@@ -70,16 +70,6 @@ More information about defining this permission can be found [here](https://lear
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Microsoft Graph Security.
 3. Click **Add instance** to create and configure a new integration instance.
-4. To ensure that mirroring works (Cortex XSOAR only):
-   1. Select **Incident Mirroring Direction**. Choose Incoming, Outgoing, or Incoming And Outgoing.
-   2. Select the **Fetches incidents** radio button.
-   3. Under **Classifier**, select **Graph Security Classifier**. It sets the incident type of each fetched record to **Graph Security Alert** or **Graph Security Incident**.
-   4. Under **Mapper (incoming)**, select **Graph Security Mapper - Incoming**. It covers both alerts and incidents.
-   5. Under **Mapper (outgoing)**, select **Graph Security Mapper - Outgoing**. It covers both alerts and incidents.
-   6. To enable mirroring to close a ticket in Cortex XSOAR, check the **Close Mirrored XSOAR Incident** checkbox.
-   7. To enable mirroring to close an alert or incident in Microsoft, check the **Close Mirrored Microsoft Alert/Incident** checkbox.
-   8. Optionally, set the **Comment Entry Tag (to Microsoft)** and **Comment Entry Tag (from Microsoft)** values. Entries tagged with the first tag are mirrored out as Microsoft alert/incident comments.
-
      | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Azure Cloud | When selecting the Custom option, the Host URL parameter must be filled. More information about National clouds can be found [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud). | False |
@@ -104,58 +94,50 @@ More information about defining this permission can be found [here](https://lear
     | Alerts Service Sources | Relevant only when fetching Alerts (incidents have no service source). Multiple `serviceSource` values can be provided, separated by commas, for example "microsoftDefenderForEndpoint,microsoftCloudAppSecurity". If empty, alerts of all service sources will be fetched. | False |
     | Alerts Filter | Use this field to filter fetched alerts according to their properties. Applies only when fetching Alerts. Overrides the service sources list, if given. Filter should be in the format "\{property\} eq '\{property-value\}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'". | False |
     | Incidents Filter | Use this field to filter fetched incidents according to their properties. Applies only when fetching Incidents. Filter should be in the format "\{property\} eq '\{property-value\}'". Multiple filters can be applied separated with " and ", for example "severity eq 'high' and status eq 'active'". | False |
-    | Incident Mirroring Direction | Choose the direction to mirror the alerts and incidents: Incoming \(from Microsoft Graph Security to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Microsoft Graph Security\), or Incoming And Outgoing \(from/to Cortex XSOAR and Microsoft Graph Security\). | False |
-    | Close Mirrored XSOAR Incident | Incoming Mirroring - when selected, and the Microsoft alert/incident status becomes Resolved, the mirrored Cortex XSOAR incident is closed. | False |
-    | Close Mirrored Microsoft Alert/Incident | Outgoing Mirroring - when selected, and the Cortex XSOAR incident is closed, the Microsoft alert/incident status is updated to Resolved. | False |
-    | Comment Entry Tag (to Microsoft) | Choose a tag to add to an entry to mirror it as a comment into the Microsoft alert/incident. Must be different from the Comment Entry Tag (from Microsoft). | False |
-    | Comment Entry Tag (from Microsoft) | The tag added to entries created from Microsoft alert/incident comments that are mirrored into Cortex XSOAR. Must be different from the Comment Entry Tag (to Microsoft). | False |
+    | Incident Mirroring Direction | The direction to mirror alerts and incidents: Incoming \(Microsoft to Cortex XSOAR\), Outgoing \(Cortex XSOAR to Microsoft\), or Incoming And Outgoing. | False |
+    | Close Mirrored XSOAR Incident | Incoming mirroring. When selected, the Cortex XSOAR incident is closed when the Microsoft alert or incident status becomes Resolved, or Redirected \(incidents\). | False |
+    | Close Mirrored Microsoft Alert/Incident | Outgoing mirroring. When selected, the Microsoft alert or incident status is set to Resolved when the Cortex XSOAR incident is closed. | False |
+    | Comment Entry Tag (to Microsoft) | Entries with this tag are mirrored as comments to the Microsoft alert or incident. Must be different from the Comment Entry Tag \(from Microsoft\). | False |
+    | Comment Entry Tag (from Microsoft) | The tag added to entries created from Microsoft alert or incident comments. Must be different from the Comment Entry Tag \(to Microsoft\). | False |
     | Microsoft 365 Defender context | When selected, the hunting query result is also saved to the Microsoft 365 Defender context path. Relevant only for the msg-advanced-hunting command. | False |
 
+4. To set up mirroring (Cortex XSOAR only), see [Configure Incident Mirroring](#configure-incident-mirroring).
 5. Click **Test** to validate the URLs, token, and connection.
 
-## Incident Mirroring
+## Configure Incident Mirroring
 
-You can enable incident mirroring between Cortex XSOAR incidents and Microsoft Graph Security alerts and incidents (available from Cortex XSOAR version 6.10.0).
-Mirroring covers both record types that the integration fetches: alerts (`security/alerts_v2`) and incidents (`security/incidents`, including their related alerts).
-To set up mirroring:
+You can mirror Microsoft Graph Security alerts and incidents with Cortex XSOAR incidents (Cortex XSOAR 6.10.0 and later).
 
-1. Enable *Fetching incidents* in your instance configuration.
-2. Under **Classifier**, select **Graph Security Classifier**, which sets the incident type (**Graph Security Alert** or **Graph Security Incident**) for each fetched record. Under **Mapper (incoming)**, select **Graph Security Mapper - Incoming**, which covers both incident types.
-3. Under **Mapper (outgoing)**, select **Graph Security Mapper - Outgoing**, which covers both incident types.
-4. In the *Incident Mirroring Direction* integration parameter, select the direction for mirroring:
+1. Select **Fetches incidents**.
+2. Under **Classifier**, select **Graph Security Classifier**. It sets the incident type to **Graph Security Alert** or **Graph Security Incident**.
+3. Under **Mapper (incoming)**, select **Graph Security Mapper - Incoming**.
+4. Under **Mapper (outgoing)**, select **Graph Security Mapper - Outgoing**.
+5. In **Incident Mirroring Direction**, select the direction:
 
     | **Option** | **Description** |
     | --- | --- |
-    | None | Turns off incident mirroring. |
-    | Incoming | Any changes in Microsoft Graph Security alerts/incidents (`status`, `classification`, `determination`, `severity`, `assignedTo`, `customTags`, alert `customDetails`, incident `displayName`, comments, related alerts) are reflected in Cortex XSOAR incidents. |
-    | Outgoing | Any changes in Cortex XSOAR incidents are reflected in Microsoft Graph Security alerts/incidents (`status` and the **Microsoft Graph Security Classification** label, which is sent as the Microsoft `classification` and `determination`; for alerts also `customDetails`; for incidents also `severity`, `displayName`, `description`, `customTags` and `resolvingComment`). The alert severity is mirrored in only. For alerts, the Cortex XSOAR **Classification** field is mirrored in only and is never sent to Microsoft. |
-    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and Microsoft Graph Security alerts/incidents are reflected in both directions. |
+    | None | Turns off mirroring. |
+    | Incoming | Microsoft changes are reflected in Cortex XSOAR: status, classification, severity, assigned user, tags, alert Additional Data, incident name, and comments. |
+    | Outgoing | Cortex XSOAR changes are reflected in Microsoft: status, **Microsoft Graph Security Classification**, and alert Additional Data. For incidents, also severity, name, description, tags, and close notes. |
+    | Incoming And Outgoing | Changes are reflected in both directions. |
 
-5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding Microsoft alert/incident status becomes **Resolved**.
-6. Optional: Check the *Close Mirrored Microsoft Alert/Incident* integration parameter to set the corresponding Microsoft alert/incident status to **Resolved** when the Cortex XSOAR incident is closed.
-7. Optional: Set the *Comment Entry Tag (to Microsoft)* (default `CommentToMicrosoftGraphSecurity`) and *Comment Entry Tag (from Microsoft)* (default `CommentFromMicrosoftGraphSecurity`) parameters. The two tags must have different values, otherwise the **Test** button fails.
+6. Optional: Select **Close Mirrored XSOAR Incident** to close the Cortex XSOAR incident when the Microsoft alert or incident is resolved.
+7. Optional: Select **Close Mirrored Microsoft Alert/Incident** to resolve the Microsoft alert or incident when the Cortex XSOAR incident is closed.
+8. Optional: Change **Comment Entry Tag (to Microsoft)** and **Comment Entry Tag (from Microsoft)**. The two tags must be different.
 
-Newly fetched Cortex XSOAR incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+Mirroring applies only to incidents fetched after you enable it.
 
-**Important Notes**
+**Notes**
 
-* To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Microsoft Graph Security.
-* Mirroring applies only to incidents that are fetched after mirroring is enabled.
-* Comments are append-only. War Room entries tagged with the *Comment Entry Tag (to Microsoft)* are posted as comments on the Microsoft alert/incident. Microsoft comments are added to the Cortex XSOAR incident as notes tagged with the *Comment Entry Tag (from Microsoft)*. Comments cannot be edited or deleted through mirroring.
 * Outgoing mirroring requires the `SecurityIncident.ReadWrite.All` and `SecurityAlert.ReadWrite.All` permissions.
-* The alert `customDetails` are mirrored in and out with the **Additional Data** field. Each entry is shown as a `key: value` item. Items without a `key: value` separator are sent to Microsoft joined with `, ` under the reserved `xsoarTags` key, and shown again as separate items on incoming mirroring. The whole set of items is sent on every update, and Microsoft may replace the existing `customDetails` with it.
-* Clearing *Microsoft Graph Security Incident Tags*, *Details* (incident description) or *Additional Data* (alert customDetails) in Cortex XSOAR clears the value in Microsoft. Close notes are not cleared on reopen.
-* When *Close Mirrored XSOAR Incident* is enabled, an incident closed in Cortex XSOAR is reopened if its status in Microsoft is not resolved or redirected.
-* The **Microsoft Graph Security Incident Status** field shows the Microsoft incident status. `resolved` and `redirected` close the Cortex XSOAR incident. `redirected` is set only by Microsoft and is not a selectable option. `unknownFutureValue` is never sent to Microsoft.
-* Microsoft sets `redirected` when it merges an incident into another one. The Cortex XSOAR incident is closed as **Resolved**, and the close notes include the target incident ID (`Redirected in Microsoft Defender to incident <id>.`).
-* The assigned user (`assignedTo`) is mirrored in only, because Microsoft uses Defender-specific user IDs. It is never sent to Microsoft.
-* The incident name is mirrored in both directions. In Cortex XSOAR the name is `<displayName> - <incident ID>`. When it is sent to Microsoft, a trailing ` - <incident ID>` is removed, so only the display name is sent.
-* The alert severity is mirrored in only, because the Microsoft Graph alerts API does not allow updating the severity. A severity change on a Cortex XSOAR alert incident is not sent to Microsoft.
-* Microsoft incidents have no **Critical** severity. A Cortex XSOAR **Critical** incident severity is not sent to Microsoft.
-* When closing from Cortex XSOAR, only the status (`resolved`) and the close comment are sent. The comment is `Closed in Cortex XSOAR as: <close reason>` followed by `Comment: <close notes>` (the incident resolving comment, or an alert comment). For alerts, the close notes are included only if the outgoing mapper maps `closeNotes` (**Graph Security Mapper - Outgoing** does). The close reason never changes the Microsoft classification. For alerts and incidents, the classification and determination are sent only when the **Microsoft Graph Security Classification** field is changed.
-* National clouds: GCC (moderate) tenants use the worldwide Microsoft Graph endpoints (`graph.microsoft.com`), so select **Worldwide** in the *Azure Cloud* parameter. GCC High tenants use `graph.microsoft.us`; select **US GCC-High**.
-* The Microsoft Graph security APIs used for mirroring are not available in the China (21Vianet) cloud.
-* The *Germany* option was removed from the *Azure Cloud* parameter, as Microsoft Cloud Germany was closed in October 2021.
+* War Room entries with the *Comment Entry Tag (to Microsoft)* are posted as Microsoft comments. Microsoft comments are added as notes with the *Comment Entry Tag (from Microsoft)*. Comments can't be edited or deleted through mirroring.
+* The alert custom details are mirrored with the **Additional Data** field, as `key: value` items. Items without `key: value` are sent under the `xsoarTags` key.
+* An incident that Microsoft redirects (merges into another incident) closes the Cortex XSOAR incident as **Resolved**. Status changes are not sent to Microsoft for a redirected incident.
+* A closed Cortex XSOAR incident is reopened only when the Microsoft status is active (incidents: `active`, `inProgress`, `awaitingAction`; alerts: `new`, `inProgress`).
+* Closing in Cortex XSOAR sends the `resolved` status and a comment with the close reason and close notes. The classification is sent only when you change the **Microsoft Graph Security Classification** field.
+* The assigned user and the alert severity are mirrored in only.
+* A **Critical** severity is not sent to Microsoft, because Microsoft incidents have no critical severity.
+* Mirroring is not available in the China (21Vianet) cloud.
 
 ## Commands
 
@@ -2877,11 +2859,11 @@ Gets remote data from a remote incident/alert. This method is only used for debu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The remote alert or incident ID. Sent automatically by the mirroring engine. When debugging manually, provide this argument, alert_id, or incident_id. | Optional |
-| alert_id | The remote alert ID. Runs the alert flow. | Optional |
-| incident_id | The remote incident ID. Runs the incident flow. | Optional |
-| lastUpdate | ISO-8601 timestamp (or UTC timestamp in seconds) of the last update. Used to decide whether the remote object changed. Defaults to 0 (epoch). | Optional |
-| last_update | ISO-8601 timestamp of the last update. Alias of lastUpdate, used when debugging manually. | Optional |
+| id | The remote alert or incident ID. | Optional |
+| alert_id | The remote alert ID. Use instead of id to force the alert flow. | Optional |
+| incident_id | The remote incident ID. Use instead of id to force the incident flow. | Optional |
+| lastUpdate | The last update time (ISO-8601 or UTC timestamp in seconds). Only comments created after this time are mirrored. Default is 0. | Optional |
+| last_update | Alias of lastUpdate. | Optional |
 
 #### Context Output
 
@@ -2900,8 +2882,8 @@ Gets the list of remote incidents/alerts that were modified since the last updat
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lastUpdate | ISO-8601 timestamp (or UTC timestamp in seconds) of the last mirror-in run. Returns the IDs of objects (alerts and incidents) modified since then. Sent automatically by the mirroring engine. When debugging manually, provide this argument or its alias last_update. | Optional |
-| last_update | ISO-8601 timestamp of the last update. Alias of lastUpdate, used when debugging manually. | Optional |
+| lastUpdate | The last update time (ISO-8601 or UTC timestamp in seconds). Returns the IDs of the alerts and incidents modified since then. | Optional |
+| last_update | Alias of lastUpdate. | Optional |
 
 #### Context Output
 
@@ -2918,8 +2900,7 @@ Updates the remote incidents/alerts with local incident changes. This method is 
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -2936,8 +2917,7 @@ Returns the list of fields to map in outgoing mirroring. This command is only us
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 

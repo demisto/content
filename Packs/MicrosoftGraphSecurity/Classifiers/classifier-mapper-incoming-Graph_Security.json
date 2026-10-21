@@ -30,6 +30,9 @@
                 "Microsoft Graph Security Detector Id": {
                     "simple": "detectorId"
                 },
+                "Microsoft Graph Security Comment": {
+                    "simple": "comments"
+                },
                 "Microsoft Graph Security Alert Determination": {
                     "simple": "determination"
                 },
@@ -306,11 +309,7 @@
                     "complex": {
                         "filters": [],
                         "root": "alerts",
-                        "transformers": [
-                            {
-                                "operator": "JsonToTable"
-                            }
-                        ]
+                        "transformers": []
                     }
                 },
                 "Assigned User": {

@@ -66,6 +66,7 @@ from MicrosoftGraphSecurity import (
     get_close_entry,
     get_entries_for_comments,
     get_mapping_fields_command,
+    get_mirroring_fields,
     get_modified_remote_data_command,
     get_remote_data_command,
     get_remote_data_wrapper_command,
@@ -83,7 +84,6 @@ from MicrosoftGraphSecurity import (
     to_graph_determination,
     build_patch_body,
     custom_details_to_list,
-    probe_incident_status_command,
     strip_remote_id_suffix,
     test_function as msg_test_function,  # aliased so pytest does not collect it as a test
     validate_mirroring_comment_tags,
@@ -2572,6 +2572,79 @@ def test_fetch_incidents_injects_mirroring_fields(mocker):
     assert incidents[0]["name"] == "Inc - 1"
 
 
+@pytest.mark.parametrize(
+    "direction_param, expected_direction",
+    [
+        ("Incoming", "In"),
+        ("Outgoing", "Out"),
+        ("Incoming And Outgoing", "Both"),
+        ("None", None),
+        ("", None),
+        (None, None),
+    ],
+)
+@pytest.mark.parametrize("mirror_type", ["alert", "incident"])
+def test_get_mirroring_fields(mocker, direction_param, expected_direction, mirror_type):
+    """
+    Given: each Incident Mirroring Direction param value (including "None", empty and missing), for alerts and incidents.
+    When: building the mirroring fields with get_mirroring_fields.
+    Then: the direction maps to In/Out/Both, or None when mirroring is off; the instance, tags and mirror_type are
+          always set (mirroring off doesn't drop them, the server ignores them when the direction is None).
+    """
+    mocker.patch.object(demisto, "integrationInstance", return_value="instance_1")
+    params = {**MIRROR_PARAMS, "mirror_direction": direction_param}
+    assert get_mirroring_fields(params, mirror_type) == {
+        "mirror_direction": expected_direction,
+        "mirror_instance": "instance_1",
+        "mirror_tags": ["CommentToMicrosoftGraphSecurity", "CommentFromMicrosoftGraphSecurity"],
+        "mirror_type": mirror_type,
+    }
+
+
+def test_fetch_incidents_mirroring_off_direction_none(mocker):
+    """
+    Given: an incident returned by the API, and the mirroring direction param set to "None" (mirroring off).
+    When: running fetch_incidents.
+    Then: the raw JSON has mirror_direction=None, and still holds mirror_instance and mirror_type=incident.
+    """
+    mocker.patch("MicrosoftGraphSecurity.parse_date_range", return_value=("2020-04-19T08:14:21.000000Z", "x"))
+    mocker.patch.object(demisto, "integrationInstance", return_value="instance_1")
+    mocker.patch.object(
+        client_mocker,
+        "get_incidents_request",
+        return_value={"value": [{"id": "1", "displayName": "Inc", "createdDateTime": "2020-04-20T10:00:00Z"}]},
+    )
+    params = {**MIRROR_PARAMS, "mirror_direction": "None"}
+    incidents, _ = fetch_incidents(client_mocker, "1 hour", 10, "", {}, params=params)
+    raw = json.loads(incidents[0]["rawJSON"])
+    assert raw["mirror_direction"] is None
+    assert raw["mirror_instance"] == "instance_1"
+    assert raw["mirror_type"] == "incident"
+
+
+def test_fetch_alerts_mirroring_off_direction_none(mocker):
+    """
+    Given: alerts returned by the API, and no mirroring direction param at all (mirroring off).
+    When: running fetch_alerts.
+    Then: every fetched record has mirror_direction=None, mirror_instance and mirror_type=alert.
+    """
+    mocker.patch("MicrosoftGraphSecurity.parse_date_range", return_value=("2020-04-19T08:14:21.000000Z", "x"))
+    mocker.patch.object(demisto, "integrationInstance", return_value="instance_1")
+    alerts_response = [
+        {"id": "a1", "createdDateTime": "2020-04-20T10:00:00Z"},
+        {"id": "a2", "createdDateTime": "2020-04-20T11:00:00Z"},
+    ]
+    mocker.patch.object(client_mocker, "search_alerts", return_value={"value": alerts_response})
+    alerts, _ = fetch_alerts(client_mocker, "1 hour", 10, "", "", {}, params={})
+    assert len(alerts) == 2
+    for alert in alerts:
+        raw = json.loads(alert["rawJSON"])
+        assert raw["mirror_direction"] is None
+        assert raw["mirror_instance"] == "instance_1"
+        assert raw["mirror_type"] == "alert"
+        assert raw["mirror_tags"] == []
+
+
 def test_fetch_alerts_mirror_tags_skip_empty_params(mocker):
     """
     Given: mirroring params where the comment tags are missing or empty (there are no code defaults).
@@ -2593,7 +2666,7 @@ def test_get_mapping_fields_command():
     Given: nothing.
     When: running get-mapping-fields.
     Then: two schemes are returned, with the Graph Security Alert/Incident type names, and `determination` is not offered
-          (it is derived from the combined Classification label). closeReason is offered (read by close-out, as in Cortex XDR),
+          (it is derived from the combined Classification label). closeReason is offered (read by close-out),
           and the alert scheme offers closeNotes (read by close-out for the alert close comment). Both schemes offer
           classification. The alert scheme doesn't offer severity (mirrored in only: Graph rejects an alert severity PATCH).
           Only the incident scheme offers severity.
@@ -2858,15 +2931,19 @@ REOPEN_ENTRY = {"Type": EntryType.NOTE, "Contents": {"dbotIncidentReopen": True}
     [
         (
             {"id": "42", "status": 0},
-            ["XSOAR investigation 42 status: 0", "the XSOAR incident is already open, no close/reopen entry"],
+            ["XSOAR investigation 42 status: 0", "status: active, remote closed: False, XSOAR closed: False."],
         ),
         (
             {"id": "42", "status": 1},
-            ["XSOAR investigation 42 status: 1", "(not closed, XSOAR: closed), adding a reopen entry"],
+            ["XSOAR investigation 42 status: 1", "status: active, remote closed: False, XSOAR closed: True."],
         ),
         (
             {"id": "42"},
-            ["XSOAR investigation 42 status: None", "status is unknown, falling back", "XSOAR: unknown), adding a reopen entry"],
+            [
+                "XSOAR investigation 42 status: None",
+                "status is unknown, falling back",
+                "status: active, remote closed: False, XSOAR closed: None.",
+            ],
         ),
     ],
     ids=["open", "closed", "unknown"],
@@ -2916,7 +2993,7 @@ def test_get_remote_data_redirected_incident_closes_as_resolved(mocker, override
     """
     Given: an incident redirected in Microsoft (merged into another incident), and an open or unknown XSOAR state.
     When: running get-remote-data with close_incident on.
-    Then: a close entry is added (like Microsoft 365 Defender), with close reason Resolved and the redirect note.
+    Then: a close entry is added, with close reason Resolved and the redirect note.
     """
     mocker.patch.object(demisto, "investigation", return_value=investigation)
     remote = _remote_object("incident", status="redirected", comments=[], classification="truePositive", **overrides)
@@ -2948,13 +3025,71 @@ def test_get_remote_data_redirected_alert_status_is_not_a_close(mocker):
     """
     Given: an alert with status "redirected" (not a Graph alert status) and a closed XSOAR investigation.
     When: running get-remote-data.
-    Then: only incidents treat redirected as closed, so the alert is reopened.
+    Then: only incidents treat redirected as closed, and it is not an active alert status, so no entry is added.
     """
     mocker.patch.object(demisto, "investigation", return_value={"id": "1", "status": 1})
     remote = _remote_object("alert", status="redirected", comments=[])
     mocker.patch.object(client_mocker.ms_client, "http_request", return_value=remote)
     res = get_remote_data_command(client_mocker, {"id": ALERT_ID, "lastUpdate": "0"}, MIRROR_PARAMS)
-    assert res.entries == [REOPEN_ENTRY]
+    assert res.entries == []
+
+
+@pytest.mark.parametrize(
+    "mirror_type, status, expected_key",
+    [
+        ("alert", "resolved", "dbotIncidentClose"),
+        ("incident", "resolved", "dbotIncidentClose"),
+        ("incident", "active", "dbotIncidentReopen"),
+        ("incident", "inProgress", "dbotIncidentReopen"),
+        ("incident", "awaitingAction", "dbotIncidentReopen"),
+        ("alert", "new", "dbotIncidentReopen"),
+        ("alert", "inProgress", "dbotIncidentReopen"),
+    ],
+)
+def test_get_remote_data_close_or_reopen_on_explicit_status(mocker, mirror_type, status, expected_key):
+    """
+    Given: a resolved or explicitly active Graph alert/incident, and an XSOAR investigation with no status.
+    When: running get-remote-data with close_incident on.
+    Then: `resolved` adds a close entry, and an active status adds a reopen entry.
+    """
+    mocker.patch.object(demisto, "investigation", return_value={"id": "1"})
+    remote = _remote_object(mirror_type, status=status, comments=[])
+    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=remote)
+    res = get_remote_data_command(client_mocker, {"id": remote["id"], "lastUpdate": "0"}, MIRROR_PARAMS)
+    assert len(res.entries) == 1
+    assert res.entries[0]["Contents"][expected_key] is True
+
+
+@pytest.mark.parametrize(
+    "mirror_type, status",
+    [
+        ("incident", None),
+        ("alert", None),
+        ("incident", "unknown"),
+        ("incident", "unknownFutureValue"),
+        ("alert", "unknownFutureValue"),
+        ("alert", "redirected"),
+    ],
+)
+@pytest.mark.parametrize("investigation", [{"id": "1", "status": 1}, {"id": "1"}], ids=["xsoar-closed", "xsoar-unknown"])
+def test_get_remote_data_no_close_or_reopen_on_unknown_status(mocker, mirror_type, status, investigation):
+    """
+    Given: a Graph alert/incident with a missing, unknown, unknownFutureValue or unexpected status,
+        and a closed or unknown XSOAR investigation.
+    When: running get-remote-data with close_incident on.
+    Then: no close and no reopen entry is added, and the skip is logged.
+    """
+    mocker.patch.object(demisto, "investigation", return_value=investigation)
+    debug_mock = mocker.patch.object(demisto, "debug")
+    remote = _remote_object(mirror_type, comments=[])
+    remote.pop("status", None)
+    if status is not None:
+        remote["status"] = status
+    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=remote)
+    res = get_remote_data_command(client_mocker, {"id": remote["id"], "lastUpdate": "0"}, MIRROR_PARAMS)
+    assert res.entries == []
+    logs = " | ".join(str(c.args[0]) for c in debug_mock.call_args_list)
+    assert f"status '{status}' is not actionable; not closing or reopening." in logs
 
 
 def test_get_remote_data_reopen_entry_when_xsoar_closed(mocker):
@@ -3094,31 +3229,23 @@ def _update_args(remote_id, delta, mirror_type, status=1, entries=None, changed=
     }
 
 
-@pytest.mark.parametrize("remote_id, expected_url", [(INCIDENT_ID, "security/incidents"), (ALERT_ID, "security/alerts_v2")])
-def test_update_remote_system_infers_type_without_mirror_type(mocker, remote_id, expected_url):
+@pytest.mark.parametrize(
+    "remote_id, mirror_type, expected_url",
+    [
+        (INCIDENT_ID, "incident", "security/incidents"),
+        (ALERT_ID, "alert", "security/alerts_v2"),
+        ("b3c5a1e2-7f4d-4c1a-9e8b-2d6f0a1b3c4d", "alert", "security/alerts_v2"),
+    ],
+)
+def test_update_remote_system_mirror_type_from_id(mocker, remote_id, mirror_type, expected_url):
     """
-    Given: realistic data without mirror_type.
+    Given: a numeric incident ID, a `da...` alert ID or a GUID-like alert ID.
     When: running update-remote-system.
-    Then: the type is inferred from the ID (digits only -> incident, else alert).
+    Then: the type is inferred from the ID (digits only -> incident, else alert) and the matching URL is PATCHed.
     """
     http_mock = _patch_http(mocker)
-    args = _update_args(remote_id, {"status": "resolved"}, "incident" if remote_id == INCIDENT_ID else "alert")
-    assert "mirror_type" not in args["data"]
-    update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
+    update_remote_system_command(client_mocker, _update_args(remote_id, {"status": "resolved"}, mirror_type), MIRROR_PARAMS)
     assert _http_calls(http_mock, "PATCH")[0].kwargs["url_suffix"] == f"{expected_url}/{remote_id}"
-
-
-def test_update_remote_system_mirror_type_override(mocker):
-    """
-    Given: a digits-only ID and data with mirror_type=alert (the optional override, if the type is ever mapped).
-    When: running update-remote-system.
-    Then: the override wins and the alert URL is PATCHed.
-    """
-    http_mock = _patch_http(mocker)
-    args = _update_args("12345", {"status": "inProgress"}, "alert")
-    args["data"]["mirror_type"] = "alert"
-    update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
-    assert _http_calls(http_mock, "PATCH")[0].kwargs["url_suffix"] == "security/alerts_v2/12345"
 
 
 def test_update_remote_system_missing_remote_id(mocker):
@@ -3857,47 +3984,141 @@ def test_yml_default_incoming_mapper_is_new_mapper():
         assert "defaultmapperin: Graph Security Mapper - Incoming\n" in yml_file.read()
 
 
-def test_update_remote_system_redirected_incident_close_out_sent(mocker):
+def test_update_remote_system_redirected_incident_close_out_skipped(mocker):
     """
     Given: an XSOAR incident closed because its Microsoft incident was redirected (close_out on).
-    When: running update-remote-system with the close delta.
-    Then: the close-out is sent like for any incident (no redirected guard, pending tenant verification).
+    When: running update-remote-system with only the close delta.
+    Then: no PATCH is sent (no status or close comment for a redirected incident), and the skip is logged.
     """
     http_mock = _patch_http(mocker)
+    debug_mock = mocker.patch.object(demisto, "debug")
     delta = {"closeReason": "Resolved", "closeNotes": "Redirected in Microsoft Defender to incident 999."}
     args = _update_args(INCIDENT_ID, delta, "incident", status=2)
     args["data"]["status"] = "redirected"
     update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
-    body = _http_calls(http_mock, "PATCH")[0].kwargs["json_data"]
-    assert body["status"] == "resolved"
-    assert body["resolvingComment"] == (
-        "Closed in Cortex XSOAR as: Resolved\nComment: Redirected in Microsoft Defender to incident 999."
-    )
+    assert _http_calls(http_mock, "PATCH") == []
+    debug_mock.assert_any_call(f"[Mirroring] Incident {INCIDENT_ID} is redirected; skipping status update.")
 
 
-def test_update_remote_system_redirected_incident_reopen_sent(mocker):
+@pytest.mark.parametrize(
+    "delta, inc_status",
+    [
+        ({"closeReason": "", "closeNotes": "", "description": "new"}, 1),
+        ({"closeReason": "Resolved", "closeNotes": "notes", "description": "new"}, 2),
+        ({"status": "active", "description": "new"}, 1),
+    ],
+    ids=["reopen", "close", "status-field"],
+)
+def test_update_remote_system_redirected_incident_sends_other_fields_only(mocker, delta, inc_status):
     """
-    Given: a redirected incident reopened in XSOAR (close keys cleared), close_out on.
-    When: running update-remote-system.
-    Then: status=active is sent (no redirected guard, pending tenant verification).
+    Given: a redirected incident with a status change (reopen, close, or status field) and a description change.
+    When: running update-remote-system with close_out on.
+    Then: only the description is PATCHed, with no status.
     """
     http_mock = _patch_http(mocker)
-    args = _update_args(INCIDENT_ID, {"closeReason": "", "closeNotes": ""}, "incident", status=1)
+    args = _update_args(INCIDENT_ID, delta, "incident", status=inc_status)
     args["data"]["status"] = "redirected"
     update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
-    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": "active"}
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"description": "new"}
 
 
-def test_update_remote_system_close_out_disabled(mocker):
+def test_update_remote_system_non_redirected_incident_close_out_sends_status(mocker):
     """
-    Given: a closed XSOAR incident with close_out off.
-    When: running update-remote-system.
-    Then: no status change is sent.
+    Given: a closed XSOAR incident whose Microsoft incident is active (not redirected), close_out on.
+    When: running update-remote-system with the close delta.
+    Then: status=resolved is still sent (the redirected guard doesn't apply).
     """
     http_mock = _patch_http(mocker)
-    delta = {"closeReason": "Resolved", "closeNotes": "done"}
+    args = _update_args(INCIDENT_ID, {"closeReason": "Resolved", "closeNotes": "done"}, "incident", status=2)
+    update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"]["status"] == "resolved"
+
+
+@pytest.mark.parametrize(
+    "delta",
+    [
+        {"closeReason": "Resolved", "closeNotes": "done", "resolvingComment": "done"},
+        {"resolvingComment": "done"},
+    ],
+    ids=["close-with-mapped-close-notes", "mapped-close-notes-only"],
+)
+def test_update_remote_system_close_out_disabled(mocker, delta):
+    """
+    Given: a closed XSOAR incident with close_out off, and a close in the delta that includes resolvingComment (the
+        outgoing-mapped closeNotes).
+    When: running update-remote-system.
+    Then: no PATCH is sent at all: no status and no resolvingComment, since nothing else changed.
+    """
+    http_mock = _patch_http(mocker)
     update_remote_system_command(client_mocker, _update_args(INCIDENT_ID, delta, "incident", status=2), {"close_out": False})
     assert _http_calls(http_mock, "PATCH") == []
+
+
+@pytest.mark.parametrize(
+    "mirror_type, remote_id, other_change, expected_body, expected_comment_url",
+    [
+        (
+            "incident",
+            INCIDENT_ID,
+            {"resolvingComment": "done", "description": "new"},
+            {"description": "new"},
+            f"security/incidents/{INCIDENT_ID}/comments",
+        ),
+        (
+            "alert",
+            ALERT_ID,
+            {"assignedTo": "x", "customDetails": ["owner: SOC"]},
+            {"customDetails": {"owner": "SOC"}},
+            f"security/alerts_v2/{ALERT_ID}/comments",
+        ),
+    ],
+)
+@pytest.mark.parametrize("close_out", [False, "false"])
+def test_update_remote_system_close_out_off_sends_other_fields_and_entries(
+    mocker, mirror_type, remote_id, other_change, expected_body, expected_comment_url, close_out
+):
+    """
+    Given: a closed XSOAR incident (status DONE) with close_out off, a close in the delta (for incidents including
+        resolvingComment, the outgoing-mapped closeNotes), another field change and an entry tagged with the outgoing
+        comment tag.
+    When: running update-remote-system.
+    Then: the PATCH holds only the other field change (no status, no resolvingComment), no close notes comment is
+          posted, and the tagged entry is still mirrored out as a comment.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={})
+    delta = {"closeReason": "Resolved", "closeNotes": "done", "closingUserId": "admin", **other_change}
+    entries = [{"id": "1", "contents": "note", "tags": ["CommentToMicrosoftGraphSecurity"], "user": "admin"}]
+    args = _update_args(remote_id, delta, mirror_type, status=2, entries=entries)
+    params = {**MIRROR_PARAMS, "close_out": close_out}
+    assert update_remote_system_command(client_mocker, args, params) == remote_id
+    patches = _http_calls(http_mock, "PATCH")
+    assert len(patches) == 1
+    assert patches[0].kwargs["json_data"] == expected_body
+    assert "status" not in patches[0].kwargs["json_data"]
+    assert "resolvingComment" not in patches[0].kwargs["json_data"]
+    posts = _http_calls(http_mock, "POST")
+    assert len(posts) == 1
+    assert posts[0].kwargs["url_suffix"] == expected_comment_url
+    comment = posts[0].kwargs["json_data"]["comment"]
+    assert "(admin): note" in comment
+    assert "done" not in comment
+
+
+def test_update_remote_system_close_out_off_close_only_posts_entries_no_patch(mocker):
+    """
+    Given: a closed XSOAR alert (status DONE) with close_out off, only close fields in the delta, and a tagged entry.
+    When: running update-remote-system.
+    Then: no PATCH is sent (nothing else changed), and the tagged entry is still posted as a comment.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={})
+    delta = {"closeReason": "Resolved", "closeNotes": "done"}
+    entries = [{"id": "1", "contents": "note", "tags": ["CommentToMicrosoftGraphSecurity"], "user": "admin"}]
+    args = _update_args(ALERT_ID, delta, "alert", status=2, entries=entries)
+    update_remote_system_command(client_mocker, args, {**MIRROR_PARAMS, "close_out": False})
+    assert _http_calls(http_mock, "PATCH") == []
+    posts = _http_calls(http_mock, "POST")
+    assert len(posts) == 1
+    assert "(admin): note" in posts[0].kwargs["json_data"]["comment"]
 
 
 @pytest.mark.parametrize(
@@ -4091,7 +4312,7 @@ def test_custom_details_to_list(custom_details, expected):
     "value, expected",
     [
         (["owner: SOC team", "url: https://x.com/a"], {"owner": "SOC team", "url": "https://x.com/a"}),
-        (["ticket:INC-123"], {"ticket": "INC-123"}),
+        (["ticket:INC-123"], {"xsoarTags": "ticket:INC-123"}),
         (["owner: SOC", "malware", "urgent"], {"owner": "SOC", "xsoarTags": "malware, urgent"}),
         (["xsoarTags: a, b", "c"], {"xsoarTags": "a, b, c"}),
         (["k: 1", "k: 2"], {"k": "2"}),
@@ -4109,11 +4330,40 @@ def test_additional_data_to_custom_details(value, expected):
     """
     Given: an outgoing Additional Data value (list, single string, JSON object/list string, dict or empty).
     When: converting it to customDetails.
-    Then: "key: value" items split on the first ": " (fallback ":"), plain items go to xsoarTags, and all values are strings.
+    Then: "key: value" items split on the first ": ", plain items go to xsoarTags, and all values are strings.
     """
     result = additional_data_to_custom_details(value)
     assert result == expected
     assert all(isinstance(v, str) for v in result.values())
+
+
+@pytest.mark.parametrize(
+    "item, expected",
+    [
+        ("key: value", {"key": "value"}),
+        ("url: https://example.com/a:b", {"url": "https://example.com/a:b"}),
+        ("time: 10:30", {"time": "10:30"}),
+        ("  owner  :   SOC  ", {"owner": "SOC"}),
+        ("key:", {"key": ""}),
+        ("key: ", {"key": ""}),
+        # No ": " separator: the item is plain and goes to xsoarTags as-is (colons inside are not split).
+        ("https://example.com", {"xsoarTags": "https://example.com"}),
+        ("10:30", {"xsoarTags": "10:30"}),
+        ("key=value", {"xsoarTags": "key=value"}),
+        ("url=https://x", {"xsoarTags": "url=https://x"}),
+        ("malware", {"xsoarTags": "malware"}),
+        ("", {}),
+        ("   ", {}),
+    ],
+)
+def test_additional_data_item_separator(item, expected):
+    """
+    Given: a single Additional Data item, including values with ":" and items without a ": " separator.
+    When: converting it to customDetails.
+    Then: only the first ": " splits key from value, so URLs and times keep their colons; items without ": "
+          (including "key=value", "https://x" and "10:30") go to xsoarTags unchanged; blank items are skipped.
+    """
+    assert additional_data_to_custom_details([item]) == expected
 
 
 def test_custom_details_round_trip():
@@ -4462,36 +4712,3 @@ def test_build_patch_body_drops_unsupported_xsoar_severity(xsoar_severity, mirro
     Then: severity isn't sent.
     """
     assert build_patch_body({"severity": xsoar_severity}, mirror_type) == {}
-
-
-""" TEMP MIRRORING PROBE COMMAND TESTS (CIAC-17706) """
-
-
-def _probe_http(mocker, before: dict, after: dict, patch_error: Exception | None = None) -> MagicMock:
-    """Mocks GET (before, then after) and PATCH (empty, or raising patch_error)."""
-    gets = iter([before, after])
-
-    def side_effect(*args, **kwargs):
-        if kwargs.get("method") == "PATCH":
-            if patch_error:
-                raise patch_error
-            return ""
-        return next(gets)
-
-    return mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=side_effect)
-
-
-@pytest.mark.parametrize("args, expected_status", [({}, "redirected"), ({"status": "active"}, "active")])
-def test_probe_incident_status_command(mocker, args, expected_status):
-    """
-    Given: an optional status argument.
-    When: running msg-mirroring-probe-incident-status.
-    Then: the status (default redirected) is sent as-is, and the status and redirectIncidentId are shown before and after.
-    """
-    after = {"status": expected_status, "redirectIncidentId": "123"}
-    http_mock = _probe_http(mocker, {"status": "active", "redirectIncidentId": None}, after)
-    result = probe_incident_status_command(client_mocker, {"incident_id": INCIDENT_ID, **args})
-    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": expected_status}
-    assert result.outputs["BeforeStatus"] == "active"
-    assert result.outputs["AfterStatus"] == expected_status
-    assert result.outputs["AfterRedirectIncidentId"] == "123"

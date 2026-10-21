@@ -216,7 +216,7 @@ configuration:
   - agentix
   - xsiam
 - display: Incident Mirroring Direction
-  additionalinfo: 'Choose the direction to mirror the alerts and incidents: Incoming (from Microsoft Graph Security to Cortex XSOAR), Outgoing (from Cortex XSOAR to Microsoft Graph Security), or Incoming And Outgoing (from/to Cortex XSOAR and Microsoft Graph Security).'
+  additionalinfo: 'The direction to mirror alerts and incidents: Incoming (Microsoft to Cortex XSOAR), Outgoing (Cortex XSOAR to Microsoft), or Incoming And Outgoing.'
   name: mirror_direction
   type: 15
   section: Collect
@@ -231,7 +231,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Close Mirrored XSOAR Incident
-  additionalinfo: Incoming Mirroring - when selected, and the Microsoft alert/incident status becomes Resolved, the mirrored Cortex XSOAR incident is closed.
+  additionalinfo: Incoming mirroring. When selected, the Cortex XSOAR incident is closed when the Microsoft alert or incident status becomes Resolved, or Redirected (incidents).
   name: close_incident
   type: 8
   section: Collect
@@ -242,7 +242,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Close Mirrored Microsoft Alert/Incident
-  additionalinfo: Outgoing Mirroring - when selected, and the Cortex XSOAR incident is closed, the Microsoft alert/incident status is updated to Resolved.
+  additionalinfo: Outgoing mirroring. When selected, the Microsoft alert or incident status is set to Resolved when the Cortex XSOAR incident is closed.
   name: close_out
   type: 8
   section: Collect
@@ -253,7 +253,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Comment Entry Tag (to Microsoft)
-  additionalinfo: Choose a tag to add to an entry to mirror it as a comment into the Microsoft alert/incident. Must be different from the Comment Entry Tag (from Microsoft).
+  additionalinfo: Entries with this tag are mirrored as comments to the Microsoft alert or incident. Must be different from the Comment Entry Tag (from Microsoft).
   name: comment_tag
   type: 0
   section: Collect
@@ -264,7 +264,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Comment Entry Tag (from Microsoft)
-  additionalinfo: The tag added to entries created from Microsoft alert/incident comments that are mirrored into Cortex XSOAR. Must be different from the Comment Entry Tag (to Microsoft).
+  additionalinfo: The tag added to entries created from Microsoft alert or incident comments. Must be different from the Comment Entry Tag (to Microsoft).
   name: comment_tag_from_microsoft_graph_security
   type: 0
   section: Collect
@@ -3228,22 +3228,22 @@ script:
       description: The Location header URL returned for the export operation.
       type: String
   - arguments:
-    - description: ISO-8601 timestamp (or UTC timestamp in seconds) of the last mirror-in run. Returns the IDs of objects (alerts and incidents) modified since then. Sent automatically by the mirroring engine. When debugging manually, provide this argument or its alias last_update.
+    - description: The last update time (ISO-8601 or UTC timestamp in seconds). Returns the IDs of the alerts and incidents modified since then.
       name: lastUpdate
-    - description: ISO-8601 timestamp of the last update. Alias of lastUpdate, used when debugging manually.
+    - description: Alias of lastUpdate.
       name: last_update
     description: Gets the list of remote incidents/alerts that were modified since the last update time. This method is only used for debugging purposes.
     name: get-modified-remote-data
   - arguments:
-    - description: The remote alert or incident ID. Sent automatically by the mirroring engine. When debugging manually, provide this argument, alert_id, or incident_id.
+    - description: The remote alert or incident ID.
       name: id
-    - description: The remote alert ID. Runs the alert flow.
+    - description: The remote alert ID. Use instead of id to force the alert flow.
       name: alert_id
-    - description: The remote incident ID. Runs the incident flow.
+    - description: The remote incident ID. Use instead of id to force the incident flow.
       name: incident_id
-    - description: ISO-8601 timestamp (or UTC timestamp in seconds) of the last update. Used to decide whether the remote object changed. Defaults to 0 (epoch).
+    - description: The last update time (ISO-8601 or UTC timestamp in seconds). Only comments created after this time are mirrored. Default is 0.
       name: lastUpdate
-    - description: ISO-8601 timestamp of the last update. Alias of lastUpdate, used when debugging manually.
+    - description: Alias of lastUpdate.
       name: last_update
     description: Gets remote data from a remote incident/alert. This method is only used for debugging purposes.
     name: get-remote-data
@@ -3253,32 +3253,6 @@ script:
   - arguments: []
     description: Updates the remote incidents/alerts with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  - arguments:
-    - description: The Microsoft Graph incident ID.
-      name: incident_id
-      required: true
-    - description: The status to send, as-is. Default is redirected.
-      name: status
-      defaultValue: redirected
-    description: 'TEMPORARY, for testing only: sends the given status (default redirected) to a Microsoft Graph incident without validation, and shows the incident status and redirectIncidentId before and after.'
-    hidden: true
-    name: msg-mirroring-probe-incident-status
-    outputs:
-    - contextPath: MsGraph.MirroringProbe.IncidentId
-      description: The incident ID.
-      type: String
-    - contextPath: MsGraph.MirroringProbe.PatchError
-      description: The PATCH error, if the request failed.
-      type: String
-    - contextPath: MsGraph.MirroringProbe.BeforeStatus
-      description: The incident status before the PATCH.
-      type: String
-    - contextPath: MsGraph.MirroringProbe.AfterStatus
-      description: The incident status after the PATCH.
-      type: String
-    - contextPath: MsGraph.MirroringProbe.AfterRedirectIncidentId
-      description: The redirectIncidentId after the PATCH.
-      type: String
   dockerimage: demisto/crypto:1.0.0.12833174
   isfetch: true
   ismappable: true
