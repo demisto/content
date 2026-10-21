@@ -15,8 +15,8 @@ Use the Anomali ThreatStream Feed Integration to fetch indicators from the Anoma
 | Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. Indicator's TLP will override the default value. | False |
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. If not selected, Indicators' verdicts are determined by their Dbot score from the API. The default is Unknown. | False |
 | Indicator Expiration Method | The method by which to expire indicators from this feed for this integration instance. | False |
-| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-| Tags | Supports CSV values. | False |
+| Bypass exclusion list | Whether to ignore the exclusion list for indicators from this feed. If selected, indicators from this feed are added to the system even if they appear on the exclusion list. | False |
+| Tags | A comma-separated list of tags to add to every indicator fetched by this feed instance, in addition to the tags returned by ThreatStream. For example: anomali,threatstream. | False |
 | Create relationships |  | False |
 | Trust any certificate (not secure) |  | False |
 
