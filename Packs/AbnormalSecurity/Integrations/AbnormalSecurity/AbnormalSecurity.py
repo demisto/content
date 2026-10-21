@@ -142,16 +142,16 @@ class Client(ContentClient):
             auth=auth,
             timeout=2400,
             # No retries, as in earlier versions; fetch retries a failed call on its next run instead.
-            retry_policy=RetryPolicy(max_attempts=1),
+            retry_policy=RetryPolicy(max_attempts=1),  # type: ignore[call-arg]
             # Fetch stops one incident type after MAX_CONSECUTIVE_FAILURES. A breaker shared by the
             # whole client would also stop the other types, and would count skippable 404s.
-            circuit_breaker=CircuitBreakerPolicy(failure_threshold=sys.maxsize),
+            circuit_breaker=CircuitBreakerPolicy(failure_threshold=sys.maxsize),  # type: ignore[call-arg]
             client_name="AbnormalSecurity",
         )
 
     def limit_rate(self, rate_per_second: float) -> None:
         """Caps the requests this client sends, from all threads together, at `rate_per_second`."""
-        self._rate_limiter = TokenBucketRateLimiter(RateLimitPolicy(rate_per_second=rate_per_second))
+        self._rate_limiter = TokenBucketRateLimiter(RateLimitPolicy(rate_per_second=rate_per_second))  # type: ignore[call-arg]
 
     def _http_request(self, *args, deadline: Deadline | None = None, **kwargs):
         """Fetch passes a `deadline`, which caps the whole call, from waiting for a rate token to
