@@ -118,6 +118,7 @@ Search Identity Guard incidents for a workspace, with rich filtering, sorting an
 #### Human Readable Output
 
 >### KELA Identity Guard incidents (workspace 1234) - 1 total
+
 >|incidentId|severity|status|sourceType|accountUserName|accountServiceHostname|createdDate|
 >|---|---|---|---|---|---|---|
 >| example-incident-id | critical | UNRESOLVED | infectedBots | jdoe | example.com | 2024-01-15T12:34:56.000Z |
@@ -197,6 +198,7 @@ Search Identity Guard bot-market alerts (bots/webmails offered for sale) for a w
 #### Human Readable Output
 
 >### KELA Identity Guard bot-market alerts (workspace 1234)
+
 >|alertId|marketName|requestStatus|availabilityStatus|price|postedDate|
 >|---|---|---|---|---|---|
 >| example-alert-id | RussianMarket | pending | available | $10 | 2024-01-15T12:34:56.000Z |
@@ -282,6 +284,7 @@ permission on Identity Guard.
 #### Human Readable Output
 
 >### KELA Identity Guard cookie incidents (workspace 1234)
+
 >|incidentId|severity|status|cookieCategory|cookieName|botCountry|
 >|---|---|---|---|---|---|
 >| example-incident-id | critical | UNRESOLVED | sso | example-cookie-name | US |
