@@ -1,6 +1,29 @@
-### Censys results for IP: 0.0.0.1
+### Censys results for IP: 0.0.0.1 (Enrichment API)
 
-### Enriched Host Data (Enrichment API)
+### Reputation
+|Field|Value|
+|---|---|
+| Label | BENIGN |
+| Score | 42.0 |
+| Score Suppressed | false |
+
+### Class Probabilities
+|Label|Probability (%)|
+|---|---|
+| HONEYPOT | 0.31 |
+| INACTIVE | 0 |
+| BENIGN | 91.15 |
+| SUSPICIOUS | 5.68 |
+| MALICIOUS | 2.86 |
+
+### Top Signals
+|Contribution (%)|Feature|Value|Category|
+|---|---|---|---|
+| +11.92 | Any Threat | false | threat_intelligence |
+| +10.86 | Distinct Threats | 0 | threat_intelligence |
+| -6.58 | Max Port | 853 | service_surface |
+
+### Enriched Host Data
 |IP|Service Count|Service Ports|Service Protocols|Service Transport Protocols|Service Scan Times|Reverse DNS Names|Network Name|CIDRs|Autonomous System Name|Autonomous System ASN|City|Province|Postal Code|Country|Country Code|Continent|Latitude|Longitude|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0.0.0.1 | 4 | 53, 443, 443 | DNS, UNKNOWN, HTTP | udp, quic, tcp | 2026-01-15T00:29:02Z, 2026-01-14T13:32:45Z, 2026-01-15T06:45:37Z | dns.example.com | Company Inc | 0.0.0.1/24 | Company Inc | 15169 | Generic City | California | 00000 | United States | US | North America | 0.0 | 0.0 |
