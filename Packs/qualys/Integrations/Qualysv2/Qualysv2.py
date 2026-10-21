@@ -39,7 +39,8 @@ QIDS_BATCH_SIZE = 500
 VULNERABILITIES_SEND_BATCH_SIZE = 5000
 # Hosts per commit: their detections are sent together, then the last run is saved with the next host ID as cursor.
 ASSETS_COMMIT_HOSTS_BATCH_SIZE = 100
-# Runs in a row that may fail mid-page with nothing committed before the error is raised (fetch shows as failed).
+# Assets runs in a row that may make no progress before the error is raised (fetch shows as failed). Counted: errors
+# before the first commit (including concurrency-limit errors) and host list timeouts once the limit is already 1.
 ASSETS_MAX_CONSECUTIVE_FAILURES = 5
 # Retry configuration for Qualys rate-limit (HTTP 409, Error Code 1965) responses.
 RATE_LIMIT_STATUS_CODE = 409
@@ -1795,8 +1796,10 @@ class Client(BaseClient):
             qid: The Qualys ID (QID).
         Returns:
             A tuple of (streamed ``requests.Response`` or ``None`` on timeout, ``set_new_limit`` flag).
+            ``set_new_limit`` is True only when the request timed out, so the caller can retry with a smaller limit.
         Raises:
-            DemistoException: can be raised by the _http_request function
+            DemistoException: can be raised by the _http_request function, including a concurrency-limit error
+                (HTTP 409, Error Code 1960) that is still active after the in-run retries.
         """
         set_new_limit = False
         self._headers.update({"Content-Type": "application/json"})
@@ -1831,19 +1834,6 @@ class Client(BaseClient):
             demisto.debug(
                 f"[HTTP Error] An error occurred during the request: {str(e)}. "
                 f"Trying again in the next fetch with a reduced limit.\n{traceback.format_exc()}"
-            )
-            set_new_limit = True
-            response = None
-
-        # Handle Qualys concurrency limit (HTTP 409, Error Code 1960): a previous long-running instance
-        # of this API is still executing. After exhausting in-run retries, defer to the next fetch with a
-        # reduced limit instead of failing the whole fetch (which would restart the snapshot from scratch).
-        except DemistoException as e:
-            if not self._is_concurrency_limit_error(getattr(e, "res", None)):
-                raise
-            demisto.debug(
-                f"[HTTP Error] Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}) still active after retries. "
-                f"Trying again in the next fetch with a reduced limit. Error: {str(e)}\n{traceback.format_exc()}"
             )
             set_new_limit = True
             response = None
@@ -3438,9 +3428,22 @@ def fetch_vulnerabilities_of_new_qids(client: Client, assets: list[dict], fetche
     return vulnerabilities
 
 
+def schedule_next_assets_run_immediately(last_run: dict) -> dict:
+    """Sets `nextTrigger` to 0 and `type` to 1 (assets), so the server triggers the next assets fetch right away.
+
+    Args:
+        last_run (dict): Last assets run dictionary. Updated in place.
+
+    Returns:
+        dict: The updated last assets run.
+    """
+    last_run["nextTrigger"] = "0"  # Trigger next fetch iteration immediately
+    last_run["type"] = FETCH_COMMAND["assets"]  # Set next fetch iteration to type 'assets'
+    return last_run
+
+
 def set_assets_last_run_with_new_limit(last_run: dict, limit: int) -> dict:
-    """Updates last assets run by setting `limit` to half, `nextTrigger` to 0, and `type` to 1 (assets).
-    This instructs the server to immediately trigger the next assets fetch iteration.
+    """Updates last assets run by setting `limit` to half (minimum 1) and scheduling the next run immediately.
 
     Args:
         last_run (dict): Last assets run dictionary.
@@ -3452,10 +3455,32 @@ def set_assets_last_run_with_new_limit(last_run: dict, limit: int) -> dict:
     new_limit = int(limit / 2) if limit > 1 else 1
     demisto.debug(f"Starting setting host limit to: {new_limit}.")
     last_run["limit"] = new_limit
-    last_run["nextTrigger"] = "0"  # Trigger next fetch iteration immediately
-    last_run["type"] = FETCH_COMMAND["assets"]  # Set next fetch iteration to type 'assets'
+    schedule_next_assets_run_immediately(last_run)
     demisto.debug(f"Finished setting host limit to: {new_limit}.")
     return last_run
+
+
+def count_assets_failure(last_run: dict[str, Any], reason: str, error: Optional[Exception] = None) -> dict[str, Any]:
+    """Counts a run that made no progress, raising once ``ASSETS_MAX_CONSECUTIVE_FAILURES`` runs in a row failed.
+
+    Args:
+        last_run (dict): Last assets run dictionary.
+        reason (str): Description of the failure, used in the raised error.
+        error (Exception | None): The original error, chained to the raised error if given.
+
+    Returns:
+        dict: A copy of the last run with the incremented ``consecutive_failures``.
+    """
+    consecutive_failures = last_run.get("consecutive_failures", 0) + 1
+    demisto.debug(
+        f"[Assets] Run made no progress, counting failure {consecutive_failures}/{ASSETS_MAX_CONSECUTIVE_FAILURES}. "
+        f"Reason: {reason}"
+    )
+    if consecutive_failures >= ASSETS_MAX_CONSECUTIVE_FAILURES:
+        raise DemistoException(
+            f"Assets fetch failed {consecutive_failures} times in a row without progress. Last error: {reason}"
+        ) from error
+    return {**last_run, "consecutive_failures": consecutive_failures}
 
 
 def iter_batches(records: Iterable[dict], size: int) -> Iterator[list[dict]]:
@@ -3581,22 +3606,77 @@ def send_assets_batch(rows: list[dict], snapshot_id: str, items_count: int) -> N
 def handle_assets_page_error(
     error: Exception, last_run: dict[str, Any], committed_run: Optional[dict[str, Any]]
 ) -> tuple[dict[str, Any], bool]:
-    """Ends the run after a mid-page failure, keeping the last commit.
+    """Ends the run after a page failure, keeping the last commit.
 
-    Returns the last commit if one was made in this run. Otherwise counts the failure and returns the original last
-    run with ``set_new_limit=True``, raising once ``ASSETS_MAX_CONSECUTIVE_FAILURES`` runs in a row made no progress.
+    - If a commit was made in this run, returns it with ``set_new_limit=False``.
+    - Otherwise the failure counts toward ``consecutive_failures`` (raising once ``ASSETS_MAX_CONSECUTIVE_FAILURES``
+      runs in a row made no progress):
+        - A Qualys concurrency-limit error (HTTP 409, Error Code 1960) on either request (host list or knowledge
+          base) keeps the limit, since the page size is not the cause, and schedules the next run immediately.
+        - Any other error returns ``set_new_limit=True`` so the caller halves the limit.
     """
-    error_message = f"Assets fetch stopped mid-page; the next fetch resumes from the last committed host. Error: {error}"
-    demisto.error(f"[Assets] {error_message}\n{traceback.format_exc()}")
     if committed_run is not None:
+        demisto.error(
+            f"[Assets] Stopped mid-page after a commit; keeping the commit (next_page={committed_run.get('next_page')}) "
+            f"without counting a failure. Error: {error}\n{traceback.format_exc()}"
+        )
         return committed_run, False
 
-    consecutive_failures = last_run.get("consecutive_failures", 0) + 1
-    if consecutive_failures >= ASSETS_MAX_CONSECUTIVE_FAILURES:
-        raise DemistoException(
-            f"Assets fetch failed {consecutive_failures} times in a row without progress. Last error: {error}"
-        ) from error
-    return {**last_run, "consecutive_failures": consecutive_failures}, True
+    demisto.error(f"[Assets] Run failed with nothing committed. Error: {error}\n{traceback.format_exc()}")
+    counted_run = count_assets_failure(last_run, str(error), error)
+    failures, limit = counted_run["consecutive_failures"], counted_run.get("limit", HOST_LIMIT)
+    if Client._is_concurrency_limit_error(getattr(error, "res", None)):
+        demisto.debug(
+            f"[Assets] Concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}) still active: failure "
+            f"{failures}/{ASSETS_MAX_CONSECUTIVE_FAILURES}, keeping {limit=}, next run starts immediately."
+        )
+        return schedule_next_assets_run_immediately(counted_run), False
+    demisto.debug(
+        f"[Assets] Error with nothing committed: failure {failures}/{ASSETS_MAX_CONSECUTIVE_FAILURES}, "
+        f"the next run halves {limit=}."
+    )
+    return counted_run, True
+
+
+def handle_assets_request_timeout(last_run: dict[str, Any]) -> tuple[dict[str, Any], bool]:
+    """Ends the run after the host list request timed out.
+
+    While the limit is above 1, returns ``set_new_limit=True`` without counting, so the caller halves the limit
+    (at most ~10 runs from the default limit). Once the limit is already 1, halving cannot help anymore, so the
+    timeout counts toward ``consecutive_failures`` and the next run is scheduled immediately with the same limit.
+    """
+    limit = last_run.get("limit", HOST_LIMIT)
+    if limit > 1:
+        demisto.debug(f"[Assets] Host list request timed out with {limit=}; the next run halves the limit (not counted).")
+        return last_run, True
+    demisto.debug("[Assets] Host list request timed out and the limit is already 1; counting the timeout as a failure.")
+    counted_run = count_assets_failure(last_run, "Host list detection request timed out with limit 1.")
+    demisto.debug(f"[Assets] Keeping limit=1, next run starts immediately. {counted_run['consecutive_failures']=}")
+    return schedule_next_assets_run_immediately(counted_run), False
+
+
+def request_host_list_page(
+    client: Client, last_run: dict[str, Any], since_datetime: str, next_page: str, limit: int
+) -> tuple[Optional[requests.Response], Optional[tuple[dict[str, Any], bool]]]:
+    """Requests one host list detection page, handling a timeout or concurrency-limit error the same way for both flows.
+
+    Returns:
+        tuple: (streamed response, failed_request_outcome).
+            - On success: (response, None).
+            - On a timeout or concurrency-limit error: (None, (last run to save, set_new_limit flag)). The page
+              function returns this outcome as is, ending the run without streaming.
+        Other request errors are raised.
+    """
+    try:
+        raw_response, timed_out = client.get_host_list_detection(since_datetime, next_page, limit)
+    except DemistoException as e:
+        if not Client._is_concurrency_limit_error(getattr(e, "res", None)):
+            raise
+        demisto.debug("[Assets] Host list request hit the concurrency limit after retries; nothing was streamed or sent.")
+        return None, handle_assets_page_error(e, last_run, committed_run=None)
+    if timed_out:
+        return None, handle_assets_request_timeout(last_run)
+    return raw_response, None
 
 
 def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> tuple[dict[str, Any], bool]:
@@ -3607,8 +3687,9 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
     page declares the cumulative ``total_assets`` to seal the snapshot.
 
     On any error mid-page (closed socket, parse error, failed send, etc.) the last commit is kept and the run ends
-    normally, so the next fetch resumes from the first uncommitted host. If nothing was committed in this run, or the
-    request timed out / hit the concurrency limit, ``set_new_limit`` is returned so the caller reduces the limit.
+    normally, so the next fetch resumes from the first uncommitted host. If nothing was committed, the run is handled
+    by ``handle_assets_page_error`` (concurrency-limit errors keep the limit, other errors return ``set_new_limit``).
+    A request timeout is handled by ``handle_assets_request_timeout``.
 
     Args:
         client (Client): Qualys client.
@@ -3622,16 +3703,17 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
     snapshot_id = str(last_run.get("snapshot_id", str(round(time.time() * 1000))))
     limit = last_run.get("limit", HOST_LIMIT)
 
-    demisto.debug(f"[Assets] Starting streamed assets fetch {snapshot_id=}, {since_datetime=}, {next_page=}")
+    demisto.debug(
+        f"[Assets] Starting streamed assets fetch {snapshot_id=}, {since_datetime=}, {next_page=}, {limit=}, "
+        f"consecutive_failures={last_run.get('consecutive_failures', 0)}"
+    )
 
     log_memory_usage("fetch_and_send_assets_streamed - before host list detection API request")
-    raw_response, set_new_limit = client.get_host_list_detection(since_datetime, next_page, limit)
+    raw_response, failed_request_outcome = request_host_list_page(client, last_run, since_datetime, next_page, limit)
     log_memory_usage("fetch_and_send_assets_streamed - after host list detection API request")
-    if set_new_limit:
-        demisto.debug("[Assets] Host list detection request needs a reduced limit; deferring to next fetch without sending.")
-        # Only signal the reduction; the caller (fetch_assets_and_vulnerabilities_by_date) is the single place that
-        # builds the reduced-limit last run, so it is not computed twice.
-        return last_run, True
+    if failed_request_outcome is not None:
+        demisto.debug("[Assets] Host list detection request failed; deferring to next fetch without sending.")
+        return failed_request_outcome
 
     stream_state: dict = {}
     batch: list = []
@@ -3700,8 +3782,10 @@ def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: 
     set to the next host ID. On the last page, the final send seals both snapshots with the cumulative totals and the
     last run is reset.
 
-    Errors are handled as in ``fetch_and_send_assets_streamed``: the last commit is kept, and if nothing was committed
-    (or the request timed out / hit the concurrency limit) ``set_new_limit`` is returned so the caller reduces the limit.
+    Errors are handled as in ``fetch_and_send_assets_streamed``, for both the host list and the knowledge-base
+    requests: the last commit is kept; if nothing was committed, ``handle_assets_page_error`` decides (concurrency-limit
+    errors keep the limit, other errors return ``set_new_limit``); a host list timeout is handled by
+    ``handle_assets_request_timeout``.
 
     Args:
         client (Client): Qualys client.
@@ -3716,14 +3800,17 @@ def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: 
     snapshot_id = str(last_run.get("snapshot_id", str(round(time.time() * 1000))))
     limit = last_run.get("limit", HOST_LIMIT)
 
-    demisto.debug(f"[Assets By QIDs] Starting page fetch {snapshot_id=}, {since_datetime=}, {next_page=}")
+    demisto.debug(
+        f"[Assets By QIDs] Starting page fetch {snapshot_id=}, {since_datetime=}, {next_page=}, {limit=}, "
+        f"consecutive_failures={last_run.get('consecutive_failures', 0)}"
+    )
 
     log_memory_usage("fetch by QIDs page - before host list detection API request")
-    raw_response, set_new_limit = client.get_host_list_detection(since_datetime, next_page, limit)
+    raw_response, failed_request_outcome = request_host_list_page(client, last_run, since_datetime, next_page, limit)
     log_memory_usage("fetch by QIDs page - after host list detection API request")
-    if set_new_limit:
-        demisto.debug("[Assets By QIDs] Host list detection request needs a reduced limit; deferring to next fetch.")
-        return last_run, True
+    if failed_request_outcome is not None:
+        demisto.debug("[Assets By QIDs] Host list detection request failed; deferring to next fetch.")
+        return failed_request_outcome
 
     stream_state: dict = {}
     fetched_qids: set = set()
@@ -4013,11 +4100,14 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
           normally. The next run resumes from that cursor with the same ``snapshot_id``, so committed hosts are not
           sent again. Hosts after the last commit are requested again; only a batch whose send failed partway can
           reach XSIAM twice.
-        - If nothing was committed in a run (request timeout, concurrency limit, or an error before the first commit),
-          the next run's ``limit`` is halved.
-        - An error before the first commit also increments ``consecutive_failures``; any commit resets it. After
-          ``ASSETS_MAX_CONSECUTIVE_FAILURES`` such runs in a row, the fetch raises so the failure is visible. Request
-          timeouts and concurrency-limit errors do not count toward this check.
+        - If nothing was committed in a run, the next run starts immediately and:
+            - Concurrency-limit error (HTTP 409, Error Code 1960, after the in-run retries): counts toward
+              ``consecutive_failures``; the ``limit`` is kept, since the page size is not the cause.
+            - Request timeout: the ``limit`` is halved without counting. Once the ``limit`` is already 1, the timeout
+              counts toward ``consecutive_failures`` instead.
+            - Any other error before the first commit: counts toward ``consecutive_failures`` and halves the ``limit``.
+        - Any commit resets ``consecutive_failures``. After ``ASSETS_MAX_CONSECUTIVE_FAILURES`` counted runs in a row,
+          the fetch raises so the failure is visible.
         - On the last page, the final send seals the snapshot with the cumulative total and the stage moves to
           "vulnerabilities".
 
@@ -4043,8 +4133,8 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
         new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
         demisto.debug("[Fetch Assets] Finished streamed fetch for assets.")
 
-        # Nothing was committed in this run (request timeout, concurrency limit, or a failure before the first commit);
-        # make the next API call smaller.
+        # Nothing was committed in this run (request timeout or a failure before the first commit, other than a
+        # concurrency-limit error); make the next API call smaller.
         if set_new_limit:
             demisto.debug(
                 f"[Fetch Assets] Reducing limit for assets next run since nothing was committed in this run. "
@@ -4099,11 +4189,14 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
           commit is kept and the run ends normally. The next run resumes from that cursor with the same
           ``snapshot_id``. Hosts after the last commit are requested again; only a batch whose send failed partway can
           reach XSIAM twice.
-        - If nothing was committed in a run (request timeout, concurrency limit, or an error before the first commit),
-          the next run's ``limit`` is halved.
-        - An error before the first commit also increments ``consecutive_failures``; any commit resets it. After
-          ``ASSETS_MAX_CONSECUTIVE_FAILURES`` such runs in a row, the fetch raises so the failure is visible. Request
-          timeouts and concurrency-limit errors do not count toward this check.
+        - If nothing was committed in a run, the next run starts immediately and:
+            - Concurrency-limit error (HTTP 409, Error Code 1960, after the in-run retries) on the host list or the
+              knowledge-base request: counts toward ``consecutive_failures``; the ``limit`` is kept.
+            - Host list request timeout: the ``limit`` is halved without counting. Once the ``limit`` is already 1,
+              the timeout counts toward ``consecutive_failures`` instead.
+            - Any other error before the first commit: counts toward ``consecutive_failures`` and halves the ``limit``.
+        - Any commit resets ``consecutive_failures``. After ``ASSETS_MAX_CONSECUTIVE_FAILURES`` counted runs in a row,
+          the fetch raises so the failure is visible.
         - The run is bounded by the request's connect/read timeouts, and progress is saved after every batch.
 
     Args:
@@ -4115,8 +4208,8 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
 
     new_last_run, set_new_limit = fetch_and_send_assets_and_vulnerabilities_by_qids(client, last_run)
 
-    # Nothing was committed in this run (request timeout, concurrency limit, or a failure before the first commit);
-    # make the next API call smaller.
+    # Nothing was committed in this run (request timeout or a failure before the first commit, other than a
+    # concurrency-limit error); make the next API call smaller.
     if set_new_limit:
         demisto.debug("[Fetch Assets By QIDs] Reducing limit for assets next run since nothing was committed in this run.")
         new_last_run = set_assets_last_run_with_new_limit(new_last_run, new_last_run.get("limit", HOST_LIMIT))

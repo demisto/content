@@ -2741,7 +2741,7 @@ def test_fetch_and_send_assets_and_vulnerabilities_by_qids_not_last_page(mocker:
 def test_fetch_and_send_assets_and_vulnerabilities_by_qids_request_needs_new_limit(mocker: MockerFixture, client: Client):
     """
     Given:
-        - A host list detection request that timed out / hit the concurrency limit.
+        - A host list detection request that timed out, with a limit above 1.
 
     When:
         - Calling fetch_and_send_assets_and_vulnerabilities_by_qids.
@@ -2806,6 +2806,235 @@ def test_fetch_and_send_assets_and_vulnerabilities_by_qids_error_before_commit(m
     assert set_new_limit is True
     assert new_last_run == {**last_run, "consecutive_failures": 1}
     mock_publish.assert_not_called()
+
+
+PAGE_FUNCTIONS = [
+    pytest.param(fetch_and_send_assets_streamed, id="by_date"),
+    pytest.param(fetch_and_send_assets_and_vulnerabilities_by_qids, id="by_qids"),
+]
+
+
+@pytest.mark.parametrize("page_function", PAGE_FUNCTIONS)
+def test_page_host_list_concurrency_limit_counts_and_keeps_limit(mocker: MockerFixture, client: Client, page_function):
+    """
+    Given:
+        - A host list request that still hits the concurrency limit (409/1960) after the in-run retries.
+
+    When:
+        - Calling either page function.
+
+    Assert:
+        - The failure is counted, the limit is kept (set_new_limit=False), the next run is scheduled immediately,
+          and nothing is sent.
+    """
+    last_run = {"stage": "assets", "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID, "limit": 250}
+    mocker.patch.object(client, "get_host_list_detection", side_effect=_make_concurrency_limit_exception())
+    mock_send = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+    mocker.patch("Qualysv2.demisto.error")
+
+    new_last_run, set_new_limit = page_function(client, last_run)
+
+    assert set_new_limit is False
+    assert new_last_run["consecutive_failures"] == 1
+    assert new_last_run["limit"] == 250
+    assert new_last_run["nextTrigger"] == "0"
+    assert new_last_run["type"] == Qualysv2.FETCH_COMMAND["assets"]
+    mock_send.assert_not_called()
+
+
+@pytest.mark.parametrize("page_function", PAGE_FUNCTIONS)
+def test_page_host_list_concurrency_limit_raises_on_max_failures(mocker: MockerFixture, client: Client, page_function):
+    """
+    Given:
+        - A last run that already failed ASSETS_MAX_CONSECUTIVE_FAILURES - 1 times, and a host list 409/1960 again.
+
+    When:
+        - Calling either page function.
+
+    Assert:
+        - The fetch raises so the failure is visible.
+    """
+    last_run = {
+        "stage": "assets",
+        "since_datetime": "2024-10-03",
+        "snapshot_id": SNAPSHOT_ID,
+        "consecutive_failures": Qualysv2.ASSETS_MAX_CONSECUTIVE_FAILURES - 1,
+    }
+    mocker.patch.object(client, "get_host_list_detection", side_effect=_make_concurrency_limit_exception())
+    mocker.patch("Qualysv2.demisto.error")
+
+    with pytest.raises(DemistoException, match="failed 5 times in a row"):
+        page_function(client, last_run)
+
+
+@pytest.mark.parametrize("page_function", PAGE_FUNCTIONS)
+def test_page_host_list_other_error_is_raised(mocker: MockerFixture, client: Client, page_function):
+    """
+    Given:
+        - A host list request that fails with an error other than a timeout or the concurrency limit.
+
+    When:
+        - Calling either page function.
+
+    Assert:
+        - The error propagates unchanged (same as before).
+    """
+    last_run = {"stage": "assets", "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
+    mocker.patch.object(client, "get_host_list_detection", side_effect=DemistoException("Unauthorized"))
+
+    with pytest.raises(DemistoException, match="Unauthorized"):
+        page_function(client, last_run)
+
+
+@pytest.mark.parametrize("page_function", PAGE_FUNCTIONS)
+@pytest.mark.parametrize(
+    "consecutive_failures, expected_failures",
+    [pytest.param(None, 1, id="first_failure"), pytest.param(2, 3, id="counter_incremented")],
+)
+def test_page_timeout_at_limit_1_counts_failure(
+    mocker: MockerFixture, client: Client, page_function, consecutive_failures, expected_failures
+):
+    """
+    Given:
+        - A host list request that times out while the limit is already 1.
+
+    When:
+        - Calling either page function.
+
+    Assert:
+        - The timeout counts toward consecutive_failures, the limit stays 1, and the next run is scheduled immediately.
+    """
+    last_run = {"stage": "assets", "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID, "limit": 1}
+    if consecutive_failures is not None:
+        last_run["consecutive_failures"] = consecutive_failures
+    mocker.patch.object(client, "get_host_list_detection", return_value=(None, True))
+
+    new_last_run, set_new_limit = page_function(client, last_run)
+
+    assert set_new_limit is False
+    assert new_last_run["consecutive_failures"] == expected_failures
+    assert new_last_run["limit"] == 1
+    assert new_last_run["nextTrigger"] == "0"
+
+
+@pytest.mark.parametrize("page_function", PAGE_FUNCTIONS)
+def test_page_timeout_at_limit_1_raises_on_max_failures(mocker: MockerFixture, client: Client, page_function):
+    """
+    Given:
+        - A last run with limit 1 that already failed ASSETS_MAX_CONSECUTIVE_FAILURES - 1 times, and another timeout.
+
+    When:
+        - Calling either page function.
+
+    Assert:
+        - The fetch raises, so a timeout at limit 1 cannot loop forever.
+    """
+    last_run = {
+        "stage": "assets",
+        "since_datetime": "2024-10-03",
+        "snapshot_id": SNAPSHOT_ID,
+        "limit": 1,
+        "consecutive_failures": Qualysv2.ASSETS_MAX_CONSECUTIVE_FAILURES - 1,
+    }
+    mocker.patch.object(client, "get_host_list_detection", return_value=(None, True))
+
+    with pytest.raises(DemistoException, match="failed 5 times in a row"):
+        page_function(client, last_run)
+
+
+@pytest.mark.parametrize("page_function", PAGE_FUNCTIONS)
+def test_page_timeout_above_limit_1_does_not_count(mocker: MockerFixture, client: Client, page_function):
+    """
+    Given:
+        - A host list request that times out while the limit is above 1, after previous failures.
+
+    When:
+        - Calling either page function.
+
+    Assert:
+        - The last run is returned unchanged with set_new_limit=True (the caller halves the limit; nothing is counted).
+    """
+    last_run = {"stage": "assets", "snapshot_id": SNAPSHOT_ID, "limit": 2, "consecutive_failures": 4}
+    mocker.patch.object(client, "get_host_list_detection", return_value=(None, True))
+
+    assert page_function(client, last_run) == (last_run, True)
+
+
+def test_by_qids_knowledge_base_concurrency_limit_before_commit_keeps_limit(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A knowledge base request that hits the concurrency limit (409/1960) on the first batch, before any commit.
+
+    When:
+        - Calling fetch_and_send_assets_and_vulnerabilities_by_qids.
+
+    Assert:
+        - Same behavior as a host list 409/1960: counted, limit kept, next run scheduled immediately, nothing sent.
+    """
+    last_run = {"stage": "assets", "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID, "limit": 250}
+    mock_publish, _, _ = _mock_qids_page(mocker, client, [_make_host("100", 1)], next_page="")
+    mocker.patch("Qualysv2.fetch_vulnerabilities_of_new_qids", side_effect=_make_concurrency_limit_exception())
+    mocker.patch("Qualysv2.demisto.error")
+
+    new_last_run, set_new_limit = fetch_and_send_assets_and_vulnerabilities_by_qids(client, last_run)
+
+    assert set_new_limit is False
+    assert new_last_run["consecutive_failures"] == 1
+    assert new_last_run["limit"] == 250
+    assert new_last_run["nextTrigger"] == "0"
+    mock_publish.assert_not_called()
+
+
+def test_by_qids_knowledge_base_concurrency_limit_after_commit_keeps_commit(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A page whose first batch of 2 hosts was committed, and the knowledge base request of the second batch
+          hits the concurrency limit (409/1960).
+
+    When:
+        - Calling fetch_and_send_assets_and_vulnerabilities_by_qids.
+
+    Assert:
+        - The last commit is returned, without counting a failure or reducing the limit.
+    """
+    last_run = {"stage": "assets", "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID, "consecutive_failures": 3}
+    hosts = [_make_host(str(100 + i), 1) for i in range(4)]
+    _mock_qids_page(mocker, client, hosts, next_page="500")
+    mocker.patch(
+        "Qualysv2.fetch_vulnerabilities_of_new_qids",
+        side_effect=[[{"QID": "1"}], _make_concurrency_limit_exception()],
+    )
+    mocker.patch("Qualysv2.demisto.error")
+
+    new_last_run, set_new_limit = fetch_and_send_assets_and_vulnerabilities_by_qids(client, last_run)
+
+    assert set_new_limit is False
+    assert new_last_run["next_page"] == "102"
+    assert "consecutive_failures" not in new_last_run
+
+
+def test_fetch_assets_and_vulnerabilities_by_qids_concurrency_limit_saves_same_limit(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A host list request that still hits the concurrency limit (409/1960) after the in-run retries.
+
+    When:
+        - Calling fetch_assets_and_vulnerabilities_by_qids (the orchestrator).
+
+    Assert:
+        - The saved last run keeps the limit, counts the failure, and triggers the next run immediately.
+    """
+    last_run = {"stage": "assets", "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID, "limit": 250}
+    mocker.patch.object(client, "get_host_list_detection", side_effect=_make_concurrency_limit_exception())
+    mocker.patch("Qualysv2.demisto.error")
+    mock_set_assets_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+
+    fetch_assets_and_vulnerabilities_by_qids(client, last_run)
+
+    saved_last_run = mock_set_assets_last_run.call_args.args[0]
+    assert saved_last_run["limit"] == 250
+    assert saved_last_run["consecutive_failures"] == 1
+    assert saved_last_run["nextTrigger"] == "0"
 
 
 @pytest.mark.parametrize(
@@ -3131,12 +3360,12 @@ class TestConcurrencyLimitRetry:
         assert http_mock.call_count == 2
         sleep_mock.assert_called_once_with(Qualysv2.CONCURRENCY_LIMIT_WAIT_SEC)
 
-    def test_host_list_1960_exhausts_retries_sets_new_limit(self, mocker: MockerFixture, client: Client):
+    def test_host_list_1960_exhausts_retries_raises(self, mocker: MockerFixture, client: Client):
         """
         Given: persistent 409/1960 concurrency-limit responses on every attempt.
         When:  get_host_list_detection is called.
-        Then:  it does NOT crash the fetch - it returns empty response with set_new_limit=True
-               so the next fetch retries with a reduced limit.
+        Then:  after the in-run retries the 1960 error is raised, so the page function counts it
+               (same as a 1960 on the knowledge-base request) instead of halving the limit.
         """
         mocker.patch.object(Qualysv2.time, "sleep")
         http_mock = mocker.patch.object(
@@ -3145,10 +3374,9 @@ class TestConcurrencyLimitRetry:
             side_effect=[_make_concurrency_limit_exception() for _ in range(Qualysv2.CONCURRENCY_LIMIT_MAX_RETRIES + 1)],
         )
 
-        response, set_new_limit = client.get_host_list_detection(since_datetime="2024-12-12", limit=HOST_LIMIT)
+        with pytest.raises(DemistoException, match="concurrency limited"):
+            client.get_host_list_detection(since_datetime="2024-12-12", limit=HOST_LIMIT)
 
-        assert response is None
-        assert set_new_limit is True
         assert http_mock.call_count == Qualysv2.CONCURRENCY_LIMIT_MAX_RETRIES + 1
 
     def test_host_list_non_1960_409_raises(self, mocker: MockerFixture, client: Client):
