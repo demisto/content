@@ -51,7 +51,6 @@ configuration:
   name: incidentType
   type: 13
   required: false
-  additionalinfo: The Cortex incident type to assign to incidents created by this integration.
   section: Collect
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
