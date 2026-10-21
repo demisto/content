@@ -14,12 +14,13 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Identity Threat Intelligence",
-        "Credential Exposure"
+        "Threat Intelligence",
+        "Dark Web",
+        "IAM"
     ],
     "useCases": [
         "Threat Intelligence Management",
-        "Identity And Access Management"
+        "Identity and Access Management"
     ],
     "keywords": [
         "KELA",

@@ -45,6 +45,9 @@ configuration:
   type: 8
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch (per source)
   name: max_fetch
@@ -52,6 +55,9 @@ configuration:
   section: Collect
   required: false
   additionalinfo: Applied separately to each enabled source (general incidents, bot-market alerts, cookie incidents), so up to 3x this number of incidents can be created per fetch cycle.
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '3 days'
   display: First fetch time
   name: first_fetch
@@ -88,6 +94,19 @@ configuration:
   type: 13
   section: Connect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  defaultvalue: '1'
+  required: false
+  advanced: true
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Search KELA Identity Guard incidents - compromised credentials detected on infostealer-infected machines, leaked credential lists, data breaches and cybercrime chatter; bot-market alerts; and compromised session-cookie incidents. Automatically fetches all three (each independently toggleable) into Cortex.
 script:
   commands:
