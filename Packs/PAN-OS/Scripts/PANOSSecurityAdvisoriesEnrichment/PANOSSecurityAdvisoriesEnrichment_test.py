@@ -1,3 +1,4 @@
+import demistomock as demisto
 import pytest
 from unittest.mock import Mock, patch
 from CommonServerPython import *
@@ -11,6 +12,7 @@ from PANOSSecurityAdvisoriesEnrichment import (
     parse_version,
     sort_versions_and_changes,
     get_external_cves,
+    main,
 )
 
 
@@ -363,3 +365,16 @@ class TestGetExternalCves:
 
         result = get_external_cves(mock_client, "PAN-SA-2023-0001")
         assert result == []  # Should return empty list for incomplete data
+
+
+def test_main_enriches_each_cve_once(mocker):
+    # given
+    mocker.patch.object(demisto, "args", return_value={"cve_id": "CVE-2024-3400,cve-2024-3400,CVE-2024-0012"})
+    enrich = mocker.patch("PANOSSecurityAdvisoriesEnrichment.enrich_cve", return_value={"Contents": {}})
+    mocker.patch("PANOSSecurityAdvisoriesEnrichment.return_results")
+
+    # when
+    main()
+
+    # then
+    assert [call.args[1] for call in enrich.call_args_list] == ["CVE-2024-3400", "CVE-2024-0012"]

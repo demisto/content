@@ -255,9 +255,10 @@ def main():
     args = demisto.args()
 
     try:
-        cve_ids = argToList(args.get("cve_id", ""))
+        # Dedupe (case-insensitive, order kept) so a multi-CVE run doesn't fetch the same advisory twice.
+        cve_ids = list(dict.fromkeys(cve_id.upper() for cve_id in argToList(args.get("cve_id", ""))))
         for cve_id in cve_ids:
-            result = enrich_cve(client, cve_id.upper())
+            result = enrich_cve(client, cve_id)
             if "error" in result:
                 return_results(result.get("error"))
             else:
