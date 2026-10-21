@@ -4,6 +4,7 @@ from CommonServerPython import *
 
 # Import the module under test
 from PANOSSecurityAdvisoriesEnrichment import (
+    REQUEST_TIMEOUT,
     Client,
     enrich_cve,
     flatten_advisory_dict,
@@ -90,7 +91,7 @@ class TestClient:
         result = client.get_cve("CVE-2023-1234")
 
         assert result == {"cveId": "CVE-2023-1234"}
-        mock_get.assert_called_once_with("https://security.paloaltonetworks.com/json/CVE-2023-1234")
+        mock_get.assert_called_once_with("https://security.paloaltonetworks.com/json/CVE-2023-1234", timeout=REQUEST_TIMEOUT)
 
     @patch("PANOSSecurityAdvisoriesEnrichment.requests.get")
     def test_get_cve_error(self, mock_get):
@@ -105,7 +106,7 @@ class TestClient:
 
         # Verify that return_results was called with the expected message
         assert result == {"error": "no such entry"}
-        mock_get.assert_called_once_with(f"{client.advisories_url}INVALID-CVE")
+        mock_get.assert_called_once_with(f"{client.advisories_url}INVALID-CVE", timeout=REQUEST_TIMEOUT)
 
     @patch("requests.get")
     def test_get_pan_sa_advisories_success(self, mock_get):
@@ -131,6 +132,54 @@ class TestClient:
         result = client.get_pan_sa_advisories("PAN-SA-2023-0001")
 
         assert result == "CSAF not available for PAN-SA-2023-0001"
+
+    def test_get_cve_raises_clear_error_on_timeout(self, mocker):
+        # given
+        mocker.patch(
+            "PANOSSecurityAdvisoriesEnrichment.requests.get", side_effect=requests.exceptions.ReadTimeout("read timed out")
+        )
+
+        # when / then
+        with pytest.raises(
+            DemistoException, match="Timed out after .* reaching https://security.paloaltonetworks.com/json/CVE-2024-3400"
+        ):
+            Client().get_cve("CVE-2024-3400")
+
+    def test_get_cve_raises_clear_error_on_connection_failure(self, mocker):
+        # given
+        mocker.patch(
+            "PANOSSecurityAdvisoriesEnrichment.requests.get", side_effect=requests.exceptions.ConnectionError("proxy refused")
+        )
+
+        # when / then
+        with pytest.raises(DemistoException, match="Could not connect to .*proxy refused"):
+            Client().get_cve("CVE-2024-3400")
+
+    def test_get_pan_sa_advisories_raises_clear_error_on_timeout(self, mocker):
+        # given
+        mocker.patch(
+            "PANOSSecurityAdvisoriesEnrichment.requests.get", side_effect=requests.exceptions.ConnectTimeout("connect timed out")
+        )
+
+        # when / then
+        with pytest.raises(DemistoException, match="Timed out after .* reaching https://security.paloaltonetworks.com/csaf/"):
+            Client().get_pan_sa_advisories("PAN-SA-2024-0001")
+
+    def test_get_logs_request_duration(self, mocker):
+        # given
+        response = Mock(status_code=200)
+        response.json.return_value = {}
+        mocker.patch("PANOSSecurityAdvisoriesEnrichment.requests.get", return_value=response)
+        debug = mocker.patch("PANOSSecurityAdvisoriesEnrichment.demisto.debug")
+
+        # when
+        Client().get_cve("CVE-2024-3400")
+
+        # then
+        assert any(
+            "GET https://security.paloaltonetworks.com/json/CVE-2024-3400 returned 200 in" in call.args[0]
+            for call in debug.call_args_list
+        )
 
 
 class TestEnrichCVE:

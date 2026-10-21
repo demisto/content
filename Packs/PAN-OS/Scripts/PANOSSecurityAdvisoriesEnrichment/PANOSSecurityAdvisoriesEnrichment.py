@@ -6,6 +6,9 @@ OUTPUT_PREFIX = "PANOSSecurityAdvisories"
 BASE_URL = "https://security.paloaltonetworks.com"
 CVE_JSON = "/json/"
 CVE_CSAF = "/csaf/"
+# (connect, read) timeout in seconds. Without a timeout, a stalled connection hangs until the platform kills the
+# script, which surfaces in Agentix as a generic error after the 300s action timeout.
+REQUEST_TIMEOUT = (10, 30)
 
 
 class Client:
@@ -16,12 +19,31 @@ class Client:
         self.advisories_url = f"{self.base_url}{CVE_JSON}"
         self.csaf_url = f"{self.base_url}{CVE_CSAF}"
 
+    @staticmethod
+    def _get(url: str) -> requests.Response:
+        """GET with a bounded timeout and timing logs, so slow or blocked egress is visible and fails fast."""
+        start_time = time.monotonic()
+        try:
+            response = requests.get(url, timeout=REQUEST_TIMEOUT)
+        except requests.exceptions.Timeout as e:
+            raise DemistoException(
+                f"Timed out after {time.monotonic() - start_time:.1f}s reaching {url}. "
+                f"Check that the engine or tenant can reach {BASE_URL}."
+            ) from e
+        except requests.exceptions.ConnectionError as e:
+            raise DemistoException(
+                f"Could not connect to {url} after {time.monotonic() - start_time:.1f}s: {e}. "
+                f"Check that the engine or tenant can reach {BASE_URL}."
+            ) from e
+        demisto.debug(f"GET {url} returned {response.status_code} in {time.monotonic() - start_time:.2f}s")
+        return response
+
     def get_cve(self, cve_id: str):
         """
         Gets a specific CVE advisory
         """
         url = f"{self.advisories_url}{cve_id}"
-        response = requests.get(url)
+        response = self._get(url)
         if response.status_code != 404 and response.status_code != 200:
             response.raise_for_status()
         return response.json()
@@ -31,7 +53,7 @@ class Client:
         Gets a specific PAN-SA advisory
         """
         url = f"{self.csaf_url}{pan_sa_id}"
-        response = requests.get(url)
+        response = self._get(url)
         if response.status_code == 404:
             demisto.debug(f"CSAF not available for {pan_sa_id}")
             return f"CSAF not available for {pan_sa_id}"
