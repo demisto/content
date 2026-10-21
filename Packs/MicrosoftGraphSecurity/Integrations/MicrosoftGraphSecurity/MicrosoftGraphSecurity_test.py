@@ -2767,11 +2767,17 @@ def test_get_modified_remote_data_command_no_page_cap(mocker):
     assert any("Listed 8 modified IDs from security/alerts_v2 in 8 page(s)" in c.args[0] for c in debug_mock.call_args_list)
 
 
+def _rate_limit_error() -> DemistoException:
+    """A DemistoException like the one BaseClient raises on HTTP 429, with the response."""
+    return DemistoException("Error in API call [429] - Too Many Requests", res=SimpleNamespace(status_code=429, headers={}))
+
+
 def test_get_modified_remote_data_command_page_failure_raises(mocker):
     """
-    Given: a nextLink chain where the 3rd page request fails.
+    Given: a nextLink chain where the 3rd page request fails with HTTP 429.
     When: running get-modified-remote-data.
-    Then: the error propagates (the run fails) instead of returning a partial ID list, so lastUpdate is not advanced.
+    Then: an "API rate limit" DemistoException is raised at once (no retry, no sleep), instead of returning a partial ID
+        list, so return_error adds "skip update" and lastUpdate is not advanced.
     """
     http_mock = mocker.patch.object(
         client_mocker.ms_client,
@@ -2779,12 +2785,62 @@ def test_get_modified_remote_data_command_page_failure_raises(mocker):
         side_effect=[
             {"value": [{"id": "a1"}], "@odata.nextLink": "https://graph/next/1"},
             {"value": [{"id": "a2"}], "@odata.nextLink": "https://graph/next/2"},
-            DemistoException("Error in API call [429] - Too Many Requests"),
+            _rate_limit_error(),
         ],
     )
-    with pytest.raises(DemistoException, match="429"):
+    with pytest.raises(DemistoException, match=r"^API rate limit: .*HTTP 429"):
         get_modified_remote_data_command(client_mocker, {"lastUpdate": "2026-10-10T10:00:00Z"}, ALERTS_ONLY_PARAMS)
     assert http_mock.call_count == 3
+    assert http_mock.call_args_list[2].kwargs["full_url"] == "https://graph/next/2"
+
+
+def test_mirror_get_does_not_retry_429(mocker):
+    """
+    Given: an HTTP 429 from Microsoft Graph.
+    When: calling mirror_get.
+    Then: an "API rate limit" DemistoException is raised after a single request (no retry, no sleep in mirroring),
+        keeping the original response.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_rate_limit_error())
+    with pytest.raises(DemistoException, match="^API rate limit") as exc_info:
+        client_mocker.mirror_get(url_suffix="security/alerts_v2")
+    assert http_mock.call_count == 1
+    assert exc_info.value.res.status_code == 429
+
+
+def test_mirror_get_does_not_wrap_other_errors(mocker):
+    """
+    Given: a non-429 API error (HTTP 500).
+    When: calling mirror_get.
+    Then: the original error is raised as-is, after a single request.
+    """
+    error = DemistoException("Error in API call [500] - Server Error", res=SimpleNamespace(status_code=500, headers={}))
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=error)
+    with pytest.raises(DemistoException, match=r"\[500\]") as exc_info:
+        client_mocker.mirror_get(url_suffix="security/alerts_v2")
+    assert exc_info.value is error
+    assert http_mock.call_count == 1
+
+
+@pytest.mark.parametrize(
+    "remote_id, expected_url",
+    [
+        ("123", "security/incidents/123?$expand=alerts"),
+        ("da637", "security/alerts_v2/da637"),
+    ],
+)
+def test_get_remote_data_raises_api_rate_limit_on_429(mocker, remote_id, expected_url):
+    """
+    Given: the single alert/incident GET fails with HTTP 429.
+    When: running get-remote-data.
+    Then: the exact "API rate limit" error is raised (no in_mirror_error fallback, no retry), like CortexXDRIR / JiraV3,
+        so the server stops this sync cycle and retries on the next one.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_rate_limit_error())
+    with pytest.raises(DemistoException) as exc_info:
+        get_remote_data_command(client_mocker, {"id": remote_id, "lastUpdate": "2026-10-10T10:00:00Z"}, MIRROR_PARAMS)
+    assert str(exc_info.value) == "API rate limit"
+    assert [c.kwargs["url_suffix"] for c in http_mock.call_args_list] == [expected_url]
 
 
 def test_get_modified_remote_data_command_last_update_alias(mocker):
@@ -2804,14 +2860,13 @@ def test_get_modified_remote_data_command_unparseable_last_update(mocker, args):
     """
     Given: an unparseable or missing lastUpdate.
     When: running get-modified-remote-data.
-    Then: like M365 Defender, an error is logged, no request is sent, and an empty ID list is returned.
+    Then: a DemistoException is raised (return_error then adds "skip update", so the server keeps the same lastUpdate),
+        and no request is sent. An empty ID list would let the server advance lastUpdate and lose the window.
     """
     http_mock = mocker.patch.object(client_mocker.ms_client, "http_request")
-    error_mock = mocker.patch.object(demisto, "error")
-    res = get_modified_remote_data_command(client_mocker, args, {})
-    assert res.modified_incident_ids == []
+    with pytest.raises(DemistoException, match="failed to parse lastUpdate"):
+        get_modified_remote_data_command(client_mocker, args, ALERTS_ONLY_PARAMS)
     assert http_mock.call_count == 0
-    assert "could not parse" in error_mock.call_args.args[0]
 
 
 @pytest.mark.parametrize(
@@ -3151,7 +3206,7 @@ def test_get_remote_data_unknown_xsoar_status_falls_back_to_remote_status(mocker
     mocker.patch.object(client_mocker.ms_client, "http_request", return_value=_remote_object("incident", status="active"))
     res = get_remote_data_command(client_mocker, {"id": INCIDENT_ID, "lastUpdate": "0"}, MIRROR_PARAMS)
     assert res.entries == [REOPEN_ENTRY]
-    assert "in_mirror_error" not in res.mirrored_object
+    assert res.mirrored_object["in_mirror_error"] == ""
 
 
 @pytest.mark.parametrize(
@@ -3209,6 +3264,29 @@ def test_get_remote_data_error_fallback(mocker):
     assert res.mirrored_object["id"] == INCIDENT_ID
     assert res.mirrored_object["in_mirror_error"] == "boom"
     assert res.entries == []
+
+
+def test_get_remote_data_clears_in_mirror_error_after_failure(mocker):
+    """
+    Given: the API fails on the first get-remote-data call for an ID, and succeeds on the next call for the same ID.
+    When: running get-remote-data twice.
+    Then: the first response carries the error in `in_mirror_error`; the second sends `in_mirror_error == ""`,
+          so the server clears the stale error on the incident (CortexXDRIR / JiraV2 convention).
+    """
+    mocker.patch.object(
+        client_mocker.ms_client,
+        "http_request",
+        side_effect=[DemistoException("boom"), _remote_object("incident", status="active")],
+    )
+    args = {"id": INCIDENT_ID, "lastUpdate": "0"}
+
+    failed = get_remote_data_command(client_mocker, args, MIRROR_PARAMS)
+    assert failed.mirrored_object["in_mirror_error"] == "boom"
+    assert failed.entries == []
+
+    recovered = get_remote_data_command(client_mocker, args, MIRROR_PARAMS)
+    assert recovered.mirrored_object["id"] == INCIDENT_ID
+    assert recovered.mirrored_object["in_mirror_error"] == ""
 
 
 def _update_args(remote_id, delta, mirror_type, status=1, entries=None, changed=True):
@@ -3710,6 +3788,314 @@ def test_update_remote_system_alert_close_out(mocker):
     assert MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR in post_call.kwargs["json_data"]["comment"]
 
 
+@pytest.mark.parametrize("delta", [{}, {"closeReason": "", "closeNotes": ""}], ids=["empty-delta", "empty-close-fields"])
+def test_update_remote_system_incident_close_without_reason_or_notes(mocker, delta):
+    """
+    Given: an XSOAR incident closed (status=2) without a close reason or close notes, mirrored to an active Microsoft
+        incident, with close_out on.
+    When: running update-remote-system.
+    Then: the incident is resolved with the default resolvingComment "Closed in Cortex XSOAR.", the path is logged with
+        demisto.debug, and no comment is POSTed.
+    """
+    http_mock = _patch_http(mocker)
+    debug_mock = mocker.patch.object(demisto, "debug")
+    update_remote_system_command(client_mocker, _update_args(INCIDENT_ID, delta, "incident", status=2), MIRROR_PARAMS)
+    body = _http_calls(http_mock, "PATCH")[0].kwargs["json_data"]
+    assert body == {"status": "resolved", "resolvingComment": "Closed in Cortex XSOAR."}
+    assert _http_calls(http_mock, "POST") == []
+    assert any("without a close reason or close notes" in c.args[0] for c in debug_mock.call_args_list)
+
+
+@pytest.mark.parametrize("delta", [{}, {"closeReason": "", "closeNotes": ""}], ids=["empty-delta", "empty-close-fields"])
+def test_update_remote_system_alert_close_without_reason_or_notes(mocker, delta):
+    """
+    Given: an XSOAR incident closed (status=2) without a close reason or close notes, mirrored to a new Microsoft alert,
+        with close_out on.
+    When: running update-remote-system.
+    Then: the alert is PATCHed with status=resolved and the marked default comment "Closed in Cortex XSOAR." is POSTed.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={})
+    update_remote_system_command(client_mocker, _update_args(ALERT_ID, delta, "alert", status=2), MIRROR_PARAMS)
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": "resolved"}
+    post_calls = _http_calls(http_mock, "POST")
+    assert len(post_calls) == 1
+    comment = post_calls[0].kwargs["json_data"]["comment"]
+    assert comment.startswith("Closed in Cortex XSOAR.")
+    assert MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR in comment
+
+
+def test_update_remote_system_incident_close_without_reason_keeps_existing_resolving_comment(mocker):
+    """
+    Given: a closed XSOAR incident without a close reason or close notes in the delta, whose outgoing data already holds
+        a resolvingComment, and close_out on.
+    When: running update-remote-system.
+    Then: the incident is resolved, and the existing resolvingComment is not overwritten with the default comment.
+    """
+    http_mock = _patch_http(mocker)
+    args = _update_args(INCIDENT_ID, {}, "incident", status=2)
+    args["data"]["resolvingComment"] = "Investigated by SOC"
+    update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": "resolved"}
+
+
+@pytest.mark.parametrize("mirror_type, remote_id", [("incident", INCIDENT_ID), ("alert", ALERT_ID)])
+def test_update_remote_system_close_without_reason_remote_already_resolved(mocker, mirror_type, remote_id):
+    """
+    Given: a closed XSOAR incident without a close reason or close notes, whose outgoing data shows the remote object is
+        already resolved, and close_out on.
+    When: running update-remote-system.
+    Then: nothing is PATCHed or POSTed (no default close comment is sent again).
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={})
+    args = _update_args(remote_id, {}, mirror_type, status=2)
+    args["data"]["status"] = "resolved"
+    update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
+    assert http_mock.call_count == 0
+
+
+@pytest.mark.parametrize("close_out", [False, "false"])
+def test_update_remote_system_close_without_reason_close_out_off(mocker, close_out):
+    """
+    Given: a closed XSOAR incident without a close reason or close notes, and close_out off.
+    When: running update-remote-system.
+    Then: the remote object is not resolved: nothing is PATCHed or POSTed.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={})
+    params = MIRROR_PARAMS | {"close_out": close_out}
+    update_remote_system_command(client_mocker, _update_args(INCIDENT_ID, {}, "incident", status=2), params)
+    assert http_mock.call_count == 0
+
+
+def test_update_remote_system_open_incident_empty_delta_sends_nothing(mocker):
+    """
+    Given: an open XSOAR incident (status=1) with an empty delta, and close_out on.
+    When: running update-remote-system.
+    Then: nothing is PATCHed or POSTed.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={})
+    update_remote_system_command(client_mocker, _update_args(INCIDENT_ID, {}, "incident", status=1), MIRROR_PARAMS)
+    assert http_mock.call_count == 0
+
+
+def _remote_status_http(remote_status: str | None = None, get_error: Exception | None = None):
+    """
+    Returns an http_request side effect for the M2 close-out guard: GET returns the remote object with `remote_status`
+    (or raises `get_error`), PATCH returns "" and POST returns {}.
+    """
+
+    def side_effect(*args, **kwargs):
+        if kwargs.get("method") != "GET":
+            return "" if kwargs.get("method") == "PATCH" else {}
+        if get_error:
+            raise get_error
+        return {"id": "x", "status": remote_status, "resolvingComment": "Benign - tested by SOC"}
+
+    return side_effect
+
+
+TAGGED_ENTRY = {"id": "1", "contents": "tagged note", "tags": ["CommentToMicrosoftGraphSecurity"], "user": "admin"}
+
+
+@pytest.mark.parametrize(
+    "delta",
+    [
+        {"closeReason": "False Positive", "closeNotes": "done"},
+        {"resolvingComment": "Benign - tested by SOC"},
+        {"closeReason": "Resolved", "status": "resolved"},
+        {},
+    ],
+    ids=["reason-and-notes", "resolving-comment-only", "explicit-status", "default-close"],
+)
+def test_update_remote_system_incident_already_resolved_no_close_out(mocker, delta):
+    """
+    Given: a Microsoft incident already resolved in Defender (with its own resolvingComment), and the XSOAR incident
+        closed (status=2) by incoming mirroring, with close_out on. The outgoing data still shows a stale "active" status.
+    When: running update-remote-system.
+    Then: the close-out is skipped: nothing is PATCHed (no status, no resolvingComment overwrite), nothing is POSTed,
+        and the skip is logged with demisto.debug.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
+    debug_mock = mocker.patch.object(demisto, "debug")
+    update_remote_system_command(client_mocker, _update_args(INCIDENT_ID, delta, "incident", status=2), MIRROR_PARAMS)
+    assert [c.kwargs["url_suffix"] for c in _http_calls(http_mock, "GET")] == [f"security/incidents/{INCIDENT_ID}"]
+    assert _http_calls(http_mock, "PATCH") == []
+    assert _http_calls(http_mock, "POST") == []
+    assert any("already resolved" in str(c.args[0]) for c in debug_mock.call_args_list)
+
+
+@pytest.mark.parametrize(
+    "delta",
+    [{"closeReason": "False Positive", "closeNotes": "not malicious"}, {}],
+    ids=["reason-and-notes", "default-close"],
+)
+def test_update_remote_system_alert_already_resolved_no_close_out(mocker, delta):
+    """
+    Given: a Microsoft alert already resolved in Defender, and the XSOAR incident closed (status=2), with close_out on.
+    When: running update-remote-system.
+    Then: no status PATCH and no close comment ("Mirrored from Cortex XSOAR") is POSTed.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
+    update_remote_system_command(client_mocker, _update_args(ALERT_ID, delta, "alert", status=2), MIRROR_PARAMS)
+    assert [c.kwargs["url_suffix"] for c in _http_calls(http_mock, "GET")] == [f"security/alerts_v2/{ALERT_ID}"]
+    assert _http_calls(http_mock, "PATCH") == []
+    assert _http_calls(http_mock, "POST") == []
+
+
+@pytest.mark.parametrize(
+    "remote_id, mirror_type, remote_status, delta, expected_body, expected_comment",
+    [
+        (
+            INCIDENT_ID,
+            "incident",
+            "active",
+            {"closeReason": "Other", "closeNotes": "n"},
+            {"status": "resolved", "resolvingComment": "Closed in Cortex XSOAR as: Other\nComment: n"},
+            None,
+        ),
+        (INCIDENT_ID, "incident", "inProgress", {}, {"status": "resolved", "resolvingComment": "Closed in Cortex XSOAR."}, None),
+        (
+            ALERT_ID,
+            "alert",
+            "new",
+            {"closeReason": "Other", "closeNotes": "n"},
+            {"status": "resolved"},
+            "Closed in Cortex XSOAR as: Other\nComment: n",
+        ),
+        (ALERT_ID, "alert", "inProgress", {}, {"status": "resolved"}, "Closed in Cortex XSOAR."),
+    ],
+    ids=["incident-reason", "incident-default", "alert-reason", "alert-default"],
+)
+def test_update_remote_system_remote_not_resolved_close_out_proceeds(
+    mocker, remote_id, mirror_type, remote_status, delta, expected_body, expected_comment
+):
+    """
+    Given: the remote object is not resolved (GET), and the XSOAR incident is closed, with close_out on.
+    When: running update-remote-system with a close reason/notes, or without them (default close message).
+    Then: the close-out runs as before: status=resolved (+ resolvingComment for incidents, close comment for alerts).
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http(remote_status))
+    update_remote_system_command(client_mocker, _update_args(remote_id, delta, mirror_type, status=2), MIRROR_PARAMS)
+    assert len(_http_calls(http_mock, "GET")) == 1
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == expected_body
+    posts = _http_calls(http_mock, "POST")
+    if expected_comment:
+        assert posts[0].kwargs["json_data"]["comment"].startswith(expected_comment)
+    else:
+        assert posts == []
+
+
+def test_update_remote_system_incident_already_resolved_other_fields_and_entries_still_sent(mocker):
+    """
+    Given: a Microsoft incident already resolved, a closed XSOAR incident whose delta also holds a severity, a display
+        name and a classification label change, and a tagged entry.
+    When: running update-remote-system with close_out on.
+    Then: the other fields are PATCHed (without status/resolvingComment), and the tagged entry is POSTed as a comment.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
+    delta = {
+        "closeReason": "Resolved",
+        "resolvingComment": "x",
+        "severity": 3,
+        "displayName": "New name",
+        "classification": "Informational - Confirmed activity",
+    }
+    args = _update_args(INCIDENT_ID, delta, "incident", status=2, entries=[TAGGED_ENTRY])
+    update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {
+        "severity": "high",
+        "displayName": "New name",
+        "classification": "informationalExpectedActivity",
+        "determination": "confirmedActivity",
+    }
+    posts = _http_calls(http_mock, "POST")
+    assert len(posts) == 1
+    assert "(admin): tagged note" in posts[0].kwargs["json_data"]["comment"]
+
+
+def test_update_remote_system_alert_already_resolved_other_fields_and_entries_still_sent(mocker):
+    """
+    Given: a Microsoft alert already resolved, a closed XSOAR incident whose delta also holds a classification label and
+        customDetails change, and a tagged entry.
+    When: running update-remote-system with close_out on.
+    Then: classification/determination/customDetails are PATCHed (no status), only the tagged entry is POSTed (no close
+        comment).
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
+    delta = {"closeReason": "Resolved", "classification": "True positive - Malware", "customDetails": ["k: v"]}
+    args = _update_args(ALERT_ID, delta, "alert", status=2, entries=[TAGGED_ENTRY])
+    update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
+    body = _http_calls(http_mock, "PATCH")[0].kwargs["json_data"]
+    assert "status" not in body
+    assert body["classification"] == "truePositive"
+    assert body["customDetails"] == {"k": "v"}
+    posts = _http_calls(http_mock, "POST")
+    assert len(posts) == 1
+    assert "(admin): tagged note" in posts[0].kwargs["json_data"]["comment"]
+
+
+@pytest.mark.parametrize("remote_id, mirror_type", [(INCIDENT_ID, "incident"), (ALERT_ID, "alert")])
+def test_update_remote_system_close_out_status_get_fails_close_out_proceeds(mocker, remote_id, mirror_type):
+    """
+    Given: the GET of the remote status fails with a non-429 error (HTTP 500), and a closed XSOAR incident with a
+        close reason, with close_out on.
+    When: running update-remote-system.
+    Then: the failure is logged and the close-out proceeds as before (status=resolved is PATCHed).
+    """
+    error = DemistoException("Error in API call [500] - Server Error", res=SimpleNamespace(status_code=500, headers={}))
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http(get_error=error))
+    debug_mock = mocker.patch.object(demisto, "debug")
+    delta = {"closeReason": "Other", "closeNotes": "n"}
+    update_remote_system_command(client_mocker, _update_args(remote_id, delta, mirror_type, status=2), MIRROR_PARAMS)
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"]["status"] == "resolved"
+    assert any("Failed to get the remote status" in str(c.args[0]) for c in debug_mock.call_args_list)
+
+
+def test_update_remote_system_close_out_status_get_rate_limited(mocker):
+    """
+    Given: the GET of the remote status fails with HTTP 429, a closed XSOAR incident with a close reason, a tagged entry,
+        and close_out on.
+    When: running update-remote-system.
+    Then: like any field update error, the "API rate limit" error is logged with demisto.error and nothing is PATCHed
+        (no close-out on a 429), but the tagged entry is still POSTed and the remote ID is returned.
+    """
+    http_mock = mocker.patch.object(
+        client_mocker.ms_client, "http_request", side_effect=_remote_status_http(get_error=_rate_limit_error())
+    )
+    error_mock = mocker.patch.object(demisto, "error")
+    mocker.patch.object(demisto, "debug")
+    args = _update_args(INCIDENT_ID, {"closeReason": "Other"}, "incident", status=2, entries=[TAGGED_ENTRY])
+    assert update_remote_system_command(client_mocker, args, MIRROR_PARAMS) == INCIDENT_ID
+    assert _http_calls(http_mock, "PATCH") == []
+    assert len(_http_calls(http_mock, "POST")) == 1
+    assert "API rate limit" in error_mock.call_args.args[0]
+
+
+@pytest.mark.parametrize(
+    "remote_id, mirror_type, delta, inc_status, params, data_overrides",
+    [
+        (INCIDENT_ID, "incident", {"displayName": "x"}, 1, MIRROR_PARAMS, {}),
+        (INCIDENT_ID, "incident", {"closeReason": "Other"}, 2, MIRROR_PARAMS | {"close_out": False}, {}),
+        (INCIDENT_ID, "incident", {"closeReason": "Other"}, 2, MIRROR_PARAMS, {"status": "redirected"}),
+        (ALERT_ID, "alert", {}, 2, MIRROR_PARAMS, {"status": "resolved"}),
+    ],
+    ids=["xsoar-open", "close-out-off", "redirected", "default-close-data-already-resolved"],
+)
+def test_update_remote_system_no_status_get_when_close_out_would_not_patch(
+    mocker, remote_id, mirror_type, delta, inc_status, params, data_overrides
+):
+    """
+    Given: an update where close-out would not PATCH (XSOAR open, close_out off, redirected incident, or the M1 default
+        close-out already skipped because the outgoing data shows a resolved remote object).
+    When: running update-remote-system.
+    Then: no extra GET of the remote status is made.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
+    args = _update_args(remote_id, delta, mirror_type, status=inc_status)
+    args["data"] |= data_overrides
+    update_remote_system_command(client_mocker, args, params)
+    assert _http_calls(http_mock, "GET") == []
+
+
 # Labels whose Graph determination name differs between alerts (alertDetermination) and incidents (plus Malware, shared).
 # Used to check the outgoing label split and the incoming mapper alignment, per type.
 TYPE_SPECIFIC_LABELS = [
@@ -4134,6 +4520,52 @@ def test_update_remote_system_reopen_out(mocker, mirror_type, remote_id, expecte
     delta = {"closeReason": "", "closeNotes": "", "closingUserId": ""}
     update_remote_system_command(client_mocker, _update_args(remote_id, delta, mirror_type, status=1), MIRROR_PARAMS)
     assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": expected_status}
+
+
+@pytest.mark.parametrize(
+    "mirror_type, remote_id, status_key, delta_status, expected_status",
+    [
+        # An explicit non-resolved status set in the same delta is kept (L6).
+        ("incident", INCIDENT_ID, "status", "inProgress", "inProgress"),
+        ("incident", INCIDENT_ID, "status", "awaitingAction", "awaitingAction"),
+        ("alert", ALERT_ID, "status", "inProgress", "inProgress"),
+        # The raw XSOAR status field (renamed to `status` by to_graph_delta_keys) behaves the same.
+        ("incident", INCIDENT_ID, "microsoftgraphsecurityincidentstatus", "inProgress", "inProgress"),
+        ("alert", ALERT_ID, "microsoftgraphsecurityalertstatus", "inProgress", "inProgress"),
+        # A resolved / empty / unknownFutureValue status is replaced with the default reopen status.
+        ("incident", INCIDENT_ID, "status", "resolved", "active"),
+        ("alert", ALERT_ID, "status", "resolved", "new"),
+        ("incident", INCIDENT_ID, "status", "", "active"),
+        ("alert", ALERT_ID, "status", "unknownFutureValue", "new"),
+    ],
+)
+def test_update_remote_system_reopen_keeps_explicit_status(
+    mocker, mirror_type, remote_id, status_key, delta_status, expected_status
+):
+    """
+    Given: a reopened XSOAR incident (close fields cleared) whose delta also holds a status.
+    When: running update-remote-system with close_out on.
+    Then: an explicit non-resolved status is kept (not overwritten by the default reopen status); a resolved, empty or
+        unknownFutureValue status is replaced with the default reopen status (incident=active, alert=new).
+    """
+    http_mock = _patch_http(mocker)
+    delta = {"closeReason": "", "closeNotes": "", status_key: delta_status}
+    update_remote_system_command(client_mocker, _update_args(remote_id, delta, mirror_type, status=1), MIRROR_PARAMS)
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": expected_status}
+
+
+def test_update_remote_system_reopen_with_explicit_status_logs_kept(mocker):
+    """
+    Given: a reopened XSOAR incident whose delta holds closeReason="", resolvingComment="" and status=inProgress.
+    When: running update-remote-system with close_out on.
+    Then: status=inProgress is sent (not active), resolvingComment is not cleared, and the kept status is logged.
+    """
+    http_mock = _patch_http(mocker)
+    debug_mock = mocker.patch.object(demisto, "debug")
+    delta = {"closeReason": "", "resolvingComment": "", "status": "inProgress"}
+    update_remote_system_command(client_mocker, _update_args(INCIDENT_ID, delta, "incident", status=1), MIRROR_PARAMS)
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": "inProgress"}
+    assert any("keeping the explicit status 'inProgress'" in c.args[0] for c in debug_mock.call_args_list)
 
 
 def test_update_remote_system_mirror_out_entries(mocker):
