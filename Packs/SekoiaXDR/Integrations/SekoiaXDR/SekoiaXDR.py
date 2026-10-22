@@ -6,7 +6,7 @@ import json
 import urllib3
 import dateparser  # type: ignore
 from typing import Any, cast
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 import re
 import pytz  # type: ignore
 
@@ -635,8 +635,10 @@ def recreate_events_job(client: Client, alert: dict[str, Any]) -> bool:
 
     alert["events_job_attempts"] = attempts
     try:
+        # Upper bound: current time (or later if the alert timestamps are in the future), to capture
+        # events indexed slightly after last_seen_at (results stay scoped via the alert_short_ids term).
         _, is_ready = handle_alert_events_query(
-            client, alert, alert["first_seen_at"], "now", f"alert_short_ids:{alert['short_id']}"
+            client, alert, alert["first_seen_at"], get_events_latest_time(alert), f"alert_short_ids:{alert['short_id']}"
         )
     except Exception as e:
         demisto.debug(f"Failed to recreate events job for alert {alert.get('short_id')} (attempt {attempts}): {e}")
@@ -707,6 +709,44 @@ def apply_time_buffer(date_str: str, delta_minutes: int) -> str:
     except ValueError as e:
         demisto.debug(f"Error applying time buffer: {e}")
         return date_str
+
+
+def parse_iso_datetime(date_str: str) -> datetime:
+    """
+    Parse an ISO 8601 date string into a timezone-aware datetime (naive values are assumed UTC).
+    """
+    clean_date_str = date_str.replace("Z", "+00:00") if date_str.endswith("Z") else date_str
+    dt_obj = datetime.fromisoformat(clean_date_str)
+    return dt_obj if dt_obj.tzinfo else dt_obj.replace(tzinfo=UTC)
+
+
+def get_events_latest_time(alert: dict) -> str:
+    """
+    Compute the upper bound of the events search for an alert.
+
+    Uses the current UTC time, but never earlier than the alert's first_seen_at / last_seen_at.
+    Alerts can carry timestamps in the future (e.g. a log source sending local time flagged as UTC),
+    and sending "now" in that case makes the Sekoia API reject the search with
+    "Earliest time must be anterior to latest time" (ES104).
+
+    Args:
+        alert (dict): The Sekoia alert.
+
+    Returns:
+        str: The latest time in ISO 8601 format (UTC, 'Z' suffix).
+    """
+    candidates = [datetime.now(UTC)]
+    for field in ("first_seen_at", "last_seen_at"):
+        value = alert.get(field)
+        if not value:
+            continue
+        try:
+            candidates.append(parse_iso_datetime(value))
+        except ValueError as e:
+            demisto.debug(f"Could not parse {field}={value} of alert {alert.get('short_id')}: {e}")
+
+    latest = max(candidates).astimezone(UTC)
+    return latest.isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 
 """ COMMAND FUNCTIONS """
@@ -888,12 +928,16 @@ def fetch_incidents(
         # Add events information to the alert, if fetch_mode is set to "Fetch With All Events"
         if fetch_mode == "Fetch With All Events":
             earliest_time = alert["first_seen_at"]
-            # Upper bound "now": capture events timestamped/indexed slightly after last_seen_at
-            # (results stay scoped to this alert via the alert_short_ids term).
-            latest_time = "now"
+            # Upper bound: current time (or later if the alert timestamps are in the future), to capture
+            # events indexed slightly after last_seen_at (results stay scoped via the alert_short_ids term).
+            latest_time = get_events_latest_time(alert)
             term = f"alert_short_ids:{alert['short_id']}"
 
-            alert, _ = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
+            try:
+                alert, _ = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
+            except Exception as e:
+                # Don't block the whole fetch: create the incident without its events
+                demisto.error(f"Failed to query events for alert {alert_id}, creating the incident without events: {e}")
 
         # Start building the incident
         incident = {
@@ -1012,9 +1056,9 @@ def get_remote_data_command(
         # Add the events to the alert
         if mirror_events and alert["status"]["name"] not in ["Closed", "Rejected"]:
             earliest_time = alert["first_seen_at"]
-            # Upper bound "now": capture events timestamped/indexed slightly after last_seen_at
-            # (results stay scoped to this alert via the alert_short_ids term).
-            latest_time = "now"
+            # Upper bound: current time (or later if the alert timestamps are in the future), to capture
+            # events indexed slightly after last_seen_at (results stay scoped via the alert_short_ids term).
+            latest_time = get_events_latest_time(alert)
             term = f"alert_short_ids:{alert['short_id']}"
 
             alert, _ = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
