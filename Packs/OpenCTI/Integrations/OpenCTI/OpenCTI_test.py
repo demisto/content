@@ -1420,7 +1420,10 @@ def test_add_object_to_container_create_command(mocker, container_type, client_a
     add_mock = mocker.patch.object(getattr(client, client_attribute), "add_stix_object_or_stix_relationship", return_value=True)
     args = {"container_type": container_type, "container_id": "container-id", "object_id": "object-id"}
     results: CommandResults = add_object_to_container_create_command(client, args)
-    add_mock.assert_called_once_with(id="container-id", stixObjectOrStixRelationshipId="object-id")
+    add_mock.assert_called_once_with(
+        id="container-id",
+        stixObjectOrStixRelationshipId="object-id",
+    )
     assert results.readable_output == f"Object added into {container_type}"
 
 
