@@ -1320,17 +1320,20 @@ def prepare_fetch_incidents_query(
     Returns:
         SQL query that matches the arguments
     """
-    if fetch_filter and (fetch_subtype or fetch_severity):
+    # "all" adds no condition to the query, so it does not conflict with a fetch filter.
+    has_subtype_restriction = bool(fetch_subtype) and "all" not in fetch_subtype
+    has_severity_restriction = bool(fetch_severity) and "all" not in fetch_severity
+    if fetch_filter and (has_subtype_restriction or has_severity_restriction):
         raise DemistoException("Fetch Filter parameter cannot be used with Subtype/Severity parameters.")
     query = f"SELECT {fetch_fields} FROM `{fetch_table}` "  # guardrails-disable-line # noqa: S608
     time_filter = "event_time" if "log" in fetch_table else "time_generated"
     query += f'WHERE {time_filter} Between TIMESTAMP("{fetch_timestamp}") AND CURRENT_TIMESTAMP'
     if fetch_filter:
         query += f" AND {fetch_filter}"
-    if fetch_subtype and "all" not in fetch_subtype:
+    if has_subtype_restriction:
         sub_types = [f'sub_type.value = "{sub_type}"' for sub_type in fetch_subtype]
         query += f' AND ({" OR ".join(sub_types)})'
-    if fetch_severity and "all" not in fetch_severity:
+    if has_severity_restriction:
         severities = [f'vendor_severity.value = "{severity}"' for severity in fetch_severity]
         query += f' AND ({" OR ".join(severities)})'
     query += f" ORDER BY {time_filter} ASC LIMIT {fetch_limit}"
