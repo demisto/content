@@ -3985,22 +3985,25 @@ def test_fetch_and_send_vulnerabilities_streamed_send_failure_closes_response(mo
     When:
         - Calling fetch_and_send_vulnerabilities_streamed.
     Then:
-        - The first batch was sent, the send error propagates, and the streamed response is closed.
+        - Both full batches reach the send, the send error propagates, and the streamed response is closed.
     """
     raw_response = Mock()
     mocker.patch.object(client, "get_vulnerabilities", return_value=raw_response)
     mocker.patch("Qualysv2.iter_vulnerabilities_result", return_value=iter([{"QID": str(i)} for i in range(4)]))
     mocker.patch("Qualysv2.VULNERABILITIES_SEND_BATCH_SIZE", 2)
-    send_mock = mocker.patch(
-        "Qualysv2.send_assets_and_vulnerabilities_to_xsiam_with_retry",
-        side_effect=[None, Qualysv2.XSIAMSendError("send failed", status_code=502)],
-    )
+    sent_batches: list[list[dict]] = []
+
+    def send(data: list, **kwargs: object) -> None:
+        sent_batches.append(list(data))  # copy: the caller clears the batch after a successful send
+        if len(sent_batches) == 2:
+            raise Qualysv2.XSIAMSendError("send failed", status_code=502)
+
+    mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam_with_retry", side_effect=send)
 
     with pytest.raises(Qualysv2.XSIAMSendError, match="send failed"):
         Qualysv2.fetch_and_send_vulnerabilities_streamed(client, {"since_datetime": "2024-10-03"})
 
-    assert send_mock.call_count == 2
-    assert send_mock.call_args_list[0].args[0] == [{"QID": "0"}, {"QID": "1"}]
+    assert sent_batches == [[{"QID": "0"}, {"QID": "1"}], [{"QID": "2"}, {"QID": "3"}]]
     raw_response.close.assert_called_once()
 
 

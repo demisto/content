@@ -3646,6 +3646,7 @@ def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, 
                 break
             send_snapshot_batch(batch, "vulnerabilities", snapshot_id, items_count=1)  # unsealed: more may follow
             total_sent += len(batch)
+            batch.clear()  # free the sent rows before the next batch is parsed (keeps one batch in memory, not two)
 
         # The final send seals the snapshot with the cumulative total. If the rows divided evenly (empty remainder),
         # close_snapshot_if_empty emits a closing signal so the snapshot still seals with the correct count.
