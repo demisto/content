@@ -1,0 +1,304 @@
+display: KELA BrandControl
+name: KELA BrandControl
+category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
+provider: KELA
+description: Detects brand impersonation (phishing websites, look-alike domains, fake social media profiles and more) with KELA Brand Control and fetches the incidents into Cortex.
+commonfields:
+  id: KELA BrandControl
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  type: 0
+  defaultvalue: https://api.ke-la.com/brand-control/v1
+  required: true
+  additionalinfo: Base URL of the KELA Brand Control API.
+  section: Connect
+- displaypassword: API Token
+  name: credentials
+  type: 9
+  hiddenusername: true
+  required: true
+  additionalinfo: API token generated in the KELA platform (system menu). It is sent as the apiToken query parameter and is never logged.
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  additionalinfo: The system proxy configured on the Cortex server or engine used to route requests to the KELA Brand Control API.
+  section: Connect
+  advanced: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  additionalinfo: The option to skip TLS certificate validation when connecting to the KELA Brand Control API.
+  section: Connect
+  advanced: true
+- display: Workspace ID(s)
+  name: workspace_ids
+  type: 0
+  required: true
+  additionalinfo: Workspace ID to connect to. Several workspaces can be given separated by commas; each one is fetched with its own state. Only workspaces owned by, or shared with, your group are accessible.
+  section: Collect
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  defaultvalue: '1'
+  required: false
+  additionalinfo: The interval, in minutes, at which Cortex runs a fetch cycle for this instance.
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: First fetch time
+  name: first_fetch
+  type: 0
+  defaultvalue: '3 days'
+  required: false
+  additionalinfo: 'How far back to fetch the first time (e.g. "3 days", "12 hours", "2026-10-01T00:00:00Z"). Applied to the incident date.'
+  section: Collect
+- display: Maximum number of incidents per fetch (per workspace)
+  name: max_fetch
+  type: 0
+  defaultvalue: '50'
+  required: false
+  additionalinfo: Between 1 and 200.
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Fetch only these severities
+  name: fetch_severities
+  type: 16
+  required: false
+  options:
+  - low
+  - medium
+  - high
+  - critical
+  additionalinfo: Optional. Leave empty to fetch every severity. Filtered-out incidents are skipped but the fetch position still advances past them.
+  section: Collect
+script:
+  commands:
+  - name: kela-brandcontrol-incident-list
+    description: Retrieves the Brand Control incidents of a workspace, with filtering, sorting and pagination. Deleted and archived incidents are excluded by default.
+    arguments:
+    - name: workspace_id
+      description: Workspace ID to query. Optional when exactly one workspace is configured on the instance.
+    - name: search_term
+      description: Free text search term.
+    - name: types
+      description: A comma-separated list of incident types to return.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - phishing_website
+      - look_alike_domain
+      - phishing_email
+      - fake_social_media_profile
+      - fake_shop
+      - malicious_application
+      - brand_infringement
+    - name: statuses
+      description: A comma-separated list of incident statuses to return.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - new
+      - in_review
+      - resolved
+      - requested_takedown
+      - false_positive
+      - irrelevant
+      - whitelisted
+    - name: severities
+      description: A comma-separated list of severities to return.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
+    - name: is_deleted
+      description: When true, returns only deleted incidents. When false, returns only incidents that are not deleted.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: is_archived
+      description: When true, returns only archived incidents. When false, returns only incidents that are not archived.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: new_updates_only
+      description: When true, returns only incidents with updates available since they were last visited in the UI.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: time_range_field
+      description: Date field the start/end dates apply to.
+      auto: PREDEFINED
+      predefined:
+      - incident_date
+      - incident_update_date
+      defaultValue: incident_date
+    - name: start_date
+      description: 'Return incidents on or after this date. Accepts ISO dates, relative dates (e.g. "3 days") or a 13 digit epoch in milliseconds.'
+    - name: end_date
+      description: 'Return incidents up to this date. Same formats as start_date.'
+    - name: sort_by
+      description: Field to sort by. If omitted, the API sorts by lastUpdated descending.
+      auto: PREDEFINED
+      predefined:
+      - incidentDate
+      - severity
+      - status
+      - lastUpdated
+    - name: sort_order
+      description: Sort order. Used together with sort_by.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    - name: limit
+      description: Number of incidents to return (1-1000). Ignored when page or page_size is given.
+      defaultValue: '50'
+    - name: page
+      description: Page number, starting at 1. Used together with page_size.
+    - name: page_size
+      description: Number of incidents per page (1-1000). Used together with page.
+    outputs:
+    - contextPath: KELA.BrandControl.Incident.incidentId
+      description: Unique identifier of the incident.
+      type: String
+    - contextPath: KELA.BrandControl.Incident.incidentDate
+      description: The timestamp in Unix milliseconds when the incident was first detected (e.g., 1700000000000).
+      type: Number
+    - contextPath: KELA.BrandControl.Incident.incidentUpdateDate
+      description: The timestamp in Unix milliseconds of the last update to the incident (e.g., 1700000000000).
+      type: Number
+    - contextPath: KELA.BrandControl.Incident.type
+      description: Type of detection, as classified by KELA.
+      type: String
+    - contextPath: KELA.BrandControl.Incident.severity
+      description: Aggregated priority for treatment (low, medium, high, critical).
+      type: String
+    - contextPath: KELA.BrandControl.Incident.status
+      description: Current status of the incident.
+      type: String
+    - contextPath: KELA.BrandControl.Incident.title
+      description: Short descriptive title of the incident.
+      type: String
+    - contextPath: KELA.BrandControl.Incident.description
+      description: Detailed explanation of the incident.
+      type: String
+    - contextPath: KELA.BrandControl.Incident.isTakedownRequested
+      description: Whether a takedown has been requested for the incident.
+      type: Boolean
+    - contextPath: KELA.BrandControl.Incident.takedowns.takedownId
+      description: Takedown request ID.
+      type: String
+    - contextPath: KELA.BrandControl.Incident.takedowns.takedownRequestDate
+      description: The timestamp in Unix milliseconds of the takedown request (e.g., 1700000000000).
+      type: Number
+    - contextPath: KELA.BrandControl.Incident.takedowns.requestedBy
+      description: KELA username that submitted the takedown request.
+      type: String
+    - contextPath: KELA.BrandControl.Incident.takedowns.status
+      description: Current status of the takedown request.
+      type: String
+    - contextPath: KELA.BrandControl.Incident.takedowns.statusUpdateDate
+      description: The timestamp in Unix milliseconds of the last takedown status update (e.g., 1700000000000).
+      type: Number
+    - contextPath: KELA.BrandControl.Incident.detectedEntity
+      description: Entity at the core of the incident. The shape varies by incident type.
+      type: Unknown
+    - contextPath: KELA.BrandControl.Incident.detectedEntity.urls
+      description: URLs linked to the detected entity.
+      type: Unknown
+    - contextPath: KELA.BrandControl.Incident.analysis
+      description: Assessment of the detected entity. The shape varies by incident type.
+      type: Unknown
+    - contextPath: KELA.BrandControl.Incident.analysis.impersonatedAsset
+      description: The legitimate asset being impersonated.
+      type: String
+    - contextPath: KELA.BrandControl.Incident.analysis.similarityScore
+      description: Similarity score between the detected entity and the impersonated asset (0-1).
+      type: Number
+    - contextPath: KELA.BrandControl.Incident.analysis.domainStatus
+      description: Status of the domain (e.g. active, inactive).
+      type: String
+    - contextPath: KELA.BrandControl.Incident.analysis.firstSeen
+      description: The timestamp in Unix milliseconds when the entity was first detected (e.g., 1700000000000).
+      type: Number
+    - contextPath: KELA.BrandControl.Incident.analysis.lastSeen
+      description: The timestamp in Unix milliseconds when the entity was last detected (e.g., 1700000000000).
+      type: Number
+    - contextPath: KELA.BrandControl.Incident.screenshots.url
+      description: Temporary signed download link of the screenshot.
+      type: String
+    - contextPath: KELA.BrandControl.Incident.screenshots.screenshotDate
+      description: The timestamp in Unix milliseconds of the screenshot (e.g., 1700000000000).
+      type: Number
+    - contextPath: KELA.BrandControl.Incident.screenshots.fileName
+      description: Screenshot file name.
+      type: String
+    - contextPath: KELA.BrandControl.Incident.reasons
+      description: Assets that triggered the detection.
+      type: Unknown
+    - contextPath: KELA.BrandControl.Incident.indicators.hasScreenshots
+      description: Whether the incident has screenshots.
+      type: Boolean
+    - contextPath: KELA.BrandControl.Incident.indicators.hasNotes
+      description: Whether the incident has notes.
+      type: Boolean
+    - contextPath: KELA.BrandControl.Incident.indicators.hasTags
+      description: Whether the incident has tags.
+      type: Boolean
+    - contextPath: KELA.BrandControl.Incident.indicators.hasRelatedEntities
+      description: Whether the incident has related entities.
+      type: Boolean
+    - contextPath: KELA.BrandControl.Incident.isDeleted
+      description: Whether the incident is deleted.
+      type: Boolean
+    - contextPath: KELA.BrandControl.Incident.isArchived
+      description: Whether the incident is archived.
+      type: Boolean
+    - contextPath: KELA.BrandControl.Incident.lastVisited
+      description: The timestamp in Unix milliseconds of the last time the incident was visited in the UI (e.g., 1700000000000).
+      type: Number
+  dockerimage: demisto/py3-tools:1.0.0.13712671
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+  isfetch: true
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
