@@ -32,34 +32,36 @@ This integration uses app-only authentication with a certificate. The setup cons
 2. From the command results, download the following files:
    - **certificateBase64.txt** - used for the **Certificate** field in Step 4.
    - **publickey.cer** - uploaded to the Azure application in the next step.
-3. In the Azure portal, open your application and click **Certificates & secrets** in the left menu.
+3. In the Azure portal, open your application under **App registrations** and click **Certificates & secrets** in the left menu.
 4. In the **Certificates** tab, click **Upload certificate**, select the **publickey.cer** file, and click **Add**.
 
 #### Step 3: Assign Exchange Online Permissions
 
-The application must have Exchange Online permissions to run the integration commands. Use **one** of the following options. **Option A** is the easiest. If the **Test** button fails, or a command returns a permissions-related error after you apply one option, try the other.
+The application must have Exchange Online permissions to run the integration commands. Use **one** of the following options. **Option A** is the simpler option. If the **Test** button fails, or a command returns a permissions-related error after you apply one option, try the other.
+
+**Note:** Both options grant broad, tenant-wide Exchange administrative permissions, which are required to support the full set of integration commands.
 
 ##### Option A: Assign the Exchange Administrator Role in Microsoft Entra ID (Easiest)
 
-1. In the [Microsoft Entra admin center](https://entra.microsoft.com/), search for **Microsoft Entra roles and administrators** in the search box.
+1. In the [Azure portal](https://portal.azure.com/), search for **Microsoft Entra roles and administrators** in the search box.
 2. Search for **Exchange Administrator** and click the role name (not the checkbox).
 3. Click **Add assignments**, search for your application name, select it, and click **Add**.
 
 ##### Option B: Add the Application to the Organization Management Role Group via PowerShell
 
-**1. Connect to Exchange Online PowerShell as an administrator**
+**Connect to Exchange Online PowerShell as an administrator**
 
 1. Open PowerShell on your machine.
 2. Install the Exchange Online module (only needed the first time):
    `Install-Module -Name ExchangeOnlineManagement -Scope CurrentUser`
 3. Import the module:
    `Import-Module ExchangeOnlineManagement`
-4. Connect using an administrator account that can manage role assignments (for example, a Global Administrator or Privileged Role Administrator). A sign-in window opens for you to authenticate:
+4. Connect using an administrator account that can manage role assignments (for example, a Global Administrator or Exchange Administrator). A sign-in window opens for you to authenticate:
    `Connect-ExchangeOnline -UserPrincipalName <admin@yourdomain.com>`
 
    Replace `<admin@yourdomain.com>` with your admin account.
 
-**2. Get the correct IDs and create the service principal**
+**Get the correct IDs and create the service principal**
 
 You need two values:
 
@@ -76,7 +78,7 @@ Now run the following command, using the Application (client) ID and the Enterpr
 
 `New-ServicePrincipal -AppId "<Application-ID>" -ObjectId "<EnterpriseApp-ObjectId>" -DisplayName "<Application Name>"`
 
-**3. Add the service principal to the Organization Management role group**
+**Add the service principal to the Organization Management role group**
 
 After the service principal is created, add it to the **Organization Management** role group so it has the permissions the integration needs to run its cmdlets:
 
@@ -84,7 +86,7 @@ After the service principal is created, add it to the **Organization Management*
 
 Use the same `<Application-ID>` value you used in the previous step.
 
-**4. Verify**
+**Verify**
 
 Confirm that the service principal is now a member of the role group:
 
@@ -105,6 +107,8 @@ Click **Test** to verify connectivity.
 
 #### Step 5: Clean Up the Playground
 
-The Playground now contains sensitive information (the certificate and its private key). Delete it by running the following command:
+The Playground now contains sensitive information (the certificate and its private key). Clear the Playground context by running the following command:
 
 `!DeleteContext all=yes`
+
+If the certificate file entries are still visible in the Playground, delete them as well.
