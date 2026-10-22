@@ -7216,7 +7216,7 @@ class ScheduledCommand:
         )
 
 
-def camelize_string(src_str, delim='_', upper_camel=True):
+def camelize_string(source_string, delim='_', upper_camel=True):
     """
     Transform snake_case to CamelCase
 
@@ -7234,9 +7234,9 @@ def camelize_string(src_str, delim='_', upper_camel=True):
     :return: A CammelCase string.
     :rtype: ``str``
     """
-    if not src_str:  # empty string
+    if not source_string:  # empty string
         return ""
-    components = src_str.split(delim)
+    components = source_string.split(delim)
     camelize_without_first_char = ''.join(map(lambda x: x.title(), components[1:]))
     if upper_camel:
         return components[0].title() + camelize_without_first_char
@@ -14643,7 +14643,7 @@ def safe_sleep(duration_seconds):
         run_duration = int(context.get('runDuration')) * 60
         time_left = run_duration - (datetime.now() - SAFE_SLEEP_START_TIME).total_seconds()
         if duration_seconds > time_left:
-            raise ValueError("Requested a sleep of {} seconds, but time left until docker timeout is {} seconds."
+            raise DemistoException("Requested a sleep of {} seconds, but time left until docker timeout is {} seconds."
                              .format(duration_seconds, run_duration))
     else:
         demisto.info('Safe sleep is not supported in this server version, sleeping for the requested time.')
