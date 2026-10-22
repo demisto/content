@@ -178,6 +178,13 @@ script:
       - "false"
       description: If "true", the search will wait for the query to iterate over all messages before returning results. This is useful when working with aggregate records, as otherwise the query may return partial values.
       defaultValue: "false"
+    - name: requiresRawMessages
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether the search job retains raw messages so they can be retrieved alongside aggregate records. Set to "false" to improve performance for aggregate-only queries where raw messages are not needed.
+      defaultValue: "true"
     outputs:
     - contextPath: Search.Messages
       description: The array of raw message objects.
