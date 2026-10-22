@@ -37,7 +37,7 @@ This integration uses app-only authentication with a certificate. The setup cons
 
 #### Step 3: Assign Exchange Online Permissions
 
-The application must have Exchange Online permissions to run the integration commands. Use **one** of the following options. **Option A** is the easiest. If the **Test** button fails after using one option, try the other.
+The application must have Exchange Online permissions to run the integration commands. Use **one** of the following options. **Option A** is the easiest. If the **Test** button fails, or a command returns a permissions-related error after you apply one option, try the other.
 
 ##### Option A: Assign the Exchange Administrator Role in Microsoft Entra ID (Easiest)
 

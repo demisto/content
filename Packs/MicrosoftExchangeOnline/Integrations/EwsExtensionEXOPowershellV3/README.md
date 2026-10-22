@@ -53,7 +53,7 @@ This integration uses app-only authentication with a certificate. The setup cons
 
 #### Step 3: Assign Exchange Online Permissions
 
-The application must have Exchange Online permissions to run the integration commands. Use **one** of the following options. **Option A** is the easiest. If the **Test** button fails after using one option, try the other.
+The application must have Exchange Online permissions to run the integration commands. Use **one** of the following options. **Option A** is the easiest. If the **Test** button fails, or a command returns a permissions-related error after you apply one option, try the other.
 
 ##### Option A: Assign the Exchange Administrator Role in Microsoft Entra ID (Easiest)
 
@@ -127,7 +127,7 @@ Get-RoleGroupMember -Identity "Organization Management"
 
 #### Step 4: Configure the Integration Instance in Cortex XSOAR/XSIAM
 
-1. In Cortex XSOAR/XSIAM, navigate to **Settings** > **Integrations**, search for **EWS Extension Online Powershell v3**, and click **Add instance**.
+1. In Cortex XSOAR/XSIAM, navigate to the page where you configure integration instances, and add an instance of the **EWS Extension Online Powershell v3** integration.
 2. Configure the following fields:
    - **Certificate** - Open the **certificateBase64.txt** file from Step 2, copy its entire content, and paste it here.
    - **Password** - Enter the password you defined when running `!CreateCertificate` in Step 2.
