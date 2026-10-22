@@ -1,6 +1,6 @@
 from contextlib import ExitStack, contextmanager
 from functools import partial
-from threading import Lock, Thread
+from threading import Event, Lock, Thread
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -51,6 +51,7 @@ class EventConnection:
         self.url = url
         self.headers = headers
         self.lock = Lock()
+        self.stop_event = Event()
         self.idle_timeout = idle_timeout
         self.fetch_interval = fetch_interval
         self.connection = self.connect()
@@ -124,13 +125,28 @@ class EventConnection:
                 demisto.error(f"[{self.event_type}] General reconnection failure: {e!s}.")
                 raise
 
+    def close(self):
+        """
+        Stop the heartbeat thread and close the WebSocket connection.
+        Releasing the session prevents HTTP 409 (Conflict) errors when a new connection is opened for the same type.
+        """
+        self.stop_event.set()
+        try:
+            self.connection.close()
+            demisto.info(f"[{self.event_type}] Closed WebSocket connection.")
+        except Exception as e:
+            demisto.debug(f"[{self.event_type}] Failed to close WebSocket connection: {e!s}")
+
     def heartbeat(self):
         """
         Heartbeat thread function to periodically send keep-alives (pong) to the server.
         Keep-alives are sent regardless of the actual connection activity to ensure the connection remains open.
+        Stops when the connection is closed.
         """
-        while True:
+        while not self.stop_event.is_set():
             with self.lock:
+                if self.stop_event.is_set():
+                    break
                 try:
                     self.connection.pong()
                     demisto.info(f"[{self.event_type}] Sent heartbeat pong")
@@ -143,7 +159,7 @@ class EventConnection:
                 except Exception as e:
                     demisto.error(f"[{self.event_type}] Unexpected error in heartbeat: {e!s} {traceback.format_exc()}")
                     self.reconnect()
-            time.sleep(self.idle_timeout)
+            self.stop_event.wait(self.idle_timeout)
 
     def receive(self, timeout: int = RECEIVE_TIMEOUT) -> dict[str, Any]:
         """Receive a new event from the websocket connection.
@@ -220,17 +236,18 @@ def websocket_connections(
     extra_headers = {"Authorization": f"Bearer {api_key}"}
 
     try:
-        with ExitStack():  # Keep connection contexts for clean up
-            connections = [
-                EventConnection(
+        with ExitStack() as stack:  # Close every opened connection on exit, including partial setup failures
+            connections = []
+            for event_type in event_types:
+                connection = EventConnection(
                     event_type=event_type,
                     url=url(type=event_type),
                     headers=extra_headers,
                     fetch_interval=fetch_interval,
                     check_heartbeat=check_heartbeat,
                 )
-                for event_type in event_types
-            ]
+                stack.callback(connection.close)
+                connections.append(connection)
 
             if write_to_integration_context:
                 set_the_integration_context(
@@ -327,10 +344,11 @@ def fetch_events(
     demisto.debug(f"[{event_type}] Fetched events IDs: {', '.join([str(event_id) for event_id in event_ids])}.")
     if write_to_integration_context:
         fetch_end_time = datetime.utcnow()
-        set_the_integration_context(
-            "last_run_results",
-            f"Got from connection {num_events} events starting at {fetch_start_time!s} until {fetch_end_time!s}",
+        results_by_type = demisto.getIntegrationContext().get("last_run_results_by_type") or {}
+        results_by_type[event_type] = (
+            f"Got from connection {num_events} events starting at {fetch_start_time!s} until {fetch_end_time!s}"
         )
+        set_the_integration_context("last_run_results_by_type", results_by_type)
     should_skip_sleeping.append(True)
     return events
 
@@ -441,9 +459,13 @@ def test_module(host: str, cluster_id: str, api_key: str):
 
 
 def get_last_run_results_command():
-    last_run_results = demisto.getIntegrationContext().get("last_run_results")
-    if last_run_results:
-        return CommandResults(readable_output=last_run_results)
+    integration_context = demisto.getIntegrationContext()
+    last_run_results = integration_context.get("last_run_results")
+    results_by_type = integration_context.get("last_run_results_by_type") or {}
+    lines = [last_run_results] if last_run_results else []
+    lines.extend(f"[{event_type}] {result}" for event_type, result in results_by_type.items())
+    if lines:
+        return CommandResults(readable_output="\n\n".join(lines))
     else:
         return CommandResults(
             readable_output="No results from the last run yet, \
@@ -501,12 +523,14 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
     """
     support_multithreading()
     demisto.info(f"Starting long running execution. Fetching {event_types=}.")
+    consecutive_failures = 0
     while True:
         try:
             with websocket_connections(
                 host, cluster_id, api_key, fetch_interval=fetch_interval, event_types=event_types
             ) as connections:
                 demisto.info("Connected to websocket")
+                consecutive_failures = 0
                 fetch_interval = max(1, fetch_interval // len(event_types))  # Divide the fetch interval equally among event types
 
                 while True:
@@ -523,9 +547,14 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
                         time.sleep(FETCH_SLEEP)
                         demisto.info(f"Finished sleeping {FETCH_SLEEP} seconds.")
         except Exception as e:
+            consecutive_failures += 1
             err = f"Got an error while running in long running {e}. {traceback.format_exc()}"
             demisto.updateModuleHealth(err, is_error=True)
             demisto.error(err)
+            # Exponential backoff to avoid hammering the server and to let it release stale sessions (HTTP 409)
+            delay = min(MAX_BACKOFF_SECONDS, BASE_BACKOFF_SECONDS * (2 ** min(consecutive_failures - 1, 10)))
+            demisto.info(f"Waiting {delay} seconds before reconnecting (consecutive failure #{consecutive_failures}).")
+            time.sleep(delay)
 
 
 def get_events_command(host: str, cluster_id: str, api_key: str, args: dict[str, str]) -> tuple[list, CommandResults]:
