@@ -258,6 +258,22 @@ def test_observable_field_update_command(mocker, field, value, expected_input):
     assert results.outputs == {"id": "123456"}
 
 
+def test_observable_field_update_command_invalid_score(mocker):
+    """Tests observable_field_update_command function
+    Given
+        a score that is not a number
+    When
+        - Calling `observable_field_update_command`
+    Then
+        - Ensure a ValueError naming the argument is raised and OpenCTI is not called.
+    """
+    client = Client
+    update_mock = mocker.patch.object(client.stix_cyber_observable, "update_field")
+    with pytest.raises(ValueError, match='"value"="abc"'):
+        observable_field_update_command(client, {"id": "123456", "field": "score", "value": "abc"})
+    update_mock.assert_not_called()
+
+
 def test_observable_field_update_command_data_not_returned(mocker):
     """Tests observable_field_update_command function
     Given

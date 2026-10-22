@@ -859,7 +859,7 @@ def observable_field_update_command(client: OpenCTIApiClient, args: dict) -> Com
     key = KEY_TO_CTI_NAME[args.get("field")]  # type: ignore
     value: Any = args.get("value")
     if key == "x_opencti_score":
-        value = int(value)
+        value = arg_to_number(value, arg_name="value", required=True)
     try:
         result = client.stix_cyber_observable.update_field(id=observable_id, input=[{"key": key, "value": value}])
     except Exception as e:
