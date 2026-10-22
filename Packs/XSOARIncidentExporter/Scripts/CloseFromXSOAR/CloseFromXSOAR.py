@@ -46,7 +46,7 @@ def main() -> None:
         if status not in ('Done', 'Archive'):
             return_results(CommandResults(
                 readable_output=f'XSOAR incident {xsoar_id} is not closed (Status: {status}). No action taken.',
-                outputs_prefix='XSOARClose',
+                outputs_prefix='XSOARExporter.Close',
                 outputs={
                     'XSOARIncidentID': xsoar_id,
                     'Status': status,
@@ -75,7 +75,7 @@ def main() -> None:
                 f'- **XSIAM Close Reason:** {xsiam_reason}\n'
                 f'- **Close Notes:** {close_notes or "(none)"}\n'
             ),
-            outputs_prefix='XSOARClose',
+            outputs_prefix='XSOARExporter.Close',
             outputs={
                 'XSOARIncidentID': xsoar_id,
                 'XSOARCloseReason': close_reason,

@@ -15,19 +15,19 @@ tags:
 enabled: true
 args: []
 outputs:
-- contextPath: XSOARClose.XSOARIncidentID
+- contextPath: XSOARExporter.Close.XSOARIncidentID
   description: The XSOAR incident ID from the alert.
   type: String
-- contextPath: XSOARClose.XSOARCloseReason
+- contextPath: XSOARExporter.Close.XSOARCloseReason
   description: The close reason from XSOAR.
   type: String
-- contextPath: XSOARClose.XSIAMCloseReason
+- contextPath: XSOARExporter.Close.XSIAMCloseReason
   description: The mapped XSIAM close reason.
   type: String
-- contextPath: XSOARClose.CloseNotes
+- contextPath: XSOARExporter.Close.CloseNotes
   description: The close notes from XSOAR.
   type: String
-- contextPath: XSOARClose.Action
+- contextPath: XSOARExporter.Close.Action
   description: Whether the case was closed or no action was taken.
   type: String
 fromversion: 6.10.0
