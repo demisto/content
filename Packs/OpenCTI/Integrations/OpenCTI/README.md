@@ -183,6 +183,34 @@ Get a list of all organizations in OpenCTI.
 | OpenCTI.Organizations.OrganizationsList.name | String | Organization name. |
 | OpenCTI.Organizations.organizationsLastRun | String | The last ID of the previous fetch to use for pagination. |
 
+#### Command Example
+
+```!opencti-organization-list limit=2```
+
+#### Context Example
+
+```json
+{
+    "OpenCTI": {
+        "Organizations": {
+            "organizationsLastRun": "WyJpZGVudGl0eS0tM2VlMjVmN2UtYjQzMS01NTE4LTkyNzAtZjUyY2RmOGVkZDBkIl0=",
+            "OrganizationsList": {
+                "name": "Example Organization",
+                "id": "2e6aa190-9d1c-4b84-820f-06d0dc61d956"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Organizations
+>
+>|Name|Id|
+>|---|---|
+>| Example Organization | 2e6aa190-9d1c-4b84-820f-06d0dc61d956 |
+
 ### opencti-organization-create
 
 ***
