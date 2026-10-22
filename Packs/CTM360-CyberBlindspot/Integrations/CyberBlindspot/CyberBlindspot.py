@@ -282,6 +282,7 @@ class Client(BaseClient):
             if cursor_request and getattr(error.res, "status_code", None) == 400:
                 raise CursorRejectedError(str(error), res=error.res) from error
             raise
+        log(DEBUG, "at client's fetch function")
         if response.get("statusCode") != 200:
             raise DemistoException(f'Error received: {response.get("message")}')
 
@@ -612,7 +613,7 @@ def test_module(client: Client, params) -> str:
         incidents = client.test_configuration(args)
         if max_fetch and len(incidents) > max_fetch:
             log(INFO, f"Incidents fetched exceed the limit, removing the excess {len(incidents) - max_fetch} incidents.")
-            incidents = incidents[:: max_fetch - 1]
+            incidents = incidents[:max_fetch]
         message = "ok"
     except DemistoException as e:
         expected_words = [
@@ -652,10 +653,7 @@ def fetch_incidents(
     try:
         page = client.fetch_incident_page(params)
     except CursorRejectedError as error:
-        log(
-            INFO,
-            f"[CyberBlindspot] The API rejected the stored fetch cursor ({error}). Restarting from the last fetched timestamp.",
-        )
+        log(INFO, f"The API rejected the stored fetch cursor ({error}). Restarting from the last fetched timestamp.")
         params = {key: value for key, value in params.items() if key != "cursor"}
         restart_from = last_run.get("last_fetched_timestamp")
         if restart_from not in ("", None):
