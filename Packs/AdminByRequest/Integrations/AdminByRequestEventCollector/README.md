@@ -1,7 +1,5 @@
 AdminByRequest is a Privileged Access Management (PAM) solution that enables secure, temporary elevation to local admin rights.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 ## Configure Admin By Request in Cortex
 
 | **Parameter** | **Description** | **Required** |
