@@ -35,7 +35,7 @@ configuration:
   type: 9
   section: Connect
   displaypassword: Service account private key (JSON)
-  additionalinfo: 'Paste the full contents of a service account JSON key file (contains "type": "service_account", client_email, private_key). Without impersonation, use the key of the service account that has the Pub/Sub permissions. With impersonation, use the key of the base (caller) service account, not of the service account to impersonate. The base service account needs only roles/iam.serviceAccountTokenCreator on the service account to impersonate. Provide either this parameter or the Workload Identity Federation configuration, not both.'
+  additionalinfo: 'The full contents of a service account JSON key file (contains "type": "service_account", client_email, private_key). Without impersonation, use the key of the service account that has the Pub/Sub permissions. With impersonation, use the key of the base (caller) service account, not of the service account to impersonate. The base service account needs only roles/iam.serviceAccountTokenCreator on the service account to impersonate. Provide either this parameter or the Workload Identity Federation configuration, not both.'
   hiddenusername: true
   required: false
 - name: wif_credentials
@@ -43,7 +43,7 @@ configuration:
   section: Connect
   advanced: true
   displaypassword: Workload Identity Federation configuration (JSON)
-  additionalinfo: Paste the external_account credential configuration JSON generated for your Workload Identity Pool provider. Provide either this parameter or the Service account private key, not both.
+  additionalinfo: The external_account credential configuration JSON generated for your Workload Identity Pool provider. Provide either this parameter or the Service account private key, not both.
   hiddenusername: true
   required: false
 - display: Service Account to impersonate
@@ -51,7 +51,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-  additionalinfo: Email of the target service account (e.g., target-sa@my-project.iam.gserviceaccount.com). Only the email is needed, not a key file. This account must hold the Pub/Sub permissions, since all Pub/Sub calls run as this account. Requires a base credential (Service account private key or Workload Identity Federation configuration); cannot be used on its own. Overrides any impersonation URL embedded in the Workload Identity Federation configuration. Leave empty for no impersonation.
+  additionalinfo: The email of the target service account (e.g., target-sa@my-project.iam.gserviceaccount.com). Only the email is needed, not a key file. This account must hold the Pub/Sub permissions, since all Pub/Sub calls run as this account. Requires a base credential (Service account private key or Workload Identity Federation configuration); cannot be used on its own. Overrides any impersonation URL embedded in the Workload Identity Federation configuration. Leave empty for no impersonation.
   required: false
 - display: Trust any certificate (not secure)
   name: insecure

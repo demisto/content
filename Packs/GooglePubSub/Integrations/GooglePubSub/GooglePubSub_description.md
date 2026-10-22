@@ -24,7 +24,7 @@
 2) In your Google Cloud project, create the target service account that the integration will act as (for example `pubsub-target@<PROJECT_ID>.iam.gserviceaccount.com`). Impersonation uses only the target's email, so no key is needed for this account.
 3) Grant the target service account the Pub/Sub permissions the integration needs, as a project-level role: `roles/pubsub.editor`, or `roles/pubsub.subscriber` together with `roles/pubsub.publisher`.
 
-    ```
+    ```bash
     gcloud projects add-iam-policy-binding <PROJECT_ID> \
       --member="serviceAccount:<TARGET_SA_EMAIL>" \
       --role="roles/pubsub.editor"
@@ -32,7 +32,7 @@
 
 4) Allow the base identity to impersonate the target by granting it `roles/iam.serviceAccountTokenCreator` on the target service account itself (a binding on the service account, not on the project). The base identity does not need Pub/Sub permissions.
 
-    ```
+    ```bash
     gcloud iam service-accounts add-iam-policy-binding <TARGET_SA_EMAIL> \
       --project=<PROJECT_ID> \
       --member="serviceAccount:<BASE_SA_EMAIL>" \
@@ -42,7 +42,7 @@
     For a Workload Identity Federation base, set `--member` to the federated principal (e.g., `principalSet://iam.googleapis.com/projects/<PROJECT_NUMBER>/locations/global/workloadIdentityPools/<POOL_ID>/*`).
 5) Enable the IAM Service Account Credentials API in the project:
 
-    ```
+    ```bash
     gcloud services enable iamcredentials.googleapis.com --project=<PROJECT_ID>
     ```
 
