@@ -7,17 +7,17 @@ This integration was tested with OpenCTI 6.9.0 and 7.261.X.
 2. Search for OpenCTI.
 3. Click **Add instance** to create and configure a new integration instance.
 
-   | **Parameter** | **Required** |
-   | --- | --- |
-   | Base URL | True |
-   | API Key (leave empty. Fill in the API key in the password field.) | False |
-   | Trust any certificate (not secure) | False |
-   | Use system proxy settings | False |
-   | Redirect stdout | False |
-   | Source Reliability | False |
-   | Suspicious score threshold (0-100) | False |
-   | Malicious score threshold (0-100) | False |
-   | Create relationships | False |
+   | **Parameter** | **Description** | **Required** |
+   | --- | --- | --- |
+   | Base URL | The URL of the OpenCTI platform, for example https://opencti.example.com. | True |
+   | API Key (leave empty. Fill in the API key in the password field.) | The API key of the OpenCTI user, available in the API access section of the user profile in OpenCTI. | False |
+   | Trust any certificate (not secure) | Whether to skip the verification of the SSL certificate of the OpenCTI platform. | False |
+   | Use system proxy settings | Whether to use the system proxy settings to connect to the OpenCTI platform. | False |
+   | Redirect stdout | Used for troubleshooting purposes. | False |
+   | Source Reliability | The reliability of the source providing the intelligence data. | False |
+   | Suspicious score threshold (0-100) | Used by the ip, domain, email, url and file commands. An indicator whose OpenCTI score (x_opencti_score) is above this threshold and not above the malicious score threshold is suspicious. An indicator whose score is not above this threshold is good. A value unknown to OpenCTI is unknown. | False |
+   | Malicious score threshold (0-100) | Used by the ip, domain, email, url and file commands. An indicator whose OpenCTI score (x_opencti_score) is above this threshold is malicious. Must not be below the suspicious score threshold. | False |
+   | Create relationships | Whether to create relationships between indicators as part of enrichment. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

@@ -8,11 +8,13 @@ commonfields:
   version: -1
 configuration:
 - display: Base URL
+  additionalinfo: The URL of the OpenCTI platform, for example https://opencti.example.com.
   name: base_url
   required: true
   type: 0
   section: Connect
 - display: API Key (leave empty. Fill in the API key in the password field.)
+  additionalinfo: The API key of the OpenCTI user, available in the API access section of the user profile in OpenCTI.
   displaypassword: API Key
   name: credentials
   type: 9
@@ -20,11 +22,13 @@ configuration:
   required: false
   section: Connect
 - display: Trust any certificate (not secure)
+  additionalinfo: Whether to skip the verification of the SSL certificate of the OpenCTI platform.
   name: insecure
   type: 8
   required: false
   section: Connect
 - display: Use system proxy settings
+  additionalinfo: Whether to use the system proxy settings to connect to the OpenCTI platform.
   name: proxy
   type: 8
   required: false
