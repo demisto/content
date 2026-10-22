@@ -231,7 +231,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Close Mirrored XSOAR Incident
-  additionalinfo: Incoming mirroring. When selected, the Cortex XSOAR incident is closed when the Microsoft alert or incident status becomes Resolved, or Redirected (incidents).
+  additionalinfo: Incoming mirroring. When selected, the Cortex XSOAR incident is closed when the Microsoft alert or incident status becomes Resolved, or Redirected (incidents), and reopened when it becomes active again.
   name: close_incident
   type: 8
   section: Collect
@@ -3230,8 +3230,6 @@ script:
   - arguments:
     - description: The last update time (ISO-8601 or UTC timestamp in seconds). Returns the IDs of the alerts and incidents modified since then.
       name: lastUpdate
-    - description: Alias of lastUpdate.
-      name: last_update
     description: Gets the list of remote incidents/alerts that were modified since the last update time. This method is only used for debugging purposes.
     name: get-modified-remote-data
   - arguments:
@@ -3241,11 +3239,9 @@ script:
       name: alert_id
     - description: The remote incident ID. Use instead of id to force the incident flow.
       name: incident_id
-    - description: The last update time (ISO-8601 or UTC timestamp in seconds). Only comments created after this time are mirrored. Default is 0.
+    - description: The last update time (ISO-8601 or UTC timestamp in seconds). Only comments created after this time are mirrored.
       name: lastUpdate
-    - description: Alias of lastUpdate.
-      name: last_update
-    description: Gets remote data from a remote incident/alert. This method is only used for debugging purposes.
+    description: Gets remote data from a remote alert/incident. This method does not update the current incident, and should be used for debugging purposes only.
     name: get-remote-data
   - arguments: []
     description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.

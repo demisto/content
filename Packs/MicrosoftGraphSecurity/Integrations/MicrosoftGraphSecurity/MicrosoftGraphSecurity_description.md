@@ -14,21 +14,24 @@ You can narrow what is fetched using the **Alerts Filter** and **Incidents Filte
 <~XSOAR>
 
 # Mirroring
-Mirroring is supported in Cortex XSOAR only.
+Mirroring is controlled by the **Incident Mirroring Direction** and **Closing** parameters.
 
-1. Under **Incident Mirroring Direction**, select **Incoming**, **Outgoing**, or **Incoming And Outgoing**.
-2. Select the **Fetches incidents** radio button.
-3. Under **Classifier**, select **Graph Security Classifier**. It routes alerts to the **Graph Security Alert** incident type and incidents to the **Graph Security Incident** incident type. Alternatively, under **Incident type**, select **Graph Security Alert** or **Graph Security Incident**.
-4. Under **Mapper (incoming)**, select **Graph Security Mapper - Incoming**. This mapper covers both alerts and incidents.
-5. Under **Mapper (outgoing)**, select **Graph Security Mapper - Outgoing**. This mapper covers both alerts and incidents.
-6. To close the Cortex XSOAR incident when the Microsoft alert or incident is resolved, select the **Close Mirrored XSOAR Incident** checkbox.
-7. To resolve the Microsoft alert or incident when the Cortex XSOAR incident is closed, select the **Close Mirrored Microsoft Alert/Incident** checkbox.
-8. In **Comment Entry Tag (to Microsoft)**, enter a tag (default: `CommentToMicrosoftGraphSecurity`). War Room entries with this tag are sent to Microsoft as alert or incident comments.
-9. In **Comment Entry Tag (from Microsoft)**, enter a tag (default: `CommentFromMicrosoftGraphSecurity`). Microsoft alert or incident comments are added to the War Room with this tag. The two tags must be different.
+**Incident Mirroring Direction** Select **Incoming**, **Outgoing** or **Incoming And Outgoing**. **None** turns mirroring off.
+* **Incoming**: Microsoft field changes and comments are mirrored in. Comments are added with the **Comment Entry Tag (from Microsoft)** tag.
+* **Outgoing**: Cortex XSOAR field changes are mirrored out. Only entries with the **Comment Entry Tag (to Microsoft)** tag are sent as comments.
 
-Closing behavior and comment mirroring depend on the selected direction: **Close Mirrored XSOAR Incident** and incoming comments require **Incoming**, and **Close Mirrored Microsoft Alert/Incident** and outgoing comments require **Outgoing**. **Incoming And Outgoing** enables both.
-Outgoing mirroring requires the `SecurityIncident.ReadWrite.All` and `SecurityAlert.ReadWrite.All` permissions.
-For the full steps, see [Configure Incident Mirroring](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph#configure-incident-mirroring).
+**Closing (optional)**
+
+These options only control closing. You don't need them to mirror comments or field changes.
+* **Close Mirrored XSOAR Incident** (incoming): Closes the Cortex XSOAR incident when the Microsoft alert or incident is Resolved. Incidents also close when Redirected. The Cortex XSOAR incident reopens when the Microsoft item is active again.
+* **Close Mirrored Microsoft Alert/Incident** (outgoing): Resolves the Microsoft alert or incident when you close the Cortex XSOAR incident.
+
+**Setup**
+* Select **Fetch incidents**, the **Graph Security Classifier**, and the **Graph Security Mapper - Incoming** and **Graph Security Mapper - Outgoing** mappers.
+* **Comment Entry Tag (to Microsoft)** and **Comment Entry Tag (from Microsoft)** must be different.
+* Outgoing mirroring needs the `SecurityIncident.ReadWrite.All` and `SecurityAlert.ReadWrite.All` permissions.
+
+For details, see [Configure Incident Mirroring](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph#configure-incident-mirroring).
 
 </~XSOAR>
 

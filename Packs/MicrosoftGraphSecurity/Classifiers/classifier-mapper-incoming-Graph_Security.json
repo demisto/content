@@ -30,9 +30,6 @@
                 "Microsoft Graph Security Detector Id": {
                     "simple": "detectorId"
                 },
-                "Microsoft Graph Security Comment": {
-                    "simple": "comments"
-                },
                 "Microsoft Graph Security Alert Determination": {
                     "simple": "determination"
                 },
@@ -102,13 +99,13 @@
                                     "input_values": {
                                         "isContext": false,
                                         "value": {
-                                            "simple": "unknown|unknown,truePositive|multiStagedAttack,truePositive|malware,truePositive|maliciousUserActivity,truePositive|unwantedSoftware,truePositive|phishing,truePositive|compromisedUser,truePositive|other,informationalExpectedActivity|securityTesting,informationalExpectedActivity|confirmedUserActivity,informationalExpectedActivity|lineOfBusinessApplication,informationalExpectedActivity|other,falsePositive|clean,falsePositive|insufficientData,falsePositive|other"
+                                            "simple": "unknown|unknown,truePositive|multiStagedAttack,truePositive|malware,truePositive|maliciousUserActivity,truePositive|unwantedSoftware,truePositive|phishing,truePositive|compromisedAccount,truePositive|other,informationalExpectedActivity|securityTesting,informationalExpectedActivity|confirmedActivity,informationalExpectedActivity|lineOfBusinessApplication,informationalExpectedActivity|other,falsePositive|notMalicious,falsePositive|notEnoughDataToValidate,falsePositive|other,truePositive|compromisedUser,informationalExpectedActivity|confirmedUserActivity,falsePositive|clean,falsePositive|insufficientData"
                                         }
                                     },
                                     "mapped_values": {
                                         "isContext": false,
                                         "value": {
-                                            "simple": "Unclassified,True positive - Multi staged attack,True positive - Malware,True positive - Malicious user activity,True positive - Unwanted software,True positive - Phishing,True positive - Compromised account,True positive - Other,Informational - Security testing,Informational - Confirmed activity,Informational - Line of business application,Informational - Other,False positive - Not malicious,False positive - Not enough data to validate,False positive - Other"
+                                            "simple": "Unclassified,True positive - Multi staged attack,True positive - Malware,True positive - Malicious user activity,True positive - Unwanted software,True positive - Phishing,True positive - Compromised account,True positive - Other,Informational - Security testing,Informational - Confirmed activity,Informational - Line of business application,Informational - Other,False positive - Not malicious,False positive - Not enough data to validate,False positive - Other,True positive - Compromised account,Informational - Confirmed activity,False positive - Not malicious,False positive - Not enough data to validate"
                                         }
                                     }
                                 }

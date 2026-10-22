@@ -81,7 +81,6 @@ from MicrosoftGraphSecurity import (
     SEVERITY_MAP,
     additional_data_to_custom_details,
     apply_classification_label,
-    to_graph_determination,
     build_patch_body,
     custom_details_to_list,
     strip_remote_id_suffix,
@@ -2843,18 +2842,6 @@ def test_get_remote_data_raises_api_rate_limit_on_429(mocker, remote_id, expecte
     assert [c.kwargs["url_suffix"] for c in http_mock.call_args_list] == [expected_url]
 
 
-def test_get_modified_remote_data_command_last_update_alias(mocker):
-    """
-    Given: the design arg name `last_update` instead of `lastUpdate`.
-    When: running get-modified-remote-data.
-    Then: it is used as lastUpdate in the filter.
-    """
-    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={"value": [{"id": "a1"}]})
-    res = get_modified_remote_data_command(client_mocker, {"last_update": "2026-10-10T10:00:00Z"}, ALERTS_ONLY_PARAMS)
-    assert res.modified_incident_ids == ["a1"]
-    assert "$filter=lastUpdateDateTime ge 2026-10-10T10:00:00Z" in http_mock.call_args.kwargs["url_suffix"]
-
-
 @pytest.mark.parametrize("args", [{"lastUpdate": "not a date at all"}, {}])
 def test_get_modified_remote_data_command_unparseable_last_update(mocker, args):
     """
@@ -2873,7 +2860,7 @@ def test_get_modified_remote_data_command_unparseable_last_update(mocker, args):
     "args, expected_args, expected_hint",
     [
         ({"id": "123", "lastUpdate": "2026-01-01"}, {"id": "123", "lastUpdate": "2026-01-01"}, None),
-        ({"incident_id": "123", "last_update": "2026-01-01"}, {"id": "123", "lastUpdate": "2026-01-01"}, "incident"),
+        ({"incident_id": "123", "lastUpdate": "2026-01-01"}, {"id": "123", "lastUpdate": "2026-01-01"}, "incident"),
         ({"alert_id": "da1"}, {"id": "da1", "lastUpdate": "0"}, "alert"),
     ],
 )
@@ -3518,14 +3505,14 @@ def test_update_remote_system_alert_classification_only_sends_patch(mocker):
     """
     Given: an open alert whose delta only changes the Microsoft Graph Security Classification field.
     When: running update-remote-system.
-    Then: the alert PATCH holds the classification and the alert determination name (`clean`).
+    Then: the alert PATCH holds the classification and the determination name (`notMalicious`).
     """
     http_mock = _patch_http(mocker)
     delta = {"classification": "False positive - Not malicious"}
     update_remote_system_command(client_mocker, _update_args(ALERT_ID, delta, "alert"), MIRROR_PARAMS)
     patch_call = _http_calls(http_mock, "PATCH")[0]
     assert patch_call.kwargs["url_suffix"] == f"security/alerts_v2/{ALERT_ID}"
-    assert patch_call.kwargs["json_data"] == {"classification": "falsePositive", "determination": "clean"}
+    assert patch_call.kwargs["json_data"] == {"classification": "falsePositive", "determination": "notMalicious"}
 
 
 def test_outgoing_mapper_classification_both_types():
@@ -3881,6 +3868,8 @@ def _remote_status_http(remote_status: str | None = None, get_error: Exception |
     """
     Returns an http_request side effect for the M2 close-out guard: GET returns the remote object with `remote_status`
     (or raises `get_error`), PATCH returns "" and POST returns {}.
+    The remote object is classified falsePositive, so incoming mirroring would close XSOAR as "False Positive" with
+    close notes "Benign - tested by SOC".
     """
 
     def side_effect(*args, **kwargs):
@@ -3888,7 +3877,12 @@ def _remote_status_http(remote_status: str | None = None, get_error: Exception |
             return "" if kwargs.get("method") == "PATCH" else {}
         if get_error:
             raise get_error
-        return {"id": "x", "status": remote_status, "resolvingComment": "Benign - tested by SOC"}
+        return {
+            "id": "x",
+            "status": remote_status,
+            "classification": "falsePositive",
+            "resolvingComment": "Benign - tested by SOC",
+        }
 
     return side_effect
 
@@ -3899,17 +3893,20 @@ TAGGED_ENTRY = {"id": "1", "contents": "tagged note", "tags": ["CommentToMicroso
 @pytest.mark.parametrize(
     "delta",
     [
-        {"closeReason": "False Positive", "closeNotes": "done"},
+        {"closeReason": "False Positive", "resolvingComment": "Benign - tested by SOC"},
+        {"closeReason": "False Positive"},
         {"resolvingComment": "Benign - tested by SOC"},
-        {"closeReason": "Resolved", "status": "resolved"},
+        {"closeReason": "False Positive", "resolvingComment": " Benign -  tested by SOC\n"},
+        {"closeReason": "False Positive", "status": "resolved"},
         {},
     ],
-    ids=["reason-and-notes", "resolving-comment-only", "explicit-status", "default-close"],
+    ids=["reason-and-notes", "reason-only", "resolving-comment-only", "whitespace-differs", "explicit-status", "default-close"],
 )
 def test_update_remote_system_incident_already_resolved_no_close_out(mocker, delta):
     """
-    Given: a Microsoft incident already resolved in Defender (with its own resolvingComment), and the XSOAR incident
-        closed (status=2) by incoming mirroring, with close_out on. The outgoing data still shows a stale "active" status.
+    Given: a Microsoft incident already resolved in Defender (classification falsePositive, resolvingComment
+        "Benign - tested by SOC"), and the XSOAR incident closed (status=2) by incoming mirroring, with close_out on.
+        The delta only echoes the incoming close (tenant shapes: ['closeReason', 'resolvingComment'] and ['closeReason']).
     When: running update-remote-system.
     Then: the close-out is skipped: nothing is PATCHed (no status, no resolvingComment overwrite), nothing is POSTed,
         and the skip is logged with demisto.debug.
@@ -3920,17 +3917,23 @@ def test_update_remote_system_incident_already_resolved_no_close_out(mocker, del
     assert [c.kwargs["url_suffix"] for c in _http_calls(http_mock, "GET")] == [f"security/incidents/{INCIDENT_ID}"]
     assert _http_calls(http_mock, "PATCH") == []
     assert _http_calls(http_mock, "POST") == []
-    assert any("already resolved" in str(c.args[0]) for c in debug_mock.call_args_list)
+    assert any("already resolved" in str(c.args[0]) and "echo" in str(c.args[0]) for c in debug_mock.call_args_list)
 
 
 @pytest.mark.parametrize(
     "delta",
-    [{"closeReason": "False Positive", "closeNotes": "not malicious"}, {}],
-    ids=["reason-and-notes", "default-close"],
+    [
+        {"closeReason": "False Positive", "closeNotes": "Resolved in Microsoft Graph Security."},
+        {"closeReason": "False Positive"},
+        {},
+    ],
+    ids=["incoming-default-notes", "reason-only", "default-close"],
 )
 def test_update_remote_system_alert_already_resolved_no_close_out(mocker, delta):
     """
-    Given: a Microsoft alert already resolved in Defender, and the XSOAR incident closed (status=2), with close_out on.
+    Given: a Microsoft alert already resolved in Defender (classification falsePositive), and the XSOAR incident closed
+        (status=2) by incoming mirroring, with close_out on. The delta holds no close keys, or only the close reason and
+        notes incoming mirroring set (scenario e).
     When: running update-remote-system.
     Then: no status PATCH and no close comment ("Mirrored from Cortex XSOAR") is POSTed.
     """
@@ -3993,8 +3996,8 @@ def test_update_remote_system_incident_already_resolved_other_fields_and_entries
     """
     http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
     delta = {
-        "closeReason": "Resolved",
-        "resolvingComment": "x",
+        "closeReason": "False Positive",
+        "resolvingComment": "Benign - tested by SOC",
         "severity": 3,
         "displayName": "New name",
         "classification": "Informational - Confirmed activity",
@@ -4021,7 +4024,7 @@ def test_update_remote_system_alert_already_resolved_other_fields_and_entries_st
         comment).
     """
     http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
-    delta = {"closeReason": "Resolved", "classification": "True positive - Malware", "customDetails": ["k: v"]}
+    delta = {"closeReason": "False Positive", "classification": "True positive - Malware", "customDetails": ["k: v"]}
     args = _update_args(ALERT_ID, delta, "alert", status=2, entries=[TAGGED_ENTRY])
     update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
     body = _http_calls(http_mock, "PATCH")[0].kwargs["json_data"]
@@ -4031,6 +4034,138 @@ def test_update_remote_system_alert_already_resolved_other_fields_and_entries_st
     posts = _http_calls(http_mock, "POST")
     assert len(posts) == 1
     assert "(admin): tagged note" in posts[0].kwargs["json_data"]["comment"]
+
+
+@pytest.mark.parametrize(
+    "delta, close_reason_in_data, expected_comment",
+    [
+        (
+            {"resolvingComment": "Phishing test"},
+            "False Positive",
+            "Closed in Cortex XSOAR as: False Positive\nComment: Phishing test",
+        ),
+        (
+            {"closeReason": "False Positive", "resolvingComment": "Phishing test"},
+            None,
+            "Closed in Cortex XSOAR as: False Positive\nComment: Phishing test",
+        ),
+        ({"closeReason": "Duplicate"}, None, "Closed in Cortex XSOAR as: Duplicate"),
+        (
+            {"closeReason": "Duplicate", "resolvingComment": "Benign - tested by SOC"},
+            None,
+            "Closed in Cortex XSOAR as: Duplicate\nComment: Benign - tested by SOC",
+        ),
+    ],
+    ids=["notes-edit", "reclose-new-notes", "reason-only-edit", "reason-edit-same-notes"],
+)
+def test_update_remote_system_incident_already_resolved_close_edit_is_sent(mocker, delta, close_reason_in_data, expected_comment):
+    """
+    Given: a Microsoft incident already resolved (falsePositive, "Benign - tested by SOC"), and an analyst edit of the
+        close notes and/or close reason on the closed XSOAR incident, with close_out on (scenarios b, c).
+    When: running update-remote-system.
+    Then: one GET, then status=resolved and the new prefixed resolvingComment are PATCHed; the push is logged.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
+    debug_mock = mocker.patch.object(demisto, "debug")
+    args = _update_args(INCIDENT_ID, delta, "incident", status=2)
+    if close_reason_in_data:
+        args["data"]["closeReason"] = close_reason_in_data
+    update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
+    assert len(_http_calls(http_mock, "GET")) == 1
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": "resolved", "resolvingComment": expected_comment}
+    assert _http_calls(http_mock, "POST") == []
+    assert any("not an echo" in str(c.args[0]) for c in debug_mock.call_args_list)
+
+
+@pytest.mark.parametrize(
+    "delta, close_reason_in_data, expected_comment",
+    [
+        (
+            {"closeReason": "Duplicate", "closeNotes": "Same as alert 1."},
+            None,
+            "Closed in Cortex XSOAR as: Duplicate\nComment: Same as alert 1.",
+        ),
+        ({"closeNotes": "edited notes"}, "False Positive", "Closed in Cortex XSOAR as: False Positive\nComment: edited notes"),
+    ],
+    ids=["reason-and-notes", "notes-only"],
+)
+def test_update_remote_system_alert_already_resolved_close_edit_posts_comment(
+    mocker, delta, close_reason_in_data, expected_comment
+):
+    """
+    Given: a Microsoft alert already resolved (falsePositive), and an analyst edit of the close reason and/or close notes on
+        the closed XSOAR incident, with close_out on (scenario d).
+    When: running update-remote-system.
+    Then: one GET, status=resolved is PATCHed (idempotent), and the new close comment is POSTed with the mirror marker.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
+    args = _update_args(ALERT_ID, delta, "alert", status=2)
+    if close_reason_in_data:
+        args["data"]["closeReason"] = close_reason_in_data
+    update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
+    assert len(_http_calls(http_mock, "GET")) == 1
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": "resolved"}
+    posts = _http_calls(http_mock, "POST")
+    assert len(posts) == 1
+    assert posts[0].kwargs["url_suffix"] == f"security/alerts_v2/{ALERT_ID}/comments"
+    assert posts[0].kwargs["json_data"]["comment"].startswith(expected_comment)
+    assert MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR in posts[0].kwargs["json_data"]["comment"]
+
+
+@pytest.mark.parametrize("remote_status", ["resolved", "active"])
+@pytest.mark.parametrize(
+    "delta",
+    [{"status": "inProgress"}, {"status": "inProgress", "resolvingComment": "n"}, {"status": "active", "closeReason": "Other"}],
+    ids=["status-only", "status-with-notes", "active-with-reason"],
+)
+def test_update_remote_system_closed_incident_explicit_open_status_is_sent(mocker, remote_status, delta):
+    """
+    Given: a closed XSOAR incident (status=2) whose delta holds an explicit non-resolved status, with close_out on, and the
+        Microsoft incident resolved or active (scenarios f, g).
+    When: running update-remote-system.
+    Then: only the explicit status is PATCHed as-is (not overwritten with resolved, not dropped), with no GET, no
+        resolvingComment and no comment POST.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http(remote_status))
+    debug_mock = mocker.patch.object(demisto, "debug")
+    update_remote_system_command(client_mocker, _update_args(INCIDENT_ID, delta, "incident", status=2), MIRROR_PARAMS)
+    assert _http_calls(http_mock, "GET") == []
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": delta["status"]}
+    assert _http_calls(http_mock, "POST") == []
+    assert any("explicit status" in str(c.args[0]) for c in debug_mock.call_args_list)
+
+
+def test_update_remote_system_closed_alert_explicit_open_status_is_sent(mocker):
+    """
+    Given: a closed XSOAR incident mirrored to a resolved alert, whose delta holds the raw alert status field set to
+        inProgress, with close_out on.
+    When: running update-remote-system.
+    Then: status=inProgress is PATCHed, with no GET and no close comment.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
+    delta = {"microsoftgraphsecurityalertstatus": "inProgress"}
+    update_remote_system_command(client_mocker, _update_args(ALERT_ID, delta, "alert", status=2), MIRROR_PARAMS)
+    assert _http_calls(http_mock, "GET") == []
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": "inProgress"}
+    assert _http_calls(http_mock, "POST") == []
+
+
+@pytest.mark.parametrize(
+    "delta",
+    [{"closeReason": "Duplicate", "resolvingComment": "Phishing test"}, {"resolvingComment": "Phishing test"}],
+    ids=["reason-and-notes", "notes-only"],
+)
+def test_update_remote_system_closed_incident_close_edit_close_out_off(mocker, delta):
+    """
+    Given: an analyst close edit on a closed XSOAR incident, mirrored to a resolved Microsoft incident, with close_out off
+        (scenario h).
+    When: running update-remote-system.
+    Then: no close is pushed: no GET, no PATCH, no POST (unchanged behavior).
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
+    params = MIRROR_PARAMS | {"close_out": False}
+    update_remote_system_command(client_mocker, _update_args(INCIDENT_ID, delta, "incident", status=2), params)
+    assert http_mock.call_count == 0
 
 
 @pytest.mark.parametrize("remote_id, mirror_type", [(INCIDENT_ID, "incident"), (ALERT_ID, "alert")])
@@ -4096,95 +4231,84 @@ def test_update_remote_system_no_status_get_when_close_out_would_not_patch(
     assert _http_calls(http_mock, "GET") == []
 
 
-# Labels whose Graph determination name differs between alerts (alertDetermination) and incidents (plus Malware, shared).
-# Used to check the outgoing label split and the incoming mapper alignment, per type.
-TYPE_SPECIFIC_LABELS = [
-    ("True positive - Compromised account", "truePositive", "compromisedUser", "compromisedAccount"),
-    ("Informational - Confirmed activity", "informationalExpectedActivity", "confirmedUserActivity", "confirmedActivity"),
-    ("False positive - Not malicious", "falsePositive", "clean", "notMalicious"),
-    ("False positive - Not enough data to validate", "falsePositive", "insufficientData", "notEnoughDataToValidate"),
-    ("True positive - Malware", "truePositive", "malware", "malware"),
+# All 15 combined labels -> (Graph classification, Graph determination). Alerts and incidents use the same names.
+ALL_CLASSIFICATION_LABELS = [
+    ("Unclassified", "unknown", "unknown"),
+    ("True positive - Multi staged attack", "truePositive", "multiStagedAttack"),
+    ("True positive - Malware", "truePositive", "malware"),
+    ("True positive - Malicious user activity", "truePositive", "maliciousUserActivity"),
+    ("True positive - Unwanted software", "truePositive", "unwantedSoftware"),
+    ("True positive - Phishing", "truePositive", "phishing"),
+    ("True positive - Compromised account", "truePositive", "compromisedAccount"),
+    ("True positive - Other", "truePositive", "other"),
+    ("Informational - Security testing", "informationalExpectedActivity", "securityTesting"),
+    ("Informational - Confirmed activity", "informationalExpectedActivity", "confirmedActivity"),
+    ("Informational - Line of business application", "informationalExpectedActivity", "lineOfBusinessApplication"),
+    ("Informational - Other", "informationalExpectedActivity", "other"),
+    ("False positive - Not malicious", "falsePositive", "notMalicious"),
+    ("False positive - Not enough data to validate", "falsePositive", "notEnoughDataToValidate"),
+    ("False positive - Other", "falsePositive", "other"),
 ]
-# The other labels: the same Graph determination name for alerts and incidents. With TYPE_SPECIFIC_LABELS, all 15 labels.
-SHARED_DETERMINATION_LABELS = [
-    ("Unclassified", "unknown", "unknown", "unknown"),
-    ("True positive - Multi staged attack", "truePositive", "multiStagedAttack", "multiStagedAttack"),
-    ("True positive - Malicious user activity", "truePositive", "maliciousUserActivity", "maliciousUserActivity"),
-    ("True positive - Unwanted software", "truePositive", "unwantedSoftware", "unwantedSoftware"),
-    ("True positive - Phishing", "truePositive", "phishing", "phishing"),
-    ("True positive - Other", "truePositive", "other", "other"),
-    ("Informational - Security testing", "informationalExpectedActivity", "securityTesting", "securityTesting"),
-    (
-        "Informational - Line of business application",
-        "informationalExpectedActivity",
-        "lineOfBusinessApplication",
-        "lineOfBusinessApplication",
-    ),
-    ("Informational - Other", "informationalExpectedActivity", "other", "other"),
-    ("False positive - Other", "falsePositive", "other", "other"),
-]
-ALL_CLASSIFICATION_LABELS = TYPE_SPECIFIC_LABELS + SHARED_DETERMINATION_LABELS
+# Old alert determination names -> current names. Graph rejects the old names on PATCH (HTTP 400), but alerts may still
+# come in with them, so the incoming Alert mapper keeps both.
+LEGACY_ALERT_DETERMINATIONS = {
+    "compromisedUser": "compromisedAccount",
+    "confirmedUserActivity": "confirmedActivity",
+    "clean": "notMalicious",
+    "insufficientData": "notEnoughDataToValidate",
+}
 
 
-@pytest.mark.parametrize("label, classification, alert_determination, incident_determination", TYPE_SPECIFIC_LABELS)
-def test_apply_classification_label_incident(label, classification, alert_determination, incident_determination):
+@pytest.mark.parametrize("label, classification, determination", ALL_CLASSIFICATION_LABELS)
+def test_apply_classification_label(label, classification, determination):
     """
-    Given: a combined Classification label in an incident delta.
+    Given: a combined Classification label in a delta (all 15 labels).
     When: splitting it.
-    Then: it becomes the Graph classification and the incident determination name.
-    """
-    delta = {"classification": label}
-    apply_classification_label(delta, "incident")
-    assert delta == {"classification": classification, "determination": incident_determination}
-
-
-@pytest.mark.parametrize("label, classification, alert_determination, incident_determination", ALL_CLASSIFICATION_LABELS)
-def test_apply_classification_label_alert(label, classification, alert_determination, incident_determination):
-    """
-    Given: a combined Classification label in an alert delta (all 15 labels).
-    When: splitting it.
-    Then: it becomes the Graph classification and the alert determination name (alertDetermination enum), other keys stay.
+    Then: it becomes the Graph classification and the current determination name (the same for alerts and incidents),
+        other keys stay.
     """
     delta = {"classification": label, "status": "new"}
-    apply_classification_label(delta, "alert")
-    assert delta == {"classification": classification, "determination": alert_determination, "status": "new"}
+    apply_classification_label(delta)
+    assert delta == {"classification": classification, "determination": determination, "status": "new"}
+    assert delta["determination"] not in LEGACY_ALERT_DETERMINATIONS
 
 
-@pytest.mark.parametrize(
-    "determination, mirror_type, expected",
-    [
-        ("compromisedAccount", "alert", "compromisedUser"),
-        ("confirmedActivity", "alert", "confirmedUserActivity"),
-        ("notMalicious", "alert", "clean"),
-        ("notEnoughDataToValidate", "alert", "insufficientData"),
-        ("malware", "alert", "malware"),
-        ("compromisedAccount", "incident", "compromisedAccount"),
-        ("confirmedActivity", "incident", "confirmedActivity"),
-        ("notMalicious", "incident", "notMalicious"),
-        ("notEnoughDataToValidate", "incident", "notEnoughDataToValidate"),
-        ("malware", "incident", "malware"),
-    ],
-)
-def test_to_graph_determination(determination, mirror_type, expected):
+def test_apply_classification_label_non_label_unchanged():
     """
-    Given: an incident-style Graph determination name and the mirror type.
-    When: converting it to the Graph determination of the object type.
-    Then: alerts use the alertDetermination names for the 4 values that differ; incidents and other values are unchanged.
+    Given: a delta whose classification is already a Graph value, not a combined label.
+    When: splitting it.
+    Then: the delta is left unchanged.
     """
-    assert to_graph_determination(determination, mirror_type) == expected
+    delta = {"classification": "truePositive", "determination": "malware"}
+    apply_classification_label(delta)
+    assert delta == {"classification": "truePositive", "determination": "malware"}
 
 
 def test_update_remote_system_alert_close_out_with_label_change_sends_classification(mocker):
     """
     Given: an alert close where the classification field also changed to "False positive - Not malicious".
     When: running update-remote-system with close_out on.
-    Then: the alert PATCH sends status=resolved and the split label (alert determination `clean`).
+    Then: the alert PATCH sends status=resolved and the split label (determination `notMalicious`).
     """
     http_mock = _patch_http(mocker)
     delta = {"closeReason": "Resolved", "classification": "False positive - Not malicious"}
     update_remote_system_command(client_mocker, _update_args(ALERT_ID, delta, "alert", status=2), MIRROR_PARAMS)
     body = _http_calls(http_mock, "PATCH")[0].kwargs["json_data"]
-    assert body == {"status": "resolved", "classification": "falsePositive", "determination": "clean"}
+    assert body == {"status": "resolved", "classification": "falsePositive", "determination": "notMalicious"}
+
+
+def test_update_remote_system_alert_not_enough_data_sends_current_determination(mocker):
+    """
+    Given: an open alert whose delta sets the label "False positive - Not enough data to validate".
+    When: running update-remote-system.
+    Then: the alerts_v2 PATCH sends `determination: notEnoughDataToValidate`, not the rejected `insufficientData`.
+    """
+    http_mock = _patch_http(mocker)
+    delta = {"classification": "False positive - Not enough data to validate"}
+    update_remote_system_command(client_mocker, _update_args(ALERT_ID, delta, "alert"), MIRROR_PARAMS)
+    patch_call = _http_calls(http_mock, "PATCH")[0]
+    assert patch_call.kwargs["url_suffix"] == f"security/alerts_v2/{ALERT_ID}"
+    assert patch_call.kwargs["json_data"] == {"classification": "falsePositive", "determination": "notEnoughDataToValidate"}
 
 
 def test_update_remote_system_incident_classification_label(mocker):
@@ -4216,19 +4340,33 @@ def _mapper_classification_pairs(section: str) -> tuple[list[str], list[str]]:
     return inputs, outputs
 
 
-@pytest.mark.parametrize("section, determination_index", [("Graph Security Alert", 2), ("Graph Security Incident", 3)])
-def test_incoming_mapper_classification_per_type(section, determination_index):
+@pytest.mark.parametrize("section, expected_count", [("Graph Security Alert", 19), ("Graph Security Incident", 15)])
+def test_incoming_mapper_classification_per_type(section, expected_count):
     """
     Given: the incoming mapper Classification rule of the Alert and Incident sections.
     When: reading its MapValuesTransformer inputs/outputs.
-    Then: both have 15 aligned items, and each type uses its own Graph determination names for the same labels.
+    Then: inputs and outputs are aligned with no duplicate inputs (15 for incidents, 15 + 4 old names for alerts),
+        and every current "classification|determination" pair maps to its label.
     """
     inputs, outputs = _mapper_classification_pairs(section)
-    assert len(inputs) == len(outputs) == 15
-    pairs = dict(zip(outputs, inputs))
-    for row in TYPE_SPECIFIC_LABELS:
-        label, classification = row[0], row[1]
-        assert pairs[label] == f"{classification}|{row[determination_index]}"
+    assert len(inputs) == len(outputs) == expected_count
+    assert len(set(inputs)) == len(inputs)
+    pairs = dict(zip(inputs, outputs))
+    for label, classification, determination in ALL_CLASSIFICATION_LABELS:
+        assert pairs[f"{classification}|{determination}"] == label
+
+
+@pytest.mark.parametrize("legacy_determination, current_determination", LEGACY_ALERT_DETERMINATIONS.items())
+def test_incoming_alert_mapper_maps_old_and_new_names_to_same_label(legacy_determination, current_determination):
+    """
+    Given: the incoming mapper Classification rule of the Alert section.
+    When: looking up an alert that comes in with the old or the current determination name.
+    Then: both names map to the same Classification label.
+    """
+    inputs, outputs = _mapper_classification_pairs("Graph Security Alert")
+    pairs = dict(zip(inputs, outputs))
+    classification = next(c for _, c, d in ALL_CLASSIFICATION_LABELS if d == current_determination)
+    assert pairs[f"{classification}|{legacy_determination}"] == pairs[f"{classification}|{current_determination}"]
 
 
 def test_new_incoming_mapper_metadata_and_sections():
@@ -4995,7 +5133,7 @@ def test_build_patch_body_incident_sends_all_statuses(status):
             "alert",
             ALERT_ID,
             {"microsoftgraphsecurityclassification": "False positive - Not malicious"},
-            {"classification": "falsePositive", "determination": "clean"},
+            {"classification": "falsePositive", "determination": "notMalicious"},
         ),
     ],
     ids=[

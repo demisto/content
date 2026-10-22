@@ -68,6 +68,8 @@ CLOSE_COMMENT_REASON_PREFIX = "Closed in Cortex XSOAR as: "
 CLOSE_COMMENT_NOTES_PREFIX = "Comment: "
 # The close comment sent when the XSOAR incident is closed without a close reason or close notes.
 DEFAULT_CLOSE_COMMENT = "Closed in Cortex XSOAR."
+# The XSOAR close notes set by incoming mirroring when the resolved Microsoft object has no resolvingComment.
+INCOMING_DEFAULT_CLOSE_NOTES = "Resolved in Microsoft Graph Security."
 # Graph's placeholder enum member; it may be shown in XSOAR select fields but is never sent in a PATCH.
 UNKNOWN_FUTURE_VALUE = "unknownFutureValue"
 UNKNOWN_FUTURE_VALUE_KEYS = {"status", "classification", "determination"}
@@ -83,8 +85,8 @@ XSOAR_TO_GRAPH_SEVERITY = {
 }
 GRAPH_SEVERITY_VALUES = set(XSOAR_TO_GRAPH_SEVERITY.values())
 
-# Combined "classification - determination" label (as shown in the Defender UI) -> Graph incident (classification,
-# determination). Used for outgoing alerts and incidents: alerts rename 4 determinations (ALERT_DETERMINATION_OVERRIDES).
+# Combined "classification - determination" label (as shown in the Defender UI) -> Graph (classification, determination).
+# Used for outgoing alerts and incidents: both use the same determination names.
 CLASSIFICATION_LABEL_TO_GRAPH = {
     "Unclassified": ("unknown", "unknown"),
     "True positive - Multi staged attack": ("truePositive", "multiStagedAttack"),
@@ -101,14 +103,6 @@ CLASSIFICATION_LABEL_TO_GRAPH = {
     "False positive - Not malicious": ("falsePositive", "notMalicious"),
     "False positive - Not enough data to validate": ("falsePositive", "notEnoughDataToValidate"),
     "False positive - Other": ("falsePositive", "other"),
-}
-# Incident determination -> alert determination, for the 4 values whose Graph enum name differs on alerts_v2
-# (alertDetermination). Must match the Alert section of the incoming mapper.
-ALERT_DETERMINATION_OVERRIDES = {
-    "compromisedAccount": "compromisedUser",
-    "confirmedActivity": "confirmedUserActivity",
-    "notMalicious": "clean",
-    "notEnoughDataToValidate": "insufficientData",
 }
 
 MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON = {
@@ -3106,7 +3100,7 @@ def infer_mirror_type(remote_id: str, type_hint: str | None = None) -> str:
 
 def normalize_get_remote_data_args(args: dict) -> tuple[dict, str | None]:
     """
-    Maps `id`/`lastUpdate` or the aliases `incident_id`/`alert_id`/`last_update` to GetRemoteDataArgs format.
+    Maps `id`/`lastUpdate` or the aliases `incident_id`/`alert_id` to GetRemoteDataArgs format.
     Returns (normalized args, type hint from the alias used).
     """
     type_hint: str | None = None
@@ -3115,7 +3109,7 @@ def normalize_get_remote_data_args(args: dict) -> tuple[dict, str | None]:
         remote_id, type_hint = args.get("incident_id"), MIRROR_TYPE_INCIDENT
     elif not remote_id and args.get("alert_id"):
         remote_id, type_hint = args.get("alert_id"), MIRROR_TYPE_ALERT
-    last_update = args.get("lastUpdate") or args.get("last_update") or "0"
+    last_update = args.get("lastUpdate") or "0"
     return {"id": remote_id or "", "lastUpdate": last_update}, type_hint
 
 
@@ -3143,7 +3137,7 @@ def fetch_mirrored_object(client: MsGraphClient, remote_id: str, mirror_type: st
 def get_close_entry(mirrored_object: dict) -> dict:
     """Builds the XSOAR close entry for a resolved Graph alert/incident."""
     classification = mirrored_object.get("classification") or "unknown"
-    close_notes = mirrored_object.get("resolvingComment") or "Resolved in Microsoft Graph Security."
+    close_notes = mirrored_object.get("resolvingComment") or INCOMING_DEFAULT_CLOSE_NOTES
     return {
         "Type": EntryType.NOTE,
         "Contents": {
@@ -3296,9 +3290,8 @@ def get_remote_data_command(
 def get_modified_remote_data_command(client: MsGraphClient, args: dict, params: dict) -> GetModifiedRemoteDataResponse:
     """
     Returns the IDs of the alerts and/or incidents (per `fetch_incidents_type`) modified since `lastUpdate`.
-    `last_update` is accepted as an alias of `lastUpdate` (for manual debugging).
     """
-    remote_args = GetModifiedRemoteDataArgs({"lastUpdate": args.get("lastUpdate") or args.get("last_update")})
+    remote_args = GetModifiedRemoteDataArgs({"lastUpdate": args.get("lastUpdate")})
     parsed_date = to_utc_datetime(remote_args.last_update)
     if not parsed_date:
         # Raised (not an empty list) so return_error adds "skip update" and the server keeps the same lastUpdate.
@@ -3327,23 +3320,15 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def to_graph_determination(determination: str, mirror_type: str) -> str:
-    """Returns the Graph determination name of the object type: alerts rename the 4 values that differ on alerts_v2."""
-    if mirror_type == MIRROR_TYPE_ALERT:
-        return ALERT_DETERMINATION_OVERRIDES.get(determination, determination)
-    return determination
-
-
-def apply_classification_label(delta: dict, mirror_type: str) -> None:
+def apply_classification_label(delta: dict) -> None:
     """
-    Translates a combined classification label (e.g. 'True positive - Malware') into the Graph classification and the
-    determination name of the object type (alert or incident). A value that isn't a label is left unchanged.
+    Translates a combined classification label (e.g. 'True positive - Malware') into the Graph classification and
+    determination. Alerts and incidents use the same determination names. A value that isn't a label is left unchanged.
     """
     label = delta.get("classification")
-    if label in CLASSIFICATION_LABEL_TO_GRAPH:
-        classification, determination = CLASSIFICATION_LABEL_TO_GRAPH[label]
-        delta["classification"] = classification
-        delta["determination"] = to_graph_determination(determination, mirror_type)
+    if label not in CLASSIFICATION_LABEL_TO_GRAPH:
+        return
+    delta["classification"], delta["determination"] = CLASSIFICATION_LABEL_TO_GRAPH[label]
 
 
 def format_close_comment(close_reason: str | None, close_notes: str | None) -> str | None:
@@ -3362,12 +3347,13 @@ def format_close_comment(close_reason: str | None, close_notes: str | None) -> s
     return f"{comment}\n{CLOSE_COMMENT_NOTES_PREFIX}{close_notes}" if close_notes else comment
 
 
-def apply_close_out(delta: dict, mirror_type: str, data: dict | None) -> str | None:
+def apply_close_out(delta: dict, mirror_type: str, data: dict | None, post_alert_comment: bool = False) -> str | None:
     """
     Sets status=resolved and the close comment (incident `resolvingComment`, alert comment). The classification is never
     set here: it is sent only when the Microsoft Graph Security Classification field itself changes.
-    Returns the alert close comment to POST, only for a new close (closeReason in the delta). A close notes edit on an
-    already closed alert posts nothing, so the close comment isn't duplicated.
+    Returns the alert close comment to POST for a new close (closeReason in the delta), or when `post_alert_comment` is set
+    (a close edit of an alert already resolved in Microsoft). Otherwise a close notes edit on an already closed alert
+    posts nothing, so the close comment isn't duplicated.
     """
     is_new_close = bool(delta.get("closeReason"))
     # The delta doesn't hold closeReason on a close notes edit, so the data is checked too (for the comment).
@@ -3376,7 +3362,7 @@ def apply_close_out(delta: dict, mirror_type: str, data: dict | None) -> str | N
     demisto.debug(f"[Mirroring] Closing out the remote {mirror_type} (close reason: {close_reason}, new close: {is_new_close}).")
     close_notes = format_close_comment(close_reason, delta.get("closeNotes") or delta.get("resolvingComment"))
     if mirror_type != MIRROR_TYPE_INCIDENT:
-        return close_notes if is_new_close else None
+        return close_notes if (is_new_close or post_alert_comment) else None
     if close_notes:
         delta["resolvingComment"] = close_notes
     return None
@@ -3422,12 +3408,12 @@ def is_close_out_needed(delta: dict, inc_status: Any, data: dict | None) -> bool
     return any(delta.get(key) for key in CLOSE_OUT_KEYS) or (data or {}).get("status") != GRAPH_RESOLVED_STATUS
 
 
-def is_remote_already_resolved(client: MsGraphClient, remote_id: str, mirror_type: str) -> bool:
+def get_resolved_remote_object(client: MsGraphClient, remote_id: str, mirror_type: str) -> dict | None:
     """
-    GETs the remote alert/incident and returns True when its status is already resolved.
+    GETs the remote alert/incident and returns it when its status is already resolved, otherwise None.
     The outgoing data isn't used: its status comes from the XSOAR status field, which can be stale right after incoming
     mirroring closed the XSOAR incident. HTTP 429 is raised ("API rate limit"); any other failure is logged and returns
-    False, so the close-out isn't blocked.
+    None, so the close-out isn't blocked.
     """
     try:
         remote_object = client.mirror_get(url_suffix=f"{MIRROR_OBJECT_URL[mirror_type]}/{remote_id}")
@@ -3435,8 +3421,35 @@ def is_remote_already_resolved(client: MsGraphClient, remote_id: str, mirror_typ
         if is_rate_limit_error(e):  # mirror_get keeps the 429 response on its "API rate limit" error
             raise
         demisto.debug(f"[Mirroring] Failed to get the remote status of {mirror_type} {remote_id}, closing out anyway: {e!s}")
-        return False
-    return isinstance(remote_object, dict) and remote_object.get("status") == GRAPH_RESOLVED_STATUS
+        return None
+    if isinstance(remote_object, dict) and remote_object.get("status") == GRAPH_RESOLVED_STATUS:
+        return remote_object
+    return None
+
+
+def normalize_close_text(text: Any) -> str:
+    """Collapses whitespace, so close texts that differ only in spaces or newlines compare equal."""
+    return " ".join(str(text or "").split())
+
+
+def get_changed_close_fields(delta: dict, remote_object: dict) -> list[str]:
+    """
+    Returns the close fields that the delta changes compared to the resolved remote object ("close notes", "close reason").
+    An empty list means the XSOAR close only echoes the close that incoming mirroring brought from Microsoft:
+    - close notes are new when they differ from the remote resolvingComment, and aren't INCOMING_DEFAULT_CLOSE_NOTES
+      (set by incoming mirroring when the remote object has no resolvingComment). Whitespace is ignored.
+    - the close reason is new when it differs from the one incoming mirroring maps from the remote classification.
+    """
+    changed_fields = []
+    close_notes = normalize_close_text(delta.get("closeNotes") or delta.get("resolvingComment"))
+    remote_comment = normalize_close_text(remote_object.get("resolvingComment"))
+    if close_notes and close_notes not in (remote_comment, INCOMING_DEFAULT_CLOSE_NOTES):
+        changed_fields.append("close notes")
+    remote_classification = remote_object.get("classification") or "unknown"
+    remote_close_reason = MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON.get(remote_classification, "Other")
+    if delta.get("closeReason") and delta["closeReason"] != remote_close_reason:
+        changed_fields.append("close reason")
+    return changed_fields
 
 
 def skip_close_out_of_resolved_remote(delta: dict, remote_id: str, mirror_type: str) -> None:
@@ -3444,9 +3457,54 @@ def skip_close_out_of_resolved_remote(delta: dict, remote_id: str, mirror_type: 
     delta.pop("status", None)
     delta.pop("resolvingComment", None)
     demisto.debug(
-        f"[Mirroring] The remote {mirror_type} {remote_id} is already resolved in Microsoft; skipping the close-out "
-        "(no status, resolvingComment or close comment is sent). Other field changes are still sent."
+        f"[Mirroring] The remote {mirror_type} {remote_id} is already resolved in Microsoft and the XSOAR close reason and "
+        "close notes match it (echo of the incoming close); skipping the close-out (no status, resolvingComment or close "
+        "comment is sent). Other field changes are still sent."
     )
+
+
+def keep_explicit_open_status(delta: dict, inc_status: Any, remote_id: str, mirror_type: str) -> bool:
+    """
+    True when the XSOAR incident is closed but the delta holds an explicit non-resolved status (e.g. inProgress).
+    The status is then sent as-is, without a close-out (no status=resolved, resolvingComment or close comment).
+    """
+    is_closed = inc_status is not None and arg_to_number(inc_status) == IncidentStatus.DONE
+    explicit_status = delta.get("status")
+    if not is_closed or not explicit_status or explicit_status in (GRAPH_RESOLVED_STATUS, UNKNOWN_FUTURE_VALUE):
+        return False
+    delta.pop("resolvingComment", None)
+    demisto.debug(
+        f"[Mirroring] The XSOAR incident is closed, but the delta holds the explicit status '{explicit_status}'; sending it "
+        f"to the remote {mirror_type} {remote_id} without a close-out."
+    )
+    return True
+
+
+def handle_mirror_out_status(
+    client: MsGraphClient, remote_id: str, mirror_type: str, delta: dict, remote_args: UpdateRemoteSystemArgs
+) -> str | None:
+    """
+    Applies an explicit status, the close-out or the reopen (close_out on). Returns alert close notes to POST, if any.
+    When the remote object is already resolved (one GET, only when close-out would PATCH), the close-out is skipped only
+    if the XSOAR close reason and close notes match it (M2 echo); otherwise the changed close is sent.
+    """
+    inc_status, data = remote_args.inc_status, remote_args.data
+    if keep_explicit_open_status(delta, inc_status, remote_id, mirror_type):
+        return None
+    if not is_close_out_needed(delta, inc_status, data):
+        return handle_close_out_or_reopen(delta, inc_status, mirror_type, data)
+    remote_object = get_resolved_remote_object(client, remote_id, mirror_type)
+    if remote_object is None:
+        return handle_close_out_or_reopen(delta, inc_status, mirror_type, data)
+    changed_fields = get_changed_close_fields(delta, remote_object)
+    if not changed_fields:
+        skip_close_out_of_resolved_remote(delta, remote_id, mirror_type)
+        return None
+    demisto.debug(
+        f"[Mirroring] The remote {mirror_type} {remote_id} is already resolved in Microsoft, but the XSOAR {changed_fields} "
+        "changed (not an echo of the incoming close); sending the close-out."
+    )
+    return apply_close_out(delta, mirror_type, data, post_alert_comment=True)
 
 
 def handle_close_out_or_reopen(delta: dict, inc_status: Any, mirror_type: str, data: dict | None) -> str | None:
@@ -3606,19 +3664,12 @@ def update_remote_fields(
         delta.pop("status", None)
         delta.pop("resolvingComment", None)
     elif argToBoolean(params.get("close_out", False)):
-        # M2: when the remote object was resolved in Microsoft (and incoming mirroring closed the XSOAR incident), the
-        # close-out must not overwrite its resolvingComment or post a close comment. One GET, only when close-out would PATCH.
-        if is_close_out_needed(delta, remote_args.inc_status, remote_args.data) and is_remote_already_resolved(
-            client, remote_id, mirror_type
-        ):
-            skip_close_out_of_resolved_remote(delta, remote_id, mirror_type)
-        else:
-            alert_close_notes = handle_close_out_or_reopen(delta, remote_args.inc_status, mirror_type, remote_args.data)
+        alert_close_notes = handle_mirror_out_status(client, remote_id, mirror_type, delta, remote_args)
     else:
         # The outgoing mapper maps closeNotes to resolvingComment: with close_out off, the open Microsoft incident
         # must not get a closing comment.
         delta.pop("resolvingComment", None)
-    apply_classification_label(delta, mirror_type)
+    apply_classification_label(delta)
     body = build_patch_body(delta, mirror_type)
     cleared_keys = sorted(key for key, value in body.items() if value in EMPTY_PATCH_VALUES)
     if cleared_keys:
