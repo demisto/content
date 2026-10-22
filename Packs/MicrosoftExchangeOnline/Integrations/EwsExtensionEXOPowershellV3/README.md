@@ -170,8 +170,7 @@ When running a command, you receive an error similar to:
 *“The term `cmdlet` is not recognized as a name of a cmdlet, function, script file, or executable program…”*
 
 **Solution:**
-Make sure the **service principal of the Microsoft Entra application used by the integration** has sufficient **Exchange Online permissions**.
-Refer to **Step 3: Assign Exchange Online Permissions** above to confirm the correct roles are assigned.
+This error means the application does not have sufficient Exchange Online permissions to run the command. Verify that you completed one of the options in **Step 3: Assign Exchange Online Permissions** above. If the error persists, try the other option.
 
 ## Commands
 
