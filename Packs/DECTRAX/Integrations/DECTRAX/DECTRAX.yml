@@ -1,0 +1,83 @@
+category: Network Security
+commonfields:
+  id: DECTRAX
+  version: -1
+configuration:
+- defaultvalue: https://api.dectrax.com
+  display: Server URL (e.g. https://api.dectrax.com)
+  name: url
+  required: true
+  type: 0
+- display: API Key / Bearer Token
+  name: apikey
+  required: false
+  type: 4
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Autonomous Cyber Deception & Line-Rate Firewall Interdiction Platform.
+display: DECTRAX
+name: DECTRAX
+script:
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: '100'
+      description: Maximum number of blocked IPs to retrieve.
+      name: limit
+    description: Ingests the active list of blocked threat actors from the DECTRAX firewall External Dynamic List (EDL).
+    name: dectrax-get-blocked-ips
+    outputs:
+    - contextPath: DECTRAX.BlockedIP.IP
+      description: The blocked IP address.
+      type: String
+    - contextPath: DECTRAX.BlockedIP.Source
+      description: Intelligence source (e.g., EDL).
+      type: String
+    - contextPath: DECTRAX.BlockedIP.Timestamp
+      description: The timestamp of evaluation.
+      type: Date
+  - arguments:
+    - default: true
+      description: The IP address to check against DECTRAX deception telemetry and active firewall blocklists.
+      name: ip
+      required: true
+    description: Query DECTRAX threat telemetry and firewall blocklists to evaluate if an IP is malicious.
+    name: dectrax-check-ip
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was evaluated.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type (ip).
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor evaluating the score (DECTRAX).
+      type: String
+    - contextPath: DBotScore.Score
+      description: The DBot score (0=Unknown, 1=Good, 2=Suspicious, 3=Bad).
+      type: Number
+    - contextPath: DECTRAX.IP.Address
+      description: The evaluated IP address.
+      type: String
+    - contextPath: DECTRAX.IP.Blocked
+      description: Whether the IP address is actively blocked in the firewall EDL.
+      type: Boolean
+    - contextPath: DECTRAX.IP.Interactions
+      description: Number of logged decoy interactions.
+      type: Number
+  dockerimage: demisto/python3:3.10.13.83279
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
