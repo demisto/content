@@ -12,6 +12,8 @@ from urllib3 import disable_warnings
 
 disable_warnings()  # pylint: disable=no-member
 
+# Test comment - no behavioral change (used to verify test playbook baseline).
+
 """ CONSTANTS """
 
 VENDOR = "qualys"
