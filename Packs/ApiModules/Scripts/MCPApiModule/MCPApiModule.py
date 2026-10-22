@@ -14,7 +14,11 @@ from mcp.client.streamable_http import streamable_http_client
 from typing import Any
 import base64
 from base64 import b64encode
-import httpx
+
+# mcp 2.0 replaced its httpx dependency with httpx2. The two libraries are not
+# interchangeable at runtime, so the client handed to streamable_http_client must be an
+# httpx2 client. httpx2 is API-compatible with httpx, so it is used throughout.
+import httpx2
 
 from urllib.parse import urlparse, urlunparse
 
@@ -167,7 +171,7 @@ def get_client_metadata(redirect_uri: str) -> dict[str, Any]:
 class OAuthHandler:
     """
     Handles OAuth 2.0 flows, discovery, and client registration.
-    Uses httpx.AsyncClient for token operations.
+    Uses httpx2.AsyncClient for token operations.
     """
 
     def __init__(
@@ -190,7 +194,7 @@ class OAuthHandler:
         self.auth_code = auth_code
         self.redirect_uri = redirect_uri
         self.verify = verify
-        self.session = httpx.AsyncClient(timeout=5, verify=verify)
+        self.session = httpx2.AsyncClient(timeout=5, verify=verify)
         self.command_prefix = command_prefix
 
     async def close(self):
@@ -260,8 +264,7 @@ class OAuthHandler:
                 return client_id, client_secret
             else:
                 raise DemistoException(
-                    f"Failed to register OAuth client: Received status code {response.status_code}, "
-                    f"and response: {response.text}"
+                    f"Failed to register OAuth client: Received status code {response.status_code}, and response: {response.text}"
                 )
         except Exception as e:
             demisto.error(f"Error registering OAuth client: {str(e)}")
@@ -296,7 +299,7 @@ class OAuthHandler:
             # Add optional state parameter for CSRF protection
             params["state"] = state
 
-        query_string = str(httpx.QueryParams(params))
+        query_string = str(httpx2.QueryParams(params))
         authorization_url = f"{authorization_endpoint}?{query_string}"
         demisto.debug(f"Generated authorization URL: {authorization_url}")
         return authorization_url
@@ -408,7 +411,7 @@ class OAuthHandler:
             response = await self.session.post(token_endpoint, data=payload, headers=FORM_URLENCODED_HEADERS)
             response.raise_for_status()
             result = response.json()
-        except httpx.HTTPStatusError as e:
+        except httpx2.HTTPStatusError as e:
             error_details = f"HTTP Error: {e.response.status_code}. Response: {e.response.text}"
             demisto.error(error_details)
             raise DemistoException(f"Failed to obtain/refresh token. {error_details}")
@@ -423,6 +426,64 @@ class OAuthHandler:
 
 
 # --- Client Class (MCP and Authentication Orchestration) ---
+
+
+def _flatten_nullable_type(schema: dict[str, Any]) -> dict[str, Any]:
+    """Return the schema with a list-valued JSON Schema "type" replaced by the single real type it names, or left out.
+
+    ["string", "null"] becomes "string", because "null" only marks the value as optional. A list that names no real
+    type (["null"]) or several (["string", "number"]) loses its "type", since picking one would be a guess. The
+    server stores a field without a type as unknown. Any other form (a plain string, anyOf, oneOf) is returned as is.
+    The given schema is never modified.
+    """
+    declared = schema.get("type")
+    if not isinstance(declared, list):
+        return schema
+    real_types = {entry for entry in declared if isinstance(entry, str) and entry != "null"}
+    single_type = next(iter(real_types)) if len(real_types) == 1 else None
+    return {key: single_type if key == "type" else value for key, value in schema.items() if key != "type" or single_type}
+
+
+def _normalize_property(name: str, prop: Any, is_output: bool) -> Any:
+    """Return the property with a readable type and, for an output property, a description. The input is not modified."""
+    if not isinstance(prop, dict):
+        return prop
+    prop = _flatten_nullable_type(prop)
+    if is_output and not prop.get("description"):
+        title = prop.get("title")
+        prop = {**prop, "description": title if isinstance(title, str) and title else name}
+    return prop
+
+
+def _normalize_schema(schema: dict[str, Any], is_output: bool) -> dict[str, Any]:
+    """Return the schema with its own type and each of its direct properties normalized. The input is not modified."""
+    schema = _flatten_nullable_type(schema)
+    properties = schema.get("properties")
+    if not isinstance(properties, dict):
+        return schema
+    return {**schema, "properties": {name: _normalize_property(name, prop, is_output) for name, prop in properties.items()}}
+
+
+# Workaround for MCP servers whose tool schemas are valid but not readable by the platform's tool discovery.
+# The platform-side fix is tracked in CRTX-289860. Once it ships, this normalization becomes redundant and should be removed.
+def normalize_tool_schemas(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Return the list-tools output in a form the platform's MCP tool discovery can read. The input is not modified.
+
+    The platform reads every property "type" as a single string, so one nullable type such as ["string", "null"]
+    makes it drop the whole server's tool list. It also rejects an output property that has no description.
+    Only these two cases are changed; schemas the platform already reads are returned as they are.
+    """
+    return [
+        {
+            **tool,
+            **{
+                key: _normalize_schema(tool[key], is_output=key == "outputSchema")
+                for key in ("inputSchema", "outputSchema")
+                if isinstance(tool.get(key), dict)
+            },
+        }
+        for tool in tools
+    ]
 
 
 class Client:
@@ -571,17 +632,13 @@ class Client:
         """
         headers = await self._resolve_headers()
         async with (
-            httpx.AsyncClient(headers=headers, verify=self.verify) as custom_httpx_client,
-            streamable_http_client(url=self.base_url, http_client=custom_httpx_client) as (
-                read_stream,
-                write_stream,
-                _,
-            ),
+            httpx2.AsyncClient(headers=headers, verify=self.verify) as custom_httpx_client,
+            streamable_http_client(url=self.base_url, http_client=custom_httpx_client) as (read_stream, write_stream),
             ClientSession(read_stream, write_stream) as session,  # pylint: disable=E0601
         ):
             # Initialize the connection
             init = await session.initialize()
-            yield session, init.serverInfo.name
+            yield session, init.server_info.name
 
     async def test_connection(self, auth_test: bool = False):
         async with self._get_session():
@@ -599,8 +656,9 @@ class Client:
         readable_output = f"{server_name} has {len(tool_names)} available tools:\n{tool_names}"
         demisto.debug(f"Available tools: {tool_names}")
 
-        tools_dump = tools.model_dump(mode="json")
-        outputs = {"server_name": server_name, "Tools": tools_dump.get("tools", [])}
+        # by_alias keeps the camelCase wire names (inputSchema, not input_schema).
+        tools_dump = tools.model_dump(mode="json", by_alias=True)
+        outputs = {"server_name": server_name, "Tools": normalize_tool_schemas(tools_dump.get("tools", []))}
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix="ListTools",
@@ -616,17 +674,19 @@ class Client:
         async with self._get_session() as (session, server_name):
             result = await session.call_tool(tool_name, parsed_arguments)
 
-        result_dump = result.model_dump(mode="json")
+        # by_alias keeps the camelCase wire names (isError, not is_error).
+        result_dump = result.model_dump(mode="json", by_alias=True)
         result_content = result_dump.get("content", [])
+        is_error = result.is_error
         readable_output = tableToMarkdown(
-            f"Tool Execution on {server_name}: '{tool_name}'{' failed' if result.isError else ''}", result_content
+            f"Tool Execution on {server_name}: '{tool_name}'{' failed' if is_error else ''}", result_content
         )
 
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix="CallTool.Tool",
             outputs=result_content,
-            entry_type=EntryType.NOTE if not result.isError else EntryType.ERROR,
+            entry_type=EntryType.NOTE if not is_error else EntryType.ERROR,
         )
 
 
