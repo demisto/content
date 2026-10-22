@@ -271,7 +271,7 @@ def validate_authorization_response(received: dict[str, str], integration_contex
         demisto.info(
             "Only an authorization code was provided, so CSRF (state) and authorization server "
             "mix-up (iss) protections could not be verified. Paste the full redirect URL from "
-            "your browser into the Authorization code parameter to enable them. Support for "
+            "your browser into the Redirect URL or Authorization Code parameter to enable them. Support for "
             "bare authorization codes is deprecated and will be removed in a future version."
         )
         return
@@ -947,13 +947,13 @@ async def generate_login_url(
         "  You will be automatically redirected to a link with the following structure:\n"
         f"  ```{redirect_structure}```\n"
         "2. Copy the **entire URL** from your browser's address bar and paste it "
-        "in the instance configuration under the **Authorization code** parameter.\n"
+        "in the instance configuration under the **Redirect URL or Authorization Code** parameter.\n"
         f"  Pasting the full URL lets Cortex verify the {verified_params}.\n"
         f"  Pasting only the `AUTH_CODE` still works, but {verification_noun} skipped, and "
         "support for it is deprecated and will be removed in a future version.\n"
         "3. Save the instance configuration.\n"
         "  **IMPORTANT NOTE**: Authentication code is time-sensitive and expires quickly.\n"
-        "  Please copy the Authorization code to the instance configuration "
+        "  Please copy the redirect URL to the instance configuration "
         "within a short time frame after generating the login URL.\n\n"
         f"4. To check connectivity, run the **!{oauth_handler.command_prefix}-auth-test** command."
     )

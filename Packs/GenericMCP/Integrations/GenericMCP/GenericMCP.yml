@@ -34,7 +34,7 @@ configuration:
     section: Connect
   - name: auth_code
     type: 9
-    displaypassword: Authorization code
+    displaypassword: Redirect URL or Authorization Code
     hiddenusername: true
     section: Connect
     additionalinfo: |

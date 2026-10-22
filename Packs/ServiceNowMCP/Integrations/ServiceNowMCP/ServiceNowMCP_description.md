@@ -19,5 +19,5 @@ This integration connects securely with a ServiceNow Model Context Protocol (MCP
 3. Enter the **Client ID** and **Client Secret** from the OAuth Inbound Integration.
 4. Save the integration instance.
 5. Run the command `!servicenow-mcp-generate-login-url` from the Playground and follow the instructions to authenticate.
-6. Copy the generated **Authorization code** into the integration instance and save.
+6. Copy the full redirect URL from your browser's address bar into the **Redirect URL or Authorization Code** parameter and save.
 7. Run the command `!servicenow-mcp-auth-test` from the Playground to verify connectivity.

@@ -34,7 +34,7 @@ configuration:
       The Client ID and Client Secret from the OAuth Inbound Integration created on the ServiceNow instance.
   - name: auth_code
     type: 9
-    displaypassword: Authorization code
+    displaypassword: Redirect URL or Authorization Code
     hiddenusername: true
     section: Connect
     additionalinfo: |
