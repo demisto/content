@@ -35,7 +35,7 @@ configuration:
   additionalinfo: Used for troubleshooting purposes.
   required: false
   section: Connect
-- additionalinfo: Reliability of the source providing the intelligence data.
+- additionalinfo: The reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
   name: integrationReliability
