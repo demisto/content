@@ -255,6 +255,16 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-appservice-webapp-update",
         "azure-appservice-webapp-update-quick-action",
     ],
+    "Microsoft.DBforPostgreSQL/flexibleServers/configurations/write": [
+        "azure-postgres-flexible-server-configuration-update",
+        "azure-postgres-flexible-server-set-disconnection-logging-quick-action",
+        "azure-postgres-flexible-server-set-checkpoint-logging-quick-action",
+        "azure-postgres-flexible-server-set-connection-throttling-quick-action",
+        "azure-postgres-flexible-server-set-session-connection-logging-quick-action",
+        "azure-postgres-flexible-server-set-log-retention-period-quick-action",
+        "azure-postgres-flexible-server-set-statement-logging-quick-action",
+        "azure-postgres-flexible-server-set-secure-transport-quick-action",
+    ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": [
         "azure-mysql-flexible-server-param-set",
         "azure-mysql-set-secure-transport-quick-action",
@@ -513,6 +523,7 @@ API_FUNCTION_TO_PERMISSIONS = {
         "Microsoft.DBforPostgreSQL/servers/configurations/write",
     ],
     "postgres_server_update": ["Microsoft.DBforPostgreSQL/servers/read", "Microsoft.DBforPostgreSQL/servers/write"],
+    "postgres_flexible_server_configuration_update": ["Microsoft.DBforPostgreSQL/flexibleServers/configurations/write"],
     "sql_db_threat_policy_update": [
         "Microsoft.Sql/servers/databases/securityAlertPolicies/read",
         "Microsoft.Sql/servers/databases/securityAlertPolicies/write",
@@ -673,6 +684,7 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.DBforPostgreSQL/servers/write",
     "Microsoft.DBforPostgreSQL/servers/configurations/read",
     "Microsoft.DBforPostgreSQL/servers/configurations/write",
+    "Microsoft.DBforPostgreSQL/flexibleServers/configurations/write",
     "Microsoft.Web/sites/config/read",
     "Microsoft.Web/sites/config/write",
     "Microsoft.Web/sites/read",
@@ -753,6 +765,7 @@ PREFIX_URL_AZURE = "https://management.azure.com/subscriptions/"
 PREFIX_URL_MS_GRAPH = "https://graph.microsoft.com/v1.0"
 POLICY_ASSIGNMENT_API_VERSION = "2024-05-01"
 POSTGRES_API_VERSION = "2017-12-01"
+POSTGRES_FLEXIBLE_API_VERSION = "2025-08-01"
 WEBAPP_API_VERSION = "2024-04-01"
 FLEXIBLE_API_VERSION = "2023-12-30"
 MONITOR_API_VERSION = "2016-03-01"
@@ -2600,6 +2613,53 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
+    def postgres_flexible_server_configuration_update(
+        self,
+        server_name: str,
+        configuration_name: str,
+        subscription_id: str,
+        resource_group_name: str,
+        source: str,
+        value: str,
+    ):
+        """
+        Updates a configuration of a PostgreSQL Flexible Server.
+
+        Args:
+            server_name (str): Name of the PostgreSQL Flexible Server.
+            configuration_name (str): Name of the configuration parameter to update.
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Name of the resource group containing the server.
+            source (str): The source of the configuration value (e.g. "user-override").
+            value (str): The new value to set for the configuration parameter.
+
+        Returns:
+            dict: The response from the Azure REST API after applying the update.
+
+        Raises:
+            ValueError: If the PostgreSQL Flexible Server or configuration parameter is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.DBforPostgreSQL/flexibleServers/{server_name}/configurations/{configuration_name}"
+        )
+        params = {"api-version": POSTGRES_FLEXIBLE_API_VERSION}
+        data = {"properties": {"source": source, "value": value}}
+        data = remove_empty_elements(data)
+        demisto.debug(f'Updating configuration "{configuration_name}" of PostgreSQL Flexible Server "{server_name}".')
+        try:
+            return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{server_name}/{configuration_name}",
+                resource_type="PostgreSQL Flexible Server Configuration",
+                api_function_name="postgres_flexible_server_configuration_update",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
     def get_monitor_log_profile(self, subscription_id: str, log_profile_name: str):
         """
         Gets a monitor log profile.
@@ -3823,7 +3883,7 @@ class AzureClient:
             }
         else:
             demisto.debug(f"using {next_token=} for retrieving the next page of results.")
-            full_url = next_token
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
             parameters = {}
         try:
             demisto.debug(f"[Azure] {parameters=}")
@@ -4460,6 +4520,7 @@ class AzureClient:
 
         try:
             if next_page_token:
+                validate_next_link(next_page_token, urlparse(PREFIX_URL_AZURE).hostname or "")
                 new_url = remove_query_param_from_url(next_page_token, "api-version")
                 demisto.debug(f"Azure billing usage request (pagination): {new_url}")
                 return self.http_request("GET", full_url=new_url, params={"api-version": api_version})
@@ -7731,6 +7792,32 @@ def mysql_flexible_server_param_set_command(client: AzureClient, params: dict, a
     value = args.get("value", "")
     client.flexible_server_param_set(server_name, configuration_name, subscription_id, resource_group_name, source, value)
     return CommandResults(readable_output=f"Updated the configuration {configuration_name} of the server {server_name}.")
+
+
+def postgres_flexible_server_configuration_update_command(client: AzureClient, params: dict, args: dict):
+    """
+    Updates a configuration of a PostgreSQL Flexible Server.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including server name, configuration name, source, and value.
+
+    Returns:
+        CommandResults: A success message confirming the configuration was updated.
+    """
+    server_name = args.get("server_name", "")
+    configuration_name = args.get("configuration_name", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    source = args.get("source", "")
+    value = args.get("value", "")
+    client.postgres_flexible_server_configuration_update(
+        server_name, configuration_name, subscription_id, resource_group_name, source, value
+    )
+    return CommandResults(
+        readable_output=f"Updated the configuration {configuration_name} of the PostgreSQL Flexible Server {server_name}."
+    )
 
 
 def monitor_log_profile_update_command(client: AzureClient, params: dict, args: dict):
@@ -12863,6 +12950,14 @@ def main():  # pragma: no cover
             "azure-webapp-auth-update": update_webapp_auth_command,
             "azure-appservice-webapp-auth-settings-update": update_webapp_auth_command,
             "azure-mysql-flexible-server-param-set": mysql_flexible_server_param_set_command,
+            "azure-postgres-flexible-server-configuration-update": postgres_flexible_server_configuration_update_command,
+            "azure-postgres-flexible-server-set-disconnection-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-checkpoint-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-connection-throttling-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-session-connection-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-log-retention-period-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-statement-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-secure-transport-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
             "azure-monitor-log-profile-update": monitor_log_profile_update_command,
             "azure-disk-update": disk_update_command,
             "azure-compute-disk-update": disk_update_command,
