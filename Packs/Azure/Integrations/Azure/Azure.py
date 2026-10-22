@@ -3883,7 +3883,7 @@ class AzureClient:
             }
         else:
             demisto.debug(f"using {next_token=} for retrieving the next page of results.")
-            full_url = next_token
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
             parameters = {}
         try:
             demisto.debug(f"[Azure] {parameters=}")
@@ -4520,6 +4520,7 @@ class AzureClient:
 
         try:
             if next_page_token:
+                validate_next_link(next_page_token, urlparse(PREFIX_URL_AZURE).hostname or "")
                 new_url = remove_query_param_from_url(next_page_token, "api-version")
                 demisto.debug(f"Azure billing usage request (pagination): {new_url}")
                 return self.http_request("GET", full_url=new_url, params={"api-version": api_version})
