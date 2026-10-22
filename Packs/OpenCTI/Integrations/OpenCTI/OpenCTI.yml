@@ -65,7 +65,7 @@ configuration:
   type: 0
   section: Collect
 - defaultvalue: 'true'
-  additionalinfo: Create relationships between indicators as part of Enrichment.
+  additionalinfo: Whether to create relationships between indicators as part of enrichment.
   display: Create relationships
   name: create_relationships
   type: 8
