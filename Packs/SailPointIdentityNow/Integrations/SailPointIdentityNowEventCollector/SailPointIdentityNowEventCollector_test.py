@@ -1,9 +1,15 @@
+import time
+from datetime import datetime, timedelta, UTC
+
 import demistomock as demisto
+from CommonServerPython import arg_to_datetime
 from SailPointIdentityNowEventCollector import (
     Client,
     add_time_and_status_to_events,
     dedup_events,
     fetch_events,
+    filter_id_timestamps_by_lookback_window,
+    parse_event_timestamp,
 )
 import pytest
 
@@ -29,6 +35,25 @@ EVENTS_WITH_THE_SAME_DATE = [
     {"created": "2022-01-01T00:00:00Z", "id": "2"},
     {"created": "2022-01-01T00:00:00Z", "id": "3"},
     {"created": "2022-01-01T00:00:00Z", "id": "4"},
+]
+
+
+# Real `created` values taken from the customer logs (XSUP-78955), plus edge cases of the same format.
+SAILPOINT_FORMAT_TIMESTAMPS = [
+    "2026-10-13T17:55:49.151Z",
+    "2026-10-13T17:52:02.143Z",
+    "2026-10-13T17:50:06.526Z",
+    "2026-10-19T18:17:53.393Z",
+    "2026-10-14T02:00:15.675Z",
+    "2026-10-13T17:50:49Z",  # CURRENT_TIME_STR / lookback fetch-start format (no milliseconds)
+    "2026-10-13T17:55:49.1Z",  # 1 fractional digit
+    "2026-10-13T17:55:49.15Z",  # 2 fractional digits
+    "2026-10-13T17:55:49.000Z",  # zero milliseconds
+    "2026-10-13T17:55:49.151234Z",  # 6 fractional digits (microseconds)
+    "2026-10-13T00:00:00.000Z",  # midnight
+    "2026-10-13T23:59:59.999Z",  # last millisecond of the day
+    "2024-02-29T12:00:00.500Z",  # leap day
+    "2026-12-31T23:59:59Z",  # year boundary
 ]
 
 
@@ -299,6 +324,165 @@ def test_fetch_events_batch(mocker, api_responses, limit, expected_events_count,
         assert max(timestamps) == expected_most_recent_timestamp
 
 
+def test_fetch_events_batch__full_page_of_duplicates_advances_from_date(mocker):
+    """
+    Given:
+        - A dedup cache that contains all the events of the first full page returned by the API
+          (e.g. a lookback window that holds more cached events than a single API call can return)
+    When:
+        - Calling _fetch_events_batch
+    Then:
+        - Ensure the fetch does not stop on the full page of duplicates
+        - Ensure the next API call uses the creation date of the last event in the duplicates page
+        - Ensure the new events after the duplicates page are fetched
+    """
+    from SailPointIdentityNowEventCollector import _fetch_events_batch
+
+    mocker.patch("SailPointIdentityNowEventCollector.MAX_EVENTS_PER_API_CALL", 2)
+    mocker.patch.object(demisto, "debug")
+
+    client = mocker.Mock()
+    client.search_events.side_effect = [EVENTS_SEQUENTIAL[:2], EVENTS_SEQUENTIAL[1:3], []]
+    previous_id_timestamps = {event["id"]: event["created"] for event in EVENTS_SEQUENTIAL[:2]}
+
+    all_events, dedup_cache = _fetch_events_batch(client, 5, "2022-01-01T00:00:00Z", previous_id_timestamps)
+
+    assert all_events == [EVENTS_SEQUENTIAL[2]]
+    assert client.search_events.call_args_list[1].kwargs["from_date"] == EVENTS_SEQUENTIAL[1]["created"]
+    assert dedup_cache == {event["id"]: event["created"] for event in EVENTS_SEQUENTIAL[:3]}
+
+
+def test_fetch_events_batch__partial_page_of_duplicates_stops(mocker):
+    """
+    Given:
+        - A dedup cache that contains all the events returned by the API
+        - The API returns fewer events than requested (no new events available yet)
+    When:
+        - Calling _fetch_events_batch
+    Then:
+        - Ensure the fetch stops after a single API call and returns no events
+        - Ensure the dedup cache is unchanged
+    """
+    from SailPointIdentityNowEventCollector import _fetch_events_batch
+
+    mocker.patch("SailPointIdentityNowEventCollector.MAX_EVENTS_PER_API_CALL", 3)
+    mocker.patch.object(demisto, "debug")
+
+    client = mocker.Mock()
+    client.search_events.side_effect = [EVENTS_SEQUENTIAL[:2]]
+    previous_id_timestamps = {event["id"]: event["created"] for event in EVENTS_SEQUENTIAL[:2]}
+
+    all_events, dedup_cache = _fetch_events_batch(client, 5, "2022-01-01T00:00:00Z", previous_id_timestamps)
+
+    assert all_events == []
+    assert client.search_events.call_count == 1
+    assert dedup_cache == previous_id_timestamps
+
+
+def test_fetch_events_batch__always_requests_full_page(mocker):
+    """
+    Given:
+        - A fetch limit that is not a multiple of the API page size
+    When:
+        - Calling _fetch_events_batch
+    Then:
+        - Ensure every API call requests a full page (MAX_EVENTS_PER_API_CALL), never the remaining count
+    """
+    from SailPointIdentityNowEventCollector import _fetch_events_batch
+
+    mocker.patch("SailPointIdentityNowEventCollector.MAX_EVENTS_PER_API_CALL", 3)
+    mocker.patch.object(demisto, "debug")
+
+    client = mocker.Mock()
+    client.search_events.side_effect = [EVENTS_SEQUENTIAL[:3], EVENTS_SEQUENTIAL[3:4]]
+
+    _fetch_events_batch(client, 5, "2022-01-01T00:00:00Z")
+
+    assert client.search_events.call_count == 2
+    assert all(call.kwargs["limit"] == 3 for call in client.search_events.call_args_list)
+
+
+def test_fetch_events_batch__truncates_to_limit_and_caches_only_kept_events(mocker):
+    """
+    Given:
+        - An API page that holds more new events than the fetch limit
+    When:
+        - Calling _fetch_events_batch
+    Then:
+        - Ensure only `limit` events are returned
+        - Ensure the dedup cache holds only the returned events, so the next run starts from the last returned event
+          and fetches the events that were cut off
+    """
+    from SailPointIdentityNowEventCollector import _fetch_events_batch
+
+    mocker.patch("SailPointIdentityNowEventCollector.MAX_EVENTS_PER_API_CALL", 3)
+    mocker.patch.object(demisto, "debug")
+
+    client = mocker.Mock()
+    client.search_events.side_effect = [EVENTS_SEQUENTIAL[:3]]
+
+    all_events, dedup_cache = _fetch_events_batch(client, 2, "2022-01-01T00:00:00Z")
+
+    assert all_events == EVENTS_SEQUENTIAL[:2]
+    assert dedup_cache == {event["id"]: event["created"] for event in EVENTS_SEQUENTIAL[:2]}
+    assert client.search_events.call_count == 1
+
+
+def test_fetch_events__remaining_smaller_than_boundary_duplicates_does_not_loop(mocker):
+    """
+    Regression test for XSUP-78955.
+
+    Given:
+        - A fetch that reaches the limit with only 1 event remaining
+        - The next API call (from the last fetched event's creation date) returns the already-fetched boundary event first
+    When:
+        - Calling fetch_events
+    Then:
+        - Ensure the next API call requests a full page, so new events after the boundary event are returned
+        - Ensure the fetch ends after exactly `limit` events and does not loop on the boundary duplicate
+        - Ensure the next run is built from the last event that is returned
+    """
+    mocker.patch("SailPointIdentityNowEventCollector.MAX_EVENTS_PER_API_CALL", 3)
+    mocker.patch.object(demisto, "debug")
+
+    client = mocker.Mock()
+    # The mocked API returns a full page regardless of the requested limit.
+    # Before the fix, the 2nd call requested 1 event and got only the boundary duplicate, forever.
+    client.search_events.side_effect = [EVENTS_SEQUENTIAL[:3], EVENTS_SEQUENTIAL[2:4]]
+
+    next_run, events = fetch_events(client, 4, 0, {"prev_date": "2022-01-01T00:00:00Z"})
+
+    assert events == EVENTS_SEQUENTIAL[:4]
+    assert client.search_events.call_count == 2
+    assert client.search_events.call_args_list[1].kwargs == {"from_date": "2022-01-01T00:03:00Z", "limit": 3}
+    assert next_run["prev_date"] == "2022-01-01T00:04:00Z"
+
+
+def test_fetch_events__truncated_events_are_fetched_in_next_run(mocker):
+    """
+    Given:
+        - An API page with more new events than the fetch limit
+    When:
+        - Calling fetch_events twice, feeding the first next_run into the second call
+    Then:
+        - Ensure the events cut off in the first run are returned in the second run, with no duplicates and no gaps
+    """
+    mocker.patch("SailPointIdentityNowEventCollector.MAX_EVENTS_PER_API_CALL", 3)
+    mocker.patch.object(demisto, "debug")
+
+    client = mocker.Mock()
+    client.search_events.side_effect = [EVENTS_SEQUENTIAL[:3], EVENTS_SEQUENTIAL[1:4]]
+
+    first_next_run, first_events = fetch_events(client, 2, 0, {"prev_date": "2022-01-01T00:00:00Z"})
+    second_next_run, second_events = fetch_events(client, 2, 0, first_next_run)
+
+    assert first_events == EVENTS_SEQUENTIAL[:2]
+    assert first_next_run["prev_date"] == "2022-01-01T00:02:00Z"
+    assert client.search_events.call_args_list[1].kwargs["from_date"] == "2022-01-01T00:02:00Z"
+    assert second_events == EVENTS_SEQUENTIAL[2:4]
+    assert second_next_run["prev_date"] == "2022-01-01T00:04:00Z"
+
+
 @pytest.mark.parametrize(
     "all_events,dedup_cache,look_back,expected_prev_date,expected_cache_size",
     [
@@ -465,6 +649,94 @@ def test_filter_id_timestamps_by_lookback_window(id_timestamps, current_date, lo
 
     # Assert exact expected result
     assert result == expected_result
+
+
+@pytest.mark.parametrize("timestamp", SAILPOINT_FORMAT_TIMESTAMPS)
+def test_parse_event_timestamp__same_result_as_arg_to_datetime(timestamp):
+    """
+    Given:
+        - A timestamp in the exact SailPoint UTC format (real values from customer logs and format edge cases)
+    When:
+        - Parsing it with parse_event_timestamp (fast path) and with arg_to_datetime (the previous parser)
+    Then:
+        - Ensure both parsers return the same moment in time
+        - Ensure the fast-path result is timezone-aware UTC, so it can be compared with other parsed timestamps
+    """
+    fast_result = parse_event_timestamp(timestamp)
+    previous_result = arg_to_datetime(timestamp, required=True)
+
+    assert fast_result == previous_result
+    assert fast_result.utcoffset() == timedelta(0)
+
+
+@pytest.mark.parametrize(
+    "timestamp",
+    [
+        "2026-10-13T17:55:49",  # no timezone designator
+        "2026-10-13T17:55:49+00:00",  # explicit offset instead of Z
+        "2026-10-13 17:55:49Z",  # space separator
+        "2026-10-13",  # date only
+        "2026-10-13T17:55:49.1512345Z",  # more than 6 fractional digits
+    ],
+)
+def test_parse_event_timestamp__other_formats_fall_back_to_arg_to_datetime(mocker, timestamp):
+    """
+    Given:
+        - A timestamp that is not in the exact SailPoint UTC format
+    When:
+        - Calling parse_event_timestamp
+    Then:
+        - Ensure the timestamp is parsed by arg_to_datetime, exactly as before the optimization
+    """
+    import SailPointIdentityNowEventCollector
+
+    arg_to_datetime_spy = mocker.spy(SailPointIdentityNowEventCollector, "arg_to_datetime")
+
+    result = parse_event_timestamp(timestamp)
+
+    arg_to_datetime_spy.assert_called_once_with(timestamp, required=True)
+    assert result == arg_to_datetime(timestamp, required=True)
+
+
+def test_parse_event_timestamp__parsed_dates_compare_consistently():
+    """
+    Given:
+        - A fast-path timestamp and a fallback timestamp that describe the same moment
+    When:
+        - Comparing the parsed results
+    Then:
+        - Ensure they are equal, so mixing both paths in the lookback filter does not change the filtering result
+    """
+    assert parse_event_timestamp("2026-10-13T17:55:49Z") == parse_event_timestamp("2026-10-13T17:55:49+00:00")
+
+
+def test_filter_id_timestamps_by_lookback_window__large_cache_is_fast(mocker):
+    """
+    Regression test for XSUP-78955.
+
+    Given:
+        - A dedup cache with 65,000 IDs in the SailPoint timestamp format (the size reached in the customer's tenant)
+    When:
+        - Calling filter_id_timestamps_by_lookback_window
+    Then:
+        - Ensure the filtering finishes in a few seconds (it took ~5 minutes with dateparser and hit the docker timeout)
+        - Ensure only the IDs inside the lookback window are kept
+    """
+    mocker.patch.object(demisto, "debug")
+    newest = datetime(2026, 10, 19, 18, 17, 53, 393000, tzinfo=UTC)
+    id_timestamps = {
+        f"id_{index}": (newest - timedelta(seconds=index)).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z" for index in range(65000)
+    }
+
+    start = time.monotonic()
+    filtered = filter_id_timestamps_by_lookback_window(id_timestamps, "2026-10-19T18:17:53.393Z", 5)
+    elapsed = time.monotonic() - start
+
+    assert elapsed < 10
+    # look_back of 5 minutes + 1 minute retention buffer = 360 seconds, inclusive
+    assert len(filtered) == 361
+    assert "id_360" in filtered
+    assert "id_361" not in filtered
 
 
 def test_add_time_and_status_to_events(mocker):
