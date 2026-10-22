@@ -371,6 +371,424 @@ def test_lost_connection_engine_to_server(mocker):
         assert e.value.code == 1
 
 
+def test_is_port_in_use_port_free(mocker):
+    """
+    Given:
+        - A port that can be bound successfully.
+    When:
+        - Calling is_port_in_use.
+    Then:
+        - False is returned.
+    """
+    import NGINXApiModule as module
+
+    mock_socket = mocker.patch.object(module.socket, "socket")
+    mock_socket.return_value.__enter__.return_value.bind.return_value = None
+
+    assert module.is_port_in_use(1111) is False
+    mock_socket.return_value.__enter__.return_value.bind.assert_called_once_with(("127.0.0.1", 1111))
+
+
+def test_is_port_in_use_port_taken(mocker):
+    """
+    Given:
+        - A port whose bind fails with EADDRINUSE.
+    When:
+        - Calling is_port_in_use.
+    Then:
+        - True is returned.
+    """
+    import errno
+
+    import NGINXApiModule as module
+
+    mock_socket = mocker.patch.object(module.socket, "socket")
+    mock_socket.return_value.__enter__.return_value.bind.side_effect = OSError(errno.EADDRINUSE, "Address in use")
+
+    assert module.is_port_in_use(1111) is True
+
+
+def test_is_port_in_use_unexpected_error_treated_as_free(mocker):
+    """
+    Given:
+        - A port whose bind fails with an unrelated OSError (EACCES).
+    When:
+        - Calling is_port_in_use.
+    Then:
+        - False is returned (unexpected errors don't block the test).
+    """
+    import errno
+
+    import NGINXApiModule as module
+
+    mock_socket = mocker.patch.object(module.socket, "socket")
+    mock_socket.return_value.__enter__.return_value.bind.side_effect = OSError(errno.EACCES, "Permission denied")
+
+    assert module.is_port_in_use(1111) is False
+
+
+def _nginx_test_response(headers: dict | None = None) -> requests.Response:
+    """Build a successful /nginx-test response with the given headers (no X-Instance-Name by default)."""
+    response = requests.Response()
+    response.status_code = 200
+    response._content = b"Welcome to nginx"
+    response.headers.update(headers or {})
+    return response
+
+
+def _mock_running_instance(mocker, requests_mock, running_instance_name: str | None, app_status: int = 401) -> None:
+    """Mock an already-running instance answering /nginx-test (with an optional X-Instance-Name header) and "/".
+
+    Args:
+        running_instance_name: The raw name of the answering instance, or None to omit the header.
+        app_status: The HTTP status of the app route.
+    """
+    import urllib.parse
+
+    import NGINXApiModule as module
+
+    mocker.patch.object(module.time, "sleep")
+    mocker.patch.object(module, "is_port_in_use", return_value=True)
+    headers = {} if running_instance_name is None else {"X-Instance-Name": urllib.parse.quote(running_instance_name, safe="")}
+    requests_mock.get("http://localhost:1111/nginx-test", text="Welcome to nginx", headers=headers)
+    requests_mock.get("http://localhost:1111/", status_code=app_status)
+
+
+def test_long_running_check_ports_in_use_matching_instance_header_passes(mocker, requests_mock):
+    """
+    Given:
+        - The ports are in use, and the nginx answering /nginx-test returns an X-Instance-Name header
+          that matches the current instance name.
+    When:
+        - Calling test_long_running_with_running_instance_check.
+    Then:
+        - The check passes (no exception), the test is not re-run and the app route is probed.
+    """
+    import NGINXApiModule as module
+
+    mocker.patch.object(demisto, "integrationInstance", return_value="EDL A")
+    _mock_running_instance(mocker, requests_mock, running_instance_name="EDL A")
+    run_mock = mocker.patch.object(module, "run_long_running")
+
+    module.test_long_running_with_running_instance_check({"longRunningPort": "1111"})
+
+    run_mock.assert_not_called()
+    assert [request.path for request in requests_mock.request_history] == ["/nginx-test", "/"]
+
+
+def test_long_running_check_ports_in_use_mismatched_instance_header_raises(mocker, requests_mock):
+    """
+    Given:
+        - The ports are in use, and the nginx answering /nginx-test belongs to another instance
+          (its X-Instance-Name header names a different instance) on the same network and Listen Port.
+    When:
+        - Calling test_long_running_with_running_instance_check.
+    Then:
+        - A DemistoException matching "already in use" is raised, the test is not re-run, the app route
+          is not probed, and the decoded name of the answering instance is logged.
+    """
+    import NGINXApiModule as module
+
+    mocker.patch.object(demisto, "integrationInstance", return_value="EDL B")
+    _mock_running_instance(mocker, requests_mock, running_instance_name="EDL A")
+    run_mock = mocker.patch.object(module, "run_long_running")
+    debug_mock = mocker.patch.object(demisto, "debug")
+
+    with pytest.raises(DemistoException, match="already in use"):
+        module.test_long_running_with_running_instance_check({"longRunningPort": "1111"})
+
+    run_mock.assert_not_called()
+    assert [request.path for request in requests_mock.request_history] == ["/nginx-test"]
+    assert any("'EDL A'" in call.args[0] for call in debug_mock.call_args_list)
+
+
+def test_is_long_running_instance_healthy_missing_instance_header_is_lenient(mocker, requests_mock):
+    """
+    Given:
+        - The nginx answering /nginx-test does not return an X-Instance-Name header (custom nginx_server_conf
+          without it, or an instance not yet restarted onto the new config).
+    When:
+        - Calling is_long_running_instance_healthy.
+    Then:
+        - True is returned (lenient, previous behavior) and the missing header is logged.
+    """
+    import NGINXApiModule as module
+
+    mocker.patch.object(demisto, "integrationInstance", return_value="EDL B")
+    _mock_running_instance(mocker, requests_mock, running_instance_name=None)
+    debug_mock = mocker.patch.object(demisto, "debug")
+
+    assert module.is_long_running_instance_healthy(1111, {}) is True
+    assert any("no X-Instance-Name header" in call.args[0] for call in debug_mock.call_args_list)
+
+
+def _read_nginx_test_location(conf: str) -> str:
+    """Return the body of the `location = /nginx-test { ... }` block of a rendered server conf."""
+    import re
+
+    match = re.search(r"location = /nginx-test \{(.*?)\n    \}", conf, re.DOTALL)
+    assert match, "location = /nginx-test block not found"
+    return match.group(1)
+
+
+def test_create_nginx_server_conf_adds_instance_name_header_to_nginx_test(tmp_path: Path, mocker):
+    """
+    Given:  the current instance is named "EDL A" and the default server conf template is used.
+    When:   create_nginx_server_conf renders the nginx server config.
+    Then:   the /nginx-test location (and only it) carries the always-sent X-Instance-Name header with the
+            encoded instance name, and no placeholder is left unrendered.
+    """
+    from NGINXApiModule import create_nginx_server_conf
+
+    mocker.patch.object(demisto, "integrationInstance", return_value="EDL A")
+    conf_file = tmp_path / "nginx-test-server.conf"
+    create_nginx_server_conf(str(conf_file), 12345, params={})
+    conf = conf_file.read_text()
+
+    expected_line = 'add_header X-Instance-Name "EDL%20A" always;'
+    assert expected_line in _read_nginx_test_location(conf)
+    assert conf.count("X-Instance-Name") == 1
+    assert "$instance_name" not in conf
+
+
+def test_instance_name_with_special_characters_is_encoded_and_round_trips(tmp_path: Path, mocker):
+    """
+    Given:  an instance name containing a space, double quotes, `$` (an nginx variable) and a backslash.
+    When:   create_nginx_server_conf renders the conf, and a /nginx-test response carrying the rendered
+            header value is compared against the current instance.
+    Then:   the header value in the conf is percent-encoded (no raw `"`, `$`, `\\` or space inside the quoted
+            value), decodes back to the original name, and the identity comparison matches.
+    """
+    import re
+    import urllib.parse
+
+    import NGINXApiModule as module
+
+    instance_name = 'My "EDL" $host \\ x'
+    mocker.patch.object(demisto, "integrationInstance", return_value=instance_name)
+    conf_file = tmp_path / "nginx-test-server.conf"
+    module.create_nginx_server_conf(str(conf_file), 12345, params={})
+
+    match = re.search(r'add_header X-Instance-Name "([^"]*)" always;', conf_file.read_text())
+    assert match
+    header_value = match.group(1)
+    assert not set(header_value) & {'"', "$", "\\", " "}
+    assert urllib.parse.unquote(header_value) == instance_name
+    assert header_value == module.get_encoded_instance_name()
+    response = _nginx_test_response({module.INSTANCE_NAME_HEADER: header_value})
+    assert module.is_answering_instance_this_instance(response, 12345) is True
+
+
+def test_create_nginx_server_conf_custom_template_without_instance_placeholder(tmp_path: Path, mocker):
+    """
+    Given:  a custom nginx_server_conf template that does not reference $instance_name / $instance_name_header.
+    When:   create_nginx_server_conf renders it.
+    Then:   the template renders as before (known placeholders substituted) and no instance header is added.
+    """
+    from NGINXApiModule import create_nginx_server_conf
+
+    mocker.patch.object(demisto, "integrationInstance", return_value="EDL A")
+    conf_file = tmp_path / "nginx-test-server.conf"
+    custom_template = "server {\n    listen $port default_server $ssl;\n    location = /nginx-test { return 200; }\n}\n"
+    create_nginx_server_conf(str(conf_file), 12345, params={"nginx_server_conf": custom_template})
+
+    conf = conf_file.read_text()
+    assert conf == "server {\n    listen 12345 default_server ;\n    location = /nginx-test { return 200; }\n}\n"
+
+
+@pytest.mark.parametrize("status_code", [200, 401, 404])
+def test_is_long_running_instance_healthy_healthy(mocker, requests_mock, status_code):
+    """
+    Given:
+        - nginx health check passes, and the app route answers through nginx with any HTTP status.
+    When:
+        - Calling is_long_running_instance_healthy with a custom app_path.
+    Then:
+        - True is returned and the app route is probed through nginx (nginx_port, not nginx_port + 1)
+          without proxies and without TLS verification.
+    """
+    import NGINXApiModule as module
+
+    mocker.patch.object(module, "test_nginx_web_server", return_value=_nginx_test_response())
+    requests_mock.get("http://localhost:1111/taxii2/", status_code=status_code)
+
+    assert module.is_long_running_instance_healthy(1111, {}, app_path="/taxii2/") is True
+    assert requests_mock.call_count == 1
+    assert requests_mock.last_request.url == "http://localhost:1111/taxii2/"
+    assert requests_mock.last_request.verify is False
+    assert requests_mock.last_request.timeout == 10
+
+
+def test_is_long_running_instance_healthy_default_path_https(mocker, requests_mock):
+    """
+    Given:
+        - A certificate key is configured (nginx serves https), and nginx health check passes.
+    When:
+        - Calling is_long_running_instance_healthy with the default app_path.
+    Then:
+        - True is returned and "/" is probed over https on the nginx port (same URL EDL used).
+    """
+    import NGINXApiModule as module
+
+    mocker.patch.object(module, "test_nginx_web_server", return_value=_nginx_test_response())
+    requests_mock.get("https://localhost:1111/", status_code=401)
+
+    assert module.is_long_running_instance_healthy(1111, {"key": "some-key"}) is True
+    assert requests_mock.last_request.url == "https://localhost:1111/"
+
+
+def test_is_long_running_instance_healthy_nginx_unhealthy(mocker, requests_mock):
+    """
+    Given:
+        - nginx health check fails.
+    When:
+        - Calling is_long_running_instance_healthy.
+    Then:
+        - False is returned and the app route is not probed.
+    """
+    import NGINXApiModule as module
+
+    mocker.patch.object(module, "test_nginx_web_server", side_effect=DemistoException("Testing nginx server: boom"))
+
+    assert module.is_long_running_instance_healthy(1111, {}) is False
+    assert not requests_mock.called
+
+
+def test_is_long_running_instance_healthy_connection_error(mocker, requests_mock):
+    """
+    Given:
+        - nginx health check passes, but the app route through nginx refuses the connection.
+    When:
+        - Calling is_long_running_instance_healthy.
+    Then:
+        - False is returned.
+    """
+    import NGINXApiModule as module
+
+    mocker.patch.object(module, "test_nginx_web_server", return_value=_nginx_test_response())
+    requests_mock.get("http://localhost:1111/", exc=requests.exceptions.ConnectionError("refused"))
+
+    assert module.is_long_running_instance_healthy(1111, {}) is False
+
+
+def test_get_long_running_ports():
+    """
+    Given:
+        - A Listen Port.
+    When:
+        - Calling get_long_running_ports.
+    Then:
+        - The nginx, WSGI (port + 1) and internal cache-fetch (port + 2) ports are returned.
+    """
+    import NGINXApiModule as module
+
+    assert module.get_long_running_ports(1111) == (1111, 1112, 1113)
+
+
+def test_long_running_check_ports_free_runs_test(mocker):
+    """
+    Given:
+        - nginx_port, nginx_port + 1 and nginx_port + 2 (the internal cache-fetch port) are all free.
+    When:
+        - Calling test_long_running_with_running_instance_check.
+    Then:
+        - All three ports are checked, run_long_running is called with is_test=True and no health check is performed.
+    """
+    import NGINXApiModule as module
+
+    params = {"longRunningPort": "1111"}
+    port_check = mocker.patch.object(module, "is_port_in_use", return_value=False)
+    run_mock = mocker.patch.object(module, "run_long_running")
+    health_mock = mocker.patch.object(module, "is_long_running_instance_healthy")
+
+    module.test_long_running_with_running_instance_check(params)
+
+    assert [call.args[0] for call in port_check.call_args_list] == [1111, 1112, 1113]
+    run_mock.assert_called_once_with(params, is_test=True)
+    health_mock.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "ports_in_use, expected_ports_text",
+    [
+        pytest.param([False, False, True], "Port(s) 1113 are already in use", id="only fetch port (port + 2) in use"),
+        pytest.param([False, True, False], "Port(s) 1112 are already in use", id="only WSGI port (port + 1) in use"),
+        pytest.param([False, True, True], "Port(s) 1112, 1113 are already in use", id="WSGI and fetch ports in use"),
+    ],
+)
+def test_long_running_check_listen_port_free_other_ports_in_use_raises(mocker, ports_in_use, expected_ports_text):
+    """
+    Given:
+        - The Listen Port is free but another port the instance binds (port + 1 and/or port + 2) is taken,
+          e.g. by another instance whose Listen Port range overlaps on the shared network.
+    When:
+        - Calling test_long_running_with_running_instance_check.
+    Then:
+        - A DemistoException naming the occupied ports and the required port range is raised,
+          the health check is skipped (nothing of ours can be serving) and the test is not run.
+    """
+    import NGINXApiModule as module
+
+    params = {"longRunningPort": "1111"}
+    mocker.patch.object(module, "is_port_in_use", side_effect=ports_in_use)
+    run_mock = mocker.patch.object(module, "run_long_running")
+    health_mock = mocker.patch.object(module, "is_long_running_instance_healthy")
+
+    with pytest.raises(DemistoException) as exc_info:
+        module.test_long_running_with_running_instance_check(params)
+
+    message = str(exc_info.value)
+    assert expected_ports_text in message
+    assert "1111 (Listen Port), 1112 (Listen Port + 1) and 1113 (Listen Port + 2)" in message
+    run_mock.assert_not_called()
+    health_mock.assert_not_called()
+
+
+def test_long_running_check_ports_in_use_healthy_returns(mocker):
+    """
+    Given:
+        - The ports are in use and a healthy instance answers on them.
+    When:
+        - Calling test_long_running_with_running_instance_check.
+    Then:
+        - The function returns without running the test or raising.
+    """
+    import NGINXApiModule as module
+
+    params = {"longRunningPort": "1111"}
+    mocker.patch.object(module, "is_port_in_use", return_value=True)
+    run_mock = mocker.patch.object(module, "run_long_running")
+    health_mock = mocker.patch.object(module, "is_long_running_instance_healthy", return_value=True)
+
+    module.test_long_running_with_running_instance_check(params, app_path="/taxii2/")
+
+    run_mock.assert_not_called()
+    health_mock.assert_called_once_with(1111, params, "/taxii2/")
+
+
+def test_long_running_check_ports_in_use_unhealthy_raises(mocker):
+    """
+    Given:
+        - All the instance ports are in use and no healthy instance answers.
+    When:
+        - Calling test_long_running_with_running_instance_check.
+    Then:
+        - The health check runs, and a DemistoException listing all the occupied ports is raised without running the test.
+    """
+    import NGINXApiModule as module
+
+    params = {"longRunningPort": "1111"}
+    mocker.patch.object(module, "is_port_in_use", return_value=True)
+    run_mock = mocker.patch.object(module, "run_long_running")
+    health_mock = mocker.patch.object(module, "is_long_running_instance_healthy", return_value=False)
+
+    with pytest.raises(DemistoException, match=r"Port\(s\) 1111, 1112, 1113 are already in use"):
+        module.test_long_running_with_running_instance_check(params)
+
+    health_mock.assert_called_once_with(1111, params, "/")
+    run_mock.assert_not_called()
+
+
 @pytest.mark.parametrize(
     "time_str, expected_seconds",
     [
