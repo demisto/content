@@ -38,7 +38,7 @@ To use this integration, you need to connect an application with a certificate.
 
      *Note: Remember your password since you will need it to create your integration instance.*
 
-   2. Download the certificateBase34.txt file.
+   2. Download the certificateBase64.txt file.
    3. Open the downloaded txt file and copy the text.
    4. In the integration instance configuration, paste the text in the **Certificate** field.
 
@@ -47,16 +47,7 @@ To use this integration, you need to connect an application with a certificate.
     2. In the Azure application, in the left menu, click **Certificates & secrets**.
     3. In the Certificates tab, upload the publickey.cer file.
 
-4. Assign Azure AD roles to the application.
-   1. You have two options:
-      - Assign Azure AD roles to the application.
-      - Assign custom role groups to the application using service principals.
-   2. In the [Azure AD portal](https://portal.azure.com/), search for **Microsoft Entra roles and administrators** in the Search box.
-   3. On the Roles and administrators page that opens, find and select one of the supported roles by clicking on the
-      name of the role (not the checkbox) in the results.
-      - The role **Security Administrator** is eligible for this integration.
-   4. On the Assignments page that opens, select **Add assignments**.
-   5. In the Add assignments flyout that opens, find and select the app that you created in Step 1.
+4. Assign Exchange Online permissions to the application. Choose **Option A** or **Option B**, as described in the **Assign Exchange Permissions (Choose Option A OR Option B)** section below. Make sure to grant the permissions before configuring the integration in Cortex XSOAR/XSIAM.
 
 Note: The information in the Playground is sensitive information. You should delete the information by running the following command:
 
@@ -68,14 +59,22 @@ Note: The information in the Playground is sensitive information. You should del
 8. In the Azure app, navigate to **Home** > **App registration** > **application name** and copy the Application (client) ID.
 9. In Cortex XSOAR/XSIAM, in the integration instance configuration, paste the application ID in **The application ID from the Azure portal** field.
 
-### Grant the application sufficient Exchange Online permissions
+### Assign Exchange Permissions (Choose Option A OR Option B)
 
-For the integration to work, the Azure AD application's service principal must have an Exchange Online management role assigned. There are **two** supported ways to grant this permission. **You only need one of them.** If authentication (the **Test** button) does not work after using one option, try the other.
+Choose one of the two options below to grant the app permission to run Exchange commands. **You only need one of them.** If authentication (the **Test** button) does not work after using one option, try the other.
 
-- **Option A - Assign a Microsoft Entra directory role to the application.** This is covered in the **App authentication** section above (see "Assign Azure AD roles to the application"). Assigning a supported directory role such as **Security Administrator** to the app is sufficient.
-- **Option B - Create an Exchange Online service principal and add it to a role group (via PowerShell).** Use this option when Option A does not work, or when you want to scope the application to a specific Exchange role group.
+#### Option A: Assign a Microsoft Entra directory role (easiest)
+
+Use this method to grant tenant-wide management through the portal.
+
+1. In the [Microsoft Entra admin center](https://entra.microsoft.com/), search for **Microsoft Entra roles and administrators** in the Search box.
+2. Search for and select the required role (click the role name, not the checkbox):
+   - The role **Exchange Administrator** is eligible for this integration.
+3. Click **Add assignments**, search for your registered application name, select it, and click **Add**.
 
 #### Option B: Add the service principal via Exchange Online PowerShell
+
+Use this method when Option A does not work, or when you want to scope the application to a specific Exchange role group.
 
 **Step 1: Connect to Exchange Online PowerShell as an administrator**
 
@@ -119,28 +118,22 @@ Now run the following command, using the Application (client) ID and the Enterpr
 New-ServicePrincipal -AppId "<Application-ID>" -ObjectId "<EnterpriseApp-ObjectId>" -DisplayName "<Application Name>"
 ```
 
-**Step 3: Assign the required Exchange Online role**
+**Step 3: Add the service principal to an Exchange Online role group**
 
-After the service principal is created, assign it the **Security Administrator** role so it has the permissions the integration needs to run its cmdlets:
-
-```powershell
-Add-RoleGroupMember -Identity "Security Administrator" -Member "<DisplayName>"
-```
-
-Use the same `<DisplayName>` value you set in Step 2.
-
-**Note:** If you get an error that `'Security Administrator' matches multiple entries`, use the **Organization Management** role instead (it is more privileged):
+After the service principal is created, add it to the **Organization Management** role group so it has the permissions the integration needs to run its cmdlets:
 
 ```powershell
-Add-RoleGroupMember -Identity "Organization Management" -Member "<DisplayName>"
+Add-RoleGroupMember -Identity "Organization Management" -Member "<Application-ID>"
 ```
+
+Use the same `<Application-ID>` value you used in Step 2.
 
 **Step 4: Verify**
 
-You can confirm the service principal now has the role with the following command. Use the same role name you assigned in Step 3:
+You can confirm the service principal is now a member of the role group with the following command:
 
 ```powershell
-Get-RoleGroupMember -Identity "<Role>"
+Get-RoleGroupMember -Identity "Organization Management"
 ```
 
 **Note:** For more information, see the official [Microsoft Documentation](https://learn.microsoft.com/en-us/powershell/exchange/app-only-auth-powershell-v2).
@@ -155,9 +148,9 @@ Get-RoleGroupMember -Identity "<Role>"
 When running 'Test', you receive the error:  
 *“The role assigned to application `app-id` isn't supported in this scenario. Please check online documentation for assigning correct Directory Roles to Azure AD Application for EXO App-Only Authentication.”*
 
-**Solution:**  
-Verify that the application has the correct directory role assigned in the **Entra ID portal**.  
-See the **“App authentication”** section above for detailed guidance.
+**Solution:**
+Verify that the application has the correct directory role assigned in the **Entra ID portal**.
+See **Option A** in the **“Assign Exchange Permissions (Choose Option A OR Option B)”** section above for detailed guidance.
 
 ---
 
@@ -169,7 +162,7 @@ When running a command, you receive an error similar to:
 
 **Solution:**
 Make sure the **service principal of the Azure AD application used by the integration** has sufficient **Exchange Online permissions**.
-Refer to the **“Grant the application sufficient Exchange Online permissions”** section above to confirm the correct roles are assigned and for detailed guidance.
+Refer to the **“Assign Exchange Permissions (Choose Option A OR Option B)”** section above to confirm the correct roles are assigned and for detailed guidance.
 
 ## Commands
 

@@ -22,7 +22,7 @@ To use this integration, you need to connect an application with a certificate.
 
      *Note: Remember your password since you will need it to create your integration instance.*
 
-   2. Download the certificateBase34.txt file.
+   2. Download the certificateBase64.txt file.
    3. Open the downloaded txt file and copy the text.
    4. In the integration instance configuration, paste the text in the **Certificate** field.
 
@@ -33,16 +33,7 @@ To use this integration, you need to connect an application with a certificate.
     3. In the Certificates tab, upload the publickey.cer file.
 
 
-4. Assign Azure AD roles to the application.
-   1. You have two options:
-      - Assign Azure AD roles to the application.
-      - Assign custom role groups to the application using service principals.
-   2. In the [Azure AD portal](https://portal.azure.com/), search for **Microsoft Entra roles and administrators** in the Search box.
-   3. On the Roles and administrators page that opens, find and select one of the supported roles by clicking on the
-      name of the role (not the checkbox) in the results.
-      - The role **Security Administrator** is eligible for this integration.
-   4. On the Assignments page that opens, select **Add assignments**.
-   5. In the Add assignments flyout that opens, find and select the app that you created in Step 1.
+4. Assign Exchange Online permissions to the application. Choose **Option A** or **Option B**, as described in the **Assign Exchange Permissions (Choose Option A OR Option B)** section below. Make sure to grant the permissions before configuring the integration in Cortex XSOAR/XSIAM.
 
 Note: The information in the Playground is sensitive information. You should delete the information by running the following command:
 
@@ -55,16 +46,57 @@ Note: The information in the Playground is sensitive information. You should del
 9. In Cortex XSOAR/XSIAM, in the integration instance configuration, paste the application ID in **The application ID from the Azure portal** field.
 
 
-### Verify that the admin account has sufficient Exchange Online permissions
-For the integration to work, the Azure AD application's service principal must have the correct permissions assigned in the Exchange Online role groups.
-1. Open the Microsoft Purview Portal: https://purview.microsoft.com/
-2. Log in using an admin account that can manage role assignments for the Azure AD application (for example, a Global Administrator or Privileged Role Administrator).
-3. In the top bar, select: **Settings → Roles and scopes**
-4. In the left sidebar, select: **Role Groups**
-5. Search for the following role groups:
-   - **Organization Management** – the most privileged role and fully supported for this integration.
-   - **Security Administrator** – a highly privileged security role that also provides full access.
-6. Open the role and verify that the **service principal of the Azure AD application used by the integration** is listed.
-7. If not listed, click **Edit → Add Users** and assign the required roles.
+### Assign Exchange Permissions (Choose Option A OR Option B)
+Choose one of the two options below to grant the app permission to run Exchange commands. **You only need one of them.** If authentication (the **Test** button) does not work after using one option, try the other.
 
-* Note - for more information go to the official [Microsoft Documentation.](https://learn.microsoft.com/en-us/defender-office-365)
+#### Option A: Assign a Microsoft Entra directory role (easiest)
+Use this method to grant tenant-wide management through the portal.
+1. In the [Microsoft Entra admin center](https://entra.microsoft.com/), search for **Microsoft Entra roles and administrators** in the Search box.
+2. Search for and select the required role (click the role name, not the checkbox):
+   - The role **Exchange Administrator** is eligible for this integration.
+3. Click **Add assignments**, search for your registered application name, select it, and click **Add**.
+
+#### Option B: Add the service principal via Exchange Online PowerShell
+Use this method when Option A does not work, or when you want to scope the application to a specific Exchange role group.
+
+**Step 1: Connect to Exchange Online PowerShell as an administrator**
+1. Open PowerShell on your machine.
+2. Install the Exchange Online module (only needed the first time):
+   `Install-Module -Name ExchangeOnlineManagement -Scope CurrentUser`
+3. Import the module:
+   `Import-Module ExchangeOnlineManagement`
+4. Connect using an administrator account that can manage role assignments (for example, a Global Administrator or Privileged Role Administrator). A sign-in window will open for you to authenticate:
+   `Connect-ExchangeOnline -UserPrincipalName <admin@yourdomain.com>`
+
+   Replace `<admin@yourdomain.com>` with your admin account.
+
+**Step 2: Get the correct IDs and create the service principal**
+
+You need two values:
+- **Application (client) ID** - take this from the **App registration** Overview page.
+- **Enterprise application Object ID** - this is **NOT** the Object ID shown on the App registration page. You must use the Object ID of the **Enterprise application** (the service principal).
+
+To get the Enterprise application Object ID:
+1. In the Azure portal, open your App registration (for example, your EWS app).
+2. On the Overview page, find the field **Managed application in local directory** and click the application name link next to it. This opens the matching Enterprise application. (Alternatively, go to **Microsoft Entra ID > Enterprise applications**, search for your app, and open it.)
+3. On the Enterprise application Overview page, copy the **Object ID**. This value is different from the Object ID on the App registration page.
+
+Now run the following command, using the Application (client) ID and the Enterprise application Object ID:
+
+`New-ServicePrincipal -AppId "<Application-ID>" -ObjectId "<EnterpriseApp-ObjectId>" -DisplayName "<Application Name>"`
+
+**Step 3: Add the service principal to an Exchange Online role group**
+
+After the service principal is created, add it to the **Organization Management** role group so it has the permissions the integration needs to run its cmdlets:
+
+`Add-RoleGroupMember -Identity "Organization Management" -Member "<Application-ID>"`
+
+Use the same `<Application-ID>` value you used in Step 2.
+
+**Step 4: Verify**
+
+You can confirm the service principal is now a member of the role group with the following command:
+
+`Get-RoleGroupMember -Identity "Organization Management"`
+
+**Note:** For more information, see the official [Microsoft Documentation](https://learn.microsoft.com/en-us/powershell/exchange/app-only-auth-powershell-v2).
