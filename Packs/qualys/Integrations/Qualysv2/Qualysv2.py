@@ -1,7 +1,7 @@
 import copy
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from collections.abc import Callable
+from collections.abc import Callable, Iterable, Iterator
 from typing import Any
 import csv
 import io
@@ -9,6 +9,7 @@ import requests
 from xml.etree import ElementTree
 
 from urllib3 import disable_warnings
+from urllib3.exceptions import ProtocolError, ReadTimeoutError
 
 disable_warnings()  # pylint: disable=no-member
 
@@ -32,20 +33,48 @@ ASSETS_FETCH_FROM = "90 days"
 HOST_LIMIT = 1000
 ASSET_SIZE_LIMIT = 10**6  # 1MB
 TEST_FROM_DATE = "one day"
-FETCH_ASSETS_COMMAND_TIME_OUT = 180
 QIDS_BATCH_SIZE = 500
-# Fields that should always be present on a fetched detection asset, along with their default
-# value to use when missing from the raw Qualys response. Add new entries here in the future
-# instead of scattering ad-hoc `setdefault` calls across the code.
-DEFAULT_DETECTION_ASSET_FIELDS: dict[str, Any] = {
-    "LAST_VM_AUTH_SCAN_DATETIME": None,
-}
+# Batch size for the by-date streamed sends. The by-date assets and vulnerabilities responses are streamed and
+# flushed in fixed-size batches into a single snapshot, keeping peak memory ~O(batch) instead of ~O(full response).
+VULNERABILITIES_SEND_BATCH_SIZE = 5000
+# Hosts per commit: their detections are sent together, then the last run is saved with the next host ID as cursor.
+ASSETS_COMMIT_HOSTS_BATCH_SIZE = 100
+# Assets runs in a row that may make no progress before the error is raised (fetch shows as failed). Counted: errors
+# before the first commit (including concurrency-limit errors) and host list timeouts once the limit is already 1.
+ASSETS_MAX_CONSECUTIVE_FAILURES = 5
+# Errors an assets page run recovers from: dropped connections, timeouts, XML cut off mid-stream, and Qualys / XSIAM
+# API errors. The run keeps its last commit, or counts toward ASSETS_MAX_CONSECUTIVE_FAILURES if nothing was committed.
+# Any other error (likely a code bug) is raised right away, since the next run would hit it again.
+RECOVERABLE_PAGE_ERRORS = (
+    requests.exceptions.RequestException,
+    ProtocolError,
+    ReadTimeoutError,
+    ElementTree.ParseError,
+    DemistoException,
+)
+# "nextTrigger" value in the assets last run that makes the server trigger the next fetch iteration immediately.
+ASSETS_NEXT_TRIGGER = "1"
 # Retry configuration for Qualys rate-limit (HTTP 409, Error Code 1965) responses.
 RATE_LIMIT_STATUS_CODE = 409
 RATE_LIMIT_TO_WAIT_HEADER = "X-RateLimit-ToWait-Sec"
 RATE_LIMIT_WAIT_BUFFER_SEC = 2
 RATE_LIMIT_MAX_WAIT_SEC = 45
 RATE_LIMIT_DEFAULT_WAIT_SEC = 30
+
+# Retry configuration for Qualys concurrency-limit (HTTP 409, Error Code 1960) responses.
+# 1960 means a previous long-running instance of this API is still executing on Qualys' side.
+# Unlike the 1965 rate-limit, the `X-RateLimit-ToWait-Sec` header is unreliable here (returns 0),
+# so we back off by a fixed interval to let the previous instance finish before retrying.
+CONCURRENCY_LIMIT_ERROR_CODE = "1960"
+CONCURRENCY_LIMIT_WAIT_SEC = 60
+CONCURRENCY_LIMIT_MAX_RETRIES = 2
+
+# Retry configuration for sending assets and vulnerabilities into XSIAM.
+# The XSIAM ingestion gateway intermittently answers with transient errors (502 from nginx, connection resets,
+# read timeouts). Without a retry a single transient error fails the whole fetch-assets cycle.
+XSIAM_SEND_MAX_ATTEMPTS = 3
+XSIAM_SEND_BACKOFF_SECONDS = 5
+XSIAM_SEND_RETRYABLE_STATUS_CODES = frozenset({408, 500, 502, 503, 504})
 
 ASSETS_DATE_FORMAT = "%Y-%m-%d"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
@@ -1625,6 +1654,28 @@ inner_args_values: dict[str, Any] = {}
 """ CLIENT CLASS """
 
 
+class XSIAMSendError(DemistoException):
+    """A failed XSIAM ingestion request that carries the HTTP status code of the response."""
+
+    def __init__(self, message: str, status_code: int | None = None, exception: Exception | None = None):
+        super().__init__(message, exception)
+        self.status_code = status_code
+
+
+class XSIAMIngestionClient(BaseClient):
+    """Client passed to ``send_assets_and_vulnerabilities_to_xsiam`` so a failed response keeps its HTTP status code.
+
+    ``send_data_to_xsiam`` raises a plain ``DemistoException`` whose message does not include the
+    status code, which makes transient errors indistinguishable from permanent ones.
+    """
+
+    def _handle_error(self, error_handler: Any, res: requests.Response, should_update_metrics: bool) -> None:
+        try:
+            super()._handle_error(error_handler, res, should_update_metrics)
+        except DemistoException as exc:
+            raise XSIAMSendError(str(exc.message), status_code=res.status_code, exception=exc) from exc
+
+
 class Client(BaseClient):
     def __init__(self, base_url, username, password, verify=True, proxy=False, headers=None):
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers, auth=(username, password))
@@ -1740,18 +1791,25 @@ class Client(BaseClient):
 
     def get_host_list_detection(
         self, since_datetime: str, next_page: str | None = None, limit: int = HOST_LIMIT, qid: Optional[str] = None
-    ) -> tuple[str, bool]:
+    ) -> tuple[Optional[requests.Response], bool]:
         """
-        Make a http request to Qualys API to get assets
+        Make a http request to Qualys API to get assets.
+
+        The response is requested as a *streamed* response (``stream=True``) so the (potentially very large) XML body
+        is not buffered in memory. The caller is responsible for consuming the body incrementally
+        (see ``handle_host_list_detection_result``).
+
         Args:
             since_datetime (str): Filter hosts by vulnerability scan end date. Specify in the `YYYY-MM-DD[THH:MM:SSZ]` format.
             next_page (str | None): For pagination; show hosts starting from a minimum host ID value.
             limit (int): Maximum number of host records returned; should be <= 1000000. Specify 0 for no truncation limit.
             qid: The Qualys ID (QID).
         Returns:
-            response from Qualys API
+            A tuple of (streamed ``requests.Response`` or ``None`` on timeout, ``set_new_limit`` flag).
+            ``set_new_limit`` is True only when the request timed out, so the caller can retry with a smaller limit.
         Raises:
-            DemistoException: can be raised by the _http_request function
+            DemistoException: can be raised by the _http_request function, including a concurrency-limit error
+                (HTTP 409, Error Code 1960) that is still active after the in-run retries.
         """
         set_new_limit = False
         self._headers.update({"Content-Type": "application/json"})
@@ -1775,35 +1833,111 @@ class Client(BaseClient):
         )
         # Read Timeout does *not* specify request max execution time! Handle using a timed thread (via `ThreadPoolExecutor`)
 
+        response: Optional[requests.Response] = None
         try:
-            response = self._http_request(
-                method="GET",
-                url_suffix=urljoin(
-                    API_SUFFIX_DETECTION, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"
-                ),
-                resp_type="text",
-                params=params,
-                timeout=timeout,
-                error_handler=self.error_handler,
-            )
+            demisto.debug(f"[HTTP Call] Requesting host list detections (streamed). Used query params: {params}.")
+            url_suffix = urljoin(API_SUFFIX_DETECTION, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1")
+            response = self._request_with_concurrency_retry("GET", url_suffix, params, timeout)
 
         # Handle response timeout (`ReadTimeout`) or response ending prematurely (`ChunkedEncodingError`)
         except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
-            demisto.debug(f"An error occurred during the request: {str(e)}. Trying again in the next fetch with a reduced limit.")
+            demisto.debug(
+                f"[HTTP Error] An error occurred during the request: {str(e)}. "
+                f"Trying again in the next fetch with a reduced limit.\n{traceback.format_exc()}"
+            )
             set_new_limit = True
-            response = ""
+            response = None
 
-        demisto.debug(f"Got host list detections response length of {len(response)} characters. Used query params: {params}.")
+        if not set_new_limit:
+            demisto.debug(f"[HTTP Call] Got streamed host list detections response. Set new limit: {set_new_limit}.")
         return response, set_new_limit
 
-    def get_vulnerabilities(self, since_datetime: str | None = None, detection_qids: str | None = None) -> str:
+    def _request_with_concurrency_retry(
+        self, method: str, url_suffix: str, params: dict[str, Any], timeout: tuple[int, int]
+    ) -> Optional[requests.Response]:
+        """Perform a streamed Qualys request, retrying on Qualys concurrency-limit (Error Code 1960).
+
+        Qualys allows only one running instance of certain long-running APIs (host list detection, knowledge base)
+        per account. If a previous (possibly timed-out) instance is still executing, Qualys returns HTTP 409 with
+        Error Code 1960. The `X-RateLimit-ToWait-Sec` header is unreliable for this case, so we back off by a fixed
+        interval before retrying.
+
+        The response is requested as a *streamed* response (``stream=True``) so the (potentially very large) XML body
+        is not buffered in memory. The caller is responsible for consuming the body incrementally.
+
+        Args:
+            method (str): HTTP method for the request (e.g. "GET", "POST").
+            url_suffix (str): The URL suffix for the request.
+            params (dict[str, Any]): Query params for the request.
+            timeout (tuple[int, int]): (connection, read) timeout for the request.
+
+        Returns:
+            Optional[requests.Response]: The streamed response.
+
+        Raises:
+            DemistoException: For non-1960 errors, or a 1960 error after retries are exhausted.
         """
-        Make a http request to Qualys API to get vulnerabilities
+        for attempt in range(CONCURRENCY_LIMIT_MAX_RETRIES + 1):
+            try:
+                return self._http_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    resp_type="response",
+                    params=params,
+                    timeout=timeout,
+                    error_handler=self.error_handler,
+                    stream=True,
+                )
+            except DemistoException as e:
+                if not self._is_concurrency_limit_error(getattr(e, "res", None)) or attempt == CONCURRENCY_LIMIT_MAX_RETRIES:
+                    raise
+                demisto.debug(
+                    f"[HTTP Error] Hit Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}). "
+                    f"Waiting {CONCURRENCY_LIMIT_WAIT_SEC}s before retry {attempt + 1}/{CONCURRENCY_LIMIT_MAX_RETRIES}. "
+                    f"Error: {str(e)}\n{traceback.format_exc()}"
+                )
+                time.sleep(CONCURRENCY_LIMIT_WAIT_SEC)  # pylint: disable=E9003
+        # Unreachable: the loop either returns or raises, but keeps type checkers satisfied.
+        raise DemistoException(f"Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}) not resolved.")
+
+    @staticmethod
+    def _is_concurrency_limit_error(response: Optional[requests.Response]) -> bool:
+        """Return True if the response is a Qualys concurrency-limit error (HTTP 409, Error Code 1960)."""
+        if response is None:
+            demisto.debug("No response object available; cannot be a concurrency-limit error.")
+            return False
+        status_code = response.status_code
+        if status_code != RATE_LIMIT_STATUS_CODE:
+            demisto.debug(f"Response status code {status_code} is not a concurrency-limit status ({RATE_LIMIT_STATUS_CODE}).")
+            return False
+        try:
+            simple_response = get_simple_response_from_raw(parse_raw_response(response.text))
+            error_code = simple_response.get("CODE") if simple_response else None
+            is_concurrency_limit = bool(simple_response) and error_code == CONCURRENCY_LIMIT_ERROR_CODE
+            demisto.debug(
+                f"Checked response for concurrency limit: status_code={status_code}, error_code={error_code}, "
+                f"is_concurrency_limit={is_concurrency_limit}."
+            )
+            return is_concurrency_limit
+        except Exception as e:
+            demisto.debug(f"Failed to parse response while checking for concurrency limit: {str(e)}\n{traceback.format_exc()}")
+            return False
+
+    def get_vulnerabilities(
+        self, since_datetime: str | None = None, detection_qids: str | None = None
+    ) -> Optional[requests.Response]:
+        """
+        Make a http request to Qualys API to get vulnerabilities.
+
+        The response is requested as a *streamed* response (``stream=True``) so the (potentially very large) XML body
+        is not buffered in memory. The caller is responsible for consuming the body incrementally
+        (see ``handle_vulnerabilities_result``).
+
         Args:
             since_datetime (str | None): Optional timestamp for filtering vulnerabilities that have been modified afterwards.
             detection_qids (str | None): Optional string of comma-separated values for filtering by Qualys host detection IDs.
         Returns:
-            response from Qualys API
+            A streamed ``requests.Response`` from the Qualys API.
         Raises:
             DemistoException: can be raised by the _http_request function
         """
@@ -1817,16 +1951,14 @@ class Client(BaseClient):
         )
 
         try:
-            response = self._http_request(
-                method="POST",
-                url_suffix=urljoin(API_SUFFIX_KNOWLEDGEBASE, "knowledge_base/vuln/?action=list"),
-                resp_type="text",
-                params=params,
-                timeout=timeout,
-                error_handler=self.error_handler,
-            )
+            demisto.debug(f"[HTTP Call] Requesting vulnerabilities (streamed). Used query params: {params}.")
+            url_suffix = urljoin(API_SUFFIX_KNOWLEDGEBASE, "knowledge_base/vuln/?action=list")
+            response = self._request_with_concurrency_retry("POST", url_suffix, params, timeout)
         except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
-            demisto.error(f"An error occurred during the vulnerabilities request: {str(e)}. Will retry in the next fetch cycle.")
+            demisto.error(
+                f"[HTTP Error] An error occurred during the vulnerabilities request: {str(e)}. "
+                f"Will retry in the next fetch cycle.\n{traceback.format_exc()}"
+            )
             raise
 
         return response
@@ -2858,50 +2990,131 @@ def get_next_page_activity_logs(footer):
     return max_id
 
 
-def handle_host_list_detection_result(raw_response: str) -> tuple[list, Optional[str]]:
+def handle_host_list_detection_result(raw_response: Optional[requests.Response]) -> tuple[list, Optional[str]]:
     """
-    Handles Host list detection response - parses xml to json and gets the list
+    Handles Host list detection response.
+
+    Consumes the (potentially very large) XML body *incrementally* using the shared ``stream_xml_elements`` helper,
+    so the whole document is never held in memory at once. In a single pass over the stream it extracts three tags:
+      - ``HOST``          -> a host record; the large, repeated element that we stream one at a time.
+      - ``WARNING``       -> the pagination block; holds the "next page" URL at ``WARNING/URL``.
+      - ``SIMPLE_RETURN`` -> the error envelope; if present, its ``RESPONSE/CODE`` signals an API error.
+
+    ``WARNING`` and ``SIMPLE_RETURN`` are small, appear at most once, and are converted to JSON so we can navigate
+    their exact nested paths (matching the previous ``xml2json`` behavior). Only the ``HOST`` stream is memory-heavy.
+
     Args:
-        raw_response (requests.Response): the raw result received from Qualys API command
+        raw_response (Optional[requests.Response]): the streamed response received from the Qualys API command.
     Returns:
-        List with data generated for the result given
+        A tuple of (list of host dicts, next page URL string).
     """
-    demisto.debug("Going to parse raw_response into the hosts list")
-    formatted_response = parse_raw_response(raw_response)
-    simple_response = get_simple_response_from_raw(formatted_response)
+    demisto.debug("[Parse] Going to stream-parse the host list detection response into the hosts list")
+
+    stream_state: dict = {}
+    hosts = list(iter_host_list_detections(raw_response, stream_state))
+    response_next_url = stream_state.get("next_url", "")
+
+    demisto.debug(f"[Parse] Extracted a list of {len(hosts)} hosts, and next URL - {response_next_url}")
+
+    return hosts, str(response_next_url)
+
+
+def iter_host_list_detections(raw_response: Optional[requests.Response], stream_state: dict) -> Iterator[dict]:
+    """Yields host dicts one at a time from the streamed host-list-detection response.
+
+    Generator form of `handle_host_list_detection_result` and the single source of truth for parsing this response.
+    Parsing semantics are identical, but hosts are yielded lazily instead of accumulated, so the (potentially large)
+    hosts list is never fully held in memory. In a single pass it extracts three tags:
+      - ``HOST``          -> a host record; the large, repeated element, yielded one at a time.
+      - ``WARNING``       -> the pagination block; its ``URL`` is written to ``stream_state["next_url"]``.
+      - ``SIMPLE_RETURN`` -> the error envelope; if present, its ``RESPONSE/CODE`` raises a DemistoException.
+
+    Because ``WARNING``/``SIMPLE_RETURN`` are only known once iteration completes, the next-page URL is exposed via
+    ``stream_state`` for the caller to read *after* the generator is exhausted, and an API error raises during iteration.
+
+    Args:
+        raw_response (Optional[requests.Response]): the streamed response received from the Qualys API command.
+        stream_state (dict): mutable holder; populated with ``next_url`` (str) after the stream is consumed.
+    Yields:
+        One host dict per ``HOST`` element.
+    """
+    stream_state["next_url"] = ""
+
+    if raw_response is None:
+        demisto.debug("[Parse] Received an empty (None) host list detection response. Yielding no hosts.")
+        return
+
+    simple_response: dict = {}
+    raw_response.raw.decode_content = True
+
+    # Single low-memory pass over the streamed body. Data must be extracted from each element *during* iteration,
+    # because `stream_xml_elements` clears each element once the generator advances past it.
+    for local_tag, element in stream_xml_elements(raw_response.raw, tags=["HOST", "WARNING", "SIMPLE_RETURN"]):
+        if local_tag == "HOST":
+            # Convert this HOST subtree to a dict.
+            host_dict = elem_to_internal(element)
+            yield host_dict.get("HOST", host_dict)
+        elif local_tag == "WARNING":
+            # Pagination block (RESPONSE/WARNING/URL). Small subtree, parse fully and read the exact path.
+            warning_dict = elem_to_internal(element).get("WARNING", {})
+            stream_state["next_url"] = warning_dict.get("URL", "") or stream_state["next_url"]
+        elif local_tag == "SIMPLE_RETURN":
+            # Error envelope (SIMPLE_RETURN/RESPONSE/{CODE,TEXT}). Small subtree, parse fully.
+            simple_return = elem_to_internal(element)
+            simple_response = get_simple_response_from_raw(simple_return) or {}
+
     if simple_response and simple_response.get("CODE"):
         raise DemistoException(f"\n{simple_response.get('TEXT')} \nCode: {simple_response.get('CODE')}")
 
-    response_requested_value = dict_safe_get(
-        formatted_response, ["HOST_LIST_VM_DETECTION_OUTPUT", "RESPONSE", "HOST_LIST", "HOST"]
-    )
-    response_next_url = dict_safe_get(
-        formatted_response, ["HOST_LIST_VM_DETECTION_OUTPUT", "RESPONSE", "WARNING", "URL"], default_return_value=""
-    )
-    if isinstance(response_requested_value, dict):
-        response_requested_value = [response_requested_value]
 
-    host_count = len(response_requested_value) if response_requested_value else 0
-    demisto.debug(f"Extracted a list of {host_count} hosts, and next URL - {response_next_url}")
-
-    return response_requested_value, str(response_next_url)
-
-
-def handle_vulnerabilities_result(raw_response: str) -> list:
+def handle_vulnerabilities_result(raw_response: Optional[requests.Response]) -> list:
     """
-    Handles vulnerabilities response - parses xml to json and gets the list
+    Handles vulnerabilities response.
+
+    Consumes the (potentially very large) XML body *incrementally* using the shared ``stream_xml_elements`` helper,
+    so the whole document is never held in memory at once. Only the repeated ``VULN`` element is extracted - the
+    large, memory-heavy part of the response - streamed one record at a time.
+
+    API errors on this endpoint are surfaced by the HTTP-layer ``error_handler`` (which parses the ``SIMPLE_RETURN``
+    envelope and raises before the body reaches this function), so a successful response contains only ``VULN``
+    records. This preserves the original (pre-streaming) behavior, which likewise only read ``VULN`` elements.
+
     Args:
-        raw_response (str): the raw XML result received from Qualys API command
+        raw_response (Optional[requests.Response]): the streamed response received from the Qualys API command.
     Returns:
-        List with data generated for the result given
+        List of vulnerability dicts.
     """
-    formatted_response = parse_raw_response(raw_response)
+    demisto.debug("[Parse] Going to stream-parse the vulnerabilities response into the vulnerabilities list")
 
-    vulnerabilities = dict_safe_get(formatted_response, ["KNOWLEDGE_BASE_VULN_LIST_OUTPUT", "RESPONSE", "VULN_LIST", "VULN"])
-    if isinstance(vulnerabilities, dict):
-        vulnerabilities = [vulnerabilities]
+    vulnerabilities = list(iter_vulnerabilities_result(raw_response))
+
+    demisto.debug(f"[Parse] Extracted a list of {len(vulnerabilities)} vulnerabilities")
 
     return vulnerabilities
+
+
+def iter_vulnerabilities_result(raw_response: Optional[requests.Response]) -> Iterator[dict]:
+    """
+    Yields vulnerability dicts one at a time from the streamed response, without accumulating the full list.
+
+    This is the generator form of ``handle_vulnerabilities_result``: it enables the caller to consume and send
+    vulnerabilities in bounded batches, keeping peak memory proportional to the batch size rather than the total
+    number of vulnerabilities. Parsing semantics are identical to ``handle_vulnerabilities_result``.
+
+    Args:
+        raw_response (Optional[requests.Response]): the streamed response received from the Qualys API command.
+    Yields:
+        One vulnerability dict per ``VULN`` element.
+    """
+    if raw_response is None:
+        demisto.debug("[Parse] Received an empty (None) vulnerabilities response. Yielding no vulnerabilities.")
+        return
+
+    raw_response.raw.decode_content = True
+
+    for _local_tag, element in stream_xml_elements(raw_response.raw, tags=["VULN"]):
+        vuln_dict = elem_to_internal(element)
+        yield vuln_dict.get("VULN", vuln_dict)
 
 
 def remove_last_events(events, time_to_remove, time_field):
@@ -2934,19 +3147,6 @@ def add_fields_to_events(events, time_field_path, event_type_field):
         for event in events:
             event["_time"] = dict_safe_get(event, time_field_path)
             event["event_type"] = event_type_field
-
-
-def apply_default_detection_asset_fields(asset: dict[str, Any]) -> None:
-    """
-    Ensures that fields listed in DEFAULT_DETECTION_ASSET_FIELDS are always present on the asset,
-    filling in the configured default value when a field is missing.
-
-    To add a new default field in the future, simply add an entry to DEFAULT_DETECTION_ASSET_FIELDS.
-
-    :param asset: the detection asset dict to mutate in-place.
-    """
-    for field, default_value in DEFAULT_DETECTION_ASSET_FIELDS.items():
-        asset.setdefault(field, default_value)
 
 
 def truncate_asset_size(asset):
@@ -2999,23 +3199,121 @@ def get_detections_from_hosts(hosts):
     :return: parsed events.
     """
     demisto.debug(f"Received {len(hosts)} hosts for extraction")
-    fetched_assets = []
+    fetched_assets = list(iter_detections_from_hosts(hosts))
+    demisto.debug(f"[Parse] Extracted {len(fetched_assets)} assets from hosts")
+    return fetched_assets, False
+
+
+def iter_detections_from_hosts(hosts: Iterable[dict]) -> Iterator[dict]:
+    """Yields detection (asset) rows one at a time from a stream of hosts, without accumulating the full list.
+
+    Generator form of `get_detections_from_hosts` and the single source of truth for the host->detection fan-out:
+    one row per detection, with a deep copy of the host-without-detections per row so each row is fully independent
+    (required because `truncate_asset_size`/`add_fields_to_events` mutate rows in place), plus the same per-row
+    `truncate_asset_size`. This is also the single place where `_time` and `event_type` are added to asset rows.
+    Yielding lazily keeps peak memory proportional to the consumer's batch size.
+
+    Args:
+        hosts (Iterable[dict]): an iterable (typically a generator) of host dicts.
+    Yields:
+        One detection (asset) row dict per detection.
+    """
     for host in hosts:
         detections_list = host.get("DETECTION_LIST", {}).get("DETECTION") or [{}]
 
         if not isinstance(detections_list, list):  # In case detections_list = {}
             detections_list = [detections_list]
 
-        for detection in detections_list:
-            new_detection = copy.deepcopy(host)
-            del new_detection["DETECTION_LIST"]
-            new_detection["DETECTION"] = detection
-            apply_default_detection_asset_fields(new_detection)
-            fetched_assets.append(new_detection)
-            truncate_asset_size(new_detection)
+        # Build the host-without-detections once per host so the (potentially large) detections list is not
+        # deep-copied per detection (keeps it O(N) rather than O(N^2) for a host with N detections).
+        host_without_detections = {key: value for key, value in host.items() if key != "DETECTION_LIST"}
 
-    demisto.debug(f"Extracted {len(fetched_assets)} assets from hosts")
-    return fetched_assets, False
+        for detection in detections_list:
+            new_detection = copy.deepcopy(host_without_detections)
+            new_detection["DETECTION"] = detection
+            truncate_asset_size(new_detection)
+            add_fields_to_events([new_detection], ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
+            yield new_detection
+
+
+def is_retryable_xsiam_error(error: BaseException) -> bool:
+    """Decide whether a failure while sending data into XSIAM is transient and worth retrying.
+
+    Args:
+        error (BaseException): The exception raised by ``send_assets_and_vulnerabilities_to_xsiam``.
+
+    Returns:
+        bool: True for retryable HTTP status codes, timeouts and dropped connections.
+    """
+    if isinstance(error, XSIAMSendError) and error.status_code is not None:
+        return error.status_code in XSIAM_SEND_RETRYABLE_STATUS_CODES
+    # SSL and proxy errors are configuration problems; retrying them only delays the failure.
+    if isinstance(error, requests.exceptions.SSLError | requests.exceptions.ProxyError):
+        return False
+    if isinstance(
+        error,
+        requests.exceptions.Timeout | requests.exceptions.ConnectionError | requests.exceptions.ChunkedEncodingError,
+    ):
+        return True
+    # BaseClient wraps network errors in a DemistoException and keeps the original as `.exception`.
+    if isinstance(error, DemistoException) and isinstance(error.exception, BaseException):
+        return is_retryable_xsiam_error(error.exception)
+    return False
+
+
+def send_assets_and_vulnerabilities_to_xsiam_with_retry(data: list, **kwargs: Any) -> None:
+    """Call ``send_assets_and_vulnerabilities_to_xsiam`` with the same arguments, retrying transient ingestion errors.
+
+    The only differences from a direct ``send_assets_and_vulnerabilities_to_xsiam`` call are:
+        - ``client_class=XSIAMIngestionClient``, so a failed response keeps its HTTP status code.
+        - Each attempt receives a shallow copy of ``data``. The streaming send path clears the items of the
+          list it is given while serializing them, so the copy keeps the original rows intact for a retry.
+        - A retry resends the whole batch. If the batch was split into several chunks and a later chunk failed,
+          the earlier chunks are sent again into the same snapshot, so their rows may appear twice.
+        - On a retryable error (see ``XSIAM_SEND_RETRYABLE_STATUS_CODES``, timeouts and dropped
+          connections) the same call is repeated, up to ``XSIAM_SEND_MAX_ATTEMPTS`` times, with
+          exponential backoff. Any other error is raised immediately, exactly as before.
+
+    Only the product, the attempt number, the error class and the HTTP status code are logged here -
+    never the payload, the headers or the response body.
+
+    Args:
+        data (list): The assets or vulnerabilities rows to send.
+        **kwargs: Keyword arguments forwarded to ``send_assets_and_vulnerabilities_to_xsiam``.
+
+    Raises:
+        Exception: The last error, when it is not retryable or all attempts are exhausted.
+    """
+    label = f"product={kwargs.get('product')}"
+    send_kwargs: dict[str, Any] = {**kwargs, "client_class": XSIAMIngestionClient}
+    max_attempts = XSIAM_SEND_MAX_ATTEMPTS
+    for attempt in range(1, max_attempts + 1):
+        try:
+            send_assets_and_vulnerabilities_to_xsiam(list(data), **send_kwargs)
+        except Exception as exc:
+            status_code = getattr(exc, "status_code", None)
+            error_name = type(exc).__name__
+            if not is_retryable_xsiam_error(exc):
+                demisto.debug(f"[XSIAM Send] {label} failed with a non-retryable error ({error_name}, {status_code=}).")
+                raise
+            if attempt == max_attempts:
+                demisto.error(
+                    f"[XSIAM Send] {label} failed after {max_attempts} attempts. Last error: {error_name}, {status_code=}."
+                )
+                raise
+            delay = XSIAM_SEND_BACKOFF_SECONDS * 2 ** (attempt - 1)
+            demisto.debug(
+                f"[XSIAM Send] {label} attempt {attempt}/{max_attempts} failed with a retryable error "
+                f"({error_name}, {status_code=}). Retrying in {delay}s."
+            )
+            time.sleep(delay)  # pylint: disable=E9003  # intentional backoff before retrying a transient XSIAM error
+            continue
+
+        if attempt > 1:
+            demisto.info(f"[XSIAM Send] {label} succeeded on attempt {attempt}/{max_attempts}.")
+        else:
+            demisto.debug(f"[XSIAM Send] {label} sent successfully on attempt 1/{max_attempts}.")
+        return
 
 
 def close_snapshot_if_empty(
@@ -3049,7 +3347,7 @@ def close_snapshot_if_empty(
     return data, items_count
 
 
-def send_assets_and_vulnerabilities_to_xsiam(
+def publish_assets_and_vulnerabilities(
     assets: list,
     vulnerabilities: list,
     cumulative_assets_count: int,
@@ -3082,11 +3380,10 @@ def send_assets_and_vulnerabilities_to_xsiam(
     if is_closing_snapshot:
         assets, total_assets_to_report = close_snapshot_if_empty(assets, total_assets_to_report, snapshot_id, "assets")
 
-    send_data_to_xsiam(
-        data=assets,
+    send_assets_and_vulnerabilities_to_xsiam_with_retry(
+        assets,
         vendor=VENDOR,
         product="assets",
-        data_type="assets",
         snapshot_id=snapshot_id,
         items_count=str(total_assets_to_report),
         should_update_health_module=False,
@@ -3103,11 +3400,10 @@ def send_assets_and_vulnerabilities_to_xsiam(
             vulnerabilities, total_vulns_to_report, snapshot_id, "vulnerabilities"
         )
 
-    send_data_to_xsiam(
-        data=vulnerabilities,
+    send_assets_and_vulnerabilities_to_xsiam_with_retry(
+        vulnerabilities,
         vendor=VENDOR,
         product="vulnerabilities",
-        data_type="assets",
         snapshot_id=snapshot_id,
         items_count=str(total_vulns_to_report),
         should_update_health_module=False,
@@ -3173,15 +3469,17 @@ def get_host_list_detections_events(
     demisto.debug(f"Finished getting client host list detections. Set new limit: {set_new_limit}")
 
     if not set_new_limit:
-        host_list_assets, next_url = handle_host_list_detection_result(host_list_detections)
+        try:
+            host_list_assets, next_url = handle_host_list_detection_result(host_list_detections)
+        finally:
+            if host_list_detections is not None:
+                host_list_detections.close()
 
         demisto.debug("Starting to parse asset detections from hosts.")
         assets, set_new_limit = get_detections_from_hosts(host_list_assets) if (host_list_assets and not is_test) else ([], False)
         demisto.debug(f"Finished parsing asset detections from hosts, created {len(assets)} assets.")
 
         if not set_new_limit:
-            demisto.debug(f"Adding fields to {len(assets)} parsed asset detections.")
-            add_fields_to_events(assets, ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
             demisto.debug(f"Extracting next page from URL: {next_url}.")
             next_page = get_next_page_from_url(next_url, "id_min")
 
@@ -3189,77 +3487,55 @@ def get_host_list_detections_events(
     return assets, next_page, set_new_limit
 
 
-def get_vulnerabilities(client: Client, since_datetime: str | None = None, detection_qids: list | None = None) -> list:
-    """Get vulnerabilities list from qualys
+def fetch_vulnerabilities_of_new_qids(client: Client, assets: list[dict], fetched_qids: set) -> list[dict]:
+    """Fetches the vulnerabilities of the assets' QIDs that were not fetched yet in this run, and marks them as fetched.
+
+    The new QIDs are requested from the knowledge base in chunks of ``QIDS_BATCH_SIZE``. They are marked as fetched
+    only after all chunks succeeded, so a failed request leaves them to be fetched again. A QID is marked even if the
+    knowledge base returned no vulnerability for it.
+
     Args:
-        client (Client): Qualys client
-        since_datetime (str | None): Optional start fetch date.
-        detection_qids (list | None): Optional list of Qualys host detection IDs.
+        client (Client): Qualys client.
+        assets (list[dict]): Asset (detection) rows.
+        fetched_qids (set): QIDs already fetched in this run. Updated in place.
     Returns:
-        list vulnerabilities
+        list[dict]: The vulnerabilities of the new QIDs.
     """
-    demisto.debug("Starting to fetch vulnerabilities")
+    new_qids = list({asset.get("DETECTION", {}).get("QID") for asset in assets} - fetched_qids - {None})
+    if not new_qids:
+        return []
 
-    if since_datetime:
-        host_list_detections = client.get_vulnerabilities(since_datetime=since_datetime)
-        vulnerabilities = handle_vulnerabilities_result(host_list_detections) or []
+    demisto.debug(f"[Vulnerabilities] Fetching vulnerabilities for {len(new_qids)} new QIDs.")
+    vulnerabilities: list[dict] = []
+    for qids_batch in batch(new_qids, QIDS_BATCH_SIZE):
+        raw_response = client.get_vulnerabilities(detection_qids=",".join(qids_batch))
+        try:
+            vulnerabilities.extend(handle_vulnerabilities_result(raw_response) or [])
+        finally:
+            if raw_response is not None:
+                raw_response.close()
 
-    elif detection_qids:
-        vulnerabilities = []
-        for qids_batch in batch(detection_qids, QIDS_BATCH_SIZE):
-            host_list_detections = client.get_vulnerabilities(detection_qids=",".join(qids_batch))
-            vulnerabilities_batch = handle_vulnerabilities_result(host_list_detections) or []
-            vulnerabilities.extend(vulnerabilities_batch)
-
-    else:
-        raise ValueError("Either 'since_datetime' or 'detection_qids' need to be specified")
-
-    demisto.debug(f"Parsed detections from hosts, got {len(vulnerabilities)=} vulnerabilities.")
+    fetched_qids.update(new_qids)
+    demisto.debug(f"[Vulnerabilities] Got {len(vulnerabilities)} vulnerabilities for {len(new_qids)} new QIDs.")
     return vulnerabilities
 
 
-def fetch_assets(client: Client, assets_last_run):
-    """Fetches host list detections
+def schedule_next_assets_run_immediately(last_run: dict) -> dict:
+    """Sets `nextTrigger` to 1 and `type` to 1 (assets), so the server triggers the next assets fetch right away.
+
     Args:
-        client: Qualys client
-        assets_last_run: The last run.
-    Return:
-        assets: assets to push to xsiam
-        vulnerabilities: vulnerabilities to push to xsiam
+        last_run (dict): Last assets run dictionary. Updated in place.
+
+    Returns:
+        dict: The updated last assets run.
     """
-    since_datetime = assets_last_run.get("since_datetime", "")
-    next_page = assets_last_run.get("next_page", "")
-    total_assets = assets_last_run.get("total_assets", 0)
-    snapshot_id = str(assets_last_run.get("snapshot_id", str(round(time.time() * 1000))))
-    limit = assets_last_run.get("limit", HOST_LIMIT)
-
-    demisto.debug(f"Starting fetch process for assets {snapshot_id=}")
-
-    if not since_datetime:
-        since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
-
-    assets, next_run_page, set_new_limit = get_host_list_detections_events(client, since_datetime, next_page, limit)
-
-    total_assets += len(assets)
-    stage = "assets" if next_run_page else "vulnerabilities"
-    amount_to_report = 1 if next_run_page else total_assets  # We report 1 as long as we have not finished pulling
-
-    new_last_run = {
-        "stage": stage,
-        "next_page": next_run_page,
-        "total_assets": total_assets,
-        "since_datetime": since_datetime,
-        "snapshot_id": snapshot_id,
-        "nextTrigger": "0",
-        "type": FETCH_COMMAND.get("assets"),
-    }
-
-    return assets, new_last_run, amount_to_report, snapshot_id, set_new_limit
+    last_run["nextTrigger"] = ASSETS_NEXT_TRIGGER  # Trigger next fetch iteration immediately
+    last_run["type"] = FETCH_COMMAND["assets"]  # Set next fetch iteration to type 'assets'
+    return last_run
 
 
 def set_assets_last_run_with_new_limit(last_run: dict, limit: int) -> dict:
-    """Updates last assets run by setting `limit` to half, `nextTrigger` to 0, and `type` to 1 (assets).
-    This instructs the server to immediately trigger the next assets fetch iteration.
+    """Updates last assets run by setting `limit` to half (minimum 1) and scheduling the next run immediately.
 
     Args:
         last_run (dict): Last assets run dictionary.
@@ -3271,37 +3547,466 @@ def set_assets_last_run_with_new_limit(last_run: dict, limit: int) -> dict:
     new_limit = int(limit / 2) if limit > 1 else 1
     demisto.debug(f"Starting setting host limit to: {new_limit}.")
     last_run["limit"] = new_limit
-    last_run["nextTrigger"] = "0"  # Trigger next fetch iteration immediately
-    last_run["type"] = FETCH_COMMAND["assets"]  # Set next fetch iteration to type 'assets'
+    schedule_next_assets_run_immediately(last_run)
     demisto.debug(f"Finished setting host limit to: {new_limit}.")
     return last_run
 
 
-def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], detection_qids: list | None = None):
-    """Fetches vulnerabilities
+def count_assets_failure(last_run: dict[str, Any], reason: str, error: Optional[Exception] = None) -> dict[str, Any]:
+    """Counts a run that made no progress, raising once ``ASSETS_MAX_CONSECUTIVE_FAILURES`` runs in a row failed.
+
     Args:
-        client (Client): Qualys client
-        last_run (dict): The last run.
-        detection_qids (list | None): List of Qualys host detection IDs.
-    Return:
-        vulnerabilities: vulnerabilities to push to xsiam
-        last_run: The  new last run to save.
+        last_run (dict): Last assets run dictionary.
+        reason (str): Description of the failure, used in the raised error.
+        error (Exception | None): The original error, chained to the raised error if given.
+
+    Returns:
+        dict: A copy of the last run with the incremented ``consecutive_failures``.
     """
-    demisto.debug("Starting fetch for vulnerabilities")
+    consecutive_failures = last_run.get("consecutive_failures", 0) + 1
+    demisto.debug(
+        f"[Assets] Run made no progress, counting failure {consecutive_failures}/{ASSETS_MAX_CONSECUTIVE_FAILURES}. "
+        f"next_page={last_run.get('next_page')}, snapshot_id={last_run.get('snapshot_id')}, "
+        f"limit={last_run.get('limit', HOST_LIMIT)}. Reason: {reason}"
+    )
+    if consecutive_failures >= ASSETS_MAX_CONSECUTIVE_FAILURES:
+        raise DemistoException(
+            f"Assets fetch failed {consecutive_failures} times in a row without progress. Last error: {reason}"
+        ) from error
+    return {**last_run, "consecutive_failures": consecutive_failures}
 
-    if detection_qids:
-        demisto.debug(f"Getting vulnerabilities for {len(detection_qids)} QIDs")
-        vulnerabilities = get_vulnerabilities(client, detection_qids=detection_qids)
-    else:
-        since_datetime = (
-            last_run.get("since_datetime") or arg_to_datetime(ASSETS_FETCH_FROM, required=True).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+
+def iter_batches(records: Iterable[dict], size: int) -> Iterator[list[dict]]:
+    """Groups an iterable into lists of at most ``size`` items. Only the last list can be shorter than ``size``."""
+    batch: list[dict] = []
+    for record in records:
+        batch.append(record)
+        if len(batch) >= size:
+            yield batch
+            batch = []
+    if batch:
+        yield batch
+
+
+def send_snapshot_batch(records: list[dict], product: str, snapshot_id: str, items_count: int) -> None:
+    """Sends one batch into an assets-type snapshot.
+
+    ``items_count=1`` keeps the snapshot unsealed; the cumulative total seals it on the final send.
+
+    Args:
+        records (list[dict]): The rows to send.
+        product (str): The dataset product ("assets" or "vulnerabilities").
+        snapshot_id (str): The snapshot ID.
+        items_count (int): The items count to report for the snapshot.
+    """
+    demisto.debug(f"[Snapshot] Sending {len(records)} {product} rows to {snapshot_id=} with {items_count=}.")
+    send_assets_and_vulnerabilities_to_xsiam_with_retry(
+        records,
+        vendor=VENDOR,
+        product=product,
+        snapshot_id=snapshot_id,
+        items_count=str(items_count),
+        should_update_health_module=False,
+    )
+
+
+def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, Any]) -> dict[str, Any]:
+    """Fetches vulnerabilities (by last modified date) and sends them to XSIAM in bounded batches.
+
+    Consumes the streamed response one record at a time and flushes every ``VULNERABILITIES_SEND_BATCH_SIZE``
+    records into the *same* vulnerabilities snapshot, so peak memory is proportional to the batch size instead
+    of the total number of vulnerabilities, while the externally-observable dataset is identical to a single
+    send: every non-final batch carries ``items_count=1`` (unsealed) and only the final batch declares the
+    cumulative total to seal the snapshot (one snapshot id per cycle, matching the previous single-send logic).
+
+    Errors are not caught here: the caller does not update the last run, so the next run retries the whole stage
+    with a new snapshot ID (see ``fetch_assets_and_vulnerabilities_by_date``).
+
+    Args:
+        client (Client): Qualys client.
+        last_run (dict): The last run.
+    Returns:
+        dict: The new last run to save.
+    """
+    since_datetime = (
+        last_run.get("since_datetime") or arg_to_datetime(ASSETS_FETCH_FROM, required=True).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+    )
+    snapshot_id = str(round(time.time() * 1000))
+    demisto.debug(f"[Vulnerabilities] Getting vulnerabilities modified after {since_datetime} (streamed batches) {snapshot_id=}")
+
+    raw_response = client.get_vulnerabilities(since_datetime=since_datetime)
+
+    total_sent = 0
+    remainder: list[dict] = []
+
+    try:
+        for batch in iter_batches(iter_vulnerabilities_result(raw_response), VULNERABILITIES_SEND_BATCH_SIZE):
+            if len(batch) < VULNERABILITIES_SEND_BATCH_SIZE:
+                remainder = batch  # only the last batch can be partial; it is sent below as the sealing send
+                break
+            send_snapshot_batch(batch, "vulnerabilities", snapshot_id, items_count=1)  # unsealed: more may follow
+            total_sent += len(batch)
+            batch.clear()  # free the sent rows before the next batch is parsed (keeps one batch in memory, not two)
+
+        # The final send seals the snapshot with the cumulative total. If the rows divided evenly (empty remainder),
+        # close_snapshot_if_empty emits a closing signal so the snapshot still seals with the correct count.
+        total_sent += len(remainder)
+        remainder, seal_count = close_snapshot_if_empty(remainder, total_sent, snapshot_id, "vulnerabilities")
+        send_snapshot_batch(remainder, "vulnerabilities", snapshot_id, items_count=seal_count)
+    finally:
+        if raw_response is not None:
+            raw_response.close()
+
+    demisto.debug(f"[Vulnerabilities] Finished streaming vulnerabilities to XSIAM. Total sent: {total_sent}. {snapshot_id=}")
+    return DEFAULT_LAST_ASSETS_RUN
+
+
+def build_next_last_run(
+    stage: str,
+    next_page: Optional[str],
+    total_assets: int,
+    since_datetime: str,
+    snapshot_id: str,
+    limit: Optional[int] = None,
+    total_vulnerabilities: Optional[int] = None,
+) -> dict[str, Any]:
+    """Builds the assets last run that triggers the next fetch iteration immediately.
+
+    ``limit`` and ``total_vulnerabilities`` are optional and added only when given, so each flow saves exactly the
+    fields it uses. ``consecutive_failures`` is intentionally never set here: any commit resets it.
+    """
+    next_last_run: dict[str, Any] = {
+        "stage": stage,
+        "next_page": next_page,
+        "total_assets": total_assets,
+        "since_datetime": since_datetime,
+        "snapshot_id": snapshot_id,
+        "nextTrigger": ASSETS_NEXT_TRIGGER,
+        "type": FETCH_COMMAND.get("assets"),
+    }
+    if limit is not None:
+        next_last_run["limit"] = limit
+    if total_vulnerabilities is not None:
+        next_last_run["total_vulnerabilities"] = total_vulnerabilities
+    return next_last_run
+
+
+def send_assets_batch(rows: list[dict], snapshot_id: str, items_count: int) -> None:
+    """Sends one batch of asset rows into the assets snapshot, logging its host IDs to verify their order."""
+    demisto.debug(f"[HOST ORDER] Host IDs in batch: {list(dict.fromkeys(row.get('ID') for row in rows))}")
+    send_snapshot_batch(rows, "assets", snapshot_id, items_count)
+
+
+def log_unexpected_assets_error(error: Exception, committed_run: Optional[dict[str, Any]]) -> None:
+    """Logs an error the page functions do not recover from (likely a code bug) before it is raised.
+
+    Progress saved earlier in the run was already stored with ``demisto.setAssetsLastRun``,
+    so raising loses nothing; the next run resumes from that point.
+    """
+    saved_page = committed_run.get("next_page") if committed_run else None
+    demisto.error(
+        f"[Assets] Unexpected {type(error).__name__} while processing the page; raising. "
+        f"Progress saved in this run is kept ({saved_page=}). Error: {error}\n{traceback.format_exc()}"
+    )
+
+
+def handle_assets_page_error(
+    error: Exception, last_run: dict[str, Any], committed_run: Optional[dict[str, Any]]
+) -> tuple[dict[str, Any], bool]:
+    """Ends the run after a recoverable page failure (see ``RECOVERABLE_PAGE_ERRORS``), keeping the last commit.
+
+    - If a commit was made in this run, returns it with ``set_new_limit=False``.
+    - Otherwise the failure counts toward ``consecutive_failures`` (raising once ``ASSETS_MAX_CONSECUTIVE_FAILURES``
+      runs in a row made no progress):
+        - A Qualys concurrency-limit error (HTTP 409, Error Code 1960) on either request (host list or knowledge
+          base) keeps the limit, since the page size is not the cause, and schedules the next run immediately.
+        - Any other error returns ``set_new_limit=True`` so the caller halves the limit.
+    """
+    if committed_run is not None:
+        demisto.error(
+            f"[Assets] Stopped mid-page after a commit; keeping the commit (next_page={committed_run.get('next_page')}) "
+            f"without counting a failure. Error: {error}\n{traceback.format_exc()}"
         )
-        demisto.debug(f"Getting vulnerabilities modified after {since_datetime}")
-        vulnerabilities = get_vulnerabilities(client, since_datetime=since_datetime)
+        return committed_run, False
 
-    new_last_run = DEFAULT_LAST_ASSETS_RUN
+    demisto.error(f"[Assets] Run failed with nothing committed. Error: {error}\n{traceback.format_exc()}")
+    counted_run = count_assets_failure(last_run, str(error), error)
+    failures, limit = counted_run["consecutive_failures"], counted_run.get("limit", HOST_LIMIT)
+    if Client._is_concurrency_limit_error(getattr(error, "res", None)):
+        demisto.debug(
+            f"[Assets] Concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}) still active: failure "
+            f"{failures}/{ASSETS_MAX_CONSECUTIVE_FAILURES}, keeping {limit=}, next run starts immediately."
+        )
+        return schedule_next_assets_run_immediately(counted_run), False
+    demisto.debug(
+        f"[Assets] Error with nothing committed: failure {failures}/{ASSETS_MAX_CONSECUTIVE_FAILURES}, "
+        f"the next run halves {limit=}."
+    )
+    return counted_run, True
 
-    return vulnerabilities, new_last_run
+
+def handle_assets_request_timeout(last_run: dict[str, Any]) -> tuple[dict[str, Any], bool]:
+    """Ends the run after the host list request timed out.
+
+    While the limit is above 1, returns ``set_new_limit=True`` without counting, so the caller halves the limit
+    (at most ~10 runs from the default limit). Once the limit is already 1, halving cannot help anymore, so the
+    timeout counts toward ``consecutive_failures`` and the next run is scheduled immediately with the same limit.
+    """
+    limit = last_run.get("limit", HOST_LIMIT)
+    if limit > 1:
+        demisto.debug(f"[Assets] Host list request timed out with {limit=}; the next run halves the limit (not counted).")
+        return last_run, True
+    demisto.debug("[Assets] Host list request timed out and the limit is already 1; counting the timeout as a failure.")
+    counted_run = count_assets_failure(last_run, "Host list detection request timed out with limit 1.")
+    demisto.debug(f"[Assets] Keeping limit=1, next run starts immediately. {counted_run['consecutive_failures']=}")
+    return schedule_next_assets_run_immediately(counted_run), False
+
+
+def request_host_list_page(
+    client: Client, last_run: dict[str, Any], since_datetime: str, next_page: str, limit: int
+) -> tuple[Optional[requests.Response], Optional[tuple[dict[str, Any], bool]]]:
+    """Requests one host list detection page, handling a timeout or concurrency-limit error the same way for both flows.
+
+    Returns:
+        tuple: (streamed response, failed_request_outcome).
+            - On success: (response, None).
+            - On a timeout or concurrency-limit error: (None, (last run to save, set_new_limit flag)). The page
+              function returns this outcome as is, ending the run without streaming.
+        Other request errors are raised.
+    """
+    try:
+        raw_response, timed_out = client.get_host_list_detection(since_datetime, next_page, limit)
+    except DemistoException as e:
+        if not Client._is_concurrency_limit_error(getattr(e, "res", None)):
+            raise
+        demisto.debug("[Assets] Host list request hit the concurrency limit after retries; nothing was streamed or sent.")
+        return None, handle_assets_page_error(e, last_run, committed_run=None)
+    if timed_out:
+        return None, handle_assets_request_timeout(last_run)
+    return raw_response, None
+
+
+def read_assets_page_state(last_run: dict[str, Any]) -> tuple[str, str, str, int]:
+    """Reads the page fields shared by both assets flows from the last run, and logs the start of the page.
+
+    A first run (no saved ``since_datetime`` / ``snapshot_id``) starts from ``ASSETS_FETCH_FROM`` with a new snapshot ID.
+
+    Args:
+        last_run (dict): Last assets run dictionary.
+    Returns:
+        tuple: (since_datetime, next_page, snapshot_id, limit).
+    """
+    since_datetime = last_run.get("since_datetime", "") or arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+    next_page = last_run.get("next_page", "")
+    snapshot_id = str(last_run.get("snapshot_id", str(round(time.time() * 1000))))
+    limit = last_run.get("limit", HOST_LIMIT)
+    demisto.debug(
+        f"[Assets Page] Starting page fetch {snapshot_id=}, {since_datetime=}, {next_page=}, {limit=}, "
+        f"consecutive_failures={last_run.get('consecutive_failures', 0)}"
+    )
+    return since_datetime, next_page, snapshot_id, limit
+
+
+def iter_committable_host_batches(
+    raw_response: Optional[requests.Response], stream_state: dict
+) -> Iterator[tuple[list[dict], Optional[str], bool]]:
+    """Streams the page's hosts in batches of ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` and yields the asset rows of each batch.
+
+    Args:
+        raw_response (Optional[requests.Response]): The streamed host list detection response.
+        stream_state (dict): Filled with ``next_url`` once the stream is fully consumed.
+    Yields:
+        tuple: (asset rows, next_page, is_full_batch).
+            - next_page: the ``id_min`` the next run resumes from once this batch is committed; None for a partial batch.
+            - is_full_batch: False only for the last batch, which the caller sends as the end-of-page remainder.
+    """
+    hosts = iter_host_list_detections(raw_response, stream_state)
+    for host_batch in iter_batches(hosts, ASSETS_COMMIT_HOSTS_BATCH_SIZE):
+        rows = list(iter_detections_from_hosts(host_batch))
+        if len(host_batch) < ASSETS_COMMIT_HOSTS_BATCH_SIZE:
+            yield rows, None, False
+            return
+        # Assumes Qualys returns hosts in ascending ID order (observed behavior, not stated in the Qualys API docs).
+        # `id_min` is inclusive, so the next run resumes right after the last host of this batch.
+        yield rows, str(int(host_batch[-1]["ID"]) + 1), True
+
+
+def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> tuple[dict[str, Any], bool]:
+    """Fetches one assets page (host list detections) and sends it to XSIAM, committing every few hosts.
+
+    Every ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts, their detections are sent into the same snapshot (``items_count=1``,
+    unsealed) and the last run is saved with ``next_page`` set to the next host ID. Only the final send of the final
+    page declares the cumulative ``total_assets`` to seal the snapshot.
+
+    On any error mid-page (closed socket, parse error, failed send, etc.) the last commit is kept and the run ends
+    normally, so the next fetch resumes from the first uncommitted host. If nothing was committed, the run is handled
+    by ``handle_assets_page_error`` (concurrency-limit errors keep the limit, other errors return ``set_new_limit``).
+    A request timeout is handled by ``handle_assets_request_timeout``.
+
+    Args:
+        client (Client): Qualys client.
+        last_run (dict): Last assets run dictionary.
+    Returns:
+        tuple[dict, bool]: (the new last run to save, set_new_limit flag).
+    """
+    demisto.debug("[Assets] Starting streamed assets page (fetch by date flow).")
+    since_datetime, next_page, snapshot_id, limit = read_assets_page_state(last_run)
+    total_assets = last_run.get("total_assets", 0)
+
+    raw_response, failed_request_outcome = request_host_list_page(client, last_run, since_datetime, next_page, limit)
+    if failed_request_outcome is not None:
+        demisto.debug("[Assets] Host list detection request failed; deferring to next fetch without sending.")
+        return failed_request_outcome
+
+    stream_state: dict = {}
+    batch: list = []
+    page_assets_count = 0
+    committed_run: Optional[dict[str, Any]] = None
+    try:
+        for batch, batch_next_page, is_full_batch in iter_committable_host_batches(raw_response, stream_state):
+            if not is_full_batch:
+                break  # sent below as the end-of-page remainder
+
+            send_assets_batch(batch, snapshot_id, items_count=1)
+            page_assets_count += len(batch)
+            batch = []
+
+            committed_run = build_next_last_run(
+                "assets", batch_next_page, total_assets + page_assets_count, since_datetime, snapshot_id, limit=limit
+            )
+            demisto.setAssetsLastRun(committed_run)
+            demisto.debug(f"[Assets] Committed up to next_page={batch_next_page}. Cumulative: {committed_run['total_assets']}.")
+
+        # The next-page URL and any API error are known only after the stream is fully consumed.
+        next_run_page = get_next_page_from_url(stream_state.get("next_url", ""), "id_min")
+        is_last_page = not next_run_page
+        page_assets_count += len(batch)
+        total_assets += page_assets_count
+
+        # On the last page this is the single sealing send (cumulative total); an empty remainder still sends a
+        # closing signal. Otherwise the remainder stays unsealed (items_count=1).
+        if is_last_page:
+            batch, seal_count = close_snapshot_if_empty(batch, total_assets, snapshot_id, "assets")
+            send_assets_batch(batch, snapshot_id, items_count=seal_count)
+        elif batch:
+            send_assets_batch(batch, snapshot_id, items_count=1)
+    except RECOVERABLE_PAGE_ERRORS as e:  # pylint: disable=catching-non-exception
+        return handle_assets_page_error(e, last_run, committed_run)
+    except Exception as e:
+        log_unexpected_assets_error(e, committed_run)
+        raise
+    finally:
+        if raw_response is not None:
+            raw_response.close()
+
+    # On the last page, move to the "vulnerabilities" stage while keeping `since_datetime`/`snapshot_id`;
+    # otherwise continue paging the "assets" stage.
+    stage = "assets" if next_run_page else "vulnerabilities"
+    new_last_run = build_next_last_run(stage, next_run_page, total_assets, since_datetime, snapshot_id)
+
+    if is_last_page:
+        demisto.updateModuleHealth({"assetsPulled": total_assets})
+
+    demisto.debug(
+        f"[Assets] Finished streamed assets page. Page sent: {page_assets_count}, cumulative: {total_assets}, "
+        f"last page: {is_last_page}."
+    )
+    return new_last_run, False
+
+
+def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str, Any]) -> tuple[dict[str, Any], bool]:
+    """Fetches one assets page and sends it with the vulnerabilities of its QIDs, committing every few hosts.
+
+    For every ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts: build their asset rows, fetch the vulnerabilities of the QIDs
+    not fetched yet in this run, send both into the same snapshot (unsealed), then save the last run with ``next_page``
+    set to the next host ID. On the last page, the final send seals both snapshots with the cumulative totals and the
+    last run is reset.
+
+    Errors are handled as in ``fetch_and_send_assets_streamed``, for both the host list and the knowledge-base
+    requests: the last commit is kept; if nothing was committed, ``handle_assets_page_error`` decides (concurrency-limit
+    errors keep the limit, other errors return ``set_new_limit``); a host list timeout is handled by
+    ``handle_assets_request_timeout``.
+
+    Args:
+        client (Client): Qualys client.
+        last_run (dict): Last assets run dictionary.
+    Returns:
+        tuple[dict, bool]: (the new last run to save, set_new_limit flag).
+    """
+    demisto.debug("[Assets By QIDs] Starting assets and vulnerabilities page (fetch by QIDs flow).")
+    since_datetime, next_page, snapshot_id, limit = read_assets_page_state(last_run)
+    total_assets = last_run.get("total_assets", 0)
+    total_vulnerabilities = last_run.get("total_vulnerabilities", 0)
+
+    raw_response, failed_request_outcome = request_host_list_page(client, last_run, since_datetime, next_page, limit)
+    if failed_request_outcome is not None:
+        demisto.debug("[Assets By QIDs] Host list detection request failed; deferring to next fetch.")
+        return failed_request_outcome
+
+    stream_state: dict = {}
+    fetched_qids: set = set()
+    assets: list = []
+    vulnerabilities: list = []
+    committed_run: Optional[dict[str, Any]] = None
+    try:
+        for assets, batch_next_page, is_full_batch in iter_committable_host_batches(raw_response, stream_state):
+            vulnerabilities = fetch_vulnerabilities_of_new_qids(client, assets, fetched_qids)
+            if not is_full_batch:
+                break  # sent below as the end-of-page remainder
+
+            total_assets += len(assets)
+            total_vulnerabilities += len(vulnerabilities)
+            publish_assets_and_vulnerabilities(
+                assets, vulnerabilities, total_assets, total_vulnerabilities, has_next_page=True, snapshot_id=snapshot_id
+            )
+            assets, vulnerabilities = [], []
+
+            committed_run = build_next_last_run(
+                "assets",
+                batch_next_page,
+                total_assets,
+                since_datetime,
+                snapshot_id,
+                limit=limit,
+                total_vulnerabilities=total_vulnerabilities,
+            )
+            demisto.setAssetsLastRun(committed_run)
+            demisto.debug(
+                f"[Assets By QIDs] Committed up to next_page={batch_next_page}. {total_assets=}, {total_vulnerabilities=}."
+            )
+
+        # The next-page URL and any API error are known only after the stream is fully consumed.
+        next_run_page = get_next_page_from_url(stream_state.get("next_url", ""), "id_min")
+        total_assets += len(assets)
+        total_vulnerabilities += len(vulnerabilities)
+        # On the last page this seals both snapshots with the cumulative totals; otherwise they stay unsealed.
+        publish_assets_and_vulnerabilities(
+            assets,
+            vulnerabilities,
+            total_assets,
+            total_vulnerabilities,
+            has_next_page=bool(next_run_page),
+            snapshot_id=snapshot_id,
+        )
+    except RECOVERABLE_PAGE_ERRORS as e:  # pylint: disable=catching-non-exception
+        return handle_assets_page_error(e, last_run, committed_run)
+    except Exception as e:
+        log_unexpected_assets_error(e, committed_run)
+        raise
+    finally:
+        if raw_response is not None:
+            raw_response.close()
+
+    demisto.debug(f"[Assets By QIDs] Finished page. {total_assets=}, {total_vulnerabilities=}, last page: {not next_run_page}.")
+    if not next_run_page:
+        demisto.updateModuleHealth({"assetsPulled": total_assets})
+        return dict(DEFAULT_LAST_ASSETS_RUN), False
+    return (
+        build_next_last_run(
+            "assets", next_run_page, total_assets, since_datetime, snapshot_id, total_vulnerabilities=total_vulnerabilities
+        ),
+        False,
+    )
 
 
 def get_qid_for_cve(client: Client, cve: str, cloud_agent_scan_type: str | None = None) -> CommandResults:
@@ -3510,61 +4215,73 @@ def qualys_command_flow_manager(
 
 def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str, Any]) -> None:
     """
-    Fetches host dectections (assets) by VM scan date and vulnerabilities by last modified date in two seperate fetch stages.
+    Fetches host detections (assets) by VM scan date and vulnerabilities by last modified date in two separate stages.
+
+    Each run handles one stage, saved in ``last_run["stage"]``. A full cycle is: all assets pages, then vulnerabilities,
+    then back to assets.
+
+    Assets stage (``fetch_and_send_assets_streamed``), one page of up to ``limit`` hosts per run:
+        - The page is streamed. Every ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts, their rows are sent into the cycle's
+          assets snapshot (unsealed) and the last run is saved right away with ``next_page`` = last host ID + 1.
+          ``id_min`` is inclusive, so this cursor is the first unsent host. This relies on Qualys returning hosts in
+          ascending ID order, which matches observed behavior but is not stated in the Qualys API documentation.
+        - On any error mid-page (dropped connection, cut-off XML, failed send), the last commit is kept and the run ends
+          normally. The next run resumes from that cursor with the same ``snapshot_id``, so committed hosts are not
+          sent again. Hosts after the last commit are requested again; only a batch whose send failed partway can
+          reach XSIAM twice.
+        - If nothing was committed in a run, the next run starts immediately and:
+            - Concurrency-limit error (HTTP 409, Error Code 1960, after the in-run retries): counts toward
+              ``consecutive_failures``; the ``limit`` is kept, since the page size is not the cause.
+            - Request timeout: the ``limit`` is halved without counting. Once the ``limit`` is already 1, the timeout
+              counts toward ``consecutive_failures`` instead.
+            - Any other recoverable error before the first commit: counts toward ``consecutive_failures`` and halves
+              the ``limit``.
+        - Only the errors in ``RECOVERABLE_PAGE_ERRORS`` are handled this way. Any other error (likely a code bug) is
+          raised right away; commits made earlier in the run are kept.
+        - Any commit resets ``consecutive_failures``. After ``ASSETS_MAX_CONSECUTIVE_FAILURES`` counted runs in a row,
+          the fetch raises so the failure is visible.
+        - On the last page, the final send seals the snapshot with the cumulative total and the stage moves to
+          "vulnerabilities".
+
+    Vulnerabilities stage (``fetch_and_send_vulnerabilities_streamed``), all vulnerabilities in one run:
+        - One request for everything modified since ``since_datetime``, sent in batches of
+          ``VULNERABILITIES_SEND_BATCH_SIZE`` into a new snapshot that is sealed on the last send.
+        - This stage is not incremental. On an error the exception propagates and the last run is not updated, so the
+          next run retries the whole stage with a new ``snapshot_id``. The partial snapshot is never sealed; this
+          assumes XSIAM does not expose a snapshot that was never sealed.
 
     Args:
         client (Client): Qualys client.
         last_run (dict): Last assets run dictionary.
     """
     fetch_stage = last_run.get("stage", "assets")
+    demisto.debug(
+        f"[Fetch Assets By Date] Starting fetch by date: assets (host detections by VM scan date) page by page, then all "
+        f"vulnerabilities by last modified date. {fetch_stage=}, next_page={last_run.get('next_page')}, "
+        f"limit={last_run.get('limit', HOST_LIMIT)}, consecutive_failures={last_run.get('consecutive_failures', 0)}."
+    )
 
     if fetch_stage == "assets":
         demisto.debug(f"Starting fetch for assets, {EXECUTION_START_TIME=}")
 
-        # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
-        # Initialize to True, could be changed to False via internal functions
-        set_new_limit = True
-        with ExecutionTimeout(FETCH_ASSETS_COMMAND_TIME_OUT):
-            # Exits code block below if it takes longer to execute than the specified timeout
-            assets, new_last_run, total_assets_to_report, snapshot_id, set_new_limit = fetch_assets(client, last_run)
-            demisto.debug("Finished fetch for assets.")
+        # Fetch, parse, and send one page in bounded batches (peak memory ~O(batch), not O(page)).
+        # The run is bounded by the request's connect/read timeouts, and progress is saved after every batch.
+        new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+        demisto.debug("[Fetch Assets] Finished streamed fetch for assets.")
 
+        # Nothing was committed in this run (request timeout or a failure before the first commit, other than a
+        # concurrency-limit error); make the next API call smaller.
         if set_new_limit:
             demisto.debug(
-                f"Reducing limit for assets next run due to exceeding timeout: {FETCH_ASSETS_COMMAND_TIME_OUT}. "
-                f"Set new limit: {set_new_limit}. Elapsed time: {time.time() - EXECUTION_START_TIME}."
+                f"[Fetch Assets] Reducing limit for assets next run since nothing was committed in this run. "
+                f"Elapsed time: {time.time() - EXECUTION_START_TIME}."
             )
-            new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get("limit", HOST_LIMIT))
-        else:
-            cumulative_assets_count: int = new_last_run["total_assets"]
-            is_last_page = not new_last_run.get("next_page")
-            demisto.debug(
-                f"Sending {len(assets)} assets to XSIAM with snapshot ID: {snapshot_id}. "
-                f"Total assets collected so far: {cumulative_assets_count}. "
-                f"Reported items count: {total_assets_to_report}. Is last page: {is_last_page}."
-            )
-
-            if is_last_page:
-                assets, total_assets_to_report = close_snapshot_if_empty(assets, total_assets_to_report, snapshot_id, "assets")
-
-            send_data_to_xsiam(
-                data=assets,
-                vendor=VENDOR,
-                product="assets",
-                data_type="assets",
-                snapshot_id=snapshot_id,
-                items_count=str(total_assets_to_report),
-                should_update_health_module=False,
-            )
-
-            demisto.updateModuleHealth({"assetsPulled": cumulative_assets_count})
+            new_last_run = set_assets_last_run_with_new_limit(new_last_run, new_last_run.get("limit", HOST_LIMIT))
 
         demisto.setAssetsLastRun(new_last_run)
 
     elif fetch_stage == "vulnerabilities":
-        vulnerabilities, new_last_run = fetch_vulnerabilities(client, last_run)
-        demisto.debug(f"Sending {len(vulnerabilities)} vulnerabilities to XSIAM.")
-        send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product="vulnerabilities", data_type="assets")
+        new_last_run = fetch_and_send_vulnerabilities_streamed(client, last_run)
         demisto.setAssetsLastRun(new_last_run)
 
     demisto.debug(f"Finished fetch assets and vulnerabilities run (by date). Set last assets run: {new_last_run}")
@@ -3572,55 +4289,71 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
 
 def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str, Any]) -> None:
     """
-    Fetches host dectections (assets) by VM scan date and vulnerabilities by host detections Qualys IDs (QIDs) in one stage.
+    Fetches host detections (assets) by VM scan date and the vulnerabilities of their Qualys IDs (QIDs) in one stage.
+
+    Each run handles one page of up to ``limit`` hosts (``fetch_and_send_assets_and_vulnerabilities_by_qids``). A full
+    cycle is all assets pages; assets and vulnerabilities share one ``snapshot_id`` per cycle.
+
+    Per page:
+        - The page is streamed. For every ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts:
+            1. Their asset rows are built (one row per detection).
+            2. Their QIDs that were not fetched yet in this run are fetched from the knowledge base (in chunks of
+               ``QIDS_BATCH_SIZE``). This happens before any send, so a failed fetch sends nothing for the batch.
+            3. The asset rows and the vulnerabilities are sent into their snapshots (unsealed, ``items_count=1``).
+            4. The last run is saved right away with ``next_page`` = last host ID + 1 and the cumulative
+               ``total_assets`` / ``total_vulnerabilities``. ``id_min`` is inclusive, so this cursor is the first
+               unsent host. This relies on Qualys returning hosts in ascending ID order, which matches observed
+               behavior but is not stated in the Qualys API documentation.
+        - The remaining hosts of the page are sent the same way at the end of the page.
+
+    Vulnerabilities duplication:
+        - The fetched QIDs are kept in memory for the current run only. Within a page each QID is sent once; a QID
+          that appears on several pages is sent again on each of them, and ``total_vulnerabilities`` counts every
+          row sent.
+        - A run that resumes mid-page (after a failure) starts with an empty set, so it can re-send vulnerabilities
+          already sent earlier on that page.
+
+    End of cycle:
+        - On the last page, the final send seals both snapshots with the cumulative totals. If a final list is empty,
+          ``close_snapshot_if_empty`` sends an empty row (``[{}]``) and counts it, so the snapshot still seals. This is
+          common for vulnerabilities, since the last hosts of a cycle often bring no new QIDs.
+        - Module health reports the cycle's total assets, and the last run is reset to ``DEFAULT_LAST_ASSETS_RUN``.
+
+    Failure handling (same as the by-date assets stage):
+        - On any error mid-page (dropped connection, cut-off XML, failed knowledge-base request, failed send), the last
+          commit is kept and the run ends normally. The next run resumes from that cursor with the same
+          ``snapshot_id``. Hosts after the last commit are requested again; only a batch whose send failed partway can
+          reach XSIAM twice.
+        - If nothing was committed in a run, the next run starts immediately and:
+            - Concurrency-limit error (HTTP 409, Error Code 1960, after the in-run retries) on the host list or the
+              knowledge-base request: counts toward ``consecutive_failures``; the ``limit`` is kept.
+            - Host list request timeout: the ``limit`` is halved without counting. Once the ``limit`` is already 1,
+              the timeout counts toward ``consecutive_failures`` instead.
+            - Any other recoverable error before the first commit: counts toward ``consecutive_failures`` and halves
+              the ``limit``.
+        - Any commit resets ``consecutive_failures``. After ``ASSETS_MAX_CONSECUTIVE_FAILURES`` counted runs in a row,
+          the fetch raises so the failure is visible.
+        - Only the errors in ``RECOVERABLE_PAGE_ERRORS`` are handled this way. Any other error (likely a code bug) is
+          raised right away; commits made earlier in the run are kept.
+        - The run is bounded by the request's connect/read timeouts, and progress is saved after every batch.
 
     Args:
         client (Client): Qualys client.
         last_run (dict): Last assets run dictionary.
     """
-    demisto.debug(f"Starting fetch for assets and vulnerabilities, {EXECUTION_START_TIME=}")
+    demisto.debug(
+        f"[Fetch Assets By QIDs] Starting fetch by QIDs: one page of assets (host detections by VM scan date) with the "
+        f"vulnerabilities of their QIDs. next_page={last_run.get('next_page')}, limit={last_run.get('limit', HOST_LIMIT)}, "
+        f"consecutive_failures={last_run.get('consecutive_failures', 0)}, {EXECUTION_START_TIME=}."
+    )
 
-    # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
-    # Initialize to True, could be changed to False via internal functions
-    set_new_limit = True
-    with ExecutionTimeout(FETCH_ASSETS_COMMAND_TIME_OUT):
-        # Exits code block below if it takes longer to execute than the specified timeout
-        assets, new_last_run, _, snapshot_id, _ = fetch_assets(client, last_run)
-        detection_qids: list = list({asset.get("DETECTION", {}).get("QID") for asset in assets})
-        vulnerabilities, _ = fetch_vulnerabilities(client, last_run, detection_qids) if detection_qids else ([], {})
-        demisto.debug("Finished fetch for assets and vulnerabilities.")
-        set_new_limit = False
+    new_last_run, set_new_limit = fetch_and_send_assets_and_vulnerabilities_by_qids(client, last_run)
 
-    # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
+    # Nothing was committed in this run (request timeout or a failure before the first commit, other than a
+    # concurrency-limit error); make the next API call smaller.
     if set_new_limit:
-        demisto.debug(
-            f"Reducing limit for assets next run due to exceeding timeout: {FETCH_ASSETS_COMMAND_TIME_OUT}. "
-            f"Set new limit: {set_new_limit}. Elapsed time: {time.time() - EXECUTION_START_TIME}."
-        )
-        new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get("limit", HOST_LIMIT))
-    else:
-        cumulative_assets_count: int = new_last_run["total_assets"]
-        has_next_assets_page = bool(new_last_run.get("next_page"))
-
-        cumulative_vulns_count: int = last_run.get("total_vulnerabilities", 0) + len(vulnerabilities)
-        new_last_run["total_vulnerabilities"] = cumulative_vulns_count
-
-        demisto.debug(f"Starting to send {len(assets)} assets and {len(vulnerabilities)} vulnerabilities to XSIAM")
-        send_assets_and_vulnerabilities_to_xsiam(
-            assets=assets,
-            vulnerabilities=vulnerabilities,
-            cumulative_assets_count=cumulative_assets_count,
-            cumulative_vulns_count=cumulative_vulns_count,
-            has_next_page=has_next_assets_page,
-            snapshot_id=snapshot_id,
-        )
-
-        # If no next assets page (i.e. finished fetching assets and their vulnerabilities), then reset last run
-        if not has_next_assets_page:
-            demisto.debug("Finished fetching all assets and vulnerabilities. Resetting last run object")
-            new_last_run = DEFAULT_LAST_ASSETS_RUN
-
-        demisto.updateModuleHealth({"assetsPulled": cumulative_assets_count + cumulative_vulns_count})
+        demisto.debug("[Fetch Assets By QIDs] Reducing limit for assets next run since nothing was committed in this run.")
+        new_last_run = set_assets_last_run_with_new_limit(new_last_run, new_last_run.get("limit", HOST_LIMIT))
 
     demisto.setAssetsLastRun(new_last_run)
     demisto.debug(f"Finished fetch assets and vulnerabilities run (by QIDs). Set last assets run: {new_last_run}")
@@ -3911,7 +4644,8 @@ def main():  # pragma: no cover
             since_datetime = arg_to_datetime("1 hour").strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
             assets, _, _ = get_host_list_detections_events(client=client, since_datetime=since_datetime, limit=1, qid=qid)
             if should_push_events:
-                send_data_to_xsiam(data=assets, vendor=VENDOR, product="host_detections", data_type="assets")
+                # The streaming send clears the list it is given; send a copy so `assets` stays intact for the output.
+                send_assets_and_vulnerabilities_to_xsiam(list(assets), vendor=VENDOR, product="host_detections")
 
             readable_output = tableToMarkdown(name="Assets from Qualys:", t=assets)
 

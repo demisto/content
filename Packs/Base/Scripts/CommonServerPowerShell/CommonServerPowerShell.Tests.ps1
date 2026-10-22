@@ -211,8 +211,8 @@ Describe 'Check-UtilityFunctions' {
             $r.Contents | Should -Be $msg
             $r.EntryContext.Failed | Should -BeTrue
             # ReturnError call demisto.Error() make sure it was called
-            Assert-MockCalled -CommandName DemistoServerLog -Times 2 -ParameterFilter {$level -eq "error"}
-            Assert-MockCalled -CommandName DemistoServerLog -Times 1 -ParameterFilter {$msg.Contains("Cannot parse the JSON")}
+            Should -Invoke -CommandName DemistoServerLog -Times 2 -ParameterFilter {$level -eq "error"}
+            Should -Invoke -CommandName DemistoServerLog -Times 1 -ParameterFilter {$msg.Contains("Cannot parse the JSON")}
         }
     }
     Context "TableToMarkdown" {

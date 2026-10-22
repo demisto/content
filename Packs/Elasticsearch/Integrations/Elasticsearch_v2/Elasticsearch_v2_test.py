@@ -1445,6 +1445,25 @@ def test_search_command_with_query_esql(mocker):
     assert call_args["body"] == {"query": f"{query}| LIMIT 2"}
 
 
+def test_update_http_body():
+    original_body = {"endpoint_ids": ["agent-1"]}
+
+    result = Elasticsearch_v2.update_http_body(
+        original_body,
+        {"alert_ids": "alert-1,alert-2", "comment": "investigation", "agent_type": ""},
+        array_fields={"alert_ids", "case_ids"},
+        string_fields={"agent_type", "comment"},
+    )
+
+    assert result is not original_body
+    assert original_body == {"endpoint_ids": ["agent-1"]}
+    assert result == {
+        "endpoint_ids": ["agent-1"],
+        "alert_ids": ["alert-1", "alert-2"],
+        "comment": "investigation",
+    }
+
+
 class TestGetElasticToken:
     """Tests for the get_elastic_token function."""
 
@@ -1692,38 +1711,86 @@ class TestGetKibanaBaseUrl:
     def test_get_kibana_base_url_success(self, mocker):
         """
         Given:
-            - A Server URL containing the ".es." Elastic Cloud subdomain segment
+            - No configured Kibana Server URL, and a Server URL containing the ".es." Elastic Cloud subdomain segment
         When:
             - Calling get_kibana_base_url
         Then:
             - Return the URL with ".es." replaced by ".kb."
         """
-        import Elasticsearch_v2
-
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": ""})
         mocker.patch("Elasticsearch_v2.SERVER", "https://my-deployment-af38b6.es.us-central1.gcp.cloud.es.io")
 
         result = Elasticsearch_v2.get_kibana_base_url()
 
         assert result == "https://my-deployment-af38b6.kb.us-central1.gcp.cloud.es.io"
 
-    def test_get_kibana_base_url_missing_es_segment(self, mocker):
+    def test_get_kibana_base_url_from_configured_param(self, mocker):
         """
         Given:
-            - A Server URL that does not contain the ".es." segment
+            - A configured Kibana Server URL of an on-premises deployment, and a Server URL without ".es."
         When:
             - Calling get_kibana_base_url
         Then:
-            - Raise a DemistoException explaining the Kibana URL could not be derived
+            - Return the configured Kibana Server URL as-is, without attempting any derivation
         """
-        import Elasticsearch_v2
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": "https://kibana.example.com:5601"})
+        mocker.patch("Elasticsearch_v2.SERVER", "https://on-prem-elastic.example.com:9200")
+
+        result = Elasticsearch_v2.get_kibana_base_url()
+
+        assert result == "https://kibana.example.com:5601"
+
+    def test_get_kibana_base_url_configured_param_strips_trailing_slash(self, mocker):
+        """
+        Given:
+            - A configured Kibana Server URL that ends with a trailing slash
+        When:
+            - Calling get_kibana_base_url
+        Then:
+            - Return the URL without the trailing slash, so paths are joined correctly
+        """
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": "https://kibana.example.com:5601/"})
+        mocker.patch("Elasticsearch_v2.SERVER", "https://on-prem-elastic.example.com:9200")
+
+        result = Elasticsearch_v2.get_kibana_base_url()
+
+        assert result == "https://kibana.example.com:5601"
+
+    def test_get_kibana_base_url_configured_param_takes_precedence(self, mocker):
+        """
+        Given:
+            - Both a configured Kibana Server URL and an Elastic Cloud Server URL containing ".es."
+        When:
+            - Calling get_kibana_base_url
+        Then:
+            - Return the configured Kibana Server URL, which takes precedence over the derivation
+        """
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": "https://custom-kibana.example.com"})
+        mocker.patch("Elasticsearch_v2.SERVER", "https://my-deployment-af38b6.es.us-central1.gcp.cloud.es.io")
+
+        result = Elasticsearch_v2.get_kibana_base_url()
+
+        assert result == "https://custom-kibana.example.com"
+
+    def test_get_kibana_base_url_missing_es_segment(self, mocker):
+        """
+        Given:
+            - No configured Kibana Server URL, and a Server URL that does not contain the ".es." segment
+        When:
+            - Calling get_kibana_base_url
+        Then:
+            - Raise a DemistoException instructing the user to configure the Kibana Server URL
+        """
         from CommonServerPython import DemistoException
 
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": ""})
         mocker.patch("Elasticsearch_v2.SERVER", "https://on-prem-elastic.example.com:9200")
 
         with pytest.raises(DemistoException) as exc_info:
             Elasticsearch_v2.get_kibana_base_url()
 
-        assert "Could not derive the Kibana URL" in str(exc_info.value)
+        assert "Could not determine the Kibana URL" in str(exc_info.value)
+        assert "Kibana Server URL" in str(exc_info.value)
 
 
 class TestGetKibanaAuthHeaders:
@@ -2740,6 +2807,308 @@ class TestEsKibanaDetectionAlertStatusSetCommand:
 
         with pytest.raises(DemistoException):
             Elasticsearch_v2.es_kibana_detection_alert_status_set_command({}, {})
+
+
+class TestEsKibanaEndpointIsolateCommand:
+    """Tests for es_kibana_endpoint_isolate_command."""
+
+    def test_isolate_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "action": "action-1",
+            "data": {
+                "id": "action-1",
+                "agentType": "endpoint",
+                "command": "isolate",
+                "isComplete": False,
+                "status": "pending",
+                "wasSuccessful": False,
+            },
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        markdown = mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Isolation submitted")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_isolate_command(
+            {
+                "space_id": "security",
+                "endpoint_ids": "endpoint-1,endpoint-2",
+                "agent_type": "endpoint",
+                "alert_ids": "alert-1,alert-2",
+                "case_ids": "case-1",
+                "comment": "Isolating as initial response",
+            },
+            {},
+        )
+
+        mock_request.assert_called_once_with(
+            "POST",
+            "/api/endpoint/action/isolate",
+            space_id="security",
+            json_data={
+                "endpoint_ids": ["endpoint-1", "endpoint-2"],
+                "agent_type": "endpoint",
+                "alert_ids": ["alert-1", "alert-2"],
+                "case_ids": ["case-1"],
+                "comment": "Isolating as initial response",
+            },
+            proxies={},
+        )
+        expected_output = response["data"]
+        assert result.outputs == expected_output
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointIsolationAction"
+        assert result.readable_output == "Isolation submitted"
+        hr = markdown.call_args.args[1]
+        assert hr["Id"] == "action-1"
+        assert hr["Is Complete"] is False
+        assert hr["Was Successful"] is False
+
+    def test_missing_endpoint_ids_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="endpoint_ids"):
+            Elasticsearch_v2.es_kibana_endpoint_isolate_command({}, {})
+
+
+class TestEsKibanaEndpointUnisolateCommand:
+    """Tests for es_kibana_endpoint_unisolate_command."""
+
+    def test_unisolate_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "action": "action-2",
+            "data": {
+                "id": "action-2",
+                "agentType": "endpoint",
+                "command": "unisolate",
+                "isComplete": True,
+                "status": "completed",
+                "wasSuccessful": True,
+            },
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        markdown = mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Unisolation submitted")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_unisolate_command(
+            {
+                "space_id": "security",
+                "endpoint_ids": "endpoint-1,endpoint-2",
+                "agent_type": "endpoint",
+                "alert_ids": "alert-1,alert-2",
+                "case_ids": "case-1",
+                "comment": "Releasing endpoint",
+            },
+            {},
+        )
+
+        mock_request.assert_called_once_with(
+            "POST",
+            "/api/endpoint/action/unisolate",
+            space_id="security",
+            json_data={
+                "endpoint_ids": ["endpoint-1", "endpoint-2"],
+                "agent_type": "endpoint",
+                "alert_ids": ["alert-1", "alert-2"],
+                "case_ids": ["case-1"],
+                "comment": "Releasing endpoint",
+            },
+            proxies={},
+        )
+        expected_output = response["data"]
+        assert result.outputs == expected_output
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointUnisolationAction"
+        assert result.readable_output == "Unisolation submitted"
+        hr = markdown.call_args.args[1]
+        assert hr["Id"] == "action-2"
+        assert hr["Command"] == "unisolate"
+        assert hr["Was Successful"] is True
+
+    def test_missing_endpoint_ids_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="endpoint_ids"):
+            Elasticsearch_v2.es_kibana_endpoint_unisolate_command({}, {})
+
+
+class TestEsKibanaEndpointAgentGetCommand:
+    """Tests for es_kibana_endpoint_agent_get_command."""
+
+    def test_get_agent_passes_path_id_and_metrics_param(self, mocker):
+        import Elasticsearch_v2
+
+        response = {"item": {"id": "agent-1", "status": "online", "local_metadata": {"host": {"hostname": "host-1"}}}}
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Fleet agents")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_agent_get_command(
+            {
+                "space_id": "security",
+                "agent_id": "agent-1",
+                "with_metrics": "true",
+            },
+            {},
+        )
+
+        mock_request.assert_called_once_with(
+            "GET",
+            "/api/fleet/agents/agent-1",
+            space_id="security",
+            params={"withMetrics": True},
+            proxies={},
+        )
+        assert result.outputs == response
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointAgentGet"
+        assert result.readable_output == "Fleet agents"
+
+    def test_get_agent_without_optional_params(self, mocker):
+        import Elasticsearch_v2
+
+        response = {"item": {"id": "agent-1", "status": "online"}}
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Fleet agent")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_agent_get_command({"agent_id": "agent-1"}, {})
+
+        mock_request.assert_called_once_with("GET", "/api/fleet/agents/agent-1", space_id=None, params={}, proxies={})
+        assert result.outputs == response
+        assert result.readable_output == "Fleet agent"
+
+    def test_get_agent_requires_agent_id(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="agent_id"):
+            Elasticsearch_v2.es_kibana_endpoint_agent_get_command({}, {})
+
+
+class TestEsKibanaEndpointExecuteCommand:
+    """Tests for es_kibana_endpoint_execute_command."""
+
+    def test_execute_command_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "data": {
+                "id": "action-1",
+                "agents": ["agent-1"],
+                "agentType": "endpoint",
+                "command": "execute",
+                "status": "pending",
+                "parameters": {"command": "ls -al", "timeout": 600},
+            }
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Command submitted")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_execute_command(
+            {
+                "space_id": "security",
+                "endpoint_ids": "agent-1,agent-2",
+                "command": "ls -al",
+                "timeout": "600",
+                "alert_ids": "alert-1",
+                "case_ids": "case-1,case-2",
+                "agent_type": "endpoint",
+                "comment": "investigation",
+            },
+            {},
+        )
+
+        mock_request.assert_called_once_with(
+            "POST",
+            "/api/endpoint/action/execute",
+            space_id="security",
+            json_data={
+                "endpoint_ids": ["agent-1", "agent-2"],
+                "parameters": {"command": "ls -al", "timeout": 600},
+                "alert_ids": ["alert-1"],
+                "case_ids": ["case-1", "case-2"],
+                "agent_type": "endpoint",
+                "comment": "investigation",
+            },
+            proxies={},
+        )
+        expected_output = response["data"]
+        assert result.outputs == expected_output
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointExecuteCommandAction"
+        assert result.readable_output == "Command submitted"
+
+    @pytest.mark.parametrize("args", [{}, {"endpoint_ids": "agent-1"}])
+    def test_execute_command_requires_endpoint_ids_and_command(self, args):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        expected_argument = "endpoint_ids" if not args else "command"
+        with pytest.raises(DemistoException, match=expected_argument):
+            Elasticsearch_v2.es_kibana_endpoint_execute_command(args, {})
+
+
+class TestEsKibanaEndpointActionDetailsCommand:
+    """Tests for es_kibana_endpoint_action_details_command."""
+
+    def test_action_details_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {"data": {"id": "action-1", "command": "execute", "status": "completed"}}
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Action details")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_action_details_command({"space_id": "security", "action_id": "action-1"}, {})
+
+        mock_request.assert_called_once_with(
+            "GET",
+            "/api/endpoint/action/action-1",
+            space_id="security",
+            proxies={},
+        )
+        expected_output = response["data"]
+        assert result.outputs == expected_output
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointGetActionDetails"
+        assert result.readable_output == "Action details"
+
+    def test_action_details_requires_action_id(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="action_id"):
+            Elasticsearch_v2.es_kibana_endpoint_action_details_command({}, {})
+
+
+class TestEsKibanaEndpointMetadataGetCommand:
+    """Tests for es_kibana_endpoint_metadata_get_command."""
+
+    def test_get_metadata_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "host_status": "online",
+            "last_checkin": "2026-10-02T12:00:00Z",
+            "metadata": {"hostname": "host-1"},
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Endpoint metadata")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_metadata_get_command({"space_id": "security", "id": "agent-1"}, {})
+
+        mock_request.assert_called_once_with(
+            "GET",
+            "/api/endpoint/metadata/agent-1",
+            space_id="security",
+            proxies={},
+        )
+        assert result.outputs == {**response, "agent_id": "agent-1"}
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointMetadataGet"
+        assert result.readable_output == "Endpoint metadata"
+
+    def test_get_metadata_requires_agent_id(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match='"id"'):
+            Elasticsearch_v2.es_kibana_endpoint_metadata_get_command({}, {})
 
 
 MOCK_EXCEPTION_ITEM = {

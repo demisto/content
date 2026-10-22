@@ -1,0 +1,55 @@
+{
+    "name": "BechtleDarkWebScan-mapper",
+    "description": "Maps incoming BechtleDarkWebScan incidents to XSOAR fields.",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "id": "BechtleDarkWebScan-mapper",
+    "mapping": {
+        "BechtleDarkWebScan Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "username": {
+                    "complex": {
+                        "root": "username",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "defaultValue": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Unknown User"
+                                        }
+                                    }
+                                },
+                                "operator": "default"
+                            }
+                        ]
+                    }
+                },
+                "link": {
+                    "simple": "link"
+                },
+                "price": {
+                    "simple": "price"
+                },
+                "domain": {
+                    "simple": "domain"
+                },
+                "stealer": {
+                    "simple": "stealer"
+                }
+            }
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

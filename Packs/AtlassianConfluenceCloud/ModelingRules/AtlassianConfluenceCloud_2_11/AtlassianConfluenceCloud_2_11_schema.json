@@ -1,0 +1,52 @@
+{
+    "atlassian_confluence_raw": {        
+        "changedvalues": {
+            "type": "string",
+            "is_array": false
+        },
+        "associatedobjects": {
+            "type": "string",
+            "is_array": false
+        },
+        "affectedobject": {
+            "type": "string",
+            "is_array": false
+        },
+        "sysadmin": {
+            "type": "string",
+            "is_array": false
+        },
+        "superadmin": {
+            "type": "string",
+            "is_array": false
+        },
+        "parsed_fields_changed_values_old": {
+            "type": "string",
+            "is_array": false
+        },
+        "parsed_fields_changed_values_new": {
+            "type": "string",
+            "is_array": false
+        },
+        "description": {
+            "type": "string",
+            "is_array": false
+        },
+        "author": {
+            "type": "string",
+            "is_array": false
+        },
+        "summary": {
+            "type": "string",
+            "is_array": false
+        },
+        "category": {
+            "type": "string",
+            "is_array": false
+        },
+        "remoteaddress": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

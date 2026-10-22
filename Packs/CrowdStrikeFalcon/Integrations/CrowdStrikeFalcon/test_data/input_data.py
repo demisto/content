@@ -616,3 +616,36 @@ response_detection_new_version = {
     "source_products": None,
     "status": "new",
 }
+
+# XSUP-71944 — synthetic composite Spotlight ``aid`` fixtures, mirroring the shapes seen in the
+# field: on multi-CID tenants Spotlight returns ``aid`` as ``<cid><separator><device_id>``.
+
+spotlight_composite_cid = "11111111111111111111111111111111"
+spotlight_composite_cid_secondary = "22222222222222222222222222222222"
+
+# Sensor AID: <cid>-<32 hex>.
+spotlight_device_id = "aaaaaaaabbbbccccddddeeeeeeeeeeee"
+spotlight_composite_aid = f"{spotlight_composite_cid}-{spotlight_device_id}"
+spotlight_device_id_secondary = "ffffffff9999888877776666555544ee"
+spotlight_composite_aid_secondary = f"{spotlight_composite_cid_secondary}-{spotlight_device_id_secondary}"
+
+# Non-sensor asset: <cid>_<base64url>. The body holds its own "_" and mixed case, so splitting
+# on the first separator truncates the ID and a case-insensitive compare is unnecessary —
+# only stripping len(cid) + 1 is safe. Uppercase never appears in the CID prefix.
+spotlight_base64_asset_id = "ATBwIpzWCBraE2yOlq9_KeyZlDMr2bfZVH7oQkFjj3CD1w"
+spotlight_composite_aid_underscore = f"{spotlight_composite_cid}_{spotlight_base64_asset_id}"
+
+# Rare shape (2 rows in the field): a "n:" prefix puts a colon inside the body, so the body
+# charset is not limited to base64url and a regex-restricted parser would reject it.
+spotlight_prefixed_device_id = "n:f54c7a6eb87650ebbf162f9d11e5a007"
+spotlight_composite_aid_prefixed = f"{spotlight_composite_cid}-{spotlight_prefixed_device_id}"
+
+# Single-CID tenant: the AID is already bare and must pass through untouched.
+spotlight_single_cid = "33333333333333333333333333333333"
+spotlight_bare_aid = "dddddddd4444333322221111000099ff"
+
+# A CID that does not prefix the AID — nothing may be stripped.
+spotlight_unrelated_cid = "44444444444444444444444444444444"
+
+# Already in the accumulator from an earlier page.
+spotlight_previously_seen_device_id = "5555555566667777888899990000aaaa"

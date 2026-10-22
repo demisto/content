@@ -275,11 +275,6 @@
             "fromversion": "6.1.0"
         },
         {
-            "integrations": "Bitbucket",
-            "playbookID": "Test_Bitbucket",
-            "fromversion": "6.5.0"
-        },
-        {
             "playbookID": "MapRangeValuesTest"
         },
         {
@@ -1868,7 +1863,7 @@
         },
         {
             "integrations": "McAfee ESM v2",
-            "instance_names": "v11.1.3",
+            "instance_names": "v11.7.1",
             "playbookID": "McAfee ESM v2 - Test v11.1.3",
             "fromversion": "5.0.0"
         },
@@ -1881,7 +1876,7 @@
         },
         {
             "integrations": "McAfee ESM v2",
-            "instance_names": "v11.1.3",
+            "instance_names": "v11.7.1",
             "playbookID": "McAfee ESM Watchlists - Test v11.1.3",
             "fromversion": "5.0.0"
         },
@@ -4361,7 +4356,7 @@
         {
             "playbookID": "McAfee ESM v2 - Test",
             "fromversion": "5.0.0",
-            "instance_names": "v11.1.3",
+            "instance_names": "v11.7.1",
             "integrations": [
                 "McAfee ESM v2"
             ]
@@ -4369,7 +4364,7 @@
         {
             "playbookID": "McAfee ESM Watchlists - Test",
             "fromversion": "5.0.0",
-            "instance_names": "v11.1.3",
+            "instance_names": "v11.7.1",
             "integrations": [
                 "McAfee ESM v2"
             ]
@@ -5935,6 +5930,36 @@
         {
             "playbookID": "CVEEnrichment-Test",
             "integrations": ["CIRCL CVE Search","Palo Alto Networks Threat Vault v2"]
+        },
+        {
+            "integrations": "Palo Alto Networks Prisma AIRS - AI Model Security",
+            "playbookID": "PaloAltoNetworks_Prisma_AIRs_Model_Security_Test",
+            "fromversion": "6.10.0"
+        },
+        {
+            "integrations": "Palo Alto Networks Prisma AIRS - AI Red Teaming",
+            "playbookID": "PaloAltoNetworks_Prisma_AIRs_RedTeam_Prompts_Test",
+            "fromversion": "6.10.0"
+        },
+        {
+            "integrations": "Palo Alto Networks Prisma AIRS - AI Runtime Security",
+            "playbookID": "PaloAltoNetworks_Prisma_AIRs_Runtime_Profiles_Test",
+            "fromversion": "6.10.0"
+        },
+        {
+            "integrations": "Palo Alto Networks Prisma AIRS - AI Runtime Security",
+            "playbookID": "PaloAltoNetworks_Prisma_AIRs_DLP_Patterns_Test",
+            "fromversion": "6.10.0"
+        },
+        {
+            "integrations": "Palo Alto Networks Prisma AIRS - AI Runtime Security",
+            "playbookID": "PaloAltoNetworks_Prisma_AIRs_DLP_Comprehensive_Test",
+            "fromversion": "6.10.0"
+        },
+        {
+            "integrations": "Palo Alto Networks Prisma AIRS - AI Runtime Security",
+            "playbookID": "PaloAltoNetworks_Prisma_AIRs_Runtime_Scan_Test",
+            "fromversion": "6.10.0"
         }
     ],
     "skipped_tests": {
@@ -6140,7 +6165,8 @@
         "ForcepointSecurityManagementCenter_test": "No instance",
         "AnsibleTower_Test_playbook": "Instance not working",
         "playbook_TrendmicroCAS_Test": "Authentication token not found",
-        "PaloAltoNetworks_DeviceSecurity-Test": "No instance"
+        "PaloAltoNetworks_DeviceSecurity-Test": "No instance",
+        "Test_Bitbucket": "No instance"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",

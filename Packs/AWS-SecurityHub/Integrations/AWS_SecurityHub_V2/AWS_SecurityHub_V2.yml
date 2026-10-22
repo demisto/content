@@ -320,7 +320,7 @@ script:
     - name: remoteId
       description: The remote finding metadata UID to update.
       required: false
-  dockerimage: demisto/boto3py3:1.0.0.11314142
+  dockerimage: demisto/boto3py3:1.0.0.12887184
   isfetch: true
   ismappable: true
   isremotesyncin: true
