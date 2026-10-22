@@ -2669,7 +2669,7 @@ script:
     - contextPath: Elasticsearch.Kibana.ValueListItem.created_at
       description: The creation date of the value list item.
       type: Date
-  dockerimage: demisto/elasticsearch:1.0.0.11195141
+  dockerimage: demisto/elasticsearch:1.0.0.13531018
   isfetch: true
   runonce: false
   script: '-'
