@@ -1499,7 +1499,7 @@ def domain_command():
 
     for domain in domain_list:
         try:
-            response = domain_ti.get_domain_report(domain=domain)
+            response = domain_ti.get_domain_report(domain_input=domain)
         except NotFoundError:
             return_results("No results were found for this input.")
             return
@@ -1519,7 +1519,7 @@ def domain_report_command():
     domain = demisto.getArg("domain")
 
     try:
-        response = domain_ti.get_domain_report(domain=domain)
+        response = domain_ti.get_domain_report(domain_input=domain)
     except NotFoundError:
         return_results("No results were found for this input.")
         return
@@ -1775,7 +1775,7 @@ def ip_command():
 
     for ip in ip_list:
         try:
-            response = ip_ti.get_ip_report(ip_address=ip)
+            response = ip_ti.get_ip_report(ip_address_input=ip)
         except NotFoundError:
             return_results("No results were found for this input.")
             return
@@ -1795,7 +1795,7 @@ def ip_report_command():
     ip = demisto.getArg("ip")
 
     try:
-        response = ip_ti.get_ip_report(ip_address=ip)
+        response = ip_ti.get_ip_report(ip_address_input=ip)
     except NotFoundError:
         return_results("No results were found for this input.")
         return
