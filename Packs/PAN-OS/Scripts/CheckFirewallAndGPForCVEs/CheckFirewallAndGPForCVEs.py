@@ -179,6 +179,11 @@ def main():
 
     try:
         for cve_json in cve_json_list:
+            if not isinstance(cve_json, dict) or not cve_json.get("cve_id"):
+                # Advisories that failed enrichment (e.g. an invalid CVE ID in a multi-CVE run) have no cve_id.
+                # Skip them instead of reporting every firewall as not affected.
+                demisto.debug(f"Skipping advisory without a cve_id: {cve_json}")
+                continue
             fw_versions_checked: list[str] = []
             gp_version_checked: list[str] = []
             result = {

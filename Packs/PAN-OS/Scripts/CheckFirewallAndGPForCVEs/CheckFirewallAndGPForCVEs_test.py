@@ -87,3 +87,44 @@ def test_check_firewall_and_gp_for_cves_affected_and_unaffected(mocker):
     assert patched_fw["IsFirewallVersionAffected"] is False  # Fixed by hotfix
     assert patched_fw["GlobalProtectVersion"] == "6.0.3"
     assert patched_fw["IsGlobalProtectVersionAffected"] is False  # Version not in affected range
+
+
+FIREWALL = {"hostname": "fw-1", "ip_address": "1.1.1.1", "sw_version": "10.2.3", "global_protect_client_package_version": ""}
+PAN_OS_ADVISORY = {
+    "cve_id": "CVE-2072-0001",
+    "cvss_severity": "HIGH",
+    "affected_list": [
+        {"product": "PAN-OS", "versions": [{"version": "10.2.0", "lessThan": "10.2.4", "status": "affected"}]},
+    ],
+}
+
+
+def test_check_firewall_and_gp_for_cves_returns_one_result_per_cve(mocker):
+    # given
+    second_advisory = PAN_OS_ADVISORY | {"cve_id": "CVE-2072-0002"}
+    mocker.patch.object(
+        demisto, "args", return_value={"pan_os_system_info_list": [FIREWALL], "cve_json": [PAN_OS_ADVISORY, second_advisory]}
+    )
+    mock_return_results = mocker.patch("CheckFirewallAndGPForCVEs.return_results")
+
+    # when
+    CheckFirewallAndGPForCVEs.main()
+
+    # then
+    assert [call.args[0].outputs["CVE_ID"] for call in mock_return_results.call_args_list] == ["CVE-2072-0001", "CVE-2072-0002"]
+
+
+def test_check_firewall_and_gp_for_cves_skips_failed_advisories(mocker):
+    # given
+    failed_advisory = {"error": "This is not a valid Palo Alto Networks CVE ID"}
+    mocker.patch.object(
+        demisto, "args", return_value={"pan_os_system_info_list": [FIREWALL], "cve_json": [failed_advisory, PAN_OS_ADVISORY]}
+    )
+    mock_return_results = mocker.patch("CheckFirewallAndGPForCVEs.return_results")
+
+    # when
+    CheckFirewallAndGPForCVEs.main()
+
+    # then
+    assert mock_return_results.call_count == 1
+    assert mock_return_results.call_args.args[0].outputs["CVE_ID"] == "CVE-2072-0001"
