@@ -10172,6 +10172,25 @@ class TestSendEventsToXSIAMTest:
         # streaming reports the same total count to the health module
         demisto.updateModuleHealth.assert_called_with({'eventsPulled': len(events)})
 
+    def test_send_data_to_xsiam_streaming_empty(self, mocker):
+        """
+        Given: an empty list and use_streaming_send=True.
+        When:  calling send_data_to_xsiam.
+        Then:  no HTTP call is made.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        http_mock = mocker.patch.object(BaseClient, '_http_request')
+
+        send_data_to_xsiam(data=[], vendor='v', product='p', data_type='events', use_streaming_send=True)
+
+        assert http_mock.call_count == 0
+
     def test_send_data_to_xsiam_streaming_skips_oversized_entry_like_legacy(self, mocker):
         """
         Given: a list of events where one single entry exceeds MAX_ALLOWED_ENTRY_SIZE.
@@ -10875,6 +10894,81 @@ class TestSendEventsToXSIAMTest:
 
         assert http_mock.call_count == 0
         assert futures == []
+
+    def test_send_data_to_xsiam_streaming_threaded_skips_oversized_entry(self, mocker):
+        """
+        Given: a list with one oversized entry between two normal ones, streaming + multiple_threads.
+        When:  calling send_data_to_xsiam.
+        Then:  the oversized entry is dropped and the futures count only the remaining events.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, MAX_ALLOWED_ENTRY_SIZE
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch.object(demisto, 'error')
+        mocker.patch('CommonServerPython.support_multithreading')
+        executors = _install_deferred_executor(mocker)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+
+        events = [
+            {'id': 0, 'msg': 'first'},
+            {'id': 1, 'blob': 'x' * (MAX_ALLOWED_ENTRY_SIZE + 1000)},
+            {'id': 2, 'msg': 'second'},
+        ]
+        futures = send_data_to_xsiam(data=list(events), vendor='v', product='p',
+                                     data_type='events', use_streaming_send=True, multiple_threads=True,
+                                     should_update_health_module=False)
+        executors[0].run_all()
+
+        assert sum(_completed_results(futures)) == 2
+        lines = [line for call in http_mock.call_args_list
+                 for line in gzip.decompress(call[1]['data']).decode('utf-8').split('\n')]
+        assert len(lines) == 2
+        assert all('blob' not in line for line in lines)
+
+    @pytest.mark.parametrize('chunk_size, multiple_posts', [(50, True), (2 ** 20, False)])
+    def test_send_data_to_xsiam_streaming_threaded_assets_snapshot_headers(self, mocker, chunk_size, multiple_posts):
+        """
+        Given: assets, streaming + multiple_threads, a custom snapshot_id and items_count.
+        When:  calling send_data_to_xsiam with a small (several chunks) and a large (single chunk) chunk_size.
+        Then:  every POST carries the same snapshot-id and the total (not per-chunk) total-items-count.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('CommonServerPython.support_multithreading')
+        executors = _install_deferred_executor(mocker)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+
+        assets = [{'id': i, 'msg': 'asset {}'.format(i)} for i in range(9)]
+        futures = send_data_to_xsiam(data=list(assets), vendor='v', product='p', chunk_size=chunk_size,
+                                     data_type='assets', snapshot_id='snap-999', items_count=len(assets),
+                                     use_streaming_send=True, multiple_threads=True,
+                                     should_update_health_module=False)
+        executors[0].run_all()
+
+        assert sum(_completed_results(futures)) == len(assets)
+        assert (http_mock.call_count > 1) == multiple_posts
+        for call in http_mock.call_args_list:
+            assert call[1]['headers']['snapshot-id'] == 'snap-999'
+            assert call[1]['headers']['total-items-count'] == str(len(assets))
 
     @pytest.mark.parametrize('data_type, snapshot_id, items_count, expected', [
         ('assets', None, None, {'snapshot_id': '123000', 'items_count': '2'}),

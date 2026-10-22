@@ -14144,7 +14144,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
     :type multiple_threads: ``bool``
     :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
-    Note that when set to True, the updateModuleHealth should be done from the integration itself.
+        Note that when set to True, should_update_health_module is ignored and the updateModuleHealth should be done
+        from the integration itself, after awaiting the returned futures.
 
     :type client_class: ``BaseClient``
     :param client_class: The client class to use for the request.
