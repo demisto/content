@@ -24,6 +24,5 @@
         "agentix",
         "xsiam",
         "cloud_posture"
-    ],
-    "defaultDataSource": "Workday Event Collector"
+    ]
 }
