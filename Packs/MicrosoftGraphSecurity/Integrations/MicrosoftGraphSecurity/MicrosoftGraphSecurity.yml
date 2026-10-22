@@ -17,7 +17,6 @@ configuration:
   - US GCC
   - US GCC-High
   - DoD
-  - Germany
   - China
   - Custom
   additionalinfo: When selecting the Custom option, the Host URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
@@ -216,6 +215,65 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
+- display: Incident Mirroring Direction
+  additionalinfo: 'The direction to mirror alerts and incidents: Incoming (Microsoft to Cortex XSOAR), Outgoing (Cortex XSOAR to Microsoft), or Incoming And Outgoing.'
+  name: mirror_direction
+  type: 15
+  section: Collect
+  required: false
+  defaultvalue: None
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  hidden:
+  - marketplacev2
+  - platform
+- display: Close Mirrored XSOAR Incident
+  additionalinfo: Incoming mirroring. When selected, the Cortex XSOAR incident is closed when the Microsoft alert or incident status becomes Resolved, or Redirected (incidents).
+  name: close_incident
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: 'false'
+  hidden:
+  - marketplacev2
+  - platform
+- display: Close Mirrored Microsoft Alert/Incident
+  additionalinfo: Outgoing mirroring. When selected, the Microsoft alert or incident status is set to Resolved when the Cortex XSOAR incident is closed.
+  name: close_out
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: 'false'
+  hidden:
+  - marketplacev2
+  - platform
+- display: Comment Entry Tag (to Microsoft)
+  additionalinfo: Entries with this tag are mirrored as comments to the Microsoft alert or incident. Must be different from the Comment Entry Tag (from Microsoft).
+  name: comment_tag
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: CommentToMicrosoftGraphSecurity
+  hidden:
+  - marketplacev2
+  - platform
+- display: Comment Entry Tag (from Microsoft)
+  additionalinfo: The tag added to entries created from Microsoft alert or incident comments. Must be different from the Comment Entry Tag (to Microsoft).
+  name: comment_tag_from_microsoft_graph_security
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: CommentFromMicrosoftGraphSecurity
+  hidden:
+  - marketplacev2
+  - platform
 - display: Microsoft 365 Defender context
   name: microsoft_365_defender_context
   defaultvalue: "false"
@@ -3169,8 +3227,37 @@ script:
     - contextPath: MsGraph.eDiscoveryCase.Export.Location
       description: The Location header URL returned for the export operation.
       type: String
+  - arguments:
+    - description: The last update time (ISO-8601 or UTC timestamp in seconds). Returns the IDs of the alerts and incidents modified since then.
+      name: lastUpdate
+    - description: Alias of lastUpdate.
+      name: last_update
+    description: Gets the list of remote incidents/alerts that were modified since the last update time. This method is only used for debugging purposes.
+    name: get-modified-remote-data
+  - arguments:
+    - description: The remote alert or incident ID.
+      name: id
+    - description: The remote alert ID. Use instead of id to force the alert flow.
+      name: alert_id
+    - description: The remote incident ID. Use instead of id to force the incident flow.
+      name: incident_id
+    - description: The last update time (ISO-8601 or UTC timestamp in seconds). Only comments created after this time are mirrored. Default is 0.
+      name: lastUpdate
+    - description: Alias of lastUpdate.
+      name: last_update
+    description: Gets remote data from a remote incident/alert. This method is only used for debugging purposes.
+    name: get-remote-data
+  - arguments: []
+    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+    name: get-mapping-fields
+  - arguments: []
+    description: Updates the remote incidents/alerts with local incident changes. This method is only used for debugging purposes and will not update the current incident.
+    name: update-remote-system
   dockerimage: demisto/crypto:1.0.0.12833174
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   runonce: false
   script: '-'
   subtype: python3
@@ -3185,3 +3272,6 @@ tests:
 - MSG-ediscovery-tpb
 - MSG-Threat-Assessment-test
 fromversion: 5.0.0
+defaultclassifier: Graph Security Classifier
+defaultmapperin: Graph Security Mapper - Incoming
+defaultmapperout: Graph Security Mapper - Outgoing

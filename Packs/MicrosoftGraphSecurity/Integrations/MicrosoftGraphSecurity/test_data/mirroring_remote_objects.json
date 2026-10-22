@@ -1,0 +1,43 @@
+{
+    "alert": {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#security/alerts_v2/$entity",
+        "id": "da637551227677560813_-961444813",
+        "title": "Suspicious execution of hidden file",
+        "status": "resolved",
+        "classification": "truePositive",
+        "determination": "malware",
+        "severity": "medium",
+        "lastUpdateDateTime": "2026-10-10T10:00:00Z",
+        "comments": [
+            {
+                "comment": "Old comment",
+                "createdByDisplayName": "analyst@contoso.com",
+                "createdDateTime": "2026-10-01T09:00:00Z"
+            },
+            {
+                "comment": "New comment from Defender",
+                "createdByDisplayName": "analyst@contoso.com",
+                "createdDateTime": "2026-10-10T09:00:00Z"
+            },
+            {
+                "comment": "(admin): hello\n\n Mirrored from Cortex XSOAR",
+                "createdByDisplayName": "Cortex XSOAR",
+                "createdDateTime": "2026-10-10T09:30:00Z"
+            }
+        ]
+    },
+    "incident": {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#security/incidents/$entity",
+        "id": "2972395",
+        "displayName": "Multi-stage incident",
+        "status": "active",
+        "classification": "unknown",
+        "determination": "unknown",
+        "severity": "high",
+        "lastUpdateDateTime": "2026-10-10T10:00:00Z",
+        "comments": [],
+        "alerts": [
+            {"id": "da637551227677560813_-961444813", "title": "Suspicious execution of hidden file"}
+        ]
+    }
+}

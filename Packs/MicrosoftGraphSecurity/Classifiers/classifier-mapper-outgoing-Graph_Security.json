@@ -1,0 +1,112 @@
+{
+    "defaultIncidentType": "",
+    "definitionId": "",
+    "description": "Maps Cortex XSOAR fields to Microsoft Graph Security alert and incident fields (outgoing mirroring).",
+    "feed": false,
+    "id": "Graph Security Mapper - Outgoing",
+    "mapping": {
+        "Graph Security Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "closeReason": {
+                    "complex": {
+                        "filters": [],
+                        "root": "closeReason",
+                        "transformers": []
+                    }
+                },
+                "closeNotes": {
+                    "complex": {
+                        "filters": [],
+                        "root": "closeNotes",
+                        "transformers": []
+                    }
+                },
+                "status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "microsoftgraphsecurityalertstatus",
+                        "transformers": []
+                    }
+                },
+                "classification": {
+                    "complex": {
+                        "filters": [],
+                        "root": "microsoftgraphsecurityclassification",
+                        "transformers": []
+                    }
+                },
+                "customDetails": {
+                    "complex": null,
+                    "simple": "additionaldata"
+                }
+            }
+        },
+        "Graph Security Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "closeReason": {
+                    "complex": {
+                        "filters": [],
+                        "root": "closeReason",
+                        "transformers": []
+                    }
+                },
+                "status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "microsoftgraphsecurityincidentstatus",
+                        "transformers": []
+                    }
+                },
+                "classification": {
+                    "complex": {
+                        "filters": [],
+                        "root": "microsoftgraphsecurityclassification",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    }
+                },
+                "displayName": {
+                    "complex": {
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    }
+                },
+                "description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "customTags": {
+                    "complex": null,
+                    "simple": "microsoftgraphsecurityincidenttags"
+                },
+                "resolvingComment": {
+                    "complex": {
+                        "filters": [],
+                        "root": "closeNotes",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "Graph Security Mapper - Outgoing",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}
