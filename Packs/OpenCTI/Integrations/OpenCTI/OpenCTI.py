@@ -1701,7 +1701,7 @@ def malware_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> Co
     try:
         result = client.malware.create(name=name, description=description, is_family=is_family, malware_types=malware_types)
     except Exception as e:
-        demisto.error(str(e))
+        demisto.error(traceback.format_exc())
         raise DemistoException(f"Can't create malware. {e}")
 
     if result and (malware_id := result.get("id")):
@@ -1733,7 +1733,7 @@ def vulnerability_create_command(client: OpenCTIApiClient, args: Dict[str, str])
     try:
         result = client.vulnerability.create(name=name, description=description)
     except Exception as e:
-        demisto.error(str(e))
+        demisto.error(traceback.format_exc())
         raise DemistoException(f"Can't create vulnerability. {e}")
 
     if result and (vulnerability_id := result.get("id")):
@@ -1764,7 +1764,7 @@ def intrusion_set_create_command(client: OpenCTIApiClient, args: Dict[str, str])
     try:
         result = client.intrusion_set.create(name=name, description=description)
     except Exception as e:
-        demisto.error(str(e))
+        demisto.error(traceback.format_exc())
         raise DemistoException(f"Can't create intrusion set. {e}")
 
     if result and (intrusion_set_id := result.get("id")):
@@ -1795,7 +1795,7 @@ def threat_actor_group_create_command(client: OpenCTIApiClient, args: Dict[str, 
     try:
         result = client.threat_actor_group.create(name=name, description=description)
     except Exception as e:
-        demisto.error(str(e))
+        demisto.error(traceback.format_exc())
         raise DemistoException(f"Can't create threat-actor-group. {e}")
 
     if result and (threat_actor_group_id := result.get("id")):
@@ -1829,7 +1829,7 @@ def campaign_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> C
     try:
         result = client.campaign.create(name=name, description=description, first_seen=first_seen, last_seen=last_seen)
     except Exception as e:
-        demisto.error(str(e))
+        demisto.error(traceback.format_exc())
         raise DemistoException(f"Can't create campaign. {e}")
 
     if result and (campaign_id := result.get("id")):
@@ -1862,7 +1862,7 @@ def grouping_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> C
     try:
         result = client.grouping.create(name=name, description=description, context=context)
     except Exception as e:
-        demisto.error(str(e))
+        demisto.error(traceback.format_exc())
         raise DemistoException(f"Can't create grouping. {e}")
 
     if result and (grouping_id := result.get("id")):
@@ -1895,7 +1895,7 @@ def report_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> Com
     try:
         result = client.report.create(name=name, description=description, published=published)
     except Exception as e:
-        demisto.error(str(e))
+        demisto.error(traceback.format_exc())
         raise DemistoException(f"Can't create report. {e}")
 
     if result and (report_id := result.get("id")):
@@ -1941,7 +1941,7 @@ def add_object_to_container_create_command(client: OpenCTIApiClient, args: Dict[
             stixObjectOrStixRelationshipId=object_id,
         )
     except Exception as e:
-        demisto.error(str(e))
+        demisto.error(traceback.format_exc())
         raise DemistoException(f"Can't add object into {container_type}. {e}")
 
     if not added:

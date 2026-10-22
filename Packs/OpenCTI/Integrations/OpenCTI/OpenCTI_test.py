@@ -1355,7 +1355,8 @@ def test_create_commands_exception(
     with pytest.raises(DemistoException, match=f"{error_message} Test exception"):
         command(client, args)
     captured = capfd.readouterr()
-    assert "Test exception" in captured.out
+    assert "Traceback (most recent call last)" in captured.out
+    assert "Exception: Test exception" in captured.out
 
 
 @pytest.mark.parametrize("returned_value", [{}, None], ids=["empty", "none"])
@@ -1438,7 +1439,8 @@ def test_add_object_to_container_create_command_exception(mocker, capfd):
     with pytest.raises(DemistoException, match="Can't add object into report. Test exception"):
         add_object_to_container_create_command(client, args)
     captured = capfd.readouterr()
-    assert captured.out.strip() == "Test exception"
+    assert "Traceback (most recent call last)" in captured.out
+    assert "Exception: Test exception" in captured.out
 
 
 def test_add_object_to_container_create_command_not_added(mocker):
