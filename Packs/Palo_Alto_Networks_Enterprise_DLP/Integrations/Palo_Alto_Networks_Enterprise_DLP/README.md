@@ -207,8 +207,3 @@ In case specific DLP incidents are not appearing on the Cortex tenant, verify th
    - Check the Strata Cloud Manager to confirm which regions generated the incidents.
    - **Note**: The *DLP Regions* dropdown menu shows all currently-supported regions.
    - Ensure all regions where incidents originated are selected from the dropdown menu.
-
-3. **Incident Attributes Missing After Upgrading to Version 2.4.0**
-   - Starting from version 2.4.0, incidents are fetched from the v4 incident inventory API, which returns only a summary of each incident.
-   - Attributes such as the URL, source and destination IP addresses, user details, direction, asset size and hash, data patterns and device information are no longer part of the fetched incident.
-   - Custom mappers, layouts or playbooks that read these attributes from `incidentDetails` must be updated. The attributes remain available in the incident details in Strata Cloud Manager.
