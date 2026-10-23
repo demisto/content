@@ -1,0 +1,8 @@
+!certificate certificate="A1B2C3D4E5F60718293A4B5C6D7E8F9012345678"
+!cmsaas-certificate-search common_name="example.com" limit="2"
+!cmsaas-certificate-get fingerprint="A1B2C3D4E5F60718293A4B5C6D7E8F9012345678" include_machine_details="true"
+!cmsaas-certificate-list-expiring days="30" limit="2"
+!cmsaas-application-list limit="2"
+!cmsaas-machine-list limit="2"
+!cmsaas-machine-get machine_identifier="8b1c5e22-1111-11ef-9a11-0242ac120002"
+!cmsaas-certificate-request-status request_id="7d3f1a20-2222-11ef-9a11-0242ac120002"

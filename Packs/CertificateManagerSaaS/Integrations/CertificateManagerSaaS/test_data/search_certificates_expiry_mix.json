@@ -1,0 +1,40 @@
+{
+  "data": {
+    "searchCertificates": {
+      "totalCount": 3,
+      "pageInfo": { "hasNextPage": false, "endCursor": null },
+      "nodes": [
+        {
+          "id": "cert-far",
+          "fingerprint": "1111111111111111111111111111111111111111",
+          "status": "ACTIVE",
+          "subject": { "dn": "CN=far.example.com", "commonName": ["far.example.com"] },
+          "issuer": { "dn": "CN=Example Issuing CA", "commonName": ["Example Issuing CA"] },
+          "validity": { "from": "2026-01-01T00:00:00Z", "to": "2027-06-01T00:00:00Z", "period": 44582400 },
+          "machineInstallations": { "totalCount": 0, "nodes": [] },
+          "tlsServerEndpoints": { "totalCount": 0, "nodes": [] }
+        },
+        {
+          "id": "cert-soon",
+          "fingerprint": "2222222222222222222222222222222222222222",
+          "status": "ACTIVE",
+          "subject": { "dn": "CN=soon.example.com", "commonName": ["soon.example.com"] },
+          "issuer": { "dn": "CN=Example Issuing CA", "commonName": ["Example Issuing CA"] },
+          "validity": { "from": "2026-01-01T00:00:00Z", "to": "2026-10-01T00:00:00Z", "period": 23673600 },
+          "machineInstallations": { "totalCount": 0, "nodes": [] },
+          "tlsServerEndpoints": { "totalCount": 0, "nodes": [] }
+        },
+        {
+          "id": "cert-expired",
+          "fingerprint": "3333333333333333333333333333333333333333",
+          "status": "ACTIVE",
+          "subject": { "dn": "CN=gone.example.com", "commonName": ["gone.example.com"] },
+          "issuer": { "dn": "CN=Example Issuing CA", "commonName": ["Example Issuing CA"] },
+          "validity": { "from": "2025-01-01T00:00:00Z", "to": "2026-09-01T00:00:00Z", "period": 52704000 },
+          "machineInstallations": { "totalCount": 0, "nodes": [] },
+          "tlsServerEndpoints": { "totalCount": 0, "nodes": [] }
+        }
+      ]
+    }
+  }
+}
