@@ -1,0 +1,92 @@
+{
+    "hydden_mesh_raw": {
+        "_raw_log": {
+            "type": "string",
+            "is_array": false
+        },
+        "_vendor": {
+            "type": "string",
+            "is_array": false
+        },
+        "_product": {
+            "type": "string",
+            "is_array": false
+        },
+        "_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "_device_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "_collector_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "_collector_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "mesh": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor_ref": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_ref": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "outcome": {
+            "type": "string",
+            "is_array": false
+        },
+        "outcome_reason": {
+            "type": "string",
+            "is_array": false
+        },
+        "is_mfa": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "risk_level": {
+            "type": "string",
+            "is_array": false
+        },
+        "tenant_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "connector_id": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
