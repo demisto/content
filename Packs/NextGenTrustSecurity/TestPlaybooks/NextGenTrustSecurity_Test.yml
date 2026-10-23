@@ -1,0 +1,469 @@
+id: NextGenTrustSecurity - Test
+version: -1
+name: NextGenTrustSecurity - Test
+description: |-
+  Test playbook for the Next-Gen Trust Security integration. Runs every read command against a live tenant and asserts the shape of the results.
+
+  The write commands - revoke, request, request status and download - are deliberately not exercised here: they mutate a real tenant's certificate inventory and revocation cannot be undone.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: a60bd3b2-9dce-4864-9747-bb392e1b7fc0
+    type: start
+    task:
+      id: a60bd3b2-9dce-4864-9747-bb392e1b7fc0
+      version: -1
+      name: ''
+      description: ''
+      type: start
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 5251d952-d5fe-4ac0-a123-cc261f14059d
+    type: regular
+    task:
+      id: 5251d952-d5fe-4ac0-a123-cc261f14059d
+      version: -1
+      name: Clear the context
+      description: Starts each run from a known-empty context so an assertion cannot pass on a leftover
+        value. Only legal in a test playbook - PB105 forbids DeleteContext with all set to yes in a shipped
+        playbook.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: 'yes'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: b012d5be-36fc-4094-b0fd-030152eeeb58
+    type: regular
+    task:
+      id: b012d5be-36fc-4094-b0fd-030152eeeb58
+      version: -1
+      name: ngts-certificate-search
+      description: Searches the certificate inventory.
+      script: '|||ngts-certificate-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      limit:
+        simple: '5'
+      max_pages:
+        simple: '2'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 2d34cdd8-74cd-4ce8-a47f-650e3e79410d
+    type: condition
+    task:
+      id: 2d34cdd8-74cd-4ce8-a47f-650e3e79410d
+      version: -1
+      name: Verify the search returned a fingerprint
+      description: Fingerprint is the natural key, so its absence means the search shape is wrong even
+        if the call succeeded.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '4'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CertManagerSaaS.Certificate.Fingerprint
+            iscontext: true
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 816ffb37-12bc-4187-acad-38db823fdae5
+    type: regular
+    task:
+      id: 816ffb37-12bc-4187-acad-38db823fdae5
+      version: -1
+      name: ngts-certificate-get
+      description: Retrieves one certificate by the fingerprint the search returned.
+      script: '|||ngts-certificate-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      fingerprint:
+        complex:
+          root: CertManagerSaaS.Certificate.Fingerprint
+      include_machine_details:
+        simple: 'false'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 6a90da90-d6e1-4dda-8e3f-56566314cb95
+    type: regular
+    task:
+      id: 6a90da90-d6e1-4dda-8e3f-56566314cb95
+      version: -1
+      name: ngts-certificate-list-expiring
+      description: Lists certificates expiring inside a 30-day window.
+      script: '|||ngts-certificate-list-expiring'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      days:
+        simple: '30'
+      limit:
+        simple: '5'
+      max_pages:
+        simple: '2'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 3508e66e-f649-4c66-8c88-4daa6f1bdf2d
+    type: regular
+    task:
+      id: 3508e66e-f649-4c66-8c88-4daa6f1bdf2d
+      version: -1
+      name: ngts-machine-list
+      description: Lists the machines known to the tenant.
+      script: '|||ngts-machine-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      limit:
+        simple: '5'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 7caed621-3d11-42ab-b530-1c6ad7621f03
+    type: condition
+    task:
+      id: 7caed621-3d11-42ab-b530-1c6ad7621f03
+      version: -1
+      name: Verify a machine was returned
+      description: Skips the machine detail call on a tenant with no machines rather than failing it.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '10'
+      'yes':
+      - '9'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CertManagerSaaS.Machine.ID
+            iscontext: true
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: a4ae5665-0b88-4f15-a989-f744bb269e33
+    type: regular
+    task:
+      id: a4ae5665-0b88-4f15-a989-f744bb269e33
+      version: -1
+      name: ngts-machine-get
+      description: Retrieves one machine, including its connection details. Roughly half of machines carry
+        no host - cloud connectors expose a vault name instead - so the host is not asserted.
+      script: '|||ngts-machine-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      machine_identifier:
+        complex:
+          root: CertManagerSaaS.Machine.ID
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 3823f5c9-d373-402c-a3d5-df6fcb1fb790
+    type: regular
+    task:
+      id: 3823f5c9-d373-402c-a3d5-df6fcb1fb790
+      version: -1
+      name: certificate
+      description: Runs the certificate reputation command on the fingerprint the search returned.
+      script: NextGenTrustSecurity|||certificate
+      type: regular
+      iscommand: true
+      brand: NextGenTrustSecurity
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      certificate:
+        complex:
+          root: CertManagerSaaS.Certificate.Fingerprint
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: 5aafe7c3-fefb-4348-99e8-4c8223b0a034
+    type: condition
+    task:
+      id: 5aafe7c3-fefb-4348-99e8-4c8223b0a034
+      version: -1
+      name: Verify the reputation produced a DBot score
+      description: The certificate indicator type is first class, so a missing DBot score means the reputation
+        command is not wired up correctly.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '12'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          ignorecase: true
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: certificate
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 65e23c12-b14f-46a4-bfca-415e4f73c3a4
+    type: title
+    task:
+      id: 65e23c12-b14f-46a4-bfca-415e4f73c3a4
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2340,
+        "width": 480,
+        "x": 400,
+        "y": 0
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

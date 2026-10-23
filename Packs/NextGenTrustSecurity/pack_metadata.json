@@ -1,0 +1,46 @@
+{
+    "name": "Next-Gen Trust Security",
+    "description": "Search, inspect, revoke and replace certificates held in Palo Alto Networks Next-Gen Trust Security through Strata Cloud Manager, and raise an issue when a certificate approaches expiry.",
+    "support": "xsoar",
+    "defaultDataSource": "NextGenTrustSecurity",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2026-09-24T00:00:00Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "NGTS",
+        "Strata Cloud Manager",
+        "Certificate",
+        "Certificate Manager",
+        "TLS"
+    ],
+    "itemPrefix": [
+        "Next-Gen Trust Security",
+        "NextGenTrustSecurity"
+    ],
+    "dependencies": {
+        "CertificateManagerCommon": {
+            "mandatory": true,
+            "display_name": "Certificate Manager Common"
+        },
+        "X509Certificate": {
+            "mandatory": true,
+            "display_name": "X509Certificate"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}
