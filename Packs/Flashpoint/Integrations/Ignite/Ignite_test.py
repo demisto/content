@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 import Ignite
 import pytest
-from CommonServerPython import DemistoException, get_current_time
+from CommonServerPython import DemistoException, EntryType, get_current_time
 from Ignite import (
     DATE_FORMAT,
     DEFAULT_SEVERITY,
@@ -4143,3 +4143,206 @@ def test_prepare_incidents_from_alerts_data_non_vulnerabilities_keeps_resource_u
 
     raw = json.loads(incidents[0]["rawJSON"])
     assert raw["resource"]["url"] == existing_url
+
+
+def test_source_media_download_command_success(requests_mock, mock_client, tmp_path):
+    """
+    Test case scenario for successful execution of source_media_download_command function.
+
+    Given:
+        - command arguments for source_media_download_command
+    When:
+        - Calling `source_media_download_command` function
+    Then:
+        - Returns an info file entry holding the media content
+    """
+    from Ignite import source_media_download_command
+
+    media_content = b"\xff\xd8\xff\xe0 dummy media content"
+    asset_id = "gs://dummy-bucket/artifacts/01/dummy_asset_id"
+
+    requests_mock.get(
+        f"{MOCK_URL}{URL_SUFFIX['SOURCE_MEDIA']}",
+        content=media_content,
+        status_code=200,
+        headers={"Content-Type": "image/jpeg"},
+    )
+
+    with patch.object(demisto, "investigation", return_value={"id": str(tmp_path / "investigation")}):
+        resp = source_media_download_command(mock_client, args={"asset_id": asset_id, "cdn": "true"})
+
+    assert resp["Type"] == EntryType.ENTRY_INFO_FILE
+    assert resp["File"] == "dummy_asset_id.jpg"
+    assert requests_mock.last_request.qs == {"asset_id": [asset_id], "cdn": ["true"]}
+
+
+def test_source_media_download_command_when_no_media_content(requests_mock, mock_client):
+    """
+    Test case scenario with no media content execution of source_media_download_command function.
+
+    Given:
+        - command arguments for source_media_download_command
+    When:
+        - Calling `source_media_download_command` function
+    Then:
+        - Returns a message stating that no media content was found
+    """
+    from Ignite import source_media_download_command
+
+    requests_mock.get(f"{MOCK_URL}{URL_SUFFIX['SOURCE_MEDIA']}", content=b"", status_code=200)
+
+    resp = source_media_download_command(mock_client, args={"asset_id": "gs://dummy-bucket/dummy_asset_id"})
+
+    assert resp.readable_output == MESSAGES["EMPTY_MEDIA_CONTENT"]
+
+
+@pytest.mark.parametrize("cdn_arg, expected_cdn", [("true", "true"), ("false", "false")])
+def test_source_media_download_command_with_cdn_arg(requests_mock, mock_client, tmp_path, cdn_arg, expected_cdn):
+    """
+    Test case scenario for execution of source_media_download_command function with the cdn argument.
+
+    Given:
+        - command arguments for source_media_download_command with cdn set to true or false
+    When:
+        - Calling `source_media_download_command` function
+    Then:
+        - Passes the cdn argument to the API as a boolean query parameter
+    """
+    from Ignite import source_media_download_command
+
+    asset_id = "gs://dummy-bucket/artifacts/01/dummy_asset_id"
+
+    requests_mock.get(
+        f"{MOCK_URL}{URL_SUFFIX['SOURCE_MEDIA']}",
+        content=b"\xff\xd8\xff\xe0 dummy media content",
+        status_code=200,
+        headers={"Content-Type": "image/jpeg"},
+    )
+
+    with patch.object(demisto, "investigation", return_value={"id": str(tmp_path / "investigation")}):
+        source_media_download_command(mock_client, args={"asset_id": asset_id, "cdn": cdn_arg})
+
+    assert requests_mock.last_request.qs == {"asset_id": [asset_id], "cdn": [expected_cdn]}
+
+
+@pytest.mark.parametrize("args", [{}, {"asset_id": " "}])
+def test_source_media_download_command_when_invalid_args_provided(mock_client, args):
+    """
+    Test case scenario when invalid arguments are provided to source_media_download_command function.
+
+    Given:
+        - invalid command arguments for source_media_download_command
+    When:
+        - Calling `source_media_download_command` function
+    Then:
+        - Returns an exception
+    """
+    from Ignite import source_media_download_command
+
+    with pytest.raises(ValueError) as err:
+        source_media_download_command(mock_client, remove_space_from_args(args))
+
+    assert str(err.value) == MESSAGES["MISSING_REQUIRED_ARGS"].format("asset_id")
+
+
+@pytest.mark.parametrize(
+    "status_code, response_text, expected_error",
+    [
+        (400, "invalid asset", MESSAGES["INVALID_ARGUMENT_RESPONSE"] + "invalid asset"),
+        (401, "", MESSAGES["INVALID_API_KEY"]),
+        (403, "", MESSAGES["TEST_CONNECTIVITY_FAILED"]),
+        (404, "", MESSAGES["NO_RECORD_FOUND"]),
+    ],
+)
+def test_source_media_download_command_when_error_response(
+    requests_mock, mock_client, status_code, response_text, expected_error
+):
+    """
+    Test case scenario when an error response is returned for source_media_download_command function.
+
+    Given:
+        - command arguments for source_media_download_command
+    When:
+        - Calling `source_media_download_command` function
+    Then:
+        - Returns an exception
+    """
+    from Ignite import source_media_download_command
+
+    requests_mock.get(f"{MOCK_URL}{URL_SUFFIX['SOURCE_MEDIA']}", text=response_text, status_code=status_code)
+
+    with pytest.raises(DemistoException) as err:
+        source_media_download_command(mock_client, args={"asset_id": "gs://dummy-bucket/dummy_asset_id"})
+
+    assert str(err.value) == MESSAGES["STATUS_CODE"].format(status_code, expected_error)
+
+
+def test_source_media_download_command_when_json_error_response(requests_mock, mock_client):
+    """
+    Test case scenario when a JSON error body is returned for source_media_download_command function.
+
+    Given:
+        - command arguments for source_media_download_command
+    When:
+        - Calling `source_media_download_command` function
+    Then:
+        - Returns an exception holding only the detail from the JSON error body
+    """
+    from Ignite import source_media_download_command
+
+    requests_mock.get(f"{MOCK_URL}{URL_SUFFIX['SOURCE_MEDIA']}", json={"detail": "invalid asset id"}, status_code=400)
+
+    with pytest.raises(DemistoException) as err:
+        source_media_download_command(mock_client, args={"asset_id": "gs://dummy-bucket/dummy_asset_id"})
+
+    assert str(err.value) == MESSAGES["STATUS_CODE"].format(400, MESSAGES["INVALID_ARGUMENT_RESPONSE"] + "invalid asset id")
+
+
+def test_source_media_download_command_when_unexpected_error_response(requests_mock, mock_client):
+    """
+    Test case scenario when an unhandled error response is returned for source_media_download_command function.
+
+    Given:
+        - command arguments for source_media_download_command
+    When:
+        - Calling `source_media_download_command` function
+    Then:
+        - Returns an exception raised by the generic error handler
+    """
+    from Ignite import source_media_download_command
+
+    requests_mock.get(f"{MOCK_URL}{URL_SUFFIX['SOURCE_MEDIA']}", text="service unavailable", status_code=503)
+
+    with pytest.raises(DemistoException) as err:
+        source_media_download_command(mock_client, args={"asset_id": "gs://dummy-bucket/dummy_asset_id"})
+
+    assert "service unavailable" in str(err.value)
+
+
+@pytest.mark.parametrize(
+    "asset_id, content_type, expected_file_name",
+    [
+        ("gs://dummy-bucket/dummy_asset_id", "image/jpeg", "dummy_asset_id.jpg"),
+        ("gs://dummy-bucket/dummy_asset_id", "image/gif", "dummy_asset_id.gif"),
+        ("gs://dummy-bucket/dummy_asset_id.png", "image/png", "dummy_asset_id.png"),
+        ("gs://dummy-bucket/dummy_asset_id", "dummy/unknown", "dummy_asset_id"),
+        ("gs://dummy-bucket/dummy_asset_id", None, "dummy_asset_id"),
+        ("gs://dummy-bucket/", "image/jpeg", "dummy-bucket.jpg"),
+        ("gs://dummy-bucket/..", "image/jpeg", "source_media.jpg"),
+        ("gs://dummy-bucket/.", "image/jpeg", "source_media.jpg"),
+    ],
+)
+def test_prepare_file_name_for_source_media(asset_id, content_type, expected_file_name):
+    """
+    Test case scenario for execution of prepare_file_name_for_source_media function.
+
+    Given:
+        - an asset ID and the content type returned by the API
+    When:
+        - Calling `prepare_file_name_for_source_media` function
+    Then:
+        - Returns the expected file name
+    """
+    from Ignite import prepare_file_name_for_source_media
+
+    assert prepare_file_name_for_source_media(asset_id, content_type) == expected_file_name
