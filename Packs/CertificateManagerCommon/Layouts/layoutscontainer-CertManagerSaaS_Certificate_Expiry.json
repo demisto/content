@@ -1,0 +1,521 @@
+{
+    "id": "CertManagerSaaS Certificate Expiry Layout",
+    "name": "CertManagerSaaS Certificate Expiry Layout",
+    "description": "Layout for CyberArk Certificate Manager SaaS certificate expiry issues.",
+    "group": "incident",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "system": false,
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "type": "custom",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-cmsaas-0001-details",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "name": "Case Details",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "cmsaas-item-type",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "cmsaas-item-severity",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "cmsaas-item-owner",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "cmsaas-item-sourcebrand",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "cmsaas-item-sourceinstance",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "cmsaas-item-playbookid",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ]
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-cmsaas-0002-certificate",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "name": "Certificate",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "certmanagersaascommonname",
+                                "height": 22,
+                                "id": "cmsaas-item-commonname",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "certmanagersaascertificateid",
+                                "height": 22,
+                                "id": "cmsaas-item-certificateid",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "certmanagersaasfingerprint",
+                                "height": 22,
+                                "id": "cmsaas-item-fingerprint",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "certmanagersaasissuer",
+                                "height": 22,
+                                "id": "cmsaas-item-issuer",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ]
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-cmsaas-0003-expiry",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "name": "Expiry",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "certmanagersaasexpirydate",
+                                "height": 22,
+                                "id": "cmsaas-item-expirydate",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "certmanagersaasdaystoexpiry",
+                                "height": 22,
+                                "id": "cmsaas-item-daystoexpiry",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ]
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-cmsaas-0004-ownership",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "name": "Ownership and Installation",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "certmanagersaasowningapplication",
+                                "height": 22,
+                                "id": "cmsaas-item-owningapplication",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "certmanagersaasowningtsg",
+                                "height": 22,
+                                "id": "cmsaas-item-owningtsg",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "certmanagersaasinstallationlocation",
+                                "height": 106,
+                                "id": "cmsaas-item-installationlocation",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ]
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-cmsaas-0005-timeline",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "name": "Timeline Information",
+                        "w": 1,
+                        "x": 1,
+                        "y": 2,
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "cmsaas-item-occurred",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "cmsaas-item-modified",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "cmsaas-item-created",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 22,
+                                "id": "cmsaas-item-duedate",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ]
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-cmsaas-0006-notes",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "name": "Notes",
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-cmsaas-0007-investigation",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "name": "Investigation Data",
+                        "w": 1,
+                        "x": 0,
+                        "y": 4,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 22,
+                                "id": "cmsaas-item-details",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ]
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-cmsaas-0008-indicators",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "type": "indicators",
+                        "w": 1,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-cmsaas-0009-closing",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "name": "Closing Information",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "cmsaas-item-dbotclosed",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "cmsaas-item-closereason",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 22,
+                                "id": "cmsaas-item-closenotes",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    }
+                ]
+            },
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Certificate",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_certmanagersaascommonname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_certmanagersaascertificateid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_certmanagersaasfingerprint",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_certmanagersaasissuer",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_certmanagersaasexpirydate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_certmanagersaasdaystoexpiry",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_certmanagersaasowningapplication",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_certmanagersaasowningtsg",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_certmanagersaasinstallationlocation",
+                        "isVisible": true
+                    }
+                ]
+            }
+        ]
+    },
+    "close": {
+        "sections": [
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_closereason",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_closenotes",
+                        "isVisible": true
+                    }
+                ]
+            },
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Custom Fields",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "quickView": {
+        "sections": [
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Certificate",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_certmanagersaascommonname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_certmanagersaasexpirydate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_certmanagersaasdaystoexpiry",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_certmanagersaasowningapplication",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_certmanagersaasowningtsg",
+                        "isVisible": true
+                    }
+                ]
+            }
+        ]
+    }
+}
