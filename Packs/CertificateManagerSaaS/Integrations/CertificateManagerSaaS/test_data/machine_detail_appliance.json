@@ -1,0 +1,10 @@
+{
+  "id": "mach-0001",
+  "machineName": "F5 v17",
+  "status": "ACTIVE",
+  "pluginId": "plug-f5",
+  "edgeInstanceId": "edge-01",
+  "creationDate": "2025-11-02T12:00:00Z",
+  "modificationDate": "2026-09-01T09:00:00Z",
+  "connectionDetails": { "host": "https://admin@F5-LTM-01.Example.COM:8443/mgmt/", "port": 8443, "authMethod": "PASSWORD" }
+}
