@@ -1,0 +1,18 @@
+{
+  "trigger_id": "195f384e80674ce8bbfe3bcbdc30c2aa",
+  "playbook_id": "CertManagerSaaS Certificate Compromise Response",
+  "suggestion_reason": "Asks an analyst to retry a key-compromise revocation that the CA did not complete, and requests a replacement.",
+  "description": "Runs the CertManagerSaaS Certificate Compromise Response playbook on revocation-failed issues fetched by the Certificate Manager SaaS and Next-Gen Trust Security integrations.",
+  "trigger_name": "CertManagerSaaS Revocation Failed Trigger",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "CertManagerSaaS Revocation Failed"
+        }
+      ]
+    }
+  }
+}

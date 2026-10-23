@@ -1,0 +1,18 @@
+{
+  "trigger_id": "1ab8136f5a524a999b11c30fdbe44a8c",
+  "playbook_id": "CertManagerSaaS Certificate Expiry Remediation",
+  "suggestion_reason": "Refreshes the certificate, sets severity from time to expiry, and assigns the owner or requests a replacement.",
+  "description": "Runs the CertManagerSaaS Certificate Expiry Remediation playbook on certificate-expiry issues fetched by the Certificate Manager SaaS and Next-Gen Trust Security integrations.",
+  "trigger_name": "CertManagerSaaS Certificate Expiry Trigger",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "CertManagerSaaS Certificate Expiry"
+        }
+      ]
+    }
+  }
+}

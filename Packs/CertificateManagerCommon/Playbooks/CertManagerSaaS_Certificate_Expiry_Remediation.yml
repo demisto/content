@@ -1,0 +1,1071 @@
+id: CertManagerSaaS Certificate Expiry Remediation
+version: -1
+name: CertManagerSaaS Certificate Expiry Remediation
+description: |-
+  Triages a CyberArk Certificate Manager SaaS certificate-expiry issue: resolves the certificate, records it on the case, sets severity from time to expiry, then either requests a replacement or hands the case to the certificate owner or an assignee role.
+
+  Hydration comes first by design. The fetched incident already carries the certificate's fields, but the lookup refreshes them - the certificate may have been renewed or revoked since the fetch - and resolves the fingerprint the later steps need.
+
+  Severity thresholds are playbook inputs so they can be aligned with the tenant-global Certificate Manager SaaS expiry thresholds, which are customer-configured and cannot be shipped in this pack. If the two disagree they disagree silently.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 64873412-027a-544f-887a-593b253ada9d
+    type: start
+    task:
+      id: 64873412-027a-544f-887a-593b253ada9d
+      version: -1
+      name: ''
+      description: ''
+      type: start
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '22'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 50611cf0-377b-55ca-aed0-5f97ba39b31e
+    type: title
+    task:
+      id: 50611cf0-377b-55ca-aed0-5f97ba39b31e
+      version: -1
+      name: Hydrate
+      description: The fetched incident names the certificate, but its fields are a snapshot from fetch
+        time. Everything downstream therefore works from a fresh lookup.
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: ebd7574d-53fb-5312-97d8-570523c088b4
+    type: condition
+    task:
+      id: ebd7574d-53fb-5312-97d8-570523c088b4
+      version: -1
+      name: Did the mapper already resolve a common name?
+      description: Uses the common name the fetch mapper put on the incident. Without one there is nothing
+        to look up, so the case is reported as unresolved.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '14'
+      'yes':
+      - '3'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.CommonName
+            iscontext: true
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 595a5267-8283-5685-9b2a-bdbd32fba17e
+    type: regular
+    task:
+      id: 595a5267-8283-5685-9b2a-bdbd32fba17e
+      version: -1
+      name: Take the common name from the mapped field
+      description: Normalizes the mapped common name onto a single context key so the search task has
+        one source regardless of which branch ran.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      key:
+        simple: CertManagerSaaS.ExpiryEvent.CommonName
+      value:
+        complex:
+          root: inputs.CommonName
+      append:
+        simple: 'false'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 9ea23644-29ff-5450-b2ac-68aace7ba28f
+    type: regular
+    task:
+      id: 9ea23644-29ff-5450-b2ac-68aace7ba28f
+      version: -1
+      name: Look the certificate up in Certificate Manager SaaS
+      description: Refreshes the certificate data - fingerprint, validity, issuer, owning application
+        or TSG, and installations - so later steps act on the current state rather than the state at fetch
+        time. Skipped when no Certificate Manager SaaS instance is enabled.
+      script: '|||cmsaas-certificate-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments:
+      common_name:
+        complex:
+          root: CertManagerSaaS.ExpiryEvent.CommonName
+      limit:
+        simple: '5'
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 3a68a1d6-24d2-55d3-a258-6d0778693a2f
+    type: condition
+    task:
+      id: 3a68a1d6-24d2-55d3-a258-6d0778693a2f
+      version: -1
+      name: Was exactly one certificate resolved?
+      description: Acting on several certificates at once - for example a renewed certificate that shares
+        the common name - would renew or re-rate the wrong one, so anything other than exactly one goes
+        to manual triage.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '14'
+      'yes':
+      - '7'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: CertManagerSaaS.Certificate.Fingerprint
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: '1'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 18817bf8-3dcd-5de3-af0e-e28b92043004
+    type: regular
+    task:
+      id: 18817bf8-3dcd-5de3-af0e-e28b92043004
+      version: -1
+      name: Write the certificate facts onto the case
+      description: Populates the pack's certificate fields with the freshly looked-up data.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      certmanagersaascertificateid:
+        complex:
+          root: CertManagerSaaS.Certificate.ID
+      certmanagersaasfingerprint:
+        complex:
+          root: CertManagerSaaS.Certificate.Fingerprint
+      certmanagersaascommonname:
+        complex:
+          root: CertManagerSaaS.Certificate.CommonName
+      certmanagersaasexpirydate:
+        complex:
+          root: CertManagerSaaS.Certificate.ValidTo
+      certmanagersaasdaystoexpiry:
+        complex:
+          root: CertManagerSaaS.Certificate.DaysUntilExpiry
+      certmanagersaasissuer:
+        complex:
+          root: CertManagerSaaS.Certificate.IssuerCommonName
+      certmanagersaasowningapplication:
+        complex:
+          root: CertManagerSaaS.Certificate.Applications.Name
+      certmanagersaasowningtsg:
+        complex:
+          root: CertManagerSaaS.Certificate.TSGID
+      certmanagersaasinstallationlocation:
+        complex:
+          root: CertManagerSaaS.Certificate.InstallationLocations
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: a88f0265-de70-5eec-aeb0-c34830ec6979
+    type: condition
+    task:
+      id: a88f0265-de70-5eec-aeb0-c34830ec6979
+      version: -1
+      name: How close is expiry?
+      description: 'Computes the severity ladder explicitly. The reusable severity playbook cannot express
+        this - it merges a closed set of hard-coded severity keys and ignores a custom one without erroring.
+        Conditions are evaluated in order, so the critical rung is tested first. The lowest rung is Medium
+        on purpose: Low creates neither a case nor a grouping.'
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '11'
+      Critical:
+      - '9'
+      High:
+      - '10'
+    conditions:
+    - label: Critical
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: CertManagerSaaS.Certificate.DaysUntilExpiry
+            iscontext: true
+          right:
+            value:
+              simple: inputs.CriticalThresholdDays
+            iscontext: true
+    - label: High
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: CertManagerSaaS.Certificate.DaysUntilExpiry
+            iscontext: true
+          right:
+            value:
+              simple: inputs.HighThresholdDays
+            iscontext: true
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 2c431ec2-645c-52eb-a8fc-25e12a05bf4c
+    type: regular
+    task:
+      id: 2c431ec2-645c-52eb-a8fc-25e12a05bf4c
+      version: -1
+      name: Set severity to Critical
+      description: Fewer days remain than the critical threshold.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      severity:
+        simple: Critical
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: c0620e46-9ac0-5936-ac81-f85155ee437c
+    type: regular
+    task:
+      id: c0620e46-9ac0-5936-ac81-f85155ee437c
+      version: -1
+      name: Set severity to High
+      description: Fewer days remain than the high threshold.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      severity:
+        simple: High
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: 6de44612-af5a-5e1f-a0e7-f6a13316d741
+    type: regular
+    task:
+      id: 6de44612-af5a-5e1f-a0e7-f6a13316d741
+      version: -1
+      name: Set severity to Medium
+      description: Outside both thresholds. Medium is the floor rather than Low, because a Low issue creates
+        neither a case nor a grouping.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      severity:
+        simple: Medium
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: d5a2979a-2e09-50fc-9be4-9c75edcfba8f
+    type: condition
+    task:
+      id: d5a2979a-2e09-50fc-9be4-9c75edcfba8f
+      version: -1
+      name: Renew this certificate automatically?
+      description: Auto-renewal is opt-in. Left off, the case is handed to the certificate owner instead.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '23'
+      'yes':
+      - '13'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          ignorecase: true
+          left:
+            value:
+              simple: inputs.AutoRenew
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 297eb190-8861-550b-91fe-1671358dc429
+    type: playbook
+    task:
+      id: 297eb190-8861-550b-91fe-1671358dc429
+      version: -1
+      name: Request a replacement certificate
+      description: Calls the reusable certificate request sub-playbook. Its outputs are shared globally
+        (separatecontext is false) so that the request identifier and outcome land in this playbook's
+        context.
+      playbookName: CertManagerSaaS Certificate Request
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments:
+      CommonName:
+        complex:
+          root: CertManagerSaaS.Certificate.CommonName
+      SubjectAlternativeNames:
+        complex:
+          root: CertManagerSaaS.Certificate.SubjectAlternativeNames
+      ApplicationID:
+        complex:
+          root: inputs.ApplicationID
+      CertificateIssuingTemplateID:
+        complex:
+          root: inputs.CertificateIssuingTemplateID
+      ExistingCertificateFingerprint:
+        complex:
+          root: CertManagerSaaS.Certificate.Fingerprint
+      ValidityPeriod:
+        complex:
+          root: inputs.ValidityPeriod
+      SourceIntegration:
+        complex:
+          root: CertManagerSaaS.Certificate.SourceBrand
+      SourceInstance:
+        complex:
+          root: CertManagerSaaS.Certificate.SourceInstance
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
+    taskid: 6071262c-286b-5fa0-ac17-d19d631d88a0
+    type: regular
+    task:
+      id: 6071262c-286b-5fa0-ac17-d19d631d88a0
+      version: -1
+      name: Report that the certificate could not be resolved uniquely
+      description: Records why the case cannot be triaged automatically so an analyst has something to
+        act on.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      value:
+        simple: 'No single certificate could be resolved for this incident: the lookup returned none,
+          or several (for example a renewed certificate with the same common name). The certificate may
+          have been deleted, or the instance cannot see it - a Next-Gen Trust Security account limited
+          to some workspaces can miss certificates. Triage this case by hand.'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: f906fa20-0f62-5c37-9486-6c4c37141dc3
+    type: regular
+    task:
+      id: f906fa20-0f62-5c37-9486-6c4c37141dc3
+      version: -1
+      name: Assign the case to the certificate owner or the assignee role
+      description: Assigns the case to CertificateOwnerEmail when set; otherwise to the least busy member
+        of AssigneeRole.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      email:
+        complex:
+          root: inputs.CertificateOwnerEmail
+      roles:
+        complex:
+          root: inputs.AssigneeRole
+      assignBy:
+        simple: less-busy-user
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 2710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '16':
+    id: '16'
+    taskid: c4569f4f-8bbc-5af1-884c-d19d67c35b65
+    type: regular
+    task:
+      id: c4569f4f-8bbc-5af1-884c-d19d67c35b65
+      version: -1
+      name: Record the remediation outcome
+      description: Leaves a war room record of what the playbook did, so the certificate request is traceable
+        from the same case.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      value:
+        complex:
+          root: CertManagerSaaS.CertificateRequest
+          transformers:
+          - operator: JsonToTable
+            args:
+              title:
+                value:
+                  simple: Certificate request outcome
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 586,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '17':
+    id: '17'
+    taskid: 28ec3d57-23ac-5029-acc2-59233886a577
+    type: title
+    task:
+      id: 28ec3d57-23ac-5029-acc2-59233886a577
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 433,
+          "y": 3090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '18':
+    id: '18'
+    taskid: b045f9cd-fe70-4acd-9c70-060c56f6ff27
+    type: regular
+    task:
+      id: b045f9cd-fe70-4acd-9c70-060c56f6ff27
+      version: -1
+      name: Look the certificate up in Next-Gen Trust Security
+      description: 'Refreshes the certificate data - fingerprint, validity, issuer, owning application
+        or TSG, and installations - so later steps act on the current state rather than the state at fetch
+        time. Next-Gen Trust Security variant: skipped when no NGTS instance is enabled. Runs after the
+        Certificate Manager SaaS lookup, so when both tenants hold the same certificate the Next-Gen Trust
+        Security result wins.'
+      script: '|||ngts-certificate-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      common_name:
+        complex:
+          root: CertManagerSaaS.ExpiryEvent.CommonName
+      limit:
+        simple: '5'
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '19':
+    id: '19'
+    taskid: ff715284-d9c0-41ad-b9bf-95688ef51f88
+    type: condition
+    task:
+      id: ff715284-d9c0-41ad-b9bf-95688ef51f88
+      version: -1
+      name: Is the fingerprint mapped?
+      description: The fingerprint identifies exactly one certificate, so it is preferred over the common
+        name, which a renewed certificate shares.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '20'
+      '#default#':
+      - '2'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Fingerprint
+            iscontext: true
+  '20':
+    id: '20'
+    taskid: 64413bd7-1ebe-40d1-b1c1-a335c15df298
+    type: regular
+    task:
+      id: 64413bd7-1ebe-40d1-b1c1-a335c15df298
+      version: -1
+      name: Get the certificate by fingerprint
+      description: Exact lookup by fingerprint. Skipped when no Certificate Manager SaaS instance is enabled;
+        an instance that does not hold the certificate returns nothing.
+      script: '|||cmsaas-certificate-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      fingerprint:
+        complex:
+          root: inputs.Fingerprint
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '21':
+    id: '21'
+    taskid: 3cfa69f1-a8a8-4fe4-8c19-bf3e57e16651
+    type: regular
+    task:
+      id: 3cfa69f1-a8a8-4fe4-8c19-bf3e57e16651
+      version: -1
+      name: Get the certificate by fingerprint (NGTS)
+      description: Exact lookup by fingerprint. Skipped when no Next-Gen Trust Security instance is enabled;
+        an instance that does not hold the certificate returns nothing. Runs after the Certificate Manager
+        SaaS lookup, so when both tenants hold the same certificate the Next-Gen Trust Security result
+        wins.
+      script: '|||ngts-certificate-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      fingerprint:
+        complex:
+          root: inputs.Fingerprint
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '22':
+    id: '22'
+    taskid: 771aeb36-2c48-4403-9a59-41f2be27071a
+    type: regular
+    task:
+      id: 771aeb36-2c48-4403-9a59-41f2be27071a
+      version: -1
+      name: Clear stale Certificate data
+      description: Removes certificate data left in the incident context by an earlier run, so every check
+        and action below sees only this run's lookup.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      key:
+        simple: CertManagerSaaS.Certificate
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '23':
+    id: '23'
+    taskid: adeeeb8f-eca9-4b76-86ef-44539cf3fdb3
+    type: condition
+    task:
+      id: adeeeb8f-eca9-4b76-86ef-44539cf3fdb3
+      version: -1
+      name: Is an owner or an assignee role configured?
+      description: Assigns the case only when CertificateOwnerEmail or AssigneeRole is set. With neither,
+        the case stays unassigned rather than landing on an analyst who does not own certificates.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '15'
+      '#default#':
+      - '17'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments: {}
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.CertificateOwnerEmail
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.AssigneeRole
+            iscontext: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3290,
+        "width": 1400,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Fingerprint
+  value:
+    simple: ${incident.certmanagersaasfingerprint}
+  required: false
+  description: 'The certificate fingerprint, as mapped onto the incident by the fetch mapper. Preferred:
+    it identifies exactly one certificate.'
+  playbookInputQuery: null
+- key: CommonName
+  value:
+    simple: ${incident.certmanagersaascommonname}
+  required: false
+  description: The certificate common name, as mapped onto the incident by the fetch mapper.
+  playbookInputQuery: null
+- key: CriticalThresholdDays
+  value:
+    simple: '7'
+  required: false
+  description: Certificates expiring within this many days are raised to Critical.
+  playbookInputQuery: null
+- key: HighThresholdDays
+  value:
+    simple: '30'
+  required: false
+  description: Certificates expiring within this many days, but outside the critical threshold, are raised
+    to High.
+  playbookInputQuery: null
+- key: AutoRenew
+  value:
+    simple: 'false'
+  required: false
+  description: Set to true to request a replacement certificate automatically. Any other value assigns
+    the case to the certificate owner or AssigneeRole instead (or leaves it unassigned when neither is
+    set).
+  playbookInputQuery: null
+- key: CertificateOwnerEmail
+  value: {}
+  required: false
+  description: The email of the certificate owner, who gets the case. When empty, a member of AssigneeRole
+    gets it; when both are empty, the case stays unassigned.
+  playbookInputQuery: null
+- key: AssigneeRole
+  value: {}
+  required: false
+  description: A role whose least busy member gets the case when no CertificateOwnerEmail is set. When
+    both are empty, the case stays unassigned.
+  playbookInputQuery: null
+- key: ApplicationID
+  value: {}
+  required: false
+  description: The identifier of the Certificate Manager SaaS application the replacement certificate
+    is requested for. Required for Certificate Manager SaaS when auto-renewal is on; not used by Next-Gen
+    Trust Security.
+  playbookInputQuery: null
+- key: CertificateIssuingTemplateID
+  value: {}
+  required: false
+  description: The identifier of the Certificate Manager SaaS issuing template the replacement is issued
+    under. Required by the request sub-playbook when auto-renewal is on.
+  playbookInputQuery: null
+- key: ValidityPeriod
+  value: {}
+  required: false
+  description: The requested validity of the replacement certificate, as an ISO 8601 duration. Leave empty
+    to use the issuing template default.
+  playbookInputQuery: null
+outputs:
+- contextPath: CertManagerSaaS.Certificate.Fingerprint
+  description: The fingerprint of the expiring certificate.
+  type: string
+- contextPath: CertManagerSaaS.Certificate.DaysUntilExpiry
+  description: Whole days remaining until the certificate expires.
+  type: number
+- contextPath: CertManagerSaaS.CertificateRequest.Succeeded
+  description: Whether a replacement certificate was issued.
+  type: boolean
+- contextPath: CertManagerSaaS.CertificateRequest.ID
+  description: The identifier of the replacement certificate request.
+  type: string
+tests:
+- CertificateManagerSaaS - Test
+fromversion: 6.10.0
