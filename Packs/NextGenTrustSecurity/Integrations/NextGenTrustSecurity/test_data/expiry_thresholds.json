@@ -1,0 +1,5 @@
+{
+  "id": "0b7f4c20-0000-11f1-aaca-000000000001",
+  "companyId": "0b7f4c20-0000-11f1-aaca-000000000002",
+  "configuration": { "inventoryMonitoringConfigurationType": "CERTIFICATE_EXPIRATION", "enabled": true, "thresholds": [7, 30, 60] }
+}

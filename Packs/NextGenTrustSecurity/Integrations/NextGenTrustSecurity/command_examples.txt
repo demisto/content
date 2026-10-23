@@ -1,0 +1,7 @@
+!certificate certificate="A1B2C3D4E5F60718293A4B5C6D7E8F9012345678"
+!ngts-certificate-search common_name="example.com" limit="2"
+!ngts-certificate-get fingerprint="B1C2D3E4F5061728394A5B6C7D8E9F0A1B2C3D4E" include_machine_details="true"
+!ngts-certificate-list-expiring days="30" limit="2"
+!ngts-machine-list limit="2"
+!ngts-machine-get machine_identifier="8b1c5e22-1111-11ef-9a11-0242ac120002"
+!ngts-certificate-request-status request_id="7d3f1a20-2222-11ef-9a11-0242ac120002"
