@@ -1,0 +1,232 @@
+id: Sprinklr - Social Account Recovery
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Sprinklr - Social Account Recovery
+description: Re-attaches a Sprinklr page or ad account to a selected team after containment. No change is made unless ConfirmAction
+  is True.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 68af2ac3-1eaa-4855-8640-e11675fe9884
+    type: start
+    task:
+      id: 68af2ac3-1eaa-4855-8640-e11675fe9884
+      version: -1
+      name: ''
+      description: ''
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    view: '{"position":{"x":450,"y":40}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      '#none#':
+      - '1'
+  '1':
+    id: '1'
+    taskid: 2d776426-318e-4ea1-8eab-bff2c367c06f
+    type: condition
+    task:
+      id: 2d776426-318e-4ea1-8eab-bff2c367c06f
+      version: -1
+      name: Restore this account?
+      description: Recovery runs only after explicit approval.
+      iscommand: false
+      brand: ''
+      type: condition
+    separatecontext: false
+    view: '{"position":{"x":450,"y":190}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      'yes':
+      - '2'
+      '#default#':
+      - '5'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ConfirmAction
+              iscontext: true
+          right:
+            value:
+              simple: 'True'
+          ignorecase: true
+  '2':
+    id: '2'
+    taskid: 1e769acf-663c-4713-ad78-6d8e936501d5
+    type: condition
+    task:
+      id: 1e769acf-663c-4713-ad78-6d8e936501d5
+      version: -1
+      name: Account type
+      description: Select the documented Governance endpoint based on the account kind.
+      iscommand: false
+      brand: ''
+      type: condition
+    separatecontext: false
+    view: '{"position":{"x":450,"y":350}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      ad:
+      - '3'
+      page:
+      - '4'
+      '#default#':
+      - '5'
+    conditions:
+    - label: ad
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AccountKind
+              iscontext: true
+          right:
+            value:
+              simple: ad
+          ignorecase: true
+    - label: page
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AccountKind
+              iscontext: true
+          right:
+            value:
+              simple: page
+          ignorecase: true
+  '3':
+    id: '3'
+    taskid: 06c8b341-549b-4354-99b1-10c65460f970
+    type: regular
+    task:
+      id: 06c8b341-549b-4354-99b1-10c65460f970
+      version: -1
+      name: Attach ad account to team
+      description: Attach an ad account to the selected team.
+      iscommand: true
+      brand: Sprinklr Event Collector
+      script: Sprinklr Event Collector|||sprinklr-attach-ad-account-to-team
+      type: regular
+    separatecontext: false
+    view: '{"position":{"x":180,"y":530}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    scriptarguments:
+      team_id:
+        complex:
+          root: inputs.TeamID
+      account_id:
+        complex:
+          root: inputs.AccountID
+      confirm:
+        simple: 'yes'
+    nexttasks:
+      '#none#':
+      - '5'
+  '4':
+    id: '4'
+    taskid: f43e9bfa-f6f6-4f7e-9bfb-4fdc055e1446
+    type: regular
+    task:
+      id: f43e9bfa-f6f6-4f7e-9bfb-4fdc055e1446
+      version: -1
+      name: Attach page account to team
+      description: Attach a page account to the selected team.
+      iscommand: true
+      brand: Sprinklr Event Collector
+      script: Sprinklr Event Collector|||sprinklr-attach-page-account-to-team
+      type: regular
+    separatecontext: false
+    view: '{"position":{"x":720,"y":530}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    scriptarguments:
+      team_id:
+        complex:
+          root: inputs.TeamID
+      account_id:
+        complex:
+          root: inputs.AccountID
+      confirm:
+        simple: 'yes'
+    nexttasks:
+      '#none#':
+      - '5'
+  '5':
+    id: '5'
+    taskid: d66ab6a2-cc8b-40b5-8e5a-552e82d98d3b
+    type: title
+    task:
+      id: d66ab6a2-cc8b-40b5-8e5a-552e82d98d3b
+      version: -1
+      name: Done
+      description: ''
+      iscommand: false
+      brand: ''
+      type: title
+    separatecontext: false
+    view: '{"position":{"x":450,"y":710}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+inputs:
+- key: TeamID
+  value: {}
+  required: true
+  description: Sprinklr team ID.
+  playbookInputQuery: null
+- key: AccountID
+  value: {}
+  required: true
+  description: Sprinklr page or ad account ID.
+  playbookInputQuery: null
+- key: AccountKind
+  value:
+    simple: page
+  required: true
+  description: 'Account kind: page or ad.'
+  playbookInputQuery: null
+- key: ConfirmAction
+  value:
+    simple: 'False'
+  required: true
+  description: Set to True only after analyst approval.
+  playbookInputQuery: null
+outputs:
+- contextPath: Sprinklr.Response.Action
+  description: Recovery action executed.
+  type: string
+fromversion: 8.0.0
+marketplaces:
+- marketplacev2
+- platform
