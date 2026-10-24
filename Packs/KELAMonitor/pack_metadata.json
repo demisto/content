@@ -1,0 +1,36 @@
+{
+    "name": "KELA Monitor",
+    "description": "KELA Monitor tracks your organization's exposure on the dark web (leaked credentials, credit cards, botnets, hacking discussions, instant messaging, network vulnerabilities). This pack fetches its incidents into Cortex.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "KELA",
+    "url": "https://www.kelacyber.com",
+    "email": "support@ke-la.com",
+    "created": "2026-10-20T00:00:00Z",
+    "githubUser": [
+        "hadarsapan-max"
+    ],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence",
+        "Dark Web"
+    ],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "KELA",
+        "Monitor",
+        "Dark web",
+        "Leaked credentials",
+        "Credit cards",
+        "Botnets"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ]
+}

@@ -1,0 +1,659 @@
+display: KELA Monitor
+name: KELAMonitor
+category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
+provider: KELA
+description: Fetches KELA Monitor incidents (hacking discussions, instant messaging, leaked credentials, network vulnerabilities, credit cards and botnets) into Cortex.
+commonfields:
+  id: KELAMonitor
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  type: 0
+  defaultvalue: https://platform.ke-la.com/api/monitor
+  required: true
+  section: Connect
+  additionalinfo: Base URL of the KELA Monitor API.
+- displaypassword: API Token
+  name: credentials
+  type: 9
+  hiddenusername: true
+  required: true
+  section: Connect
+  additionalinfo: API token generated in the KELA platform (system menu). It is sent as the apiToken query parameter and is never logged.
+- display: Monitor ID
+  name: monitor_id
+  type: 0
+  required: true
+  section: Connect
+  additionalinfo: Numeric ID of the monitor to connect to. It appears in the Monitor module URL, under the monitorId parameter. Create one instance per monitor.
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  defaultvalue: '1'
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incident types to fetch
+  name: incident_types
+  type: 16
+  required: true
+  section: Collect
+  options:
+  - hacking_discussions
+  - instant_messaging
+  - leaked_credentials
+  - network_vulnerabilities
+  - credit_cards
+  - botnets
+  additionalinfo: 'Mandatory: select at least one. Each type keeps its own fetch position.'
+- display: First fetch time
+  name: first_fetch
+  type: 0
+  defaultvalue: 3 days
+  required: false
+  section: Collect
+  additionalinfo: How far back to fetch the first time (e.g. "3 days", "12 hours", "2026-10-01T00:00:00Z"). Applied to the incident date. Only used on the first run of each incident type.
+- display: Maximum number of incidents per fetch (per incident type)
+  name: max_fetch
+  type: 0
+  defaultvalue: '50'
+  required: false
+  section: Collect
+  additionalinfo: Between 1 and 200.
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Fetch only these severities
+  name: fetch_severities
+  type: 16
+  required: false
+  section: Collect
+  options:
+  - low
+  - medium
+  - high
+  - critical
+  additionalinfo: Optional. Leave empty to fetch every severity.
+- display: Mask sensitive data
+  name: mask_sensitive_data
+  type: 8
+  defaultvalue: 'true'
+  required: false
+  section: Collect
+  additionalinfo: When selected (recommended), passwords are replaced by ******** and credit card numbers keep only the BIN and the last 4 digits, both in fetched incidents and in command outputs. Clear it to store the data exactly as KELA returns it.
+script:
+  commands:
+  - name: kela-monitor-incident-list
+    description: Returns a batch of incidents of one incident type, with optional filters. When more incidents may be available it also returns a scroll ID for kela-monitor-incident-scroll.
+    arguments:
+    - name: incident_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - hacking_discussions
+      - instant_messaging
+      - leaked_credentials
+      - network_vulnerabilities
+      - credit_cards
+      - botnets
+      description: The type of incidents to query.
+    - name: monitor_id
+      description: Monitor ID to query. Defaults to the Monitor ID configured on the instance.
+    - name: text
+      description: Free text to filter results by (same as the free text search on the discovery page).
+    - name: severities
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
+      description: Severities to return. Comma separated.
+    - name: from_date
+      description: Minimal date. Accepts ISO dates, relative dates (e.g. "3 days") or a 10 digit epoch in seconds.
+    - name: to_date
+      description: Maximal date. Same formats as from_date.
+    - name: first_appearance
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+      description: Leaked credentials only. If true, only returns the first appearance of each credential as tracked by KELA. Best used with a date range.
+    - name: limit
+      defaultValue: '20'
+      description: The maximal number of incidents to return in this batch (1-1000).
+    outputs:
+    - contextPath: KELA.Monitor.Incident.id
+      description: The incident's ID, usable with the incident data endpoint.
+      type: String
+    - contextPath: KELA.Monitor.Incident.type
+      description: Incident type; determines which type-specific fields are populated.
+      type: String
+    - contextPath: KELA.Monitor.Incident.sub_type
+      description: Numeric sub type (integer, or string for some hacking_discussions).
+      type: Unknown
+    - contextPath: KELA.Monitor.Incident.sub_type_description
+      description: Human-readable sub type.
+      type: String
+    - contextPath: KELA.Monitor.Incident.severity
+      description: 1 = low, 2 = medium, 3 = high, 4 = critical.
+      type: Number
+    - contextPath: KELA.Monitor.Incident.incident_date
+      description: Epoch time (seconds) at which the incident was reported in Monitor.
+      type: Number
+    - contextPath: KELA.Monitor.Incident.feed_property_id
+      description: Aggregation ID the incident belongs to.
+      type: String
+    - contextPath: KELA.Monitor.Incident.feedPropertyId
+      description: Same as feed_property_id (leaked_credentials, botnets).
+      type: String
+    - contextPath: KELA.Monitor.Incident.assets.id
+      description: Related asset ID.
+      type: Number
+    - contextPath: KELA.Monitor.Incident.assets.name
+      description: Related asset name.
+      type: String
+    - contextPath: KELA.Monitor.Incident.assets.type
+      description: Related asset category.
+      type: String
+    - contextPath: KELA.Monitor.Incident.tags
+      description: Tags of the incident.
+      type: Unknown
+    - contextPath: KELA.Monitor.Incident.categories
+      description: Categories of the incident.
+      type: Unknown
+    - contextPath: KELA.Monitor.Incident.user_actions.read
+      description: Whether the incident was read.
+      type: Boolean
+    - contextPath: KELA.Monitor.Incident.user_actions.star
+      description: Whether the incident was starred.
+      type: Boolean
+    - contextPath: KELA.Monitor.Incident.user_actions.delete
+      description: Whether the incident was deleted.
+      type: Boolean
+    - contextPath: KELA.Monitor.Incident.user_actions.handled
+      description: Name of who handled the incident, or false.
+      type: Unknown
+    - contextPath: KELA.Monitor.Incident.user_actions.hide
+      description: Whether the incident was hidden.
+      type: Boolean
+    - contextPath: KELA.Monitor.Incident.user_actions.publish
+      description: Whether the incident was published.
+      type: Boolean
+    - contextPath: KELA.Monitor.Incident.user_actions.request
+      description: Whether an RFI was requested.
+      type: Boolean
+    - contextPath: KELA.Monitor.Incident.actions.read
+      description: Same flags as user_actions (not returned for hacking_discussions).
+      type: Boolean
+    - contextPath: KELA.Monitor.Incident.title
+      description: '[hacking_discussions] Incident title.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.publish_date
+      description: '[hacking_discussions] Epoch (seconds) of the original publication.'
+      type: Number
+    - contextPath: KELA.Monitor.Incident.author
+      description: '[hacking_discussions, instant_messaging] Author of the post or message.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.image
+      description: '[hacking_discussions] Screenshot URL.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.source
+      description: '[hacking_discussions, credit_cards, botnets, leaked_credentials] Source of the data.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.text
+      description: '[hacking_discussions] Text snippet.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.posted_date
+      description: '[leaked_credentials, instant_messaging, credit_cards, botnets] Epoch (seconds) the data was originally published.'
+      type: Number
+    - contextPath: KELA.Monitor.Incident.email
+      description: '[leaked_credentials] Email address of the credentials.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.domain
+      description: '[leaked_credentials] Domain of the email address.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.password
+      description: '[leaked_credentials] Password, masked unless Mask sensitive data is cleared.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.password_type
+      description: '[leaked_credentials] Type of password.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.source_id
+      description: '[leaked_credentials, credit_cards] ID of the original incident.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.dump_name
+      description: '[leaked_credentials] Name of the dump.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.dump_description
+      description: '[leaked_credentials] Description of the dump.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.service
+      description: '[leaked_credentials, network_vulnerabilities, botnets] Service the credentials or port relate to.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.ip
+      description: '[network_vulnerabilities] IP address(es).'
+      type: String
+    - contextPath: KELA.Monitor.Incident.port
+      description: '[network_vulnerabilities] Port.'
+      type: Number
+    - contextPath: KELA.Monitor.Incident.description
+      description: '[network_vulnerabilities] Description of the exposure.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.hostname
+      description: '[network_vulnerabilities] Hostnames.'
+      type: Unknown
+    - contextPath: KELA.Monitor.Incident.isp
+      description: '[network_vulnerabilities, botnets] ISP.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.technology
+      description: '[network_vulnerabilities] Vulnerable technology.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.cve_details
+      description: '[network_vulnerabilities] CVEs the technology is vulnerable to.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.number
+      description: '[credit_cards] Card number, masked unless Mask sensitive data is cleared.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.bin
+      description: '[credit_cards] Card BIN.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.bot_id
+      description: '[botnets] Bot identifier.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.resource
+      description: '[botnets] Server the credentials were used on.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.available_data
+      description: '[botnets] Fields extracted from the bot.'
+      type: Unknown
+    - contextPath: KELA.Monitor.Incident.infection_type
+      description: '[botnets] Bot type.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.price
+      description: '[botnets] Bot price on the market.'
+      type: Number
+    - contextPath: KELA.Monitor.Incident.country
+      description: '[botnets] Country of the infected host.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.purchased
+      description: '[botnets] Whether the bot data was purchased.'
+      type: Boolean
+    - contextPath: KELA.Monitor.Incident.username
+      description: '[botnets] Username of the compromised account.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.source_type
+      description: '[botnets] Type of source of the dump.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.file_hash
+      description: '[botnets] Hash of the dump file.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.dataId
+      description: '[botnets] Identifier of the data record.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.data_id
+      description: '[hacking_discussions, instant_messaging] ID of the underlying post or message.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.source_name
+      description: '[instant_messaging] Name of the source.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.chat_type
+      description: '[instant_messaging] Chat type.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.chat_name
+      description: '[instant_messaging] Chat title.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.snippet
+      description: '[instant_messaging] Preview of the message.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.full_text
+      description: '[instant_messaging] Full text of the message.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.message_id
+      description: '[instant_messaging] Message ID in the source platform.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.posted_date_range.min
+      description: '[instant_messaging] Minimum date, epoch in MILLISECONDS.'
+      type: Number
+    - contextPath: KELA.Monitor.Incident.posted_date_range.max
+      description: '[instant_messaging] Maximum date, epoch in MILLISECONDS.'
+      type: Number
+    - contextPath: KELA.Monitor.Incident.media.url
+      description: Signed, expiring URL of an attached media item.
+      type: String
+    - contextPath: KELA.Monitor.Incident.media.name
+      description: Media file name.
+      type: String
+    - contextPath: KELA.Monitor.Incident.media.size
+      description: Media size in bytes.
+      type: Number
+    - contextPath: KELA.Monitor.Incident.media.hash
+      description: Media hash.
+      type: String
+    - contextPath: KELA.Monitor.Incident.preview
+      description: '[hacking_discussions] Preview image URL.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.pdf
+      description: '[hacking_discussions] PDF capture URL.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.source_url
+      description: '[hacking_discussions] URL of the original post.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.reasons.type
+      description: '[leaked_credentials] Reason type.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.reasons.sub_type
+      description: '[leaked_credentials] Reason sub type.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.reasons.value
+      description: '[leaked_credentials] Reason values.'
+      type: Unknown
+    - contextPath: KELA.Monitor.Incident.original_data_source_id
+      description: '[leaked_credentials, credit_cards] ID of the original data source.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.relevant_date
+      description: Epoch (seconds) relevant to the incident.
+      type: Number
+    - contextPath: KELA.Monitor.Scroll.scrollId
+      description: Scroll ID to get the next batch (valid for 2 minutes).
+      type: String
+    - contextPath: KELA.Monitor.Scroll.monitorId
+      description: Monitor ID the scroll belongs to.
+      type: Number
+    - contextPath: KELA.Monitor.Scroll.incidentType
+      description: Incident type of the original request (empty when it comes from a scroll).
+      type: String
+  - name: kela-monitor-incident-scroll
+    description: Continues a kela-monitor-incident-list request using its scroll ID. Repeat until no incidents are returned. A scroll ID is valid for 2 minutes.
+    arguments:
+    - name: scroll_id
+      required: true
+      description: The scroll ID returned by kela-monitor-incident-list or by a previous scroll. It is valid for 2 minutes.
+    - name: monitor_id
+      description: Monitor ID. Defaults to the Monitor ID configured on the instance.
+    outputs:
+    - contextPath: KELA.Monitor.Incident.id
+      description: The incident's ID, usable with the incident data endpoint.
+      type: String
+    - contextPath: KELA.Monitor.Incident.type
+      description: Incident type; determines which type-specific fields are populated.
+      type: String
+    - contextPath: KELA.Monitor.Incident.sub_type
+      description: Numeric sub type (integer, or string for some hacking_discussions).
+      type: Unknown
+    - contextPath: KELA.Monitor.Incident.sub_type_description
+      description: Human-readable sub type.
+      type: String
+    - contextPath: KELA.Monitor.Incident.severity
+      description: 1 = low, 2 = medium, 3 = high, 4 = critical.
+      type: Number
+    - contextPath: KELA.Monitor.Incident.incident_date
+      description: Epoch time (seconds) at which the incident was reported in Monitor.
+      type: Number
+    - contextPath: KELA.Monitor.Incident.feed_property_id
+      description: Aggregation ID the incident belongs to.
+      type: String
+    - contextPath: KELA.Monitor.Incident.feedPropertyId
+      description: Same as feed_property_id (leaked_credentials, botnets).
+      type: String
+    - contextPath: KELA.Monitor.Incident.assets.id
+      description: Related asset ID.
+      type: Number
+    - contextPath: KELA.Monitor.Incident.assets.name
+      description: Related asset name.
+      type: String
+    - contextPath: KELA.Monitor.Incident.assets.type
+      description: Related asset category.
+      type: String
+    - contextPath: KELA.Monitor.Incident.tags
+      description: Tags of the incident.
+      type: Unknown
+    - contextPath: KELA.Monitor.Incident.categories
+      description: Categories of the incident.
+      type: Unknown
+    - contextPath: KELA.Monitor.Incident.user_actions.read
+      description: Whether the incident was read.
+      type: Boolean
+    - contextPath: KELA.Monitor.Incident.user_actions.star
+      description: Whether the incident was starred.
+      type: Boolean
+    - contextPath: KELA.Monitor.Incident.user_actions.delete
+      description: Whether the incident was deleted.
+      type: Boolean
+    - contextPath: KELA.Monitor.Incident.user_actions.handled
+      description: Name of who handled the incident, or false.
+      type: Unknown
+    - contextPath: KELA.Monitor.Incident.user_actions.hide
+      description: Whether the incident was hidden.
+      type: Boolean
+    - contextPath: KELA.Monitor.Incident.user_actions.publish
+      description: Whether the incident was published.
+      type: Boolean
+    - contextPath: KELA.Monitor.Incident.user_actions.request
+      description: Whether an RFI was requested.
+      type: Boolean
+    - contextPath: KELA.Monitor.Incident.actions.read
+      description: Same flags as user_actions (not returned for hacking_discussions).
+      type: Boolean
+    - contextPath: KELA.Monitor.Incident.title
+      description: '[hacking_discussions] Incident title.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.publish_date
+      description: '[hacking_discussions] Epoch (seconds) of the original publication.'
+      type: Number
+    - contextPath: KELA.Monitor.Incident.author
+      description: '[hacking_discussions, instant_messaging] Author of the post or message.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.image
+      description: '[hacking_discussions] Screenshot URL.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.source
+      description: '[hacking_discussions, credit_cards, botnets, leaked_credentials] Source of the data.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.text
+      description: '[hacking_discussions] Text snippet.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.posted_date
+      description: '[leaked_credentials, instant_messaging, credit_cards, botnets] Epoch (seconds) the data was originally published.'
+      type: Number
+    - contextPath: KELA.Monitor.Incident.email
+      description: '[leaked_credentials] Email address of the credentials.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.domain
+      description: '[leaked_credentials] Domain of the email address.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.password
+      description: '[leaked_credentials] Password, masked unless Mask sensitive data is cleared.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.password_type
+      description: '[leaked_credentials] Type of password.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.source_id
+      description: '[leaked_credentials, credit_cards] ID of the original incident.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.dump_name
+      description: '[leaked_credentials] Name of the dump.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.dump_description
+      description: '[leaked_credentials] Description of the dump.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.service
+      description: '[leaked_credentials, network_vulnerabilities, botnets] Service the credentials or port relate to.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.ip
+      description: '[network_vulnerabilities] IP address(es).'
+      type: String
+    - contextPath: KELA.Monitor.Incident.port
+      description: '[network_vulnerabilities] Port.'
+      type: Number
+    - contextPath: KELA.Monitor.Incident.description
+      description: '[network_vulnerabilities] Description of the exposure.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.hostname
+      description: '[network_vulnerabilities] Hostnames.'
+      type: Unknown
+    - contextPath: KELA.Monitor.Incident.isp
+      description: '[network_vulnerabilities, botnets] ISP.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.technology
+      description: '[network_vulnerabilities] Vulnerable technology.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.cve_details
+      description: '[network_vulnerabilities] CVEs the technology is vulnerable to.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.number
+      description: '[credit_cards] Card number, masked unless Mask sensitive data is cleared.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.bin
+      description: '[credit_cards] Card BIN.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.bot_id
+      description: '[botnets] Bot identifier.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.resource
+      description: '[botnets] Server the credentials were used on.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.available_data
+      description: '[botnets] Fields extracted from the bot.'
+      type: Unknown
+    - contextPath: KELA.Monitor.Incident.infection_type
+      description: '[botnets] Bot type.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.price
+      description: '[botnets] Bot price on the market.'
+      type: Number
+    - contextPath: KELA.Monitor.Incident.country
+      description: '[botnets] Country of the infected host.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.purchased
+      description: '[botnets] Whether the bot data was purchased.'
+      type: Boolean
+    - contextPath: KELA.Monitor.Incident.username
+      description: '[botnets] Username of the compromised account.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.source_type
+      description: '[botnets] Type of source of the dump.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.file_hash
+      description: '[botnets] Hash of the dump file.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.dataId
+      description: '[botnets] Identifier of the data record.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.data_id
+      description: '[hacking_discussions, instant_messaging] ID of the underlying post or message.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.source_name
+      description: '[instant_messaging] Name of the source.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.chat_type
+      description: '[instant_messaging] Chat type.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.chat_name
+      description: '[instant_messaging] Chat title.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.snippet
+      description: '[instant_messaging] Preview of the message.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.full_text
+      description: '[instant_messaging] Full text of the message.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.message_id
+      description: '[instant_messaging] Message ID in the source platform.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.posted_date_range.min
+      description: '[instant_messaging] Minimum date, epoch in MILLISECONDS.'
+      type: Number
+    - contextPath: KELA.Monitor.Incident.posted_date_range.max
+      description: '[instant_messaging] Maximum date, epoch in MILLISECONDS.'
+      type: Number
+    - contextPath: KELA.Monitor.Incident.media.url
+      description: Signed, expiring URL of an attached media item.
+      type: String
+    - contextPath: KELA.Monitor.Incident.media.name
+      description: Media file name.
+      type: String
+    - contextPath: KELA.Monitor.Incident.media.size
+      description: Media size in bytes.
+      type: Number
+    - contextPath: KELA.Monitor.Incident.media.hash
+      description: Media hash.
+      type: String
+    - contextPath: KELA.Monitor.Incident.preview
+      description: '[hacking_discussions] Preview image URL.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.pdf
+      description: '[hacking_discussions] PDF capture URL.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.source_url
+      description: '[hacking_discussions] URL of the original post.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.reasons.type
+      description: '[leaked_credentials] Reason type.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.reasons.sub_type
+      description: '[leaked_credentials] Reason sub type.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.reasons.value
+      description: '[leaked_credentials] Reason values.'
+      type: Unknown
+    - contextPath: KELA.Monitor.Incident.original_data_source_id
+      description: '[leaked_credentials, credit_cards] ID of the original data source.'
+      type: String
+    - contextPath: KELA.Monitor.Incident.relevant_date
+      description: Epoch (seconds) relevant to the incident.
+      type: Number
+    - contextPath: KELA.Monitor.Scroll.scrollId
+      description: Scroll ID to get the next batch (valid for 2 minutes).
+      type: String
+    - contextPath: KELA.Monitor.Scroll.monitorId
+      description: Monitor ID the scroll belongs to.
+      type: Number
+    - contextPath: KELA.Monitor.Scroll.incidentType
+      description: Incident type of the original request (empty when it comes from a scroll).
+      type: String
+  dockerimage: demisto/python3:3.12.14.13495286
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+  isfetch: true
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

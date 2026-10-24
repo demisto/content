@@ -1,3 +1,4 @@
+deprecated: true
 category: Data Enrichment & Threat Intelligence
 provider: KELA
 commonfields:
@@ -60,8 +61,8 @@ configuration:
   - Hacking Discussions
   required: true
   type: 16
-description: This integration enables you to fetch incidents and manage your RaDark monitor from Cortex XSOAR.
-display: RaDark
+description: Deprecated. Use the KELA Monitor integration instead.
+display: RaDark (Deprecated)
 name: RaDark
 script:
   commands:

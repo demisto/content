@@ -1,10 +1,11 @@
 args:
 - description: Detailed items as a dictionary.
   name: itemDetails
-comment: Map details to an RaDark incident.
+comment: Deprecated. Use the KELA Monitor integration instead.
 commonfields:
   id: MapRaDarkIncidentDetails
   version: -1
+deprecated: true
 dockerimage: demisto/python3:3.12.8.3296088
 enabled: true
 name: MapRaDarkIncidentDetails
