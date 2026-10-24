@@ -2,8 +2,7 @@ args:
 - default: true
   description: War room entryID of the file to read.
   name: entryID
-  required: true
-comment: Read the license_data.log file extracted from the log bundle.
+comment: Get the license data from an uploaded license file (XSOAR 6) or API (XSIAM)
 commonfields:
   id: HealthCheckLicenseData
   version: -1
@@ -17,9 +16,10 @@ runas: DBotWeakRole
 script: ''
 scripttarget: 0
 subtype: python3
-tags: []
+tags: 
+- HealthCheck
 type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-toversion: 7.99.99
+

@@ -1,0 +1,988 @@
+id: HealthCheck
+version: 4
+contentitemexportablefields:
+  contentitemfields:
+    packID: HealthCheck
+    packName: System Diagnostics and Health Check
+    itemVersion: 3.5.0
+    fromServerVersion: 8.10.0
+    toServerVersion: ''
+    definitionid: ''
+    prevname: ''
+    isoverridable: false
+    supportedModules: []
+vcShouldKeepItemLegacyProdMachine: false
+aclrelations: []
+aclowner:
+  id: ''
+  type: ''
+  name: ''
+name: HealthCheck-xsiam
+description: HealthCheck XSIAM main playbook.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: dd90e344-9343-4938-8ca5-df5d8f372f94
+    type: start
+    task:
+      id: dd90e344-9343-4938-8ca5-df5d8f372f94
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '8'
+      - '64'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: cc0c5159-234a-41ce-85eb-1539c8ca0261
+    type: regular
+    task:
+      id: cc0c5159-234a-41ce-85eb-1539c8ca0261
+      version: -1
+      name: Installed Packs
+      description: "Read the installedpacks.json. \n\nCount and get packs names"
+      scriptName: HealthCheckInstalledPacks
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '48'
+    scriptarguments:
+      entryID:
+        simple: '0'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1145\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 97c0badc-f965-4760-8f3d-5946fab2bb09
+    type: regular
+    task:
+      id: 97c0badc-f965-4760-8f3d-5946fab2bb09
+      version: -1
+      name: Integrations instances
+      description: Trend graph for alerts created per day
+      scriptName: HealthCheckIntegrations
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '48'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 1145\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: b74bf8f1-571e-4357-87fc-ad2cb139603f
+    type: title
+    task:
+      id: b74bf8f1-571e-4357-87fc-ad2cb139603f
+      version: -1
+      name: System Details
+      description: In this section, collect information about the system
+      type: title
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '44'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 227.5\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 569779c7-4f4a-443e-865a-eb5a713851a0
+    type: title
+    task:
+      id: 569779c7-4f4a-443e-865a-eb5a713851a0
+      version: -1
+      name: Packs and Integrations
+      description: In this section, collect information about Packs and Integrations
+      type: title
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '7'
+      - '6'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 967.5\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '17':
+    id: '17'
+    taskid: e90847aa-3ba7-4628-843b-486201b142f7
+    type: title
+    task:
+      id: e90847aa-3ba7-4628-843b-486201b142f7
+      version: -1
+      name: Playbook Analysis
+      description: In this section, collect information about the Playbooks
+      type: title
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '18'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1685\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '18':
+    id: '18'
+    taskid: 44378738-e84f-4a33-846e-0cf2411fa287
+    type: regular
+    task:
+      id: 44378738-e84f-4a33-846e-0cf2411fa287
+      version: -1
+      name: Analyze playbooks
+      description: Parsing playbooks
+      scriptName: HealthCheckPlaybookAnalysis
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '22'
+    scriptarguments:
+      Thresholds:
+        simple: ${Health Check Thresholds.Playbooks}
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1855\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '22':
+    id: '22'
+    taskid: e5272464-94ae-4583-a0fc-74e05a38c1e0
+    type: title
+    task:
+      id: e5272464-94ae-4583-a0fc-74e05a38c1e0
+      version: -1
+      name: Analyze Indicators -TBD
+      description: Reports on common indicators
+      type: title
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '55'
+      - '58'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 2040\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '23':
+    id: '23'
+    taskid: eae12290-1c78-4b5b-819e-efa3dcc001c8
+    type: title
+    task:
+      id: eae12290-1c78-4b5b-819e-efa3dcc001c8
+      version: -1
+      name: Conclusions
+      description: Writing Health Check Conclusions
+      type: title
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '24'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 3105\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '24':
+    id: '24'
+    taskid: ea29801d-0e26-4d72-8905-aa91719bc2cf
+    type: regular
+    task:
+      id: ea29801d-0e26-4d72-8905-aa91719bc2cf
+      version: -1
+      name: Save to action items table
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      columns:
+        simple: category,severity,description,resolution
+      context_path:
+        simple: HealthCheck.ActionableItems
+      grid_id:
+        simple: healthcheckactionableitems
+      keys:
+        simple: category,severity,description,resolution
+      overwrite:
+        simple: 'false'
+      sort_by:
+        simple: severity
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 3275\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '25':
+    id: '25'
+    taskid: 32ce8132-45e0-4c04-8964-3d58e3e0202c
+    type: title
+    task:
+      id: 32ce8132-45e0-4c04-8964-3d58e3e0202c
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 3460\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '43':
+    id: '43'
+    taskid: f2683791-1ad3-427a-8178-9eeed41a5e3c
+    type: title
+    task:
+      id: f2683791-1ad3-427a-8178-9eeed41a5e3c
+      version: -1
+      name: Server Settings - TBD
+      description: In this section, collect information about the Server Configuration
+      type: title
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '12'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 782.5\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '44':
+    id: '44'
+    taskid: fa4383b8-a8cc-473b-874c-88577dcab365
+    type: regular
+    task:
+      id: fa4383b8-a8cc-473b-874c-88577dcab365
+      version: -1
+      name: License Data
+      description: Coleccting license details
+      scriptName: HealthCheckLicenseData
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '63'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 405\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '45':
+    id: '45'
+    taskid: 3c36574d-2396-471d-ae4c-3ce0383d5cfa
+    type: regular
+    task:
+      id: 3c36574d-2396-471d-ae4c-3ce0383d5cfa
+      version: -1
+      name: Collect widgets data
+      description: Two-stage script that collects dashboard query results for the current user. Stage 1 queries the query center history (last 60 minutes) to get execution_ids. Stage 2 fetches actual query results for each execution_id and stores them by query source name.
+      scriptName: HealthCheckCollect
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '46'
+    scriptarguments:
+      dashboard_name:
+        simple: Ingestion/Integration
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1555,\n    \"y\": 405\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '46':
+    id: '46'
+    taskid: b0f69260-d646-4481-a9a8-0b53f6f90b06
+    type: regular
+    task:
+      id: b0f69260-d646-4481-a9a8-0b53f6f90b06
+      version: -1
+      name: Collect widgets data
+      description: Two-stage script that collects dashboard query results for the current user. Stage 1 queries the query center history (last 60 minutes) to get execution_ids. Stage 2 fetches actual query results for each execution_id and stores them by query source name.
+      scriptName: HealthCheckCollect
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '47'
+    scriptarguments:
+      dashboard_name:
+        simple: Issues/Cases
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1555,\n    \"y\": 590\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '47':
+    id: '47'
+    taskid: 4163e03a-1ae9-4194-ad93-0502751977c5
+    type: regular
+    task:
+      id: 4163e03a-1ae9-4194-ad93-0502751977c5
+      version: -1
+      name: Collect widgets data
+      description: Two-stage script that collects dashboard query results for the current user. Stage 1 queries the query center history (last 60 minutes) to get execution_ids. Stage 2 fetches actual query results for each execution_id and stores them by query source name.
+      scriptName: HealthCheckCollect
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '57'
+    scriptarguments:
+      dashboard_name:
+        simple: Agent and Asset
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1555,\n    \"y\": 775\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '48':
+    id: '48'
+    taskid: 94d21470-3e08-4bed-81fc-7a750342f3ef
+    type: title
+    task:
+      id: 94d21470-3e08-4bed-81fc-7a750342f3ef
+      version: -1
+      name: Custom Content
+      type: title
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '49'
+      - '50'
+      - '51'
+      - '52'
+      - '53'
+      - '54'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 1330\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '49':
+    id: '49'
+    taskid: 56ab4990-e631-41ce-a1a9-8693512f71ba
+    type: regular
+    task:
+      id: 56ab4990-e631-41ce-a1a9-8693512f71ba
+      version: -1
+      name: Custom Fields
+      description: Get custom fields stats
+      scriptName: HealthCheckCustomFields
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '17'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1500\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '50':
+    id: '50'
+    taskid: 83920212-d851-4161-b0ac-7583bb1436ff
+    type: regular
+    task:
+      id: 83920212-d851-4161-b0ac-7583bb1436ff
+      version: -1
+      name: Custom Layouts
+      description: Get custom layouts stats
+      scriptName: HealthCheckCustomLayouts
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '17'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1500\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '51':
+    id: '51'
+    taskid: a6e6c6d5-aba3-4447-b76f-e49cc90c2aa8
+    type: regular
+    task:
+      id: a6e6c6d5-aba3-4447-b76f-e49cc90c2aa8
+      version: -1
+      name: Custom Scripts
+      description: Get Custom Scripts Stats
+      scriptName: HealthCheckCustomScripts
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '17'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1500\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '52':
+    id: '52'
+    taskid: 2fa9dad3-a255-4540-9607-d27b77a34670
+    type: regular
+    task:
+      id: 2fa9dad3-a255-4540-9607-d27b77a34670
+      version: -1
+      name: Custom Dashboards
+      description: Count custom dashboards
+      scriptName: HealthCheckCustomDashboards
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '17'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 1500\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '53':
+    id: '53'
+    taskid: 42b0fdd5-1156-4374-923a-3d2baa7bbbbb
+    type: regular
+    task:
+      id: 42b0fdd5-1156-4374-923a-3d2baa7bbbbb
+      version: -1
+      name: Custom Widgets
+      description: Count custom widgets
+      scriptName: HealthCheckCustomWidgets
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '17'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1770,\n    \"y\": 1500\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '54':
+    id: '54'
+    taskid: 7511517f-bfa8-443f-b2ec-f38831c680f9
+    type: regular
+    task:
+      id: 7511517f-bfa8-443f-b2ec-f38831c680f9
+      version: -1
+      name: Count BIOCs
+      description: Count BIOC Rules
+      scriptName: HealthCheckBIOCRules
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '17'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 2200,\n    \"y\": 1500\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '55':
+    id: '55'
+    taskid: 370c813e-383e-4096-b743-fe77f5c88b11
+    type: title
+    task:
+      id: 370c813e-383e-4096-b743-fe77f5c88b11
+      version: -1
+      name: Agents
+      type: title
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '56'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 2210\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '56':
+    id: '56'
+    taskid: dbd445ff-7a06-43ae-a446-c35a581fa3db
+    type: regular
+    task:
+      id: dbd445ff-7a06-43ae-a446-c35a581fa3db
+      version: -1
+      name: Collect agents data
+      description: Collects health-check data from the Cortex XDR API for a specific category. Pass data=Agents to collect agent status and end-of-life version counts. Results are written to HealthCheck.CollectResults in the alert context, keyed by widget name, for downstream processing by HealthCheckParseResults.
+      scriptName: HealthCheckCollectData
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '60'
+    scriptarguments:
+      data:
+        simple: Agents
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 2380\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '57':
+    id: '57'
+    taskid: 49f38ac1-d98e-419c-86ac-7b8a1ba49f58
+    type: regular
+    task:
+      id: 49f38ac1-d98e-419c-86ac-7b8a1ba49f58
+      version: -1
+      name: Parse collected results
+      description: Parses the CollectResults dictionary produced by HealthCheckCollect and stored in context under HealthCheck.CollectResults.  Each raw XQL-query result key is classified into a dashboard category (AgentAndAsset, IngestionIntegration, IssuesCases) and its rows are normalised into consistent CamelCase fields. The structured output is written back to HealthCheck.CollectResults grouped by category and query type, plus a flat ByKey lookup for direct access.
+      scriptName: HealthCheckParseResults
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1555,\n    \"y\": 960\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '58':
+    id: '58'
+    taskid: 70770ce8-d272-4789-b5ed-07678bc842ac
+    type: title
+    task:
+      id: 70770ce8-d272-4789-b5ed-07678bc842ac
+      version: -1
+      name: Cases
+      type: title
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '59'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 2210\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '59':
+    id: '59'
+    taskid: 0434cd21-c3f9-4a9c-86a2-2caed8862d90
+    type: regular
+    task:
+      id: 0434cd21-c3f9-4a9c-86a2-2caed8862d90
+      version: -1
+      name: Collect cases data
+      description: Collects health-check data from the Cortex XDR API for a specific category. Pass data=Agents to collect agent status and end-of-life version counts. Results are written to HealthCheck.CollectResults in the alert context, keyed by widget name, for downstream processing by HealthCheckParseResults.
+      scriptName: HealthCheckCollectData
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '60'
+    scriptarguments:
+      data:
+        simple: Cases
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 2380\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '60':
+    id: '60'
+    taskid: 2fffb498-f811-42d2-8b23-4620931c353f
+    type: title
+    task:
+      id: 2fffb498-f811-42d2-8b23-4620931c353f
+      version: -1
+      name: Engines
+      type: title
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '61'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 2565\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '61':
+    id: '61'
+    taskid: 8c89e5c5-8c8b-43fe-a1f1-18a63e069977
+    type: regular
+    task:
+      id: 8c89e5c5-8c8b-43fe-a1f1-18a63e069977
+      version: -1
+      name: Check for outdated engines
+      scriptName: HealthCheckOutdatedEngines
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '62'
+    scriptarguments:
+      RunInPlaybook:
+        simple: 'True'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 2735\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '62':
+    id: '62'
+    taskid: 10bcbd57-e16f-4341-915b-95b9b2381e67
+    type: regular
+    task:
+      id: 10bcbd57-e16f-4341-915b-95b9b2381e67
+      version: -1
+      name: Check for disconnected engines
+      scriptName: HealthCheckDisconnectedEngines
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments:
+      RunInPlaybook:
+        simple: 'True'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 2920\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '63':
+    id: '63'
+    taskid: 2fad7a47-73d1-40e8-b5b6-50703bb6fe2c
+    type: regular
+    task:
+      id: 2fad7a47-73d1-40e8-b5b6-50703bb6fe2c
+      version: -1
+      name: Admin users
+      description: Fetches Account Admin and Instance Administrator users via core-api-post and displays them in a markdown table.
+      scriptName: HealthCheckGetAdminUsers
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '43'
+    scriptarguments:
+      RunInPlaybook:
+        simple: 'True'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 590\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '64':
+    id: '64'
+    taskid: 43923395-f0a6-41ad-bf0e-0cd6225df237
+    type: regular
+    task:
+      id: 43923395-f0a6-41ad-bf0e-0cd6225df237
+      version: -1
+      name: Open health check dashboards
+      description: 'Please open all three health check dashboards before completing this task. '
+      type: regular
+      iscommand: false
+      brand: ''
+      playbooktaskmissingcomponent:
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - '45'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1555,\n    \"y\": 220\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+outlinetasks: {}
+system: true
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3470,\n      \"width\": 2530,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
+inputs: []
+inputSections:
+- inputs: []
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+dirtyInputs: true
+adopted: true
+possibleresponses: []
+fromversion: 8.10.0
