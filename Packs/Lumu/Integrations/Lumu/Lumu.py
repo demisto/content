@@ -557,7 +557,7 @@ def fetch_incidents(client: Client, first_fetch_time, last_run, items, time):
         }
 
         incident = {
-            "name": f'lumu - {event_doc.get("description", "")} - {inc_id}',
+            "name": f'lumu - {event_doc.get("description","")} - {inc_id}',
             "occurred": event_doc.get("timestamp", today),
             "dbotMirrorId": str(inc_id),
             "rawJSON": json.dumps(event_doc),
