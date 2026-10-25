@@ -3613,3 +3613,20 @@ async def test_stream_and_parse_report_error_includes_exception_type(mocker):
     message = str(excinfo.value)
     assert "CancelledError" in message, "error message must include the exception type name"
     assert "streaming or sending events" in message
+
+
+def test_asset_query_uses_latest_completed_scan():
+    """
+    Given:
+        - The asset collector SQL query.
+    When:
+        - Selecting each asset's latest scan in the asset_latest_scan CTE.
+    Then:
+        - Only completed scans with a finish time are considered, so an unfinished scan (NULL finish time, which sorts
+          first in DESC order) cannot hide an asset's earlier completed scans.
+    """
+    cte = BASE_QUERY_FOR_ASSETS.split("asset_latest_scan AS (", 1)[1].split("latest_os_certainty AS (", 1)[0]
+    where_clause = cte.split("WHERE", 1)[1].split("ORDER BY", 1)[0]
+
+    assert "ds.status_id = 'C'" in where_clause
+    assert "ds.finished IS NOT NULL" in where_clause

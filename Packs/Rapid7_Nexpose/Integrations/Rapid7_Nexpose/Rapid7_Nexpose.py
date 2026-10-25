@@ -150,7 +150,8 @@ asset_service AS (
         GROUP BY
             dahn.asset_id
     ),
--- Finds the single, absolute latest scan for each asset (regardless of status)
+-- Finds the latest completed scan for each asset. Unfinished scans (running, paused, stopped, aborted) have a NULL
+-- finish time, which sorts first in DESC order and would otherwise hide the asset's completed scans.
 asset_latest_scan AS (
     SELECT DISTINCT ON (fas.asset_id)
         fas.asset_id,
@@ -167,8 +168,11 @@ asset_latest_scan AS (
         fact_asset_scan fas
     JOIN
         dim_scan ds ON fas.scan_id = ds.scan_id
+    WHERE
+        ds.status_id = 'C'
+        AND ds.finished IS NOT NULL
     ORDER BY
-        fas.asset_id, ds.finished DESC -- Order by asset ID, then descending finish time to get the absolute latest
+        fas.asset_id, ds.finished DESC -- Order by asset ID, then descending finish time to get the latest completed scan
 ),
 latest_os_certainty AS (
     SELECT DISTINCT ON (fasos.asset_id)
