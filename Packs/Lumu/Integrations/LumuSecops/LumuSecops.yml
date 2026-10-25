@@ -100,7 +100,7 @@ configuration:
 script:
   script: ''
   type: python
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.15.14069087
   subtype: python3
   isfetch: true
   ismappable: true
