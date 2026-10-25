@@ -179,6 +179,7 @@ handle_proxy()
 
 
 def main():
+    demisto.debug(f"CheckPhish: running command {demisto.command()}")
     demisto_params = demisto.params()
     good_disp = argToList(demisto_params.get("good_disp"))
     susp_disp = argToList(demisto_params.get("susp_disp"))

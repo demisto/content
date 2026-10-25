@@ -5963,7 +5963,7 @@
         }
     ],
     "skipped_tests": {
-        "HelloWorld-Test": "Temporary skip to verify CI test collection behavior - DO NOT MERGE",
+        "CheckPhish-Test": "Temporary skip to verify CI test collection behavior - DO NOT MERGE",
         "Test XDR Playbook general commands": "xdr-get-endpoint-device-control-violations fails because no device-control violations exist on the XDR lab tenants — CRTX-261310",
         "Test - Netcraft": "Netcraft tenant is out of takedown credits, causing the test playbook to fail.",
         "Tanium Threat Response V2 Test": "The creds were expired, opened a ticket CRTX-155635",

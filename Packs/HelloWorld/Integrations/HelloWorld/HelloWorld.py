@@ -891,7 +891,6 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    demisto.debug(f"HelloWorld: running command {command}")
 
     api_key = params.get("credentials", {}).get("password")
 
