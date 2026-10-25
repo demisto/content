@@ -1470,9 +1470,9 @@ class TestSDKContract:
         # Checked on the class: server_info and protocol_version are properties that raise
         # until the context manager is entered.
         for attribute in ("server_info", "protocol_version", "list_tools", "call_tool"):
-            assert hasattr(MCPClient, attribute), (
-                f"The SDK client no longer exposes '{attribute}'. Client._get_session and its callers must be updated."
-            )
+            assert hasattr(
+                MCPClient, attribute
+            ), f"The SDK client no longer exposes '{attribute}'. Client._get_session and its callers must be updated."
         assert hasattr(MCPClient, "__aenter__")
 
     def test_mcp_client_knows_the_stateless_protocol_version(self):
@@ -1497,9 +1497,9 @@ class TestSDKContract:
         """
         fields = CallToolResult.model_fields
 
-        assert "is_error" in fields, (
-            f"CallToolResult no longer exposes 'is_error' (has: {sorted(fields)}). Client.call_tool must be updated."
-        )
+        assert (
+            "is_error" in fields
+        ), f"CallToolResult no longer exposes 'is_error' (has: {sorted(fields)}). Client.call_tool must be updated."
 
     def test_call_tool_result_serializes_to_camel_case_wire_names(self):
         """
