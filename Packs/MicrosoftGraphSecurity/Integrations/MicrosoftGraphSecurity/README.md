@@ -164,7 +164,7 @@ With **Close Mirrored XSOAR Incident** selected:
 Requires **Outgoing** or **Incoming And Outgoing**.
 
 * The fields in the table in step 5 are mirrored out.
-* Entries with the **Comment Entry Tag (to Microsoft)** tag are sent as comments that start with `(<user name>): ` and end with `Mirrored from Cortex XSOAR`.
+* Entries with the **Comment Entry Tag (to Microsoft)** tag are sent as comments that start with `(<user name>):` and end with `Mirrored from Cortex XSOAR`.
 * The classification is sent only when you change the **Microsoft Graph Security Classification** field.
 * Alert **Additional Data** is sent as `key: value` items. Items without a key are sent under the `xsoarTags` key.
 

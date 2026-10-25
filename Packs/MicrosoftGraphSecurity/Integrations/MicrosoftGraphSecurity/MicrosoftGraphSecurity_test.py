@@ -87,6 +87,7 @@ from MicrosoftGraphSecurity import (
     custom_details_to_list,
     strip_remote_id_suffix,
     get_delta_close_notes,
+    add_mirror_marker,
     has_close_fields,
     is_open_graph_status,
     is_xsoar_incident_closed,
@@ -2741,11 +2742,11 @@ def test_get_modified_remote_data_command_paging(mocker):
     http_mock = mocker.patch.object(
         client_mocker.ms_client,
         "http_request",
-        side_effect=[{"value": [{"id": "a1"}], "@odata.nextLink": "https://graph/next"}, {"value": [{"id": "a2"}]}],
+        side_effect=[{"value": [{"id": "a1"}], "@odata.nextLink": "https://graph.microsoft.com/next"}, {"value": [{"id": "a2"}]}],
     )
     res = get_modified_remote_data_command(client_mocker, {"lastUpdate": "2026-10-10T10:00:00Z"}, ALERTS_ONLY_PARAMS)
     assert res.modified_incident_ids == ["a1", "a2"]
-    assert http_mock.call_args_list[1].kwargs["full_url"] == "https://graph/next"
+    assert http_mock.call_args_list[1].kwargs["full_url"] == "https://graph.microsoft.com/next"
 
 
 def test_get_modified_remote_data_command_no_page_cap(mocker):
@@ -2755,7 +2756,10 @@ def test_get_modified_remote_data_command_no_page_cap(mocker):
     Then: there is no page cap: all 8 pages are requested, all IDs are returned, and the total is logged with demisto.debug.
     """
     total_pages = 8
-    pages = [{"value": [{"id": f"a{i}"}], "@odata.nextLink": f"https://graph/next/{i + 1}"} for i in range(total_pages - 1)]
+    pages = [
+        {"value": [{"id": f"a{i}"}], "@odata.nextLink": f"https://graph.microsoft.com/next/{i + 1}"}
+        for i in range(total_pages - 1)
+    ]
     pages.append({"value": [{"id": f"a{total_pages - 1}"}]})
     http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=pages)
     debug_mock = mocker.patch.object(demisto, "debug")
@@ -2763,7 +2767,7 @@ def test_get_modified_remote_data_command_no_page_cap(mocker):
     assert res.modified_incident_ids == [f"a{i}" for i in range(total_pages)]
     assert http_mock.call_count == total_pages
     assert [c.kwargs["full_url"] for c in http_mock.call_args_list[1:]] == [
-        f"https://graph/next/{i}" for i in range(1, total_pages)
+        f"https://graph.microsoft.com/next/{i}" for i in range(1, total_pages)
     ]
     assert any("Listed 8 modified IDs from security/alerts_v2 in 8 page(s)" in c.args[0] for c in debug_mock.call_args_list)
 
@@ -2784,15 +2788,15 @@ def test_get_modified_remote_data_command_page_failure_raises(mocker):
         client_mocker.ms_client,
         "http_request",
         side_effect=[
-            {"value": [{"id": "a1"}], "@odata.nextLink": "https://graph/next/1"},
-            {"value": [{"id": "a2"}], "@odata.nextLink": "https://graph/next/2"},
+            {"value": [{"id": "a1"}], "@odata.nextLink": "https://graph.microsoft.com/next/1"},
+            {"value": [{"id": "a2"}], "@odata.nextLink": "https://graph.microsoft.com/next/2"},
             _rate_limit_error(),
         ],
     )
     with pytest.raises(DemistoException, match=r"^API rate limit: .*HTTP 429"):
         get_modified_remote_data_command(client_mocker, {"lastUpdate": "2026-10-10T10:00:00Z"}, ALERTS_ONLY_PARAMS)
     assert http_mock.call_count == 3
-    assert http_mock.call_args_list[2].kwargs["full_url"] == "https://graph/next/2"
+    assert http_mock.call_args_list[2].kwargs["full_url"] == "https://graph.microsoft.com/next/2"
 
 
 def test_mirror_get_does_not_retry_429(mocker):
@@ -3505,8 +3509,8 @@ def test_outgoing_mapper_alert_has_no_severity():
 @pytest.mark.parametrize(
     "mirror_type, remote_id, delta, expected_body",
     [
-        ("incident", INCIDENT_ID, {"assignedTo": "analyst@contoso.com", "displayName": "x"}, {"displayName": "x"}),
-        ("alert", ALERT_ID, {"assignedTo": "analyst@contoso.com", "status": "inProgress"}, {"status": "inProgress"}),
+        ("incident", INCIDENT_ID, {"assignedTo": "analyst@example.com", "displayName": "x"}, {"displayName": "x"}),
+        ("alert", ALERT_ID, {"assignedTo": "analyst@example.com", "status": "inProgress"}, {"status": "inProgress"}),
     ],
 )
 def test_update_remote_system_never_sends_assigned_to(mocker, mirror_type, remote_id, delta, expected_body):
@@ -3551,7 +3555,11 @@ def test_update_remote_system_alert_sends_classification(mocker, delta):
     update_remote_system_command(client_mocker, _update_args(ALERT_ID, delta, "alert"), MIRROR_PARAMS)
     patch_call = _http_calls(http_mock, "PATCH")[0]
     assert patch_call.kwargs["url_suffix"] == f"security/alerts_v2/{ALERT_ID}"
-    assert patch_call.kwargs["json_data"] == {"status": "inProgress", "classification": "truePositive", "determination": "malware"}
+    assert patch_call.kwargs["json_data"] == {
+        "status": "inProgress",
+        "classification": "truePositive",
+        "determination": "malware",
+    }
 
 
 def test_update_remote_system_alert_classification_only_sends_patch(mocker):
@@ -4882,7 +4890,9 @@ def test_reopen_after_close_without_reason_reopens_remote(mocker, mirror_type, r
     assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": expected_status}
 
 
-@pytest.mark.parametrize("mirror_type, remote_id, expected_status", [("incident", INCIDENT_ID, "active"), ("alert", ALERT_ID, "new")])
+@pytest.mark.parametrize(
+    "mirror_type, remote_id, expected_status", [("incident", INCIDENT_ID, "active"), ("alert", ALERT_ID, "new")]
+)
 def test_reopen_remote_status_get_fails_reopens_anyway(mocker, mirror_type, remote_id, expected_status):
     """
     Given: a reopened XSOAR incident (closingUserId cleared), and the GET of the remote status fails (not HTTP 429).
@@ -5055,9 +5065,7 @@ def test_update_remote_system_first_entry_fails_raises_second_not_posted(mocker)
     When: running update-remote-system.
     Then: the POST error is raised and the second entry is not POSTed.
     """
-    http_mock = mocker.patch.object(
-        client_mocker.ms_client, "http_request", side_effect=[DemistoException("POST failed"), {}]
-    )
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=[DemistoException("POST failed"), {}])
     entries = [
         {"id": "e1", "contents": "first", "tags": ["CommentToMicrosoftGraphSecurity"]},
         {"id": "e2", "contents": "second", "tags": ["CommentToMicrosoftGraphSecurity"]},
@@ -5100,8 +5108,10 @@ def test_create_alert_comment_command_body_unchanged(mocker):
 @pytest.mark.parametrize(
     "custom_details, expected",
     [
-        ({"threatIntelligenceVerdict": "KnownMalicious", "iocTypeMatched": "IPAddress"},
-         ["threatIntelligenceVerdict: KnownMalicious", "iocTypeMatched: IPAddress"]),
+        (
+            {"threatIntelligenceVerdict": "KnownMalicious", "iocTypeMatched": "IPAddress"},
+            ["threatIntelligenceVerdict: KnownMalicious", "iocTypeMatched: IPAddress"],
+        ),
         ({"owner": "SOC", "xsoarTags": "malware, urgent"}, ["owner: SOC", "malware", "urgent"]),
         ({"xsoarTags": ""}, []),
         ({}, []),
@@ -5121,7 +5131,7 @@ def test_custom_details_to_list(custom_details, expected):
 @pytest.mark.parametrize(
     "value, expected",
     [
-        (["owner: SOC team", "url: https://x.com/a"], {"owner": "SOC team", "url": "https://x.com/a"}),
+        (["owner: SOC team", "url: https://fake-url.com/a"], {"owner": "SOC team", "url": "https://fake-url.com/a"}),
         (["ticket:INC-123"], {"xsoarTags": "ticket:INC-123"}),
         (["owner: SOC", "malware", "urgent"], {"owner": "SOC", "xsoarTags": "malware, urgent"}),
         (["xsoarTags: a, b", "c"], {"xsoarTags": "a, b, c"}),
@@ -5160,7 +5170,7 @@ def test_additional_data_to_custom_details(value, expected):
         ("https://example.com", {"xsoarTags": "https://example.com"}),
         ("10:30", {"xsoarTags": "10:30"}),
         ("key=value", {"xsoarTags": "key=value"}),
-        ("url=https://x", {"xsoarTags": "url=https://x"}),
+        ("url=https://fake-url.com", {"xsoarTags": "url=https://fake-url.com"}),
         ("malware", {"xsoarTags": "malware"}),
         ("", {}),
         ("   ", {}),
@@ -5171,7 +5181,7 @@ def test_additional_data_item_separator(item, expected):
     Given: a single Additional Data item, including values with ":" and items without a ": " separator.
     When: converting it to customDetails.
     Then: only the first ": " splits key from value, so URLs and times keep their colons; items without ": "
-          (including "key=value", "https://x" and "10:30") go to xsoarTags unchanged; blank items are skipped.
+          (including "key=value", "https://fake-url.com" and "10:30") go to xsoarTags unchanged; blank items are skipped.
     """
     assert additional_data_to_custom_details([item]) == expected
 
@@ -5182,7 +5192,7 @@ def test_custom_details_round_trip():
     When: converting to Additional Data items and back.
     Then: the original dictionary is restored.
     """
-    custom_details = {"sourceUrl": "https://x.com/a:b", "time": "10:30", "xsoarTags": "malware, urgent"}
+    custom_details = {"sourceUrl": "https://fake-url.com/a:b", "time": "10:30", "xsoarTags": "malware, urgent"}
     assert additional_data_to_custom_details(custom_details_to_list(custom_details)) == custom_details
 
 
@@ -5248,12 +5258,12 @@ def test_update_remote_system_alert_custom_details(mocker):
     Then: the PATCH body has customDetails as a dict of strings, with plain items under xsoarTags.
     """
     http_mock = _patch_http(mocker)
-    delta = {"customDetails": ["owner: SOC team", "url: https://x.com/a", "malware", "urgent"]}
+    delta = {"customDetails": ["owner: SOC team", "url: https://fake-url.com/a", "malware", "urgent"]}
     update_remote_system_command(client_mocker, _update_args(ALERT_ID, delta, "alert"), MIRROR_PARAMS)
     patch_call = _http_calls(http_mock, "PATCH")[0]
     assert patch_call.kwargs["url_suffix"] == f"security/alerts_v2/{ALERT_ID}"
     assert patch_call.kwargs["json_data"] == {
-        "customDetails": {"owner": "SOC team", "url": "https://x.com/a", "xsoarTags": "malware, urgent"}
+        "customDetails": {"owner": "SOC team", "url": "https://fake-url.com/a", "xsoarTags": "malware, urgent"}
     }
 
 
@@ -5545,7 +5555,8 @@ def test_is_xsoar_incident_closed(inc_status, expected):
         ({"closeReason": "", "closeNotes": None, "displayName": "x"}, False),
         ({"closeReason": "Resolved"}, True),
         ({"closeNotes": "notes"}, True),
-        ({"closingUserId": "admin"}, True),
+        # closingUserId holds no close text (only who closed it), so it is not a close field.
+        ({"closingUserId": "admin"}, False),
         ({"resolvingComment": "comment"}, True),
     ],
 )
@@ -5553,9 +5564,34 @@ def test_has_close_fields(delta, expected):
     """
     Given: an outgoing delta.
     When: checking for close fields.
-    Then: True only when a CLOSE_OUT_KEYS value is non-empty.
+    Then: True only when a CLOSE_OUT_KEYS value (close text: reason, notes, resolvingComment) is non-empty.
     """
     assert has_close_fields(delta) is expected
+
+
+@pytest.mark.parametrize(
+    "mirror_type, remote_id, expected_patch, expected_comments",
+    [
+        ("incident", INCIDENT_ID, {"status": "resolved", "resolvingComment": "Closed in Cortex XSOAR."}, []),
+        ("alert", ALERT_ID, {"status": "resolved"}, ["Closed in Cortex XSOAR."]),
+    ],
+)
+def test_close_without_reason_with_mapped_closing_user_sends_default_comment(
+    mocker, mirror_type, remote_id, expected_patch, expected_comments
+):
+    """
+    Given: an XSOAR close without a close reason or close notes. closingUserId is mapped in the outgoing mapper, so the
+        delta holds only {"closingUserId": "admin"}, and the remote object is still open.
+    When: running update-remote-system with close_out on.
+    Then: the remote object is resolved with the default close comment (incident resolvingComment, alert comment) -
+        closingUserId alone doesn't count as close text, so the default close-out is used.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("active"))
+    args = _update_args(remote_id, {"closingUserId": "admin"}, mirror_type, status=2)
+    update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == expected_patch
+    comments = [c.kwargs["json_data"]["comment"] for c in _http_calls(http_mock, "POST")]
+    assert [add_mirror_marker(text) for text in expected_comments] == comments
 
 
 @pytest.mark.parametrize(

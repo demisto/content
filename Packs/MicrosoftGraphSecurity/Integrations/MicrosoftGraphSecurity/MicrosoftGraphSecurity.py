@@ -56,8 +56,11 @@ GRAPH_ACTIVE_STATUSES = {
     MIRROR_TYPE_ALERT: {"new", "inProgress"},
 }
 # `resolvingComment` is the outgoing-mapped `closeNotes` of an incident: the delta can hold it without the other close keys.
-CLOSE_OUT_KEYS = ("closeReason", "closeNotes", "closingUserId", "resolvingComment")
-# The close comment sent to Microsoft (incident resolvingComment / alert comment): "<reason prefix><reason>\n<notes prefix><notes>".
+# `closingUserId` is not a close field: it holds no close text, and it's mapped (non-empty on every close) only for the
+# reopen detection (is_xsoar_reopen). Listing it would send a close without a reason or notes with no close comment.
+CLOSE_OUT_KEYS = ("closeReason", "closeNotes", "resolvingComment")
+# The close comment sent to Microsoft (incident resolvingComment / alert comment):
+#   "<reason prefix><reason>\n<notes prefix><notes>".
 CLOSE_COMMENT_REASON_PREFIX = "Closed in Cortex XSOAR as: "
 CLOSE_COMMENT_NOTES_PREFIX = "Comment: "
 # The close comment sent when the XSOAR incident is closed without a close reason or close notes.
@@ -206,9 +209,9 @@ def custom_details_to_list(custom_details: Any) -> list[str]:
 def split_custom_details_item(item: str) -> tuple[str, str] | None:
     """
     Splits one Additional Data item into a stripped (key, value) pair.
-    Splits on the first ": " only, so values may contain colons (e.g. "url: https://x/a:b").
+    Splits on the first ": " only, so values may contain colons (e.g. "url: https://fake-url.com/a:b").
     An item ending with ":" (and no ": ") gives an empty value ("key:" -> ("key", "")).
-    Returns None when there is no separator or the key is empty (e.g. "https://x", "10:30", ": v");
+    Returns None when there is no separator or the key is empty (e.g. "https://fake-url.com", "10:30", ": v");
     the caller then puts the item in xsoarTags.
     """
     key, separator, value = item.partition(CUSTOM_DETAILS_SEPARATOR)
@@ -393,12 +396,16 @@ class MsGraphClient:
     def update_mirrored_alert(self, alert_id: str, body: dict) -> None:
         """PATCHes an alert with the given body (mirroring)."""
         cmd_url = f"{CMD_URL}/{alert_id}"
-        self.ms_client.http_request(method="PATCH", url_suffix=cmd_url, json_data=body, resp_type="text", timeout=FETCH_INCIDENTS_TIMEOUT)
+        self.ms_client.http_request(
+            method="PATCH", url_suffix=cmd_url, json_data=body, resp_type="text", timeout=FETCH_INCIDENTS_TIMEOUT
+        )
 
     def update_mirrored_incident(self, incident_id: str, body: dict) -> None:
         """PATCHes an incident with the given body (mirroring)."""
         cmd_url = f"{INCIDENTS_URL}/{incident_id}"
-        self.ms_client.http_request(method="PATCH", url_suffix=cmd_url, json_data=body, resp_type="text", timeout=FETCH_INCIDENTS_TIMEOUT)
+        self.ms_client.http_request(
+            method="PATCH", url_suffix=cmd_url, json_data=body, resp_type="text", timeout=FETCH_INCIDENTS_TIMEOUT
+        )
 
     def list_modified_object_ids(self, object_url: str, last_update_iso: str) -> list[str]:
         """Lists the IDs of alerts/incidents modified since `last_update_iso`, following @odata.nextLink until the last page."""
@@ -3184,7 +3191,9 @@ def get_redirected_close_entry(mirrored_object: dict) -> dict:
     Closed as Resolved, with the target incident in the close notes.
     """
     target_id = mirrored_object.get("redirectIncidentId")
-    close_notes = f"Redirected in Microsoft Defender to incident {target_id}." if target_id else "Redirected in Microsoft Defender."
+    close_notes = (
+        f"Redirected in Microsoft Defender to incident {target_id}." if target_id else "Redirected in Microsoft Defender."
+    )
     if resolving_comment := mirrored_object.get("resolvingComment"):
         close_notes = f"{close_notes}\n{resolving_comment}"
     return build_close_entry(REDIRECTED_CLOSE_REASON, close_notes)
@@ -3234,9 +3243,7 @@ def get_close_or_reopen_entries(mirrored_object: dict, close_incident: bool) -> 
         demisto.debug(f"[Mirroring] {remote_id} status '{status}' is not actionable; not closing or reopening.")
         return []
     xsoar_closed = is_xsoar_investigation_closed()
-    demisto.debug(
-        f"[Mirroring] {remote_id} status: {status}, remote closed: {remote_closed}, XSOAR closed: {xsoar_closed}."
-    )
+    demisto.debug(f"[Mirroring] {remote_id} status: {status}, remote closed: {remote_closed}, XSOAR closed: {xsoar_closed}.")
     if xsoar_closed is not None and xsoar_closed == remote_closed:
         return []
     if not remote_closed:
