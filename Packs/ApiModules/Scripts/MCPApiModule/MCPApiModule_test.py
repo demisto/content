@@ -1,3 +1,4 @@
+import copy
 import inspect
 import traceback
 
@@ -23,6 +24,7 @@ from MCPApiModule import (
     OAuthHandler,
     Client,
     generate_login_url,
+    normalize_tool_schemas,
 )
 
 # ExceptionGroup is new in Python 3.11, so we define it for older versions for testing purposes
@@ -873,6 +875,226 @@ class TestSDKContract:
             f"model_dump(by_alias=True) no longer emits the 'isError' wire name (got keys: {sorted(dumped)}). "
             "The ListTools/CallTool context output contract has changed."
         )
+
+
+class TestNormalizeToolSchemas:
+    """Covers normalize_tool_schemas, which keeps the list-tools output readable by the platform's tool discovery."""
+
+    @staticmethod
+    def _tool(input_properties: dict, output_properties: dict | None = None) -> dict:
+        tool: dict = {"name": "test_tool", "inputSchema": {"type": "object", "properties": input_properties}}
+        if output_properties is not None:
+            tool["outputSchema"] = {"type": "object", "properties": output_properties}
+        return tool
+
+    @pytest.mark.parametrize(
+        "prop, expected",
+        [
+            ({"type": ["string", "null"]}, {"type": "string"}),
+            ({"type": ["null", "integer"]}, {"type": "integer"}),
+            ({"type": ["string", "string", "null"]}, {"type": "string"}),
+            ({"type": ["string", "null"], "description": "Kept."}, {"type": "string", "description": "Kept."}),
+            ({"type": ["null"]}, {}),
+            ({"type": []}, {}),
+            ({"type": ["string", "number"]}, {}),
+            ({"type": ["number", "string", "null"]}, {}),
+            ({"type": ["string", "number"], "description": "Kept."}, {"description": "Kept."}),
+        ],
+    )
+    def test_type_list_is_reduced_to_a_single_type_or_removed(self, prop: dict, expected: dict):
+        """
+        Given: An input property whose type is a list, as JSON Schema allows.
+        When: normalize_tool_schemas runs.
+        Then: A list that names one real type (null aside) becomes that type, and a list that names none or several
+              loses its type instead of guessing one. Other keys are kept.
+        """
+        tool = self._tool({"field": prop})
+
+        [result] = normalize_tool_schemas([tool])
+
+        assert result["inputSchema"]["properties"]["field"] == expected
+
+    @pytest.mark.parametrize(
+        "prop",
+        [
+            {"type": "string"},
+            {"type": "object", "properties": {"nested": {"type": ["string", "null"]}}},
+            {"anyOf": [{"type": "string"}, {"type": "null"}]},
+            {"oneOf": [{"type": "object"}, {"type": "null"}], "description": "Kept."},
+            {"description": "No type at all."},
+            {"type": "array", "items": {"type": "string"}},
+        ],
+    )
+    def test_forms_the_platform_already_reads_are_not_touched(self, prop: dict):
+        """
+        Given: A property with a plain type, an anyOf or oneOf, no type, or a nested schema.
+        When: normalize_tool_schemas runs.
+        Then: The property is unchanged, so a tool the platform already stores keeps its stored shape.
+        """
+        tool = self._tool({"field": copy.deepcopy(prop)})
+
+        [result] = normalize_tool_schemas([tool])
+
+        assert result["inputSchema"]["properties"]["field"] == prop
+
+    def test_top_level_schema_type_list_is_flattened(self):
+        """
+        Given: A tool whose whole inputSchema and outputSchema use a type list.
+        When: normalize_tool_schemas runs.
+        Then: Both top-level types become a single string.
+        """
+        tool = {"name": "t", "inputSchema": {"type": ["object", "null"]}, "outputSchema": {"type": ["object", "null"]}}
+
+        [result] = normalize_tool_schemas([tool])
+
+        assert result["inputSchema"]["type"] == "object"
+        assert result["outputSchema"]["type"] == "object"
+
+    def test_top_level_schema_type_list_with_several_real_types_loses_its_type(self):
+        """
+        Given: A tool whose whole outputSchema names several real types.
+        When: normalize_tool_schemas runs.
+        Then: The top-level type is removed instead of guessing one, and the properties are still normalized.
+        """
+        tool = {"name": "t", "outputSchema": {"type": ["object", "array"], "properties": {"a": {"type": ["string", "null"]}}}}
+
+        [result] = normalize_tool_schemas([tool])
+
+        assert "type" not in result["outputSchema"]
+        assert result["outputSchema"]["properties"]["a"]["type"] == "string"
+
+    def test_output_property_without_description_gets_a_default(self):
+        """
+        Given: Output properties with no description, an empty one, one with a title, and one with a description.
+        When: normalize_tool_schemas runs.
+        Then: The title or the property name becomes the description, and an existing description is kept.
+        """
+        tool = self._tool(
+            {},
+            {
+                "results": {"type": "array"},
+                "empty": {"type": "string", "description": ""},
+                "found": {"type": "boolean", "title": "Found"},
+                "ok": {"type": "boolean", "description": "Kept."},
+            },
+        )
+
+        [result] = normalize_tool_schemas([tool])
+
+        properties = result["outputSchema"]["properties"]
+        assert properties["results"]["description"] == "results"
+        assert properties["empty"]["description"] == "empty"
+        assert properties["found"]["description"] == "Found"
+        assert properties["ok"]["description"] == "Kept."
+
+    @pytest.mark.parametrize("title", [5, None, "", ["Found"], {"text": "Found"}])
+    def test_output_property_title_that_is_not_a_usable_string_falls_back_to_the_name(self, title):
+        """
+        Given: An output property with no description and a title that is empty or not a string.
+        When: normalize_tool_schemas runs.
+        Then: The property name becomes the description, so the description is always a non-empty string.
+        """
+        tool = self._tool({}, {"found": {"type": "boolean", "title": title}})
+
+        [result] = normalize_tool_schemas([tool])
+
+        assert result["outputSchema"]["properties"]["found"]["description"] == "found"
+
+    def test_input_property_description_is_left_alone(self):
+        """
+        Given: An input property with no description.
+        When: normalize_tool_schemas runs.
+        Then: No description is added, because the platform does not require one for MCP arguments.
+        """
+        tool = self._tool({"field": {"type": "string"}})
+
+        [result] = normalize_tool_schemas([tool])
+
+        assert "description" not in result["inputSchema"]["properties"]["field"]
+
+    def test_unusual_shapes_do_not_raise(self):
+        """
+        Given: A tool with no schemas, a boolean property schema, and a null properties value.
+        When: normalize_tool_schemas runs.
+        Then: Nothing raises and the tools are returned as they were.
+        """
+        tools = [
+            {"name": "bare"},
+            {"name": "boolean", "inputSchema": {"properties": {"flag": True}}},
+            {"name": "null_properties", "outputSchema": {"properties": None}},
+        ]
+        expected = copy.deepcopy(tools)
+
+        assert normalize_tool_schemas(tools) == expected
+
+    def test_input_is_not_modified(self):
+        """
+        Given: Tools with a nullable type, a multi-type list, and an undocumented output property.
+        When: normalize_tool_schemas runs.
+        Then: The result is normalized, and the given tools are left exactly as they were.
+        """
+        tools = [
+            self._tool(
+                {"owner": {"type": ["string", "null"]}, "mixed": {"type": ["string", "number"]}},
+                {"results": {"type": ["array", "null"]}},
+            )
+        ]
+        original = copy.deepcopy(tools)
+
+        result = normalize_tool_schemas(tools)
+
+        assert tools == original
+        assert result[0]["inputSchema"]["properties"] == {"owner": {"type": "string"}, "mixed": {}}
+        assert result[0]["outputSchema"]["properties"] == {"results": {"type": "array", "description": "results"}}
+
+    def test_empty_tool_list(self):
+        """
+        Given: An empty tool list.
+        When: normalize_tool_schemas runs.
+        Then: An empty list is returned.
+        """
+        assert normalize_tool_schemas([]) == []
+
+    @pytest.mark.asyncio
+    async def test_list_tools_returns_normalized_schemas(self, mocker: MockerFixture, mock_client_instance: Client):
+        """
+        Given: An MCP server whose tool has a nullable property type and an undocumented output property.
+        When: list_tools is called.
+        Then: The ListTools output carries a single string type and a description, and the camelCase wire names remain.
+        """
+        mocker.patch.object(Client, "_resolve_headers", return_value={})
+        mock_session = mocker.MagicMock()
+        mock_init_result = Mock(spec=["server_info"])
+        mock_init_result.server_info = Mock()
+        mock_init_result.server_info.name = "TestServer"
+        mock_session.initialize = mocker.AsyncMock(return_value=mock_init_result)
+        mock_tool = Mock()
+        mock_tool.name = "update_project"
+        mock_tools = Mock()
+        mock_tools.tools = [mock_tool]
+        mock_tools.model_dump.return_value = {
+            "tools": [
+                {
+                    "name": "update_project",
+                    "inputSchema": {"type": "object", "properties": {"owner": {"type": ["string", "null"]}}},
+                    "outputSchema": {"type": "object", "properties": {"results": {"type": "array"}}},
+                }
+            ]
+        }
+        mock_session.list_tools = mocker.AsyncMock(return_value=mock_tools)
+        mock_streamable_client = mocker.patch("MCPApiModule.streamable_http_client")
+        mock_streamable_client.return_value.__aenter__ = mocker.AsyncMock(return_value=("r", "w"))
+        mock_streamable_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
+        mock_client_session = mocker.patch("MCPApiModule.ClientSession")
+        mock_client_session.return_value.__aenter__ = mocker.AsyncMock(return_value=mock_session)
+        mock_client_session.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
+
+        result = await mock_client_instance.list_tools()
+
+        tool = result.outputs["Tools"][0]
+        assert tool["inputSchema"]["properties"]["owner"]["type"] == "string"
+        assert tool["outputSchema"]["properties"]["results"]["description"] == "results"
+        mock_tools.model_dump.assert_called_once_with(mode="json", by_alias=True)
 
 
 # --- Connection Tests -----------------------------------------------------
