@@ -231,7 +231,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Close Mirrored XSOAR Incident
-  additionalinfo: Incoming mirroring. When selected, the Cortex XSOAR incident is closed when the Microsoft alert or incident is resolved (or, for incidents, redirected), and reopened when the Microsoft alert or incident is reopened.
+  additionalinfo: Whether to close the Cortex XSOAR incident when the Microsoft alert or incident is resolved (or, for incidents, redirected), and reopen it when the Microsoft alert or incident is reopened.
   name: close_incident
   type: 8
   section: Collect
@@ -242,7 +242,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Close Mirrored Microsoft Alert/Incident
-  additionalinfo: Outgoing mirroring. When selected, the Microsoft alert or incident status is set to Resolved when the Cortex XSOAR incident is closed, and set back to active (incidents) or new (alerts) when it is reopened. The status of an incident redirected in Microsoft isn't changed.
+  additionalinfo: Whether to set the Microsoft alert or incident status to Resolved when the Cortex XSOAR incident is closed, and set it back to active (incidents) or new (alerts) when it is reopened. When disabled, status is never sent to Microsoft, including edits to the Microsoft Graph Security Incident/Alert Status field. The status of an incident redirected in Microsoft isn't changed.
   name: close_out
   type: 8
   section: Collect
@@ -253,7 +253,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Comment Entry Tag (to Microsoft)
-  additionalinfo: Entries with this tag are mirrored as comments to the Microsoft alert or incident. Must be set and different from the Comment Entry Tag (from Microsoft).
+  additionalinfo: The tag for entries that are mirrored as comments to the Microsoft alert or incident. Must be set and different from the Comment Entry Tag (from Microsoft).
   name: comment_tag
   type: 0
   section: Collect
