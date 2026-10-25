@@ -430,7 +430,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!msg-invoke-action identity_accounts_id=`0000` account_id=`0001` action=`disable` identity_provider=`activeDirectory` ```
+```!msg-invoke-action identity_accounts_id=0000 account_id=0001 action=disable identity_provider=activeDirectory```
 
 #### Human Readable Output
 

@@ -840,22 +840,6 @@ script:
     execution: false
     name: msg-generate-login-url
   - arguments:
-    - description: The name of the eDiscovery case.
-      isArray: false
-      name: display_name
-      required: true
-    - description: The case description.
-      isArray: false
-      name: description
-      required: false
-    - description: The external case number for customer reference.
-      isArray: false
-      name: external_id
-      required: false
-    description: Perform actions such as revoking accounts and forcing password reset for identity accounts that are observed in Microsoft Defender for Identity. To learn more about the possible actions, see https://learn.microsoft.com/en-us/graph/api/security-identityaccounts-invokeaction?view=graph-rest-1.0&tabs=http.
-    execution: false
-    name: msg-invoke-action
-  - arguments:
     - description: The identifier of the accounts that are monitored for suspicious or malicious activity by Microsoft Defender for Identity.
       isArray: false
       name: identity_accounts_id
@@ -885,6 +869,22 @@ script:
       - 'activeDirectory'
       - 'okta'
       required: true
+    description: Perform actions such as revoking accounts and forcing password reset for identity accounts that are observed in Microsoft Defender for Identity. To learn more about the possible actions, see https://learn.microsoft.com/en-us/graph/api/security-identityaccounts-invokeaction?view=graph-rest-1.0&tabs=http.
+    execution: false
+    name: msg-invoke-action
+  - arguments:
+    - description: The name of the eDiscovery case.
+      isArray: false
+      name: display_name
+      required: true
+    - description: The case description.
+      isArray: false
+      name: description
+      required: false
+    - description: The external case number for customer reference.
+      isArray: false
+      name: external_id
+      required: false
     description: Create a new eDiscovery case. This command only creates an eDiscovery (Premium) case using the new case format. To learn more about the new case format in eDiscovery, see https://learn.microsoft.com/en-us/microsoft-365/compliance/advanced-ediscovery-new-case-format.
     execution: false
     name: msg-create-ediscovery-case
