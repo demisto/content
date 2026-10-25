@@ -231,7 +231,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Close Mirrored XSOAR Incident
-  additionalinfo: Incoming mirroring. When selected, the Cortex XSOAR incident is closed when the Microsoft alert or incident status becomes Resolved, or Redirected (incidents), and reopened when it becomes active again.
+  additionalinfo: Incoming mirroring. When selected, the Cortex XSOAR incident is closed when the Microsoft alert or incident is resolved (or, for incidents, redirected), and reopened when the Microsoft alert or incident is reopened.
   name: close_incident
   type: 8
   section: Collect
@@ -242,7 +242,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Close Mirrored Microsoft Alert/Incident
-  additionalinfo: Outgoing mirroring. When selected, the Microsoft alert or incident status is set to Resolved when the Cortex XSOAR incident is closed.
+  additionalinfo: Outgoing mirroring. When selected, the Microsoft alert or incident status is set to Resolved when the Cortex XSOAR incident is closed, and set back to active (incidents) or new (alerts) when it is reopened. The status of an incident redirected in Microsoft isn't changed.
   name: close_out
   type: 8
   section: Collect
@@ -253,7 +253,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Comment Entry Tag (to Microsoft)
-  additionalinfo: Entries with this tag are mirrored as comments to the Microsoft alert or incident. Must be different from the Comment Entry Tag (from Microsoft).
+  additionalinfo: Entries with this tag are mirrored as comments to the Microsoft alert or incident. Must be set and different from the Comment Entry Tag (from Microsoft).
   name: comment_tag
   type: 0
   section: Collect
@@ -264,7 +264,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Comment Entry Tag (from Microsoft)
-  additionalinfo: The tag added to entries created from Microsoft alert or incident comments. Must be different from the Comment Entry Tag (to Microsoft).
+  additionalinfo: The tag added to entries created from Microsoft alert or incident comments. Must be set and different from the Comment Entry Tag (to Microsoft).
   name: comment_tag_from_microsoft_graph_security
   type: 0
   section: Collect
@@ -3228,18 +3228,18 @@ script:
       description: The Location header URL returned for the export operation.
       type: String
   - arguments:
-    - description: The last update time (ISO-8601 or UTC timestamp in seconds). Returns the IDs of the alerts and incidents modified since then.
+    - description: The last update time (ISO-8601 or UTC timestamp in seconds). Returns the IDs of the alerts and/or incidents (according to **Fetch incidents type**) modified since then.
       name: lastUpdate
     description: Gets the list of remote incidents/alerts that were modified since the last update time. This method is only used for debugging purposes.
     name: get-modified-remote-data
   - arguments:
     - description: The remote alert or incident ID.
       name: id
-    - description: The remote alert ID. Use instead of id to force the alert flow.
+    - description: The remote alert ID. Used only when id and incident_id are not provided.
       name: alert_id
-    - description: The remote incident ID. Use instead of id to force the incident flow.
+    - description: The remote incident ID. Used only when id is not provided.
       name: incident_id
-    - description: The last update time (ISO-8601 or UTC timestamp in seconds). Only comments created after this time are mirrored.
+    - description: The last update time (ISO-8601 or UTC timestamp in seconds). Only comments created after this time are returned.
       name: lastUpdate
     description: Gets remote data from a remote alert/incident. This method does not update the current incident, and should be used for debugging purposes only.
     name: get-remote-data
