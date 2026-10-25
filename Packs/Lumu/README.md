@@ -9,9 +9,14 @@ You can also provide comments, change of status like mute, unmute and close in X
 
 # What does this pack do?
 
-- Monitor and poll the Lumu Incident from Cortex XSOAR, using de [Lumu API specification](https://docs.lumu.io/portal/en/kb/articles/core-concepts-api#Consult_incidents_updates_through_REST)
-- Using Cortex mirroring  process updates the Lumu incidents retrieved from Lumu in Cortex XSOAR.
-- Operate the incident from Cortex, launching action like muting, unmuting and closing incident from Cortex and submit through Lumu  API to sync the both platforms status.
-- Manual interaction to operate Lumu incidents with commands, there are more than 15 commands to work automatically or manually
+- This pack includes **two integrations**: **Lumu** (legacy) and **Lumu SecOps**.
+- As of 2026, for new installations, use **Lumu SecOps** because it is the newer service and includes the latest incident types.
+- The legacy Lumu integration remains available for backward compatibility with existing deployments.
+- Commands in the legacy integration start with `lumu-`.
+- Commands in the Lumu SecOps integration start with `lumusecops-`.
+- Monitor and poll Lumu incidents from Cortex XSOAR using the [Lumu API specification](https://docs.lumu.io/portal/en/kb/articles/core-concepts-api#Consult_incidents_updates_Available_for_Insights).
+- Use the Cortex mirroring process to keep incidents synchronized between Lumu and Cortex XSOAR.
+- Operate incidents from Cortex XSOAR with actions such as muting, unmuting, and closing incidents, and submit changes through the Lumu API to sync both platforms.
+- Manual interaction to operate Lumu incidents with commands, with more than 15 commands available for automated or analyst-driven workflows.
 
-As part of this pack, you will also get 1 addicional out-of-the-box layout name `lumu` so that you can visualize Lumu incident information in Cortex XSOAR.
+As part of this pack, you will also get 1 additional out-of-the-box layout named either `lumu` or `lumusecops` regarding the integration deployed so that you can visualize Lumu incident information in Cortex XSOAR.
