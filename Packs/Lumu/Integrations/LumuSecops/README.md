@@ -18,6 +18,24 @@ This integration was integrated and tested with new Lumu Defender SecOps API.
 | Mirror tags | Comments and files tagged with this value are mirrored to Lumu. | False |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Lumu to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Lumu\), or Incoming and Outgoing \(from/to Cortex XSOAR and Lumu\). Cortex XSOAR only parameter. | False |
 
+## Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and Lumu Secops corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+
+1. Enable *Fetching incidents* in your instance configuration.
+2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Incoming | Any changes in Lumu Secops events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Lumu Secops events (outgoing mirrored fields). |
+    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and Lumu Secops events will be reflected in both directions. |
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Lumu Secops.
+
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
@@ -1031,21 +1049,3 @@ Clears the Lumu Secops cache. For internal use.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | LumuSecops.ClearCache | String | The cache clear operation result. |
-
-## Incident Mirroring
-
-You can enable incident mirroring between Cortex XSOAR incidents and Lumu Secops corresponding events (available from Cortex XSOAR version 6.0.0).
-To set up the mirroring:
-
-1. Enable *Fetching incidents* in your instance configuration.
-2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
-
-    | **Option** | **Description** |
-    | --- | --- |
-    | None | Turns off incident mirroring. |
-    | Incoming | Any changes in Lumu Secops events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
-    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Lumu Secops events (outgoing mirrored fields). |
-    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and Lumu Secops events will be reflected in both directions. |
-
-Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
-**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Lumu Secops.
