@@ -74,7 +74,7 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
     | Fetch Assets and Vulnerabilities | Available in Cortex XSIAM only. Whether to fetch host list detections (assets) and vulnerabilites. | False |
     | Assets and Vulnerabilities Fetch Interval | Available in Cortex XSIAM only. The fetch interval for assets and vulnerabilities. It is recommended to set it to 24 hours. Interval lower then 1 hour is not supported. Default is 1 day. | False |
     | Fetch Vulnerabilities Behavior | Available in Cortex XSIAM only. Default is Fetch by last modified date. | False |
-    | Search List IDs to Exclude | Available in Cortex XSIAM only. Qualys Search List IDs to exclude during the scheduled assets and vulnerabilities fetch. Show detection records only when a record's QID IS EXCLUDED from one or more of the specified search list titles. One or more IDs may be specified. A range is specified with a dash (for example: 40-42). Multiple entries are comma separated. | False |
+    | Search List IDs to Exclude | Available in Cortex XSIAM only. The Qualys search list IDs to exclude during the scheduled assets and vulnerabilities fetch. Show detection records only when a record's QID IS EXCLUDED from one or more of the specified search list titles. One or more IDs may be specified. A range is specified with a dash (for example: 40-42). Multiple entries are comma-separated. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

@@ -49,7 +49,7 @@ configuration:
   - exposure_management
 - display: Search List IDs to Exclude
   name: exclude_search_list_ids
-  additionalinfo: "Qualys Search List IDs to exclude during the scheduled assets and vulnerabilities fetch. Show detection records only when a record's QID IS EXCLUDED from one or more of the specified search list titles. One or more IDs may be specified. A range is specified with a dash (for example: 40-42). Multiple entries are comma separated."
+  additionalinfo: "The Qualys search list IDs to exclude during the scheduled assets and vulnerabilities fetch. Show detection records only when a record's QID IS EXCLUDED from one or more of the specified search list titles. One or more IDs may be specified. A range is specified with a dash (for example: 40-42). Multiple entries are comma-separated."
   section: Collect
   advanced: true
   required: false
