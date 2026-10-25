@@ -21,7 +21,7 @@ configuration:
   displaypassword: Password/API key
   name: credentials
   type: 9
-  required: true
+  required: false
   section: Connect
 - display: Fetch incidents
   name: isFetch
