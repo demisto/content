@@ -1,4 +1,5 @@
 import re
+import urllib.parse
 from datetime import timezone
 from enum import Enum
 from typing import Any
@@ -127,7 +128,8 @@ class MsGraphClient:
         )
 
     def invoke_action(self, account_id: str, action: str, identity_accounts_id: str, identity_provider: str) -> Any:
-        url = f"/security/identities/identityAccounts/{identity_accounts_id}/invokeAction"
+        encoded_identity_accounts_id = urllib.parse.quote(identity_accounts_id, safe="")
+        url = f"security/identities/identityAccounts/{encoded_identity_accounts_id}/invokeAction"
         return self.ms_client.http_request(
             method="POST",
             url_suffix=url,

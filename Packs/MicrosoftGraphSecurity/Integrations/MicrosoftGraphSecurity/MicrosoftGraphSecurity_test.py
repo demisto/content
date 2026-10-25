@@ -2383,7 +2383,7 @@ def test_invoke_action_request(mocker):
 
     http_request.assert_called_once_with(
         method="POST",
-        url_suffix="/security/identities/identityAccounts/identity-1/invokeAction",
+        url_suffix="security/identities/identityAccounts/identity-1/invokeAction",
         json_data={"accountId": "account-1", "action": "disable", "identityProvider": "activeDirectory"},
         return_empty_response=True,
     )

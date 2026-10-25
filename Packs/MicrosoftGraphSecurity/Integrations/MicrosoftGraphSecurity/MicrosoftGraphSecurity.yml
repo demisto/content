@@ -870,7 +870,7 @@ script:
       - 'okta'
       required: true
     description: Perform actions such as revoking accounts and forcing password reset for identity accounts that are observed in Microsoft Defender for Identity. To learn more about the possible actions, see https://learn.microsoft.com/en-us/graph/api/security-identityaccounts-invokeaction?view=graph-rest-1.0&tabs=http.
-    execution: false
+    execution: true
     name: msg-invoke-action
   - arguments:
     - description: The name of the eDiscovery case.
