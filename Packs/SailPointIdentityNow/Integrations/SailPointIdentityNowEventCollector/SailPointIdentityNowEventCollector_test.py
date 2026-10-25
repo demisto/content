@@ -2,7 +2,7 @@ import time
 from datetime import datetime, timedelta, UTC
 
 import demistomock as demisto
-from CommonServerPython import arg_to_datetime
+from CommonServerPython import DemistoException, arg_to_datetime
 from SailPointIdentityNowEventCollector import (
     Client,
     add_time_and_status_to_events,
@@ -862,3 +862,149 @@ def test_dedup_events(mocker, events, last_fetched_ids, expected, debug_msgs):
     assert deduped_events == expected
     for i, msg in enumerate(debug_msgs):
         assert msg in debug_msg.call_args_list[i][0][0]
+
+
+# =============================================================================
+# CLIENT, TEST-MODULE AND GET-EVENTS TESTS
+# =============================================================================
+
+
+def test_client_init__token_failure_raises(mocker):
+    """
+    Given:
+        - Token generation fails (e.g. invalid client credentials)
+    When:
+        - Creating a Client
+    Then:
+        - Ensure an exception with a clear "Failed to get token" message is raised
+    """
+    mocker.patch.object(Client, "get_token", side_effect=Exception("Unauthorized"))
+
+    with pytest.raises(Exception, match="Failed to get token. Error: Unauthorized"):
+        Client(base_url="https://example.com", client_id="test_id", client_secret="test_secret", verify=False, proxy=False)
+
+
+def test_test_module__success(mocker):
+    """
+    Given:
+        - A client whose fetch succeeds
+    When:
+        - Calling test_module
+    Then:
+        - Ensure 'ok' is returned and fetch_events is called with limit 1 and an empty last run
+    """
+    from SailPointIdentityNowEventCollector import test_module
+
+    fetch_events_mock = mocker.patch("SailPointIdentityNowEventCollector.fetch_events", return_value=({}, []))
+    client = mocker.Mock()
+
+    assert test_module(client) == "ok"
+    fetch_events_mock.assert_called_once_with(client=client, limit=1, look_back=0, last_run={})
+
+
+def test_test_module__forbidden_returns_authorization_error(mocker):
+    """
+    Given:
+        - A client whose fetch fails with a Forbidden error
+    When:
+        - Calling test_module
+    Then:
+        - Ensure an authorization error message is returned instead of raising
+    """
+    from SailPointIdentityNowEventCollector import test_module
+
+    mocker.patch("SailPointIdentityNowEventCollector.fetch_events", side_effect=DemistoException("Error 403 Forbidden"))
+
+    assert test_module(mocker.Mock()) == "Authorization Error: make sure API Key is correctly set"
+
+
+def test_test_module__other_error_is_raised(mocker):
+    """
+    Given:
+        - A client whose fetch fails with an error that is not Forbidden
+    When:
+        - Calling test_module
+    Then:
+        - Ensure the original error is raised
+    """
+    from SailPointIdentityNowEventCollector import test_module
+
+    mocker.patch("SailPointIdentityNowEventCollector.fetch_events", side_effect=DemistoException("Connection timed out"))
+
+    with pytest.raises(DemistoException, match="Connection timed out"):
+        test_module(mocker.Mock())
+
+
+def test_get_events(mocker):
+    """
+    Given:
+        - A client that returns events
+    When:
+        - Calling get_events
+    Then:
+        - Ensure the events are returned as-is with a readable output table
+        - Ensure the search arguments are passed to the client
+    """
+    from SailPointIdentityNowEventCollector import get_events
+
+    client = mocker.Mock()
+    client.search_events.return_value = EVENTS_SEQUENTIAL[:2]
+
+    events, command_results = get_events(client, from_date="2022-01-01T00:00:00Z", from_id="1", limit=2)
+
+    assert events == EVENTS_SEQUENTIAL[:2]
+    assert "Test Events" in command_results.readable_output
+    client.search_events.assert_called_once_with(prev_id="1", from_date="2022-01-01T00:00:00Z", limit=2)
+
+
+# =============================================================================
+# FETCH EVENTS - LAST RUN FORMAT TESTS
+# =============================================================================
+
+
+def test_fetch_events__first_run_starts_from_current_time(mocker):
+    """
+    Given:
+        - An empty last run (first fetch)
+    When:
+        - Calling fetch_events
+    Then:
+        - Ensure the fetch starts from the current time (CURRENT_TIME_STR)
+        - Ensure the next run is built from the fetched events
+    """
+    import SailPointIdentityNowEventCollector
+
+    mocker.patch.object(demisto, "debug")
+    client = mocker.Mock()
+    client.search_events.return_value = [EVENTS_SEQUENTIAL[0]]
+
+    next_run, events = fetch_events(client, limit=10, look_back=5, last_run={})
+
+    assert client.search_events.call_args_list[0].kwargs["from_date"] == SailPointIdentityNowEventCollector.CURRENT_TIME_STR
+    assert events == [EVENTS_SEQUENTIAL[0]]
+    assert next_run["prev_date"] == EVENTS_SEQUENTIAL[0]["created"]
+    assert next_run["last_fetched_id_timestamps"] == {"1": EVENTS_SEQUENTIAL[0]["created"]}
+
+
+def test_fetch_events__legacy_last_fetched_ids_format(mocker):
+    """
+    Given:
+        - A last run in the legacy format (last_fetched_ids list, without timestamps)
+    When:
+        - Calling fetch_events
+    Then:
+        - Ensure the legacy format is detected and the fetch starts from prev_date minus the lookback
+        - Ensure the next run is migrated to the new last_fetched_id_timestamps format
+    """
+    debug_mock = mocker.patch.object(demisto, "debug")
+    client = mocker.Mock()
+    client.search_events.return_value = [EVENTS_SEQUENTIAL[2]]
+    last_run = {"prev_date": "2022-01-01T00:02:00Z", "last_fetched_ids": ["1", "2"]}
+
+    next_run, events = fetch_events(client, limit=10, look_back=1, last_run=last_run)
+
+    assert client.search_events.call_args_list[0].kwargs["from_date"] == "2022-01-01T00:01:00Z"
+    assert any("Using legacy format with 2 cached IDs" in call.args[0] for call in debug_mock.call_args_list)
+    assert events == [EVENTS_SEQUENTIAL[2]]
+    assert "last_fetched_ids" not in next_run
+    assert next_run["last_fetched_id_timestamps"] == {"3": EVENTS_SEQUENTIAL[2]["created"]}

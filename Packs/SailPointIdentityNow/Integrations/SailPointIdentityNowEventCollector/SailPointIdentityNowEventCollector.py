@@ -571,5 +571,5 @@ def main() -> None:  # pragma: no cover
 
 """ ENTRY POINT """
 
-if __name__ in ("__main__", "__builtin__", "builtins"):
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()
