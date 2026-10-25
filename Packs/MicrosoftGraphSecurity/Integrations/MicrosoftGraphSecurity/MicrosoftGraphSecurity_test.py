@@ -222,16 +222,22 @@ def test_fetch_alerts_command(mocker, test_case):
     mocker.patch("MicrosoftGraphSecurity.parse_date_range", return_value=("2020-04-19 08:14:21", "never mind"))
     test_data = load_json("./test_data/test_fetch_incidents_command.json").get(test_case)
     mocker.patch.object(client_mocker, "search_alerts", return_value=test_data.get("mock_response"))
-    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=10, extra_filter="", service_sources="", last_run={})
+    alerts, _ = fetch_alerts(
+        client_mocker, fetch_time="1 hour", fetch_limit=10, extra_filter="", service_sources="", last_run={}, params={}
+    )
     assert len(alerts) == 3
     assert alerts[0].get("severity") == 2
     assert alerts[2].get("occurred") == "2020-04-20T16:54:50.2722072Z"
 
-    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=1, extra_filter="", service_sources="", last_run={})
+    alerts, _ = fetch_alerts(
+        client_mocker, fetch_time="1 hour", fetch_limit=1, extra_filter="", service_sources="", last_run={}, params={}
+    )
     assert len(alerts) == 1
     assert alerts[0].get("name") == "test alert - da637218501473413212_-1554891308"
 
-    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=0, extra_filter="", service_sources="", last_run={})
+    alerts, _ = fetch_alerts(
+        client_mocker, fetch_time="1 hour", fetch_limit=0, extra_filter="", service_sources="", last_run={}, params={}
+    )
     assert len(alerts) == 0
 
 
@@ -269,7 +275,9 @@ def test_fetch_incidents_command(mocker):
     }
     mocker.patch.object(client_mocker, "get_incidents_request", return_value=mock_response)
 
-    incidents, new_last_run = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=10, extra_filter="", last_run={})
+    incidents, new_last_run = fetch_incidents(
+        client_mocker, fetch_time="1 hour", fetch_limit=10, extra_filter="", last_run={}, params={}
+    )
 
     assert len(incidents) == 2
     assert incidents[0].get("name") == "Incident One - 1"
@@ -304,6 +312,7 @@ def test_fetch_incidents_command_dedup_by_last_run(mocker):
         fetch_limit=10,
         extra_filter="",
         last_run={"time": "2020-04-20T10:00:00.0000000Z"},
+        params={},
     )
 
     assert len(incidents) == 1
@@ -452,7 +461,7 @@ def test_fetch_incidents_does_not_mutate_last_run(mocker):
 
     original_last_run = {"time": "2020-04-20T10:00:00.0000000Z"}
     _, new_last_run = fetch_incidents(
-        client_mocker, fetch_time="1 hour", fetch_limit=10, extra_filter="", last_run=original_last_run
+        client_mocker, fetch_time="1 hour", fetch_limit=10, extra_filter="", last_run=original_last_run, params={}
     )
 
     assert original_last_run == {"time": "2020-04-20T10:00:00.0000000Z"}
@@ -486,6 +495,7 @@ def test_fetch_alerts_does_not_mutate_last_run(mocker):
         extra_filter="",
         service_sources="",
         last_run=original_last_run,
+        params={},
     )
 
     assert original_last_run == {"time": "2020-04-20T10:00:00.0000000Z"}
@@ -534,6 +544,7 @@ def test_fetch_alerts_subsecond_ordering_and_deduplication(mocker):
         extra_filter="",
         service_sources="",
         last_run={"time": "2026-09-08T12:40:41.99Z", "last_fetched_ids": ["alert_0"]},
+        params={},
     )
     assert len(alerts_run1) == 9
     assert last_run1["time"] == "2026-09-08T12:40:42.23Z"
@@ -550,6 +561,7 @@ def test_fetch_alerts_subsecond_ordering_and_deduplication(mocker):
         extra_filter="",
         service_sources="",
         last_run=last_run1,
+        params={},
     )
     assert len(alerts_run2) == 1
     assert json.loads(alerts_run2[0]["rawJSON"])["id"] == "alert_new"
@@ -597,6 +609,7 @@ def test_fetch_incidents_subsecond_ordering_and_deduplication(mocker):
         fetch_limit=10,
         extra_filter="",
         last_run={"time": "2026-09-08T12:40:41.99Z", "last_fetched_ids": ["incident_0"]},
+        params={},
     )
     assert len(incidents_run1) == 9
     assert last_run1["time"] == "2026-09-08T12:40:42.23Z"
@@ -618,6 +631,7 @@ def test_fetch_incidents_subsecond_ordering_and_deduplication(mocker):
         fetch_limit=10,
         extra_filter="",
         last_run=last_run1,
+        params={},
     )
     assert len(incidents_run2) == 1
     assert json.loads(incidents_run2[0]["rawJSON"])["id"] == "incident_new"
@@ -655,6 +669,7 @@ def test_fetch_alerts_same_timestamp_pagination_across_runs(mocker):
         extra_filter="",
         service_sources="",
         last_run={},
+        params={},
     )
     assert len(alerts1) == 2
     assert [json.loads(a["rawJSON"])["id"] for a in alerts1] == ["alert_1", "alert_2"]
@@ -669,6 +684,7 @@ def test_fetch_alerts_same_timestamp_pagination_across_runs(mocker):
         extra_filter="",
         service_sources="",
         last_run=last_run1,
+        params={},
     )
     assert len(alerts2) == 2
     assert [json.loads(a["rawJSON"])["id"] for a in alerts2] == ["alert_3", "alert_4"]
@@ -683,6 +699,7 @@ def test_fetch_alerts_same_timestamp_pagination_across_runs(mocker):
         extra_filter="",
         service_sources="",
         last_run=last_run2,
+        params={},
     )
     assert len(alerts3) == 0
 
@@ -720,6 +737,7 @@ def test_fetch_incidents_same_timestamp_pagination_across_runs(mocker):
         fetch_limit=2,
         extra_filter="",
         last_run={},
+        params={},
     )
     assert len(inc1) == 2
     assert [json.loads(i["rawJSON"])["id"] for i in inc1] == ["inc_1", "inc_2"]
@@ -733,6 +751,7 @@ def test_fetch_incidents_same_timestamp_pagination_across_runs(mocker):
         fetch_limit=2,
         extra_filter="",
         last_run=last_run1,
+        params={},
     )
     assert len(inc2) == 2
     assert [json.loads(i["rawJSON"])["id"] for i in inc2] == ["inc_3", "inc_4"]
@@ -746,6 +765,7 @@ def test_fetch_incidents_same_timestamp_pagination_across_runs(mocker):
         fetch_limit=2,
         extra_filter="",
         last_run=last_run2,
+        params={},
     )
     assert len(inc3) == 0
 
@@ -782,6 +802,7 @@ def test_fetch_upgrade_migration_without_last_fetched_ids(mocker):
         fetch_limit=10,
         extra_filter="",
         last_run={"time": ts_boundary},  # No 'last_fetched_ids' key
+        params={},
     )
     assert len(incidents_run1) == 1
     assert json.loads(incidents_run1[0]["rawJSON"])["id"] == "inc_newer_1"
@@ -804,6 +825,7 @@ def test_fetch_upgrade_migration_without_last_fetched_ids(mocker):
         extra_filter="",
         service_sources="",
         last_run={"time": ts_boundary},  # No 'last_fetched_ids' key
+        params={},
     )
     assert len(alerts_run1) == 1
     assert json.loads(alerts_run1[0]["rawJSON"])["id"] == "alert_newer_1"
@@ -845,6 +867,7 @@ def test_fetch_boundary_deduplication_3_at_t_and_1_at_t_plus_1(mocker):
         extra_filter="",
         service_sources="",
         last_run={},
+        params={},
     )
     assert len(alerts_run1) == 2
     assert [json.loads(a["rawJSON"])["id"] for a in alerts_run1] == ["alert_1", "alert_2"]
@@ -859,6 +882,7 @@ def test_fetch_boundary_deduplication_3_at_t_and_1_at_t_plus_1(mocker):
         extra_filter="",
         service_sources="",
         last_run=last_run1,
+        params={},
     )
     assert len(alerts_run2) == 2
     assert [json.loads(a["rawJSON"])["id"] for a in alerts_run2] == ["alert_3", "alert_4"]
@@ -913,6 +937,7 @@ def test_fetch_malformed_missing_none_timestamps(mocker):
         fetch_limit=10,
         extra_filter="",
         last_run={},
+        params={},
     )
     assert len(incidents) == 4
     # The valid item with true timestamp is sorted to the end
@@ -936,6 +961,7 @@ def test_fetch_malformed_missing_none_timestamps(mocker):
         extra_filter="",
         service_sources="",
         last_run={},
+        params={},
     )
     assert len(alerts) == 4
     assert json.loads(alerts[-1]["rawJSON"])["id"] == "a_valid"
@@ -986,6 +1012,7 @@ def test_fetch_timezone_offset_normalization(mocker):
         extra_filter="",
         service_sources="",
         last_run={},
+        params={},
     )
     # Chronological order must be: plus2 (12:30 UTC), z (13:00 UTC), minus4 (15:00 UTC)
     ingested_ids = [json.loads(a["rawJSON"])["id"] for a in alerts]
@@ -1019,6 +1046,7 @@ def test_fetch_empty_api_response_retains_last_run_state(mocker):
         fetch_limit=10,
         extra_filter="",
         last_run=initial_last_run,
+        params={},
     )
     assert len(incidents) == 0
     assert new_last_run_inc == initial_last_run
@@ -1030,6 +1058,7 @@ def test_fetch_empty_api_response_retains_last_run_state(mocker):
         extra_filter="",
         service_sources="",
         last_run=initial_last_run,
+        params={},
     )
     assert len(alerts) == 0
     assert new_last_run_alerts == initial_last_run
@@ -1092,6 +1121,7 @@ def test_fetch_realistic_pagination_simulation(mocker):
             fetch_limit=2,
             extra_filter="",
             last_run=current_last_run,
+            params={},
         )
         if not incidents:
             break
@@ -2546,27 +2576,23 @@ def test_fetch_alerts_injects_mirroring_fields(mocker):
 
 def test_fetch_incidents_injects_mirroring_fields(mocker):
     """
-    Given: an incident returned by the API, and no params passed (falls back to demisto.params()).
+    Given: an incident returned by the API, and the mirroring params passed explicitly.
     When: running fetch_incidents.
     Then: the raw JSON includes the mirroring fields and mirror_type=incident.
     """
     mocker.patch("MicrosoftGraphSecurity.parse_date_range", return_value=("2020-04-19T08:14:21.000000Z", "x"))
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "mirror_direction": "Incoming",
-            "comment_tag": "CommentToMicrosoftGraphSecurity",
-            "comment_tag_from_microsoft_graph_security": "CommentFromMicrosoftGraphSecurity",
-        },
-    )
+    params = {
+        "mirror_direction": "Incoming",
+        "comment_tag": "CommentToMicrosoftGraphSecurity",
+        "comment_tag_from_microsoft_graph_security": "CommentFromMicrosoftGraphSecurity",
+    }
     mocker.patch.object(demisto, "integrationInstance", return_value="instance_1")
     mocker.patch.object(
         client_mocker,
         "get_incidents_request",
         return_value={"value": [{"id": "1", "displayName": "Inc", "createdDateTime": "2020-04-20T10:00:00Z"}]},
     )
-    incidents, _ = fetch_incidents(client_mocker, "1 hour", 10, "", {})
+    incidents, _ = fetch_incidents(client_mocker, "1 hour", 10, "", {}, params=params)
     raw = json.loads(incidents[0]["rawJSON"])
     assert raw["mirror_direction"] == "In"
     assert raw["mirror_type"] == "incident"
@@ -2825,6 +2851,62 @@ def test_http_get_with_rate_limit_does_not_wrap_other_errors(mocker):
         client_mocker.http_get_with_rate_limit(url_suffix="security/alerts_v2")
     assert exc_info.value is error
     assert http_mock.call_count == 1
+
+
+def test_list_modified_object_ids_stops_at_page_limit(mocker):
+    """
+    Given: a Graph API that always returns another @odata.nextLink (an endless pagination loop).
+    When: calling list_modified_object_ids.
+    Then: the loop stops after MAX_MODIFIED_PAGES requests, returns the IDs read so far and logs that the limit was hit.
+    """
+    from MicrosoftGraphSecurity import MAX_MODIFIED_PAGES
+
+    endless_page = {"value": [{"id": "a1"}], "@odata.nextLink": "https://graph.microsoft.com/next"}
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value=endless_page)
+    debug_mock = mocker.patch.object(demisto, "debug")
+
+    modified_ids = client_mocker.list_modified_object_ids("security/alerts_v2", "2026-10-10T10:00:00Z")
+
+    assert http_mock.call_count == MAX_MODIFIED_PAGES
+    assert modified_ids == ["a1"] * MAX_MODIFIED_PAGES
+    assert any(f"Reached the limit of {MAX_MODIFIED_PAGES} pages" in str(call.args[0]) for call in debug_mock.call_args_list)
+
+
+@pytest.mark.parametrize(
+    "method_name, call_args, expected_method",
+    [
+        ("update_alert_by_id", ("id1", {"status": "resolved"}), "PATCH"),
+        ("update_incident_by_id", ("id1", {"status": "resolved"}), "PATCH"),
+        ("create_alert_comment", ("id1", {"comment": "hi"}), "POST"),
+        ("create_incident_comment", ("id1", {"comment": "hi"}), "POST"),
+    ],
+)
+def test_mirroring_write_requests_raise_rate_limit_error_on_429(mocker, method_name, call_args, expected_method):
+    """
+    Given: an HTTP 429 from Microsoft Graph.
+    When: sending a mirroring PATCH (update_alert_by_id / update_incident_by_id) or comment POST
+        (create_alert_comment / create_incident_comment).
+    Then: an "API rate limit" DemistoException is raised after a single request, keeping the original response.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_rate_limit_error())
+    with pytest.raises(DemistoException, match=r"^API rate limit: .*HTTP 429") as exc_info:
+        getattr(client_mocker, method_name)(*call_args)
+    assert http_mock.call_count == 1
+    assert http_mock.call_args.kwargs["method"] == expected_method
+    assert exc_info.value.res.status_code == 429
+
+
+def test_mirroring_patch_does_not_wrap_other_errors(mocker):
+    """
+    Given: a non-429 API error (HTTP 500) on a mirroring PATCH.
+    When: calling update_alert_by_id.
+    Then: the original error is raised as-is.
+    """
+    error = DemistoException("Error in API call [500] - Server Error", res=SimpleNamespace(status_code=500, headers={}))
+    mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=error)
+    with pytest.raises(DemistoException, match=r"\[500\]") as exc_info:
+        client_mocker.update_alert_by_id("id1", {"status": "resolved"})
+    assert exc_info.value is error
 
 
 @pytest.mark.parametrize(
@@ -5035,14 +5117,13 @@ def test_update_remote_system_patch_rate_limited_raises_no_entries_posted(mocker
     """
     Given: a field delta whose PATCH fails with HTTP 429, and one tagged entry.
     When: running update-remote-system.
-    Then: the 429 error is raised as is and no comment is POSTed.
+    Then: an "API rate limit" error (keeping the 429 response) is raised and no comment is POSTed.
     """
-    error = _rate_limit_error()
-    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=error)
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_rate_limit_error())
     args = _update_args(INCIDENT_ID, {"displayName": "x"}, "incident", entries=[TAGGED_ENTRY])
-    with pytest.raises(DemistoException) as exc_info:
+    with pytest.raises(DemistoException, match=r"^API rate limit: .*HTTP 429") as exc_info:
         update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
-    assert exc_info.value is error
+    assert exc_info.value.res.status_code == 429
     assert _http_calls(http_mock, "POST") == []
 
 
@@ -5050,14 +5131,13 @@ def test_update_remote_system_comment_post_rate_limited_raises(mocker):
     """
     Given: a tagged entry whose comment POST fails with HTTP 429.
     When: running update-remote-system.
-    Then: the 429 error is raised as is.
+    Then: an "API rate limit" error (keeping the 429 response) is raised.
     """
-    error = _rate_limit_error()
-    mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=error)
+    mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_rate_limit_error())
     args = _update_args(INCIDENT_ID, {}, "incident", entries=[TAGGED_ENTRY], changed=False)
-    with pytest.raises(DemistoException) as exc_info:
+    with pytest.raises(DemistoException, match=r"^API rate limit: .*HTTP 429") as exc_info:
         update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
-    assert exc_info.value is error
+    assert exc_info.value.res.status_code == 429
 
 
 def test_update_remote_system_first_entry_fails_raises_second_not_posted(mocker):

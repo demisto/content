@@ -42,6 +42,8 @@ MIRROR_TYPE_INCIDENT = "incident"
 
 # Error message that stops the current mirroring sync cycle.
 RATE_LIMIT_ERROR_MESSAGE = "API rate limit"
+# Max pages followed via @odata.nextLink when listing modified alerts/incidents.
+MAX_MODIFIED_PAGES = 100
 GRAPH_RESOLVED_STATUS = "resolved"
 # Incident merged into another incident (redirectIncidentId).
 GRAPH_REDIRECTED_STATUS = "redirected"
@@ -340,7 +342,7 @@ class MsGraphClient:
         Creates an alert comment (POST security/alerts_v2/{id}/comments). `params` is the full comment body.
         """
         cmd_url = f"{CMD_URL}/{alert_id}/comments"
-        response = self.ms_client.http_request(method="POST", url_suffix=cmd_url, json_data=params)
+        response = self.http_request_with_rate_limit("POST", url_suffix=cmd_url, json_data=params)
         return response
 
     def create_incident_comment(self, incident_id: str, params: dict) -> dict:
@@ -348,29 +350,38 @@ class MsGraphClient:
         Creates an incident comment (POST security/incidents/{id}/comments). `params` is the full comment body.
         """
         cmd_url = f"{INCIDENTS_URL}/{incident_id}/comments"
-        response = self.ms_client.http_request(method="POST", url_suffix=cmd_url, json_data=params)
+        response = self.http_request_with_rate_limit("POST", url_suffix=cmd_url, json_data=params)
         return response
 
-    def http_get_with_rate_limit(self, **request_kwargs) -> dict:
+    def http_request_with_rate_limit(self, method: str, **request_kwargs) -> Any:
         """
-        GET with the `Prefer: include-unknown-enum-members` header and FETCH_INCIDENTS_TIMEOUT, used by the mirroring
-        commands. HTTP 429 is not retried here (no sleep in mirroring): it is raised at once as an
-        "API rate limit" DemistoException, so the current sync cycle stops and the next cycle retries.
+        Sends a request via MicrosoftClient.http_request, used by the mirroring commands. HTTP 429 is not retried here
+        (no sleep in mirroring): it is raised at once as an "API rate limit" DemistoException, so the current sync cycle
+        stops and the next cycle retries. Any other error is raised as-is.
         Note: MicrosoftClient.http_request already lets urllib3 retry a 429 that has a Retry-After header (retries=3).
         """
         try:
-            return self.ms_client.http_request(
-                method="GET", headers=PREFER_UNKNOWN_ENUM_HEADER, timeout=FETCH_INCIDENTS_TIMEOUT, **request_kwargs
-            )
+            return self.ms_client.http_request(method=method, **request_kwargs)
         except Exception as e:
             if not is_rate_limit_error(e):
                 raise
-            demisto.debug(f"[Mirroring] HTTP 429 from Microsoft Graph; failing this sync cycle without retrying: {e!s}")
+            demisto.debug(
+                f"[Mirroring] HTTP 429 from Microsoft Graph ({method}); failing this sync cycle without retrying: {e!s}"
+            )
             raise DemistoException(
                 f"{RATE_LIMIT_ERROR_MESSAGE}: Microsoft Graph returned HTTP 429 (Too Many Requests). {e!s}",
                 exception=e,
                 res=getattr(e, "res", None),
             )
+
+    def http_get_with_rate_limit(self, **request_kwargs) -> dict:
+        """
+        GET with the `Prefer: include-unknown-enum-members` header and FETCH_INCIDENTS_TIMEOUT, with the 429 handling of
+        http_request_with_rate_limit.
+        """
+        return self.http_request_with_rate_limit(
+            "GET", headers=PREFER_UNKNOWN_ENUM_HEADER, timeout=FETCH_INCIDENTS_TIMEOUT, **request_kwargs
+        )
 
     def get_alert_by_id(self, alert_id: str) -> dict:
         """Gets a single alert by ID (GET security/alerts_v2/{id}), with the mirroring rate-limit handling."""
@@ -387,25 +398,34 @@ class MsGraphClient:
     def update_alert_by_id(self, alert_id: str, body: dict) -> None:
         """PATCHes an alert (security/alerts_v2/{id}) with the given body."""
         cmd_url = f"{CMD_URL}/{alert_id}"
-        self.ms_client.http_request(
-            method="PATCH", url_suffix=cmd_url, json_data=body, resp_type="text", timeout=FETCH_INCIDENTS_TIMEOUT
+        self.http_request_with_rate_limit(
+            "PATCH", url_suffix=cmd_url, json_data=body, resp_type="text", timeout=FETCH_INCIDENTS_TIMEOUT
         )
 
     def update_incident_by_id(self, incident_id: str, body: dict) -> None:
         """PATCHes an incident (security/incidents/{id}) with the given body."""
         cmd_url = f"{INCIDENTS_URL}/{incident_id}"
-        self.ms_client.http_request(
-            method="PATCH", url_suffix=cmd_url, json_data=body, resp_type="text", timeout=FETCH_INCIDENTS_TIMEOUT
+        self.http_request_with_rate_limit(
+            "PATCH", url_suffix=cmd_url, json_data=body, resp_type="text", timeout=FETCH_INCIDENTS_TIMEOUT
         )
 
     def list_modified_object_ids(self, object_url: str, last_update_iso: str) -> list[str]:
-        """Lists the IDs of alerts/incidents modified since `last_update_iso`, following @odata.nextLink until the last page."""
+        """
+        Lists the IDs of alerts/incidents modified since `last_update_iso`, following @odata.nextLink until the last page
+        or until MAX_MODIFIED_PAGES pages were read.
+        """
         request: dict[str, Any] = {
             "url_suffix": f"{object_url}?$filter=lastUpdateDateTime ge {last_update_iso}&$top={MAX_ITEMS_PER_RESPONSE}"
         }
         modified_ids: list[str] = []
         pages = 0
         while request:
+            if pages >= MAX_MODIFIED_PAGES:
+                demisto.debug(
+                    f"[Mirroring] Reached the limit of {MAX_MODIFIED_PAGES} pages when listing modified IDs from {object_url}, "
+                    "not following the next link."
+                )
+                break
             response = self.http_get_with_rate_limit(**request)
             modified_ids.extend(str(obj["id"]) for obj in response.get("value", []) if obj.get("id"))
             pages += 1
@@ -1568,7 +1588,7 @@ def get_mirroring_fields(params: dict, mirror_type: str) -> dict:
 
 
 def fetch_incidents(
-    client: MsGraphClient, fetch_time: str, fetch_limit: int, extra_filter: str, last_run: dict, params: dict | None = None
+    client: MsGraphClient, fetch_time: str, fetch_limit: int, extra_filter: str, last_run: dict, params: dict
 ) -> tuple[list, dict]:
     """
     Fetches up to `fetch_limit` incidents created within the fetch time window.
@@ -1579,11 +1599,11 @@ def fetch_incidents(
         fetch_limit (int): the maximum number of incidents to fetch.
         extra_filter (str): an optional extra filter to add to the time window.
         last_run (dict): the incidents last run from the previous fetch.
-        params (dict | None): the integration parameters (for the mirroring fields). Defaults to demisto.params().
+        params (dict): the integration parameters (for the mirroring fields).
     Returns:
         tuple[list, dict]: the fetched incidents, and the updated incidents last run.
     """
-    mirroring_fields = get_mirroring_fields(params if params is not None else demisto.params(), MIRROR_TYPE_INCIDENT)
+    mirroring_fields = get_mirroring_fields(params, MIRROR_TYPE_INCIDENT)
     # Copy the input last_run so we never mutate the caller's argument.
     new_last_run: dict[str, Any] = (
         dict(last_run) if last_run else {"time": parse_date_range(fetch_time, date_format=TIMESTAMP_FORMAT)[0]}
@@ -1695,7 +1715,7 @@ def fetch_alerts(
     extra_filter: str,
     service_sources: str,
     last_run: dict,
-    params: dict | None = None,
+    params: dict,
 ) -> tuple[list, dict]:
     """
     Fetches up to `fetch_limit` alerts created within the fetch time window, matching the given filters.
@@ -1706,11 +1726,11 @@ def fetch_alerts(
         extra_filter (str): an optional user filter.
         service_sources (str): a comma separated list of service sources to fetch alerts by.
         last_run (dict): the alerts last run from the previous fetch.
-        params (dict | None): the integration parameters (for the mirroring fields). Defaults to demisto.params().
+        params (dict): the integration parameters (for the mirroring fields).
     Returns:
         tuple[list, dict]: the fetched alerts, and the updated alerts last run.
     """
-    mirroring_fields = get_mirroring_fields(params if params is not None else demisto.params(), MIRROR_TYPE_ALERT)
+    mirroring_fields = get_mirroring_fields(params, MIRROR_TYPE_ALERT)
     filter_query = create_filter_query(extra_filter, service_sources)
 
     # Copy the input last_run so we never mutate the caller's argument.
@@ -3206,7 +3226,10 @@ def is_xsoar_investigation_closed() -> bool | None:
     try:
         investigation = demisto.investigation() or {}
     except Exception as e:
-        demisto.debug(f"[Mirroring] Could not read the XSOAR investigation, falling back to the remote status: {e!s}")
+        demisto.debug(
+            f"[Mirroring] Could not read the XSOAR investigation, falling back to the remote status: {e!s}\n"
+            f"{traceback.format_exc()}"
+        )
         return None
     investigation_id, investigation_status = investigation.get("id"), investigation.get("status")
     demisto.debug(f"[Mirroring] XSOAR investigation {investigation_id} status: {investigation_status!r}")
@@ -3475,7 +3498,10 @@ def get_remote_object_for_status(client: MsGraphClient, remote_id: str, mirror_t
     except Exception as e:
         if is_rate_limit_error(e):  # http_get_with_rate_limit keeps the 429 response on its "API rate limit" error
             raise
-        demisto.debug(f"[Mirroring] Failed to get the remote status of {mirror_type} {remote_id}, {action} anyway: {e!s}")
+        demisto.debug(
+            f"[Mirroring] Failed to get the remote status of {mirror_type} {remote_id}, {action} anyway: {e!s}\n"
+            f"{traceback.format_exc()}"
+        )
         return None
     return remote_object if isinstance(remote_object, dict) else None
 
