@@ -848,3 +848,109 @@ def test_update_request_note_command(mocker):
     }
     result = update_request_note_command(client, args)
     assert result.outputs == EXPECTED_UPDATE_NOTE
+
+
+LARGE_HTML_DESCRIPTION = (
+    "<table>" + "<tr><td style='border:1px solid #000'>alert</td><td>host.corp.local</td></tr>" * 200 + "</table>"
+)
+SDP_BASE_URL = "https://sdp.example.com/api/v3/"
+SUCCESS_RESPONSE = {
+    "request": {"id": "123"},
+    "request_note": {"id": "1", "request": {"id": "123"}},
+    "response_status": {"status": "success", "messages": [{"message": "ok"}]},
+}
+
+WRITE_COMMANDS_CASES = [
+    ("create_request_command", "POST", "requests", {"subject": "s", "description": LARGE_HTML_DESCRIPTION}),
+    ("update_request_command", "PUT", "requests/123", {"request_id": "123", "description": LARGE_HTML_DESCRIPTION}),
+    ("assign_request_command", "PUT", "requests/123/_assign", {"request_id": "123", "technician": "tech"}),
+    (
+        "modify_linked_request_command",
+        "POST",
+        "requests/123/link_requests",
+        {"request_id": "123", "action": "Link", "linked_requests_id": "1", "comment": LARGE_HTML_DESCRIPTION},
+    ),
+    (
+        "modify_linked_request_command",
+        "DELETE",
+        "requests/123/link_requests",
+        {"request_id": "123", "action": "Unlink", "linked_requests_id": "1"},
+    ),
+    (
+        "add_resolution_command",
+        "POST",
+        "requests/123/resolutions",
+        {"request_id": "123", "resolution_content": LARGE_HTML_DESCRIPTION},
+    ),
+    ("close_request_command", "PUT", "requests/123/_close", {"request_id": "123", "closure_comments": LARGE_HTML_DESCRIPTION}),
+    (
+        "add_request_note_command",
+        "POST",
+        "requests/123/notes",
+        {
+            "request_id": "123",
+            "description": LARGE_HTML_DESCRIPTION,
+            "mark_first_response": "false",
+            "add_to_linked_requests": "false",
+            "notify_technician": "false",
+            "show_to_requester": "false",
+        },
+    ),
+    (
+        "update_request_note_command",
+        "PUT",
+        "requests/123/notes/1",
+        {
+            "request_id": "123",
+            "request_note_id": "1",
+            "description": LARGE_HTML_DESCRIPTION,
+            "mark_first_response": "false",
+            "add_to_linked_requests": "false",
+            "notify_technician": "false",
+            "show_to_requester": "false",
+        },
+    ),
+]
+
+
+@pytest.mark.parametrize("command_name, method, url_suffix, args", WRITE_COMMANDS_CASES)
+def test_write_commands_send_input_data_in_body(command_name, method, url_suffix, args, requests_mock):
+    """
+    Given:
+        - A write command (POST/PUT/DELETE) with a potentially large value (e.g. an HTML table description).
+    When:
+        - Running the command against the Service Desk Plus API.
+    Then:
+        - The input_data is sent in the request body (form-encoded) and not in the URL query string,
+          so large payloads do not cause '414 Request-URI Too Large' (XSUP-79578).
+    """
+    import ServiceDeskPlus
+    from urllib.parse import parse_qs
+
+    client = Client(SDP_BASE_URL, "test_oauth_url", True, False, technician_key="technician_key", on_premise=True)
+    mocked_request = requests_mock.register_uri(method, SDP_BASE_URL + url_suffix, json=SUCCESS_RESPONSE)
+
+    getattr(ServiceDeskPlus, command_name)(client, args)
+
+    sent_request = mocked_request.last_request
+    assert "input_data" not in sent_request.qs
+    assert "input_data" in parse_qs(sent_request.text)
+
+
+def test_list_requests_keeps_input_data_in_query_string(requests_mock):
+    """
+    Given:
+        - The list requests command (GET) with filtering arguments.
+    When:
+        - Running the command against the Service Desk Plus API.
+    Then:
+        - The input_data stays in the URL query string, as GET requests have no body.
+    """
+    client = Client(SDP_BASE_URL, "test_oauth_url", True, False, technician_key="technician_key", on_premise=True)
+    mocked_request = requests_mock.get(SDP_BASE_URL + "requests", json={"requests": []})
+
+    list_requests_command(client, {"page_size": "1"})
+
+    sent_request = mocked_request.last_request
+    assert "input_data" in sent_request.qs
+    assert not sent_request.body
