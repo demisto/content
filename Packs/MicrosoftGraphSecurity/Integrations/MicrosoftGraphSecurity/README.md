@@ -97,7 +97,7 @@ More information about defining this permission can be found [here](https://lear
     | Incidents Filter | Use this field to filter fetched incidents according to their properties. Applies only when fetching Incidents. Filter should be in the format "\{property\} eq '\{property-value\}'". Multiple filters can be applied separated with " and ", for example "severity eq 'high' and status eq 'active'". | False |
     | Microsoft 365 Defender context | When selected, the hunting query result is also saved to the Microsoft 365 Defender context path. Relevant only for the msg-advanced-hunting command. | False |
 
-    <~XSOAR>
+<~XSOAR>
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
@@ -107,7 +107,7 @@ More information about defining this permission can be found [here](https://lear
     | Comment Entry Tag (to Microsoft) | Entries with this tag are mirrored as comments to the Microsoft alert or incident. Must be set and different from the Comment Entry Tag \(from Microsoft\). | False |
     | Comment Entry Tag (from Microsoft) | The tag added to entries created from Microsoft alert or incident comments. Must be set and different from the Comment Entry Tag \(to Microsoft\). | False |
 
-    </~XSOAR>
+</~XSOAR>
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -129,7 +129,7 @@ You can mirror Microsoft Graph Security alerts and incidents with Cortex XSOAR i
     | --- | --- |
     | None | Turns off incident mirroring. |
     | Incoming | Changes in Microsoft alerts and incidents, including description and comments, are reflected in Cortex XSOAR incidents. For incidents, the resolving comment (close notes) is also reflected. |
-    | Outgoing | Changes in Cortex XSOAR incidents are reflected in Microsoft: status, **Microsoft Graph Security Classification** and alert **Additional Data**. For incidents, also severity, name, description and tags. |
+    | Outgoing | Changes in Cortex XSOAR incidents are reflected in Microsoft: status, classification/determination (from **Microsoft Graph Security Classification**) and tagged comments. Alerts also send customDetails. Incidents also send severity, displayName, description, customTags and resolvingComment. |
     | Incoming And Outgoing | Changes are reflected in both directions. |
 
 6. Optional: Select the **Close Mirrored XSOAR Incident** checkbox to close the Cortex XSOAR incident when the Microsoft alert or incident is resolved or redirected, and reopen it when the Microsoft alert or incident is active again.

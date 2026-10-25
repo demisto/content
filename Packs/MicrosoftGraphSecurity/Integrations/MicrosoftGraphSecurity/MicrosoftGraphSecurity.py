@@ -19,7 +19,7 @@ THREAT_ASSESSMENT_URL_PREFIX = "informationProtection/threatAssessmentRequests"
 MAX_ITEMS_PER_RESPONSE = 50
 FETCH_INCIDENTS_TIMEOUT = 60
 TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-# Maps Microsoft Graph Security severity to Cortex XSOAR severity (used for both fetched alerts and incidents).
+# Graph severity -> XSOAR severity.
 SEVERITY_MAP = {
     "low": IncidentSeverity.LOW,
     "medium": IncidentSeverity.MEDIUM,
@@ -35,44 +35,38 @@ INCIDENTS_URL = "security/incidents"
 PREFER_UNKNOWN_ENUM_HEADER = {"Prefer": "include-unknown-enum-members"}
 MIRROR_DIRECTION = {"Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR = "Mirrored from Cortex XSOAR"
-# Discriminator key added to every raw alert/incident (fetch + get-remote-data), used by the classifier.
+# Classifier discriminator key added to every raw alert/incident.
 MIRROR_TYPE_KEY = "mirror_type"
 MIRROR_TYPE_ALERT = "alert"
 MIRROR_TYPE_INCIDENT = "incident"
 
-# The exact error that stops the mirroring sync loop for the current cycle (same as CortexXDRIR / JiraV3 / Lumu).
+# Error message that stops the current mirroring sync cycle.
 RATE_LIMIT_ERROR_MESSAGE = "API rate limit"
 GRAPH_RESOLVED_STATUS = "resolved"
-# Set by Microsoft when an incident is merged into another one (redirectIncidentId = the target). Incidents only.
+# Incident merged into another incident (redirectIncidentId).
 GRAPH_REDIRECTED_STATUS = "redirected"
-# XSOAR close reason for a redirected incident (the target incident is named in the close notes).
 REDIRECTED_CLOSE_REASON = "Resolved"
-# demisto.investigation() status of a closed XSOAR investigation (0 = open, 1 = closed).
 XSOAR_INVESTIGATION_STATUS_CLOSED = 1
 GRAPH_REOPEN_STATUS = {MIRROR_TYPE_INCIDENT: "active", MIRROR_TYPE_ALERT: "new"}
-# Incoming mirroring reopens the XSOAR incident only on these explicit statuses (never on a missing/unknown status).
+# Graph statuses that reopen the XSOAR incident.
 GRAPH_ACTIVE_STATUSES = {
     MIRROR_TYPE_INCIDENT: {"active", "inProgress", "awaitingAction"},
     MIRROR_TYPE_ALERT: {"new", "inProgress"},
 }
-# `resolvingComment` is the outgoing-mapped `closeNotes` of an incident: the delta can hold it without the other close keys.
-# `closingUserId` is not a close field: it holds no close text, and it's mapped (non-empty on every close) only for the
-# reopen detection (is_xsoar_reopen). Listing it would send a close without a reason or notes with no close comment.
+# Delta keys that mark an outgoing close (closingUserId is used only for reopen detection).
 CLOSE_OUT_KEYS = ("closeReason", "closeNotes", "resolvingComment")
-# The close comment sent to Microsoft (incident resolvingComment / alert comment):
-#   "<reason prefix><reason>\n<notes prefix><notes>".
+# Close comment format: "<reason prefix><reason>\n<notes prefix><notes>".
 CLOSE_COMMENT_REASON_PREFIX = "Closed in Cortex XSOAR as: "
 CLOSE_COMMENT_NOTES_PREFIX = "Comment: "
-# The close comment sent when the XSOAR incident is closed without a close reason or close notes.
+# Close comment sent when there is no close reason or close notes.
 DEFAULT_CLOSE_COMMENT = "Closed in Cortex XSOAR."
-# The XSOAR close notes set by incoming mirroring when the resolved Microsoft object has no resolvingComment.
+# Incoming close notes when the resolved Microsoft object has no resolvingComment.
 INCOMING_DEFAULT_CLOSE_NOTES = "Resolved in Microsoft Graph Security."
-# Graph's placeholder enum member; it may be shown in XSOAR select fields but is never sent in a PATCH.
+# Graph placeholder enum member, never sent in a PATCH.
 UNKNOWN_FUTURE_VALUE = "unknownFutureValue"
 UNKNOWN_FUTURE_VALUE_KEYS = {"status", "classification", "determination"}
 
-# XSOAR severity -> Graph severity (outgoing incidents only: Graph alerts_v2 rejects a severity update, so the alert
-# severity is mirrored in only). An XSOAR severity with no Graph value (Critical) is not sent.
+# XSOAR severity -> Graph severity (outgoing incidents only; Critical is not sent).
 XSOAR_TO_GRAPH_SEVERITY = {
     IncidentSeverity.UNKNOWN: "unknown",
     IncidentSeverity.INFO: "informational",
@@ -82,8 +76,7 @@ XSOAR_TO_GRAPH_SEVERITY = {
 }
 GRAPH_SEVERITY_VALUES = set(XSOAR_TO_GRAPH_SEVERITY.values())
 
-# Combined "classification - determination" label (as shown in the Defender UI) -> Graph (classification, determination).
-# Used for outgoing alerts and incidents: both use the same determination names.
+# Combined "classification - determination" label -> Graph (classification, determination).
 CLASSIFICATION_LABEL_TO_GRAPH = {
     "Unclassified": ("unknown", "unknown"),
     "True positive - Multi staged attack": ("truePositive", "multiStagedAttack"),
@@ -109,8 +102,7 @@ MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON = {
     "informationalExpectedActivity": "Resolved",
 }
 
-# `determination` is not offered: apply_classification_label derives it from the combined Classification label.
-# `closeReason` is never PATCHed, but it must be mapped so the server keeps it in the delta for the close comment.
+# closeReason is mapped only for the close comment; determination is derived from the classification label.
 CLOSE_REASON_FIELD_DESCRIPTION = (
     "The close reason of the Cortex XSOAR incident. Used only for the close comment, not sent as a field."
 )
@@ -132,7 +124,7 @@ OUTGOING_INCIDENT_FIELDS = {
     "resolvingComment": "User input that explains the resolution of the incident and the classification choice.",
 }
 
-# `assignedTo` is mirror-in only (Defender-specific user IDs), so it is never sent in a PATCH.
+# assignedTo is mirrored in only.
 INCIDENT_PATCH_KEYS = {
     "classification",
     "determination",
@@ -143,10 +135,9 @@ INCIDENT_PATCH_KEYS = {
     "customTags",
     "resolvingComment",
 }
-# The alert severity is mirrored in only, so it is never sent (Graph alerts_v2 rejects a severity update).
+# Alert severity is mirrored in only (Graph rejects alert severity updates).
 ALERT_PATCH_KEYS = {"status", "classification", "determination", "customDetails"}
-# XSOAR field (cliName) -> Graph key, kept in sync with the outgoing mapper. The update-remote-system delta can hold the
-# raw field name instead of the mapped key (seen for a cleared tags field).
+# XSOAR field cliName -> Graph key, for deltas that hold raw field names.
 XSOAR_FIELD_TO_GRAPH_KEY: dict[str, dict[str, str]] = {
     MIRROR_TYPE_INCIDENT: {
         "microsoftgraphsecurityincidentstatus": "status",
@@ -160,16 +151,15 @@ XSOAR_FIELD_TO_GRAPH_KEY: dict[str, dict[str, str]] = {
         "additionaldata": "customDetails",
     },
 }
-# Values treated as "not set": dropped from the PATCH body unless the key is clearable.
+# Values treated as "not set" in a PATCH body.
 EMPTY_PATCH_VALUES: tuple = (None, "", [], {})
-# Keys sent with this typed empty value when the analyst clears the field in Cortex XSOAR. `resolvingComment` is excluded
-# so a reopen (closeNotes becomes "") doesn't erase Microsoft's resolution comment.
+# Typed empty values sent when a field is cleared in Cortex XSOAR.
 CLEARABLE_PATCH_KEYS: dict[str, dict[str, Any]] = {
     MIRROR_TYPE_INCIDENT: {"customTags": [], "description": ""},
     MIRROR_TYPE_ALERT: {"customDetails": {}},
 }
-# Alert customDetails <-> "Additional Data" items: "key: value" per entry, plain items joined under XSOAR_TAGS_KEY.
-CUSTOM_DETAILS_LIST_KEY = "customDetailsList"  # computed raw alert key, mapped to "Additional Data"
+# Alert customDetails <-> "Additional Data" items.
+CUSTOM_DETAILS_LIST_KEY = "customDetailsList"
 CUSTOM_DETAILS_SEPARATOR = ": "
 XSOAR_TAGS_KEY = "xsoarTags"
 XSOAR_TAGS_JOINER = ", "
@@ -381,27 +371,27 @@ class MsGraphClient:
                 res=getattr(e, "res", None),
             )
 
-    def get_mirrored_alert(self, alert_id: str) -> dict:
-        """Gets a single alert by ID for mirroring (GET security/alerts_v2/{id})."""
+    def get_alert_by_id(self, alert_id: str) -> dict:
+        """Gets a single alert by ID (GET security/alerts_v2/{id}), with the mirroring rate-limit handling."""
         cmd_url = f"{CMD_URL}/{alert_id}"
         return self.mirror_get(url_suffix=cmd_url)
 
-    def get_mirrored_incident(self, incident_id: str, expand_alerts: bool = False) -> dict:
-        """Gets a single incident by ID for mirroring (GET security/incidents/{id}), optionally with `?$expand=alerts`."""
+    def get_incident_by_id(self, incident_id: str, expand_alerts: bool = False) -> dict:
+        """Gets a single incident by ID (GET security/incidents/{id}), optionally with `?$expand=alerts`."""
         cmd_url = f"{INCIDENTS_URL}/{incident_id}"
         if expand_alerts:
             cmd_url += "?$expand=alerts"
         return self.mirror_get(url_suffix=cmd_url)
 
-    def update_mirrored_alert(self, alert_id: str, body: dict) -> None:
-        """PATCHes an alert with the given body (mirroring)."""
+    def update_alert_by_id(self, alert_id: str, body: dict) -> None:
+        """PATCHes an alert (security/alerts_v2/{id}) with the given body."""
         cmd_url = f"{CMD_URL}/{alert_id}"
         self.ms_client.http_request(
             method="PATCH", url_suffix=cmd_url, json_data=body, resp_type="text", timeout=FETCH_INCIDENTS_TIMEOUT
         )
 
-    def update_mirrored_incident(self, incident_id: str, body: dict) -> None:
-        """PATCHes an incident with the given body (mirroring)."""
+    def update_incident_by_id(self, incident_id: str, body: dict) -> None:
+        """PATCHes an incident (security/incidents/{id}) with the given body."""
         cmd_url = f"{INCIDENTS_URL}/{incident_id}"
         self.ms_client.http_request(
             method="PATCH", url_suffix=cmd_url, json_data=body, resp_type="text", timeout=FETCH_INCIDENTS_TIMEOUT
@@ -3151,14 +3141,14 @@ def to_mirrored_object(response: dict | None, mirror_type: str) -> dict:
 
 def fetch_alert(client: MsGraphClient, alert_id: str) -> dict:
     """Gets a single alert by ID for incoming mirroring, with the computed `customDetailsList` key."""
-    alert = to_mirrored_object(client.get_mirrored_alert(alert_id), MIRROR_TYPE_ALERT)
+    alert = to_mirrored_object(client.get_alert_by_id(alert_id), MIRROR_TYPE_ALERT)
     alert[CUSTOM_DETAILS_LIST_KEY] = custom_details_to_list(alert.get("customDetails"))
     return alert
 
 
 def fetch_incident(client: MsGraphClient, incident_id: str) -> dict:
     """Gets a single incident by ID for incoming mirroring, with its alerts expanded."""
-    return to_mirrored_object(client.get_mirrored_incident(incident_id, expand_alerts=True), MIRROR_TYPE_INCIDENT)
+    return to_mirrored_object(client.get_incident_by_id(incident_id, expand_alerts=True), MIRROR_TYPE_INCIDENT)
 
 
 def to_xsoar_close_reason(graph_object: dict) -> str:
@@ -3478,9 +3468,9 @@ def get_remote_object_for_status(client: MsGraphClient, remote_id: str, mirror_t
     """
     try:
         if mirror_type == MIRROR_TYPE_INCIDENT:
-            remote_object = client.get_mirrored_incident(remote_id)
+            remote_object = client.get_incident_by_id(remote_id)
         else:
-            remote_object = client.get_mirrored_alert(remote_id)
+            remote_object = client.get_alert_by_id(remote_id)
     except Exception as e:
         if is_rate_limit_error(e):  # mirror_get keeps the 429 response on its "API rate limit" error
             raise
@@ -3787,9 +3777,9 @@ def update_remote_fields(
     if body:
         demisto.debug(f"[Mirroring] PATCH {mirror_type} {remote_id} with keys {sorted(body)}")
         if mirror_type == MIRROR_TYPE_INCIDENT:
-            client.update_mirrored_incident(remote_id, body)
+            client.update_incident_by_id(remote_id, body)
         else:
-            client.update_mirrored_alert(remote_id, body)
+            client.update_alert_by_id(remote_id, body)
     post_alert_close_notes(client, remote_id, mirror_type, alert_close_notes)
 
 

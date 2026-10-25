@@ -2838,7 +2838,7 @@ def test_get_remote_data_raises_api_rate_limit_on_429(mocker, remote_id, expecte
     """
     Given: the single alert/incident GET fails with HTTP 429.
     When: running get-remote-data.
-    Then: the exact "API rate limit" error is raised (no in_mirror_error fallback, no retry), like CortexXDRIR / JiraV3,
+    Then: the exact "API rate limit" error is raised (no in_mirror_error fallback, no retry),
         so the server stops this sync cycle and retries on the next one.
     """
     http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_rate_limit_error())
@@ -3301,7 +3301,7 @@ def test_get_remote_data_clears_in_mirror_error_after_failure(mocker):
     Given: the API fails on the first get-remote-data call for an ID, and succeeds on the next call for the same ID.
     When: running get-remote-data twice.
     Then: the first response carries the error in `in_mirror_error`; the second sends `in_mirror_error == ""`,
-          so the server clears the stale error on the incident (same convention as CortexXDRIR / JiraV3).
+          so the server clears the stale error on the incident.
     """
     mocker.patch.object(
         client_mocker.ms_client,
@@ -5625,14 +5625,14 @@ def test_get_delta_close_notes(delta, expected):
     assert get_delta_close_notes(delta) == expected
 
 
-def test_get_mirrored_alert_request(mocker):
+def test_get_alert_by_id_request(mocker):
     """
     Given: an alert ID.
-    When: calling MsGraphClient.get_mirrored_alert.
+    When: calling MsGraphClient.get_alert_by_id.
     Then: one GET is sent to security/alerts_v2/{id}, with the Prefer header, the mirror timeout and no params.
     """
     http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={"id": "da123"})
-    assert client_mocker.get_mirrored_alert("da123") == {"id": "da123"}
+    assert client_mocker.get_alert_by_id("da123") == {"id": "da123"}
     http_mock.assert_called_once_with(
         method="GET",
         url_suffix="security/alerts_v2/da123",
@@ -5645,14 +5645,14 @@ def test_get_mirrored_alert_request(mocker):
     "expand_alerts, expected_url",
     [(False, "security/incidents/42"), (True, "security/incidents/42?$expand=alerts")],
 )
-def test_get_mirrored_incident_request(mocker, expand_alerts, expected_url):
+def test_get_incident_by_id_request(mocker, expand_alerts, expected_url):
     """
     Given: an incident ID, and whether to expand alerts.
-    When: calling MsGraphClient.get_mirrored_incident.
+    When: calling MsGraphClient.get_incident_by_id.
     Then: one GET is sent to the expected URL, with the Prefer header, the mirror timeout and no params.
     """
     http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={"id": "42"})
-    assert client_mocker.get_mirrored_incident("42", expand_alerts=expand_alerts) == {"id": "42"}
+    assert client_mocker.get_incident_by_id("42", expand_alerts=expand_alerts) == {"id": "42"}
     http_mock.assert_called_once_with(
         method="GET",
         url_suffix=expected_url,
@@ -5663,12 +5663,12 @@ def test_get_mirrored_incident_request(mocker, expand_alerts, expected_url):
 
 @pytest.mark.parametrize(
     "method_name, expected_url",
-    [("update_mirrored_alert", "security/alerts_v2/id1"), ("update_mirrored_incident", "security/incidents/id1")],
+    [("update_alert_by_id", "security/alerts_v2/id1"), ("update_incident_by_id", "security/incidents/id1")],
 )
-def test_update_mirrored_object_request(mocker, method_name, expected_url):
+def test_update_alert_or_incident_by_id_request(mocker, method_name, expected_url):
     """
     Given: an alert/incident ID and a PATCH body.
-    When: calling MsGraphClient.update_mirrored_alert / update_mirrored_incident.
+    When: calling MsGraphClient.update_alert_by_id / update_incident_by_id.
     Then: one PATCH is sent to the expected URL with the body, a text response type and the mirror timeout.
     """
     http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value="")
