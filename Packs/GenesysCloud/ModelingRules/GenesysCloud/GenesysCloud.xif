@@ -6,7 +6,7 @@
 */
 alter
     extract_context_ip_address = context -> remoteIp,
-    extract_first_ip_in_array = replex(arrayindex(arraymap(remoteIp -> [], "@element"),0),"\"",""),
+    extract_first_ip_in_array = replex(arrayindex(remoteIp -> [], 0),"\"",""),
     extract_ip_v4_addresses_array = arraymap(remoteIp -> [], if(is_ipv4(replex("@element","\"","")) ,trim("@element", "\""),null)),
     extract_ip_v6_addresses_array = arraymap(remoteIp -> [], if(is_ipv6(replex("@element","\"","")) ,trim("@element", "\""),null))
 // Perform protocol validation to identify if the source IP is IPv4 or IPv6.
