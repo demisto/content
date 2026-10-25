@@ -20,7 +20,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "DeepInstinct v3",
     "supportedModules": [
         "agentix",
         "xsiam"

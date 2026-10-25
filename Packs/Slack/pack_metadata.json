@@ -42,7 +42,6 @@
         "xpanse",
         "platform"
     ],
-    "defaultDataSource": "Slack Event Collector",
     "supportedModules": [
         "agentix",
         "cloud",

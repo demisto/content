@@ -68,7 +68,6 @@
         "CommonTypes",
         "CrowdStrikeFalcon"
     ],
-    "defaultDataSource": "Code42 Event Collector",
     "supportedModules": [
         "agentix",
         "xsiam",
