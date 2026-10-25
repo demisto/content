@@ -1,5 +1,5 @@
 SecOps operations for the new Lumu Defender API. Fetch, investigate, and manage Lumu incidents from Cortex XSOAR with bidirectional mirroring.
-This integration was integrated and tested with version xx of LumuSecops.
+This integration was integrated and tested with new Lumu Defender SecOps API.
 
 ## Configure Lumu Secops in Cortex
 
