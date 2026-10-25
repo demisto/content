@@ -1375,7 +1375,7 @@ class TestGetSearchlogsEvents:
         When:
             - Fetching search log events.
         Then:
-            - An empty list is returned and the original last run is preserved.
+            - The error is raised so the fetch loop can log it and continue with the other event types.
         """
         from OracleCloudInfrastructureEventCollector import get_searchlogs_events
 
@@ -1390,16 +1390,14 @@ class TestGetSearchlogsEvents:
             "LastFetchedIds": ["event-2"],
         }
 
-        events, last_run = get_searchlogs_events(
-            client=dummy_client,
-            search_log_query="search query",
-            max_fetch=10,
-            last_searchlogs_ids=searchlog_last_run["LastFetchedIds"],
-            first_fetch_time=searchlog_last_run["lastRun"],
-        )
-
-        assert events == []
-        assert last_run == searchlog_last_run
+        with pytest.raises(Exception, match="API Error"):
+            get_searchlogs_events(
+                client=dummy_client,
+                search_log_query="search query",
+                max_fetch=10,
+                last_searchlogs_ids=searchlog_last_run["LastFetchedIds"],
+                first_fetch_time=searchlog_last_run["lastRun"],
+            )
 
     @freeze_time("2023-01-01T10:10:10.000Z")
     def test_get_searchlogs_events_last_fetched_ids_same_time(self, mocker, dummy_client):
@@ -1633,6 +1631,64 @@ class TestTestModule:
         assert result == "ok"
         assert mocked_http_request.called
         assert mocked_searchlogs.called
+
+    def test_test_module_reports_all_failing_event_types(self, dummy_client, mocker):
+        """
+        Given:
+            - event_types_to_fetch contains 'Audit', 'Search Logs' and 'CloudGuard Problems'.
+        When:
+            - test_module is called and all three event types fail (Audit API error, missing search log query,
+              invalid CloudGuard query).
+        Then:
+            - test_module raises a single error that lists every failing event type with its error.
+        """
+        from OracleCloudInfrastructureEventCollector import SEARCHLOG_QUERY_REQUIRED_ERROR, test_module
+
+        mocker.patch.object(dummy_client, "_http_request", side_effect=DemistoException("AuditDown"))
+
+        with pytest.raises(DemistoException) as exc_info:
+            test_module(
+                client=dummy_client,
+                search_log_query="",
+                event_types_to_fetch=["Audit", "Search Logs", "CloudGuard Problems"],
+                cloudguard_query="badKey=1",
+            )
+
+        raised_text = str(exc_info.value)
+        assert "- Audit: AuditDown" in raised_text
+        assert f"- Search Logs: {SEARCHLOG_QUERY_REQUIRED_ERROR}" in raised_text
+        assert "- CloudGuard Problems: Unsupported key 'badKey'" in raised_text
+
+    def test_test_module_continues_after_failure(self, dummy_client, mocker):
+        """
+        Given:
+            - event_types_to_fetch contains 'Audit', 'Search Logs' and 'CloudGuard Problems'.
+        When:
+            - test_module is called and only the Audit API fails.
+        Then:
+            - The Search Logs and CloudGuard APIs are still tested.
+            - The raised error lists only Audit.
+        """
+        from OracleCloudInfrastructureEventCollector import test_module
+
+        mocker.patch.object(dummy_client, "_http_request", side_effect=DemistoException("AuditDown"))
+        mocked_searchlogs = mocker.patch("OracleCloudInfrastructureEventCollector.searchlogs_api_request")
+        mocked_cloudguard = mocker.patch("OracleCloudInfrastructureEventCollector.cloudguard_problems_api_request")
+
+        with pytest.raises(DemistoException) as exc_info:
+            test_module(
+                client=dummy_client,
+                search_log_query="search query",
+                event_types_to_fetch=["Audit", "Search Logs", "CloudGuard Problems"],
+                cloudguard_query="",
+            )
+
+        raised_text = str(exc_info.value)
+        assert mocked_searchlogs.called
+        assert mocked_cloudguard.called
+        assert "- Audit: AuditDown" in raised_text
+        assert "Search Logs" not in raised_text
+        assert "CloudGuard Problems" not in raised_text
 
 
 class MockCloudGuardResponse:
@@ -2232,7 +2288,7 @@ class TestCloudGuardFlows:
         When:
             - Running fetch-events.
         Then:
-            - return_error is called with a readable message and no Problems are fetched.
+            - The error is logged with a readable message, the fetch does not fail and no Problems are fetched.
         """
         from OracleCloudInfrastructureEventCollector import main
 
@@ -2245,12 +2301,13 @@ class TestCloudGuardFlows:
         )
         mocked_get_problems = mocker.patch("OracleCloudInfrastructureEventCollector.get_cloudguard_problems")
         mocked_return_error = mocker.patch("OracleCloudInfrastructureEventCollector.return_error")
-        mocker.patch("OracleCloudInfrastructureEventCollector.demisto.error")
+        mocked_log_error = mocker.patch("OracleCloudInfrastructureEventCollector.demisto.error")
 
         main()
 
         assert not mocked_get_problems.called
-        assert "Unsupported key 'badKey'" in mocked_return_error.call_args.args[0]
+        assert not mocked_return_error.called
+        assert "Unsupported key 'badKey'" in mocked_log_error.call_args.args[0]
 
     @pytest.mark.parametrize(
         "cloudguard_side_effect, error_text",
@@ -2272,7 +2329,7 @@ class TestCloudGuardFlows:
         Then:
             - Audit events are still sent and the Audit last run is saved.
             - The CloudGuard last run is not changed.
-            - The CloudGuard error is raised (via return_error) after the other event types were handled.
+            - The CloudGuard error is only logged, the fetch itself does not fail (return_error is not called).
         """
         from OracleCloudInfrastructureEventCollector import main
 
@@ -2299,7 +2356,7 @@ class TestCloudGuardFlows:
         mocked_send_events = mocker.patch("OracleCloudInfrastructureEventCollector.send_events_to_xsiam")
         mocked_set_last_run = mocker.patch("OracleCloudInfrastructureEventCollector.demisto.setLastRun")
         mocked_return_error = mocker.patch("OracleCloudInfrastructureEventCollector.return_error")
-        mocker.patch("OracleCloudInfrastructureEventCollector.demisto.error")
+        mocked_log_error = mocker.patch("OracleCloudInfrastructureEventCollector.demisto.error")
 
         main()
 
@@ -2307,5 +2364,423 @@ class TestCloudGuardFlows:
         saved_last_run = mocked_set_last_run.call_args.args[0]
         assert saved_last_run["lastRun"] == "2023-01-01T10:00:00.001000Z"
         assert saved_last_run["CloudGuardProblems"] == previous_cloudguard_last_run
-        assert mocked_return_error.call_count == 1
-        assert error_text in mocked_return_error.call_args.args[0]
+        assert not mocked_return_error.called
+        assert any(error_text in str(call.args[0]) for call in mocked_log_error.call_args_list)
+
+    def test_fetch_events_all_event_types_failed_logs_each_error(self, mocker, dummy_client):
+        """
+        Given:
+            - event_types_to_fetch is ['Audit', 'CloudGuard Problems'] and a previous last run exists.
+        When:
+            - Running fetch-events and every selected event type fails.
+        Then:
+            - Each event type error is logged with its error message and every event type was attempted.
+            - The fetch does not fail (return_error is not called), no events are sent and the last run is unchanged.
+        """
+        from OracleCloudInfrastructureEventCollector import main
+
+        previous_last_run = {
+            "lastRun": "2023-01-01T09:00:00.000000Z",
+            "CloudGuardProblems": {"lastRun": "2023-01-01T09:00:00.000000Z", "LastFetchedIds": ["k1"]},
+        }
+        params = {**self.params, "event_types_to_fetch": ["Audit", "CloudGuard Problems"]}
+        mock_demisto(mocker, mock_params=params, mock_args={}, command="fetch-events", mock_last_run=previous_last_run)
+        mocker.patch("OracleCloudInfrastructureEventCollector.Client", return_value=dummy_client)
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.cloudguard_problems_api_request",
+            side_effect=DemistoException("CloudGuardDown"),
+        )
+        mocker.patch("OracleCloudInfrastructureEventCollector.get_events", side_effect=DemistoException("AuditDown"))
+        mocked_send_events = mocker.patch("OracleCloudInfrastructureEventCollector.send_events_to_xsiam")
+        mocked_set_last_run = mocker.patch("OracleCloudInfrastructureEventCollector.demisto.setLastRun")
+        mocked_return_error = mocker.patch("OracleCloudInfrastructureEventCollector.return_error")
+        mocked_log_error = mocker.patch("OracleCloudInfrastructureEventCollector.demisto.error")
+
+        main()
+
+        logged_errors = [str(call.args[0]) for call in mocked_log_error.call_args_list]
+        assert any("CloudGuard Problems" in log and "CloudGuardDown" in log for log in logged_errors)
+        assert any("Audit" in log and "AuditDown" in log for log in logged_errors)
+        assert not mocked_return_error.called
+        assert not mocked_send_events.called
+        assert mocked_set_last_run.call_args.args[0] == previous_last_run
+
+    def test_get_events_command_partial_failure_returns_other_types(self, mocker, dummy_client):
+        """
+        Given:
+            - event_types_to_fetch is ['Audit', 'CloudGuard Problems'].
+        When:
+            - Running the manual oracle-cloud-infrastructure-get-events command and only CloudGuard fails.
+        Then:
+            - The Audit events are returned, the CloudGuard error is logged and the command does not fail.
+        """
+        from OracleCloudInfrastructureEventCollector import main
+
+        params = {**self.params, "event_types_to_fetch": ["Audit", "CloudGuard Problems"]}
+        mock_demisto(mocker, mock_params=params, mock_args={}, command="oracle-cloud-infrastructure-get-events", mock_last_run={})
+        mocker.patch("OracleCloudInfrastructureEventCollector.Client", return_value=dummy_client)
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.cloudguard_problems_api_request",
+            side_effect=DemistoException("CloudGuardDown"),
+        )
+        audit_events = [{"eventId": "a1", "eventTime": "2023-01-01T10:00:00.000Z"}]
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.get_events", return_value=(audit_events, "2023-01-01T10:00:00.001000Z")
+        )
+        mocked_return_results = mocker.patch("OracleCloudInfrastructureEventCollector.return_results")
+        mocked_return_error = mocker.patch("OracleCloudInfrastructureEventCollector.return_error")
+        mocked_log_error = mocker.patch("OracleCloudInfrastructureEventCollector.demisto.error")
+
+        main()
+
+        assert mocked_return_results.call_args.args[0].raw_response == audit_events
+        assert not mocked_return_error.called
+        assert "CloudGuardDown" in mocked_log_error.call_args.args[0]
+
+
+class TestRemainingBranches:
+    """Tests for edge-case branches: input validation, last run migration, pagination, partial failures and main errors."""
+
+    params = {
+        "tenancy_ocid": "dummy_tenancy_ocid",
+        "user_ocid": "dummy_user_ocid",
+        "region": "dummy_region",
+        "max_fetch": "5",
+        "first_fetch": "3 day",
+        "credentials": {"identifier": "dummy_key_fingerprint", "password": "dummy_private_key"},
+        "event_types_to_fetch": ["Audit"],
+    }
+
+    def test_build_searchlog_url_invalid_region(self, mocker):
+        """
+        Given:
+            - A client that was created with a valid region.
+        When:
+            - build_searchlog_url is called with an invalid region.
+        Then:
+            - A DemistoException about the invalid region is raised.
+        """
+        mocker.patch.object(Client, "build_singer_object", return_value="dummy_singer_object")
+        mocked_is_region = mocker.patch("OracleCloudInfrastructureEventCollector.is_region", return_value=True)
+        client = Client(
+            verify_certificate=False,
+            proxy=False,
+            region="us-ashburn-1",
+            tenancy_ocid="dummy_tenancy_ocid",
+            private_key="dummy_private_key",
+            user_ocid="dummy_use_ocid",
+            key_fingerprint="dummy_key_fingerprint",
+            compartment_id="",
+            private_key_type="PKCS#8",
+        )
+        mocked_is_region.return_value = False
+
+        with pytest.raises(DemistoException, match="invalid region parameter"):
+            client.build_searchlog_url("invalid_region")
+
+    def test_validate_private_key_syntax_without_spaces(self, dummy_client):
+        """
+        Given:
+            - A private key that contains no spaces.
+        When:
+            - validate_private_key_syntax is called.
+        Then:
+            - The key is returned unchanged.
+        """
+        assert dummy_client.validate_private_key_syntax("KEY\\nWITHOUT\\nSPACES", "PKCS#8") == "KEY\nWITHOUT\nSPACES"
+
+    def test_get_fetch_time_invalid_first_fetch_param(self):
+        """
+        Given:
+            - A last run exists but the first fetch parameter can not be parsed.
+        When:
+            - get_fetch_time is called.
+        Then:
+            - The default fetch time is returned.
+        """
+        from OracleCloudInfrastructureEventCollector import get_fetch_time
+
+        result = get_fetch_time(last_run="2023-01-01T10:00:00.000Z", first_fetch_param=None)  # type: ignore[arg-type]
+
+        assert isinstance(result, datetime.datetime)
+        assert result < datetime.datetime.now(result.tzinfo)
+
+    def test_get_searchlogs_events_event_without_time(self, mocker, dummy_client):
+        """
+        Given:
+            - A Search Logs result without a 'time' field.
+        When:
+            - Fetching search log events.
+        Then:
+            - The event is still returned and a debug message is written.
+        """
+        from OracleCloudInfrastructureEventCollector import get_searchlogs_events
+
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.searchlogs_api_request",
+            return_value=MockResponse(content={"results": [{"data": {"logContent": {"id": "no-time"}}}]}),
+        )
+        mocked_debug = mocker.patch("OracleCloudInfrastructureEventCollector.demisto.debug")
+
+        events, _ = get_searchlogs_events(dummy_client, "search query", 10, [], "2023-01-01T08:00:00.000Z")
+
+        assert events == [{"id": "no-time", "_time": None}]
+        assert any("has no time field" in str(call.args[0]) for call in mocked_debug.call_args_list)
+
+    def test_get_searchlogs_events_pagination_stops_on_empty_page(self, mocker, dummy_client):
+        """
+        Given:
+            - The first Search Logs page has a next page token and the next page is empty.
+        When:
+            - Fetching search log events.
+        Then:
+            - Pagination stops on the empty page and only the first page events are returned.
+        """
+        from OracleCloudInfrastructureEventCollector import get_searchlogs_events
+
+        first_page = MockResponse(
+            content={"results": [{"data": {"logContent": {"id": "e1", "time": "2023-01-01T09:00:00.000Z"}}}]}
+        )
+        first_page.headers._store["opc-next-page"] = ("opc-next-page", "page-2")  # type: ignore[assignment]
+        mocked_request = mocker.patch(
+            "OracleCloudInfrastructureEventCollector.searchlogs_api_request",
+            side_effect=[first_page, MockResponse(content={"results": []})],
+        )
+
+        events, _ = get_searchlogs_events(dummy_client, "search query", 10, [], "2023-01-01T08:00:00.000Z")
+
+        assert [event["id"] for event in events] == ["e1"]
+        assert mocked_request.call_count == 2
+        assert mocked_request.call_args.kwargs["next_page"] == "page-2"
+
+    def test_get_events_unresolved_first_fetch_time(self, dummy_client):
+        """
+        Given:
+            - The first fetch time could not be resolved (None).
+        When:
+            - get_events is called.
+        Then:
+            - A DemistoException is raised.
+        """
+        from OracleCloudInfrastructureEventCollector import get_events
+
+        with pytest.raises(DemistoException, match="Could not resolve First fetch time parameter"):
+            get_events(dummy_client, None, 5, push_events_on_error=False)
+
+    def test_get_events_single_event_object(self, mocker, dummy_client):
+        """
+        Given:
+            - The Audit API returns a single event object instead of a list.
+        When:
+            - get_events is called.
+        Then:
+            - The event is wrapped in a list and returned with the _time key.
+        """
+        from OracleCloudInfrastructureEventCollector import get_events
+
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.audit_log_api_request",
+            return_value=MockResponse(content={"eventTime": "2023-01-01T10:00:00.000Z"}),
+        )
+
+        events, last_event_time = get_events(dummy_client, datetime.datetime(2023, 1, 1, 9, 0, 0), 5, push_events_on_error=False)
+
+        assert events == [{"eventTime": "2023-01-01T10:00:00.000Z", "_time": "2023-01-01T10:00:00.000Z"}]
+        assert last_event_time == "2023-01-01T10:00:00.001000Z"
+
+    def test_get_events_pagination(self, mocker, dummy_client):
+        """
+        Given:
+            - The first Audit page has a next page token.
+        When:
+            - get_events is called.
+        Then:
+            - The next page is requested from the last event time + 1ms and both pages are returned.
+        """
+        from OracleCloudInfrastructureEventCollector import get_events
+
+        first_page = MockResponse(content=[{"eventTime": "2023-01-01T10:00:00.000Z"}])
+        first_page.headers._store["opc-next-page"] = ("opc-next-page", "page-2")  # type: ignore[assignment]
+        second_page = MockResponse(content=[{"eventTime": "2023-01-01T11:00:00.000Z"}])
+        mocked_request = mocker.patch(
+            "OracleCloudInfrastructureEventCollector.audit_log_api_request", side_effect=[first_page, second_page]
+        )
+
+        events, last_event_time = get_events(dummy_client, datetime.datetime(2023, 1, 1, 9, 0, 0), 5, push_events_on_error=False)
+
+        assert [event["eventTime"] for event in events] == ["2023-01-01T10:00:00.000Z", "2023-01-01T11:00:00.000Z"]
+        assert last_event_time == "2023-01-01T11:00:00.001000Z"
+        assert mocked_request.call_args.kwargs == {
+            "client": dummy_client,
+            "start_time": "2023-01-01T10:00:00.001000Z",
+            "next_page": "page-2",
+        }
+
+    @pytest.mark.parametrize(
+        "raw_last_run, expected",
+        [
+            pytest.param("2023-01-01T10:00:00.000Z", {}, id="not a dict"),
+            pytest.param({"lastRun": 123, "other": "kept"}, {"other": "kept"}, id="invalid Audit last run"),
+            pytest.param({"SearchLog": "invalid"}, {}, id="SearchLog is not a dict"),
+            pytest.param({"CloudGuardProblems": ["invalid"]}, {}, id="CloudGuardProblems is not a dict"),
+            pytest.param(
+                {"SearchLog": {"lastRun": "t", "LastFetchedIds": "invalid"}},
+                {"SearchLog": {"lastRun": "t", "LastFetchedIds": []}},
+                id="LastFetchedIds is not a list",
+            ),
+            pytest.param(
+                {"lastRun": "t1", "SearchLog": {"lastRun": "t2", "LastFetchedIds": ["a"]}},
+                {"lastRun": "t1", "SearchLog": {"lastRun": "t2", "LastFetchedIds": ["a"]}},
+                id="valid last run is kept",
+            ),
+        ],
+    )
+    def test_migrate_last_run(self, raw_last_run, expected):
+        """
+        Given:
+            - A last run saved by a previous version, possibly with malformed values.
+        When:
+            - migrate_last_run is called.
+        Then:
+            - Malformed values are dropped or fixed, valid and unknown keys are kept.
+        """
+        from OracleCloudInfrastructureEventCollector import migrate_last_run
+
+        assert migrate_last_run(raw_last_run) == expected
+
+    def test_fetch_searchlog_events_missing_query(self, dummy_client):
+        """
+        Given:
+            - The 'Search log query' parameter is empty.
+        When:
+            - fetch_searchlog_events is called.
+        Then:
+            - A DemistoException with the required-query message is raised.
+        """
+        from OracleCloudInfrastructureEventCollector import SEARCHLOG_QUERY_REQUIRED_ERROR, fetch_searchlog_events
+
+        with pytest.raises(DemistoException) as exc_info:
+            fetch_searchlog_events(dummy_client, "", 5, {})
+
+        assert SEARCHLOG_QUERY_REQUIRED_ERROR in str(exc_info.value)
+
+    @freeze_time("2023-01-01T12:00:00.000Z")
+    def test_fetch_events_audit_partial_failure_sends_collected_events(self, mocker, dummy_client):
+        """
+        Given:
+            - event_types_to_fetch is ['Audit'].
+        When:
+            - Running fetch-events and the second Audit page request fails after the first page was collected.
+        Then:
+            - The collected events are sent and the Audit last run is advanced.
+            - The error is logged with the number of collected events and the fetch does not fail.
+        """
+        from OracleCloudInfrastructureEventCollector import main
+
+        mock_demisto(mocker, mock_params=self.params, mock_args={}, command="fetch-events", mock_last_run={})
+        mocker.patch("OracleCloudInfrastructureEventCollector.Client", return_value=dummy_client)
+        first_page = MockResponse(content=[{"eventTime": "2023-01-01T10:00:00.000Z"}])
+        first_page.headers._store["opc-next-page"] = ("opc-next-page", "page-2")  # type: ignore[assignment]
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.audit_log_api_request",
+            side_effect=[first_page, DemistoException("SecondPageDown")],
+        )
+        mocked_send_events = mocker.patch("OracleCloudInfrastructureEventCollector.send_events_to_xsiam")
+        mocked_set_last_run = mocker.patch("OracleCloudInfrastructureEventCollector.demisto.setLastRun")
+        mocked_return_error = mocker.patch("OracleCloudInfrastructureEventCollector.return_error")
+        mocked_log_error = mocker.patch("OracleCloudInfrastructureEventCollector.demisto.error")
+
+        main()
+
+        mocked_send_events.assert_called_once_with(
+            [{"eventTime": "2023-01-01T10:00:00.000Z", "_time": "2023-01-01T10:00:00.000Z"}],
+            vendor="oracle",
+            product="cloud_infrastructure",
+        )
+        assert mocked_set_last_run.call_args.args[0]["lastRun"] == "2023-01-01T10:00:00.001000Z"
+        logged_error = mocked_log_error.call_args.args[0]
+        assert "1 events collected before the error" in logged_error
+        assert "SecondPageDown" in logged_error
+        assert not mocked_return_error.called
+
+    def test_main_test_module_success(self, mocker, dummy_client):
+        """
+        Given:
+            - event_types_to_fetch is ['Audit'] and the Audit API is reachable.
+        When:
+            - Running test-module through main.
+        Then:
+            - 'ok' is returned.
+        """
+        from OracleCloudInfrastructureEventCollector import main
+
+        mock_demisto(mocker, mock_params=self.params, mock_args={}, command="test-module", mock_last_run={})
+        mocker.patch("OracleCloudInfrastructureEventCollector.Client", return_value=dummy_client)
+        mocker.patch.object(dummy_client, "_http_request")
+        mocked_return_results = mocker.patch("OracleCloudInfrastructureEventCollector.return_results")
+
+        main()
+
+        mocked_return_results.assert_called_once_with("ok")
+
+    def test_main_test_module_failure(self, mocker, dummy_client):
+        """
+        Given:
+            - event_types_to_fetch is ['Audit'] and the Audit API fails.
+        When:
+            - Running test-module through main.
+        Then:
+            - return_error is called with the list of failing event types.
+        """
+        from OracleCloudInfrastructureEventCollector import main
+
+        mock_demisto(mocker, mock_params=self.params, mock_args={}, command="test-module", mock_last_run={})
+        mocker.patch("OracleCloudInfrastructureEventCollector.Client", return_value=dummy_client)
+        mocker.patch.object(dummy_client, "_http_request", side_effect=DemistoException("AuditDown"))
+        mocked_return_error = mocker.patch("OracleCloudInfrastructureEventCollector.return_error")
+
+        main()
+
+        error_message = mocked_return_error.call_args.args[0]
+        assert "Error while testing the following event types" in error_message
+        assert "- Audit: AuditDown" in error_message
+
+    def test_main_unknown_command(self, mocker, dummy_client):
+        """
+        Given:
+            - An unsupported command.
+        When:
+            - Running main.
+        Then:
+            - return_error is called with a 'does not exist' message.
+        """
+        from OracleCloudInfrastructureEventCollector import main
+
+        mock_demisto(mocker, mock_params=self.params, mock_args={}, command="unknown-command", mock_last_run={})
+        mocker.patch("OracleCloudInfrastructureEventCollector.Client", return_value=dummy_client)
+        mocked_return_error = mocker.patch("OracleCloudInfrastructureEventCollector.return_error")
+
+        main()
+
+        mocked_return_error.assert_called_once_with("Command unknown-command does not exist for this integration.")
+
+    def test_main_client_creation_failure(self, mocker):
+        """
+        Given:
+            - The Client can not be created (for example, an invalid private key).
+        When:
+            - Running fetch-events.
+        Then:
+            - return_error is called with the command name and the original error.
+        """
+        from OracleCloudInfrastructureEventCollector import main
+
+        mock_demisto(mocker, mock_params=self.params, mock_args={}, command="fetch-events", mock_last_run={})
+        mocker.patch("OracleCloudInfrastructureEventCollector.Client", side_effect=DemistoException("InvalidKey"))
+        mocked_return_error = mocker.patch("OracleCloudInfrastructureEventCollector.return_error")
+
+        main()
+
+        error_message = mocked_return_error.call_args.args[0]
+        assert "Failed to execute fetch-events command." in error_message
+        assert "InvalidKey" in error_message

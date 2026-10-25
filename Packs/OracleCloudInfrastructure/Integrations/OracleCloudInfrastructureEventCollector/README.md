@@ -14,7 +14,6 @@ Audit log events can be used for security audits, to track usage of and changes 
 Oracle Cloud Infrastructure SDKs and CLI require basic configuration information, which is achieved by using configuration parameters either with a configuration file or a runtime defined configuration dictionary. This integration uses the runtime defined configuration dictionary.
 More about OCI configuration [here](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm).
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Tenancy OCID |  | True |
@@ -33,7 +32,6 @@ More about OCI configuration [here](https://docs.oracle.com/en-us/iaas/Content/A
 | CloudGuard Problems query | Filters for CloudGuard Problems as key=value pairs separated by ";" \(for example: riskLevel=CRITICAL;lifecycleState=ACTIVE\). Each pair is passed as a ListProblems query parameter. Leave empty to fetch all Problems. CloudGuard Problems are fetched from the configured Region, which must be the Cloud Guard reporting region. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Commands
 

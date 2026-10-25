@@ -942,29 +942,33 @@ def fetch_searchlog_events(
 
 def run_event_type_fetchers(
     fetchers: dict[str, Callable[[], tuple[list[dict[str, Any]], Any]]],
-) -> tuple[dict[str, tuple[list[dict[str, Any]], Any]], dict[str, Exception]]:
+) -> dict[str, tuple[list[dict[str, Any]], Any]]:
     """Run each event type fetcher independently so a failure in one does not stop the others.
+
+    When an event type fails, the error is logged and the remaining event types keep running.
+    The failed event type keeps its previous last run (unless partial events were collected), so it is retried
+    in the next fetch cycle.
 
     Args:
         fetchers (dict): Event type name to a callable returning (events, last_run).
 
     Returns:
-        tuple: A dict of event type to (events, last_run) for every type that returned events
-               (including partial events of a failed type), and a dict of event type to the raised error.
+        dict: Event type to (events, last_run) for every type that returned events
+              (including partial events of a failed type).
     """
     fetched: dict[str, tuple[list[dict[str, Any]], Any]] = {}
-    errors: dict[str, Exception] = {}
     for event_type, fetcher in fetchers.items():
         try:
             fetched[event_type] = fetcher()
         except EventFetchError as e:
-            demisto.error(f"OCI: Error while fetching {event_type} ({len(e.events)} events collected before the error): {e}")
+            demisto.error(
+                f"OCI: Failed to fetch {event_type} events ({len(e.events)} events collected before the error), "
+                f"continuing with the other event types. Error: {e}"
+            )
             fetched[event_type] = (e.events, e.last_run)
-            errors[event_type] = e
         except Exception as e:
-            demisto.error(f"OCI: Error while fetching {event_type}: {e}")
-            errors[event_type] = e
-    return fetched, errors
+            demisto.error(f"OCI: Failed to fetch {event_type} events, continuing with the other event types. Error: {e}")
+    return fetched
 
 
 def send_fetched_events(fetched: dict[str, tuple[list[dict[str, Any]], Any]], last_run: dict[str, Any]) -> dict[str, Any]:
@@ -989,74 +993,93 @@ def send_fetched_events(fetched: dict[str, tuple[list[dict[str, Any]], Any]], la
     return last_run
 
 
-def raise_fetch_errors(errors: dict[str, Exception]) -> None:
-    """Raise a single error that lists every event type that failed during the fetch.
-
-    Args:
-        errors (dict[str, Exception]): Event type to the raised error.
-
-    Raises:
-        DemistoException: If at least one event type failed.
-    """
-    if not errors:
-        return
-    details = "\n".join(f"- {event_type}: {error}" for event_type, error in errors.items())
-    raise DemistoException(f"Failed to fetch the following event types:\n{details}")
-
-
 """ Test module """
 
 
-def test_module(client: Client, search_log_query: str, event_types_to_fetch: list, cloudguard_query: str | None = None) -> str:
-    """Tests API connectivity and authentication.
+def check_audit_connectivity(client: Client) -> None:
+    """Test the Audit API with an empty time window.
+
+    Args:
+        client (Client): Client for API requests.
+    """
+    datetime_now = datetime.now().strftime(DATE_FORMAT)
+    params = {"compartmentId": client.compartment_id, "startTime": datetime_now, "endTime": datetime_now}
+    client._http_request(method="GET", params=params)
+
+
+def check_searchlog_connectivity(client: Client, search_log_query: str | None) -> None:
+    """Validate the 'Search log query' parameter and test the Search Logs API.
+
+    Args:
+        client (Client): Client for API requests.
+        search_log_query (str | None): The 'Search log query' parameter.
+
+    Raises:
+        DemistoException: If the query is missing.
+    """
+    if not search_log_query:
+        raise DemistoException(SEARCHLOG_QUERY_REQUIRED_ERROR)
+    now = datetime.now()
+    searchlogs_api_request(
+        client=client,
+        time_start=now.strftime(SEARCHLOG_DATE_FORMAT),
+        time_end=(now + timedelta(days=14)).strftime(SEARCHLOG_DATE_FORMAT),
+        search_query=search_log_query,
+    )
+
+
+def check_cloudguard_connectivity(client: Client, cloudguard_query: str | None) -> None:
+    """Validate the 'CloudGuard Problems query' parameter and test the Cloud Guard ListProblems API.
+
+    Args:
+        client (Client): Client for API requests.
+        cloudguard_query (str | None): The raw 'CloudGuard Problems query' parameter.
+    """
+    cloudguard_filters = parse_cloudguard_query(cloudguard_query)
+    datetime_now = format_cloudguard_time(datetime.now(timezone.utc))  # noqa: UP017
+    cloudguard_problems_api_request(
+        client=client, time_start=datetime_now, time_end=datetime_now, filters=cloudguard_filters, limit=1
+    )
+
+
+def test_module(
+    client: Client, search_log_query: str | None, event_types_to_fetch: list, cloudguard_query: str | None = None
+) -> str:
+    """Tests API connectivity and authentication for every selected event type.
+
+    Every selected event type is tested, even if an earlier one failed, so the error lists all the failing event types.
 
     Args:
         client (Client): Client for SDK interaction and api requests.
-        search_log_query (str): The search log query string from the instance configuration.
+        search_log_query (str | None): The search log query string from the instance configuration.
         event_types_to_fetch (list): The event types selected in the instance configuration.
         cloudguard_query (str | None): The raw 'CloudGuard Problems query' parameter.
 
     Raises:
-        DemistoException: If an error occurred while testing.
+        DemistoException: If at least one selected event type failed, listing every failing event type and its error.
 
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
+    all_checks: dict[str, Callable[[], None]] = {
+        AUDIT_EVENT_TYPE: lambda: check_audit_connectivity(client),
+        SEARCHLOG_EVENT_TYPE: lambda: check_searchlog_connectivity(client, search_log_query),
+        CLOUDGUARD_EVENT_TYPE: lambda: check_cloudguard_connectivity(client, cloudguard_query),
+    }
 
-    if "Audit" in event_types_to_fetch:
+    errors: dict[str, Exception] = {}
+    for event_type, check in all_checks.items():
+        if event_type not in event_types_to_fetch:
+            continue
         try:
-            datetime_now = datetime.now().strftime(DATE_FORMAT)
-            params = {"compartmentId": client.compartment_id, "startTime": datetime_now, "endTime": datetime_now}
-            client._http_request(method="GET", params=params)
-
+            check()
         except Exception as e:
-            raise DemistoException(f"Error while testing: {e}") from e
+            demisto.debug(f"OCI: test-module failed for {event_type}: {e}")
+            errors[event_type] = e
 
-    if SEARCHLOG_EVENT_TYPE in event_types_to_fetch:
-        if not search_log_query:
-            raise DemistoException(SEARCHLOG_QUERY_REQUIRED_ERROR)
-        try:
-            now = datetime.now()
-            searchlogs_time_start = now.strftime(SEARCHLOG_DATE_FORMAT)
-            searchlogs_time_end = (now + timedelta(days=14)).strftime(SEARCHLOG_DATE_FORMAT)
-
-            searchlogs_api_request(
-                client=client, time_start=searchlogs_time_start, time_end=searchlogs_time_end, search_query=search_log_query
-            )
-
-        except Exception as e:
-            raise DemistoException(f"Error while testing: {e}") from e
-
-    if CLOUDGUARD_EVENT_TYPE in event_types_to_fetch:
-        try:
-            cloudguard_filters = parse_cloudguard_query(cloudguard_query)
-            datetime_now = format_cloudguard_time(datetime.now(timezone.utc))  # noqa: UP017
-            cloudguard_problems_api_request(
-                client=client, time_start=datetime_now, time_end=datetime_now, filters=cloudguard_filters, limit=1
-            )
-
-        except Exception as e:
-            raise DemistoException(f"Error while testing: {e}") from e
+    if errors:
+        details = "\n".join(f"- {event_type}: {error}" for event_type, error in errors.items())
+        raise DemistoException(f"Error while testing the following event types:\n{details}")
 
     return "ok"
 
@@ -1103,8 +1126,7 @@ def main():
             push_events = command == "fetch-events" or should_push_events
 
             # Each event type is fetched independently: a failure in one type (bad query, API error,
-            # invalid first fetch time) does not stop the others. All failures are raised at the end,
-            # after the successfully fetched events were sent and their last run was saved.
+            # invalid first fetch time) is logged with its error and the other event types keep running.
             all_fetchers: dict[str, Callable[[], tuple[list[dict[str, Any]], Any]]] = {
                 SEARCHLOG_EVENT_TYPE: lambda: fetch_searchlog_events(client, searchlogs_query, max_fetch, searchlog_last_run),
                 CLOUDGUARD_EVENT_TYPE: lambda: fetch_cloudguard_problems(
@@ -1118,7 +1140,7 @@ def main():
                 ),
             }
             selected_fetchers = {event_type: f for event_type, f in all_fetchers.items() if event_type in event_types_to_fetch}
-            fetched, fetch_errors = run_event_type_fetchers(selected_fetchers)
+            fetched = run_event_type_fetchers(selected_fetchers)
 
             if push_events:
                 last_run = send_fetched_events(fetched, last_run)
@@ -1127,8 +1149,6 @@ def main():
             else:
                 for event_type, (events, _) in fetched.items():
                     return_results(events_to_command_results(events, EVENT_TYPE_TABLE_TITLES[event_type]))
-
-            raise_fetch_errors(fetch_errors)
         else:
             return_error(f"Command {command} does not exist for this integration.")
     except Exception as e:
