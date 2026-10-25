@@ -147,6 +147,152 @@ def debug_compare_unsorted(
         demisto.info(f"BitSight sort-compare: comparison failed and was skipped: {e}")
 
 
+# TEMPORARY DEBUG (XSUP-77274): offset-paging simulation, with vs without the sort.
+DEBUG_SORT_SIM = True
+# TEMPORARY (XSUP-78867): one-time automatic fetch reset, no instance configuration needed.
+# On the first scheduled fetch after upload, last_run is reset to first_fetch=this date, offset=0, dedup
+# cleared. The value is stored as applied_fetch_start, so later runs move forward normally. To reset again
+# in a later upload, change this value. Set to "" to disable.
+FORCED_FETCH_START = "30 days ago"
+DEBUG_SORT_SIM_PAGE_SIZE = 1000
+DEBUG_SORT_SIM_MAX_PAGES = 20  # up to 20,000 findings per order
+DEBUG_SORT_SIM_MAX_STORED_KEYS = 25000  # per order, kept in integration context
+DEBUG_SORT_SIM_MAX_LISTED_KEYS = 20
+
+
+def debug_fetch_all_keys(
+    client: "Client", guid: str, first_seen_gte: str, last_seen_lte: str, sort: str | None
+) -> tuple[list[str], Any, int, bool]:
+    """Fetch the full window (all pages from offset 0) in one order.
+
+    Returns: (finding keys in API order, API count, number of first_seen descents, truncated flag).
+    """
+    keys: list[str] = []
+    api_count: Any = None
+    descents = 0
+    previous_first_seen: str | None = None
+    for page in range(DEBUG_SORT_SIM_MAX_PAGES):
+        res = client.get_company_findings(
+            guid,
+            first_seen_gte=first_seen_gte,
+            last_seen_lte=last_seen_lte,
+            limit=DEBUG_SORT_SIM_PAGE_SIZE,
+            offset=page * DEBUG_SORT_SIM_PAGE_SIZE,
+            sort=sort,
+        )
+        results = res.get("results") or []
+        api_count = res.get("count", api_count)
+        for finding in results:
+            first_seen = str(finding.get("first_seen") or "")
+            if previous_first_seen is not None and first_seen < previous_first_seen:
+                descents += 1
+            previous_first_seen = first_seen
+            keys.append(finding_key(finding))
+        if len(results) < DEBUG_SORT_SIM_PAGE_SIZE:
+            return keys, api_count, descents, False
+    return keys, api_count, descents, True
+
+
+def debug_simulate_offset_paging(previous_keys: list[str], current_keys: list[str]) -> dict[str, list[str]]:
+    """Simulate a collector that had consumed everything up to the previous snapshot (offset = len(previous)).
+
+    Its next page is current_keys[len(previous_keys):]. A NEW finding (not in previous) that is not in that
+    page is SKIPPED forever. An OLD finding that is in that page is a DUPLICATE.
+    """
+    previous_set = set(previous_keys)
+    current_set = set(current_keys)
+    next_page = current_keys[len(previous_keys) :]
+    next_page_set = set(next_page)
+    new_keys = [k for k in current_keys if k not in previous_set]
+    return {
+        "new": new_keys,
+        "skipped": [k for k in new_keys if k not in next_page_set],
+        "duplicated": [k for k in next_page if k in previous_set],
+        "removed": [k for k in previous_keys if k not in current_set],
+    }
+
+
+def debug_sort_simulation(client: "Client", guid: str, first_seen_gte: str, last_seen_lte: str) -> dict[str, Any]:
+    """TEMPORARY DEBUG (XSUP-77274): prove whether the sort prevents offset-paging skips.
+
+    Every run: fetch the full window both WITH the sort and WITHOUT it, compare each order to the previous
+    run's snapshot (kept in integration context) and count the new findings that offset paging would skip
+    in each order. Running totals are accumulated. Results are logged (demisto.info, prefix
+    "BitSight sort-sim:") and returned as a compact dict that the caller stores in last_run, so they also
+    appear in the server-side lastRun log lines. Never raises and never affects what is ingested.
+    """
+    try:
+        context = get_integration_context() or {}
+        state = context.get("sort_sim") or {}
+        sorted_keys, sorted_count, sorted_descents, sorted_truncated = debug_fetch_all_keys(
+            client, guid, first_seen_gte, last_seen_lte, FINDINGS_SORT
+        )
+        unsorted_keys, unsorted_count, unsorted_descents, unsorted_truncated = debug_fetch_all_keys(
+            client, guid, first_seen_gte, last_seen_lte, None
+        )
+        summary: dict[str, Any] = {
+            "run_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "window": f"{first_seen_gte}..{last_seen_lte}",
+            "count_sorted": sorted_count,
+            "count_unsorted": unsorted_count,
+            "fetched_sorted": len(sorted_keys),
+            "fetched_unsorted": len(unsorted_keys),
+            "first_seen_descents_sorted": sorted_descents,
+            "first_seen_descents_unsorted": unsorted_descents,
+            "same_order": sorted_keys == unsorted_keys,
+            "same_set": set(sorted_keys) == set(unsorted_keys),
+            "truncated": sorted_truncated or unsorted_truncated,
+        }
+        totals: dict[str, int] = state.get("totals") or {}
+        same_window = state.get("window_start") == first_seen_gte
+        if not same_window:
+            totals = {}
+        if same_window and state.get("sorted") is not None and state.get("unsorted") is not None:
+            with_sort = debug_simulate_offset_paging(state["sorted"], sorted_keys)
+            without_sort = debug_simulate_offset_paging(state["unsorted"], unsorted_keys)
+            cap = DEBUG_SORT_SIM_MAX_LISTED_KEYS
+            summary.update(
+                {
+                    "baseline": False,
+                    "new_findings": len(with_sort["new"]),
+                    "removed_findings": len(with_sort["removed"]),
+                    "skipped_with_sort": len(with_sort["skipped"]),
+                    "skipped_without_sort": len(without_sort["skipped"]),
+                    "duplicated_with_sort": len(with_sort["duplicated"]),
+                    "duplicated_without_sort": len(without_sort["duplicated"]),
+                    "skipped_keys_with_sort": with_sort["skipped"][:cap],
+                    "skipped_keys_without_sort": without_sort["skipped"][:cap],
+                }
+            )
+            for name in (
+                "new_findings",
+                "removed_findings",
+                "skipped_with_sort",
+                "skipped_without_sort",
+                "duplicated_with_sort",
+                "duplicated_without_sort",
+            ):
+                totals[name] = totals.get(name, 0) + summary[name]
+            totals["compared_runs"] = totals.get("compared_runs", 0) + 1
+        else:
+            summary["baseline"] = True  # first snapshot for this window, nothing to compare yet
+        summary["totals"] = totals
+
+        max_keys = DEBUG_SORT_SIM_MAX_STORED_KEYS
+        context["sort_sim"] = {
+            "window_start": first_seen_gte,
+            "sorted": sorted_keys[:max_keys],
+            "unsorted": unsorted_keys[:max_keys],
+            "totals": totals,
+        }
+        set_integration_context(context)
+        demisto.info(f"BitSight sort-sim: {json.dumps(summary)}")
+        return summary
+    except Exception as e:  # never let the debug simulation affect the real fetch
+        demisto.info(f"BitSight sort-sim: simulation failed and was skipped: {e}")
+        return {"error": str(e)}
+
+
 def to_bitsight_date(ts: int) -> str:
     """Convert a UNIX timestamp (seconds) to Bitsight date format (YYYY-MM-DD).
 
@@ -197,6 +343,43 @@ def findings_to_events(findings: list[dict[str, Any]]) -> tuple[list[dict[str, A
         events.append(event)
 
     return events, missing_date_findings
+
+
+def apply_fetch_start_reset(last_run: dict[str, Any], fetch_start_param: str | None) -> dict[str, Any]:
+    """Apply a one-time reset of the fetch state from the `fetch_start_date` instance parameter.
+
+    The reset is applied only when the parameter value differs from the value that was last applied
+    (stored in last_run as `applied_fetch_start`). Following runs see the same value, skip the reset
+    and keep moving forward from the stored offset. To reset again, change the parameter value.
+    Clearing the parameter never resets anything.
+
+    On reset: first_fetch = the parsed date, offset = 0 and the dedup memory is cleared, so every
+    finding from that date onward is fetched again.
+
+    Args:
+        last_run (dict[str, Any]): The stored last run.
+        fetch_start_param (str | None): Raw parameter value, e.g. "2026-09-25" or "30 days ago".
+
+    Returns:
+        dict[str, Any]: The last run to use for this fetch (a new dict when a reset is applied).
+    """
+    fetch_start_param = (fetch_start_param or "").strip()
+    if not fetch_start_param or fetch_start_param == last_run.get("applied_fetch_start"):
+        return last_run
+
+    start_dt = arg_to_datetime(fetch_start_param, arg_name="fetch_start_date", required=True)
+    first_fetch_date = start_dt.strftime(BITSIGHT_DATE_FORMAT)  # type: ignore[union-attr]
+    demisto.info(
+        f"BitSight: applying fetch reset fetch_start_date='{fetch_start_param}' -> first_fetch={first_fetch_date}, "
+        f"offset=0, dedup cleared. Previous state: first_fetch={last_run.get('first_fetch')} "
+        f"offset={last_run.get('offset')} applied_fetch_start={last_run.get('applied_fetch_start')}"
+    )
+    return {
+        "first_fetch": first_fetch_date,
+        "offset": 0,
+        "already_fetched_findings": [],
+        "applied_fetch_start": fetch_start_param,
+    }
 
 
 def fetch_events(
@@ -313,6 +496,9 @@ def fetch_events(
         "offset": new_offset,
         "already_fetched_findings": already_fetched_findings,
     }
+    # Keep the marker of the last applied reset so the same reset is not applied again.
+    if last_run.get("applied_fetch_start"):
+        new_last_run["applied_fetch_start"] = last_run["applied_fetch_start"]
 
     demisto.debug(
         f"BitSight: fetch_events done raw_findings={len(all_events)} new_events={len(events)} "
@@ -499,13 +685,28 @@ def main():
             return_results(test_module(client, params.get("guid")))
 
         elif command == "fetch-events":
+            last_run = apply_fetch_start_reset(last_run, FORCED_FETCH_START)
             events, new_last_run, missing_date_findings = fetch_events(
                 client, guid=guid, max_fetch=max_fetch, last_run=last_run, debug_compare_unsorted_request=True
             )
-            demisto.setLastRun(new_last_run)
 
+            # Push first, then save state: if the push fails, the same page is fetched again next run.
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            demisto.debug(f"Fetched and pushed {len(events)} events")
+
+            if DEBUG_SORT_SIM:
+                # TEMPORARY DEBUG (XSUP-77274). Stored in last_run so it also shows in the server lastRun logs.
+                # Key starts with "_" so it sorts first in the server's "New last run" log line (Go sorts JSON
+                # map keys alphabetically); a truncated line still shows it before the long dedup list.
+                sim_summary = debug_sort_simulation(
+                    client, guid, new_last_run["first_fetch"], to_bitsight_date(int(datetime.now().timestamp()))
+                )
+                new_last_run = {"_debug_sort_sim": sim_summary, **new_last_run}
+            demisto.setLastRun(new_last_run)
+            demisto.info(
+                f"BitSight: pushed {len(events)} events. New last run: first_fetch={new_last_run.get('first_fetch')} "
+                f"offset={new_last_run.get('offset')} dedup_keys={len(new_last_run.get('already_fetched_findings', []))} "
+                f"applied_fetch_start={new_last_run.get('applied_fetch_start')}"
+            )
             if missing_date_findings:
                 raise ValueError(f"No first_seen date found for findings: {', '.join(missing_date_findings)}")
             return
