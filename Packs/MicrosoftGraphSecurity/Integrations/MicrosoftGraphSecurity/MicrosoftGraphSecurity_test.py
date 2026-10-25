@@ -2930,17 +2930,20 @@ def test_get_remote_data_close_entry_when_resolved(mocker):
     assert comment_entries[0]["Note"] is True
 
 
-@pytest.mark.parametrize("incoming_tag_params", [{}, {"comment_tag_from_microsoft_graph_security": ""}])
-def test_get_remote_data_empty_incoming_tag_uses_default_tag(mocker, incoming_tag_params):
+@pytest.mark.parametrize(
+    "incoming_tag_params",
+    [{}, {"comment_tag_from_microsoft_graph_security": ""}, {"comment_tag_from_microsoft_graph_security": None}],
+)
+def test_get_remote_data_empty_incoming_tag_leaves_note_untagged(mocker, incoming_tag_params):
     """
-    Given: the 'Comment Entry Tag (from Microsoft)' param is missing or empty.
+    Given: the 'Comment Entry Tag (from Microsoft)' param is missing, empty or None.
     When: running get-remote-data on an alert with a new comment.
-    Then: the note entry is tagged with the default incoming tag, never with an empty tag.
+    Then: the note entry is still created, with no tags (never an empty-string tag).
     """
     mocker.patch.object(client_mocker.ms_client, "http_request", return_value=_remote_object("alert"))
     res = get_remote_data_command(client_mocker, {"id": ALERT_ID, "lastUpdate": "2026-10-05T00:00:00Z"}, incoming_tag_params)
     assert len(res.entries) == 1
-    assert res.entries[0]["Tags"] == ["CommentFromMicrosoftGraphSecurity"]
+    assert res.entries[0]["Tags"] == []
 
 
 def test_get_remote_data_no_close_entry_when_close_incident_off(mocker):
@@ -3473,6 +3476,20 @@ def test_build_patch_body_alert_severity_not_sent(severity):
     assert build_patch_body({"severity": severity}, "alert") == {}
 
 
+@pytest.mark.parametrize("section", ["Graph Security Alert", "Graph Security Incident"])
+def test_outgoing_mapper_maps_closing_user_id(section):
+    """
+    Given: the outgoing mapper.
+    When: reading the alert and incident sections.
+    Then: closingUserId is mapped from the XSOAR closingUserId field, so the server keeps the cleared value in the
+        update-remote-system delta on an XSOAR reopen (is_xsoar_reopen reads it). It is never PATCHed.
+    """
+    with open("../../Classifiers/classifier-mapper-outgoing-Graph_Security.json") as mapper_file:
+        mapping = json.load(mapper_file)["mapping"]
+    assert _outgoing_mapper_source(mapping[section]["internalMapping"]["closingUserId"]) == "closingUserId"
+    assert "closingUserId" not in INCIDENT_PATCH_KEYS | ALERT_PATCH_KEYS
+
+
 def test_outgoing_mapper_alert_has_no_severity():
     """
     Given: the outgoing mapper.
@@ -3768,16 +3785,25 @@ def test_update_remote_system_alert_close_notes_edit_posts_no_comment(mocker):
     assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": "resolved"}
 
 
-def test_update_remote_system_reopen_with_cleared_resolving_comment(mocker):
+@pytest.mark.parametrize(
+    "remote_id, mirror_type, delta",
+    [
+        (INCIDENT_ID, "incident", {"resolvingComment": ""}),
+        (INCIDENT_ID, "incident", {"closeNotes": ""}),
+        (INCIDENT_ID, "incident", {"closeReason": "", "closeNotes": ""}),
+        (INCIDENT_ID, "incident", {"closingUserId": "admin"}),
+        (ALERT_ID, "alert", {"closeNotes": ""}),
+    ],
+)
+def test_update_remote_system_cleared_close_fields_without_closing_user_is_not_a_reopen(mocker, remote_id, mirror_type, delta):
     """
-    Given: a reopened XSOAR incident whose delta holds only an empty resolvingComment.
+    Given: an open XSOAR incident whose delta clears close fields but doesn't clear closingUserId.
     When: running update-remote-system with close_out on.
-    Then: the incident is reopened (status=active), and resolvingComment isn't sent.
+    Then: nothing is sent (no GET, no PATCH) - only an XSOAR reopen clears closingUserId.
     """
     http_mock = _patch_http(mocker)
-    args = _update_args(INCIDENT_ID, {"resolvingComment": ""}, "incident", status=1)
-    update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
-    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": "active"}
+    update_remote_system_command(client_mocker, _update_args(remote_id, delta, mirror_type, status=1), MIRROR_PARAMS)
+    assert http_mock.call_count == 0
 
 
 def test_update_remote_system_incident_close_out_keeps_label(mocker):
@@ -4725,11 +4751,11 @@ def test_update_remote_system_redirected_incident_does_not_read_close_out(mocker
 )
 def test_update_remote_system_reopen_out(mocker, mirror_type, remote_id, expected_status):
     """
-    Given: a reopened XSOAR incident (the close fields are cleared in the delta).
+    Given: a reopened XSOAR incident (the close fields are cleared in the delta), and the remote object is resolved.
     When: running update-remote-system.
     Then: the remote object is reopened (incident=active, alert=new).
     """
-    http_mock = _patch_http(mocker)
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
     delta = {"closeReason": "", "closeNotes": "", "closingUserId": ""}
     update_remote_system_command(client_mocker, _update_args(remote_id, delta, mirror_type, status=1), MIRROR_PARAMS)
     assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": expected_status}
@@ -4756,26 +4782,27 @@ def test_update_remote_system_reopen_keeps_explicit_status(
     mocker, mirror_type, remote_id, status_key, delta_status, expected_status
 ):
     """
-    Given: a reopened XSOAR incident (close fields cleared) whose delta also holds a status.
+    Given: a reopened XSOAR incident (close fields cleared) whose delta also holds a status, and a resolved remote object.
     When: running update-remote-system with close_out on.
     Then: an explicit non-resolved status is kept (not overwritten by the default reopen status); a resolved, empty or
         unknownFutureValue status is replaced with the default reopen status (incident=active, alert=new).
     """
-    http_mock = _patch_http(mocker)
-    delta = {"closeReason": "", "closeNotes": "", status_key: delta_status}
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
+    delta = {"closeReason": "", "closeNotes": "", "closingUserId": "", status_key: delta_status}
     update_remote_system_command(client_mocker, _update_args(remote_id, delta, mirror_type, status=1), MIRROR_PARAMS)
     assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": expected_status}
 
 
 def test_update_remote_system_reopen_with_explicit_status_logs_kept(mocker):
     """
-    Given: a reopened XSOAR incident whose delta holds closeReason="", resolvingComment="" and status=inProgress.
+    Given: a reopened XSOAR incident whose delta holds closeReason="", closingUserId="", resolvingComment="" and
+        status=inProgress, and a resolved remote incident.
     When: running update-remote-system with close_out on.
     Then: status=inProgress is sent (not active), resolvingComment is not cleared, and the kept status is logged.
     """
-    http_mock = _patch_http(mocker)
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
     debug_mock = mocker.patch.object(demisto, "debug")
-    delta = {"closeReason": "", "resolvingComment": "", "status": "inProgress"}
+    delta = {"closeReason": "", "closingUserId": "", "resolvingComment": "", "status": "inProgress"}
     update_remote_system_command(client_mocker, _update_args(INCIDENT_ID, delta, "incident", status=1), MIRROR_PARAMS)
     assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": "inProgress"}
     assert any("keeping the explicit status 'inProgress'" in c.args[0] for c in debug_mock.call_args_list)
@@ -4789,21 +4816,23 @@ def test_update_remote_system_reopen_with_explicit_status_logs_kept(mocker):
         ("alert", ALERT_ID, "inProgress"),
     ],
 )
-def test_reopen_echo_overwrites_status(mocker, mirror_type, remote_id, remote_status):
+def test_reopen_echo_of_remote_reopen_sends_nothing(mocker, mirror_type, remote_id, remote_status):
     """
     Given: a Microsoft analyst reopened a resolved remote object to a non-resolved status, the incoming mirror reopened the
-        XSOAR incident, and the server echoes the reopen outgoing with only cleared close fields (no `status` in the
-        delta) while data.status holds the remote status.
+        XSOAR incident, and the server echoes the reopen outgoing with only cleared close fields (no `status` in the delta).
     When: running update-remote-system with close_out on.
-    Then: the PATCH keeps the remote status (not the default reopen status active/new), and the kept status is logged.
+    Then: the remote status is checked, it is already open, so no PATCH is sent (the Microsoft status is not overwritten)
+        and the skip is logged.
     """
-    http_mock = _patch_http(mocker)
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http(remote_status))
     debug_mock = mocker.patch.object(demisto, "debug")
-    args = _update_args(remote_id, {"closeReason": "", "closeNotes": ""}, mirror_type, status=1)
+    delta = {"closeReason": "", "closeNotes": "", "closingUserId": ""}
+    args = _update_args(remote_id, delta, mirror_type, status=1)
     args["data"]["status"] = remote_status
     update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
-    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": remote_status}
-    assert any(f"keeping current status={remote_status}" in str(c.args[0]) for c in debug_mock.call_args_list)
+    assert len(_http_calls(http_mock, "GET")) == 1
+    assert _http_calls(http_mock, "PATCH") == []
+    assert any("is already open in Microsoft" in str(c.args[0]) for c in debug_mock.call_args_list)
 
 
 @pytest.mark.parametrize(
@@ -4818,15 +4847,88 @@ def test_reopen_echo_overwrites_status(mocker, mirror_type, remote_id, remote_st
 def test_reopen_after_resolve_sends_default_reopen_status(mocker, mirror_type, remote_id, data_status, expected_status):
     """
     Given: a real XSOAR reopen after a resolve: the delta clears the close fields and data.status is resolved (or empty /
-        unknownFutureValue).
+        unknownFutureValue), and the remote object is resolved.
     When: running update-remote-system with close_out on.
     Then: the default reopen status is sent (incident=active, alert=new).
     """
-    http_mock = _patch_http(mocker)
-    args = _update_args(remote_id, {"closeReason": "", "closeNotes": ""}, mirror_type, status=1)
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
+    args = _update_args(remote_id, {"closeReason": "", "closeNotes": "", "closingUserId": ""}, mirror_type, status=1)
     args["data"]["status"] = data_status
     update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
     assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": expected_status}
+
+
+@pytest.mark.parametrize(
+    "mirror_type, remote_id, delta, expected_status",
+    [
+        ("incident", INCIDENT_ID, {"closeNotes": "", "closingUserId": ""}, "active"),
+        ("incident", INCIDENT_ID, {"closingUserId": ""}, "active"),
+        ("alert", ALERT_ID, {"closeNotes": "", "closingUserId": ""}, "new"),
+        ("alert", ALERT_ID, {"closingUserId": ""}, "new"),
+    ],
+    ids=["incident-with-notes", "incident-no-notes", "alert-with-notes", "alert-no-notes"],
+)
+def test_reopen_after_close_without_reason_reopens_remote(mocker, mirror_type, remote_id, delta, expected_status):
+    """
+    Given: an XSOAR incident closed without a close reason (the remote object was resolved with the default comment) and
+        then reopened, so the delta clears closingUserId but holds no closeReason, and the remote object is resolved.
+    When: running update-remote-system with close_out on.
+    Then: the remote object is reopened (incident=active, alert=new).
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
+    args = _update_args(remote_id, delta, mirror_type, status=1)
+    args["data"]["status"] = "resolved"
+    update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": expected_status}
+
+
+@pytest.mark.parametrize("mirror_type, remote_id, expected_status", [("incident", INCIDENT_ID, "active"), ("alert", ALERT_ID, "new")])
+def test_reopen_remote_status_get_fails_reopens_anyway(mocker, mirror_type, remote_id, expected_status):
+    """
+    Given: a reopened XSOAR incident (closingUserId cleared), and the GET of the remote status fails (not HTTP 429).
+    When: running update-remote-system with close_out on.
+    Then: the remote object is reopened anyway (as the close-out does on a failed GET), and the failure is logged.
+    """
+    http_mock = mocker.patch.object(
+        client_mocker.ms_client, "http_request", side_effect=_remote_status_http(get_error=DemistoException("boom"))
+    )
+    debug_mock = mocker.patch.object(demisto, "debug")
+    args = _update_args(remote_id, {"closeReason": "", "closingUserId": ""}, mirror_type, status=1)
+    args["data"]["status"] = "resolved"
+    update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": expected_status}
+    assert any("reopening anyway" in str(c.args[0]) for c in debug_mock.call_args_list)
+
+
+def test_reopen_remote_status_get_rate_limited(mocker):
+    """
+    Given: a reopened XSOAR incident (closingUserId cleared), a tagged entry, and the GET of the remote status fails with
+        HTTP 429.
+    When: running update-remote-system with close_out on.
+    Then: the "API rate limit" error is raised, so the server retries; nothing is PATCHed and no entry is POSTed.
+    """
+    http_mock = mocker.patch.object(
+        client_mocker.ms_client, "http_request", side_effect=_remote_status_http(get_error=_rate_limit_error())
+    )
+    mocker.patch.object(demisto, "debug")
+    args = _update_args(INCIDENT_ID, {"closeReason": "", "closingUserId": ""}, "incident", status=1, entries=[TAGGED_ENTRY])
+    with pytest.raises(DemistoException, match="API rate limit"):
+        update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
+    assert _http_calls(http_mock, "PATCH") == []
+    assert _http_calls(http_mock, "POST") == []
+
+
+@pytest.mark.parametrize("close_out", [False, "false"])
+def test_reopen_close_out_off_sends_nothing(mocker, close_out):
+    """
+    Given: a reopened XSOAR incident (closingUserId cleared) and close_out off.
+    When: running update-remote-system.
+    Then: the remote status is not checked and nothing is sent.
+    """
+    http_mock = _patch_http(mocker)
+    args = _update_args(INCIDENT_ID, {"closeReason": "", "closingUserId": ""}, "incident", status=1)
+    update_remote_system_command(client_mocker, args, MIRROR_PARAMS | {"close_out": close_out})
+    assert http_mock.call_count == 0
 
 
 def test_update_remote_system_mirror_out_entries(mocker):
@@ -5217,12 +5319,13 @@ def test_build_patch_body_non_clearable_empty_dropped(delta, mirror_type, expect
 
 def test_update_remote_system_reopen_does_not_clear_resolving_comment(mocker):
     """
-    Given: a reopened XSOAR incident (closeNotes and closingUserId cleared, status not DONE), close_out on.
+    Given: a reopened XSOAR incident (closeReason, closeNotes and closingUserId cleared, status not DONE), a resolved
+        remote incident, and close_out on.
     When: running update-remote-system.
-    Then: resolvingComment is not sent, so Microsoft's resolution comment is kept.
+    Then: the incident is reopened (status=active), and resolvingComment is not sent, so Microsoft's resolution comment is kept.
     """
-    http_mock = _patch_http(mocker)
-    delta = {"closeNotes": "", "closingUserId": ""}
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
+    delta = {"closeReason": "", "closeNotes": "", "closingUserId": ""}
     update_remote_system_command(client_mocker, _update_args(INCIDENT_ID, delta, "incident", status=1), MIRROR_PARAMS)
     body = _http_calls(http_mock, "PATCH")[0].kwargs["json_data"]
     assert "resolvingComment" not in body
@@ -5297,11 +5400,11 @@ def test_update_remote_system_raw_field_names_renamed(mocker, mirror_type, remot
 
 def test_update_remote_system_cleared_raw_tags_field_reopen(mocker):
     """
-    Given: the tenant delta of a reopened incident with its tags cleared, under the raw field name.
+    Given: the tenant delta of a reopened incident with its tags cleared, under the raw field name, and a resolved remote.
     When: running update-remote-system with close_out on.
     Then: the PATCH reopens the incident and clears customTags.
     """
-    http_mock = _patch_http(mocker)
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_remote_status_http("resolved"))
     delta = {"closeReason": "", "closingUserId": "", "microsoftgraphsecurityincidenttags": [], "runStatus": ""}
     update_remote_system_command(client_mocker, _update_args(INCIDENT_ID, delta, "incident", status=1), MIRROR_PARAMS)
     assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": "active", "customTags": []}
@@ -5486,22 +5589,34 @@ def test_get_delta_close_notes(delta, expected):
     assert get_delta_close_notes(delta) == expected
 
 
-@pytest.mark.parametrize(
-    "object_url, object_id, expand_alerts, expected_url",
-    [
-        ("security/alerts_v2", "da123", False, "security/alerts_v2/da123"),
-        ("security/incidents", "42", False, "security/incidents/42"),
-        ("security/incidents", "42", True, "security/incidents/42?$expand=alerts"),
-    ],
-)
-def test_get_mirrored_object_request(mocker, object_url, object_id, expand_alerts, expected_url):
+def test_get_mirrored_alert_request(mocker):
     """
-    Given: an alert/incident URL, an ID, and whether to expand alerts.
-    When: calling MsGraphClient.get_mirrored_object.
+    Given: an alert ID.
+    When: calling MsGraphClient.get_mirrored_alert.
+    Then: one GET is sent to security/alerts_v2/{id}, with the Prefer header, the mirror timeout and no params.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={"id": "da123"})
+    assert client_mocker.get_mirrored_alert("da123") == {"id": "da123"}
+    http_mock.assert_called_once_with(
+        method="GET",
+        url_suffix="security/alerts_v2/da123",
+        headers={"Prefer": "include-unknown-enum-members"},
+        timeout=60,
+    )
+
+
+@pytest.mark.parametrize(
+    "expand_alerts, expected_url",
+    [(False, "security/incidents/42"), (True, "security/incidents/42?$expand=alerts")],
+)
+def test_get_mirrored_incident_request(mocker, expand_alerts, expected_url):
+    """
+    Given: an incident ID, and whether to expand alerts.
+    When: calling MsGraphClient.get_mirrored_incident.
     Then: one GET is sent to the expected URL, with the Prefer header, the mirror timeout and no params.
     """
-    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={"id": object_id})
-    assert client_mocker.get_mirrored_object(object_url, object_id, expand_alerts=expand_alerts) == {"id": object_id}
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={"id": "42"})
+    assert client_mocker.get_mirrored_incident("42", expand_alerts=expand_alerts) == {"id": "42"}
     http_mock.assert_called_once_with(
         method="GET",
         url_suffix=expected_url,
@@ -5510,17 +5625,30 @@ def test_get_mirrored_object_request(mocker, object_url, object_id, expand_alert
     )
 
 
-@pytest.mark.parametrize("object_url", ["security/alerts_v2", "security/incidents"])
-def test_create_mirror_comment_request(mocker, object_url):
+@pytest.mark.parametrize(
+    "method_name, expected_url",
+    [("update_mirrored_alert", "security/alerts_v2/id1"), ("update_mirrored_incident", "security/incidents/id1")],
+)
+def test_update_mirrored_object_request(mocker, method_name, expected_url):
     """
-    Given: an alert/incident URL, an ID and a comment.
-    When: calling MsGraphClient.create_mirror_comment.
-    Then: one POST is sent to {url}/{id}/comments with the Graph alertComment body, and the response is returned.
+    Given: an alert/incident ID and a PATCH body.
+    When: calling MsGraphClient.update_mirrored_alert / update_mirrored_incident.
+    Then: one PATCH is sent to the expected URL with the body, a text response type and the mirror timeout.
     """
-    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={"value": []})
-    assert client_mocker.create_mirror_comment(object_url, "id1", "hello") == {"value": []}
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value="")
+    getattr(client_mocker, method_name)("id1", {"status": "resolved"})
     http_mock.assert_called_once_with(
-        method="POST",
-        url_suffix=f"{object_url}/id1/comments",
-        json_data={"@odata.type": "microsoft.graph.security.alertComment", "comment": "hello"},
+        method="PATCH", url_suffix=expected_url, json_data={"status": "resolved"}, resp_type="text", timeout=60
     )
+
+
+def test_create_incident_comment_request(mocker):
+    """
+    Given: an incident ID and a comment body.
+    When: calling MsGraphClient.create_incident_comment.
+    Then: one POST is sent to security/incidents/{id}/comments with the body, and the response is returned.
+    """
+    body = {"@odata.type": "microsoft.graph.security.alertComment", "comment": "hello"}
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={"value": []})
+    assert client_mocker.create_incident_comment("id1", body) == {"value": []}
+    http_mock.assert_called_once_with(method="POST", url_suffix="security/incidents/id1/comments", json_data=body)

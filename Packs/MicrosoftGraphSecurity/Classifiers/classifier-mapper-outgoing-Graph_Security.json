@@ -22,6 +22,13 @@
                         "transformers": []
                     }
                 },
+                "closingUserId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "closingUserId",
+                        "transformers": []
+                    }
+                },
                 "status": {
                     "complex": {
                         "filters": [],
@@ -49,6 +56,13 @@
                     "complex": {
                         "filters": [],
                         "root": "closeReason",
+                        "transformers": []
+                    }
+                },
+                "closingUserId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "closingUserId",
                         "transformers": []
                     }
                 },
