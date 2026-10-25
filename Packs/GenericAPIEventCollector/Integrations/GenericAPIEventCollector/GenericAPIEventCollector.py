@@ -309,6 +309,9 @@ def fetch_events(
             continue
         event["_time"] = incident_created_dt.isoformat()
         current_id: Any = dict_safe_get(event, id_keys) if id_keys else None
+        # Some APIs wrap the ID in a one-item list, e.g. Group-IB breacheddb addInfo.updateTimestampLong.
+        if isinstance(current_id, list) and len(current_id) == 1:
+            current_id = current_id[0]
         current_id_int = arg_to_number(current_id) if id_type_lower == IdTypes.INTEGER.value else None
         previous_id_int = arg_to_number(previous_fetched_id) if id_type_lower == IdTypes.INTEGER.value else None
 

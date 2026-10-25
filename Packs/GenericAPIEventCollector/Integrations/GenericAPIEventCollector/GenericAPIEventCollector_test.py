@@ -1055,6 +1055,36 @@ def test_fetch_events_integer_id_cursor_accepts_events_with_old_timestamps():
     assert next_run["@last_fetched_datetime"] == "2026-10-11T00:00:00"
 
 
+def test_fetch_events_integer_id_wrapped_in_one_item_list():
+    """
+    Given: an integer ID returned as a one-item list (Group-IB breacheddb addInfo.updateTimestampLong).
+    When: fetch_events runs with ID type "integer".
+    Then: the list is unwrapped, so the fetch does not fail with "is not a valid number" and the cursor
+          is saved as a plain number (regression test, XSUP-78726).
+    """
+    client = RecordingClient(
+        [
+            {
+                "items": [
+                    {"datetime": "2020-01-18T12:50:49", "addInfo": {"updateTimestampLong": [1579333849000000]}},
+                    {"datetime": "2020-01-18T17:25:52", "addInfo": {"updateTimestampLong": [1579350352000000]}},
+                ]
+            }
+        ]
+    )
+    params = {"id_keys": "addInfo.updateTimestampLong", "id_type": "integer"}
+    last_run = {
+        "@first_fetch_datetime": "2026-10-11T00:00:00",
+        "@last_fetched_datetime": "2026-10-11T00:00:00",
+        "@last_fetched_id": "1579333849000000",
+    }
+
+    next_run, events = run_fetch(client, params, last_run)
+
+    assert len(events) == 1
+    assert next_run["@last_fetched_id"] == "1579350352000000"
+
+
 def test_fetch_events_string_id_keeps_time_filter():
     """
     Given: ID type "string".
