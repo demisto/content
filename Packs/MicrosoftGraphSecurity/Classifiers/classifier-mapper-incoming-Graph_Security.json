@@ -198,7 +198,7 @@
                 "dbotMirrorTags": {
                     "simple": "mirror_tags"
                 },
-                "Microsoft Graph Incident Id": {
+                "Microsoft Graph Security Incident Id": {
                     "simple": "id"
                 },
                 "Microsoft Graph Security Incident Status": {

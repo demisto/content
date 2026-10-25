@@ -64,7 +64,7 @@ from MicrosoftGraphSecurity import (
     run_estimate_statistics_command,
     _get_last_estimate_statistics_command,
     build_close_entry,
-    get_close_entry,
+    get_resolved_close_entry,
     to_xsoar_close_reason,
     get_entries_for_comments,
     get_mapping_fields_command,
@@ -90,7 +90,7 @@ from MicrosoftGraphSecurity import (
     add_mirror_marker,
     has_close_fields,
     is_open_graph_status,
-    is_xsoar_incident_closed,
+    is_inc_status_closed,
     test_function as msg_test_function,  # aliased so pytest does not collect it as a test
     validate_mirroring_comment_tags,
 )
@@ -2799,30 +2799,30 @@ def test_get_modified_remote_data_command_page_failure_raises(mocker):
     assert http_mock.call_args_list[2].kwargs["full_url"] == "https://graph.microsoft.com/next/2"
 
 
-def test_mirror_get_does_not_retry_429(mocker):
+def test_http_get_with_rate_limit_does_not_retry_429(mocker):
     """
     Given: an HTTP 429 from Microsoft Graph.
-    When: calling mirror_get.
+    When: calling http_get_with_rate_limit.
     Then: an "API rate limit" DemistoException is raised after a single request (no retry, no sleep in mirroring),
         keeping the original response.
     """
     http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_rate_limit_error())
     with pytest.raises(DemistoException, match="^API rate limit") as exc_info:
-        client_mocker.mirror_get(url_suffix="security/alerts_v2")
+        client_mocker.http_get_with_rate_limit(url_suffix="security/alerts_v2")
     assert http_mock.call_count == 1
     assert exc_info.value.res.status_code == 429
 
 
-def test_mirror_get_does_not_wrap_other_errors(mocker):
+def test_http_get_with_rate_limit_does_not_wrap_other_errors(mocker):
     """
     Given: a non-429 API error (HTTP 500).
-    When: calling mirror_get.
+    When: calling http_get_with_rate_limit.
     Then: the original error is raised as-is, after a single request.
     """
     error = DemistoException("Error in API call [500] - Server Error", res=SimpleNamespace(status_code=500, headers={}))
     http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=error)
     with pytest.raises(DemistoException, match=r"\[500\]") as exc_info:
-        client_mocker.mirror_get(url_suffix="security/alerts_v2")
+        client_mocker.http_get_with_rate_limit(url_suffix="security/alerts_v2")
     assert exc_info.value is error
     assert http_mock.call_count == 1
 
@@ -3214,13 +3214,13 @@ def test_get_remote_data_unknown_xsoar_status_falls_back_to_remote_status(mocker
         ({}, "Other"),
     ],
 )
-def test_get_close_entry_reason_mapping(overrides, expected_reason):
+def test_get_resolved_close_entry_reason_mapping(overrides, expected_reason):
     """
     Given: a resolved Graph object with a falsePositive, unknown, null or missing classification.
     When: building the close entry.
     Then: the close reason is mapped (falsePositive -> False Positive; unknown/missing -> Other) and default notes are used.
     """
-    entry = get_close_entry({"id": "1", "status": "resolved", **overrides})
+    entry = get_resolved_close_entry({"id": "1", "status": "resolved", **overrides})
     assert entry["Type"] == EntryType.NOTE
     assert entry["ContentsFormat"] == EntryFormat.JSON
     assert entry["Contents"]["dbotIncidentClose"] is True
@@ -3243,10 +3243,11 @@ def test_to_xsoar_close_reason(graph_object, expected_reason):
     """
     Given: a Graph object with a known, unknown, unmapped, null, empty or missing classification.
     When: mapping it to the XSOAR close reason.
-    Then: a known classification is mapped, any other value falls back to Other, and get_close_entry uses the same reason.
+    Then: a known classification is mapped, any other value falls back to Other,
+          and get_resolved_close_entry uses the same reason.
     """
     assert to_xsoar_close_reason(graph_object) == expected_reason
-    assert get_close_entry(graph_object)["Contents"]["closeReason"] == expected_reason
+    assert get_resolved_close_entry(graph_object)["Contents"]["closeReason"] == expected_reason
 
 
 def test_build_close_entry():
@@ -5539,13 +5540,13 @@ def test_build_patch_body_drops_unsupported_xsoar_severity(xsoar_severity, mirro
     "inc_status, expected",
     [(None, False), ("", False), (0, False), (1, False), (2, True), ("2", True), (3, False)],
 )
-def test_is_xsoar_incident_closed(inc_status, expected):
+def test_is_inc_status_closed(inc_status, expected):
     """
     Given: an update-remote-system `status` arg (None means open).
     When: checking whether the XSOAR incident is closed.
     Then: only IncidentStatus.DONE (2 or "2") is closed.
     """
-    assert is_xsoar_incident_closed(inc_status) is expected
+    assert is_inc_status_closed(inc_status) is expected
 
 
 @pytest.mark.parametrize(
