@@ -27,7 +27,6 @@
         "xpanse",
         "platform"
     ],
-    "defaultDataSource": "ServiceNow v2",
     "supportedModules": [
         "asm",
         "exposure_management",
