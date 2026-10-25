@@ -456,7 +456,9 @@ class OAuthHandler:
         }
         error_message = f"Error discovering OAuth metadata for {base_url}, using default metadata."
         try:
-            response = await self.session.get(f"{base_url}/.well-known/oauth-authorization-server", headers=OAUTH_DISCOVERY_HEADERS)
+            response = await self.session.get(
+                f"{base_url}/.well-known/oauth-authorization-server", headers=OAUTH_DISCOVERY_HEADERS
+            )
             if response.is_success:
                 metadata.update(response.json())
             else:
@@ -538,7 +540,7 @@ class OAuthHandler:
         demisto.debug(f"Generated authorization URL: {authorization_url}")
         return authorization_url
 
-    async def generate_dynamic_registration_login_url(self) -> tuple[str, dict[str, str]]:
+    async def generate_dynamic_registration_login_url(self) -> tuple[str, dict[str, Any]]:
         """
         Performs dynamic client registration and starts the authorization process.
         Returns the authorization URL and context data to save.
@@ -579,7 +581,7 @@ class OAuthHandler:
         }
         return auth_url, context_data
 
-    def generate_authorization_code_login_url(self, authorization_endpoint: str) -> tuple[str, dict[str, str]]:
+    def generate_authorization_code_login_url(self, authorization_endpoint: str) -> tuple[str, dict[str, Any]]:
         """
         Generates the login URL for the standard Authorization Code flow.
 
@@ -991,12 +993,14 @@ async def generate_login_url(
     oauth_metadata = build_oauth_metadata(context_data.get("oauth_metadata", {}))
     iss_supported = bool(oauth_metadata and oauth_metadata.authorization_response_iss_parameter_supported)
 
-    redirect_structure = "REDIRECT_URI?code=AUTH_CODE&state=STATE&iss=ISSUER" if iss_supported else (
-        "REDIRECT_URI?code=AUTH_CODE&state=STATE"
+    redirect_structure = (
+        "REDIRECT_URI?code=AUTH_CODE&state=STATE&iss=ISSUER" if iss_supported else ("REDIRECT_URI?code=AUTH_CODE&state=STATE")
     )
-    verified_params = "`state` and `iss` parameters, which protect against CSRF and " "authorization-server mix-up attacks" if (
-        iss_supported
-    ) else "`state` parameter, which protects against CSRF attacks"
+    verified_params = (
+        "`state` and `iss` parameters, which protect against CSRF and authorization-server mix-up attacks"
+        if (iss_supported)
+        else "`state` parameter, which protects against CSRF attacks"
+    )
     verification_noun = "these verifications are" if iss_supported else "this verification is"
 
     result_msg = (

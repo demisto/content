@@ -350,8 +350,6 @@ def test_get_client_metadata_declares_web_for_public_redirect(mocker: MockerFixt
     # when
     result = get_client_metadata("https://oproxy.demisto.ninja/authcode")
 
-
-
     # then
     assert result["application_type"] == "web"
 
@@ -687,6 +685,7 @@ def test_oauth_handler_preserves_legacy_bare_auth_code():
     assert handler.authorization_response == {"code": "A1", "is_full_url": ""}
 
 
+@pytest.mark.asyncio
 async def test_discover_oauth_metadata_accepts_issuer_matching_discovery_origin(mocker: MockerFixture):
     """
     Given: Metadata whose issuer matches the URL it was served from (as Atlassian and
@@ -707,6 +706,7 @@ async def test_discover_oauth_metadata_accepts_issuer_matching_discovery_origin(
     assert metadata["issuer"] == "https://mcp.atlassian.com"
 
 
+@pytest.mark.asyncio
 async def test_discover_oauth_metadata_rejects_issuer_from_a_different_origin(mocker: MockerFixture):
     """
     Given: Metadata declaring an issuer that differs from the URL it was served from.
@@ -727,6 +727,7 @@ async def test_discover_oauth_metadata_rejects_issuer_from_a_different_origin(mo
         await handler._discover_oauth_metadata("https://mcp.atlassian.com")
 
 
+@pytest.mark.asyncio
 async def test_discover_oauth_metadata_falls_back_to_origin_when_discovery_fails(mocker: MockerFixture):
     """
     Given: A discovery request that fails.
@@ -1470,8 +1471,7 @@ class TestSDKContract:
         # until the context manager is entered.
         for attribute in ("server_info", "protocol_version", "list_tools", "call_tool"):
             assert hasattr(MCPClient, attribute), (
-                f"The SDK client no longer exposes '{attribute}'. Client._get_session and its "
-                "callers must be updated."
+                f"The SDK client no longer exposes '{attribute}'. Client._get_session and its callers must be updated."
             )
         assert hasattr(MCPClient, "__aenter__")
 
@@ -1497,9 +1497,9 @@ class TestSDKContract:
         """
         fields = CallToolResult.model_fields
 
-        assert (
-            "is_error" in fields
-        ), f"CallToolResult no longer exposes 'is_error' (has: {sorted(fields)}). Client.call_tool must be updated."
+        assert "is_error" in fields, (
+            f"CallToolResult no longer exposes 'is_error' (has: {sorted(fields)}). Client.call_tool must be updated."
+        )
 
     def test_call_tool_result_serializes_to_camel_case_wire_names(self):
         """
@@ -1707,10 +1707,9 @@ class TestNormalizeToolSchemas:
         """
         mocker.patch.object(Client, "_resolve_headers", return_value={})
         mock_session = mocker.MagicMock()
-        mock_init_result = Mock(spec=["server_info"])
-        mock_init_result.server_info = Mock()
-        mock_init_result.server_info.name = "TestServer"
-        mock_session.initialize = mocker.AsyncMock(return_value=mock_init_result)
+        mock_session.server_info = Mock()
+        mock_session.server_info.name = "TestServer"
+        mock_session.protocol_version = "2026-07-28"
         mock_tool = Mock()
         mock_tool.name = "update_project"
         mock_tools = Mock()
@@ -1725,12 +1724,10 @@ class TestNormalizeToolSchemas:
             ]
         }
         mock_session.list_tools = mocker.AsyncMock(return_value=mock_tools)
-        mock_streamable_client = mocker.patch("MCPApiModule.streamable_http_client")
-        mock_streamable_client.return_value.__aenter__ = mocker.AsyncMock(return_value=("r", "w"))
-        mock_streamable_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
-        mock_client_session = mocker.patch("MCPApiModule.ClientSession")
-        mock_client_session.return_value.__aenter__ = mocker.AsyncMock(return_value=mock_session)
-        mock_client_session.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
+        mocker.patch("MCPApiModule.streamable_http_client")
+        mock_mcp_client = mocker.patch("MCPApiModule.MCPClient")
+        mock_mcp_client.return_value.__aenter__ = mocker.AsyncMock(return_value=mock_session)
+        mock_mcp_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
 
         result = await mock_client_instance.list_tools()
 
