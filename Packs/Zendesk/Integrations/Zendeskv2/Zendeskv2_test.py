@@ -1308,6 +1308,7 @@ class TestOAuthAuthentication:
             "client_id": [self.CLIENT_ID],
             "client_secret": [self.CLIENT_SECRET],
             "scope": ["tickets:read users:read"],
+            "expires_in": [str(OAUTH_TOKEN_EXPIRES_IN_SECONDS)],
         }
         assert client._auth is None
         assert users_mock.last_request.headers["Authorization"] == "Bearer new_token"
@@ -1427,21 +1428,25 @@ class TestOAuthAuthentication:
         assert saved_context["users"] == {"1": "user@example.com"}
         assert saved_context[OAUTH_TOKEN_CONTEXT_KEY]["access_token"] == "new_token"
 
-    def test_get_oauth_access_token_when_no_expires_in_saves_token_as_expired(self, requests_mock, integration_context):
+    @freeze_time(FROZEN_TIME)
+    def test_get_oauth_access_token_when_no_expires_in_uses_requested_expiry(self, requests_mock, integration_context):
         """
         Given:
             - A token response without expires_in.
         When:
             - The client is created.
         Then:
-            - The token is used, but saved with expires_at 0 so it is not reused on the next run.
+            - The token is used and cached with the explicitly requested expiry, so it is reused on later runs.
         """
         requests_mock.post(self.TOKEN_URL, json={"access_token": "new_token"})
 
         client = self._oauth_client()
 
         assert client._headers == {"Authorization": "Bearer new_token"}
-        assert integration_context.call_args[0][0][OAUTH_TOKEN_CONTEXT_KEY]["expires_at"] == 0
+        assert (
+            integration_context.call_args[0][0][OAUTH_TOKEN_CONTEXT_KEY]["expires_at"]
+            == self.FROZEN_TIMESTAMP + OAUTH_TOKEN_EXPIRES_IN_SECONDS - OAUTH_TOKEN_EXPIRY_BUFFER_SECONDS
+        )
 
     def test_get_oauth_access_token_when_response_has_no_access_token_raises(self, requests_mock, integration_context):
         """

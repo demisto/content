@@ -61,6 +61,7 @@ OAUTH_TOKEN_SUFFIX = "/oauth/tokens"
 OAUTH_DEFAULT_SCOPE = "read write"
 OAUTH_TOKEN_CONTEXT_KEY = "oauth_token"
 OAUTH_TOKEN_EXPIRY_BUFFER_SECONDS = 60
+OAUTH_TOKEN_EXPIRES_IN_SECONDS = 1800
 
 
 class CacheManager:
@@ -346,6 +347,7 @@ class ZendeskClient(BaseClient):
                 "client_id": client_id,
                 "client_secret": client_secret,
                 "scope": scope,
+                "expires_in": OAUTH_TOKEN_EXPIRES_IN_SECONDS,
             },
             headers={"Content-Type": "application/x-www-form-urlencoded", "Accept": "application/json"},
         )
@@ -353,12 +355,12 @@ class ZendeskClient(BaseClient):
         if not access_token:
             raise DemistoException("Failed to obtain an OAuth access token from Zendesk: no access_token in the response.")
 
-        expires_in = arg_to_number(response.get("expires_in"))
+        expires_in = arg_to_number(response.get("expires_in")) or OAUTH_TOKEN_EXPIRES_IN_SECONDS
         integration_context[OAUTH_TOKEN_CONTEXT_KEY] = {
             "access_token": access_token,
             "client_id": client_id,
             "scope": scope,
-            "expires_at": time.time() + expires_in - OAUTH_TOKEN_EXPIRY_BUFFER_SECONDS if expires_in else 0,
+            "expires_at": time.time() + expires_in - OAUTH_TOKEN_EXPIRY_BUFFER_SECONDS,
         }
         demisto.setIntegrationContext(integration_context)
         return access_token
