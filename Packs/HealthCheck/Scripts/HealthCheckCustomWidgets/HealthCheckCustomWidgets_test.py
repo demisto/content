@@ -29,7 +29,7 @@ def test_widget_count_is_written_to_incident(mocker):
     When: The script runs.
     Then: The count is stored on the incident via setIncident.
     """
-    api_response = [{"Type": 1, "Contents": {"response": {"objects_count": 12}}}]
+    api_response = [{"Type": 1, "Contents": {"response": {"reply": {"objects_count": 12}}}}]
 
     calls = run_script(mocker, api_response)
 
@@ -43,7 +43,7 @@ def test_widgets_endpoint_is_queried(mocker):
     When: The script runs.
     Then: The widgets get endpoint is called with an empty request_data body.
     """
-    api_response = [{"Type": 1, "Contents": {"response": {"objects_count": 0}}}]
+    api_response = [{"Type": 1, "Contents": {"response": {"reply": {"objects_count": 0}}}}]
 
     calls = run_script(mocker, api_response)
 
