@@ -428,6 +428,64 @@ class OAuthHandler:
 # --- Client Class (MCP and Authentication Orchestration) ---
 
 
+def _flatten_nullable_type(schema: dict[str, Any]) -> dict[str, Any]:
+    """Return the schema with a list-valued JSON Schema "type" replaced by the single real type it names, or left out.
+
+    ["string", "null"] becomes "string", because "null" only marks the value as optional. A list that names no real
+    type (["null"]) or several (["string", "number"]) loses its "type", since picking one would be a guess. The
+    server stores a field without a type as unknown. Any other form (a plain string, anyOf, oneOf) is returned as is.
+    The given schema is never modified.
+    """
+    declared = schema.get("type")
+    if not isinstance(declared, list):
+        return schema
+    real_types = {entry for entry in declared if isinstance(entry, str) and entry != "null"}
+    single_type = next(iter(real_types)) if len(real_types) == 1 else None
+    return {key: single_type if key == "type" else value for key, value in schema.items() if key != "type" or single_type}
+
+
+def _normalize_property(name: str, prop: Any, is_output: bool) -> Any:
+    """Return the property with a readable type and, for an output property, a description. The input is not modified."""
+    if not isinstance(prop, dict):
+        return prop
+    prop = _flatten_nullable_type(prop)
+    if is_output and not prop.get("description"):
+        title = prop.get("title")
+        prop = {**prop, "description": title if isinstance(title, str) and title else name}
+    return prop
+
+
+def _normalize_schema(schema: dict[str, Any], is_output: bool) -> dict[str, Any]:
+    """Return the schema with its own type and each of its direct properties normalized. The input is not modified."""
+    schema = _flatten_nullable_type(schema)
+    properties = schema.get("properties")
+    if not isinstance(properties, dict):
+        return schema
+    return {**schema, "properties": {name: _normalize_property(name, prop, is_output) for name, prop in properties.items()}}
+
+
+# Workaround for MCP servers whose tool schemas are valid but not readable by the platform's tool discovery.
+# The platform-side fix is tracked in CRTX-289860. Once it ships, this normalization becomes redundant and should be removed.
+def normalize_tool_schemas(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Return the list-tools output in a form the platform's MCP tool discovery can read. The input is not modified.
+
+    The platform reads every property "type" as a single string, so one nullable type such as ["string", "null"]
+    makes it drop the whole server's tool list. It also rejects an output property that has no description.
+    Only these two cases are changed; schemas the platform already reads are returned as they are.
+    """
+    return [
+        {
+            **tool,
+            **{
+                key: _normalize_schema(tool[key], is_output=key == "outputSchema")
+                for key in ("inputSchema", "outputSchema")
+                if isinstance(tool.get(key), dict)
+            },
+        }
+        for tool in tools
+    ]
+
+
 class Client:
     """
     Client for interacting with the MCP server, responsible for:
@@ -600,7 +658,7 @@ class Client:
 
         # by_alias keeps the camelCase wire names (inputSchema, not input_schema).
         tools_dump = tools.model_dump(mode="json", by_alias=True)
-        outputs = {"server_name": server_name, "Tools": tools_dump.get("tools", [])}
+        outputs = {"server_name": server_name, "Tools": normalize_tool_schemas(tools_dump.get("tools", []))}
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix="ListTools",

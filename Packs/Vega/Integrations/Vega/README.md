@@ -1,7 +1,5 @@
 Vega integration for fetching alerts and incidents from the Vega platform.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 ## Configure Vega in Cortex
 
 | **Parameter** | **Description** | **Required** |
