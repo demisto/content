@@ -1,12 +1,12 @@
 Use this integration to fetch BitSight security findings as events in Cortex XSIAM. This is important for organizations that wish to integrate BitSight programmatically into their security operations.
 
-When configured as a fetching integration, it will continuously fetch new findings starting from the current day. The manual `bitsight-get-events` command fetches findings from the last 2 days (48 hours).
+When configured as a fetching integration, it will continuously fetch new findings starting from the current day. The manual `bitsight-get-events` command fetches findings from the last 2 days (48 hours) by default, or from an explicit date range when `start_date` and/or `end_date` are provided.
 
 ## Configure BitSight Event Collector in Cortex
 
 | Parameter | Description | Required | Default Value |
 | --- | --- | --- | --- |
-| Server URL | REST API Endpoint of BitSight server. | True | https://api.bitsighttech.com |
+| Server URL | REST API Endpoint of BitSight server. | True | <https://api.bitsighttech.com> |
 | API Key | BitSight API token. | True | - |
 | Company's GUID | Optional. If provided, findings for this company and its subsidiaries will be collected. If omitted, the collector attempts to use `myCompany.guid`. | False | - |
 | Trust any certificate (not secure) |  | False | - |
@@ -22,7 +22,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### bitsight-get-events
 
 ***
-Gets findings as events from BitSight Event Collector. The command fetches findings from the last 2 days (48 hours).
+Gets findings as events from BitSight Event Collector. By default, the command fetches findings from the last 2 days (48 hours). When `start_date` and/or `end_date` are provided, it fetches findings from that date range instead.
 
 #### Base Command
 
@@ -35,6 +35,8 @@ Gets findings as events from BitSight Event Collector. The command fetches findi
 | limit | The number of events to return. | Optional | 5 |
 | guid | Override the Company GUID for this command only. | Optional | - |
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. | Required | false |
+| start_date | Start of the window to retrieve findings from. Accepts free text (e.g., "2 days ago", "1 week ago") or a date (e.g., 2026-08-31). When provided, the command queries this explicit date range instead of the default 2-day lookback. | Optional | - |
+| end_date | End of the window to retrieve findings up to. Accepts free text (e.g., "now", "1 day ago") or a date (e.g., 2026-09-02). Defaults to now. | Optional | - |
 
 #### Context Output
 
