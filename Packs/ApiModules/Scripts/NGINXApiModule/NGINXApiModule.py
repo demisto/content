@@ -881,8 +881,10 @@ def test_nginx_web_server(port: int, params: dict) -> requests.Response:
             # let nginx startup
             time.sleep(0.5)
             protocol = "https" if params.get("key") else "http"
-            res = requests.get(
-                f"{protocol}://localhost:{port}/nginx-test", verify=False, proxies={"http": "", "https": ""}
+            res = requests.get(  # guardrails-disable-line # nosec
+                f"{protocol}://localhost:{port}/nginx-test",  # guardrails-disable-line # nosec
+                verify=False,  # guardrails-disable-line # nosec
+                proxies={"http": "", "https": ""},  # guardrails-disable-line # nosec
             )  # guardrails-disable-line # nosec
             res.raise_for_status()
             welcome = "Welcome to nginx"
@@ -1171,12 +1173,12 @@ def is_app_route_answering(app_url: str, nginx_port: int) -> bool:
     """
     try:
         with requests.get(  # guardrails-disable-line # nosec
-            app_url,
-            verify=False,
-            proxies={"http": "", "https": ""},
-            timeout=APP_ROUTE_PROBE_TIMEOUT,
-            stream=True,
-        ) as app_resp:
+            app_url,  # guardrails-disable-line # nosec
+            verify=False,  # guardrails-disable-line # nosec
+            proxies={"http": "", "https": ""},  # guardrails-disable-line # nosec
+            timeout=APP_ROUTE_PROBE_TIMEOUT,  # guardrails-disable-line # nosec
+            stream=True,  # guardrails-disable-line # nosec
+        ) as app_resp:  # guardrails-disable-line # nosec
             demisto.debug(f"nginx: app route on port {nginx_port} responded with status {app_resp.status_code}.")
             return True
     except requests.exceptions.ReadTimeout:
