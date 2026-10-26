@@ -913,6 +913,17 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             ]
         return result
 
+    def list_service_desk_organizations(self, service_desk_id: str) -> Dict[str, Any]:
+        """This method is in charge of returning the organizations associated with a service desk.
+
+        Args:
+            service_desk_id (str): The ID of the service desk.
+
+        Returns:
+            Dict[str, Any]: The results of the API, which will hold the organizations.
+        """
+        return self.http_request(method="GET", url_suffix=f"/rest/servicedeskapi/servicedesk/{service_desk_id}/organization")
+
 
 class JiraCloudClient(JiraBaseClient):
     """This class inherits the JiraBaseClient class and implements the required abstract methods,
@@ -2632,6 +2643,33 @@ def list_service_desks_command(client: JiraOnPremClient, args: Dict[str, str]) -
         outputs=service_desks,
         readable_output=tableToMarkdown(name="Service desks", t=service_desks, headerTransform=pascalToSpace, removeNull=True),
         raw_response=service_desks,
+    )
+
+
+def list_service_desk_organizations_command(client: JiraOnPremClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of returning the organizations for a specific service desk.
+
+    Args:
+        client (JiraOnPremClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+            service_desk_id (str): The ID of the service desk.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
+    service_desk_id = args["service_desk_id"]
+    organizations = client.list_service_desk_organizations(service_desk_id=service_desk_id)
+
+    return CommandResults(
+        outputs_prefix="Jira.ServiceDeskOrganization",
+        outputs=organizations,
+        readable_output=tableToMarkdown(
+            name=f"Organizations for service desk {service_desk_id}",
+            t=organizations,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        ),
+        raw_response=organizations,
     )
 
 
@@ -5070,6 +5108,7 @@ def main():  # pragma: no cover
         "get-remote-data-preview": get_remote_data_preview_command,
         "jira-get-request-types": get_request_types_command,
         "jira-get-service-desk-id-by-project": list_service_desks_command,
+        "jira-get-service-desk-organizations": list_service_desk_organizations_command,
     }
     try:
         client: JiraBaseClient

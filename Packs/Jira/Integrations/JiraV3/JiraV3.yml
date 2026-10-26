@@ -1589,6 +1589,16 @@ script:
       description: The service desks.
       type: Object
   - arguments:
+    - description: The service desk ID used to filter organizations.
+      name: service_desk_id
+      required: true
+    description: Returns a list of organizations associated with a service desk.
+    name: jira-get-service-desk-organizations
+    outputs:
+    - contextPath: Jira.ServiceDeskOrganization
+      description: The organizations associated with the service desk.
+      type: Object
+  - arguments:
     - description: The user's key (On-prem only).
       name: key
       required: false
