@@ -20,6 +20,8 @@ from Azure import (
     set_webapp_config_command,
     update_webapp_auth_command,
     mysql_flexible_server_param_set_command,
+    postgres_flexible_server_configuration_update_command,
+    POSTGRES_FLEXIBLE_API_VERSION,
     monitor_log_profile_update_command,
     disk_update_command,
     webapp_update_command,
@@ -2651,6 +2653,120 @@ def test_flexible_server_param_set_error_handling(mocker, client):
     )
 
 
+def test_postgres_flexible_server_configuration_update_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to update a PostgreSQL Flexible Server configuration.
+    When: The postgres_flexible_server_configuration_update_command function is called with valid parameters.
+    Then: The function should return a success message and pass the correct arguments to the client method.
+    """
+    mocker.patch.object(client, "postgres_flexible_server_configuration_update", return_value=None)
+
+    args = {
+        "server_name": "test-postgres-flex",
+        "configuration_name": "log_checkpoints",
+        "source": "user-override",
+        "value": "on",
+    }
+
+    result = postgres_flexible_server_configuration_update_command(client, mock_params, args)
+
+    assert (
+        "Updated the configuration log_checkpoints of the PostgreSQL Flexible Server test-postgres-flex" in result.readable_output
+    )
+    client.postgres_flexible_server_configuration_update.assert_called_once_with(
+        "test-postgres-flex",
+        "log_checkpoints",
+        mock_params.get("subscription_id"),
+        mock_params.get("resource_group_name"),
+        "user-override",
+        "on",
+    )
+
+
+def test_azure_client_postgres_flexible_server_configuration_update_success(mocker, client):
+    """
+    Given: An Azure client and valid PostgreSQL Flexible Server configuration parameters.
+    When: The postgres_flexible_server_configuration_update method is called.
+    Then: The method should make the correct PUT API call and return the response.
+    """
+    mock_response = {
+        "name": "log_checkpoints",
+        "id": (
+            "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.DBforPostgreSQL/flexibleServers/test-postgres-flex/"
+            "configurations/log_checkpoints"
+        ),
+        "properties": {"value": "on", "source": "user-override", "description": "Enables logging of checkpoints"},
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    result = client.postgres_flexible_server_configuration_update(
+        server_name="test-postgres-flex",
+        configuration_name="log_checkpoints",
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        source="user-override",
+        value="on",
+    )
+
+    expected_url = (
+        f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.DBforPostgreSQL/flexibleServers/test-postgres-flex/"
+        "configurations/log_checkpoints"
+    )
+    client.http_request.assert_called_once_with(
+        method="PUT",
+        full_url=expected_url,
+        json_data={"properties": {"source": "user-override", "value": "on"}},
+        params={"api-version": POSTGRES_FLEXIBLE_API_VERSION},
+    )
+
+    assert result == mock_response
+    assert result["name"] == "log_checkpoints"
+    assert result["properties"]["value"] == "on"
+    assert result["properties"]["source"] == "user-override"
+
+
+def test_azure_client_postgres_flexible_server_configuration_update_error_handling(mocker, client):
+    """
+    Given: An Azure client and arguments for updating a PostgreSQL Flexible Server configuration.
+    When: The postgres_flexible_server_configuration_update method is called and an exception occurs.
+    Then: The method should call handle_azure_error with appropriate parameters.
+    """
+    server_name = "test-postgres-flex"
+    configuration_name = "log_checkpoints"
+    subscription_id = "12345678-1234-1234-1234-123456789012"
+    resource_group_name = "test-resource-group"
+    source = "user-override"
+    value = "on"
+
+    mock_exception = Exception("404 Not Found")
+
+    mocker.patch.object(client, "http_request", side_effect=mock_exception)
+    mocker.patch.object(
+        client,
+        "handle_azure_error",
+        side_effect=ValueError("PostgreSQL Flexible Server Configuration not found"),
+    )
+
+    with pytest.raises(ValueError, match="PostgreSQL Flexible Server Configuration not found"):
+        client.postgres_flexible_server_configuration_update(
+            server_name=server_name,
+            configuration_name=configuration_name,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            source=source,
+            value=value,
+        )
+
+    client.handle_azure_error.assert_called_once_with(
+        e=mock_exception,
+        resource_name=f"{server_name}/{configuration_name}",
+        resource_type="PostgreSQL Flexible Server Configuration",
+        api_function_name="postgres_flexible_server_configuration_update",
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+    )
+
+
 def test_get_monitor_log_profile(mocker, client):
     """
     Given: An Azure client and arguments for getting a monitor log profile.
@@ -5104,7 +5220,11 @@ def test_azure_billing_usage_list_command_with_pagination_token(mocker, client, 
     }
     mocker.patch.object(client, "http_request", return_value=mock_response)
 
-    args = {"subscription_id": "test-subscription-id", "next_page_token": "existing-skiptoken"}
+    args = {
+        "subscription_id": "test-subscription-id",
+        "next_page_token": "https://management.azure.com/subscriptions/test-subscription-id/providers/"
+        "Microsoft.Consumption/usageDetails?api-version=2024-08-01&$skiptoken=existing-skiptoken",
+    }
     params = mock_params
 
     result = azure_billing_usage_list_command(client, params, args)
@@ -7641,10 +7761,19 @@ def test_ip_group_list_client_uses_next_token(mocker, client):
     assert mock_http_request.call_args.kwargs["params"] == {}
 
 
-def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, client):
+INVALID_NEXT_TOKENS = [
+    "https://attacker.example.com/next-page",
+    "https://management.azure.com.attacker.example.com/next-page",
+    "https://management.azure.com@attacker.example.com/next-page",
+    "http://management.azure.com/next-page",
+]
+
+
+@pytest.mark.parametrize("next_token", INVALID_NEXT_TOKENS)
+def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, client, next_token):
     """
     Given:
-        - An AzureClient and a next token pointing at a host that is not the configured Azure management endpoint.
+        - An AzureClient and a next token that is not an HTTPS URL on the configured Azure management endpoint.
     When:
         - Calling the ip_group_list client method with that token.
     Then:
@@ -7653,11 +7782,89 @@ def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, cli
     mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
 
     with pytest.raises(DemistoException, match="Invalid next_token"):
-        client.ip_group_list(
-            subscription_id="sub-id", resource_group_name="test-rg", next_token="https://attacker.example.com/next-page"
-        )
+        client.ip_group_list(subscription_id="sub-id", resource_group_name="test-rg", next_token=next_token)
 
     mock_http_request.assert_not_called()
+
+
+@pytest.mark.parametrize("next_token", INVALID_NEXT_TOKENS)
+def test_list_vm_request_rejects_invalid_next_token(mocker, client, next_token):
+    """
+    Given:
+        - An AzureClient and a next token that is not an HTTPS URL on the configured Azure management endpoint.
+    When:
+        - Calling the list_vm_request client method with that token.
+    Then:
+        - A DemistoException is raised and no request is sent, so that the Azure access token is not leaked.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.list_vm_request(subscription_id="sub-id", resource_group_name="test-rg", next_token=next_token)
+
+    mock_http_request.assert_not_called()
+
+
+def test_billing_usage_list_with_valid_next_page_token(mocker, client):
+    """
+    Given:
+        - An AzureClient and a next page token returned by a previous call to the usage details API.
+    When:
+        - Calling the billing_usage_list client method with that token.
+    Then:
+        - The request is sent to the next page URL, with the api-version from the token replaced by the default one.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+    next_page_token = (
+        "https://management.azure.com/subscriptions/sub-id/providers/Microsoft.Consumption/usageDetails"
+        "?api-version=2019-01-01&$skiptoken=abc"
+    )
+
+    client.billing_usage_list(subscription_id="sub-id", next_page_token=next_page_token)
+
+    mock_http_request.assert_called_once()
+    assert mock_http_request.call_args.kwargs["full_url"].startswith(
+        "https://management.azure.com/subscriptions/sub-id/providers/Microsoft.Consumption/usageDetails"
+    )
+    assert "api-version" not in mock_http_request.call_args.kwargs["full_url"]
+    assert mock_http_request.call_args.kwargs["params"] == {"api-version": "2024-08-01"}
+
+
+@pytest.mark.parametrize("next_page_token", INVALID_NEXT_TOKENS)
+def test_billing_usage_list_rejects_invalid_next_page_token(mocker, client, next_page_token):
+    """
+    Given:
+        - An AzureClient and a next page token that is not an HTTPS URL on the configured Azure management endpoint.
+    When:
+        - Calling the billing_usage_list client method with that token.
+    Then:
+        - A DemistoException is raised and no request is sent, so that the Azure access token is not leaked.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.billing_usage_list(subscription_id="sub-id", next_page_token=next_page_token)
+
+    mock_http_request.assert_not_called()
+
+
+def test_validate_next_link_accepts_gov_host(mocker):
+    """
+    Given:
+        - A next link on the US Gov management host, and the integration configured for a Gov account.
+    When:
+        - Calling validate_next_link with the host taken from PREFIX_URL_AZURE.
+    Then:
+        - The link is returned unchanged, so valid Gov pagination keeps working.
+    """
+    from urllib.parse import urlparse
+
+    from Azure import validate_next_link
+
+    mocker.patch.object(Azure, "PREFIX_URL_AZURE", "https://management.usgovcloudapi.net/subscriptions/")
+    next_link = "https://management.usgovcloudapi.net/subscriptions/sub-id/next-page?$skipToken=abc"
+
+    assert validate_next_link(next_link, urlparse(Azure.PREFIX_URL_AZURE).hostname or "") == next_link
 
 
 def test_ip_group_list_client_by_subscription(mocker, client):
