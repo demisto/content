@@ -1,0 +1,88 @@
+{
+    "gitguardian_saas_raw": {
+        "_source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "int",
+            "is_array": false
+        },
+        "incident_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "detector": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "validity": {
+            "type": "string",
+            "is_array": false
+        },
+        "risk_score": {
+            "type": "int",
+            "is_array": false
+        },
+        "occurrences_count": {
+            "type": "int",
+            "is_array": false
+        },
+        "tags": {
+            "type": "string",
+            "is_array": false
+        },
+        "assignee_email": {
+            "type": "string",
+            "is_array": false
+        },
+        "gitguardian_url": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "action_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "data": {
+            "type": "string",
+            "is_array": false
+        },
+        "member_email": {
+            "type": "string",
+            "is_array": false
+        },
+        "member_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "member_id": {
+            "type": "int",
+            "is_array": false
+        },
+        "api_token_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "ip_address": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_ids": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

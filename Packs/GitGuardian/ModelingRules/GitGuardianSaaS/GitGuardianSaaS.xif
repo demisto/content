@@ -1,0 +1,37 @@
+[MODEL: dataset = gitguardian_saas_raw]
+// Mapping secret incidents
+filter _source_log_type = "incident_secret"
+| alter
+        detector_name = coalesce(detector -> display_name, detector -> name),
+        incident_tags = arraystring(arraymap(tags -> [], trim("@element", "\"")), ", ")
+| alter
+        xdm.alert.original_alert_id = to_string(id),
+        xdm.alert.name = coalesce(incident_name, detector_name),
+        xdm.alert.severity = severity,
+        xdm.alert.subcategory = detector_name,
+        xdm.alert.risks = arraycreate(to_string(risk_score)),
+        xdm.alert.description = concat("Status = ", status, ", Validity = ", validity, ", Occurrences = ", to_string(occurrences_count), if(incident_tags != null and incident_tags != "", concat(", Tags = ", incident_tags), "")),
+        xdm.event.id = to_string(id),
+        xdm.event.type = _source_log_type,
+        xdm.event.outcome_reason = status,
+        xdm.target.user.upn = assignee_email,
+        xdm.target.identity.upn = assignee_email,
+        xdm.network.http.url = gitguardian_url;
+
+// Mapping audit logs
+filter _source_log_type = "audit_log"
+| alter
+        xdm.event.id = to_string(id),
+        xdm.event.type = _source_log_type,
+        xdm.event.original_event_type = event_name,
+        xdm.event.operation_sub_type = action_type,
+        xdm.event.description = to_json_string(data),
+        xdm.source.user.upn = member_email,
+        xdm.source.identity.upn = member_email,
+        xdm.source.user.username = member_name,
+        xdm.source.identity.username = member_name,
+        xdm.source.user.identifier = coalesce(to_string(member_id), api_token_id),
+        xdm.source.identity.identifier = coalesce(to_string(member_id), api_token_id),
+        xdm.source.ipv4 = if(ip_address ~= "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", ip_address, null),
+        xdm.source.ipv6 = if(ip_address ~= ":", ip_address, null),
+        xdm.target.resource.id = arraystring(arraymap(target_ids -> [], trim("@element", "\"")), ", ");
