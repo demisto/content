@@ -36,7 +36,7 @@ configuration:
   defaultvalue: read write
   required: false
   section: Connect
-  additionalinfo: OAuth scope requested at token acquisition. Defaults to 'read write' when empty.
+  additionalinfo: OAuth scope requested at token acquisition, as a space-separated list (e.g., 'tickets:read users:read'). Defaults to 'read write' when empty.
 - display: Fetch incidents
   name: isFetch
   type: 8

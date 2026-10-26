@@ -10,7 +10,7 @@
 | Password/API key |  | False |
 | Client ID | OAuth 2.0 client identifier \(the 'Unique identifier' of the OAuth client in Zendesk\) and client secret. When both are set, OAuth authentication is used instead of the Username/Password credentials. | False |
 | Client Secret |  | False |
-| Scope | OAuth scope requested at token acquisition. Defaults to 'read write' when empty. | False |
+| Scope | OAuth scope requested at token acquisition, as a space-separated list \(e.g., 'tickets:read users:read'\). Defaults to 'read write' when empty. | False |
 | Fetch incidents |  | False |
 | Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror \*\*Incoming\*\* only \(from Zendesk to Cortex XSOAR\), \*\*Outgoing\*\* only \(from Cortex XSOAR to Zendesk\), or both \*\*Incoming And Outgoing\*\*. | False |
 | Close mirrored incidents | If true, XSOAR will mirror also the ticket closeing. | False |
