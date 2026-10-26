@@ -5,7 +5,19 @@ from freezegun import freeze_time
 import demistomock as demisto
 import pytest
 from requests.auth import _basic_auth_str
-from TAXII2Server import APP, MEDIA_TYPE_STIX_V20, MEDIA_TYPE_TAXII_V20, TAXII2Server, create_fields_list, create_query, uuid
+from TAXII2Server import (
+    APP,
+    MEDIA_TYPE_STIX_V20,
+    MEDIA_TYPE_TAXII_V20,
+    TAXII2Server,
+    create_fields_list,
+    create_query,
+    uuid,
+)
+from TAXII2Server import (
+    # Aliased so pytest does not collect the imported helper as a test (its name starts with "test_").
+    test_long_running_with_running_instance_check as long_running_instance_check,
+)
 
 HEADERS = {
     "Authorization": _basic_auth_str("username", "password"),
@@ -740,9 +752,7 @@ def _patch_long_running_check_names(mocker, port_in_use: bool, healthy: bool | N
     Returns:
         dict: The created mocks keyed by name.
     """
-    import TAXII2Server as taxii2_server_module
-
-    runtime_globals = taxii2_server_module.test_long_running_with_running_instance_check.__globals__
+    runtime_globals = long_running_instance_check.__globals__
     mocks = {
         "get_params_port": mocker.MagicMock(return_value=1000),
         "is_port_in_use": mocker.MagicMock(return_value=port_in_use),
