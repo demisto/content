@@ -13,7 +13,7 @@
     "hours": 0,
     "hoursR": 0,
     "id": "Health Check and BPA",
-    "layout": "Health Check and BPA",
+    "layout": "HealthCheck issue Layout",
     "locked": false,
     "name": "Health Check and BPA",
     "onChangeRepAlg": 1,

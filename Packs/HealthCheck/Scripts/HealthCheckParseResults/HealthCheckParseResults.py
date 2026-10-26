@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 import re
+import traceback
 from typing import Any
 
 ActionItem = dict[str, str]
@@ -404,36 +405,40 @@ def parse_collect_results(collect_results: dict) -> list[ActionItem]:
             items = handler(rows, cfg)
             action_items.extend(items)
         except Exception as exc:  # noqa: BLE001
-            demisto.error(f"HealthCheckParseResults: handler for '{canonical}' raised {exc}")
+            demisto.error(f"HealthCheckParseResults: handler for '{canonical}' raised {exc}\n{traceback.format_exc()}")
 
     return action_items
 
 
 def main() -> None:
-    raw_data = load_context_data()
+    try:
+        raw_data = load_context_data()
 
-    collect_results: dict[str, list[dict]] = raw_data.get("CollectResults") or {}
+        collect_results: dict[str, list[dict]] = raw_data.get("CollectResults") or {}
 
-    if not collect_results:
-        return_warning("HealthCheck.CollectResults is empty — nothing to parse")
-        return
+        if not collect_results:
+            return_warning("HealthCheck.CollectResults is empty — nothing to parse")
+            return
 
-    action_items = parse_collect_results(collect_results)
+        action_items = parse_collect_results(collect_results)
 
-    return_results(
-        CommandResults(
-            outputs_prefix="HealthCheck",
-            outputs_key_field="",
-            outputs={"ActionableItems": action_items},
-            readable_output=tableToMarkdown(
-                "HealthCheck Actionable Items",
-                action_items,
-                headers=["category", "severity", "description", "resolution"],
+        return_results(
+            CommandResults(
+                outputs_prefix="HealthCheck",
+                outputs_key_field="",
+                outputs={"ActionableItems": action_items},
+                readable_output=tableToMarkdown(
+                    "HealthCheck Actionable Items",
+                    action_items,
+                    headers=["category", "severity", "description", "resolution"],
+                )
+                if action_items
+                else "No actionable items generated.",
             )
-            if action_items
-            else "No actionable items generated.",
         )
-    )
+    except Exception as e:
+        demisto.error(traceback.format_exc())
+        return_error(f"Failed to execute HealthCheckParseResults. Error: {str(e)}", error=e)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

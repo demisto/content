@@ -25,6 +25,7 @@
 	"editForm": true,
 	"fieldCalcScript": "",
 	"fromServerVersion": "",
+	"fromVersion": "8.10.0",
 	"group": 0,
 	"hidden": false,
 	"id": "incident_healthchecktotaladminscount",

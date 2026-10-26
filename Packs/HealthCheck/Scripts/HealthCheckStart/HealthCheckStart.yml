@@ -1,5 +1,4 @@
-comment: Creates a HealthCheck alert via the XSIAM local API (public_api/v1/alerts/create_alert)
-  and posts a hyperlink to the created alert in the War Room.
+comment: Creates a HealthCheck alert via the XSIAM local API (public_api/v1/alerts/create_alert) and posts a hyperlink to the created alert in the War Room.
 commonfields:
   id: HealthCheckStart
   version: -1
@@ -14,4 +13,6 @@ runonce: false
 tags: []
 fromversion: 8.3.0
 marketplaces:
-  - marketplacev2
+- marketplacev2
+tests:
+- No tests (auto formatted)

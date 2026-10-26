@@ -1,4 +1,4 @@
-comment: Get custom fields stats
+comment: Get custom fields stats.
 commonfields:
   id: HealthCheckCustomFields
   version: -1

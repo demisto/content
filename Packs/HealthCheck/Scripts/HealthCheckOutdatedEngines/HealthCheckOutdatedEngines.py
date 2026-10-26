@@ -43,7 +43,7 @@ def main():
             return_results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(chart_data)})
 
     except Exception as exc:
-        return_error(f"OutdatedEnginesWidget failed: {exc}")
+        return_error(f"OutdatedEnginesWidget failed: {exc}", error=exc)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

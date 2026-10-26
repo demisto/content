@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
 import time
+import traceback
 
 
 def get_current_unix_ms() -> int:
@@ -22,7 +23,7 @@ def get_issue_id_by_external_id(external_id: str) -> int | None:
         }
     }
 
-    demisto.debug("get_issue_id_by_external_id: waiting 2 seconds for issue to be indexed")
+    demisto.debug("get_issue_id_by_external_id: waiting 10 seconds for issue to be indexed")
     time.sleep(10)
 
     result = demisto.executeCommand(
@@ -41,7 +42,7 @@ def get_issue_id_by_external_id(external_id: str) -> int | None:
         if data:
             return data[0].get("id")
     except (KeyError, IndexError, TypeError) as e:
-        demisto.debug(f"get_issue_id_by_external_id parse error: {e}")
+        demisto.debug(f"get_issue_id_by_external_id parse error: {e}\n{traceback.format_exc()}")
 
     return None
 
@@ -77,7 +78,10 @@ def main() -> None:
             response = result[0]["Contents"]["response"]
             reply = response.get("reply", response)
         except (KeyError, IndexError, TypeError) as e:
-            return_error(f"Unexpected response structure from /public_api/v1/issue: {e}")
+            return_error(
+                f"Unexpected response structure from /public_api/v1/issue: {e}\n{traceback.format_exc()}",
+                error=e,
+            )
             return
 
         external_id = reply.get("external_id") if isinstance(reply, dict) else None
@@ -93,16 +97,10 @@ def main() -> None:
         else:
             message = "HealthCheck issue created successfully."
 
-        demisto.results(
-            {
-                "Type": entryTypes["note"],
-                "ContentsFormat": formats["markdown"],
-                "Contents": message,
-            }
-        )
+        return_results(CommandResults(readable_output=message))
 
     except Exception as e:
-        return_error(f"HealthCheckStart failed: {e}")
+        return_error(f"HealthCheckStart failed: {e}\n{traceback.format_exc()}", error=e)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

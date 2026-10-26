@@ -16,13 +16,11 @@ try:
         return_error(f"Failed to fetch BIOCs: {get_error(res)}")
 
     # The response is expected to contain the BIOC in the reply field
-    biocs = res[0].get("Contents", {}).get("response", {})
+    response = res[0].get("Contents", {}).get("response") or {}
+    biocs = response.get("reply", {}) if isinstance(response, dict) else response
 
     if not isinstance(biocs, dict):
-        # Fallback for alternative response structures
-        biocs = res[0].get("Contents", {}).get("response", {}).get("reply", {})
-        if not isinstance(biocs, dict):
-            return_error("Unexpected response format: BIOCs list not found.")
+        return_error("Unexpected response format: BIOCs list not found.")
 
     total_biocs = biocs.get("objects_count")
 

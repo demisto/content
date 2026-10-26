@@ -21,8 +21,12 @@ def get_xsiam_license_data():
         contents = res[0].get("Contents", {}).get("response", {})
         details = contents.get("reply", {})
 
-        licenseTypeKey = [key for key, value in details.items() if re.match(r"purchased_xsiam_(?!gb).*$", key)][0]
-        licenseTypeString = licenseTypeKey.removeprefix("purchased_")
+        license_type_key = next((key for key in details if re.match(r"purchased_xsiam_(?!gb).*$", key)), None)
+        if not license_type_key:
+            return_error("No purchased XSIAM license was found in the tenant info response.")
+            return
+
+        licenseTypeString = license_type_key.removeprefix("purchased_")
         licenseType = licenseTypeString.replace("_", " ").title()
         split = licenseType.split(" ")
         split[0] = split[0].upper()
@@ -32,7 +36,7 @@ def get_xsiam_license_data():
 
         licenseDetails.append({"field": "License Type", "value": licenseType})
 
-        licenseBreakdownRaw = details.get(licenseTypeKey, {})
+        licenseBreakdownRaw = details.get(license_type_key, {})
         if licenseBreakdownRaw != {}:
             licenseBreakdown = []
             licenseBreakdown.append(
@@ -122,7 +126,7 @@ def get_xsiam_license_data():
         return_results(CommandResults(readable_output="HealchCheckInstalledPacks Done"))
 
     except Exception as e:
-        return_error(f"Error in XSIAM license logic: {str(e)}")
+        return_error(f"Error in XSIAM license logic: {str(e)}", error=e)
 
 
 def get_xsoar6_license_data():

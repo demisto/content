@@ -15,10 +15,8 @@ try:
     if is_error(res):
         return_error(f"Failed to fetch incident fields: {get_error(res)}")
 
-    fields = res[0].get("Contents", {}).get("response", [])
-    if not isinstance(fields, list):
-        # Fallback if response structure varies
-        fields = res[0].get("Contents", {}).get("response", {}).get("reply", [])
+    response = res[0].get("Contents", {}).get("response") or []
+    fields = response.get("reply", []) if isinstance(response, dict) else response
 
     total_issue_fields = 0
     total_case_fields = 0

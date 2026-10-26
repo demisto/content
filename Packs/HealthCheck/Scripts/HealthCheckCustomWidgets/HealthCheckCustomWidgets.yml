@@ -1,4 +1,4 @@
-comment: Count custom widgets
+comment: Count custom widgets.
 commonfields:
   id: HealthCheckCustomWidgets
   version: -1

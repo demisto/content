@@ -1,4 +1,4 @@
-comment: Get Custom Scripts Stats
+comment: Get Custom Scripts Stats.
 commonfields:
   id: HealthCheckCustomScripts
   version: -1

@@ -16,13 +16,11 @@ try:
         return_error(f"Failed to fetch widgets: {get_error(res)}")
 
     # The response is expected to contain the widget in the reply field
-    widgets = res[0].get("Contents", {}).get("response", {})
+    response = res[0].get("Contents", {}).get("response") or {}
+    widgets = response.get("reply", {}) if isinstance(response, dict) else response
 
     if not isinstance(widgets, dict):
-        # Fallback for alternative response structures
-        widgets = res[0].get("Contents", {}).get("response", {}).get("reply", {})
-        if not isinstance(widgets, dict):
-            return_error("Unexpected response format: widgets list not found.")
+        return_error("Unexpected response format: widgets list not found.")
 
     total_widgets = widgets.get("objects_count")
 

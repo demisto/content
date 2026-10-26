@@ -15,10 +15,8 @@ try:
     if is_error(res):
         return_error(f"Failed to fetch layouts: {get_error(res)}")
 
-    layouts = res[0].get("Contents", {}).get("response", [])
-    if not isinstance(layouts, list):
-        # Fallback if response structure varies
-        layouts = res[0].get("Contents", {}).get("response", {}).get("reply", [])
+    response = res[0].get("Contents", {}).get("response") or []
+    layouts = response.get("reply", []) if isinstance(response, dict) else response
 
     total_issue_layouts = 0
     total_case_layouts = 0

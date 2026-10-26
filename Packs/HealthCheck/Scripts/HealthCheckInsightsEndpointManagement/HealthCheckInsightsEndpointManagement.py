@@ -1,12 +1,21 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import time
 import json
 import pandas as pd
 from datetime import UTC
+from typing import Any
+
+XQL_POLL_INTERVAL_SECONDS = 3
 
 
-def printDFtoMarkdown(result, title):
+def print_df_to_markdown(result: pd.DataFrame, title: str) -> None:
+    """
+    Render a DataFrame as a markdown table in the War Room.
+
+    Args:
+        result (pd.DataFrame): The DataFrame to render.
+        title (str): The table title.
+    """
     dict_result = result.to_dict(orient="records")
     md = tableToMarkdown(title, dict_result)
     results = CommandResults(
@@ -15,9 +24,22 @@ def printDFtoMarkdown(result, title):
     return_results(results)
 
 
-def execute_xql_query(query, limit=1000, max_polls=30):
-    # Execute XQL query and return results#
+def execute_xql_query(query: str, limit: int = 1000, max_polls: int = 30) -> list[dict[str, Any]]:
+    """
+    Start an XQL query through core-api-post and poll until it completes.
 
+    Args:
+        query (str): The XQL query to run.
+        limit (int): Maximum number of rows to return.
+        max_polls (int): Maximum number of polling attempts before giving up.
+
+    Returns:
+        list[dict[str, Any]]: The query result rows.
+
+    Raises:
+        ValueError: If starting the query, polling, or the query itself fails.
+        TimeoutError: If the query does not finish within max_polls attempts.
+    """
     # Step 1: Start query
     start_body = {
         "request_data": {
@@ -66,12 +88,12 @@ def execute_xql_query(query, limit=1000, max_polls=30):
         elif reply["status"] == "FAILED":
             raise ValueError(f"Query failed: {reply.get('error')}")
 
-        time.sleep(3)
+        safe_sleep(XQL_POLL_INTERVAL_SECONDS)
 
     raise TimeoutError("Query timeout")
 
 
-def query_inventory_by_os(df):
+def query_inventory_by_os(df: pd.DataFrame) -> pd.DataFrame:
     """
     Query 1: Count endpoints grouped by platform, OS, and version.
     XQL: dataset = endpoints | comp count() as total by platform, operating_system, os_version | sort desc total
@@ -189,56 +211,46 @@ def query_disconnected_endpoints_by_type_optimized(df, days_threshold=20):
     return workstations, servers
 
 
-"""Main execution."""
+def main() -> None:
+    """Main execution."""
+    try:
+        # Get query from args and limit
+        query = demisto.args().get("query", "dataset = endpoints | limit 100")
 
-# Get query from args and limit
-query = demisto.args().get("query", "dataset = endpoints | limit 100")
+        # Execute Main Endpoints dataset query
+        endpoints_data = execute_xql_query(query)
 
-# Execute Main Endpoints dataset query
+        # Convert to DataFrame ONCE - for all queries usage
+        df = pd.DataFrame(endpoints_data)
+        return_results(f"DataFrame created with {len(df)} rows and {len(df.columns)} columns\n")
 
-endpoints_data = execute_xql_query(query)
+        # Query 1: Inventory by OS
+        result_query_1 = query_inventory_by_os(df)
+        print_df_to_markdown(result_query_1, "Count endpoints grouped by platform, OS, and version")
 
-# Convert to DataFrame ONCE - fir all queries usage
-df = pd.DataFrame(endpoints_data)
-return_results(f"DataFrame created with {len(df)} rows and {len(df.columns)} columns\n")
+        # Query 2: Content auto-update disabled
+        result_query_2 = query_content_autoupdate_disabled(df)
+        if result_query_2 is not None:
+            print_df_to_markdown(
+                result_query_2,
+                "Count endpoints with content auto-update disabled, grouped by prevention policy",
+            )
 
-# Execute Query 1: Inventory by OS
-# Translate "XQL: dataset = endpoints | comp count() as total by platform, operating_system, os_version | sort desc total\n")
-result_query_1 = query_inventory_by_os(df)
-printDFtoMarkdown(result_query_1, "Count endpoints grouped by platform, OS, and version")
-# return_results(result1.to_string(index=False))
+        # Queries 3 and 6: Disconnected workstations and servers
+        workstations, servers = query_disconnected_endpoints_by_type_optimized(df, 20)
+        if workstations is not None:
+            print_df_to_markdown(workstations, "Disconnected Workstations:")
+        if servers is not None:
+            print_df_to_markdown(servers, "Disconnected Servers:")
 
+        # Query 4: Connection lost endpoints
+        connection_lost = query_connection_lost_endpoints(df)
+        if connection_lost is not None:
+            print_df_to_markdown(connection_lost, "Connection lost endpoints")
 
-# Execute Query 2: Content auto-update disabled
-
-# Translate
-# "XQL: dataset = endpoints | filter content_auto_update = ENUM.DISABLED | comp count() as total by assigned_prevention_policy\n"
-result_query_2 = query_content_autoupdate_disabled(df)
-
-if result_query_2 is not None:
-    printDFtoMarkdown(
-        result_query_2,
-        "Count endpoints with content auto-update disabled, grouped by prevention policy",
-    )
-    # return_results(result_query_2.to_string(index=False))
-    # return_results(
-    #     f"Total endpoints with auto-update disabled: {result_query_2['total'].sum()}"
-    # )
-
-
-# execute query 3, 6:
-
-workstations, servers = query_disconnected_endpoints_by_type_optimized(df, 20)
-if workstations is not None:
-    printDFtoMarkdown(workstations, "Disconnected Workstations:")
-if servers is not None:
-    printDFtoMarkdown(servers, "Disconnected Servers:")
+    except Exception as e:
+        return_error(f"Failed to execute HealthCheckInsightsEndpointManagement. Error: {str(e)}")
 
 
-# execute query 4
-
-# Query 4: Connection lost endpoints
-connection_lost = query_connection_lost_endpoints(df)
-if connection_lost is not None:
-    # return_results(connection_lost.to_string(index=False))
-    printDFtoMarkdown(connection_lost, "Connection lost endpoints")
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    main()

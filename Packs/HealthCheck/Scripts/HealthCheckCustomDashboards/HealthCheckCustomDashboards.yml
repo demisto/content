@@ -1,4 +1,4 @@
-comment: Count custom dashboards
+comment: Count custom dashboards.
 commonfields:
   id: HealthCheckCustomDashboards
   version: -1

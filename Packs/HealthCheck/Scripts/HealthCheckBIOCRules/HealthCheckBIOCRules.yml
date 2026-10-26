@@ -1,4 +1,4 @@
-comment: Count BIOC Rules
+comment: Count BIOC Rules.
 commonfields:
   id: HealthCheckBIOCRules
   version: -1

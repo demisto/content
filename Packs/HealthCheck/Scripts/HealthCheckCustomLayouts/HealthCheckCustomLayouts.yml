@@ -1,4 +1,4 @@
-comment: Get custom layouts stats
+comment: Get custom layouts stats.
 commonfields:
   id: HealthCheckCustomLayouts
   version: -1
