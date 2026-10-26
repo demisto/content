@@ -191,8 +191,8 @@ script:
       description: The user's ID to retrieve.
     - name: user_name
       description: |-
-        The user's name. 
-        Required permissions to use this argument: Agents. 
+        The user's name.
+        Required permissions to use this argument: Agents.
     - name: external_id
       description: The user's unique identifier from another system.
     - name: role
@@ -692,8 +692,8 @@ script:
     arguments:
     - name: organization_id
       description: |-
-        The ID of a specific organization. 
-        Required permissions: Admins, Agents. 
+        The ID of a specific organization.
+        Required permissions: Admins, Agents.
     - name: limit
       default: true
       description: Maximum number of results to return. Default is 50.
@@ -876,7 +876,7 @@ script:
     arguments:
     - name: limit
       default: true
-      description: Maximum number of results to return.
+      description: Maximum number of results to return. Default is 50.
     - name: page_size
       description: The page size (used for pagination).
     - name: page_number
@@ -915,7 +915,7 @@ script:
       Required permissions: Agents. 
     arguments:
     - name: query
-      description: 'Query to search for tickets. For more information about the search syntax, see https://developer.zendesk.com/rest_api/docs/core/search.'
+      description: 'The query to search for tickets. For more information about the search syntax, see https://developer.zendesk.com/rest_api/docs/core/search.'
     - name: ticket_id
       isArray: true
       description: The ID of a specific ticket.
@@ -1096,9 +1096,9 @@ script:
       - 'false'
     - name: file_id
       isArray: true
-      description: A comma-separated list of optional entry IDs of attachments.
+      description: A comma-separated list of entry IDs of attachments.
     - name: filename
-      description: A comma-separated list of filenames to upload if file_id is set. Default is the original filename.
+      description: A comma-separated list of filenames to upload if you provide file_id. Default is the original filename.
       isArray: true
     - name: collaborators
       description: Users to add as CC's when creating a ticket.
@@ -1305,10 +1305,10 @@ script:
       - 'true'
       - 'false'
     - name: file_id
-      description: A comma-separated list of optional entry IDs of attachments.
+      description: A comma-separated list of entry IDs of attachments.
       isArray: true
     - name: filename
-      description: A comma-separated list of filenames to upload if file_id is set. Default is the original filename.
+      description: A comma-separated list of filenames to upload if you provide file_id. Default is the original filename.
       isArray: true
     - name: recipient
       description: The original recipient email address of the ticket.
@@ -1553,14 +1553,14 @@ script:
     - name: file_id
       required: true
       isArray: true
-      description: A comma-separated list of optional entry IDs of attachments.
+      description: A comma-separated list of entry IDs of attachments.
     - name: comment
       required: true
       description: The comment body for the attached file.
     - name: filename
       default: true
       isArray: true
-      description: A comma-separated list of filenames to upload if file_id is set. Default is the original filename.
+      description: A comma-separated list of filenames to upload if you provide file_id. Default is the original filename.
   - name: zendesk-attachment-get
     description: |-
       Get attachment.
