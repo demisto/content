@@ -2,8 +2,10 @@ import time
 from datetime import datetime, timedelta, UTC
 
 import demistomock as demisto
+import SailPointIdentityNowEventCollector as sp_event_collector
 from CommonServerPython import DemistoException, arg_to_datetime
 from SailPointIdentityNowEventCollector import (
+    CURRENT_TIME_STR,
     Client,
     add_time_and_status_to_events,
     dedup_events,
@@ -688,9 +690,7 @@ def test_parse_event_timestamp__other_formats_fall_back_to_arg_to_datetime(mocke
     Then:
         - Ensure the timestamp is parsed by arg_to_datetime, exactly as before the optimization
     """
-    import SailPointIdentityNowEventCollector
-
-    arg_to_datetime_spy = mocker.spy(SailPointIdentityNowEventCollector, "arg_to_datetime")
+    arg_to_datetime_spy = mocker.spy(sp_event_collector, "arg_to_datetime")
 
     result = parse_event_timestamp(timestamp)
 
@@ -972,15 +972,13 @@ def test_fetch_events__first_run_starts_from_current_time(mocker):
         - Ensure the fetch starts from the current time (CURRENT_TIME_STR)
         - Ensure the next run is built from the fetched events
     """
-    import SailPointIdentityNowEventCollector
-
     mocker.patch.object(demisto, "debug")
     client = mocker.Mock()
     client.search_events.return_value = [EVENTS_SEQUENTIAL[0]]
 
     next_run, events = fetch_events(client, limit=10, look_back=5, last_run={})
 
-    assert client.search_events.call_args_list[0].kwargs["from_date"] == SailPointIdentityNowEventCollector.CURRENT_TIME_STR
+    assert client.search_events.call_args_list[0].kwargs["from_date"] == CURRENT_TIME_STR
     assert events == [EVENTS_SEQUENTIAL[0]]
     assert next_run["prev_date"] == EVENTS_SEQUENTIAL[0]["created"]
     assert next_run["last_fetched_id_timestamps"] == {"1": EVENTS_SEQUENTIAL[0]["created"]}
