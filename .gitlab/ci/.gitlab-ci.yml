@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "chore/csp-validation-opus-latest-alias"
+  CURRENT_BRANCH_NAME: "chore/csp-validation-model-ci-variable"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "chore/csp-validation-opus-latest-alias"
+    ref: "chore/csp-validation-model-ci-variable"
     project: "${CI_PROJECT_NAMESPACE}/infra"
