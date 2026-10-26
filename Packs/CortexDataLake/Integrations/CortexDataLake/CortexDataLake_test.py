@@ -723,6 +723,50 @@ def test_map_to_migrated_url_passthrough_for_unlisted_url(unmapped_url):
     assert map_to_migrated_url(unmapped_url) == unmapped_url
 
 
+def test_build_connectivity_test_query_is_time_bounded():
+    """
+    Given:
+        - No arguments.
+    When:
+        - Calling build_connectivity_test_query.
+    Then:
+        - The query targets firewall.traffic, is bounded to the last hour by time_generated, and is limited to 1 row.
+    """
+    from CortexDataLake import build_connectivity_test_query
+
+    query = build_connectivity_test_query()
+
+    match = re.fullmatch(
+        r'SELECT \* FROM `firewall\.traffic` WHERE time_generated BETWEEN TIMESTAMP\("(.+)"\) AND CURRENT_TIMESTAMP LIMIT 1',
+        query,
+    )
+    assert match
+    start_time = datetime.strptime(match.group(1), "%Y-%m-%d %H:%M:%S")
+    expected_start, _ = parse_date_range("1 hour")
+    assert abs(expected_start - start_time) < timedelta(minutes=1)
+
+
+def test_is_url_reachable_uses_connectivity_test_query(mocker):
+    """
+    Given:
+        - A candidate URL whose query service responds successfully.
+    When:
+        - Calling Client._is_url_reachable.
+    Then:
+        - The probe query is the time-bounded connectivity test query.
+    """
+    from CortexDataLake import Client
+
+    mocker.patch("CortexDataLake.build_connectivity_test_query", return_value="BOUNDED QUERY")
+    client = mocker.Mock(spec=Client)
+    query_service = mocker.Mock()
+    query_service.create_query = mocker.Mock(return_value=mocker.Mock(status_code=201))
+    client.initial_query_service = mocker.Mock(return_value=query_service)
+
+    assert Client._is_url_reachable(client, "https://api.us.cdl.paloaltonetworks.com", "test-token") is True
+    assert query_service.create_query.call_args.kwargs["query_params"] == {"query": "BOUNDED QUERY", "language": "csql"}
+
+
 @pytest.mark.parametrize("status_code", [200, 201, 204, 301, 399])
 def test_is_url_reachable_returns_true_on_success_status(mocker, status_code):
     """
