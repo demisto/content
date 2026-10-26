@@ -2,10 +2,11 @@
     "name": "Anomali ThreatStream Feed",
     "description": "Anomali ThreatStream Feed and Sample Management. This pack is designed to fetch, manage, and query threat intelligence feeds and associated samples from Anomali ThreatStream.",
     "support": "xsoar",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "created": "2025-06-26T00:00:00Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
@@ -14,7 +15,10 @@
         "Threat Intelligence"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Anomali",
+        "Anomali ThreatStream"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
