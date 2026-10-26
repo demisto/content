@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: sk-csp-validation
+  CURRENT_BRANCH_NAME: "chore/csp-validation-model-ci-variable"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: sk-csp-validation
+    ref: "chore/csp-validation-model-ci-variable"
     project: "${CI_PROJECT_NAMESPACE}/infra"
