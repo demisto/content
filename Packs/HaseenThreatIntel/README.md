@@ -55,7 +55,7 @@ This integration is feed-only. It does not expose any CLI commands; indicators a
 
 ![Haseen M2M service configuration](doc_files/haseen-m2m-service.png)
 
-![Delta Feed Job Playbook](doc_files/Haseen-DeltaFeed-Generic.png)
+![Delta Feed Job Playbook](doc_files/Haseen_-_Delta_Feed_-_Generic.png)
 
 ---
 

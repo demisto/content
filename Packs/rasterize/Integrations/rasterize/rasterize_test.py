@@ -691,7 +691,19 @@ def test_is_private_network_urls(mocker: MockerFixture):
     )
 
 
-def test_increase_counter_chrome_instances_file(mocker):
+@pytest.fixture
+def chrome_instances_tmp_path(mocker, tmp_path) -> str:
+    """
+    Redirect CHROME_INSTANCES_FILE_PATH to a writable temp dir.
+    write_chrome_instances_file() writes atomically via a NamedTemporaryFile in the target's directory,
+    and the default (/var) is not writable in the test container.
+    """
+    chrome_instances_path = str(tmp_path / "chrome_instances.json")
+    mocker.patch("rasterize.CHROME_INSTANCES_FILE_PATH", chrome_instances_path)
+    return chrome_instances_path
+
+
+def test_increase_counter_chrome_instances_file(mocker, chrome_instances_tmp_path):
     """
     Given:
         - A new Chrome instance content
@@ -718,7 +730,7 @@ def test_increase_counter_chrome_instances_file(mocker):
     assert expected_rasterization_count == mocker_json.call_args[0][0]["2222"][RASTERIZATION_COUNT]
 
 
-def test_add_new_chrome_instance(mocker):
+def test_add_new_chrome_instance(mocker, chrome_instances_tmp_path):
     """
     Given:
         - A new Chrome instance content
@@ -749,7 +761,7 @@ def test_add_new_chrome_instance(mocker):
     assert "9345" in mocker_json.call_args[0][0]
 
 
-def test_terminate_port_chrome_instances_file(mocker):
+def test_terminate_port_chrome_instances_file(mocker, chrome_instances_tmp_path):
     """
     Given:
         - A port to terminate.
@@ -772,7 +784,7 @@ def test_terminate_port_chrome_instances_file(mocker):
     assert "2222" not in mocker_json.call_args[0][0]
 
 
-def test_write_chrome_instances_empty(mocker):
+def test_write_chrome_instances_empty(mocker, chrome_instances_tmp_path):
     """
     Given:
         - A new Chrome instance content(first chrome instance).
@@ -791,6 +803,26 @@ def test_write_chrome_instances_empty(mocker):
     write_chrome_instances_file(new_chrome_content=mock_file_content)
 
     assert mocker_json.call_count == 1
+
+
+def test_write_chrome_instances_file_atomic_round_trip(chrome_instances_tmp_path):
+    """
+    Given:
+        - A writable chrome instances file location.
+    When:
+        - Executing write_chrome_instances_file and reading the file back.
+    Then:
+        - The content round-trips intact and no temporary files are left behind.
+    """
+    from rasterize import write_chrome_instances_file
+
+    content = util_load_json("test_data/chrome_instances.json")
+    write_chrome_instances_file(new_chrome_content=content)
+
+    with open(chrome_instances_tmp_path) as f:
+        assert json.load(f) == content
+    directory = os.path.dirname(chrome_instances_tmp_path)
+    assert os.listdir(directory) == ["chrome_instances.json"]
 
 
 def test_read_json_file(mocker):
@@ -1074,6 +1106,133 @@ def test_retry_loading(mocker: MockerFixture):
     mock_tab.Page.getFrameTree.side_effect = pychrome.exceptions.RuntimeException("runtime_exception")
     handler.retry_loading()
     assert mock_event.set.called
+
+
+def test_retry_loading_is_not_reentrant(mocker: MockerFixture):
+    """
+    Given:
+        - A PychromeEventHandler whose page is stuck on a chrome-error page.
+        - Page.navigate re-fires the frameStoppedLoading CDP callback, which calls
+          retry_loading again - exactly what Chrome does in production.
+    When:
+        - retry_loading is called.
+    Then:
+        - The nested (re-entrant) invocations return immediately instead of starting a new
+          retry budget, so the total number of navigate calls stays bounded by
+          DEFAULT_RETRIES_COUNT instead of growing without limit (which previously hung the
+          command until the engine dispatch timeout and leaked a Chrome tab).
+    """
+    mock_tab = mocker.Mock()
+    mock_tab.Page.getFrameTree = mocker.Mock(return_value={"frameTree": {"frame": {"url": CHROME_ERROR_URL}}})
+    mock_event = mocker.Mock()
+    handler = PychromeEventHandler(None, mock_tab, mock_event, "file:///test.html", 30)
+
+    # Simulate Chrome firing frameStoppedLoading as a result of our own Page.navigate call.
+    def navigate_side_effect(*args, **kwargs):
+        handler.retry_loading()  # re-entrant call - must be ignored
+
+    mock_tab.Page.navigate = mocker.Mock(side_effect=navigate_side_effect)
+    mocker.patch("time.sleep")
+    mocker.patch.object(rasterize, "safe_sleep")
+
+    handler.retry_loading()
+
+    # Without the guard this recursed and navigate was called far more than the retry budget.
+    assert mock_tab.Page.navigate.call_count == DEFAULT_RETRIES_COUNT
+    assert handler.load_failed is True
+    assert mock_event.set.called
+    assert handler._retry_in_progress is False
+
+
+def test_retry_loading_respects_total_deadline(mocker: MockerFixture):
+    """
+    Given:
+        - A handler whose overall retry deadline has already elapsed.
+    When:
+        - retry_loading is called.
+    Then:
+        - It gives up immediately without navigating, and marks the load as failed, so the
+          worker thread can never outlive the engine's dispatch timeout.
+    """
+    mock_tab = mocker.Mock()
+    mock_tab.Page.navigate = mocker.Mock()
+    mock_tab.Page.getFrameTree = mocker.Mock(return_value={"frameTree": {"frame": {"url": CHROME_ERROR_URL}}})
+    mock_event = mocker.Mock()
+    handler = PychromeEventHandler(None, mock_tab, mock_event, "file:///test.html", 30)
+
+    # Deadline already in the past.
+    handler._retry_deadline = time.monotonic() - 1
+    mocker.patch("time.sleep")
+    mocker.patch.object(rasterize, "safe_sleep")
+
+    handler.retry_loading()
+
+    mock_tab.Page.navigate.assert_not_called()
+    assert handler.load_failed is True
+    assert mock_event.set.called
+
+
+def test_close_orphaned_tabs(mocker: MockerFixture):
+    """
+    Given:
+        - A browser carrying more tabs than allowed, left over from executions that were
+          killed by the engine dispatch timeout before their tab could be closed.
+    When:
+        - close_orphaned_tabs is called.
+    Then:
+        - The excess (oldest) tabs are closed and only max_allowed_tabs remain.
+    """
+    tabs = [f"tab{i}" for i in range(19)]
+    mock_browser = mocker.Mock()
+    mock_browser.list_tab = mocker.Mock(return_value=tabs)
+    mock_browser.close_tab = mocker.Mock()
+
+    closed = rasterize.close_orphaned_tabs(mock_browser, max_allowed_tabs=1)
+
+    assert closed == 18
+    assert mock_browser.close_tab.call_count == 18
+    # The most recent tab is kept.
+    closed_tabs = [c.args[0] for c in mock_browser.close_tab.call_args_list]
+    assert "tab18" not in closed_tabs
+
+
+def test_close_orphaned_tabs_no_op_when_within_limit(mocker: MockerFixture):
+    """
+    Given:
+        - A browser with no more tabs than allowed.
+    When:
+        - close_orphaned_tabs is called.
+    Then:
+        - No tab is closed.
+    """
+    mock_browser = mocker.Mock()
+    mock_browser.list_tab = mocker.Mock(return_value=["tab0"])
+    mock_browser.close_tab = mocker.Mock()
+
+    assert rasterize.close_orphaned_tabs(mock_browser, max_allowed_tabs=1) == 0
+    mock_browser.close_tab.assert_not_called()
+
+
+def test_write_chrome_instances_file_is_atomic(mocker: MockerFixture, tmp_path):
+    """
+    Given:
+        - Chrome instance content to persist.
+    When:
+        - write_chrome_instances_file writes it.
+    Then:
+        - The destination file contains valid JSON (written via a temp file + atomic rename,
+          so a concurrent reader can never observe a truncated, half-written file), and no
+          temporary files are left behind.
+    """
+    target = tmp_path / "chrome_instances.json"
+    mocker.patch.object(rasterize, "CHROME_INSTANCES_FILE_PATH", str(target))
+
+    content = {"9301": {"instance_id": "abc", "rasterization_count": 3}}
+    rasterize.write_chrome_instances_file(content)
+
+    assert json.loads(target.read_text()) == content
+    # No leftover temp files in the directory.
+    assert [p.name for p in tmp_path.iterdir()] == ["chrome_instances.json"]
 
 
 @pytest.mark.parametrize(
@@ -1919,6 +2078,119 @@ def test_wait_for_page_load_timeout(mocker):
     assert result is True
     stopped = [call.kwargs["method_path"] for call in safe_call.call_args_list]
     assert "Page.stopLoading" in stopped
+
+
+def test_wait_for_page_load_normal_completion_no_freeze_on_load(mocker):
+    """
+    Given: A cgroup limit exists, the page finishes loading, and the caller passed
+           freeze_on_load=False (text extraction, which still needs a live JS context).
+    When: Calling wait_for_page_load_with_memory_guard.
+    Then: The tab is NOT frozen on the normal-completion path and True is still returned.
+
+    Regression test for a bug where the unconditional post-load freeze disabled script
+    execution and purged the V8 heap, so the Runtime.evaluate used by rasterize-extract
+    failed with "Cannot find default execution context".
+    """
+    mocker.patch.object(rasterize, "get_container_available_memory_bytes", return_value=10 * 1024 * 1024 * 1024)
+    freeze = mocker.patch.object(rasterize, "_freeze_tab_for_screenshot")
+    event = threading.Event()
+    event.set()
+    tab = mocker.MagicMock()
+
+    result = rasterize.wait_for_page_load_with_memory_guard(
+        tab_ready_event=event, navigation_timeout=5, tab_id="tab_id", path="path", tab=tab, freeze_on_load=False
+    )
+
+    assert result is True
+    freeze.assert_not_called()
+
+
+def test_wait_for_page_load_memory_pressure_freezes_even_when_freeze_on_load_false(mocker):
+    """
+    Given: A caller passed freeze_on_load=False, the page does not finish loading, and
+           available memory drops below the tolerance.
+    When: Calling wait_for_page_load_with_memory_guard.
+    Then: The tab is still frozen and False is returned - freeze_on_load only suppresses the
+          post-load freeze, never the OOM protection.
+    """
+    mocker.patch.object(rasterize, "get_container_available_memory_bytes", return_value=10 * 1024 * 1024)
+    freeze = mocker.patch.object(rasterize, "_freeze_tab_for_screenshot")
+    mocker.patch.object(rasterize.time, "sleep")
+    event = threading.Event()  # never set
+    tab = mocker.MagicMock()
+
+    result = rasterize.wait_for_page_load_with_memory_guard(
+        tab_ready_event=event,
+        navigation_timeout=5,
+        tolerance_bytes=650 * 1024 * 1024,
+        poll_interval=0.01,
+        tab_id="tab_id",
+        path="path",
+        tab=tab,
+        freeze_on_load=False,
+    )
+
+    assert result is False
+    assert event.is_set()
+    freeze.assert_called_once_with(tab, "tab_id", "path")
+
+
+def test_wait_for_page_load_freeze_on_load_defaults_to_true(mocker):
+    """
+    Given: A caller that does not pass freeze_on_load (screenshot/PDF captures).
+    When: Calling wait_for_page_load_with_memory_guard and the page finishes loading.
+    Then: The tab is frozen, preserving the existing memory-capping behavior for captures.
+    """
+    mocker.patch.object(rasterize, "get_container_available_memory_bytes", return_value=10 * 1024 * 1024 * 1024)
+    freeze = mocker.patch.object(rasterize, "_freeze_tab_for_screenshot")
+    event = threading.Event()
+    event.set()
+    tab = mocker.MagicMock()
+
+    result = rasterize.wait_for_page_load_with_memory_guard(
+        tab_ready_event=event, navigation_timeout=5, tab_id="tab_id", path="path", tab=tab
+    )
+
+    assert result is True
+    freeze.assert_called_once_with(tab, "tab_id", "path")
+
+
+# endregion
+
+
+# region warn_unless_test_module tests
+
+
+def test_warn_unless_test_module_suppresses_entry_during_test_module(mocker):
+    """
+    Given: The running command is test-module and a non-fatal condition (memory pressure) occurred.
+    When: Calling warn_unless_test_module.
+    Then: No war-room entry is emitted, so test-module keeps returning a single "ok" entry and the
+          debug-log download keeps working. The message is written to the debug log instead.
+    """
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    return_warning_mock = mocker.patch.object(rasterize, "return_warning")
+    debug_mock = mocker.patch.object(demisto, "debug")
+
+    rasterize.warn_unless_test_module("Warning: Rasterize aborted page-load wait due to memory pressure.")
+
+    return_warning_mock.assert_not_called()
+    assert any("memory pressure" in str(call_args) for call_args in debug_mock.call_args_list)
+
+
+@pytest.mark.parametrize("command", ["rasterize", "rasterize-email", "rasterize-html", "rasterize-pdf"])
+def test_warn_unless_test_module_returns_warning_for_other_commands(mocker, command):
+    """
+    Given: The running command is a regular rasterize command and a non-fatal condition occurred.
+    When: Calling warn_unless_test_module.
+    Then: The warning entry is returned as before - the suppression applies only to test-module.
+    """
+    mocker.patch.object(demisto, "command", return_value=command)
+    return_warning_mock = mocker.patch.object(rasterize, "return_warning")
+
+    rasterize.warn_unless_test_module("Warning: some content might be missing.")
+
+    return_warning_mock.assert_called_once_with("Warning: some content might be missing.")
 
 
 # endregion
