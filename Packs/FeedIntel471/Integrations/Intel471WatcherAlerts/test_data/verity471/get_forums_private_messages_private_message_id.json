@@ -1,0 +1,46 @@
+{
+  "author": {
+    "historical_usernames": [
+      "string"
+    ],
+    "id": "string",
+    "user_name": "string"
+  },
+  "forum": {
+    "activity": {
+      "first_seen_ts": "2026-01-01T00:00:00Z",
+      "last_seen_ts": "2026-01-01T00:00:00Z"
+    },
+    "description": "string",
+    "id": "string",
+    "links": {
+      "external": {
+        "href": "string"
+      },
+      "verity_api": {
+        "href": "string"
+      },
+      "verity_portal": {
+        "href": "string"
+      }
+    },
+    "title": "string"
+  },
+  "private_message": {
+    "conversation_id": "string",
+    "creation_ts": "string",
+    "id": "string",
+    "message": "string",
+    "subject": "string",
+    "translated_message": "string",
+    "translated_subject": "string",
+    "translation_status": "WaitingForTranslation"
+  },
+  "recipient": {
+    "historical_usernames": [
+      "string"
+    ],
+    "id": "string",
+    "user_name": "string"
+  }
+}

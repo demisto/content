@@ -1,0 +1,42 @@
+{
+  "activity": {
+    "first_seen_ts": "2026-01-01T00:00:00Z",
+    "last_seen_ts": "2026-01-01T00:00:00Z"
+  },
+  "cookies_available": true,
+  "id": "string",
+  "infostealer": {
+    "browser": "string",
+    "grabbed_ts": "2026-01-01T00:00:00Z"
+  },
+  "link": "string",
+  "links": {
+    "external": {
+      "href": "string"
+    },
+    "verity_api": {
+      "href": "string"
+    },
+    "verity_portal": {
+      "href": "string"
+    }
+  },
+  "login_available": true,
+  "marketplace_id": "string",
+  "name": "string",
+  "others": {
+    "key": "string"
+  },
+  "password_available": true,
+  "product_id": "string",
+  "product_info": {
+    "updated_ts": "2026-01-01T00:00:00Z"
+  },
+  "product_title": "string",
+  "stolen_data": {
+    "datasets": [
+      "string"
+    ],
+    "source": "string"
+  }
+}

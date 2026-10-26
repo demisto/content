@@ -1,0 +1,39 @@
+{
+  "activity": {
+    "first_seen_ts": "2026-01-01T00:00:00Z",
+    "last_seen_ts": "2026-01-01T00:00:00Z"
+  },
+  "chunk_number": 0,
+  "download": {
+    "href": "string"
+  },
+  "file": {
+    "id": "string",
+    "name": "string"
+  },
+  "id": "string",
+  "links": {
+    "external": {
+      "href": "string"
+    },
+    "verity_api": {
+      "href": "string"
+    },
+    "verity_portal": {
+      "href": "string"
+    }
+  },
+  "post": {
+    "href": "string",
+    "id": "string",
+    "title": "string"
+  },
+  "thread": {
+    "id": "string",
+    "name": "string"
+  },
+  "website": {
+    "id": "string",
+    "title": "string"
+  }
+}
