@@ -11,12 +11,12 @@
         "comments": [
             {
                 "comment": "Old comment",
-                "createdByDisplayName": "analyst@contoso.com",
+                "createdByDisplayName": "Test@demistodev.onmicrosoft.com",
                 "createdDateTime": "2026-10-01T09:00:00Z"
             },
             {
                 "comment": "New comment from Defender",
-                "createdByDisplayName": "analyst@contoso.com",
+                "createdByDisplayName": "Test@demistodev.onmicrosoft.com",
                 "createdDateTime": "2026-10-10T09:00:00Z"
             },
             {
