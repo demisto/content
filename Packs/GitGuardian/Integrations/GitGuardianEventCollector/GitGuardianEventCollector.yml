@@ -38,8 +38,8 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: This is the GitGuardian event collector integration for Cortex XSIAM.
-display: GitGuardian Event Collector
+description: This is the GitGuardian Enterprise event collector integration for Cortex XSIAM. For the GitGuardian SaaS platform, use the GitGuardian SaaS integration.
+display: GitGuardian Enterprise
 name: GitGuardianEventCollector
 script:
   commands:

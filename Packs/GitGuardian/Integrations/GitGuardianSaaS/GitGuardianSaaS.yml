@@ -1,0 +1,99 @@
+category: Analytics & SIEM
+provider: GitGuardian
+sectionorder:
+  - Connect
+  - Collect
+commonfields:
+  id: GitGuardianSaaS
+  version: -1
+name: GitGuardianSaaS
+display: GitGuardian SaaS
+description: Collect secret incidents and audit logs from the GitGuardian SaaS platform. GitGuardian is a developer-first solution that scans source-control activity in real time for leaked secrets (API tokens, database credentials, certificates).
+configuration:
+  - display: Server URL
+    name: url
+    type: 0
+    defaultvalue: https://api.gitguardian.com
+    required: false
+    section: Connect
+    additionalinfo: "US region: https://api.gitguardian.com. EU region: https://api.eu1.gitguardian.com."
+  - displaypassword: API Key
+    name: api_key
+    type: 9
+    hiddenusername: true
+    required: true
+    section: Connect
+    additionalinfo: Service Account token (recommended) or Personal Access Token with the incidents:read and audit_logs:read scopes.
+  - display: Trust any certificate (not secure)
+    name: insecure
+    type: 8
+    required: false
+    section: Connect
+    advanced: true
+  - display: Use system proxy settings
+    name: proxy
+    type: 8
+    required: false
+    section: Connect
+    advanced: true
+  - display: Fetch events
+    name: isFetchEvents
+    type: 8
+    required: false
+    section: Collect
+  - display: Event types
+    name: event_types
+    type: 16
+    required: false
+    defaultvalue: Secret Incidents,Audit Logs
+    options:
+      - Secret Incidents
+      - Audit Logs
+    section: Collect
+  - display: The maximum number of events per fetch per type
+    name: max_events_per_fetch
+    type: 0
+    defaultvalue: "1000"
+    required: false
+    section: Collect
+    advanced: true
+    additionalinfo: Events are fetched in pages of 100. The default (1000) means up to 10 API calls per event type per fetch cycle.
+script:
+  script: "-"
+  type: python
+  subtype: python3
+  commands:
+    - name: gitguardian-saas-get-events
+      description: Gets events from GitGuardian SaaS. This command is used for developing and debugging and should be used with caution, as it can create duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism.
+      arguments:
+        - name: should_push_events
+          description: If true, the command creates events. Otherwise, it only displays them.
+          required: true
+          auto: PREDEFINED
+          defaultValue: "false"
+          predefined:
+            - "true"
+            - "false"
+        - name: limit
+          description: Maximum number of events to return per event type.
+          defaultValue: "10"
+        - name: start_date
+          description: 'The date from which to get events, in ISO-8601 format or as a relative time (e.g., "3 days ago", "2024-01-01T00:00:00Z"). Default is 1 hour ago.'
+        - name: event_types
+          description: A comma-separated list of event types to get. Default is the event types configured in the instance.
+          auto: PREDEFINED
+          isArray: true
+          predefined:
+            - Secret Incidents
+            - Audit Logs
+  dockerimage: demisto/fastapi:0.125.0.12689358
+  isfetchevents: true
+  runonce: false
+marketplaces:
+  - marketplacev2
+  - platform
+fromversion: 8.4.0
+tests:
+  - No tests (auto formatted)
+supportedModules:
+  - xsiam
