@@ -17,7 +17,7 @@ configuration:
   section: Connect
   required: true
   required:platform: false
-  additionalinfo: You can set the value either in the configuration or directly within the commands. If you set it in both places, the value in the command will override the configuration setting.
+  additionalinfo: You  can set the value either in the configuration or directly within the commands. If you set it in both places, the value in the command will override the configuration setting.
 - display: Default Resource Group Name
   name: resource_group_name
   type: 0
