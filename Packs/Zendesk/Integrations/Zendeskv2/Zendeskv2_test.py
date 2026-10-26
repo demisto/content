@@ -1448,6 +1448,58 @@ class TestOAuthAuthentication:
             == self.FROZEN_TIMESTAMP + OAUTH_TOKEN_EXPIRES_IN_SECONDS - OAUTH_TOKEN_EXPIRY_BUFFER_SECONDS
         )
 
+    @freeze_time(FROZEN_TIME)
+    @pytest.mark.parametrize(
+        "error_body, token_dropped",
+        [
+            pytest.param(
+                {"error": "invalid_token", "error_description": "The access token provided is expired, revoked, malformed"},
+                True,
+                id="invalid token",
+            ),
+            pytest.param({"error": "Couldn't authenticate you"}, False, id="other 401"),
+        ],
+    )
+    def test_error_handler_when_401_drops_cached_token_only_for_invalid_token(
+        self, mocker, requests_mock, error_body, token_dropped
+    ):
+        """
+        Given:
+            - A valid cached OAuth token, and Zendesk rejects an API call with 401.
+        When:
+            - The API call is made.
+        Then:
+            - The error is raised.
+            - The cached token is removed from the integration context and the loaded cache only for invalid_token errors.
+        """
+        cached_token = {
+            "access_token": "cached_token",
+            "client_id": self.CLIENT_ID,
+            "scope": OAUTH_DEFAULT_SCOPE,
+            "expires_at": self.FROZEN_TIMESTAMP + 100,
+        }
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            side_effect=lambda: {"users": {"1": "user@example.com"}, OAUTH_TOKEN_CONTEXT_KEY: cached_token},
+        )
+        set_context = mocker.patch.object(demisto, "setIntegrationContext")
+        cache_manager = CacheManager(None)
+        cache_manager._data = {"users": {"1": "user@example.com"}, OAUTH_TOKEN_CONTEXT_KEY: cached_token}
+        mocker.patch.object(Zendeskv2, "CACHE", cache_manager)
+        requests_mock.get(full_url("users/1"), status_code=401, json=error_body)
+        client = self._oauth_client()
+
+        with pytest.raises(DemistoException, match="401|invalid_token|authenticate"):
+            client._get_user_by_id("1")
+
+        if token_dropped:
+            set_context.assert_called_once_with({"users": {"1": "user@example.com"}})
+            assert OAUTH_TOKEN_CONTEXT_KEY not in cache_manager._data
+        else:
+            set_context.assert_not_called()
+            assert cache_manager._data[OAUTH_TOKEN_CONTEXT_KEY] == cached_token
+
     def test_get_oauth_access_token_when_response_has_no_access_token_raises(self, requests_mock, integration_context):
         """
         Given:

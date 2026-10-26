@@ -367,6 +367,15 @@ class ZendeskClient(BaseClient):
 
     @staticmethod
     def error_handler(res: Response) -> None:
+        if res.status_code == 401 and "invalid_token" in res.text:
+            # The saved OAuth token was expired, revoked or invalidated. Drop it so the next run requests a new one.
+            demisto.debug("Zendesk rejected the OAuth access token. Removing it from the integration context.")
+            integration_context = demisto.getIntegrationContext() or {}
+            if integration_context.pop(OAUTH_TOKEN_CONTEXT_KEY, None):
+                demisto.setIntegrationContext(integration_context)
+            if CACHE and CACHE._data:
+                # Otherwise CACHE.save() at the end of the run writes the old token back.
+                CACHE._data.pop(OAUTH_TOKEN_CONTEXT_KEY, None)
         if res.text:
             raise DemistoException(f"Error occurred in Zendesk API: {res.text}")
         res.raise_for_status()
