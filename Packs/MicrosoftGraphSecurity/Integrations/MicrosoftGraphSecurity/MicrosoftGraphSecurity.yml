@@ -869,7 +869,7 @@ script:
       - 'activeDirectory'
       - 'okta'
       required: true
-    description: Perform actions such as revoking accounts and forcing password reset for identity accounts that are observed in Microsoft Defender for Identity. To learn more about the possible actions, see https://learn.microsoft.com/en-us/graph/api/security-identityaccounts-invokeaction?view=graph-rest-1.0&tabs=http.
+    description: 'Perform actions such as revoking accounts and forcing password reset for identity accounts that are observed in Microsoft Defender for Identity. Requires the SecurityIdentitiesActions.ReadWrite.All permission (Delegated or Application). For delegated access, the signed-in user must have at least the Security Administrator role. Supported in the Worldwide (global) cloud only. To learn more about the possible actions, see https://learn.microsoft.com/en-us/graph/api/security-identityaccounts-invokeaction?view=graph-rest-1.0&tabs=http.'
     execution: true
     name: msg-invoke-action
   - arguments:

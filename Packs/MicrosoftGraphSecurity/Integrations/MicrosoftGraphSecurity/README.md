@@ -65,6 +65,10 @@ More information about defining this permission can be found [here](https://lear
 2. ThreatAssessment.ReadWrite.All - Delegated
 3. User.Read.All - Delegated
 
+**Identity Accounts**:
+
+1. SecurityIdentitiesActions.ReadWrite.All - Delegated or Application (required for the command `msg-invoke-action`). For delegated access, the signed-in user must have at least the *Security Administrator* role. Supported in the Worldwide (global) cloud only.
+
 ## Configure Microsoft Graph Security on Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -409,7 +413,11 @@ There is no context output for this command.
 ### msg-invoke-action
 
 ***
-Performs remediation actions for identity accounts.
+Performs remediation actions for identity accounts that are observed in Microsoft Defender for Identity.
+
+Required permissions: SecurityIdentitiesActions.ReadWrite.All (Delegated or Application). For delegated access, the signed-in user must have at least the *Security Administrator* role.
+
+Note: This command is supported in the Worldwide (global) cloud only. It isn't available in national clouds (for example, US GCC or US GCC-High).
 
 #### Base Command
 
