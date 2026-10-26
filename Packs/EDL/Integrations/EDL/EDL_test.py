@@ -1766,6 +1766,113 @@ def test_test_module_ports_taken_by_foreign_process_raises(mocker):
     mocks["run_long_running"].assert_not_called()
 
 
+def _patch_running_instance_end_to_end(mocker, nginx_test_side_effect: Exception | None = None) -> dict:
+    """Patch only the port check, the nginx/WSGI test and /nginx-test, keeping is_long_running_instance_healthy
+    and the app route probe real (the app route is served by requests_mock).
+
+    Patches the delegate's __globals__ so it works whether NGINXApiModule is unified into EDL.py or imported.
+
+    Args:
+        nginx_test_side_effect: An exception raised by test_nginx_web_server, or None for a healthy
+            /nginx-test response without an X-Instance-Name header (identity check is skipped).
+
+    Returns:
+        dict: The created mocks keyed by name.
+    """
+    import requests
+
+    nginx_test_response = requests.Response()
+    nginx_test_response.status_code = 200
+    nginx_test_response._content = b"Welcome to nginx"
+    runtime_globals = edl.test_long_running_with_running_instance_check.__globals__
+    mocks = {
+        "get_params_port": mocker.MagicMock(return_value=1000),
+        "is_port_in_use": mocker.MagicMock(return_value=True),
+        "run_long_running": mocker.MagicMock(return_value=None),
+        "test_nginx_web_server": mocker.MagicMock(return_value=nginx_test_response, side_effect=nginx_test_side_effect),
+    }
+    mocker.patch.dict(runtime_globals, mocks)
+    mocker.patch.object(edl, "validate_test_module_params", return_value=None)
+    return mocks
+
+
+def test_test_module_existing_instance_slow_list_returns_ok(mocker, requests_mock):
+    """
+    Given:
+      - The EDL ports are in use and nginx answers /nginx-test.
+      - The app route accepts the connection but does not answer in time (the list is still being generated).
+    When:
+      - test_module runs end to end.
+    Then:
+      - The result is exactly "ok" and the ports are not re-bound.
+    """
+    import requests
+
+    mocks = _patch_running_instance_end_to_end(mocker)
+    requests_mock.get("http://localhost:1000/", exc=requests.exceptions.ReadTimeout("read timed out"))
+
+    assert edl.test_module({}, {"longRunningPort": "1000"}) == ("ok", {}, {})
+    mocks["run_long_running"].assert_not_called()
+
+
+@pytest.mark.parametrize("status_code", [401, 429])
+def test_test_module_existing_instance_any_status_returns_ok(mocker, requests_mock, status_code):
+    """
+    Given:
+      - The EDL ports are in use and nginx answers /nginx-test.
+      - The app route answers with an HTTP status (401 when credentials are set, 429 from the connection limit).
+    When:
+      - test_module runs end to end.
+    Then:
+      - The result is exactly "ok".
+    """
+    mocks = _patch_running_instance_end_to_end(mocker)
+    requests_mock.get("http://localhost:1000/", status_code=status_code)
+
+    assert edl.test_module({}, {"longRunningPort": "1000"}) == ("ok", {}, {})
+    mocks["run_long_running"].assert_not_called()
+
+
+def test_test_module_existing_instance_connection_error_raises(mocker, requests_mock):
+    """
+    Given:
+      - The EDL ports are in use and nginx answers /nginx-test, but the app route refuses the connection.
+    When:
+      - test_module runs end to end.
+    Then:
+      - A DemistoException matching "already in use" is raised.
+    """
+    import requests
+    from CommonServerPython import DemistoException
+
+    mocks = _patch_running_instance_end_to_end(mocker)
+    requests_mock.get("http://localhost:1000/", exc=requests.exceptions.ConnectionError("refused"))
+
+    with pytest.raises(DemistoException, match="already in use"):
+        edl.test_module({}, {"longRunningPort": "1000"})
+    mocks["run_long_running"].assert_not_called()
+
+
+def test_test_module_nginx_test_fails_raises(mocker, requests_mock):
+    """
+    Given:
+      - The EDL ports are in use, but the /nginx-test check fails.
+    When:
+      - test_module runs end to end.
+    Then:
+      - A DemistoException is raised and the app route is never probed.
+    """
+    from CommonServerPython import DemistoException
+
+    mocks = _patch_running_instance_end_to_end(mocker, nginx_test_side_effect=DemistoException("Testing nginx server: boom"))
+    requests_mock.get("http://localhost:1000/", status_code=200)
+
+    with pytest.raises(DemistoException, match="already in use"):
+        edl.test_module({}, {"longRunningPort": "1000"})
+    assert not requests_mock.called
+    mocks["run_long_running"].assert_not_called()
+
+
 def test_test_module_validation_runs_before_port_check(mocker):
     """
     Given:

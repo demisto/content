@@ -1151,6 +1151,45 @@ def is_answering_instance_this_instance(nginx_test_response: requests.Response, 
     return True
 
 
+APP_ROUTE_PROBE_TIMEOUT: tuple[float, float] = (5, 3)  # (connect, read) seconds
+
+
+def is_app_route_answering(app_url: str, nginx_port: int) -> bool:
+    """Check whether something accepted the TCP connection on the app route through nginx.
+
+    The response body is never read (stream=True). Any HTTP status means the app answered. A ReadTimeout
+    (the connection was accepted but no headers arrived in time, for example while a large list is still
+    being generated) also counts as answering. Connection-level failures (ConnectionError, ConnectTimeout,
+    SSLError) and any other RequestException count as not answering.
+
+    Args:
+        app_url (str): The full app route URL on the nginx port.
+        nginx_port (int): The probed nginx port (for logging).
+
+    Returns:
+        bool: True if the app route is answering, False otherwise.
+    """
+    try:
+        with requests.get(  # guardrails-disable-line # nosec
+            app_url,
+            verify=False,
+            proxies={"http": "", "https": ""},
+            timeout=APP_ROUTE_PROBE_TIMEOUT,
+            stream=True,
+        ) as app_resp:
+            demisto.debug(f"nginx: app route on port {nginx_port} responded with status {app_resp.status_code}.")
+            return True
+    except requests.exceptions.ReadTimeout:
+        demisto.debug(
+            f"nginx: app route on port {nginx_port} accepted the connection but did not answer within "
+            f"{APP_ROUTE_PROBE_TIMEOUT[1]}s (likely still generating the list); treating it as answering."
+        )
+        return True
+    except requests.exceptions.RequestException as ex:  # ConnectionError, ConnectTimeout, SSLError, ...
+        demisto.debug(f"nginx: app route check against port {nginx_port} failed: {ex}.")
+        return False
+
+
 def is_long_running_instance_healthy(nginx_port: int, params: dict, app_path: str = "/") -> bool:
     """Check whether the server already listening on nginx_port looks like a healthy instance of this integration.
 
@@ -1167,8 +1206,11 @@ def is_long_running_instance_healthy(nginx_port: int, params: dict, app_path: st
            nginx_server_conf template that does not add it, or an instance started before the header
            existed), the identity check is skipped and the result relies on the other checks only,
            so in that case another instance answering on the same Listen Port cannot be ruled out.
-        3. The app route (app_path) is reachable through nginx (any HTTP status, including 401
-           when credentials are configured, means an app is answering behind nginx).
+        3. The app route (app_path) is reachable through nginx: any HTTP status (including 401
+           when credentials are configured, or 429 from the connection limit) means an app is
+           answering behind nginx. A connection that is accepted but does not answer within the
+           read timeout (for example, while the list is still being generated) also counts.
+           Connection-level failures (refused, connect timeout, TLS handshake) do not.
 
     Note:
         Only nginx_port is probed. The WSGI server_port (nginx_port + 1) and the internal
@@ -1188,7 +1230,6 @@ def is_long_running_instance_healthy(nginx_port: int, params: dict, app_path: st
     """
     protocol = "https" if params.get("key") else "http"
     app_url = f"{protocol}://localhost:{nginx_port}/{app_path.lstrip('/')}"
-    no_proxy = {"http": "", "https": ""}
 
     # 1. nginx health endpoint - confirms nginx is up and its config is serving correctly.
     #    test_nginx_web_server polls with retries, so a transient hiccup won't fail us.
@@ -1204,12 +1245,9 @@ def is_long_running_instance_healthy(nginx_port: int, params: dict, app_path: st
         return False
 
     # 2. App route - confirms our app is answering behind nginx.
-    #    Any HTTP response (including 401 when authentication is enforced) proves it is our app.
-    try:
-        app_resp = requests.get(app_url, verify=False, proxies=no_proxy, timeout=10)  # guardrails-disable-line # nosec
-        demisto.debug(f"nginx: app route on port {nginx_port} responded with status {app_resp.status_code}.")
-    except Exception as ex:
-        demisto.debug(f"nginx: app route check against port {nginx_port} failed: {ex}.")
+    #    Any HTTP response (including 401 when authentication is enforced), or an accepted connection
+    #    that is still generating the response, proves it is our app.
+    if not is_app_route_answering(app_url, nginx_port):
         return False
 
     demisto.debug(f"nginx: detected an existing healthy long-running instance on port {nginx_port}.")
