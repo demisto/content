@@ -1,0 +1,64 @@
+{
+    "sailpoint_identitynow_raw": {
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "created": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "objects": {
+            "type": "string",
+            "is_array": false
+        },
+        "operation": {
+            "type": "string",
+            "is_array": false
+        },
+        "org": {
+            "type": "string",
+            "is_array": false
+        },
+        "pod": {
+            "type": "string",
+            "is_array": false
+        },
+        "stack": {
+            "type": "string",
+            "is_array": false
+        },
+        "ipaddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor": {
+            "type": "string",
+            "is_array": false
+        },
+        "target": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "attributes": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
