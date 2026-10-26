@@ -1,4 +1,6 @@
 
+**Note:** Zendesk will permanently deactivate API tokens on April 30, 2027. To keep the integration working, configure OAuth 2.0 authentication. For more information, see [Announcing the removal of API tokens as an authentication method for API requests](https://support.zendesk.com/hc/en-us/articles/10851263566234-Announcing-the-removal-of-API-tokens-as-an-authentication-method-for-API-requests).
+
 ## Configure Zendesk v2 in Cortex
 
 | **Parameter** | **Description** | **Required** |
