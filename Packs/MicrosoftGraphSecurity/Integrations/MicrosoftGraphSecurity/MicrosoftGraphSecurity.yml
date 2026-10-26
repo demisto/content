@@ -230,7 +230,7 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-- display: Close Mirrored XSOAR Incident
+- display: Close Mirrored Cortex XSOAR Incident
   additionalinfo: Whether to close the Cortex XSOAR incident when the Microsoft alert or incident is resolved (or, for incidents, redirected), and reopen it when the Microsoft alert or incident is reopened.
   name: close_incident
   type: 8

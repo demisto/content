@@ -1,7 +1,7 @@
 {
     "id": "incident_microsoftgraphsecurityincidentid",
     "version": -1,
-    "name": "Microsoft Graph Security Incident Id",
+    "name": "Microsoft Graph Security Incident ID",
     "ownerOnly": false,
     "cliName": "microsoftgraphsecurityincidentid",
     "type": "shortText",

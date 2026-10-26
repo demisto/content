@@ -3660,8 +3660,12 @@ def handle_mirror_out_status(
     client: MsGraphClient, remote_id: str, mirror_type: str, delta: dict, inc_status: Any, data: dict
 ) -> str | None:
     """
-    Applies an explicit status, the close-out or the reopen (close_out on). Returns alert close notes to POST, if any.
-    If the remote object is already resolved, the close-out is sent only when the XSOAR close reason or notes changed.
+    Sets the outgoing status in the delta (close_out on). Returns the alert close comment to POST, if any.
+    The first matching case wins:
+    1. Closed XSOAR incident with an explicit open status (e.g. inProgress): send that status, no close-out.
+    2. XSOAR reopen: reopen the remote object, unless it is already open (echo of an incoming reopen).
+    3. Remote object not resolved: close it out.
+    4. Remote object already resolved: close it out again only if the close reason or notes changed.
     """
     if keep_explicit_open_status(delta, inc_status, remote_id, mirror_type):
         return None

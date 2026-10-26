@@ -14,7 +14,7 @@ You can narrow what is fetched using the **Alerts Filter** and **Incidents Filte
 <~XSOAR>
 
 # Mirroring
-Mirroring is controlled by the **Incident Mirroring Direction** parameter. The optional **Close Mirrored XSOAR Incident** and **Close Mirrored Microsoft Alert/Incident** parameters control closing.
+Mirroring is controlled by the **Incident Mirroring Direction** parameter. The optional **Close Mirrored Cortex XSOAR Incident** and **Close Mirrored Microsoft Alert/Incident** parameters control closing.
 
 **Incident Mirroring Direction**: Select **Incoming**, **Outgoing** or **Incoming And Outgoing**. **None** turns off mirroring.
 * **Incoming**: Microsoft field changes and comments are mirrored in. Comments are added with the **Comment Entry Tag (from Microsoft)** tag.
@@ -23,7 +23,7 @@ Mirroring is controlled by the **Incident Mirroring Direction** parameter. The o
 ### Closing (optional)
 
 These options only control closing. You don't need them to mirror comments or field changes.
-* **Close Mirrored XSOAR Incident** (incoming): Closes the Cortex XSOAR incident when the Microsoft alert or incident is Resolved. Incidents also close when Redirected. The Cortex XSOAR incident reopens when the Microsoft alert or incident is reopened.
+* **Close Mirrored Cortex XSOAR Incident** (incoming): Closes the Cortex XSOAR incident when the Microsoft alert or incident is Resolved. Incidents also close when Redirected. The Cortex XSOAR incident reopens when the Microsoft alert or incident is reopened.
 * **Close Mirrored Microsoft Alert/Incident** (outgoing): Resolves the Microsoft alert or incident when you close the Cortex XSOAR incident, and sets it back to active/new when you reopen it. Redirected Microsoft incidents keep their status.
 
 ### Setup

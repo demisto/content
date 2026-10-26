@@ -102,7 +102,7 @@ More information about defining this permission can be found [here](https://lear
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Incident Mirroring Direction | The direction to mirror alerts and incidents: Incoming \(Microsoft to Cortex XSOAR\), Outgoing \(Cortex XSOAR to Microsoft\), or Incoming And Outgoing. | False |
-    | Close Mirrored XSOAR Incident | Incoming mirroring. When selected, the Cortex XSOAR incident is closed when the Microsoft alert or incident is resolved \(or, for incidents, redirected\), and reopened when the Microsoft alert or incident is reopened. | False |
+    | Close Mirrored Cortex XSOAR Incident | Incoming mirroring. When selected, the Cortex XSOAR incident is closed when the Microsoft alert or incident is resolved \(or, for incidents, redirected\), and reopened when the Microsoft alert or incident is reopened. | False |
     | Close Mirrored Microsoft Alert/Incident | Outgoing mirroring. When selected, the Microsoft alert or incident status is set to Resolved when the Cortex XSOAR incident is closed. | False |
     | Comment Entry Tag (to Microsoft) | Entries with this tag are mirrored as comments to the Microsoft alert or incident. Must be set and different from the Comment Entry Tag \(from Microsoft\). | False |
     | Comment Entry Tag (from Microsoft) | The tag added to entries created from Microsoft alert or incident comments. Must be set and different from the Comment Entry Tag \(to Microsoft\). | False |
@@ -132,7 +132,7 @@ You can mirror Microsoft Graph Security alerts and incidents with Cortex XSOAR i
     | Outgoing | Changes in Cortex XSOAR incidents are reflected in Microsoft, including classification/determination (based on Microsoft Graph Security Classification) and tagged comments. Status is sent only when Close Mirrored Microsoft Alert/Incident is enabled. For alerts, customDetails is also sent. For incidents, severity, displayName, description, and customTags are also sent; resolvingComment is sent only when Close Mirrored Microsoft Alert/Incident is enabled. |
     | Incoming And Outgoing | Changes are reflected in both directions. |
 
-6. Optional: Select the **Close Mirrored XSOAR Incident** checkbox to close the Cortex XSOAR incident when the Microsoft alert or incident is resolved or redirected, and reopen it when the Microsoft alert or incident is active again.
+6. Optional: Select the **Close Mirrored Cortex XSOAR Incident** checkbox to close the Cortex XSOAR incident when the Microsoft alert or incident is resolved or redirected, and reopen it when the Microsoft alert or incident is active again.
 7. Optional: Select the **Close Mirrored Microsoft Alert/Incident** checkbox to resolve the Microsoft alert or incident when the Cortex XSOAR incident is closed.
 8. Optional: In **Comment Entry Tag (to Microsoft)**, change the tag (default: `CommentToMicrosoftGraphSecurity`). War Room entries with this tag are sent to Microsoft as alert or incident comments.
 9. Optional: In **Comment Entry Tag (from Microsoft)**, change the tag (default: `CommentFromMicrosoftGraphSecurity`). Microsoft alert or incident comments are added to the War Room with this tag. The two tags must be set and different.
@@ -151,7 +151,7 @@ Requires **Incoming** or **Incoming And Outgoing**.
 * If you remove a type, items of that type that were already fetched stop getting Microsoft changes.
 * Only the fields in the Outgoing row of the table in step 5 are mirrored out. All other mapped fields, such as the assigned user, the alert severity and the alert description, are mirrored in only.
 
-With **Close Mirrored XSOAR Incident** selected:
+With **Close Mirrored Cortex XSOAR Incident** selected:
 
 * The Cortex XSOAR incident closes when the Microsoft alert or incident is Resolved.
 * An incident also closes when Microsoft redirects it, which means Microsoft merged it into another incident. A redirected incident closes as **Resolved**.
