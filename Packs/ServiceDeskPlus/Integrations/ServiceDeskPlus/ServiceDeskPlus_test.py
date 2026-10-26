@@ -3,6 +3,7 @@ import pytest
 from ServiceDeskPlus import (
     Client,
     OAUTH_URL,
+    add_request_note_command,
     add_resolution_command,
     args_to_query,
     assign_request_command,
@@ -24,6 +25,7 @@ from ServiceDeskPlus import (
     pickup_request_command,
     resolution_human_readable,
     update_request_command,
+    update_request_note_command,
 )
 from test_data.response_constants import (
     RESPONSE_CREATE_REQUEST,
@@ -806,8 +808,6 @@ def test_get_request_note_command(mocker):
 
 
 def test_add_request_note_command(mocker):
-    from ServiceDeskPlus import add_request_note_command
-
     client = Client("server_url", "test_oauth_url", True, False, technician_key="technician_key", on_premise=True)
     mocker.patch.object(client, "http_request", return_value=RESPONSE_ADD_NOTE)
     args = {
@@ -833,8 +833,6 @@ def test_delete_request_note_command(mocker):
 
 
 def test_update_request_note_command(mocker):
-    from ServiceDeskPlus import update_request_note_command
-
     client = Client("server_url", "test_oauth_url", True, False, technician_key="technician_key", on_premise=True)
     mocker.patch.object(client, "http_request", return_value=RESPONSE_UPDATE_NOTE)
     args = {
@@ -924,13 +922,12 @@ def test_write_commands_send_input_data_in_body(command_name, method, url_suffix
         - The input_data is sent in the request body (form-encoded) and not in the URL query string,
           so large payloads do not cause '414 Request-URI Too Large' (XSUP-79578).
     """
-    import ServiceDeskPlus
     from urllib.parse import parse_qs
 
     client = Client(SDP_BASE_URL, "test_oauth_url", True, False, technician_key="technician_key", on_premise=True)
     mocked_request = requests_mock.register_uri(method, SDP_BASE_URL + url_suffix, json=SUCCESS_RESPONSE)
 
-    getattr(ServiceDeskPlus, command_name)(client, args)
+    globals()[command_name](client, args)
 
     sent_request = mocked_request.last_request
     assert "input_data" not in sent_request.qs

@@ -212,6 +212,8 @@ class Client(BaseClient):
                     err_msg = f"Unauthorized request - check domain location and the given credentials -\n{res!s}"
                 raise DemistoException(err_msg)
 
+            raise DemistoException(f"Unexpected response status code {res.status_code}: {res.text}")
+
         except Exception as e:
             if "SSL Certificate Verification Failed" in e.args[0]:
                 return_error(
