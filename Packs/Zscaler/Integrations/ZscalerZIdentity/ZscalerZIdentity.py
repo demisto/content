@@ -1,12 +1,15 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+import html
 import re
+import traceback
 
 """ CONSTANTS """
 
 INTEGRATION_NAME = "ZscalerZIA"
-BASE_API_URL = "https://api.zsapi.net/zia/api/v1"
+DEFAULT_BASE_URL = "https://api.zsapi.net/zia/api/v1"
+ZIA_API_PATH = "/zia/api/v1"
 TOKEN_URL_TEMPLATE = "https://{server_url}/oauth2/v1/token"
 AUDIENCE = "https://api.zscaler.com"
 SUSPICIOUS_CATEGORIES = ["SUSPICIOUS_DESTINATION", "SPYWARE_OR_ADWARE"]
@@ -41,6 +44,57 @@ AUTO_ACTIVATE_CHANGES_COMMANDS = (
 handle_proxy()
 
 
+def _sanitize_url_entry(value: Any) -> Any:
+    """Decodes HTML entities in a URL entry for the Zscaler ZIA API.
+
+    Used as a fallback in update_url_category when Zscaler rejects a URL
+    category PUT with:
+        INVALID_INPUT_ARGUMENT: URLs must not contain HTML content
+    Zscaler now blocks any payload that contains HTML entity-encoded markup
+    (for example &amp;). Because update_url_category re-sends every existing
+    URL stored in the category, a single legacy entry already stored with such
+    an entity breaks every subsequent update until it is cleaned up.
+
+    Args:
+        value: A URL or IP range entry as a string.
+
+    Returns:
+        The decoded string, or the original value unchanged when it is not a string.
+    """
+    if not isinstance(value, str):
+        return value
+    return html.unescape(value)
+
+
+def _sanitize_url_list(values: list | None) -> list:
+    if not values:
+        return []
+    return [_sanitize_url_entry(v) for v in values]
+
+
+def _is_html_content_error(exc: Exception) -> bool:
+    message = str(exc)
+    return "INVALID_INPUT_ARGUMENT" in message and "URLs must not contain HTML content" in message
+
+
+def build_api_base_url(base_url: str) -> str:
+    """Normalizes the configured ZIA API base URL.
+
+    Args:
+        base_url: The configured base URL. May omit the scheme, include a trailing
+            slash, or omit the /zia/api/v1 path. Empty means DEFAULT_BASE_URL.
+
+    Returns:
+        The normalized base URL ending with /zia/api/v1.
+    """
+    host = (base_url or "").strip().rstrip("/") or DEFAULT_BASE_URL
+    if not host.startswith(("http://", "https://")):
+        host = f"https://{host}"
+    if host.endswith(ZIA_API_PATH):
+        return host
+    return f"{host}{ZIA_API_PATH}"
+
+
 """ CLIENT CLASS """
 
 
@@ -69,6 +123,7 @@ class Client(BaseClient):
         reliability: str,
         auto_activate: bool,
         suspicious_categories: list[str],
+        base_url: str = DEFAULT_BASE_URL,
     ):
         """Initializes the Client.
 
@@ -81,8 +136,9 @@ class Client(BaseClient):
             reliability: Source reliability for DBotScore (e.g. "C - Fairly reliable").
             auto_activate: If True, activate ZIA changes after each write command.
             suspicious_categories: List of URL categories considered suspicious.
+            base_url: The ZIA API base URL. Defaults to DEFAULT_BASE_URL.
         """
-        super().__init__(base_url=BASE_API_URL, verify=verify, proxy=proxy)
+        super().__init__(base_url=build_api_base_url(base_url), verify=verify, proxy=proxy)
         self.server_url = server_url
         self.client_id = client_id
         self.client_secret = client_secret
@@ -197,7 +253,7 @@ class Client(BaseClient):
 
         Args:
             method: HTTP method string (e.g. "GET", "POST", "PUT", "DELETE").
-            url_suffix: The API path suffix appended to BASE_API_URL.
+            url_suffix: The API path suffix appended to the ZIA API base URL.
             data: Optional JSON-serializable body payload (dict or list).
             params: Optional URL query parameters dict.
             resp_type: Response parsing mode passed to _http_request.
@@ -237,7 +293,7 @@ class Client(BaseClient):
 
         Args:
             method: HTTP method string (e.g. "GET", "POST", "PUT", "DELETE").
-            url_suffix: The API path suffix appended to BASE_API_URL.
+            url_suffix: The API path suffix appended to the ZIA API base URL.
             data: Optional JSON-serializable body payload (dict or list).
             params: Optional URL query parameters dict.
             resp_type: Response parsing mode passed to _http_request
@@ -433,7 +489,18 @@ class Client(BaseClient):
         if ip_ranges_retaining_parent_category is not None:
             payload["ipRangesRetainingParentCategory"] = ip_ranges_retaining_parent_category
 
-        self.api_request("PUT", f"/urlCategories/{category_id}", data=payload, resp_type="response")
+        try:
+            self.api_request("PUT", f"/urlCategories/{category_id}", data=payload, resp_type="response")
+        except DemistoException as e:
+            if not _is_html_content_error(e):
+                raise
+            demisto.debug(traceback.format_exc())
+            demisto.debug(
+                "Zscaler rejected the URL category update with 'URLs must not contain HTML content'. "
+                "Retrying once with HTML entities decoded in the URL list."
+            )
+            payload["urls"] = _sanitize_url_list(payload["urls"])
+            self.api_request("PUT", f"/urlCategories/{category_id}", data=payload, resp_type="response")
 
     # ---- URL Quota ----
 
@@ -1798,6 +1865,7 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
 
     server_url = params.get("server_url", "")
+    base_url = params.get("base_url") or DEFAULT_BASE_URL
     client_id = params.get("credentials", {}).get("identifier", "")
     client_secret = params.get("credentials", {}).get("password", "")
     verify = not params.get("insecure", False)
@@ -1822,6 +1890,7 @@ def main() -> None:  # pragma: no cover
         reliability=reliability,
         auto_activate=auto_activate,
         suspicious_categories=suspicious_categories,
+        base_url=base_url,
     )
 
     demisto.debug(f"Command is: {command}")

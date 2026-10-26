@@ -15,7 +15,7 @@ configuration:
   required: true
   defaultvalue:
   type: 0
-  additionalinfo: 'REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application.'
+  additionalinfo: 'The Workday privacy REST API endpoint including the tenant name. Take the Workday REST API Endpoint from the View API Clients report and replace /api/v1/ with /api/privacy/v1/.'
   section: Connect
 - name: token_url
   display: Token endpoint (e.g. https://WORKDAY-HOST/ccx/oauth2/TENANT-NAME/token)
@@ -75,6 +75,12 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  defaultvalue: "true"
 script:
   commands:
   - name: workday-get-activity-logging
@@ -107,8 +113,8 @@ script:
       defaultValue: "false"
       description: If true, the command creates events; otherwise, it only displays them.
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
       required: false
     outputs: []
   runonce: false
@@ -116,7 +122,7 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.12.13.10404775
+  dockerimage: demisto/python3:3.12.14.13919218
 fromversion: 8.2.0
 tests:
 - No tests (auto formatted)
