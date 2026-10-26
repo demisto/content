@@ -271,8 +271,7 @@ class TestBitSightEventCollector:
         mock_client.get_company_findings.assert_called_once_with(
             "test-guid", first_seen_gte="2024-01-15", last_seen_lte="2024-01-16", limit=100, offset=10
         )
-        # New findings should be tracked for de-duplication
-        assert len(new_last_run["already_fetched_findings"]) == 2
+        assert "already_fetched_findings" not in new_last_run
 
     def test_fetch_events_no_results(self, mock_client, mocker):
         """
@@ -562,155 +561,78 @@ class TestBitSightEventCollector:
             method="GET", url_suffix="v1/companies/test-guid/findings", params=expected_params
         )
 
-    def test_client_get_company_findings_without_sort(self, mock_client):
+    def test_fetch_events_findings_sharing_a_key_are_all_sent(self, mock_client, mocker):
         """
-        Given: sort=None (used only by the temporary unsorted debug comparison)
-
-        When: Calling get_company_findings
-
-        Then: The sort param is omitted from the request
-        """
-        mock_client.get_company_findings(
-            guid="test-guid", first_seen_gte="2024-01-15", last_seen_lte="2024-01-16", limit=100, offset=0, sort=None
-        )
-
-        _, kwargs = mock_client._http_request.call_args
-        assert "sort" not in kwargs["params"]
-
-    def test_fetch_events_debug_compare_unsorted(self, mock_client, mocker):
-        """
-        Given: debug_compare_unsorted_request=True and the API returns different orders with/without sort
+        Given: Two different findings that share rolledup_observation_id and first_seen (XSUP-78867)
 
         When: fetch_events runs
 
-        Then: A second, unsorted request with the same window/offset is sent, the differences are logged,
-              and only the sorted response is used for events and last_run.
-        """
-        sorted_findings = [
-            {"rolledup_observation_id": "A", "first_seen": "2026-09-01"},
-            {"rolledup_observation_id": "B", "first_seen": "2026-09-02"},
-        ]
-        unsorted_findings = [
-            {"rolledup_observation_id": "C", "first_seen": "2026-09-03"},
-            {"rolledup_observation_id": "A", "first_seen": "2026-09-01"},
-        ]
-
-        def fake_get_findings(guid, first_seen_gte, last_seen_lte, limit, offset, sort="first_seen"):
-            return {"results": unsorted_findings if sort is None else sorted_findings, "count": 3}
-
-        get_findings = mocker.patch.object(mock_client, "get_company_findings", side_effect=fake_get_findings)
-        info = mocker.patch("BitSightEventCollector.demisto.info")
-        last_run = {"first_fetch": "2026-09-01", "offset": 5}
-
-        with freeze_time("2026-09-03 12:00:00"):
-            events, new_last_run, _ = fetch_events(
-                client=mock_client, guid="g", max_fetch=2, last_run=last_run, debug_compare_unsorted_request=True
-            )
-
-        assert get_findings.call_count == 2
-        _, unsorted_kwargs = get_findings.call_args_list[1]
-        assert unsorted_kwargs["sort"] is None
-        assert unsorted_kwargs["offset"] == 5
-        assert unsorted_kwargs["first_seen_gte"] == "2026-09-01"
-        # Only the sorted response feeds events / last_run
-        assert [e["rolledup_observation_id"] for e in events] == ["A", "B"]
-        assert new_last_run["offset"] == 7
-        logs = " ".join(str(c.args[0]) for c in info.call_args_list)
-        assert "same_order=False" in logs
-        assert "unsorted: count=3 returned=2 first_seen_descents=1" in logs
-        assert "only_in_sorted (new code fetches, old code would not): ['B-#-2026-09-02']" in logs
-        assert "only_in_unsorted (old code fetches, new code does not): ['C-#-2026-09-03']" in logs
-
-    def test_fetch_events_debug_compare_failure_does_not_break_fetch(self, mock_client, mocker):
-        """
-        Given: The unsorted debug request raises an error
-
-        When: fetch_events runs with debug_compare_unsorted_request=True
-
-        Then: The error is swallowed and the sorted results are still returned.
-        """
-        sorted_findings = [{"rolledup_observation_id": "A", "first_seen": "2026-09-01"}]
-
-        def fake_get_findings(guid, first_seen_gte, last_seen_lte, limit, offset, sort="first_seen"):
-            if sort is None:
-                raise DemistoException("boom")
-            return {"results": sorted_findings}
-
-        mocker.patch.object(mock_client, "get_company_findings", side_effect=fake_get_findings)
-
-        with freeze_time("2026-09-03 12:00:00"):
-            events, new_last_run, _ = fetch_events(
-                client=mock_client, guid="g", max_fetch=10, last_run={}, debug_compare_unsorted_request=True
-            )
-
-        assert len(events) == 1
-        assert new_last_run["offset"] == 1
-
-    def test_fetch_events_no_debug_compare_by_default(self, mock_client, sample_findings, mocker):
-        """
-        Given: fetch_events called without debug_compare_unsorted_request (e.g. bitsight-get-events)
-
-        When: fetch_events runs
-
-        Then: Only the single sorted request is sent.
-        """
-        get_findings = mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings})
-
-        with freeze_time("2024-01-15 12:00:00"):
-            fetch_events(client=mock_client, guid="g", max_fetch=10, last_run={})
-
-        assert get_findings.call_count == 1
-
-    def test_fetch_events_skips_already_fetched_findings(self, mock_client, mocker):
-        """
-        Given: last_run already contains a finding key (rolledup_observation_id-#-first_seen)
-
-        When: The API returns that same finding again alongside a new one
-
-        Then: The already-seen finding is skipped and only the new finding is returned,
-              while the offset still advances by the raw number of findings returned.
+        Then: Both findings are returned (no key-based de-duplication) and the offset advances by 2.
         """
         findings = [
-            {"rolledup_observation_id": "SEEN==", "first_seen": "2026-09-01", "risk_vector": "web_appsec"},
-            {"rolledup_observation_id": "NEW==", "first_seen": "2026-09-01", "risk_vector": "web_appsec"},
+            {"rolledup_observation_id": "SAME==", "first_seen": "2026-10-24", "assets": [{"asset": "a.example.com"}]},
+            {"rolledup_observation_id": "SAME==", "first_seen": "2026-10-24", "assets": [{"asset": "b.example.com"}]},
         ]
-        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": findings})
+        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": findings, "count": 642})
+        last_run = {"first_fetch": "2026-09-25", "offset": 640}
 
+        with freeze_time("2026-10-26 12:00:00"):
+            events, new_last_run, _ = fetch_events(client=mock_client, guid="test-guid", max_fetch=1000, last_run=last_run)
+
+        assert len(events) == 2
+        assert new_last_run == {"first_fetch": "2026-09-25", "offset": 642, "api_count": 642}
+
+    def test_fetch_events_drops_legacy_state_keys(self, mock_client, mocker):
+        """
+        Given: A last_run saved by an older build (with already_fetched_findings and debug keys)
+
+        When: fetch_events runs
+
+        Then: The fetch continues from the stored offset and only first_fetch, offset and api_count are kept.
+        """
+        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": [], "count": 640})
         last_run = {
-            "first_fetch": "2026-09-01",
-            "offset": 5,
-            "already_fetched_findings": ["SEEN==-#-2026-09-01"],
+            "_debug_sort_sim": {"baseline": False},
+            "first_fetch": "2026-09-25",
+            "offset": 640,
+            "already_fetched_findings": ["X==-#-2026-09-25"],
+            "applied_fetch_start": "30 days ago",
         }
 
-        with freeze_time("2026-09-02 12:00:00"):
-            events, new_last_run, _ = fetch_events(client=mock_client, guid="test-guid", max_fetch=100, last_run=last_run)
+        with freeze_time("2026-10-26 12:00:00"):
+            events, new_last_run, _ = fetch_events(client=mock_client, guid="test-guid", max_fetch=1000, last_run=last_run)
 
-        # Only the new finding is emitted
-        assert len(events) == 1
-        assert events[0]["rolledup_observation_id"] == "NEW=="
-        # Offset advances by RAW findings (2), not by de-duplicated events (1)
-        assert new_last_run["offset"] == 7
-        # Both keys are now tracked
-        assert set(new_last_run["already_fetched_findings"]) == {"SEEN==-#-2026-09-01", "NEW==-#-2026-09-01"}
+        assert events == []
+        assert new_last_run == {"first_fetch": "2026-09-25", "offset": 640, "api_count": 640}
 
-    def test_fetch_events_new_finding_not_skipped(self, mock_client, mocker):
+    def test_main_fetch_events_pushes_before_saving_last_run(self, mocker):
         """
-        Given: A previously-unseen finding (the XSUP-77274 'GK4e' scenario)
+        Given: The fetch-events command
 
-        When: fetch_events runs with an empty dedup set
+        When: main runs
 
-        Then: The finding is emitted and its key is recorded for future de-duplication.
+        Then: The events are pushed to XSIAM before the new last_run is saved.
         """
-        findings = [
-            {"rolledup_observation_id": "GK4e==", "first_seen": "2026-09-01", "risk_vector": "web_appsec"},
-        ]
-        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": findings})
+        import BitSightEventCollector
 
-        last_run = {"first_fetch": "2026-09-01", "offset": 0, "already_fetched_findings": []}
+        calls: list[str] = []
+        demisto = BitSightEventCollector.demisto
+        mocker.patch.object(demisto, "params", return_value={"guid": "g", "credentials": {"identifier": "key"}})
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(demisto, "command", return_value="fetch-events")
+        mocker.patch.object(demisto, "getLastRun", return_value={"first_fetch": "2026-09-25", "offset": 0})
+        mocker.patch.object(demisto, "setLastRun", side_effect=lambda _: calls.append("setLastRun"))
+        mocker.patch.object(
+            BitSightEventCollector,
+            "send_events_to_xsiam",
+            side_effect=lambda *args, **kwargs: calls.append("send_events_to_xsiam"),
+        )
+        mocker.patch.object(
+            Client,
+            "get_company_findings",
+            return_value={"results": [{"rolledup_observation_id": "A", "first_seen": "2026-09-25"}], "count": 1},
+        )
 
-        with freeze_time("2026-09-02 12:00:00"):
-            events, new_last_run, _ = fetch_events(client=mock_client, guid="test-guid", max_fetch=100, last_run=last_run)
+        BitSightEventCollector.main()
 
-        assert len(events) == 1
-        assert events[0]["rolledup_observation_id"] == "GK4e=="
-        assert new_last_run["already_fetched_findings"] == ["GK4e==-#-2026-09-01"]
+        assert calls == ["send_events_to_xsiam", "setLastRun"]
