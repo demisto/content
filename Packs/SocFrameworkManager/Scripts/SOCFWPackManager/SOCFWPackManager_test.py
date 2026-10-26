@@ -1412,3 +1412,33 @@ def test_resolve_install_closure_still_raises_a_dependency_to_min_version(mocker
     wanted = script.resolve_install_closure([{"id": "PackA", "version": "latest"}], using="", installed=installed, upgrade=False)
 
     assert wanted["Dep"] == "2.5.0"
+
+
+def test_version_from_asset_filename():
+    mod, _ = load_script()
+    assert mod._version_from_asset_filename("SocFrameworkMicrosoftDefender-v1.2.16.zip") == "1.2.16"
+    assert mod._version_from_asset_filename("soc-nozomi-guardian-v1.1.3.zip") == "1.1.3"
+    # Unparseable degrades to presence-only rather than blocking the install.
+    assert mod._version_from_asset_filename("Pack.zip") == ""
+    assert mod._version_from_asset_filename("") == ""
+
+
+def test_wait_for_pack_installed_rejects_wrong_version(mocker):
+    """The defect: presence was the whole test, so a stale version passed."""
+    mod, _ = load_script()
+    mocker.patch.object(mod, "fetch_installed_packs", side_effect=lambda using: {"p": {"version": "1.2.13"}})
+    mocker.patch.object(mod.demisto, "executeCommand", return_value=None)
+    assert mod.wait_for_pack_installed("p", "", 0, 5, False, expected_version="1.2.16") is False
+
+
+def test_wait_for_pack_installed_accepts_matching_version(monkeypatch):
+    mod, _ = load_script()
+    monkeypatch.setattr(mod, "fetch_installed_packs", lambda using: {"p": {"version": "1.2.16"}})
+    assert mod.wait_for_pack_installed("p", "", 0, 5, False, expected_version="1.2.16") is True
+
+
+def test_wait_for_pack_installed_presence_only_without_expected(monkeypatch):
+    """Callers that cannot know the version keep the old behaviour."""
+    mod, _ = load_script()
+    monkeypatch.setattr(mod, "fetch_installed_packs", lambda using: {"p": {"version": "9.9.9"}})
+    assert mod.wait_for_pack_installed("p", "", 0, 5, False) is True

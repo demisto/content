@@ -1,0 +1,31 @@
+{
+    "result": {
+        "id": "managed_ruleset_id_1",
+        "name": "Cloudflare Managed Ruleset",
+        "description": "Managed ruleset created by Cloudflare",
+        "kind": "managed",
+        "phase": "http_request_firewall_managed",
+        "source": "firewall_managed",
+        "version": "2",
+        "last_updated": "2023-02-20T14:30:00Z",
+        "rules": [
+            {
+                "id": "rule_id_1",
+                "description": "Detect WordPress attacks",
+                "action": "block",
+                "categories": ["wordpress", "php"],
+                "enabled": true
+            },
+            {
+                "id": "rule_id_2",
+                "description": "Detect SQL injection",
+                "action": "managed_challenge",
+                "categories": ["wordpress"],
+                "enabled": true
+            }
+        ]
+    },
+    "success": true,
+    "errors": [],
+    "messages": []
+}
