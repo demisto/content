@@ -1153,9 +1153,7 @@ def test_test_module_self_pointing_url_blocks_configuration(mocker):
     """
     from CortexXDRIR import Client
 
-    mocker.patch.object(
-        demisto, "demistoUrls", return_value={"server": "https://tenant.xdr.pan.local"}
-    )
+    mocker.patch.object(demisto, "demistoUrls", return_value={"server": "https://tenant.xdr.pan.local"})
     client = Client(
         base_url="https://tenant.xdr.pan.local/public_api/v1",
         proxy=False,
