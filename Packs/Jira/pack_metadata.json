@@ -22,7 +22,6 @@
         "xpanse",
         "platform"
     ],
-    "defaultDataSource": "Jira Event Collector",
     "dependencies": {
         "JiraDataCenter": {
             "mandatory": false,

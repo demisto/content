@@ -82,7 +82,7 @@ if demisto.command() == "yolo-coco-process-image":
         for detection in output:
             # extract the class ID and confidence (i.e., probability) of
             # the current object detection
-            scores = detection[5:]
+            scores = detection[5:]  # type: ignore[index]
             classID = np.argmax(scores)
             confidence = scores[classID]
 
@@ -93,7 +93,7 @@ if demisto.command() == "yolo-coco-process-image":
                 # size of the image, keeping in mind that YOLO actually
                 # returns the center (x, y)-coordinates of the bounding
                 # box followed by the boxes' width and height
-                box = detection[0:4] * np.array([W, H, W, H])
+                box = detection[0:4] * np.array([W, H, W, H])  # type: ignore[index]
                 (centerX, centerY, width, height) = box.astype("int")
 
                 # use the center (x, y)-coordinates to derive the top and

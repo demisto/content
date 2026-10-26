@@ -18,6 +18,13 @@ configuration:
   type: 13
   defaultvalue: Varonis SaaS Incident
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: The FQDN/IP the integration should connect to
   hidden: false
   name: url
@@ -161,7 +168,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: True
+      default: true
       description: Indicates whether alerts should be ordered in newest to oldest order.
       predefined:
       - 'True'
@@ -188,7 +195,7 @@ script:
       description: Alert severity.
       type: String
     - contextPath: Varonis.Alert.Rule.Category.Name
-      description:  |- 
+      description: |-
         Alert category. Options are:
         - Reconnaissance 
         - Intrusion 
@@ -394,7 +401,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: True
+      default: true
       description: Indicates whether events should be ordered in newest to oldest order.
       predefined:
       - 'True'

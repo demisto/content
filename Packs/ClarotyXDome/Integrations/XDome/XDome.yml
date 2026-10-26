@@ -17,6 +17,13 @@ configuration:
   type: 13
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - defaultvalue: https://api.claroty.com/
   display: XDome API Base URL
   name: url

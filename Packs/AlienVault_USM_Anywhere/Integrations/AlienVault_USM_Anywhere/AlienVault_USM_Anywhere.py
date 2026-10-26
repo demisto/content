@@ -27,6 +27,10 @@ USE_SSL = not demisto.params().get("insecure", False)
 IS_FETCH = demisto.params().get("isFetch")
 # How much time before the first fetch to retrieve incidents
 FETCH_TIME = demisto.params().get("fetch_time", "3 days")
+# Default lookback window (in minutes) used when the parameter is unset or empty
+DEFAULT_LOOKBACK_MINUTES = 0
+# Upper bound on the number of UUIDs persisted in lastRun for deduplication
+MAX_FETCHED_IDS = 5000
 # Service base URL
 BASE_URL = SERVER + "/api/2.0"
 # Headers to be sent in requests
@@ -281,6 +285,7 @@ def item_to_incident(item):
         "name": "Alarm: " + item.get("uuid"),
         "occurred": occurred,
         "rawJSON": json.dumps(item),
+        "dbotMirrorId": item.get("uuid"),
     }
 
     return incident
@@ -465,39 +470,82 @@ def get_events_by_alarm_command():
 
 
 def fetch_incidents():
+    incidents = []
     last_run = demisto.getLastRun()
-    # Get the last fetch time, if exists
     last_fetch = last_run.get("timestamp")
 
-    # Handle first time fetch, fetch incidents retroactively
-    # OR
-    # Handle first time after release
+    # UUID -> fetch timestamp
+    fetched_ids = last_run.get("fetched_ids", {})
+
+    # First fetch handling
     if last_fetch is None:
         time_field = last_run.get("time")
+
         if time_field:
             last_fetch = date_to_timestamp(time_field, parse_time(time_field))
         else:
             last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
-    incidents = []
     limit = dict_value_to_int(demisto.params(), "fetch_limit") or 10
-    items = search_alarms(start_time=last_fetch, direction="asc", limit=limit)
+    lookback_minutes = arg_to_number(demisto.params().get("lookback"))
+    if lookback_minutes is None or lookback_minutes < 0:
+        lookback_minutes = DEFAULT_LOOKBACK_MINUTES
+
+    # Apply lookback window
+    start_fetch = max(0, int(last_fetch) - (lookback_minutes * 60 * 1000))
+    demisto.debug(f"last fetch is: {last_fetch}, fetch from is: {start_fetch}")
+    demisto.debug(f"previously fetched ids: {fetched_ids}")
+    items = search_alarms(start_time=start_fetch, direction="asc", limit=limit)
+
+    # Track newest occurred timestamp seen this run
+    latest_timestamp = int(last_fetch)
+
+    now_ms = int(time.time() * 1000)
+
+    # Keep IDs only inside lookback window (+1h safety buffer)
+    retention_ms = (lookback_minutes + 60) * 60 * 1000
+
+    # Remove expired cached UUIDs
+    fetched_ids = {uuid: ts for uuid, ts in fetched_ids.items() if now_ms - ts <= retention_ms}
+    demisto.debug(f"previously fetched ids after removing cached: {fetched_ids}")
     for item in items:
+        incident_id = item.get("uuid")
+
+        if not incident_id:
+            demisto.debug("Skipping item without UUID")
+            continue
+
         incident = item_to_incident(item)
+        occurred = incident.get("occurred")
+        incident_timestamp = date_to_timestamp(occurred, parse_time(occurred))
+
+        # Track latest timestamp for every item seen, including duplicates, so the
+        # watermark always advances and a fully duplicate page cannot stall the fetch
+        latest_timestamp = max(latest_timestamp, incident_timestamp)
+
+        # Full cross-window dedup
+        if incident_id in fetched_ids:
+            demisto.debug(f"Skipping duplicate incident: {incident_id}")
+            continue
+
         incidents.append(incident)
 
-    if incidents:
-        #  updating according to latest incident
-        time_str = str(incidents[-1].get("occurred"))
+        # Remember UUID as fetched
+        fetched_ids[incident_id] = now_ms
 
-        # add one second to last incident occurred time to avoid duplications
-        occurred = datetime.strptime(time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-        occurred = occurred + timedelta(seconds=1)
-        time_str = occurred.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    demisto.debug(f"fetched {len(items)} items, {len(incidents)} new incidents, latest timestamp: {latest_timestamp}")
 
-        last_fetch = str(date_to_timestamp(time_str, date_format=parse_time(time_str)))
+    if len(fetched_ids) > MAX_FETCHED_IDS:
+        demisto.debug(f"fetched_ids exceeded {MAX_FETCHED_IDS}, truncating to newest entries")
+        fetched_ids = dict(sorted(fetched_ids.items(), key=lambda kv: kv[1], reverse=True)[:MAX_FETCHED_IDS])
 
-    demisto.setLastRun({"timestamp": last_fetch})
+    demisto.setLastRun(
+        {
+            "timestamp": latest_timestamp,
+            "fetched_ids": fetched_ids,
+        }
+    )
+
     demisto.incidents(incidents)
 
 

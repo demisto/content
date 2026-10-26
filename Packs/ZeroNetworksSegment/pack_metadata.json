@@ -2,10 +2,11 @@
     "name": "Zero Networks Segment",
     "description": "Integrates with Zero Networks Segment API to fetch and process audit and network events.",
     "support": "xsoar",
-    "currentVersion": "1.0.12",
+    "currentVersion": "1.0.14",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "created": "2024-09-04T06:37:14Z",
     "categories": [
         "Network Security"
     ],

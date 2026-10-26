@@ -142,17 +142,21 @@
             },
             "total_sightings": 1
         },
+        "score": 3,
         "fields": {
-            "tags": [],
+            "tags": [
+                "malware:dummy-malware",
+                "source:dummy_source"
+            ],
             "flashpointfeedindicatorid": "dummy-id-1",
             "flashpointfeedindicatortype": "ipv4",
             "flashpointfeedapi": "https://api.example.com/indicators/dummy-id-1",
+            "flashpointfeedscorevalue": "malicious",
             "flashpointfeedlastscoredate": "2026-01-01T00:00:00Z",
             "flashpointfeedmodifieddate": "2026-01-01T00:00:00Z",
             "flashpointfeedcreateddate": "2026-01-01T00:00:00Z",
             "flashpointfeedlastseendate": "2026-01-01T00:00:00Z",
             "flashpointfeedplatformurl": "https://app.example.com/iocs/dummy-id-1",
-            "flashpointfeedscorevalue": "malicious",
             "flashpointfeedaptdescription": "N/A",
             "flashpointfeedexternalreferences": [
                 {
@@ -328,17 +332,21 @@
             },
             "total_sightings": 1
         },
+        "score": 0,
         "fields": {
-            "tags": [],
+            "tags": [
+                "malware:dummy-malware-2",
+                "source:dummy_source"
+            ],
             "flashpointfeedindicatorid": "dummy-id-2",
             "flashpointfeedindicatortype": "file",
             "flashpointfeedapi": "https://api.example.com/indicators/dummy-id-2",
+            "flashpointfeedscorevalue": "unknown",
             "flashpointfeedlastscoredate": "2026-01-01T00:00:00Z",
             "flashpointfeedmodifieddate": "2026-01-01T00:00:00Z",
             "flashpointfeedcreateddate": "2026-01-01T00:00:00Z",
             "flashpointfeedlastseendate": "2026-01-01T00:00:00Z",
             "flashpointfeedplatformurl": "https://app.example.com/iocs/dummy-id-2",
-            "flashpointfeedscorevalue": "unknown",
             "flashpointfeedaptdescription": null,
             "flashpointfeedexternalreferences": null,
             "md5": null,

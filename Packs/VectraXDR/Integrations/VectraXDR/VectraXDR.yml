@@ -158,6 +158,13 @@ configuration:
   required: false
   type: 13
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 description: This integration allows to create incidents based on Vectra XDR Entities.
 display: Vectra XDR
 name: VectraXDR

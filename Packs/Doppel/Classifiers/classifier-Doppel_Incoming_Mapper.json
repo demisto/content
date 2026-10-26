@@ -21,6 +21,9 @@
 				"Audit Logs": {
 					"simple": "audit_logs.[]."
 				},
+		        "Doppel Audit Logs": {
+					"simple": "audit_logs"
+				},
 				"Block Indicators Status": {
 					"simple": "entity_state"
 				},
@@ -29,9 +32,6 @@
 				},
 				"Doppel Entity": {
 					"simple": "entity"
-				},
-				"Doppel Entity Content": {
-					"simple": "entity_content"
 				},
 				"Doppel Link": {
 					"simple": "doppel_link"
@@ -95,6 +95,9 @@
 				"Audit Logs": {
 					"simple": "audit_logs.[]."
 				},
+		        "Doppel Audit Logs": {
+					"simple": "audit_logs"
+				},
 				"Block Indicators Status": {
 					"simple": "entity_state"
 				},
@@ -111,9 +114,6 @@
 				},
 				"Doppel Entity": {
 					"simple": "entity"
-				},
-				"Doppel Entity Content": {
-					"simple": "entity_content"
 				},
 				"Doppel Link": {
 					"simple": "doppel_link"
@@ -167,9 +167,12 @@
 				},
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
-				}, 
+				},
 				"Doppel Screenshot URL": {
 					"simple": "screenshot_url"
+				},
+				"Doppel Entity Content": {
+					"simple": "entity_content"
 				}
 			}
 		},
@@ -191,6 +194,9 @@
 				"Audit Logs": {
 					"simple": "audit_logs.[]."
 				},
+		        "Doppel Audit Logs": {
+					"simple": "audit_logs"
+				},
 				"Block Indicators Status": {
 					"simple": "entity_state"
 				},
@@ -199,9 +205,6 @@
 				},
 				"Doppel Entity": {
 					"simple": "entity"
-				},
-				"Doppel Entity Content": {
-					"simple": "entity_content"
 				},
 				"Doppel Link": {
 					"simple": "doppel_link"
@@ -244,6 +247,9 @@
 				},
 				"Doppel Screenshot URL": {
 					"simple": "screenshot_url"
+				},
+				"Doppel Entity Content Ecommerce": {
+					"simple": "entity_content"
 				}
 			}
 		},
@@ -265,6 +271,9 @@
 				"Audit Logs": {
 					"simple": "audit_logs.[]."
 				},
+                "Doppel Audit Logs": {
+					"simple": "audit_logs"
+				},
 				"Block Indicators Status": {
 					"simple": "entity_state"
 				},
@@ -281,9 +290,6 @@
 				},
 				"Doppel Entity": {
 					"simple": "entity"
-				},
-				"Doppel Entity Content": {
-					"simple": "entity_content"
 				},
 				"Doppel Link": {
 					"simple": "doppel_link"
@@ -361,6 +367,9 @@
 				"Audit Logs": {
 					"simple": "audit_logs.[]."
 				},
+                "Doppel Audit Logs": {
+					"simple": "audit_logs"
+				},
 				"Block Indicators Status": {
 					"simple": "entity_state"
 				},
@@ -369,9 +378,6 @@
 				},
 				"Doppel Entity": {
 					"simple": "entity"
-				},
-				"Doppel Entity Content": {
-					"simple": "entity_content"
 				},
 				"Doppel Link": {
 					"simple": "doppel_link"
@@ -414,6 +420,9 @@
 				},
 				"Doppel Screenshot URL": {
 					"simple": "screenshot_url"
+				},
+				"Doppel Entity Content Mobile Apps": {
+					"simple": "entity_content"
 				}
 			}
 		},
@@ -435,6 +444,9 @@
 				"Audit Logs": {
 					"simple": "audit_logs.[]."
 				},
+                "Doppel Audit Logs": {
+					"simple": "audit_logs"
+				},
 				"Block Indicators Status": {
 					"simple": "entity_state"
 				},
@@ -451,9 +463,6 @@
 				},
 				"Doppel Entity": {
 					"simple": "entity"
-				},
-				"Doppel Entity Content": {
-					"simple": "entity_content"
 				},
 				"Doppel Link": {
 					"simple": "doppel_link"
@@ -531,6 +540,9 @@
 				"Audit Logs": {
 					"simple": "audit_logs.[]."
 				},
+                "Doppel Audit Logs": {
+					"simple": "audit_logs"
+				},
 				"Block Indicators Status": {
 					"simple": "entity_state"
 				},
@@ -539,9 +551,6 @@
 				},
 				"Doppel Entity": {
 					"simple": "entity"
-				},
-				"Doppel Entity Content": {
-					"simple": "entity_content"
 				},
 				"Doppel Link": {
 					"simple": "doppel_link"
@@ -584,6 +593,108 @@
 				},
 				"Doppel Screenshot URL": {
 					"simple": "screenshot_url"
+				},
+				"Doppel Entity Content Social Media": {
+					"simple": "entity_content"
+				}
+			}
+		},
+		"Doppel Alert Telco": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Additional Indicators": {
+					"simple": "entity"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Source": {
+					"simple": "source"
+				},
+				"Alert tags": {
+					"simple": "tags"
+				},
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
+				},
+                "Doppel Audit Logs": {
+					"simple": "audit_logs"
+				},
+				"Block Indicators Status": {
+					"simple": "entity_state"
+				},
+				"Changed": {
+					"complex": {
+						"accessor": "[0].changed_by",
+						"filters": [],
+						"root": "audit_logs",
+						"transformers": []
+					}
+				},
+				"Doppel Brand": {
+					"simple": "brand"
+				},
+				"Doppel Entity": {
+					"simple": "entity"
+				},
+				"Doppel Link": {
+					"simple": "doppel_link"
+				},
+				"Doppel Notes": {
+					"simple": "notes"
+				},
+				"Doppel Platform": {
+					"simple": "platform"
+				},
+				"Doppel Product": {
+					"simple": "product"
+				},
+				"Doppel Queue State": {
+					"simple": "queue_state"
+				},
+				"Doppel Uploaded By": {
+					"simple": "uploaded_by"
+				},
+				"Selected Indicators": {
+					"simple": "entity"
+				},
+				"State": {
+					"complex": {
+						"filters": [],
+						"root": "queue_state",
+						"transformers": []
+					}
+				},
+				"Vulnerable Product": {
+					"simple": "brand"
+				},
+				"occurred": {
+					"simple": "created_at"
+				},
+				"severity": {
+					"simple": "severity"
+				},
+				"source": {
+					"complex": {
+						"filters": [],
+						"root": "source",
+						"transformers": []
+					}
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
+				"Doppel Screenshot URL": {
+					"simple": "screenshot_url"
+				},
+				"Doppel Entity Content Telco": {
+					"simple": "entity_content"
 				}
 			}
 		},
@@ -602,6 +713,9 @@
 				"Audit Logs": {
 					"simple": "audit_logs.[]."
 				},
+                "Doppel Audit Logs": {
+					"simple": "audit_logs"
+				},
 				"Block Indicators Status": {
 					"simple": "entity_state"
 				},
@@ -610,9 +724,6 @@
 				},
 				"Doppel Entity": {
 					"simple": "entity"
-				},
-				"Doppel Entity Content": {
-					"simple": "entity_content.root_domain"
 				},
 				"Doppel Entity State": {
 					"simple": "entity_state"
@@ -655,6 +766,21 @@
 				},
 				"Doppel Screenshot URL": {
 					"simple": "screenshot_url"
+				},
+				"Doppel Entity Content": {
+					"simple": "entity_content"
+				},
+				"Doppel Entity Content Social Media": {
+					"simple": "entity_content"
+				},
+				"Doppel Entity Content Mobile Apps": {
+					"simple": "entity_content"
+				},
+				"Doppel Entity Content Ecommerce": {
+					"simple": "entity_content"
+				},
+				"Doppel Entity Content Telco": {
+					"simple": "entity_content"
 				}
 			}
 		}
@@ -662,5 +788,9 @@
 	"name": "Doppel Incoming_Mapper",
 	"type": "mapping-incoming",
 	"version": -1,
-	"fromVersion": "6.10.0"
+	"fromVersion": "6.10.0",
+	"supportedModules": [
+		"agentix",
+		"xsiam"
+	]
 }

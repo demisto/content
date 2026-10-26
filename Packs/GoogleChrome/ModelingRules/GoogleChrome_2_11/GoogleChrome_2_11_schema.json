@@ -1,0 +1,16 @@
+{
+    "google_workspace_chrome_raw": {
+        "events": {
+          "type": "string",
+          "is_array": false
+        },
+        "event": {
+          "type": "string",
+          "is_array": false
+        },
+        "parameters": {
+          "type": "string",
+          "is_array": false
+        }
+    }
+}

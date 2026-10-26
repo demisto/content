@@ -92,6 +92,13 @@ configuration:
   type: 13
   required: false
   section: Connect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 defaultmapperin: 'CTM360-CyberBlindspot - Incoming Mapper'
 description: 'Take action on incidents derived from CTM360 CBS threat intelligence that is directly linked to your organization.'
 display: CTM360 CyberBlindspot

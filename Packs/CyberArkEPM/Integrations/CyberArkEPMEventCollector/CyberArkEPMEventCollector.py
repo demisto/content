@@ -40,10 +40,6 @@ class Config:
     VALID_UNTIL = "valid_until"
     DEFAULT_TOKEN_TTL_SECONDS = 6 * 60 * 60
     CACHE_BUFFER_SECONDS = 60
-    # EPM SET API version segment used in the OAuth data-call paths, e.g.
-    # https://<tenant>/EPM/API/<version>/Sets. Only applies to the Idira OAuth flow.
-    EPM_API_VERSION = "26.7.0"
-
     # Context outputs prefix per event type. The *-get-events commands expose the parsed/normalized
     # events under these prefixes so operators can verify the normalization while debugging.
     OUTPUTS_PREFIX = {
@@ -87,8 +83,9 @@ class Client(BaseClient):
         self.identity_url = identity_url
         self.web_app_id = web_app_id
         # `server_url` is the EPM server address used only for the Idira OAuth method (e.g.
-        # https://example.epm.cyberark.com/). For the EPM/SAML methods the base URL is resolved
-        # from the login response within the code.
+        # https://example.epm.cyberark.com). For the EPM/SAML methods the base URL is resolved
+        # from the login response within the code. Already normalized by `normalize_server_url`
+        # at the parameter-parsing layer.
         self.server_url = server_url
         # Resolve the authentication method. When `auth_method` is not provided (e.g. instances
         # created before the parameter existed), fall back to the legacy behavior: SAML when both
@@ -107,6 +104,34 @@ class Client(BaseClient):
             self.epm_auth_to_cyber_ark()
         self.policy_audits_event_type = policy_audits_event_type
         self.raw_events_event_type = raw_events_event_type
+        self._log_configuration()
+
+    def _log_configuration(self) -> None:
+        """Log the non-sensitive client configuration to aid troubleshooting.
+
+        Emitted once per execution, since the Client is constructed a single time in `main()`, so
+        this does not add per-request log noise.
+
+        Only connection-shaping values are logged. Credentials (username, password) and the
+        Authorization header are deliberately excluded so nothing sensitive reaches the logs; the
+        booleans below record whether a credential was supplied, never its value.
+        """
+        demisto.debug(
+            "[Client] Configuration: "
+            f"auth_method={self.auth_method!r}, "
+            f"base_url={self._base_url!r}, "
+            f"server_url={self.server_url!r}, "
+            f"identity_url={self.identity_url!r}, "
+            f"web_app_id={self.web_app_id!r}, "
+            f"authentication_url={self.authentication_url!r}, "
+            f"application_url={self.application_url!r}, "
+            f"application_id={self.application_id!r}, "
+            f"policy_audits_event_type={self.policy_audits_event_type!r}, "
+            f"raw_events_event_type={self.raw_events_event_type!r}, "
+            f"verify={self._verify}, "
+            f"has_username={bool(self.username)}, "
+            f"has_password={bool(self.password)}"
+        )
 
     def _get_access_token(self, force_refresh: bool = False) -> str:
         """Get or refresh the OAuth2 access token, with caching in the integration context.
@@ -179,7 +204,16 @@ class Client(BaseClient):
         if not self.server_url:
             raise DemistoException("Server URL is required for Idira OAuth authentication.")
         access_token = self._get_access_token(force_refresh=force_refresh)
-        self._base_url = f"{self.server_url.rstrip('/')}/EPM/API/{Config.EPM_API_VERSION}/"
+        # An empty version selects the version-less path, which the tenant resolves to its latest
+        # deployed version. Interpolating an empty segment would produce a double slash
+        # ("/EPM/API//Sets") and 404, so the two shapes are built separately rather than by
+        # formatting "" into the middle of the path.
+        # The version-less path. CyberArk resolves it to the latest API version deployed on the
+        # tenant, which is what we want: a pinned version is only ever a routing token that can go
+        # stale, and when it does the request fails as a bare 404 with nothing to explain it.
+        # Confirmed against a live tenant - `GET /EPM/API/Sets` returns 200.
+        self._base_url = f"{self.server_url}/EPM/API/"
+        demisto.debug(f"[oauth_auth_to_cyber_ark] Using EPM SET API base URL: {self._base_url}")
         self._headers["Authorization"] = f"Bearer {access_token}"
 
     def _refresh_oauth_token(self) -> None:
@@ -284,13 +318,35 @@ class Client(BaseClient):
         self._base_url = urljoin(result.get("ManagerURL"), "/EPM/API/")
         self._headers["Authorization"] = f"basic {result.get('EPMAuthenticationResult')}"
 
+    def _log_request_url(self, caller: str, url_suffix: str) -> None:
+        """Log the fully-resolved request URL for a data-plane call.
+
+        The version segment is chosen once, in `oauth_auth_to_cyber_ark`, and then lives inside
+        `self._base_url` where no per-call log ever showed it. That is precisely how the malformed
+        version segment stayed invisible in a customer's debug log for as long as it did. Logging
+        the resolved URL on every data call means the path shape actually used - version-pinned or
+        version-less - is provable from the logs for *every* endpoint, not just for `Sets`.
+
+        Args:
+            caller: The calling method, used as the log prefix.
+            url_suffix: The suffix appended to the base URL for this call.
+        """
+        demisto.debug(f"[{caller}] Request URL: {self._base_url}{url_suffix}")
+
     def get_set_list(self) -> dict:
+        self._log_request_url("Client.get_set_list", "Sets")
         result = self._http_request("GET", url_suffix="Sets")
-        demisto.debug(f"[Client.get_set_list] Retrieved {len(result.get('Sets', []))} sets from API")
+        sets = result.get("Sets", [])
+        demisto.debug(f"[Client.get_set_list] Retrieved {len(sets)} sets from API")
+        # The tenant's own set names are logged in full because name resolution is an exact string
+        # match: when it fails, the only way to see why is to compare what was configured against
+        # what the tenant actually returned, character for character.
+        demisto.debug(f"[Client.get_set_list] Set names returned by the tenant: {[entry.get('Name') for entry in sets]}")
         return result
 
     def get_admin_audits(self, set_id: str, from_date: str = "", limit: int = ADMIN_AUDITS_MAX_LIMIT) -> dict:
         url_suffix = f"Sets/{set_id}/AdminAudit?dateFrom={from_date}&limit={min(limit, ADMIN_AUDITS_MAX_LIMIT)}"
+        self._log_request_url("Client.get_admin_audits", url_suffix)
         return self._http_request("GET", url_suffix=url_suffix)
 
     def get_policy_audits(self, set_id: str, from_date: str = "", limit: int = MAX_LIMIT, next_cursor: str = "start") -> dict:
@@ -298,6 +354,8 @@ class Client(BaseClient):
         filter_params = f"arrivalTime GE {from_date}"
         if self.policy_audits_event_type:
             filter_params += f' AND eventType IN {",".join(self.policy_audits_event_type)}'
+        self._log_request_url("Client.get_policy_audits", url_suffix)
+        demisto.debug(f"[Client.get_policy_audits] filter={filter_params}")
         data = assign_params(
             filter=filter_params,
         )
@@ -312,7 +370,8 @@ class Client(BaseClient):
             f"[Client.get_events] set_id={set_id}, from_date={from_date}, limit={limit}, next_cursor={next_cursor}, "
             f"raw_events_event_type={self.raw_events_event_type}"
         )
-        demisto.debug(f"[Client.get_events] url_suffix={url_suffix} filter={filter_params}")
+        self._log_request_url("Client.get_events", url_suffix)
+        demisto.debug(f"[Client.get_events] filter={filter_params}")
         data = assign_params(
             filter=filter_params,
         )
@@ -452,6 +511,68 @@ def reconcile_last_run_with_current_sets(last_run: dict, current_set_ids: list, 
     return last_run
 
 
+def reconcile_split_set_names(configured_names: list[str], tenant_names: list[str]) -> list[str]:
+    """Repair set names that a comma split broke apart, using the tenant's real names as the authority.
+
+    The *Set name* parameter is a comma-separated list, so a set whose own name contains a comma -
+    such as "CybrWorld-Windows(cyberark software, inc._11)" - arrives here already torn into
+    ["CybrWorld-Windows(cyberark software", "inc._11)"]. Neither fragment matches anything and the
+    fetch fails. On a tenant where EPM has appended an account name like "…, Inc." to every set,
+    that makes the parameter unusable no matter what the operator types.
+
+    The ambiguity is only unresolvable in isolation: "Alpha, Inc., Beta, Inc." could be two names or
+    four. But we are not in isolation - we know the exact set names the tenant returned, so we can
+    ask which reading corresponds to reality. Consecutive fragments are rejoined and tested against
+    that list, longest run first, so a real name always wins over the fragments it contains.
+
+    Args:
+        configured_names: The names as parsed from the parameter, possibly split mid-name.
+        tenant_names: The set names the tenant actually returned.
+
+    Returns:
+        The configured names with any split names rejoined. Fragments that match nothing are
+        preserved unchanged so the caller can still report them as unresolved.
+    """
+    if not configured_names or not tenant_names:
+        return configured_names
+
+    tenant_lookup = {name.strip().casefold(): name for name in tenant_names if name}
+    repaired: list[str] = []
+    index = 0
+
+    while index < len(configured_names):
+        # Try the longest run of consecutive fragments first: a shorter run may also match, but a
+        # longer one that matches a real set name is always the better reading. Preferring the
+        # short match would let a set named "Alpha" swallow the first half of "Alpha, Inc.".
+        for end in range(len(configured_names), index, -1):
+            run = configured_names[index:end]
+            # argToList strips whitespace around each element, so the original spacing is gone.
+            # Both spellings are tried because either could be what the operator typed.
+            candidates = [", ".join(run), ",".join(run)] if len(run) > 1 else [run[0]]
+            match = next((tenant_lookup[c.strip().casefold()] for c in candidates if c.strip().casefold() in tenant_lookup), None)
+            if match is not None:
+                if len(run) > 1:
+                    demisto.debug(
+                        f"[reconcile_split_set_names] Rejoined {len(run)} comma-split fragment(s) into the "
+                        f"tenant set name {match!r}."
+                    )
+                repaired.append(match)
+                index = end
+                break
+        else:
+            # No run starting here matches a real set. Keep the fragment as configured so the
+            # caller reports it as unresolved rather than silently dropping it.
+            repaired.append(configured_names[index])
+            index += 1
+
+    if repaired != configured_names:
+        demisto.debug(
+            f"[reconcile_split_set_names] Repaired the configured set names against the tenant list: "
+            f"{configured_names} -> {repaired}"
+        )
+    return repaired
+
+
 def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
     """
     Gets a list of set names and returns a list of set IDs.
@@ -466,12 +587,24 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
     context_set_items = integration_context.get("set_items", {})
     demisto.debug(f"[get_set_ids_by_set_names] Cached set_items in context: {context_set_items}")
 
-    if context_set_items.keys() != set(set_names):
+    # The cache is keyed by the REPAIRED names, because that is what resolved against the tenant.
+    # A comma-bearing name arrives here as fragments, so comparing the fragments directly against
+    # the cache could never match and every fetch cycle would re-issue GET /Sets forever. Rejoining
+    # the fragments the same way first makes the comparison meaningful again.
+    cached_names = list(context_set_items.keys())
+    lookup_names = reconcile_split_set_names(set_names, cached_names) if cached_names else set_names
+
+    if context_set_items.keys() != set(lookup_names):
         result = client.get_set_list()
         all_sets = result.get("Sets", [])
         # Log all available set names from API for debugging
         all_set_names_from_api = [set_item.get("Name") for set_item in all_sets]
         demisto.debug(f"[get_set_ids_by_set_names] All available set names from API: {all_set_names_from_api}")
+
+        # Repair any name the comma split tore apart, now that the tenant's real names are known.
+        # This is the only point in the flow where both halves of the problem are in scope: the
+        # configured value, and the authoritative list to check it against.
+        set_names = reconcile_split_set_names(set_names, all_set_names_from_api)
 
         context_set_items = {
             set_item.get("Name"): set_item.get("Id") for set_item in result.get("Sets", []) if set_item.get("Name") in set_names
@@ -481,13 +614,20 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
         resolved_set_names = set(context_set_items.keys())
         unresolved_set_names = set(set_names) - resolved_set_names
 
-        demisto.info(f"[get_set_ids_by_set_names] Successfully resolved set names: {resolved_set_names}")
-        demisto.info(f"[get_set_ids_by_set_names] Resolved set_name -> set_id mapping: {context_set_items}")
+        demisto.debug(f"[get_set_ids_by_set_names] Successfully resolved set names: {resolved_set_names}")
+        demisto.debug(f"[get_set_ids_by_set_names] Resolved set_name -> set_id mapping: {context_set_items}")
 
         if unresolved_set_names:
+            # Both sides of the comparison are logged together. Resolution is an exact string
+            # match, so an unresolved name is only ever explicable by seeing it next to the names
+            # the tenant actually returned. Note that a comma-split name would already have been
+            # rejoined above, so anything still unresolved here is a genuine mismatch - a typo, or
+            # a set that no longer exists - rather than a formatting artifact.
             demisto.error(
                 f"[get_set_ids_by_set_names] Could not resolve the following set names to set IDs: "
-                f"{unresolved_set_names}. These sets will not be fetched."
+                f"{unresolved_set_names}. These sets will not be fetched. "
+                f"Names available on the tenant: {all_set_names_from_api}. "
+                f"Check for a typo, or for a set that has been renamed or deleted in CyberArk EPM."
             )
 
         # Merge into the existing context instead of overwriting it, so we don't clobber
@@ -496,10 +636,10 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
         integration_context["set_items"] = context_set_items
         set_integration_context(integration_context)
     else:
-        demisto.debug("[get_set_ids_by_set_names] Using cached set_items from integration context")
+        demisto.debug(f"[get_set_ids_by_set_names] Using cached set_items from integration context: {lookup_names}")
 
     set_ids = list(context_set_items.values())
-    demisto.info(f"[get_set_ids_by_set_names] Final set_ids to fetch events from: {set_ids}")
+    demisto.debug(f"[get_set_ids_by_set_names] Final set_ids to fetch events from: {set_ids}")
 
     return set_ids
 
@@ -627,9 +767,13 @@ def fetch_events(
     """
     events: list = []
     set_ids_to_process = list(last_run.keys())
-    demisto.info(f"[fetch_events] Start fetching, {last_run=}")
-    demisto.info(f"[fetch_events] Set IDs to process: {set_ids_to_process}")
+    demisto.debug(f"[fetch_events] Start fetching, {last_run=}")
+    demisto.debug(f"[fetch_events] Set IDs to process: {set_ids_to_process}")
     demisto.debug(f"[fetch_events] params: {max_fetch=}, {enable_admin_audits=}")
+    # Restate the base URL at the start of every fetch. The client is built once and its base URL
+    # logged once, but a fetch is what runs every cycle - so this is the line that proves, per
+    # cycle, which URL the event calls actually went to.
+    demisto.debug(f"[fetch_events] Using base_url={client._base_url!r}")
 
     if enable_admin_audits:
         for set_id, admin_audits in get_admin_audits(client, last_run, max_fetch).items():
@@ -663,7 +807,7 @@ def fetch_events(
 
     unique_types = list(dict.fromkeys(e.get("eventType") for e in events if isinstance(e, dict)))
     demisto.debug(f"[fetch_events] unique_event_types fetched during this fetch={unique_types}")
-    demisto.info(
+    demisto.debug(
         f"[fetch_events] Sending {len(events)} events to XSIAM. "
         f"first_event_keys={(list(events[0].keys()) if events else [])} "
         f"updated_next_run={last_run}"
@@ -673,22 +817,107 @@ def fetch_events(
 
 
 def test_module(client: Client, last_run: dict) -> str:
-    """
-    Tests API connectivity and authentication'
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is successful.
-    Raises exceptions if something goes wrong.
+    """Test API connectivity and authentication by running a small real fetch.
+
+    A trimmed fetch is used rather than a single probe call because it exercises the whole chain the
+    customer depends on - authentication, set-name resolution, and the event endpoints - so a
+    misconfiguration surfaces here instead of at the first scheduled fetch.
+
     Args:
         client (Client): CyberArkEPM client to use.
+        last_run (dict): The current last-run object, passed through to the test fetch.
+
     Returns:
-        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
+        str: 'ok' if the test passed. Any failure raises and fails the test.
     """
-    demisto.debug("[test_module] starting test fetch with max_fetch=5")
+    demisto.debug(f"[test_module] Starting test fetch with max_fetch=5 using base_url={client._base_url!r}")
     fetch_events(client=client, last_run=last_run, max_fetch=5)
-    demisto.debug("[test_module] test fetch completed successfully")
+    demisto.info(f"[test_module] PASSED: test fetch succeeded against base_url={client._base_url!r}")
     return "ok"
 
 
 """ MAIN FUNCTION """
+
+
+def parse_set_names(raw_set_names: Any) -> list[str]:
+    """Parse the *Set name* parameter into a list of set names.
+
+    The parameter has always been a comma-separated list, which silently breaks for any set whose
+    name contains a comma. That is not an edge case: CyberArk EPM appends the account name to every
+    set on a tenant, so an account registered as "Example Corp, Inc." yields set names such as
+    "ExWorld-Windows(example corp, inc._11)" - and EPM offers no way to rename them. On such a
+    tenant `argToList` turns one set into two fragments that match nothing, and no combination of
+    sets can be configured at all.
+
+    The repair happens later, in `reconcile_split_set_names`, where the tenant's real set list is
+    in hand and can say which reading of the commas corresponds to reality. Operators therefore
+    keep entering a plain comma-separated list exactly as before, whatever their names contain.
+
+    A JSON array is also accepted, for the case where the tenant list is unavailable or a name is
+    genuinely ambiguous, since JSON quotes each element and a comma inside quotes is just a
+    character:
+
+        ["ExWorld-Windows(example corp, inc._11)", "ExWorld-Linux(example corp, inc._11)"]
+
+    Args:
+        raw_set_names: The raw parameter value, as configured on the instance.
+
+    Returns:
+        The configured set names. Empty when nothing was configured.
+    """
+    if isinstance(raw_set_names, list):  # already a list (e.g. multi-select), nothing to parse
+        return [str(name).strip() for name in raw_set_names if str(name).strip()]
+
+    raw = str(raw_set_names or "").strip()
+    if not raw:
+        return []
+
+    if raw.startswith("["):
+        try:
+            parsed = json.loads(raw)
+        except json.JSONDecodeError as json_error:
+            # A value that opens with "[" was clearly meant to be JSON, so a silent fall back to the
+            # comma split would hand back fragments and a baffling "set not found" later on. This
+            # also catches a valid array followed by trailing junk, e.g. '["a"], "b"'.
+            raise DemistoException(
+                f'The "Set name" parameter looks like a JSON array but could not be parsed: {json_error}. '
+                f'Provide a valid JSON array, for example ["Set One", "Set Two"], or a comma-separated '
+                f"list of names that do not themselves contain commas."
+            ) from json_error
+
+        # `parsed` is necessarily a list: json.loads only reaches here for input starting with "[".
+        set_names = [str(name).strip() for name in parsed if str(name).strip()]
+        # The names themselves are logged, not just a count. A count cannot answer the only
+        # question that matters on a tenant with comma-bearing names - did each name survive
+        # whole, or was it split? Seeing the parsed list settles that from the log alone.
+        demisto.debug(
+            f"[parse_set_names] mode=json-array: parsed {len(set_names)} set name(s) from a JSON array. "
+            f"Commas within a name are preserved. names={set_names}"
+        )
+        return set_names
+
+    set_names = argToList(raw)
+    demisto.debug(
+        f"[parse_set_names] mode=comma-separated: parsed {len(set_names)} set name(s) using the comma split. "
+        f"A name that itself contains a comma is split into fragments here and is rejoined later by "
+        f"reconcile_split_set_names against the tenant's real set list. names={set_names}"
+    )
+    return set_names
+
+
+def normalize_server_url(server_url: str | None) -> str | None:
+    """Normalize the *Server URL* parameter so it can be joined into a path without duplicate slashes.
+
+    Args:
+        server_url: The raw parameter value, which may be None, empty, or have a trailing slash.
+
+    Returns:
+        The trimmed server URL without a trailing slash, or None when no value was provided. The
+        empty/None case is preserved rather than defaulted, because `oauth_auth_to_cyber_ark`
+        reports a missing Server URL as a user-facing error.
+    """
+    normalized = (server_url or "").strip().rstrip("/")
+    return normalized or None
 
 
 def validate_params(
@@ -746,7 +975,7 @@ def main():  # pragma: no cover
     auth_method = params.get("authentication_method") or Config.AUTH_METHOD_EPM
     identity_url = params.get("identity_url")
     web_app_id = params.get("web_app_id")
-    server_url = params.get("server_url")
+    server_url = normalize_server_url(params.get("server_url"))
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
 
@@ -760,7 +989,7 @@ def main():  # pragma: no cover
         server_url=server_url,
     )
 
-    set_names = argToList(params.get("set_name"))
+    set_names = parse_set_names(params.get("set_name"))
     enable_admin_audits = argToBoolean(params.get("enable_admin_audits", False))
     policy_audits_event_type = argToList(params.get("policy_audits_event_type"))
     raw_events_event_type = argToList(params.get("raw_events_event_type"))

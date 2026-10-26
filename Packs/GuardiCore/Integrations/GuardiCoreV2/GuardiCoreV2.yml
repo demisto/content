@@ -109,6 +109,13 @@ configuration:
   type: 13
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 description: The GuardiCore v2 integration provides access to incident and endpoint (asset) information via the GuardiCore API.
 display: GuardiCore v2
 fromversion: 6.0.0

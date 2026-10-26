@@ -2080,7 +2080,7 @@ script:
       name: with_metrics
     description: Akamai Generic API Call.
     name: akamai-generic-api-call-command
-  dockerimage: demisto/auth-utils:1.0.0.9224111
+  dockerimage: demisto/auth-utils:1.0.0.11671917
   script: ''
   subtype: python3
   type: python

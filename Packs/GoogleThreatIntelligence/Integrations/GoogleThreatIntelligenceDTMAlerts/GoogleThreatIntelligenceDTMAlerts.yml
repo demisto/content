@@ -134,6 +134,13 @@ configuration:
   type: 13
   defaultvalue: Google Threat Intelligence DTM Alert
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 script:
   script: ''
   type: python

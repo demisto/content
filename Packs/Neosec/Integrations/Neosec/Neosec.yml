@@ -1,4 +1,7 @@
 category: Network Security
+sectionorder:
+- Connect
+- Collect
 provider: Akamai Technologies
 commonfields:
   id: Neosec
@@ -12,26 +15,31 @@ configuration:
   additionalinfo: The API Key to use for connection
   displaypassword: API Key
   hiddenusername: true
+  section: Connect
 - name: url
   display: URL
   required: true
   defaultvalue: https://neograph.neosec.com
   type: 0
   additionalinfo: ""
+  section: Connect
 - name: tenant_key
   display: Tenant Key
   required: true
   defaultvalue:
   type: 0
   additionalinfo: ""
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - name: alert_status
   display: Fetch alerts with status
   defaultvalue: Open
@@ -41,6 +49,7 @@ configuration:
   - Open
   - Closed
   required: false
+  section: Collect
 - name: alert_type
   display: Fetch alerts with type
   defaultvalue:
@@ -50,6 +59,7 @@ configuration:
   - Runtime
   - Posture
   required: false
+  section: Collect
 - name: severities
   display: Severity of alerts to fetch
   defaultvalue: Low,Medium,High,Critical
@@ -62,33 +72,46 @@ configuration:
   - High
   - Critical
   required: false
+  section: Collect
 - name: max_fetch
   display: Max incident to fetch
   defaultvalue: "50"
   type: 0
   additionalinfo: ""
   required: false
+  section: Collect
 - name: first_fetch
   display: First fetch time
   defaultvalue: 3 days
   type: 0
   additionalinfo:
   required: false
+  section: Collect
 - name: neosec_node_url
   display: Neosec Node URL (Optional)
   defaultvalue:
   type: 0
   additionalinfo: ""
   required: false
+  section: Connect
 - display: Incident type
   name: incidentType
   type: 13
   defaultvalue: Neosec Incident
   required: false
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  advanced: true
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 description: Neosec is reinventing application security. Its pioneering SaaS platform gives security professionals visibility into behavior across their entire API estate. Built for organizations that expose APIs to partners, suppliers, and users, Neosec discovers all your APIs, analyzes their behavior, and stops threats lurking inside.
 display: Neosec
 name: Neosec

@@ -553,3 +553,13 @@ Permanently delete a Claude project document (a plain-text project_doc) via the 
 >|id|type|Deleted|
 >|---|---|---|
 >| claude_proj_doc_011CbqYrHZoNLmjzW2AC53fK | claude_project_document_deleted | true |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require the **Cortex XSIAM** license:
+
+- Fetch events
+
+</~PLATFORM>

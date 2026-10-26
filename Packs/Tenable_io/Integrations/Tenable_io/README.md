@@ -19,7 +19,6 @@ This integration was integrated and tested with January 2023 release of Tenable.
     | Secret Key | Tenable API secret key. | True |
     | Events Fetch Interval | Fetch interval in minutes for events. | False |
     | Assets Fetch Interval | Fetch interval in minutes for assets and vulnerabilities. | False |
-    | Severity | The severity of the vulnerabilities to include in the export. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Max Fetch | The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section. | False |
     | Trust any certificate (not secure) |  | False |
@@ -55,7 +54,8 @@ This integration was integrated and tested with January 2023 release of Tenable.
 
 ## Notes
 
-- ***Fetch assets and vulnerabilities (Beta)*** command fetches assets and vulnerabilities from the last 90 days only.
+- ***Fetch assets and vulnerabilities (Beta)*** command fetches assets from the last 90 days and vulnerabilities that were last found in the last 3 days. A vulnerability is collected only after a scan detects it within that 3-day window, so findings from scans that run less often (for example, weekly credentialed scans) appear after the next scan.
+- In Cortex XSIAM, selecting both **Fetch events** and **Fetch assets and vulnerabilities** on the same instance is not supported. Configure two instances with the same URL and API keys: one with only **Fetch events** selected and one with only **Fetch assets and vulnerabilities** selected.
 
 ## Commands
 
@@ -1640,3 +1640,17 @@ There is no context output for this command.
 >|Action| Actor    | Crud | Description | Fields                                                                                                                                                  | Id  |Is Anonymous|Is Failure|Received| Target                                              |
 >|----------|------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|-----|---|---|---|-----------------------------------------------------|---|
 >| user.create | id: test | c    |             | {'key': 'X-Access-Type', 'value': 'apikey'},<br>{'key': 'X-Forwarded-For', 'value': '1.2.3.4'},<br>{'key': 'X-Request-Uuid', 'value': '12:12:12:12:12'} | 12  | true | false | 2022-05-18T16:33:02Z | id: 12-1-1-1-1<br>name: test@test.com<br>type: User |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require the **Cortex XSIAM** license:
+
+- Fetch events
+
+The following configuration parameters require **Cortex XSIAM** with the **Exposure Management** add-on:
+
+- Fetch assets and vulnerabilities
+
+</~PLATFORM>

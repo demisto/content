@@ -1986,8 +1986,22 @@ def test_generic_file_get_command_success(requests_mock):
     assert result.outputs_prefix == "FileContent"
     assert result.outputs["Id"] == "2097159"
     assert result.outputs["Title"] == "test_page"
-    assert result.outputs["Type"] == "text/html"
-    assert result.outputs["Content"] == "<p>This is the page content</p>"
+    assert result.outputs["Type"] == "text/markdown"
+    # Content is the storage-format HTML converted to Markdown.
+    assert isinstance(result.outputs["Content"], str)
+    content = result.outputs["Content"]
+    assert "This is the page content" in content
+    # Assert specific Markdown syntax to ensure the HTML was actually converted to Markdown:
+    # - the <h1> is rendered as a setext heading (underlined with '=').
+    assert "Heading\n=======" in content
+    # - the <li> items are rendered as Markdown bullet-list markers.
+    assert "* Item one" in content
+    assert "* Item two" in content
+    # No raw HTML tags should remain after the conversion.
+    assert "<p>" not in content
+    assert "<h1>" not in content
+    assert "<ul>" not in content
+    assert "<li>" not in content
     assert result.outputs["Url"] == args["url"]
 
 

@@ -105,6 +105,13 @@ configuration:
   name: incidentType
   type: 13
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 defaultclassifier: SOCRadar Incident Classifier
 defaultmapperin: SOCRadar Incident Mapper
 defaultmapperout: 'null'

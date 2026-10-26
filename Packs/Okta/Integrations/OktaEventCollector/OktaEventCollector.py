@@ -1,5 +1,6 @@
 import re
 from typing import cast
+from urllib.parse import urlsplit, urlunsplit, parse_qsl
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -286,7 +287,16 @@ class Client(ContentClient):
         """
         if next_link_url:
             demisto.debug("[API Fetch] Requesting events using the pagination next_link")
-            return self._http_request(method="GET", full_url=next_link_url, resp_type="response")
+            # Build the request from the cursor carried in the link plus an explicit page
+            # size and ordering, so it does not depend on which parameters the link happens
+            # to include. A link that carries only the cursor would otherwise let the API
+            # apply its smaller default page size and default ordering, stalling the cursor.
+            split_url = urlsplit(next_link_url)
+            base_url = urlunsplit((split_url.scheme, split_url.netloc, split_url.path, "", ""))
+            link_params = dict(parse_qsl(split_url.query))
+            link_params["limit"] = str(page_size)
+            link_params["sortOrder"] = Config.SORT_ORDER
+            return self._http_request(method="GET", full_url=base_url, params=link_params, resp_type="response")
 
         params = {
             "sortOrder": Config.SORT_ORDER,

@@ -1,0 +1,81 @@
+
+{
+    "cohesity_helios_raw": {
+      "action": {
+        "type": "string",
+        "is_array": false
+      },
+      "entityType": {
+        "type": "string",
+        "is_array": false
+      },
+      "entityName": {
+        "type": "string",
+        "is_array": false
+      },
+      "alertTypeBucket": {
+        "type": "string",
+        "is_array": false
+      },
+      "alertState": {
+        "type": "string",
+        "is_array": false
+      },
+      "alertCategory": {
+        "type": "string",
+        "is_array": false
+      },
+      "severity": {
+        "type": "string",
+        "is_array": false
+      },
+      "alertDocument": {
+        "type": "string",
+        "is_array": false
+      },
+      "newRecord": {
+        "type": "string",
+        "is_array": false
+      },
+      "details": {
+        "type": "string",
+        "is_array": false
+      },
+      "domain": {
+        "type": "string",
+        "is_array": false
+      },
+      "ip": {
+        "type": "string",
+        "is_array": false
+      },
+      "username": {
+        "type": "string",
+        "is_array": false
+      },
+      "sourceType": {
+        "type": "string",
+        "is_array": false
+      },
+      "alertName": {
+        "type": "string",
+        "is_array": false
+      },
+      "alertCode": {
+        "type": "string",
+        "is_array": false
+      },
+      "clusterName": {
+        "type": "string",
+        "is_array": false
+      },
+      "alertId": {
+        "type": "string",
+        "is_array": false
+      },
+      "id": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

@@ -6,8 +6,8 @@ display: SCADAfence CNM
 category: Network Security
 provider: Rapid7
 sectionorder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 description: fetching data from CNM.
 configuration:
 - display: API auth secret
@@ -48,6 +48,13 @@ configuration:
   type: 13
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: 'Required severity levels for alerts separated by comma, from [Information,Warning,Threat,Severe,Critical]. For ex.: Warning, Threat'
   name: AlertSeverity
   defaultvalue: Information,Warning,Threat,Severe,Critical

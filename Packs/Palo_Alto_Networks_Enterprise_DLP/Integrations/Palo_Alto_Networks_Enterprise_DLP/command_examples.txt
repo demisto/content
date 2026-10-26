@@ -1,2 +1,3 @@
 !pan-dlp-get-report report_id=3165792284
 !pan-dlp-get-report report_id=3165792284 fetch_snippets=true
+!pan-dlp-get-report report_id=3165792284 service_name=prisma-saas

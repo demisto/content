@@ -1,0 +1,419 @@
+description: Starts configuration backup job for the Veeam Backup & Replication instance.
+id: Veeam - Start Configuration Backup
+inputs:
+- description: ""
+  key: Instance
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      accessor: sourceInstance
+      root: incident
+name: Veeam - Start Configuration Backup
+outputs: []
+starttaskid: "0"
+fromversion: "6.10.0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5ed72362-b351-4a31-8f94-a67c04d7d288
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 5ed72362-b351-4a31-8f94-a67c04d7d288
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -230
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Start Configuration Backup.
+      id: 9460a026-efd2-481f-8eec-864829b5ad93
+      iscommand: true
+      name: Start Configuration Backup
+      script: VBR REST API|||veeam-vbr-start-configuration-backup
+      type: regular
+      version: -1
+    taskid: 9460a026-efd2-481f-8eec-864829b5ad93
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 80
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: result
+                root: Veeam.VBR.get_session.result
+          operator: isEqualString
+          right:
+            value:
+              simple: Success
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: result
+                root: Veeam.VBR.get_session.result
+          operator: isEqualString
+          right:
+            value:
+              simple: Warning
+      label: "yes"
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check Session State.
+      id: d12a0272-020f-4c1f-8c15-8186205ef00e
+      iscommand: false
+      name: Check Session State
+      type: condition
+      version: -1
+    taskid: d12a0272-020f-4c1f-8c15-8186205ef00e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 570
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fee204d0-1afc-4dd8-8f3f-2e8d61dd2d19
+      iscommand: false
+      name: Success
+      type: title
+      version: -1
+      description: ''
+    taskid: fee204d0-1afc-4dd8-8f3f-2e8d61dd2d19
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident.
+      id: fb459a0f-6463-4ab1-879e-8bb5b04928dc
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: fb459a0f-6463-4ab1-879e-8bb5b04928dc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 930
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c87342b6-0e9f-4193-8a1c-f053380839aa
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: c87342b6-0e9f-4193-8a1c-f053380839aa
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1140
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Finish:
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Configuration backup has not been completed.
+      id: 9c6b21d4-4251-4631-8a8f-a5b5353cb609
+      iscommand: false
+      name: Failed
+      type: condition
+      version: -1
+    taskid: 9c6b21d4-4251-4631-8a8f-a5b5353cb609
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -420,
+          "y": 930
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      id: a11f7ec6-eb00-44f4-88aa-87ba245be872
+      iscommand: false
+      name: Clear Context Data
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: a11f7ec6-eb00-44f4-88aa-87ba245be872
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -85
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: using
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.Instance
+      Ids:
+        complex:
+          accessor: id
+          root: Veeam.VBR.Configurationbackuphasbeenstarted
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: id_
+      PollingCommandName:
+        simple: veeam-vbr-get-session
+      Timeout:
+        simple: "120"
+      dt:
+        simple: Veeam.VBR.get_session(val.state != 'Stopped').id
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 51e291ce-9bf1-49ba-8192-86eb9b951c65
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 51e291ce-9bf1-49ba-8192-86eb9b951c65
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 240
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id_:
+        complex:
+          accessor: id
+          root: Veeam.VBR.Configurationbackuphasbeenstarted
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Get Session.
+      id: 0aec8ec3-d179-4006-8a5d-7e2f72df3b1f
+      iscommand: true
+      name: Get Session
+      script: VBR REST API|||veeam-vbr-get-session
+      type: regular
+      version: -1
+    taskid: 0aec8ec3-d179-4006-8a5d-7e2f72df3b1f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 850,
+        "x": -420,
+        "y": -230
+      }
+    }
+  }

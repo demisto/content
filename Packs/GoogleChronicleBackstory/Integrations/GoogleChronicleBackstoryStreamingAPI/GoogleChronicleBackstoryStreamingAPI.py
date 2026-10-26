@@ -130,6 +130,7 @@ class Client:
         filter_rule_ids = argToList(params.get("rule_ids", []))
         self.filter_rule_ids = [rule_id.strip() for rule_id in filter_rule_ids if rule_id.strip()]
         self.filter_exclude_rule_ids = argToBoolean(params.get("exclude_rule_ids", False))
+        self.max_fetch = arg_to_number(params.get("max_fetch")) or MAX_DETECTION_STREAM_BATCH_SIZE
 
         # V1 Alpha API parameters
         self.project_id = service_account_credential.get("project_id", "")
@@ -1116,7 +1117,7 @@ def stream_detection_alerts_in_retry_loop(client: Client, initial_continuation_t
             elif continuation_time:
                 req_data = {"continuationTime": continuation_time}
 
-            req_data.update({"detectionBatchSize": MAX_DETECTION_STREAM_BATCH_SIZE})
+            req_data.update({"detectionBatchSize": client.max_fetch})
 
             # Connections may last hours. Make a new authorized session every retry loop
             # to avoid session expiration.

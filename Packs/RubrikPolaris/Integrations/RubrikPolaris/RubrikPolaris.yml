@@ -6949,7 +6949,7 @@ script:
     - contextPath: RubrikPolaris.SensitiveDataObjectFile.exposureSummary.fileCount.violatedCount
       description: The number of files with violations in the exposure summary.
       type: Number
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.10133006
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.12701738
   isfetch: true
   runonce: false
   script: '-'
