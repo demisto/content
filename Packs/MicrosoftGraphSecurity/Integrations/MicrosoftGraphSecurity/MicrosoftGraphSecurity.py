@@ -52,14 +52,14 @@ GRAPH_RESOLVED_STATUS = "resolved"
 GRAPH_REDIRECTED_STATUS = "redirected"
 REDIRECTED_CLOSE_REASON = "Resolved"
 XSOAR_INVESTIGATION_STATUS_CLOSED = 1
-GRAPH_REOPEN_STATUS = {MIRROR_TYPE_INCIDENT: "active", MIRROR_TYPE_ALERT: "new"}
+GRAPH_DEFAULT_REOPEN_STATUS = {MIRROR_TYPE_INCIDENT: "active", MIRROR_TYPE_ALERT: "new"}
 # Graph statuses that reopen the XSOAR incident.
 GRAPH_ACTIVE_STATUSES = {
     MIRROR_TYPE_INCIDENT: {"active", "inProgress", "awaitingAction"},
     MIRROR_TYPE_ALERT: {"new", "inProgress"},
 }
 # Delta keys that mark an outgoing close (closingUserId is used only for reopen detection).
-CLOSE_OUT_KEYS = ("closeReason", "closeNotes", "resolvingComment")
+CLOSE_FIELD_KEYS = ("closeReason", "closeNotes", "resolvingComment")
 # Close comment format: "<reason prefix><reason>\n<notes prefix><notes>".
 CLOSE_COMMENT_REASON_PREFIX = "Closed in Cortex XSOAR as: "
 CLOSE_COMMENT_NOTES_PREFIX = "Comment: "
@@ -342,23 +342,23 @@ class MsGraphClient:
         response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
         return response
 
-    def create_alert_comment(self, alert_id: str, params: dict) -> dict:
+    def create_alert_comment(self, alert_id: str, body: dict) -> dict:
         """
-        Creates an alert comment (POST security/alerts_v2/{id}/comments). `params` is the full comment body.
+        Creates an alert comment (POST security/alerts_v2/{id}/comments). `body` is the full comment body.
         """
         cmd_url = f"{CMD_URL}/{alert_id}/comments"
-        response = self.http_request_with_rate_limit("POST", url_suffix=cmd_url, json_data=params)
+        response = self.http_request_fail_on_429("POST", url_suffix=cmd_url, json_data=body)
         return response
 
-    def create_incident_comment(self, incident_id: str, params: dict) -> dict:
+    def create_incident_comment(self, incident_id: str, body: dict) -> dict:
         """
-        Creates an incident comment (POST security/incidents/{id}/comments). `params` is the full comment body.
+        Creates an incident comment (POST security/incidents/{id}/comments). `body` is the full comment body.
         """
         cmd_url = f"{INCIDENTS_URL}/{incident_id}/comments"
-        response = self.http_request_with_rate_limit("POST", url_suffix=cmd_url, json_data=params)
+        response = self.http_request_fail_on_429("POST", url_suffix=cmd_url, json_data=body)
         return response
 
-    def http_request_with_rate_limit(self, method: str, **request_kwargs) -> Any:
+    def http_request_fail_on_429(self, method: str, **request_kwargs) -> Any:
         """
         Sends a request via MicrosoftClient.http_request, used by the mirroring commands. HTTP 429 is not retried here
         (no sleep in mirroring): it is raised at once as an "API rate limit" DemistoException, so the current sync cycle
@@ -382,9 +382,9 @@ class MsGraphClient:
     def http_get_with_rate_limit(self, **request_kwargs) -> dict:
         """
         GET with the `Prefer: include-unknown-enum-members` header and FETCH_INCIDENTS_TIMEOUT, with the 429 handling of
-        http_request_with_rate_limit.
+        http_request_fail_on_429.
         """
-        return self.http_request_with_rate_limit(
+        return self.http_request_fail_on_429(
             "GET", headers=PREFER_UNKNOWN_ENUM_HEADER, timeout=FETCH_INCIDENTS_TIMEOUT, **request_kwargs
         )
 
@@ -403,14 +403,14 @@ class MsGraphClient:
     def update_alert_by_id(self, alert_id: str, body: dict) -> None:
         """PATCHes an alert (security/alerts_v2/{id}) with the given body."""
         cmd_url = f"{CMD_URL}/{alert_id}"
-        self.http_request_with_rate_limit(
+        self.http_request_fail_on_429(
             "PATCH", url_suffix=cmd_url, json_data=body, resp_type="text", timeout=FETCH_INCIDENTS_TIMEOUT
         )
 
     def update_incident_by_id(self, incident_id: str, body: dict) -> None:
         """PATCHes an incident (security/incidents/{id}) with the given body."""
         cmd_url = f"{INCIDENTS_URL}/{incident_id}"
-        self.http_request_with_rate_limit(
+        self.http_request_fail_on_429(
             "PATCH", url_suffix=cmd_url, json_data=body, resp_type="text", timeout=FETCH_INCIDENTS_TIMEOUT
         )
 
@@ -3366,7 +3366,7 @@ def get_saved_mirror_last_update() -> dict[str, str]:
     return dict(saved) if isinstance(saved, dict) else {}
 
 
-def resolve_mirror_start(fetch_type: str, saved: dict[str, str], server_last_update: datetime) -> datetime:
+def get_mirror_start(fetch_type: str, saved: dict[str, str], server_last_update: datetime) -> datetime:
     """Returns the saved start timestamp of `fetch_type` if there is a valid one, else the server's lastUpdate."""
     saved_dt = to_utc_datetime(saved.get(fetch_type))
     if saved_dt:
@@ -3375,7 +3375,7 @@ def resolve_mirror_start(fetch_type: str, saved: dict[str, str], server_last_upd
     return server_last_update
 
 
-def next_mirror_start(fetch_type: str, start: datetime, max_last_update: datetime | None, capped: bool) -> str | None:
+def get_next_mirror_start(fetch_type: str, start: datetime, max_last_update: datetime | None, capped: bool) -> str | None:
     """
     Returns the timestamp the next cycle of `fetch_type` should start from, or None when all pages were read
     (the next cycle uses the server's lastUpdate).
@@ -3429,10 +3429,10 @@ def get_modified_remote_data_command(client: MsGraphClient, args: dict, params: 
     for fetch_type, object_url in (("Alerts", CMD_URL), ("Incidents", INCIDENTS_URL)):
         if fetch_type not in fetch_types:
             continue
-        start = resolve_mirror_start(fetch_type, saved, server_last_update)
+        start = get_mirror_start(fetch_type, saved, server_last_update)
         ids, max_last_update, capped = client.list_modified_object_ids(object_url, to_graph_filter_iso(start))
         modified_ids.extend(ids)
-        if next_start := next_mirror_start(fetch_type, start, max_last_update, capped):
+        if next_start := get_next_mirror_start(fetch_type, start, max_last_update, capped):
             new_state[fetch_type] = next_start
     # Written only after all types were listed: if a request raised, the context is unchanged and the next cycle retries.
     save_mirror_last_update(new_state)
@@ -3484,14 +3484,14 @@ def format_close_comment(close_reason: str | None, close_notes: str | None) -> s
     return f"{comment}\n{CLOSE_COMMENT_NOTES_PREFIX}{close_notes}" if close_notes else comment
 
 
-def is_inc_status_closed(inc_status: Any) -> bool:
+def is_xsoar_incident_closed(inc_status: Any) -> bool:
     """True when the update-remote-system `status` arg is IncidentStatus.DONE. A missing status (None) means open."""
     return inc_status is not None and arg_to_number(inc_status) == IncidentStatus.DONE
 
 
 def has_close_fields(delta: dict) -> bool:
-    """True when the delta holds a non-empty close field (CLOSE_OUT_KEYS)."""
-    return any(delta.get(key) for key in CLOSE_OUT_KEYS)
+    """True when the delta holds a non-empty close field (CLOSE_FIELD_KEYS)."""
+    return any(delta.get(key) for key in CLOSE_FIELD_KEYS)
 
 
 def is_open_graph_status(status: Any) -> bool:
@@ -3556,7 +3556,7 @@ def is_close_out_needed(delta: dict, inc_status: Any, data: dict) -> bool:
     True when handle_close_out would resolve the remote object: the XSOAR incident is closed and either the delta
     holds close fields (apply_close_out) or the outgoing data doesn't show it resolved (apply_default_close_out).
     """
-    if not is_inc_status_closed(inc_status):
+    if not is_xsoar_incident_closed(inc_status):
         return False
     return has_close_fields(delta) or data.get("status") != GRAPH_RESOLVED_STATUS
 
@@ -3567,10 +3567,10 @@ def is_xsoar_reopen(delta: dict, inc_status: Any) -> bool:
     Only a reopen clears `closingUserId` - also after a close without a close reason, where `closeReason` stays empty and
     is not in the delta. Clearing the close reason or notes of an open incident is a normal edit, not a reopen.
     """
-    return not is_inc_status_closed(inc_status) and delta.get("closingUserId", None) == ""
+    return not is_xsoar_incident_closed(inc_status) and delta.get("closingUserId", None) == ""
 
 
-def get_remote_object_for_status(client: MsGraphClient, remote_id: str, mirror_type: str, action: str) -> dict | None:
+def get_remote_object(client: MsGraphClient, remote_id: str, mirror_type: str, action: str) -> dict | None:
     """
     GETs the remote alert/incident to check its current status before a close-out or a reopen.
     The outgoing data isn't used: its status comes from the XSOAR status field, which can be stale right after incoming
@@ -3595,7 +3595,7 @@ def get_remote_object_for_status(client: MsGraphClient, remote_id: str, mirror_t
 
 def get_resolved_remote_object(client: MsGraphClient, remote_id: str, mirror_type: str) -> dict | None:
     """GETs the remote alert/incident and returns it when its status is already resolved, otherwise None."""
-    remote_object = get_remote_object_for_status(client, remote_id, mirror_type, action="closing out")
+    remote_object = get_remote_object(client, remote_id, mirror_type, action="closing out")
     if remote_object and remote_object.get("status") == GRAPH_RESOLVED_STATUS:
         return remote_object
     return None
@@ -3640,23 +3640,15 @@ def skip_close_out_of_resolved_remote(delta: dict, remote_id: str, mirror_type: 
     )
 
 
-def keep_explicit_open_status(delta: dict, inc_status: Any, remote_id: str, mirror_type: str) -> bool:
+def has_explicit_open_status(delta: dict, inc_status: Any) -> bool:
     """
     True when the XSOAR incident is closed but the delta holds an explicit non-resolved status (e.g. inProgress).
     The status is then sent as-is, without a close-out (no status=resolved, resolvingComment or close comment).
     """
-    explicit_status = delta.get("status")
-    if not is_inc_status_closed(inc_status) or not is_open_graph_status(explicit_status):
-        return False
-    delta.pop("resolvingComment", None)
-    demisto.debug(
-        f"[Mirroring] The XSOAR incident is closed, but the delta holds the explicit status '{explicit_status}'; sending it "
-        f"to the remote {mirror_type} {remote_id} without a close-out."
-    )
-    return True
+    return is_xsoar_incident_closed(inc_status) and is_open_graph_status(delta.get("status"))
 
 
-def handle_mirror_out_status(
+def handle_outgoing_status_change(
     client: MsGraphClient, remote_id: str, mirror_type: str, delta: dict, inc_status: Any, data: dict
 ) -> str | None:
     """
@@ -3667,7 +3659,12 @@ def handle_mirror_out_status(
     3. Remote object not resolved: close it out.
     4. Remote object already resolved: close it out again only if the close reason or notes changed.
     """
-    if keep_explicit_open_status(delta, inc_status, remote_id, mirror_type):
+    if has_explicit_open_status(delta, inc_status):
+        delta.pop("resolvingComment", None)
+        demisto.debug(
+            f"[Mirroring] The XSOAR incident is closed, but the delta holds the explicit status '{delta.get('status')}'; "
+            f"sending it to the remote {mirror_type} {remote_id} without a close-out."
+        )
         return None
     if is_xsoar_reopen(delta, inc_status):
         handle_reopen(client, remote_id, mirror_type, delta, data)
@@ -3694,7 +3691,7 @@ def handle_close_out(delta: dict, inc_status: Any, mirror_type: str, data: dict)
     The remote object isn't resolved here (or its status couldn't be read), so alert close notes are always posted,
     also without a close reason (e.g. `!closeInvestigation closeNotes=...`).
     """
-    if not is_inc_status_closed(inc_status):
+    if not is_xsoar_incident_closed(inc_status):
         return None
     if has_close_fields(delta):
         return apply_close_out(delta, mirror_type, data, post_alert_comment=True)
@@ -3714,7 +3711,7 @@ def handle_reopen(client: MsGraphClient, remote_id: str, mirror_type: str, delta
     Microsoft, so its status isn't overwritten (only an explicit non-resolved delta status is kept). If the remote status
     can't be read (other than HTTP 429, which is raised), the remote object is reopened anyway.
     """
-    remote_object = get_remote_object_for_status(client, remote_id, mirror_type, action="reopening")
+    remote_object = get_remote_object(client, remote_id, mirror_type, action="reopening")
     remote_status = remote_object.get("status") if remote_object else None
     if is_open_graph_status(remote_status):
         if not is_open_graph_status(delta.get("status")):
@@ -3738,7 +3735,7 @@ def set_reopen_status(delta: dict, mirror_type: str, data: dict) -> None:
         # The analyst set a non-resolved status in the same change (e.g. inProgress): keep it.
         demisto.debug(
             f"[Mirroring] Reopening the remote {mirror_type}: keeping the explicit status '{explicit_status}' "
-            f"instead of the default reopen status '{GRAPH_REOPEN_STATUS[mirror_type]}'."
+            f"instead of the default reopen status '{GRAPH_DEFAULT_REOPEN_STATUS[mirror_type]}'."
         )
         return
     current_status = explicit_status or data.get("status")
@@ -3747,7 +3744,7 @@ def set_reopen_status(delta: dict, mirror_type: str, data: dict) -> None:
         delta["status"] = current_status
         demisto.debug(f"[Mirroring] Reopening the remote {mirror_type}, keeping current status={current_status}.")
         return
-    delta["status"] = GRAPH_REOPEN_STATUS[mirror_type]
+    delta["status"] = GRAPH_DEFAULT_REOPEN_STATUS[mirror_type]
     demisto.debug(f"[Mirroring] Reopening the remote {mirror_type} (status={delta['status']}).")
 
 
@@ -3835,11 +3832,11 @@ def mirror_out_entries(client: MsGraphClient, entries: list[dict], comment_tag: 
         demisto.debug(f"[Mirroring] Mirrored out entry {entry_id} to {mirror_type} {remote_id}.")
 
 
-def post_alert_close_notes(client: MsGraphClient, remote_id: str, mirror_type: str, close_notes: str | None) -> None:
+def post_alert_close_comment(client: MsGraphClient, alert_id: str, notes: str | None) -> None:
     """POSTs the alert close notes as a marked comment, if any. Failures are raised."""
-    if not close_notes:
+    if not notes:
         return
-    create_graph_comment(client, remote_id, mirror_type, add_mirror_marker(close_notes))
+    client.create_alert_comment(alert_id, build_graph_comment_body(add_mirror_marker(notes)))
 
 
 def strip_remote_id_suffix(name: str, remote_id: str) -> str:
@@ -3858,7 +3855,7 @@ def is_redirected_incident(mirror_type: str, data: dict) -> bool:
     return mirror_type == MIRROR_TYPE_INCIDENT and data.get("status") == GRAPH_REDIRECTED_STATUS
 
 
-def apply_status_policy(
+def apply_outgoing_status(
     client: MsGraphClient, remote_id: str, mirror_type: str, delta: dict, inc_status: Any, data: dict, params: dict
 ) -> str | None:
     """
@@ -3869,7 +3866,7 @@ def apply_status_policy(
       resolvingComment (the outgoing-mapped closeNotes) is sent, so XSOAR never resolves or reopens the remote object.
       The delta keys are already Graph keys here (to_graph_delta_keys), so the raw status field is covered too.
     - close_out on: an open XSOAR incident (also a reopen) never sends resolvingComment, since Graph rejects it on a
-      non-resolved incident. Then the explicit status, close-out or reopen is applied (handle_mirror_out_status).
+      non-resolved incident. Then the explicit status, close-out or reopen is applied (handle_outgoing_status_change).
     """
     if is_redirected_incident(mirror_type, data):
         demisto.debug(f"[Mirroring] Incident {remote_id} is redirected; skipping status update.")
@@ -3880,12 +3877,12 @@ def apply_status_policy(
             demisto.debug(f"[Mirroring] close_out is off; status is not sent to the remote {mirror_type} {remote_id}.")
         drop_status_change(delta)
         return None
-    if not is_inc_status_closed(inc_status) and "resolvingComment" in delta:
+    if not is_xsoar_incident_closed(inc_status) and "resolvingComment" in delta:
         delta.pop("resolvingComment")
         demisto.debug(
             f"[Mirroring] The XSOAR incident is open; resolvingComment is not sent to the remote {mirror_type} {remote_id}."
         )
-    return handle_mirror_out_status(client, remote_id, mirror_type, delta, inc_status, data)
+    return handle_outgoing_status_change(client, remote_id, mirror_type, delta, inc_status, data)
 
 
 def update_remote_fields(
@@ -3899,7 +3896,7 @@ def update_remote_fields(
     delta = to_graph_delta_keys(remote_args.delta or {}, mirror_type)
     if mirror_type == MIRROR_TYPE_INCIDENT and isinstance(delta.get("displayName"), str):
         delta["displayName"] = strip_remote_id_suffix(delta["displayName"], remote_id)
-    alert_close_notes = apply_status_policy(client, remote_id, mirror_type, delta, remote_args.inc_status, data, params)
+    alert_close_notes = apply_outgoing_status(client, remote_id, mirror_type, delta, remote_args.inc_status, data, params)
     apply_classification_label(delta)
     body = build_patch_body(delta, mirror_type)
     cleared_keys = sorted(key for key, value in body.items() if value in EMPTY_PATCH_VALUES)
@@ -3911,7 +3908,7 @@ def update_remote_fields(
             client.update_incident_by_id(remote_id, body)
         else:
             client.update_alert_by_id(remote_id, body)
-    post_alert_close_notes(client, remote_id, mirror_type, alert_close_notes)
+    post_alert_close_comment(client, remote_id, alert_close_notes)
 
 
 def update_remote_system_command(client: MsGraphClient, args: dict, params: dict) -> str:
@@ -3932,7 +3929,7 @@ def update_remote_system_command(client: MsGraphClient, args: dict, params: dict
     )
     # A close without a close reason or close notes changes no outgoing-mapped field, so the delta can be empty: the
     # field update still runs for a closed incident, so close-out can resolve the remote object (with the default comment).
-    if remote_args.incident_changed and (remote_args.delta or is_inc_status_closed(remote_args.inc_status)):
+    if remote_args.incident_changed and (remote_args.delta or is_xsoar_incident_closed(remote_args.inc_status)):
         update_remote_fields(client, remote_id, mirror_type, remote_args, params)
     comment_tag: str = params.get("comment_tag") or ""
     if remote_args.entries and not comment_tag:

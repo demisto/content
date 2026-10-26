@@ -91,7 +91,7 @@ from MicrosoftGraphSecurity import (
     add_mirror_marker,
     has_close_fields,
     is_open_graph_status,
-    is_inc_status_closed,
+    is_xsoar_incident_closed,
     test_function as msg_test_function,  # aliased so pytest does not collect it as a test
     validate_mirroring_comment_tags,
 )
@@ -5920,13 +5920,13 @@ def test_build_patch_body_drops_unsupported_xsoar_severity(xsoar_severity, mirro
     "inc_status, expected",
     [(None, False), ("", False), (0, False), (1, False), (2, True), ("2", True), (3, False)],
 )
-def test_is_inc_status_closed(inc_status, expected):
+def test_is_xsoar_incident_closed(inc_status, expected):
     """
     Given: an update-remote-system `status` arg (None means open).
     When: checking whether the XSOAR incident is closed.
     Then: only IncidentStatus.DONE (2 or "2") is closed.
     """
-    assert is_inc_status_closed(inc_status) is expected
+    assert is_xsoar_incident_closed(inc_status) is expected
 
 
 @pytest.mark.parametrize(
@@ -5945,7 +5945,7 @@ def test_has_close_fields(delta, expected):
     """
     Given: an outgoing delta.
     When: checking for close fields.
-    Then: True only when a CLOSE_OUT_KEYS value (close text: reason, notes, resolvingComment) is non-empty.
+    Then: True only when a CLOSE_FIELD_KEYS value (close text: reason, notes, resolvingComment) is non-empty.
     """
     assert has_close_fields(delta) is expected
 
