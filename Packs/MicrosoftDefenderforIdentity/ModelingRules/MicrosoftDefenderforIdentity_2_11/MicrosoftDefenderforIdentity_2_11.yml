@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: Microsoft_Defender_for_Identity_ModelingRule
+name: Microsoft Defender for Identity Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
