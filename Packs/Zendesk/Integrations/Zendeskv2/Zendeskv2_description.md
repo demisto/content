@@ -2,9 +2,9 @@ Use the Zendesk V2 integration to perform operations related to users, tickets, 
 
 ### Authentication Methods
 
-This integration offers the following authentication methods:
+This integration offers the following authentication methods. Configure only one of them; configuring more than one returns an error.
 
-- **OAuth 2.0 (Client Credentials) - Recommended.** Fill in **Client ID**, **Client Secret** and, optionally, **Scope**. When Client ID and Client Secret are set, OAuth is used and the credentials below are ignored.
+- **OAuth 2.0 (Client Credentials) - Recommended.** Fill in **Client ID**, **Client Secret** and, optionally, **Scope**.
 - **API token - Deprecated.** Username in the format `<email>/token` and the API token as the password. Zendesk will deactivate API tokens on April 30, 2027 ([notice](https://developer.zendesk.com/documentation/authentication/oauth-migration/)).
 - **Username and password - Deprecated.** Your Zendesk email and password. Migrate to OAuth ([notice](https://developer.zendesk.com/api-reference/introduction/security-and-auth/)).
 

@@ -1339,23 +1339,6 @@ class TestOAuthAuthentication:
 
         assert urllib.parse.parse_qs(token_mock.last_request.text)["scope"] == [OAUTH_DEFAULT_SCOPE]
 
-    @pytest.mark.usefixtures("integration_context")
-    def test_init_when_oauth_and_credentials_configured_prefers_oauth(self, requests_mock):
-        """
-        Given:
-            - Both OAuth (Client ID and Client Secret) and Username / Password credentials are configured.
-        When:
-            - The client is created.
-        Then:
-            - OAuth is used: a Bearer header is set and basic auth is not.
-        """
-        requests_mock.post(self.TOKEN_URL, json={"access_token": "new_token", "expires_in": 1800})
-
-        client = self._oauth_client(username="user@example.com", password="password")
-
-        assert client._auth is None
-        assert client._headers == {"Authorization": "Bearer new_token"}
-
     def test_init_when_only_credentials_configured_uses_basic_auth(self, requests_mock):
         """
         Given:
@@ -1522,6 +1505,48 @@ class TestOAuthAuthentication:
         main()
 
         assert "No authentication method is configured" in return_error_mock.call_args[0][0]
+        assert requests_mock.call_count == 0
+
+    @pytest.mark.parametrize(
+        "credentials, oauth_credentials",
+        [
+            pytest.param(
+                {"identifier": "user@example.com", "password": "password"},
+                {"identifier": CLIENT_ID, "password": CLIENT_SECRET},
+                id="both methods fully configured",
+            ),
+            pytest.param(
+                {"identifier": "user@example.com"}, {"identifier": CLIENT_ID, "password": CLIENT_SECRET}, id="username only"
+            ),
+            pytest.param(
+                {"identifier": "user@example.com", "password": "password"}, {"identifier": CLIENT_ID}, id="client id only"
+            ),
+        ],
+    )
+    def test_main_when_multiple_auth_methods_configured_returns_error(
+        self, mocker, requests_mock, credentials, oauth_credentials
+    ):
+        """
+        Given:
+            - Fields of both OAuth and Username / Password credentials are configured.
+        When:
+            - main() runs any command.
+        Then:
+            - A readable error is returned and no request is sent.
+        """
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"base_url": BASE_URL, "credentials": credentials, "oauth_credentials": oauth_credentials},
+        )
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(Zendeskv2, "CACHE", None)
+        return_error_mock = mocker.patch.object(Zendeskv2, "return_error")
+
+        main()
+
+        assert "More than one authentication method is configured" in return_error_mock.call_args[0][0]
         assert requests_mock.call_count == 0
 
     def test_main_when_oauth_configured_passes_oauth_params_to_client(self, mocker):

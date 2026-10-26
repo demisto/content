@@ -300,17 +300,15 @@ class ZendeskClient(BaseClient):
         oauth_token_url = urljoin(base_url, OAUTH_TOKEN_SUFFIX)
         base_url = urljoin(base_url, "/api/v2/")
         auth = headers = None
-        use_oauth = bool(client_id and client_secret)
-        # When OAuth is used, the Bearer header is set below, after the token is acquired.
-        if not use_oauth and username and password:
+        if username and password:
             # auth = (f'{username}/token', password)
             auth = (username, password)
-        elif not use_oauth and password:
+        elif password:
             headers = {"Authorization": f"Bearer {password}"}
 
         super().__init__(base_url, auth=auth, proxy=proxy, verify=verify, headers=headers)
 
-        if use_oauth:
+        if client_id and client_secret:
             access_token = self._get_oauth_access_token(
                 oauth_token_url, client_id or "", client_secret or "", scope or OAUTH_DEFAULT_SCOPE
             )
@@ -1354,6 +1352,11 @@ def main():  # pragma: no cover
     client_secret = oauth_credentials.get("password")
     global CACHE
     try:
+        if (client_id or client_secret) and (credentials.get("identifier") or credentials.get("password")):
+            raise DemistoException(
+                "More than one authentication method is configured. Provide either the OAuth Client ID and Client Secret, "
+                "or the Username and Password/API key credentials, not both."
+            )
         if not (client_id and client_secret) and not credentials.get("password"):
             raise DemistoException(
                 "No authentication method is configured. Provide either the OAuth Client ID and Client Secret, "

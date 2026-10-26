@@ -8,7 +8,7 @@
 | Server URL (e.g., https://demisto.zendesk.com) |  | True |
 | Username (or '&lt;username&gt;/token' when using API key). | example 'admin@org.com' when using the password, or 'admin@org.com/token' when using an API key. | False |
 | Password/API key |  | False |
-| Client ID | OAuth 2.0 client identifier \(the 'Unique identifier' of the OAuth client in Zendesk\) and client secret. When both are set, OAuth authentication is used instead of the Username/Password credentials. | False |
+| Client ID | OAuth 2.0 client identifier \(the 'Unique identifier' of the OAuth client in Zendesk\) and client secret. | False |
 | Client Secret |  | False |
 | Scope | OAuth scope requested at token acquisition, as a space-separated list \(e.g., 'tickets:read users:read'\). Defaults to 'read write' when empty. | False |
 | Fetch incidents |  | False |
