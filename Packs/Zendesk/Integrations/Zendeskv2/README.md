@@ -1,5 +1,3 @@
-Some changes have been made that might affect your existing content.
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-zendesk-v2).
 
 ## Configure Zendesk v2 in Cortex
 
