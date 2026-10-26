@@ -1,17 +1,15 @@
 Use Workday Event Collector integration to get activity loggings from Workday.
 This integration was integrated and tested with API v1.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 ## Configure Workday Event Collector in Cortex
 
 | **Parameter**                                                                    | **Description**                                                                                                                | **Required** |
 |----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|--------------|
-| Server URL (e.g. https://WORKDAY-HOST/ccx/api/privacy/v1/TENANT_NAME)                   | REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application                       | True         |
-| Token endpoint (e.g. https://WORKDAY-HOST/ccx/oauth2/TENANT_NAME/token)          | Token endpoint of the Workday server. Can be obtained from View API Clients report in Workday application.                     | True         |
-| Client ID                                                                        | Copy the Client ID and Secret from the Register API Client for Integrations stage at Workday.                                  | True         |
-| Client Secret                                                                    |                                                                                                                                | True         |
-| Refresh Token                                                                    | Non-expiry Workday API refresh token.                                                                                          | True         |
+| Server URL (e.g. <https://WORKDAY-HOST/ccx/api/privacy/v1/TENANT_NAME>)                   | The Workday privacy REST API endpoint, including the tenant name: `https://<host>/ccx/api/privacy/v1/<tenant>`. Take the host and tenant from the **Workday REST API Endpoint** in the View API Clients report (`https://<host>/ccx/api/v1/<tenant>`) and replace `/api/v1/` with `/api/privacy/v1/`. | True         |
+| Token endpoint (e.g. <https://WORKDAY-HOST/ccx/oauth2/TENANT_NAME/token>)          | The **Token Endpoint** shown in the View API Clients report: `https://<host>/ccx/oauth2/<tenant>/token`.                       | True         |
+| Client ID                                                                        | The Client ID of the API client registered with the **Register API Client for Integrations** task. This collector does not use a username. | True         |
+| Client Secret                                                                    | The Client Secret of the registered API client.                                                                                | True         |
+| Refresh Token                                                                    | Non-expiry Workday API refresh token, generated with **Manage Refresh Token for Integrations** for the registered API client.  | True         |
 | Trust any certificate (not secure)                                               |                                                                                                                                | False        |
 | Use system proxy settings                                                        |                                                                                                                                | False        |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |                                                                                                                                | False        |
@@ -59,3 +57,7 @@ There is no context output for this command.
 | test_action | test_device | 1.1.1.1 | 2023-04-24T07:00:00Z | test_session_id | 123 | id: 1234<br>descriptor: test_descriptor<br>href: test_href | test_display | 2 | 1234 | test_agent |
 | test_action | test_device | 1.1.1.1 | 2023-04-24T07:00:00Z | test_session_id | 123 | id: 1234<br>descriptor: test_descriptor<br>href: test_href | test_display | 3 | 1234 | test_agent |
 | test_action | test_device | 1.1.1.1 | 2023-04-24T07:00:00Z | test_session_id | 123 | id: 1234<br>descriptor: test_descriptor<br>href: test_href | test_display | 4 | 1234 | test_agent |
+
+## Known Limitations
+
+By design, each fetch only requests events up to `now - 60 seconds`, so the collector always lags 60 seconds behind the current time. This lag is required because Workday publishes a minute's events gradually and not strictly in timestamp order. Waiting ensures each time window is fully published before it is fetched, which prevents events from being missed. As a result, the most recent ~60 seconds of events are collected on the next fetch cycle rather than the current one.
