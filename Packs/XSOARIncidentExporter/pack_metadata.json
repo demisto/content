@@ -6,10 +6,24 @@
     "author": "Jon Huebner",
     "url": "https://github.com/jhueby/Xporter",
     "email": "",
-    "categories": ["Utilities"],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
-    "useCases": ["Incident Response"],
-    "keywords": ["export", "incidents", "migration", "xsoar", "xsiam", "xporter"],
+    "useCases": [
+        "Incident Response"
+    ],
+    "keywords": [
+        "export",
+        "incidents",
+        "migration",
+        "xsoar",
+        "xsiam",
+        "xporter"
+    ],
     "created": "2026-09-15T00:00:00Z",
-    "marketplaces": ["xsoar", "marketplacev2"]
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

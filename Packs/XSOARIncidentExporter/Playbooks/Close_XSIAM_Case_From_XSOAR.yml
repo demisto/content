@@ -1,11 +1,5 @@
 id: Close XSIAM Case From XSOAR
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
-aclrelations: []
-aclowner:
-  id: ""
-  type: ""
-  name: ""
 name: Close XSIAM Case From XSOAR
 tags:
 - xsoar
@@ -22,8 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -56,8 +49,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "2"
@@ -88,8 +79,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -106,7 +96,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-outlinetasks: {}
 view: |-
   {
     "linkLabelsPosition": {},
@@ -122,9 +111,10 @@ view: |-
 inputs: []
 outputs: []
 adopted: true
-possibleresponses: []
 description: |-
   Runs on XSIAM when an alert from XSOAR is ingested.
   Extracts the Close Reason and Close Notes from the XSOAR incident data.
   If the XSOAR incident was closed, closes the XSIAM case with the same reason and notes.
 fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
