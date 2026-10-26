@@ -1,12 +1,21 @@
 Use the Zendesk V2 integration to perform operations related to users, tickets, attachments, and more.
 
-### Authentication
+### Authentication Methods
+
+This integration offers the following authentication methods:
+
+- **OAuth 2.0 (Client Credentials) - Recommended.** Fill in **Client ID**, **Client Secret** and, optionally, **Scope**. When Client ID and Client Secret are set, OAuth is used and the credentials below are ignored.
+- **API token - Deprecated.** Username in the format `<email>/token` and the API token as the password. Zendesk will deactivate API tokens on April 30, 2027 ([notice](https://developer.zendesk.com/documentation/authentication/oauth-migration/)).
+- **Username and password - Deprecated.** Your Zendesk email and password. Migrate to OAuth ([notice](https://developer.zendesk.com/api-reference/introduction/security-and-auth/)).
+
+### Configuring OAuth Authentication
 
 An administrator must register an OAuth client in Zendesk and generate a client secret before configuring the integration:
 
 1. In Zendesk Admin Center, go to **Apps and integrations → APIs → OAuth Clients**.
 2. Create a new OAuth client. Record the **Client ID** (the "Unique identifier" value) and generate a **Client Secret** (shown once, copy it immediately).
 3. Ensure the OAuth client is enabled for the **Client Credentials** grant and has the required scopes (read, write) allowed at the client level.
+4. In the instance configuration, enter the Client ID and Client Secret. Leave **Scope** as `read write`, or enter a space-separated list of narrower scopes.
 
 ### Required permissions
 
