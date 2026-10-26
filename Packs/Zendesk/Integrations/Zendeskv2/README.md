@@ -5,7 +5,7 @@
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://demisto.zendesk.com) |  | True |
+| Server URL (e.g., https://demisto.zendesk.com) | The URL of your Zendesk server. For example, https://demisto.zendesk.com. | True |
 | Username (or '&lt;username&gt;/token' when using API key). | example 'admin@org.com' when using the password, or 'admin@org.com/token' when using an API key. | False |
 | Password/API key |  | False |
 | Client ID | The OAuth 2.0 client identifier \(the 'Unique identifier' of the OAuth client in Zendesk\) and client secret. | False |
@@ -57,9 +57,9 @@ Required permissions: Admins, Agents and Light Agents.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | The user's ID to retrieve. | Optional |
-| user_name | The user's name. <br/>Required permissions to use this argument: Agents . | Optional |
+| user_name | The user's name.<br/>Required permissions to use this argument: Agents. | Optional |
 | external_id | The user's unique identifier from another system. | Optional |
-| role | The user's role. Possible values are: end_user, agent, admin. | Optional |
+| role | The user's role. Possible values are: end-user, agent, admin. | Optional |
 | limit | Maximum number of results to return. Default is 50. | Optional |
 | page_size | The page size (used for pagination). | Optional |
 | page_number | The page number (used for pagination). | Optional |
@@ -196,7 +196,7 @@ Required permissions: Agents, with restrictions on certain actions.
 | --- | --- | --- |
 | user_id | The user ID to update. | Required |
 | name | The user's name. | Optional |
-| role | The user's role. Possible values are "end-user", "agent", or "admin". Possible values are: end_user, agent, admin. | Optional |
+| role | The user's role. Possible values are "end-user", "agent", or "admin". Possible values are: end-user, agent, admin. | Optional |
 | role_type | The user's role type. Possible values are: custom_agent, light_agent, chat_agent, chat_agent_contributor, admin, billing_admin. | Optional |
 | verified | Whether to mark the user email as verified (the added email). Possible values are: true, false. | Optional |
 | suspended | Whether the user is suspended. Possible values are: true, false. | Optional |
@@ -250,7 +250,7 @@ Required permissions: Agents, with restrictions on certain actions.
 | Zendesk.User.signature | string | The user's signature. |
 | Zendesk.User.suspended | boolean | Whether the agent is suspended. Tickets from suspended users are also suspended, and these users cannot sign in to the end user portal. |
 | Zendesk.User.tags | string | The user's tags. Only present if your account has user tagging enabled. |
-| Zendesk.User.ticket_restriction | string | Specifies which tickets the user has access to. Possible values are: "organization", "groups", "assigned", "requested", null |
+| Zendesk.User.ticket_restriction | string | Specifies which tickets the user has access to. Possible values are: "organization", "groups", "assigned", "requested", null. |
 | Zendesk.User.time_zone | string | The user's time zone. |
 | Zendesk.User.two_factor_auth_enabled | boolean | Whether two factor authentication is enabled. |
 | Zendesk.User.updated_at | string | The time the user was last updated. |
@@ -282,7 +282,7 @@ There is no context output for this command.
 Get organization's data.
 Required permissions: Agents, with certain restrictions.
 If the agent has a custom agent role that restricts the agent's access to only users in their own organization,
-a 403 Forbidden error is returned. See Creating custom agent roles in Zendesk help.
+a 403 Forbidden error is returned. See Creating custom agent roles in the Zendesk help.
 
 #### Base Command
 
@@ -292,7 +292,7 @@ a 403 Forbidden error is returned. See Creating custom agent roles in Zendesk he
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_id | The ID of a specific organization. <br/>Required permissions: Admins, Agents.  | Optional |
+| organization_id | The ID of a specific organization.<br/>Required permissions: Admins, Agents. | Optional |
 | limit | Maximum number of results to return. Default is 50. | Optional |
 | page_size | The page size (used for pagination). | Optional |
 | page_number | The page number (used for pagination). | Optional |
@@ -329,7 +329,7 @@ Required permissions: Agents.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Query to search for tickets. For more information about the search syntax, see https://developer.zendesk.com/rest_api/docs/core/search. . | Optional |
+| query | The query to search for tickets. For more information about the search syntax, see https://developer.zendesk.com/rest_api/docs/core/search. | Optional |
 | ticket_id | The ID of a specific ticket. | Optional |
 | filter | Filter tickets for which the specified user is relevant. Possible values are: assigned, requested, ccd, followed, recent. | Optional |
 | user_id | The agent ID associated with tickets filtered. | Optional |
@@ -384,7 +384,7 @@ Required permissions: Agents.
 ### zendesk-ticket-create
 
 ***
-Create a new zendesk ticket.
+Create a new Zendesk ticket.
 Required permissions: Agents.
 
 #### Base Command
@@ -393,32 +393,34 @@ Required permissions: Agents.
 
 #### Input
 
-| **Argument Name**      | **Description** | **Required** |
-|------------------------| --- | --- |
-| subject                | The subject of this ticket. | Required |
-| type                   | The type of this ticket. Possible values are: problem, incident, question, task. | Required |
-| requester              | The user who requested this ticket. | Required |
-| assignee_email         | The email address of the agent to assign the ticket to. | Optional |
-| collaborators          | Users to add as CC's when creating a ticket. | Optional |
-| description            | The ticket description. | Required |
-| recipient              | The original recipient email address of the ticket. | Optional |
-| status                 | The state of the ticket. Possible values are: new, open, pending, hold, solved, closed. | Optional |
-| priority               | The urgency with which the ticket should be addressed. Possible values are: urgent, high, normal, low. Default is normal. | Optional |
-| due_at                 | If this is a ticket of type "task" it has a due date. Due date format uses ISO 8601 format. | Optional |
-| email_ccs              | An array of agents or end users email CCs to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'. | Optional |
-| external_id            | An ID you can use to link Zendesk Support tickets to local records. | Optional |
-| forum_topic_id         | The topic in the Zendesk Web portal this ticket originated from, if any. | Optional |
-| followers              | An array of agent followers to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'. | Optional |
-| group_id               | The group this ticket is assigned to. | Optional |
-| organization_id        | The organization of the requester. | Optional |
-| problem_id             | For tickets of type "incident", the ID of the problem the incident is linked to. | Optional |
-| tags                   | The tags applied to this ticket. | Optional |
-| via_followup_source_id | The ID of a closed ticket when creating a follow-up ticket. | Optional |
-| custom_fields          | Custom fields for the ticket (this is a JSON-formatted argument, see: https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets#setting-custom-field-values). | Optional |
-| brand_id               | Enterprise only. The ID of the brand this ticket is associated with. | Optional |
-| comment                | A comment to add to the ticket. | Optional |
-| html_comment           | An HTML comment to add to the ticket. | Optional |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subject | The subject of this ticket. | Required |
+| type | The type of this ticket. Possible values are: problem, incident, question, task. | Required |
+| requester | The user who requested this ticket. | Required |
+| assignee_email | The email address of the agent to assign the ticket to. | Optional |
+| comment | A comment to add to the ticket. | Optional |
+| html_comment | An HTML comment to add to the ticket. | Optional |
 | public | true if a public comment; false if an internal note. The initial value set on ticket creation persists for any additional comment unless you change it. Possible values are: true, false. Default is true. | Optional |
+| file_id | A comma-separated list of entry IDs of attachments. | Optional |
+| filename | A comma-separated list of filenames to upload if you provide file_id. Default is the original filename. | Optional |
+| collaborators | Users to add as CC's when creating a ticket. | Optional |
+| description | The ticket description. | Required |
+| recipient | The original recipient email address of the ticket. | Optional |
+| status | The state of the ticket. Possible values are: new, open, pending, hold, solved, closed. | Optional |
+| priority | The urgency with which the ticket should be addressed. Possible values are: urgent, high, normal, low. Default is normal. | Optional |
+| due_at | If this is a ticket of type "task" it has a due date. Due date format uses ISO 8601 format. | Optional |
+| email_ccs | An array of agents or end users email CCs to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'. | Optional |
+| external_id | An ID you can use to link Zendesk Support tickets to local records. | Optional |
+| forum_topic_id | The topic in the Zendesk Web portal this ticket originated from, if any. | Optional |
+| followers | An array of agent followers to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'. | Optional |
+| group_id | The group this ticket is assigned to. | Optional |
+| organization_id | The organization of the requester. | Optional |
+| problem_id | For tickets of type "incident", the ID of the problem the incident is linked to. | Optional |
+| tags | The tags applied to this ticket. | Optional |
+| via_followup_source_id | The ID of a closed ticket when creating a follow-up ticket. | Optional |
+| custom_fields | Custom fields for the ticket (this is a JSON-formatted argument, see: https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets#setting-custom-field-values). | Optional |
+| brand_id | Enterprise only. The ID of the brand this ticket is associated with. | Optional |
 
 #### Context Output
 
@@ -486,6 +488,8 @@ Required permissions: Agents.
 | comment | A comment to add to the ticket. | Optional |
 | html_comment | An HTML comment to add to the ticket. | Optional |
 | public | true if a public comment; false if an internal note. The initial value set on ticket creation persists for any additional comment unless you change it. Possible values are: true, false. Default is true. | Optional |
+| file_id | A comma-separated list of entry IDs of attachments. | Optional |
+| filename | A comma-separated list of filenames to upload if you provide file_id. Default is the original filename. | Optional |
 | recipient | The original recipient email address of the ticket. | Optional |
 | status | The state of the ticket. Possible values are: open, pending, hold, solved, closed. | Optional |
 | priority | The urgency with which the ticket should be addressed. Possible values are: urgent, high, normal, low. | Optional |
@@ -609,7 +613,7 @@ Required permissions: Agents.
 ### zendesk-ticket-attachment-add
 
 ***
-Attach file to ticket.
+Attach a file to a ticket.
 Required permissions: End users.
 
 #### Base Command
@@ -621,9 +625,9 @@ Required permissions: End users.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ticket_id | The ID of the ticket where the file should be uploaded. | Required |
-| file_id | The file entry ID. | Required |
+| file_id | A comma-separated list of entry IDs of attachments. | Required |
 | comment | The comment body for the attached file. | Required |
-| filename | The filename to upload. Default is the original filename. | Optional |
+| filename | A comma-separated list of filenames to upload if you provide file_id. Default is the original filename. | Optional |
 
 #### Context Output
 
@@ -937,7 +941,7 @@ Allowed for: Admins, Agents.
 | --- | --- | --- |
 | Zendesk.Group.created_at | Date | The time the group was created. |
 | Zendesk.Group.default | Boolean | If the group is the default one for the account. |
-| Zendesk.Group.deleted | Boolean | `true` if the group is deleted `false` otherwise. |
+| Zendesk.Group.deleted | Boolean | true if the group is deleted false otherwise. |
 | Zendesk.Group.description | String | The description of the group. |
 | Zendesk.Group.id | Number | The group ID. |
 | Zendesk.Group.is_public | Boolean | If true, the group is public. If false, the group is private. You can't change a private group to a public group. |

@@ -1235,6 +1235,63 @@ class TestCommandArgumentHandling:
                 **self.REQUIRED_ARGS, **TestCommandArgumentHandling.EXTRA_UNEXPECTED_ARGS
             )
 
+    class TestZendeskTicketCreateAttachments:
+        def test_create_ticket_with_attachment(self, zendesk_client, mocker, tmp_path):
+            file_on_disk = tmp_path / "uploaded.txt"
+            file_on_disk.write_bytes(b"payload")
+            mocker.patch.object(
+                demisto,
+                "getFilePath",
+                return_value={"path": str(file_on_disk), "name": "uploaded.txt"},
+            )
+            http_request = mocker.patch.object(
+                zendesk_client,
+                "_http_request",
+                side_effect=[{"upload": {"token": "tok"}}, {"ticket": {"id": 1}}],
+            )
+            mocker.patch.object(zendesk_client, "_ZendeskClient__command_results_zendesk_tickets")
+
+            zendesk_client.zendesk_ticket_create(
+                subject="subject",
+                type="question",
+                requester="requester@example.com",
+                description="description",
+                file_id="fid",
+            )
+
+            assert http_request.call_args_list[1].kwargs["json_data"]["ticket"]["comment"] == {
+                "body": "description",
+                "uploads": ["tok"],
+            }
+
+    class TestZendeskTicketUpdateAttachments:
+        def test_update_ticket_with_attachment(self, zendesk_client, mocker, tmp_path):
+            file_on_disk = tmp_path / "uploaded.txt"
+            file_on_disk.write_bytes(b"payload")
+            mocker.patch.object(
+                demisto,
+                "getFilePath",
+                return_value={"path": str(file_on_disk), "name": "uploaded.txt"},
+            )
+            http_request = mocker.patch.object(
+                zendesk_client,
+                "_http_request",
+                side_effect=[{"upload": {"token": "tok"}}, {"ticket": {"id": 1}}],
+            )
+            mocker.patch.object(zendesk_client, "_ZendeskClient__command_results_zendesk_tickets")
+
+            zendesk_client.zendesk_ticket_update(ticket_id=1, comment="description", file_id="fid")
+
+            assert http_request.call_args_list[1].kwargs["json_data"]["ticket"]["comment"] == {
+                "body": "description",
+                "uploads": ["tok"],
+            }
+
+            def test_update_ticket_with_filename_without_file_id(self, zendesk_client):
+                msg = re.escape("You cannot specify 'filename' without providing 'file_id'.")
+                with pytest.raises(DemistoException, match=msg):
+                    zendesk_client.zendesk_ticket_update(ticket_id=1, filename="custom.txt")
+
     class TestGetModifiedRemoteData:
         @staticmethod
         @pytest.fixture
