@@ -9,6 +9,7 @@ tags:
 - Utility
 comment: Prints a basic hello message to the War Room.
 enabled: true
+internal: false
 scripttarget: 0
 runas: DBotWeakRole
 dockerimage: demisto/python3:3.12.14.13495286
