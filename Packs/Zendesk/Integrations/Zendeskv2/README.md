@@ -1002,3 +1002,11 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 
 - To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Zendesk v2.
 - Required permissions: Admins
+
+## Troubleshooting
+
+### OAuth authentication
+
+- **The Test button succeeds, but commands fail with `403 Forbidden`.** The **Scope** value contains a scope Zendesk does not recognize (for example, a typo, or a comma-separated list instead of a space-separated string). Zendesk still creates an access token for an unrecognized scope, but every API request made with it returns `403 Forbidden`. Enter the scopes as a space-separated string, for example `read write` or `tickets:read users:read`. For the list of valid scopes, see [Scopes](https://developer.zendesk.com/api-reference/ticketing/oauth/grant_type_tokens/#scope).
+- **The Test button fails with `400 Bad Request` and an `invalid_scope` error.** The OAuth client has allowed scopes configured in Zendesk, and the requested **Scope** includes a scope outside that list. Either request only scopes from the client's allowed scopes, or edit the OAuth client in Zendesk Admin Center to allow the required scopes. For more information, see [Understanding client-level allowed scopes](https://developer.zendesk.com/documentation/authentication/oauth-migration/#understanding-client-level-allowed-scopes).
+- **Actions appear in Zendesk as performed by an admin user.** Actions performed with a Client Credentials token are attributed to the Zendesk user who created the OAuth client. This affects audit logs, ticket and comment authorship, and permission checks. For more information, see [Client credentials grant](https://developer.zendesk.com/documentation/authentication/oauth-migration/#client-credentials-grant).
