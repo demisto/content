@@ -6,11 +6,11 @@
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g., https://demisto.zendesk.com) | The URL of your Zendesk server. For example, https://demisto.zendesk.com. | True |
-| Username (or '&lt;username&gt;/token' when using API key). | example 'admin@org.com' when using the password, or 'admin@org.com/token' when using an API key. | False |
-| Password/API key |  | False |
 | Client ID | The OAuth 2.0 client identifier \(the 'Unique identifier' of the OAuth client in Zendesk\) and client secret. | False |
 | Client Secret |  | False |
 | Scope | The OAuth scope requested at token acquisition, as a space-separated list \(e.g., 'tickets:read users:read'\). Defaults to 'read write' when empty. | False |
+| Username (or '&lt;username&gt;/token' when using API key). | example 'admin@org.com' when using the password, or 'admin@org.com/token' when using an API key. | False |
+| Password/API key |  | False |
 | Fetch incidents |  | False |
 | Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror \*\*Incoming\*\* only \(from Zendesk to Cortex XSOAR\), \*\*Outgoing\*\* only \(from Cortex XSOAR to Zendesk\), or both \*\*Incoming And Outgoing\*\*. | False |
 | Close mirrored incidents | If true, XSOAR will mirror also the ticket closeing. | False |
