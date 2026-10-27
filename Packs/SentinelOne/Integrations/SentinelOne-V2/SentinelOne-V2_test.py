@@ -2865,3 +2865,225 @@ def test_get_alert_with_raw_indicators(mocker, requests_mock):
     assert outputs["Process"]["cmdLine"] == "testd --host=unix:///var/run/test.sock"
     assert requests_mock.last_request.method == "POST"
     assert "alertWithRawIndicators" in requests_mock.last_request.json()["query"]
+
+
+def test_create_firewall_rule(mocker, requests_mock):
+    """
+    When:
+        sentinelone-create-firewall-rule command is called to block remote IPs/domains
+    Returns:
+        The created firewall rule item with expected request payload and context output.
+    """
+    raw_response = {
+        "data": {
+            "id": "225494730938493804",
+            "name": "Block Malicious IP and Domain",
+            "action": "Block",
+            "status": "Enabled",
+            "direction": "outbound",
+            "osType": "windows",
+            "osTypes": ["windows", "linux"],
+            "protocol": "any",
+            "remoteHosts": [
+                {
+                    "type": "addresses",
+                    "values": ["test_ip"],
+                }
+            ],
+            "scope": "site",
+            "scopeId": "225494730938493805",
+            "order": 1,
+            "editable": True,
+            "creator": "admin",
+            "creatorId": "225494730938493800",
+            "createdAt": "2026-10-27T12:00:00.000000Z",
+            "updatedAt": "2026-10-27T12:00:00.000000Z",
+            "description": "Block suspicious indicator",
+            "ruleCategory": "firewall",
+        }
+    }
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/firewall-control", json=raw_response)
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-create-firewall-rule")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "name": "Block Malicious IP and Domain",
+            "action": "Block",
+            "status": "Enabled",
+            "direction": "outbound",
+            "os_types": "windows,linux",
+            "protocol": "any",
+            "remote_host_type": "addresses",
+            "remote_host_values": "test_ip",
+            "site_ids": "225494730938493805",
+            "description": "Block suspicious indicator",
+        },
+    )
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs["ID"] == "225494730938493804"
+    assert outputs["Name"] == "Block Malicious IP and Domain"
+    assert outputs["Action"] == "Block"
+    assert outputs["Status"] == "Enabled"
+    assert outputs["OsTypes"] == ["windows", "linux"]
+    assert outputs["RemoteHosts"] == [{"type": "addresses", "values": ["test_ip"]}]
+    assert requests_mock.last_request.json() == {
+        "filter": {
+            "siteIds": ["225494730938493805"],
+        },
+        "data": {
+            "name": "Block Malicious IP and Domain",
+            "action": "Block",
+            "status": "Enabled",
+            "direction": "outbound",
+            "osTypes": ["windows", "linux"],
+            "protocol": "any",
+            "remoteHosts": [{"type": "addresses", "values": ["test_ip"]}],
+            "description": "Block suspicious indicator",
+        },
+    }
+
+
+def test_create_firewall_rule_full_schema_and_validations(mocker, requests_mock):
+    """
+    When:
+        sentinelone-create-firewall-rule command is called with full schema fields (fqdn, ports, application, location)
+        or with missing scope / missing values
+    Returns:
+        Properly structured payload for full schema fields and raises DemistoException on invalid input combinations.
+    """
+    raw_response = {
+        "data": {
+            "id": "225494730938493999",
+            "name": "Block Domain and Ports",
+            "action": "Block",
+            "status": "Enabled",
+        }
+    }
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/firewall-control", json=raw_response)
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-create-firewall-rule")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "name": "Block Domain and Ports",
+            "action": "Block",
+            "status": "Enabled",
+            "tenant": "true",
+            "remote_host_type": "fqdn",
+            "remote_host_values": "malicious.example.com,bad.example.org",
+            "local_host_type": "cidr",
+            "local_host_values": "10.0.0.0/8",
+            "remote_port_type": "ports",
+            "remote_port_values": "80,443",
+            "local_port_type": "any",
+            "application_type": "path",
+            "application_values": "C:\\bad.exe",
+            "location_type": "specific",
+            "location_ids": "225494730938493804",
+            "tag_ids": "225494730938493915",
+        },
+    )
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    assert requests_mock.last_request.json() == {
+        "filter": {
+            "tenant": True,
+        },
+        "data": {
+            "name": "Block Domain and Ports",
+            "action": "Block",
+            "status": "Enabled",
+            "remoteHosts": [{"type": "fqdn", "values": ["malicious.example.com", "bad.example.org"]}],
+            "localHost": {"type": "cidr", "values": ["10.0.0.0/8"]},
+            "remotePort": {"type": "ports", "values": [80, 443]},
+            "localPort": {"type": "any"},
+            "application": {"type": "path", "values": ["C:\\bad.exe"]},
+            "location": {"type": "specific", "values": [{"id": "225494730938493804"}]},
+            "tagIds": ["225494730938493915"],
+        },
+    }
+    assert mock_return_results.call_args_list[0].args[0].outputs["ID"] == "225494730938493999"
+
+    client = sentinelone_v2.Client(base_url="https://usea1.sentinelone.net/web/api/v2.1/", verify=False, proxy=False, headers={})
+    with pytest.raises(sentinelone_v2.DemistoException, match="You must provide a scope filter"):
+        sentinelone_v2.create_firewall_rule_command(
+            client,
+            {"name": "Rule", "action": "Block", "status": "Enabled"},
+        )
+    with pytest.raises(sentinelone_v2.DemistoException, match="remote_host_values is required"):
+        sentinelone_v2.create_firewall_rule_command(
+            client,
+            {"name": "Rule", "action": "Block", "status": "Enabled", "tenant": "true", "remote_host_type": "fqdn"},
+        )
+
+
+def test_delete_firewall_rule(mocker, requests_mock):
+    """
+    When:
+        sentinelone-delete-firewall-rule command is called with filter parameters
+    Returns:
+        Number of firewall rules successfully deleted as reported by the API, and raises DemistoException when no filter is given.
+    """
+    raw_response = {"data": {"affected": 2}}
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/firewall-control", json=raw_response)
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-delete-firewall-rule")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "ids": "225494730938493804,225494730938493915",
+            "site_ids": "225494730938493805",
+            "actions": "Block",
+            "statuses": "Enabled",
+        },
+    )
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs["Affected"] == 2
+    assert requests_mock.last_request.method == "DELETE"
+    assert requests_mock.last_request.json() == {
+        "filter": {
+            "ids": ["225494730938493804", "225494730938493915"],
+            "siteIds": ["225494730938493805"],
+            "actions": ["Block"],
+            "statuses": ["Enabled"],
+        }
+    }
+
+    client = sentinelone_v2.Client(base_url="https://usea1.sentinelone.net/web/api/v2.1/", verify=False, proxy=False, headers={})
+    with pytest.raises(sentinelone_v2.DemistoException, match="You must provide at least one filter parameter"):
+        sentinelone_v2.delete_firewall_rule_command(client, {})

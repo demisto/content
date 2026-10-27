@@ -783,6 +783,19 @@ class Client(BaseClient):
             return response.get("data")[0]
         return {}
 
+    def create_firewall_rule_request(self, filter_data: dict, rule_data: dict) -> dict:
+        payload = {
+            "filter": filter_data,
+            "data": rule_data,
+        }
+        response = self._http_request(method="POST", url_suffix="firewall-control", json_data=payload)
+        return response.get("data") or {}
+
+    def delete_firewall_rule_request(self, filter_data: dict) -> dict:
+        payload = {"filter": filter_data}
+        response = self._http_request(method="DELETE", url_suffix="firewall-control", json_data=payload, ok_codes=[200])
+        return response.get("data") or {}
+
     def delete_unified_exclusion_request(self, exclusions: list[dict]) -> dict:
         body = {"data": {"exclusions": exclusions}}
         response = self._http_request(method="DELETE", url_suffix="unified-exclusions", json_data=body, ok_codes=[200])
@@ -3896,6 +3909,212 @@ def delete_unified_exclusion_command(client: Client, args: dict) -> CommandResul
     )
 
 
+def create_firewall_rule_command(client: Client, args: dict) -> CommandResults:
+    """
+    Create a Firewall Control rule for a specified scope (v2.1 firewall-control endpoint).
+    """
+    name = args["name"]
+    action = args["action"]
+    status = args["status"]
+    direction = args.get("direction")
+    os_types = argToList(args.get("os_types")) or None
+    protocol = args.get("protocol")
+    description = args.get("description")
+    tag_ids = argToList(args.get("tag_ids")) or None
+
+    tenant = argToBoolean(args["tenant"]) if args.get("tenant") is not None else None
+    account_ids = argToList(args.get("account_ids")) or None
+    site_ids = argToList(args.get("site_ids")) or None
+    group_ids = argToList(args.get("group_ids")) or None
+
+    if tenant is None and not any([account_ids, site_ids, group_ids]):
+        raise DemistoException(
+            "You must provide a scope filter: set 'tenant' to true, or specify 'account_ids', 'site_ids', or 'group_ids'."
+        )
+
+    remote_host_type = args.get("remote_host_type")
+    remote_host_values = argToList(args.get("remote_host_values"))
+    remote_hosts = None
+    if remote_host_type:
+        if remote_host_type != "any" and not remote_host_values:
+            raise DemistoException("remote_host_values is required when remote_host_type is not 'any'.")
+        remote_hosts = [assign_params(type=remote_host_type, values=remote_host_values or None)]
+    elif remote_host_values:
+        raise DemistoException("remote_host_type is required when remote_host_values is specified.")
+
+    local_host_type = args.get("local_host_type")
+    local_host_values = argToList(args.get("local_host_values"))
+    local_host = None
+    if local_host_type:
+        if local_host_type != "any" and not local_host_values:
+            raise DemistoException("local_host_values is required when local_host_type is not 'any'.")
+        local_host = assign_params(type=local_host_type, values=local_host_values or None)
+    elif local_host_values:
+        raise DemistoException("local_host_type is required when local_host_values is specified.")
+
+    remote_port_type = args.get("remote_port_type")
+    remote_port_values_raw = argToList(args.get("remote_port_values"))
+    remote_port = None
+    if remote_port_type:
+        if remote_port_type != "any" and not remote_port_values_raw:
+            raise DemistoException("remote_port_values is required when remote_port_type is not 'any'.")
+        remote_port_values = [arg_to_number(p, arg_name="remote_port_values") for p in remote_port_values_raw]
+        remote_port = assign_params(type=remote_port_type, values=remote_port_values or None)
+    elif remote_port_values_raw:
+        raise DemistoException("remote_port_type is required when remote_port_values is specified.")
+
+    local_port_type = args.get("local_port_type")
+    local_port_values_raw = argToList(args.get("local_port_values"))
+    local_port = None
+    if local_port_type:
+        if local_port_type != "any" and not local_port_values_raw:
+            raise DemistoException("local_port_values is required when local_port_type is not 'any'.")
+        local_port_values = [arg_to_number(p, arg_name="local_port_values") for p in local_port_values_raw]
+        local_port = assign_params(type=local_port_type, values=local_port_values or None)
+    elif local_port_values_raw:
+        raise DemistoException("local_port_type is required when local_port_values is specified.")
+
+    application_type = args.get("application_type")
+    application_values = argToList(args.get("application_values"))
+    application = None
+    if application_type:
+        if application_type != "any" and not application_values:
+            raise DemistoException("application_values is required when application_type is not 'any'.")
+        application = assign_params(type=application_type, values=application_values or None)
+    elif application_values:
+        raise DemistoException("application_type is required when application_values is specified.")
+
+    location_type = args.get("location_type")
+    location_ids = argToList(args.get("location_ids"))
+    location = None
+    if location_type:
+        if location_type == "specific" and not location_ids:
+            raise DemistoException("location_ids is required when location_type is 'specific'.")
+        location_values = [{"id": loc_id} for loc_id in location_ids] if location_ids else None
+        location = assign_params(type=location_type, values=location_values)
+    elif location_ids:
+        raise DemistoException("location_type is required when location_ids is specified.")
+
+    filter_data = assign_params(
+        tenant=tenant,
+        accountIds=account_ids,
+        siteIds=site_ids,
+        groupIds=group_ids,
+    )
+
+    rule_data = assign_params(
+        name=name,
+        action=action,
+        status=status,
+        direction=direction,
+        osTypes=os_types,
+        protocol=protocol,
+        description=description,
+        tagIds=tag_ids,
+        remoteHosts=remote_hosts,
+        localHost=local_host,
+        remotePort=remote_port,
+        localPort=local_port,
+        application=application,
+        location=location,
+    )
+
+    new_rule = client.create_firewall_rule_request(filter_data=filter_data, rule_data=rule_data)
+
+    context_entry: dict = {}
+    title = "Sentinel One - Create Firewall Rule"
+
+    if new_rule:
+        title += "\nThe firewall rule was successfully created."
+        context_entry = {
+            "ID": new_rule.get("id"),
+            "Name": new_rule.get("name"),
+            "Action": new_rule.get("action"),
+            "Status": new_rule.get("status"),
+            "Direction": new_rule.get("direction"),
+            "OsType": new_rule.get("osType"),
+            "OsTypes": new_rule.get("osTypes"),
+            "Protocol": new_rule.get("protocol"),
+            "RemoteHost": new_rule.get("remoteHost"),
+            "RemoteHosts": new_rule.get("remoteHosts"),
+            "LocalHost": new_rule.get("localHost"),
+            "RemotePort": new_rule.get("remotePort"),
+            "LocalPort": new_rule.get("localPort"),
+            "Application": new_rule.get("application"),
+            "Location": new_rule.get("location"),
+            "Scope": new_rule.get("scope"),
+            "ScopeId": new_rule.get("scopeId"),
+            "Order": new_rule.get("order"),
+            "Editable": new_rule.get("editable"),
+            "Creator": new_rule.get("creator"),
+            "CreatorId": new_rule.get("creatorId"),
+            "CreatedAt": new_rule.get("createdAt"),
+            "UpdatedAt": new_rule.get("updatedAt"),
+            "Description": new_rule.get("description"),
+            "RuleCategory": new_rule.get("ruleCategory"),
+            "TagIds": new_rule.get("tagIds"),
+            "TagNames": new_rule.get("tagNames"),
+            "Tags": new_rule.get("tags"),
+            "ProductId": new_rule.get("productId"),
+        }
+
+    return CommandResults(
+        readable_output=tableToMarkdown(title, context_entry, removeNull=True, headerTransform=pascalToSpace),
+        outputs_prefix="SentinelOne.FirewallRule",
+        outputs_key_field="ID",
+        outputs=context_entry,
+        raw_response=new_rule,
+    )
+
+
+def delete_firewall_rule_command(client: Client, args: dict) -> CommandResults:
+    """
+    Delete Firewall Control rules that match the filter (v2.1 firewall-control endpoint).
+    """
+    tenant = argToBoolean(args["tenant"]) if args.get("tenant") is not None else None
+    filter_data = assign_params(
+        ids=argToList(args.get("ids")) or None,
+        accountIds=argToList(args.get("account_ids")) or None,
+        siteIds=argToList(args.get("site_ids")) or None,
+        groupIds=argToList(args.get("group_ids")) or None,
+        tenant=tenant,
+        query=args.get("query"),
+        scopes=argToList(args.get("scopes")) or None,
+        applications=argToList(args.get("applications")) or None,
+        name=args.get("name"),
+        protocols=argToList(args.get("protocols")) or None,
+        osTypes=argToList(args.get("os_types")) or None,
+        directions=argToList(args.get("directions")) or None,
+        actions=argToList(args.get("actions")) or None,
+        statuses=argToList(args.get("statuses")) or None,
+        createdAt__lt=args.get("created_at_lt"),
+        createdAt__gt=args.get("created_at_gt"),
+        createdAt__lte=args.get("created_at_lte"),
+        createdAt__gte=args.get("created_at_gte"),
+        createdAt__between=args.get("created_at_between"),
+        locationIds=argToList(args.get("location_ids")) or None,
+        tagIds=argToList(args.get("tag_ids")) or None,
+        name__contains=argToList(args.get("name_contains")) or None,
+        tagName__contains=argToList(args.get("tag_name_contains")) or None,
+        application__contains=argToList(args.get("application_contains")) or None,
+        protocol__contains=argToList(args.get("protocol_contains")) or None,
+        service__contains=argToList(args.get("service_contains")) or None,
+    )
+
+    if not filter_data:
+        raise DemistoException("You must provide at least one filter parameter to delete firewall rules.")
+
+    response = client.delete_firewall_rule_request(filter_data=filter_data)
+    affected = response.get("affected", 0)
+
+    return CommandResults(
+        readable_output=f"Sentinel One - Firewall Rules Deleted\n{affected} firewall rule(s) successfully deleted.",
+        outputs_prefix="SentinelOne.FirewallRule.Deleted",
+        outputs={"Affected": affected},
+        raw_response=response,
+    )
+
+
 def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, os_type: str = None) -> list[str | None]:
     """
     Return the IDs of the hash from the white. Helper function for remove_item_from_whitelist
@@ -6613,6 +6832,8 @@ def main():
             "sentinelone-get-unified-exclusions": get_unified_exclusions_command,
             "sentinelone-create-unified-exclusion": create_unified_exclusion_command,
             "sentinelone-delete-unified-exclusions": delete_unified_exclusion_command,
+            "sentinelone-create-firewall-rule": create_firewall_rule_command,
+            "sentinelone-delete-firewall-rule": delete_firewall_rule_command,
             "sentinelone-get-alert-with-raw-indicators": get_alert_with_raw_indicators_command,
         },
         "commands_with_params": {
