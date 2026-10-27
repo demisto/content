@@ -20,6 +20,9 @@ Censys rate limits to 10 queries a day per IP for unauthenticated clients, and v
 
 ## IP reputation command
 
-Censys API provides reputation data exclusively to paying customers. When set to True, the integration will use labels to determinate reputation on IPs.
+- **Determine IP score using Censys Host Reputation data**: Scores the IP as Malicious, Suspicious or Good based on the Censys host reputation label (`host.reputation.label`).
+- **Use Censys Host Enrichment API for ip command**: Retrieves IP data from the host enrichment API (enabled by default). IPs that fail enrichment fall back to the search API. The ***ip*** command's `use_enrichment_endpoint` argument overrides this parameter.
+- **Determine IP score using Censys Labels**: Scores the IP using host labels (`host.labels.value`) and service labels (`host.services.labels.value`) against the configured malicious/suspicious labels and thresholds. Thresholds count distinct labels across the host and its services. Labels that are not listed in the drop-down can be typed in manually.
+- **When both scoring options are enabled**: The higher of the two scores is applied. If both give the same score, both reasons are shown in the description.
 
 Once the integration instance is configured, it will be used to populate the Censys SOAR dashboard.
