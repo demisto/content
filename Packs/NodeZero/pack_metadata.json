@@ -1,8 +1,8 @@
 {
     "name": "NodeZero",
-    "description": "Horizon3.ai NodeZero autonomous pentest platform. Fetches high/critical weaknesses as incidents.",
+    "description": "Horizon3.ai NodeZero autonomous pentest platform. Fetches high and critical weaknesses as incidents, and collects every weakness from completed pentests as Cortex XSIAM events.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "2.0.0",
     "author": "Horizon3.ai",
     "url": "https://horizon3.ai",
     "email": "support@horizon3.ai",
@@ -27,6 +27,7 @@
         "marketplacev2",
         "platform"
     ],
+    "defaultDataSource": "NodeZeroEventCollector",
     "supportedModules": [
         "agentix",
         "xsiam"
