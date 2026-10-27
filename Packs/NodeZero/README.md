@@ -71,10 +71,12 @@ The event collector runs independently of the **NodeZero** integration, so you c
 
 ### Dashboard
 
-The **NodeZero Overview** dashboard shows the NodeZero events from the last 30 days:
+The **NodeZero Overview** dashboard shows the NodeZero events from the last 30 days. To narrow the dashboard to one or more pentests, pick them in the **Pentest** filter. The filter lists each pentest by name, completion date and pentest ID, newest first. **Hours since last ingest** always covers all pentests.
 
+- **Key counts**: critical weaknesses, weaknesses in the CISA Known Exploited Vulnerabilities catalog, weaknesses known to be used in ransomware campaigns, and weaknesses NodeZero proved by exploiting them.
 - **Ingestion health**: events ingested per day, the number of pentests ingested, hours since the last event was ingested, and a per-pentest table that compares the events ingested with the number of weaknesses NodeZero reported.
 - **Weaknesses by severity**: a breakdown by severity, and weaknesses found per day by severity.
+- **Impacts and categories**: weaknesses by the downstream impacts they lead to, such as host or domain compromise, and by NodeZero category.
 - **Top weaknesses and hosts**: the 25 most common weaknesses and the 25 hosts with the most weaknesses.
 
 ### Sample XQL queries
