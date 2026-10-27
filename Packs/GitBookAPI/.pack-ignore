@@ -1,0 +1,14 @@
+# Pack ignore file
+# Use this file to ignore specific linter errors or tests
+
+# Ignore a specific test
+# [file:playbook-Test.yml]
+# ignore=auto-test
+
+# Ignore linter errors
+# [file:integration.yml]
+# ignore=IN126,PA116
+
+# Require network for tests
+# [tests_require_network]
+# integration-id
