@@ -163,9 +163,16 @@ VERITY471_CASES = [
             "Source Object: MALWARE EVENT",
             "Malware Family: string",
             "Malware Family Version: string",
+            "Malware Component: string",
+            "Malware Variant: string",
+            "Threat Type: malware",
+            "Bulletproof Hosting Provider: string",
             "Kill chain phases: ",
             '"phase_name": "string"',
             "Event Type: string",
+            "First seen: 2026-01-01T00:00:00Z",
+            "Last seen: 2026-01-01T00:00:00Z",
+            "\n\nClassification:\nstring (string)",
             "\n\nEvent Details:\n",
             '"bot_settings"',
         ],
@@ -196,6 +203,7 @@ VERITY471_CASES = [
             "Forum: string",
             "Subject: string",
             "Author: string",
+            "Recipient: string",
         ],
         "",
         "string",
@@ -575,6 +583,33 @@ def test_verity_append_field(value, expected):
           carry meaningful zeroes (tier, times_sold, rating, response time).
     """
     assert feed._verity_append_field("Source Object: X", "Field", value) == expected
+
+
+@pytest.mark.parametrize(
+    "girs,expected",
+    [
+        ([{"name": "Malware", "path": "1.2.3"}], "Malware (1.2.3)"),
+        ([{"name": "Malware", "path": "1.2.3"}, {"name": "Creds", "path": "4.5"}], "Malware (1.2.3)\nCreds (4.5)"),
+        ([{"name": "Malware"}], "Malware"),  # path missing -> name only
+        ([{"path": "1.2.3"}], "1.2.3"),  # name missing -> path only
+        ([{}], ""),  # neither -> dropped
+        ([], ""),
+        (None, ""),
+        ("not-a-list", ""),
+    ],
+)
+def test_verity_format_girs_block(girs, expected):
+    """
+    Given:
+        - The classification.girs list on a Verity471 document.
+
+    When:
+        - _verity_format_girs_block renders it.
+
+    Then:
+        - Each entry becomes "<name> (<path>)", degrading to whichever half is present.
+    """
+    assert feed._verity_format_girs_block(girs) == expected
 
 
 @pytest.mark.parametrize(

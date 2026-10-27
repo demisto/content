@@ -710,6 +710,21 @@ def _verity_format_entities_block(entities: Any) -> str:
     return "\n".join(parts) if parts else ""
 
 
+def _verity_format_girs_block(girs: Any) -> str:
+    """Renders ``classification.girs`` as "<name> (<path>)" lines."""
+    if not girs or not isinstance(girs, list):
+        return ""
+    parts: list[str] = []
+    for gir in girs:
+        if not isinstance(gir, dict):
+            parts.append(str(gir))
+            continue
+        name = str(gir.get("name", ""))
+        path = str(gir.get("path", ""))
+        parts.append(f"{name} ({path})" if name and path else name or path)
+    return "\n".join(part for part in parts if part)
+
+
 def _verity_format_price(price: Any) -> str:
     """Renders a marketplace price list (``[{"value": .., "currency": ..}]``) as "<value> <currency>"."""
     if not price or not isinstance(price, list):
@@ -1018,6 +1033,13 @@ class MalwareEventAdapter(BaseAdapter):
         ver = _verity_malware_version(self.alert)
         if not _verity_is_blank(ver):
             details += "\n" + "Malware Family Version: " + ver
+        malware = deep_get(self.alert, "threat.data.malware", {}) or {}
+        details = _verity_append_field(details, "Malware Component", malware.get("component"))
+        details = _verity_append_field(details, "Malware Variant", malware.get("variant"))
+        details = _verity_append_field(details, "Threat Type", deep_get(self.alert, "threat.type", None))
+        details = _verity_append_field(
+            details, "Bulletproof Hosting Provider", deep_get(self.alert, "threat.data.bulletproof_hosting.provider", None)
+        )
         kc = self.alert.get("kill_chain_phases", [])
         if not _verity_is_blank(kc) and kc is not None:
             kc_str = json.dumps(kc, indent=2, sort_keys=False, default=str)
@@ -1025,6 +1047,11 @@ class MalwareEventAdapter(BaseAdapter):
         et = str(self.alert.get("type", ""))
         if not _verity_is_blank(et):
             details += "\n" + "Event Type: " + et
+        details = _verity_append_field(details, "First seen", deep_get(self.alert, "activity.first_seen_ts", None))
+        details = _verity_append_field(details, "Last seen", deep_get(self.alert, "activity.last_seen_ts", None))
+        girs = _verity_format_girs_block((self.alert.get("classification") or {}).get("girs"))
+        if not _verity_is_blank(girs):
+            details += "\n\n" + "Classification:" + "\n" + girs
         event_details = self.alert.get("data")
         block = ""
         if event_details is None:
@@ -1180,6 +1207,7 @@ class ForumsPrivateMessageAdapter(BaseAdapter):
         author = str(deep_get(self.alert, "author.user_name", ""))
         if not _verity_is_blank(author):
             details += "\n" + "Author: " + author
+        details = _verity_append_field(details, "Recipient", deep_get(self.alert, "recipient.user_name", None))
         raw = str(deep_get(self.alert, "private_message.message", ""))
         body = html.unescape(" ".join(remove_tags(raw).strip().split()))
         if not _verity_is_blank(body):
