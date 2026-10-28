@@ -5087,3 +5087,152 @@ class TestClientRequests:
         response = Mock(status_code=Qualysv2.RATE_LIMIT_STATUS_CODE, text="bad")
 
         assert Client._is_concurrency_limit_error(response) is False
+
+
+""" EXCLUDE SEARCH LIST IDS TESTS """
+
+
+@pytest.mark.parametrize(
+    "qid, exclude_search_list_ids, expected_extra_params",
+    [
+        pytest.param(None, None, {}, id="Not set - no change in request"),
+        pytest.param(None, "", {}, id="Empty - no change in request"),
+        pytest.param(None, "1523994,40-42", {"exclude_search_list_ids": "1523994,40-42"}, id="Exclude IDs sent"),
+        pytest.param("123", "1523994", {"qids": "123"}, id="QID takes precedence - mutually exclusive"),
+    ],
+)
+def test_get_host_list_detection_exclude_search_list_ids(
+    mocker: MockerFixture, client: Client, qid, exclude_search_list_ids, expected_extra_params
+):
+    """
+    Given:
+        - Optional QID and optional Search List IDs to exclude.
+    When:
+        - Calling Client.get_host_list_detection.
+    Then:
+        - Ensure 'exclude_search_list_ids' is added to the query params only when set and no QID is provided.
+    """
+    client_http_request = mocker.patch.object(client, "_http_request")
+
+    client.get_host_list_detection(
+        since_datetime="2024-12-12", limit=HOST_LIMIT, qid=qid, exclude_search_list_ids=exclude_search_list_ids
+    )
+
+    assert client_http_request.call_args.kwargs["params"] == {
+        "truncation_limit": HOST_LIMIT,
+        "vm_scan_date_after": "2024-12-12",
+        "show_qds": 1,
+        "show_qds_factors": 1,
+        **expected_extra_params,
+    }
+
+
+def test_request_host_list_page_passes_exclude_search_list_ids(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - Search List IDs to exclude.
+    When:
+        - Calling request_host_list_page.
+    Then:
+        - Ensure the Search List IDs are passed to Client.get_host_list_detection.
+    """
+    raw_response = Mock()
+    mock_get_host_list = mocker.patch.object(client, "get_host_list_detection", return_value=(raw_response, False))
+
+    response, failed_outcome = Qualysv2.request_host_list_page(
+        client, {}, "2025-01-01", "", HOST_LIMIT, exclude_search_list_ids="1523994,40-42"
+    )
+
+    assert response is raw_response
+    assert failed_outcome is None
+    assert mock_get_host_list.call_args.kwargs["exclude_search_list_ids"] == "1523994,40-42"
+
+
+@pytest.mark.parametrize("page_function", [fetch_and_send_assets_streamed, fetch_and_send_assets_and_vulnerabilities_by_qids])
+def test_page_functions_pass_exclude_search_list_ids(mocker: MockerFixture, client: Client, page_function):
+    """
+    Given:
+        - Search List IDs to exclude.
+    When:
+        - Calling the streamed assets page function of either fetch flow (by date / by QIDs).
+    Then:
+        - Ensure the Search List IDs are passed to request_host_list_page.
+    """
+    last_run = {"stage": "assets", "snapshot_id": SNAPSHOT_ID}
+    mock_request_page = mocker.patch("Qualysv2.request_host_list_page", return_value=(None, (last_run, True)))
+
+    page_function(client, last_run, exclude_search_list_ids="1523994,40-42")
+
+    assert mock_request_page.call_args.kwargs["exclude_search_list_ids"] == "1523994,40-42"
+
+
+@pytest.mark.parametrize(
+    "fetch_function, page_function_name",
+    [
+        (fetch_assets_and_vulnerabilities_by_date, "fetch_and_send_assets_streamed"),
+        (fetch_assets_and_vulnerabilities_by_qids, "fetch_and_send_assets_and_vulnerabilities_by_qids"),
+    ],
+    ids=["by_date", "by_qids"],
+)
+def test_fetch_flows_pass_exclude_search_list_ids(mocker: MockerFixture, client: Client, fetch_function, page_function_name):
+    """
+    Given:
+        - Search List IDs to exclude and an "assets" fetch stage.
+    When:
+        - Calling fetch_assets_and_vulnerabilities_by_date or fetch_assets_and_vulnerabilities_by_qids.
+    Then:
+        - Ensure the Search List IDs are passed down to the streamed assets page function.
+    """
+    last_run = {"stage": "assets", "snapshot_id": SNAPSHOT_ID}
+    mock_page_function = mocker.patch(f"Qualysv2.{page_function_name}", return_value=(last_run, False))
+    mocker.patch.object(demisto, "setAssetsLastRun")
+
+    fetch_function(client, last_run, exclude_search_list_ids="1523994,40-42")
+
+    assert mock_page_function.call_args.kwargs["exclude_search_list_ids"] == "1523994,40-42"
+
+
+@pytest.mark.parametrize("exclude_search_list_ids", ["1523994,40-42", None])
+def test_test_module_passes_exclude_search_list_ids(mocker: MockerFixture, client: Client, exclude_search_list_ids):
+    """
+    Given:
+        - Instance params with "Fetch assets and vulnerabilities" enabled, with or without Search List IDs to exclude.
+    When:
+        - Calling test_module.
+    Then:
+        - Ensure the Search List IDs are passed to the host list detection request, so a bad value fails the test.
+    """
+    from Qualysv2 import test_module
+
+    mock_get_detections = mocker.patch("Qualysv2.get_host_list_detections_events", return_value=([], "", False))
+    params = {"isFetchAssets": True, "exclude_search_list_ids": exclude_search_list_ids}
+
+    assert test_module(client, params, first_fetch_time="2025-01-01T00:00:00Z") == "ok"
+    assert mock_get_detections.call_args.kwargs["exclude_search_list_ids"] == exclude_search_list_ids
+
+
+def test_test_module_fails_on_invalid_exclude_search_list_ids(requests_mock: RequestsMocker, client: Client):
+    """
+    Given:
+        - Instance params with an invalid Search List ID to exclude, and Qualys responds with an error.
+    When:
+        - Calling test_module.
+    Then:
+        - Ensure the Qualys error is raised (and shown to the user) instead of returning "ok".
+    """
+    from Qualysv2 import test_module
+
+    error_response = (
+        '<?xml version="1.0" encoding="UTF-8" ?>'
+        "<SIMPLE_RETURN><RESPONSE><CODE>1905</CODE>"
+        "<TEXT>parameter exclude_search_list_ids has invalid value: abc</TEXT>"
+        "</RESPONSE></SIMPLE_RETURN>"
+    )
+    mocked_request = requests_mock.get(f"{BASE_URL}api/5.0/fo/asset/host/vm/detection/", text=error_response, status_code=400)
+
+    with pytest.raises(DemistoException, match="exclude_search_list_ids has invalid value"):
+        test_module(client, {"isFetchAssets": True, "exclude_search_list_ids": "abc"}, first_fetch_time="2025-01-01T00:00:00Z")
+
+    last_request = mocked_request.last_request
+    assert last_request is not None
+    assert last_request.qs["exclude_search_list_ids"] == ["abc"]

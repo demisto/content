@@ -1790,7 +1790,12 @@ class Client(BaseClient):
         return response.text
 
     def get_host_list_detection(
-        self, since_datetime: str, next_page: str | None = None, limit: int = HOST_LIMIT, qid: Optional[str] = None
+        self,
+        since_datetime: str,
+        next_page: str | None = None,
+        limit: int = HOST_LIMIT,
+        qid: Optional[str] = None,
+        exclude_search_list_ids: Optional[str] = None,
     ) -> tuple[Optional[requests.Response], bool]:
         """
         Make a http request to Qualys API to get assets.
@@ -1804,6 +1809,8 @@ class Client(BaseClient):
             next_page (str | None): For pagination; show hosts starting from a minimum host ID value.
             limit (int): Maximum number of host records returned; should be <= 1000000. Specify 0 for no truncation limit.
             qid: The Qualys ID (QID).
+            exclude_search_list_ids (str | None): Comma-separated Qualys Search List IDs (ranges allowed) whose
+                detections are excluded from the response. Ignored when `qid` is set, as the API does not allow both.
         Returns:
             A tuple of (streamed ``requests.Response`` or ``None`` on timeout, ``set_new_limit`` flag).
             ``set_new_limit`` is True only when the request timed out, so the caller can retry with a smaller limit.
@@ -1823,6 +1830,8 @@ class Client(BaseClient):
 
         if qid:
             params["qids"] = qid
+        elif exclude_search_list_ids:
+            params["exclude_search_list_ids"] = exclude_search_list_ids
 
         if next_page:
             params["id_min"] = next_page
@@ -3448,7 +3457,13 @@ def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) 
 
 
 def get_host_list_detections_events(
-    client, since_datetime, next_page="", limit=HOST_LIMIT, is_test=False, qid: Optional[str] = None
+    client,
+    since_datetime,
+    next_page="",
+    limit=HOST_LIMIT,
+    is_test=False,
+    qid: Optional[str] = None,
+    exclude_search_list_ids: Optional[str] = None,
 ) -> tuple:
     """Get host list detections from qualys
     Args:
@@ -3458,6 +3473,7 @@ def get_host_list_detections_events(
         limit: The limit of the host list detections
         is_test: Indicates whether it's test-module run or regular run.
         qid: The Qualys ID (QID).
+        exclude_search_list_ids: Comma-separated Qualys Search List IDs whose detections should be excluded.
     Returns:
         Host list detections assets
     """
@@ -3465,7 +3481,9 @@ def get_host_list_detections_events(
     assets: list = []
 
     demisto.debug("Starting to get client host list detections.")
-    host_list_detections, set_new_limit = client.get_host_list_detection(since_datetime, next_page, limit, qid)
+    host_list_detections, set_new_limit = client.get_host_list_detection(
+        since_datetime, next_page, limit, qid, exclude_search_list_ids=exclude_search_list_ids
+    )
     demisto.debug(f"Finished getting client host list detections. Set new limit: {set_new_limit}")
 
     if not set_new_limit:
@@ -3763,9 +3781,22 @@ def handle_assets_request_timeout(last_run: dict[str, Any]) -> tuple[dict[str, A
 
 
 def request_host_list_page(
-    client: Client, last_run: dict[str, Any], since_datetime: str, next_page: str, limit: int
+    client: Client,
+    last_run: dict[str, Any],
+    since_datetime: str,
+    next_page: str,
+    limit: int,
+    exclude_search_list_ids: str | None = None,
 ) -> tuple[Optional[requests.Response], Optional[tuple[dict[str, Any], bool]]]:
     """Requests one host list detection page, handling a timeout or concurrency-limit error the same way for both flows.
+
+    Args:
+        client (Client): Qualys client.
+        last_run (dict): Last assets run dictionary.
+        since_datetime (str): Filter hosts by vulnerability scan end date.
+        next_page (str): The host ID to start the page from (``id_min``).
+        limit (int): Maximum number of hosts in the page.
+        exclude_search_list_ids (str | None): Comma-separated Qualys Search List IDs whose detections should be excluded.
 
     Returns:
         tuple: (streamed response, failed_request_outcome).
@@ -3775,7 +3806,9 @@ def request_host_list_page(
         Other request errors are raised.
     """
     try:
-        raw_response, timed_out = client.get_host_list_detection(since_datetime, next_page, limit)
+        raw_response, timed_out = client.get_host_list_detection(
+            since_datetime, next_page, limit, exclude_search_list_ids=exclude_search_list_ids
+        )
     except DemistoException as e:
         if not Client._is_concurrency_limit_error(getattr(e, "res", None)):
             raise
@@ -3831,7 +3864,9 @@ def iter_committable_host_batches(
         yield rows, str(int(host_batch[-1]["ID"]) + 1), True
 
 
-def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> tuple[dict[str, Any], bool]:
+def fetch_and_send_assets_streamed(
+    client: Client, last_run: dict[str, Any], exclude_search_list_ids: str | None = None
+) -> tuple[dict[str, Any], bool]:
     """Fetches one assets page (host list detections) and sends it to XSIAM, committing every few hosts.
 
     Every ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts, their detections are sent into the same snapshot (``items_count=1``,
@@ -3846,6 +3881,7 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
     Args:
         client (Client): Qualys client.
         last_run (dict): Last assets run dictionary.
+        exclude_search_list_ids (str | None): Comma-separated Qualys Search List IDs whose detections should be excluded.
     Returns:
         tuple[dict, bool]: (the new last run to save, set_new_limit flag).
     """
@@ -3853,7 +3889,9 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
     since_datetime, next_page, snapshot_id, limit = read_assets_page_state(last_run)
     total_assets = last_run.get("total_assets", 0)
 
-    raw_response, failed_request_outcome = request_host_list_page(client, last_run, since_datetime, next_page, limit)
+    raw_response, failed_request_outcome = request_host_list_page(
+        client, last_run, since_datetime, next_page, limit, exclude_search_list_ids=exclude_search_list_ids
+    )
     if failed_request_outcome is not None:
         demisto.debug("[Assets] Host list detection request failed; deferring to next fetch without sending.")
         return failed_request_outcome
@@ -3914,7 +3952,9 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
     return new_last_run, False
 
 
-def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str, Any]) -> tuple[dict[str, Any], bool]:
+def fetch_and_send_assets_and_vulnerabilities_by_qids(
+    client: Client, last_run: dict[str, Any], exclude_search_list_ids: str | None = None
+) -> tuple[dict[str, Any], bool]:
     """Fetches one assets page and sends it with the vulnerabilities of its QIDs, committing every few hosts.
 
     For every ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts: build their asset rows, fetch the vulnerabilities of the QIDs
@@ -3930,6 +3970,7 @@ def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: 
     Args:
         client (Client): Qualys client.
         last_run (dict): Last assets run dictionary.
+        exclude_search_list_ids (str | None): Comma-separated Qualys Search List IDs whose detections should be excluded.
     Returns:
         tuple[dict, bool]: (the new last run to save, set_new_limit flag).
     """
@@ -3938,7 +3979,9 @@ def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: 
     total_assets = last_run.get("total_assets", 0)
     total_vulnerabilities = last_run.get("total_vulnerabilities", 0)
 
-    raw_response, failed_request_outcome = request_host_list_page(client, last_run, since_datetime, next_page, limit)
+    raw_response, failed_request_outcome = request_host_list_page(
+        client, last_run, since_datetime, next_page, limit, exclude_search_list_ids=exclude_search_list_ids
+    )
     if failed_request_outcome is not None:
         demisto.debug("[Assets By QIDs] Host list detection request failed; deferring to next fetch.")
         return failed_request_outcome
@@ -4145,7 +4188,13 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
             )
         if is_fetch_assets:
             since_datetime = arg_to_datetime("1 hour").strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
-            get_host_list_detections_events(client=client, since_datetime=since_datetime, limit=1, is_test=True)
+            get_host_list_detections_events(
+                client=client,
+                since_datetime=since_datetime,
+                limit=1,
+                is_test=True,
+                exclude_search_list_ids=params.get("exclude_search_list_ids"),
+            )
     else:
         build_args_dict({"launched_after_datetime": TEST_FROM_DATE}, COMMANDS_ARGS_DATA["test-module"], False)
         client.command_http_request(COMMANDS_API_DATA["test-module"])
@@ -4213,7 +4262,9 @@ def qualys_command_flow_manager(
         return handled_result
 
 
-def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str, Any]) -> None:
+def fetch_assets_and_vulnerabilities_by_date(
+    client: Client, last_run: dict[str, Any], exclude_search_list_ids: str | None = None
+) -> None:
     """
     Fetches host detections (assets) by VM scan date and vulnerabilities by last modified date in two separate stages.
 
@@ -4253,6 +4304,7 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
     Args:
         client (Client): Qualys client.
         last_run (dict): Last assets run dictionary.
+        exclude_search_list_ids (str | None): Comma-separated Qualys Search List IDs whose detections should be excluded.
     """
     fetch_stage = last_run.get("stage", "assets")
     demisto.debug(
@@ -4266,7 +4318,9 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
 
         # Fetch, parse, and send one page in bounded batches (peak memory ~O(batch), not O(page)).
         # The run is bounded by the request's connect/read timeouts, and progress is saved after every batch.
-        new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+        new_last_run, set_new_limit = fetch_and_send_assets_streamed(
+            client, last_run, exclude_search_list_ids=exclude_search_list_ids
+        )
         demisto.debug("[Fetch Assets] Finished streamed fetch for assets.")
 
         # Nothing was committed in this run (request timeout or a failure before the first commit, other than a
@@ -4287,7 +4341,9 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
     demisto.debug(f"Finished fetch assets and vulnerabilities run (by date). Set last assets run: {new_last_run}")
 
 
-def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str, Any]) -> None:
+def fetch_assets_and_vulnerabilities_by_qids(
+    client: Client, last_run: dict[str, Any], exclude_search_list_ids: str | None = None
+) -> None:
     """
     Fetches host detections (assets) by VM scan date and the vulnerabilities of their Qualys IDs (QIDs) in one stage.
 
@@ -4340,6 +4396,7 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
     Args:
         client (Client): Qualys client.
         last_run (dict): Last assets run dictionary.
+        exclude_search_list_ids (str | None): Comma-separated Qualys Search List IDs whose detections should be excluded.
     """
     demisto.debug(
         f"[Fetch Assets By QIDs] Starting fetch by QIDs: one page of assets (host detections by VM scan date) with the "
@@ -4347,7 +4404,9 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
         f"consecutive_failures={last_run.get('consecutive_failures', 0)}, {EXECUTION_START_TIME=}."
     )
 
-    new_last_run, set_new_limit = fetch_and_send_assets_and_vulnerabilities_by_qids(client, last_run)
+    new_last_run, set_new_limit = fetch_and_send_assets_and_vulnerabilities_by_qids(
+        client, last_run, exclude_search_list_ids=exclude_search_list_ids
+    )
 
     # Nothing was committed in this run (request timeout or a failure before the first commit, other than a
     # concurrency-limit error); make the next API call smaller.
@@ -4683,12 +4742,14 @@ def main():  # pragma: no cover
 
         elif command == "fetch-assets":
             last_run = demisto.getAssetsLastRun()
+            exclude_search_list_ids = params.get("exclude_search_list_ids")
             demisto.debug(f"Got last assets run: {last_run}")
             demisto.debug(f"Fetch vulnerabilites behavior is set to: {fetch_vulnerabilities_behavior}")
+            demisto.debug(f"Search List IDs to exclude: {exclude_search_list_ids}")
             if fetch_vulnerabilities_behavior == "Fetch by unique QIDs of assets":
-                fetch_assets_and_vulnerabilities_by_qids(client, last_run)
+                fetch_assets_and_vulnerabilities_by_qids(client, last_run, exclude_search_list_ids=exclude_search_list_ids)
             else:
-                fetch_assets_and_vulnerabilities_by_date(client, last_run)
+                fetch_assets_and_vulnerabilities_by_date(client, last_run, exclude_search_list_ids=exclude_search_list_ids)
 
         elif command in commands_methods:
             return_results(qualys_command_flow_manager(client, args, command, commands_methods[command]))
