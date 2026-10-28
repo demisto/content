@@ -1319,3 +1319,379 @@ class TestCommandArgumentHandling:
             zendesk_client.get_modified_remote_data(
                 lastUpdate="2024-01-01T00:00:00Z", **TestCommandArgumentHandling.EXTRA_UNEXPECTED_ARGS
             )
+
+
+class TestOAuthAuthentication:
+    TOKEN_URL = f"{BASE_URL}/oauth/tokens"
+    CLIENT_ID = "test_client"
+    CLIENT_SECRET = "test_secret"
+    FROZEN_TIME = "2026-01-01T00:00:00Z"
+    FROZEN_TIMESTAMP = datetime.fromisoformat(FROZEN_TIME).timestamp()
+
+    @staticmethod
+    @pytest.fixture
+    def integration_context(mocker):
+        """Patches the integration context get/set and returns the setter mock."""
+        mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+        return mocker.patch.object(demisto, "setIntegrationContext")
+
+    def _oauth_client(self, scope: str | None = None, **kwargs) -> ZendeskClient:
+        return ZendeskClient(BASE_URL, client_id=self.CLIENT_ID, client_secret=self.CLIENT_SECRET, scope=scope, **kwargs)
+
+    @freeze_time(FROZEN_TIME)
+    def test_init_when_oauth_configured_requests_token_and_sets_bearer_header(self, requests_mock, integration_context):
+        """
+        Given:
+            - Client ID and Client Secret are configured, and no token is cached.
+        When:
+            - The client is created and an API call is made.
+        Then:
+            - A client_credentials token request is sent as a form body with the configured scope.
+            - The API call uses the access token as a Bearer token, without basic auth.
+            - The token is cached with an expiry of expires_in minus the buffer.
+        """
+        token_mock = requests_mock.post(
+            self.TOKEN_URL, json={"access_token": "new_token", "token_type": "bearer", "expires_in": 1800}
+        )
+        users_mock = requests_mock.get(full_url("users/1"), json=get_json_file("users/1"))
+
+        client = self._oauth_client(scope="tickets:read users:read")
+        client._get_user_by_id("1")
+
+        assert token_mock.call_count == 1
+        assert token_mock.last_request.headers["Content-Type"] == "application/x-www-form-urlencoded"
+        assert urllib.parse.parse_qs(token_mock.last_request.text) == {
+            "grant_type": ["client_credentials"],
+            "client_id": [self.CLIENT_ID],
+            "client_secret": [self.CLIENT_SECRET],
+            "scope": ["tickets:read users:read"],
+            "expires_in": [str(OAUTH_TOKEN_EXPIRES_IN_SECONDS)],
+        }
+        assert client._auth is None
+        assert users_mock.last_request.headers["Authorization"] == "Bearer new_token"
+        integration_context.assert_called_once_with(
+            {
+                OAUTH_TOKEN_CONTEXT_KEY: {
+                    "access_token": "new_token",
+                    "client_id": self.CLIENT_ID,
+                    "scope": "tickets:read users:read",
+                    "expires_at": self.FROZEN_TIMESTAMP + 1800 - OAUTH_TOKEN_EXPIRY_BUFFER_SECONDS,
+                }
+            }
+        )
+
+    @pytest.mark.usefixtures("integration_context")
+    @pytest.mark.parametrize("scope", [None, ""])
+    def test_init_when_scope_empty_requests_default_scope(self, requests_mock, scope):
+        """
+        Given:
+            - OAuth is configured and the Scope parameter is empty.
+        When:
+            - The client is created.
+        Then:
+            - The token request uses the default scope "read write".
+        """
+        token_mock = requests_mock.post(self.TOKEN_URL, json={"access_token": "new_token", "expires_in": 1800})
+
+        self._oauth_client(scope=scope)
+
+        assert urllib.parse.parse_qs(token_mock.last_request.text)["scope"] == [OAUTH_DEFAULT_SCOPE]
+
+    def test_init_when_only_credentials_configured_uses_basic_auth(self, requests_mock):
+        """
+        Given:
+            - Only Username / Password credentials are configured.
+        When:
+            - The client is created.
+        Then:
+            - Basic auth is used and no token request is made.
+        """
+        token_mock = requests_mock.post(self.TOKEN_URL, json={"access_token": "new_token"})
+
+        client = ZendeskClient(BASE_URL, username="user@example.com", password="password")
+
+        assert client._auth == ("user@example.com", "password")
+        assert token_mock.call_count == 0
+
+    @freeze_time(FROZEN_TIME)
+    def test_get_oauth_access_token_when_valid_token_cached_reuses_it(self, mocker, requests_mock):
+        """
+        Given:
+            - A cached token for the same client ID and scope that has not expired.
+        When:
+            - The client is created.
+        Then:
+            - The cached token is used and no token request is made.
+        """
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={
+                OAUTH_TOKEN_CONTEXT_KEY: {
+                    "access_token": "cached_token",
+                    "client_id": self.CLIENT_ID,
+                    "scope": OAUTH_DEFAULT_SCOPE,
+                    "expires_at": self.FROZEN_TIMESTAMP + 100,
+                }
+            },
+        )
+        set_context = mocker.patch.object(demisto, "setIntegrationContext")
+        token_mock = requests_mock.post(self.TOKEN_URL, json={"access_token": "new_token", "expires_in": 1800})
+
+        client = self._oauth_client()
+
+        assert client._headers == {"Authorization": "Bearer cached_token"}
+        assert token_mock.call_count == 0
+        set_context.assert_not_called()
+
+    @freeze_time(FROZEN_TIME)
+    @pytest.mark.parametrize(
+        "cached_overrides",
+        [
+            pytest.param({"expires_at": FROZEN_TIMESTAMP - 1}, id="expired"),
+            pytest.param({"expires_at": 0}, id="no expiry"),
+            pytest.param({"client_id": "other_client"}, id="different client id"),
+            pytest.param({"scope": "read"}, id="different scope"),
+        ],
+    )
+    def test_get_oauth_access_token_when_cached_token_unusable_requests_new_token(self, mocker, requests_mock, cached_overrides):
+        """
+        Given:
+            - A cached token that is expired, has no expiry, or belongs to a different client ID or scope.
+        When:
+            - The client is created.
+        Then:
+            - A new token is requested and replaces the cached one, keeping other context data.
+        """
+        cached_token = {
+            "access_token": "cached_token",
+            "client_id": self.CLIENT_ID,
+            "scope": OAUTH_DEFAULT_SCOPE,
+            "expires_at": self.FROZEN_TIMESTAMP + 100,
+        } | cached_overrides
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={"users": {"1": "user@example.com"}, OAUTH_TOKEN_CONTEXT_KEY: cached_token},
+        )
+        set_context = mocker.patch.object(demisto, "setIntegrationContext")
+        token_mock = requests_mock.post(self.TOKEN_URL, json={"access_token": "new_token", "expires_in": 1800})
+
+        client = self._oauth_client()
+
+        assert token_mock.call_count == 1
+        assert client._headers == {"Authorization": "Bearer new_token"}
+        saved_context = set_context.call_args[0][0]
+        assert saved_context["users"] == {"1": "user@example.com"}
+        assert saved_context[OAUTH_TOKEN_CONTEXT_KEY]["access_token"] == "new_token"
+
+    @freeze_time(FROZEN_TIME)
+    def test_get_oauth_access_token_when_no_expires_in_uses_requested_expiry(self, requests_mock, integration_context):
+        """
+        Given:
+            - A token response without expires_in.
+        When:
+            - The client is created.
+        Then:
+            - The token is used and cached with the explicitly requested expiry, so it is reused on later runs.
+        """
+        requests_mock.post(self.TOKEN_URL, json={"access_token": "new_token"})
+
+        client = self._oauth_client()
+
+        assert client._headers == {"Authorization": "Bearer new_token"}
+        assert (
+            integration_context.call_args[0][0][OAUTH_TOKEN_CONTEXT_KEY]["expires_at"]
+            == self.FROZEN_TIMESTAMP + OAUTH_TOKEN_EXPIRES_IN_SECONDS - OAUTH_TOKEN_EXPIRY_BUFFER_SECONDS
+        )
+
+    @freeze_time(FROZEN_TIME)
+    @pytest.mark.parametrize(
+        "error_body, token_dropped",
+        [
+            pytest.param(
+                {"error": "invalid_token", "error_description": "The access token provided is expired, revoked, malformed"},
+                True,
+                id="invalid token",
+            ),
+            pytest.param({"error": "Couldn't authenticate you"}, False, id="other 401"),
+        ],
+    )
+    def test_error_handler_when_401_drops_cached_token_only_for_invalid_token(
+        self, mocker, requests_mock, error_body, token_dropped
+    ):
+        """
+        Given:
+            - A valid cached OAuth token, and Zendesk rejects an API call with 401.
+        When:
+            - The API call is made.
+        Then:
+            - The error is raised.
+            - The cached token is removed from the integration context and the loaded cache only for invalid_token errors.
+        """
+        cached_token = {
+            "access_token": "cached_token",
+            "client_id": self.CLIENT_ID,
+            "scope": OAUTH_DEFAULT_SCOPE,
+            "expires_at": self.FROZEN_TIMESTAMP + 100,
+        }
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            side_effect=lambda: {"users": {"1": "user@example.com"}, OAUTH_TOKEN_CONTEXT_KEY: cached_token},
+        )
+        set_context = mocker.patch.object(demisto, "setIntegrationContext")
+        cache_manager = CacheManager(None)
+        cache_manager._data = {"users": {"1": "user@example.com"}, OAUTH_TOKEN_CONTEXT_KEY: cached_token}
+        mocker.patch.object(Zendeskv2, "CACHE", cache_manager)
+        requests_mock.get(full_url("users/1"), status_code=401, json=error_body)
+        client = self._oauth_client()
+
+        with pytest.raises(DemistoException, match="401|invalid_token|authenticate"):
+            client._get_user_by_id("1")
+
+        if token_dropped:
+            set_context.assert_called_once_with({"users": {"1": "user@example.com"}})
+            assert OAUTH_TOKEN_CONTEXT_KEY not in cache_manager._data
+        else:
+            set_context.assert_not_called()
+            assert cache_manager._data[OAUTH_TOKEN_CONTEXT_KEY] == cached_token
+
+    def test_get_oauth_access_token_when_response_has_no_access_token_raises(self, requests_mock, integration_context):
+        """
+        Given:
+            - A token response without an access_token.
+        When:
+            - The client is created.
+        Then:
+            - A DemistoException is raised and nothing is cached.
+        """
+        requests_mock.post(self.TOKEN_URL, json={"token_type": "bearer"})
+
+        with pytest.raises(DemistoException, match="no access_token in the response"):
+            self._oauth_client()
+        integration_context.assert_not_called()
+
+    @pytest.mark.usefixtures("integration_context")
+    def test_get_oauth_access_token_when_token_request_fails_raises_api_error(self, requests_mock):
+        """
+        Given:
+            - The token endpoint rejects the request (e.g. a scope outside the client's allowed scopes).
+        When:
+            - The client is created.
+        Then:
+            - A DemistoException containing the Zendesk error body is raised.
+        """
+        requests_mock.post(self.TOKEN_URL, status_code=400, json={"error": "invalid_scope"})
+
+        with pytest.raises(DemistoException, match="invalid_scope"):
+            self._oauth_client()
+
+    @pytest.mark.parametrize(
+        "params",
+        [
+            pytest.param({"base_url": BASE_URL}, id="no auth params"),
+            pytest.param(
+                {"base_url": BASE_URL, "credentials": {"identifier": "user@example.com"}, "oauth_credentials": {}},
+                id="username without password",
+            ),
+            pytest.param(
+                {"base_url": BASE_URL, "oauth_credentials": {"identifier": "test_client"}},
+                id="client id without secret",
+            ),
+        ],
+    )
+    def test_main_when_no_auth_configured_returns_error(self, mocker, requests_mock, params):
+        """
+        Given:
+            - Neither OAuth (Client ID and Client Secret) nor a password is configured.
+        When:
+            - main() runs any command.
+        Then:
+            - A readable error is returned and no request is sent.
+        """
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(Zendeskv2, "CACHE", None)
+        return_error_mock = mocker.patch.object(Zendeskv2, "return_error")
+
+        main()
+
+        assert "No authentication method is configured" in return_error_mock.call_args[0][0]
+        assert requests_mock.call_count == 0
+
+    @pytest.mark.parametrize(
+        "credentials, oauth_credentials",
+        [
+            pytest.param(
+                {"identifier": "user@example.com", "password": "password"},
+                {"identifier": CLIENT_ID, "password": CLIENT_SECRET},
+                id="both methods fully configured",
+            ),
+            pytest.param(
+                {"identifier": "user@example.com"}, {"identifier": CLIENT_ID, "password": CLIENT_SECRET}, id="username only"
+            ),
+            pytest.param(
+                {"identifier": "user@example.com", "password": "password"}, {"identifier": CLIENT_ID}, id="client id only"
+            ),
+        ],
+    )
+    def test_main_when_multiple_auth_methods_configured_returns_error(
+        self, mocker, requests_mock, credentials, oauth_credentials
+    ):
+        """
+        Given:
+            - Fields of both OAuth and Username / Password credentials are configured.
+        When:
+            - main() runs any command.
+        Then:
+            - A readable error is returned and no request is sent.
+        """
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"base_url": BASE_URL, "credentials": credentials, "oauth_credentials": oauth_credentials},
+        )
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(Zendeskv2, "CACHE", None)
+        return_error_mock = mocker.patch.object(Zendeskv2, "return_error")
+
+        main()
+
+        assert "More than one authentication method is configured" in return_error_mock.call_args[0][0]
+        assert requests_mock.call_count == 0
+
+    def test_main_when_oauth_configured_passes_oauth_params_to_client(self, mocker):
+        """
+        Given:
+            - OAuth credentials and a scope are configured, with no Username / Password credentials.
+        When:
+            - main() runs test-module.
+        Then:
+            - The client is created with the Client ID, Client Secret and Scope from the params.
+        """
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "base_url": BASE_URL,
+                "oauth_credentials": {"identifier": self.CLIENT_ID, "password": self.CLIENT_SECRET},
+                "scope": "read",
+            },
+        )
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(Zendeskv2, "CACHE", None)
+        client_mock = mocker.patch.object(Zendeskv2, "ZendeskClient")
+        mocker.patch.object(Zendeskv2, "CacheManager")
+        mocker.patch.object(Zendeskv2, "return_results")
+
+        main()
+
+        client_kwargs = client_mock.call_args.kwargs
+        assert client_kwargs["client_id"] == self.CLIENT_ID
+        assert client_kwargs["client_secret"] == self.CLIENT_SECRET
+        assert client_kwargs["scope"] == "read"
+        assert client_kwargs["password"] is None

@@ -1,4 +1,5 @@
 import re
+import urllib.parse
 from datetime import timezone
 from enum import Enum
 from typing import Any
@@ -444,6 +445,16 @@ class MsGraphClient:
             method="POST",
             url_suffix=url,
             json_data={"displayName": display_name, "description": description, "externalId": external_id},
+        )
+
+    def invoke_action(self, account_id: str, action: str, identity_accounts_id: str, identity_provider: str) -> Any:
+        encoded_identity_accounts_id = urllib.parse.quote(identity_accounts_id, safe="")
+        url = f"security/identities/identityAccounts/{encoded_identity_accounts_id}/invokeAction"
+        return self.ms_client.http_request(
+            method="POST",
+            url_suffix=url,
+            json_data={"accountId": account_id, "action": action, "identityProvider": identity_provider},
+            return_empty_response=True,
         )
 
     def update_edsicovery_case(self, case_id, display_name, description, external_id):
@@ -1952,6 +1963,28 @@ def create_ediscovery_case_command(client: MsGraphClient, args: dict):
     """ """
     res = client.create_edsicovery_case(args.get("display_name"), args.get("description"), args.get("external_id"))
     return ediscovery_cases_command_results([res], res)
+
+
+def invoke_action_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Perform actions such as revoking accounts and forcing password reset for identity accounts.
+
+    Args:
+        client (MsGraphClient): MsGraphClient client object.
+        args (dict): The command's arguments dictionary.
+
+    Returns:
+        CommandResults: A CommandResults object indicating the success of the action performed.
+    """
+    account_id = args["account_id"]
+    action = args["action"]
+    client.invoke_action(
+        account_id=account_id,
+        action=action,
+        identity_accounts_id=args["identity_accounts_id"],
+        identity_provider=args["identity_provider"],
+    )
+    return CommandResults(readable_output=f"Action: {action} was successfully performed for account: {account_id}.")
 
 
 def close_ediscovery_case_command(client: MsGraphClient, args):
@@ -3889,6 +3922,7 @@ def main():
         "msg-get-users": get_users_command,
         "msg-get-user": get_user_command,
         "msg-create-alert-comment": create_alert_comment_command,
+        "msg-invoke-action": invoke_action_command,
         # eDiscovery commands
         "msg-create-ediscovery-case": create_ediscovery_case_command,
         "msg-list-ediscovery-cases": list_ediscovery_case_command,
