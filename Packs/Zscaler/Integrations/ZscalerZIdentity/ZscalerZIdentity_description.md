@@ -22,6 +22,7 @@ This integration connects to the Zscaler Internet Access (ZIA) API using **OAuth
 | Parameter | Description |
 |-----------|-------------|
 | **Server URL** | The Server URL assigned to your organization. For example, `www.vanity.zslogin.net`. |
+| **Base URL** | The base URL of the ZIA API. Default: `https://api.zsapi.net/zia/api/v1`. |
 | **Client ID** | The OAuth 2.0 client ID from ZIdentity. |
 | **Client Secret** | The OAuth 2.0 client secret from ZIdentity. |
 | **Auto Activate Changes** | If enabled, the integration will automatically activate configuration changes after each write command. If disabled, use the `zia-activate-changes` command manually. |
@@ -34,6 +35,6 @@ The integration uses the OAuth 2.0 **client credentials** grant type:
 
 1. Sends a POST request to `https://{server_url}/oauth2/v1/token` with `client_id`, `client_secret`, and `audience=https://api.zscaler.com`.
 2. ZIdentity returns a Bearer access token.
-3. All ZIA API calls use `Authorization: Bearer {access_token}`.
+3. All ZIA API calls are sent to the configured **Base URL** with `Authorization: Bearer {access_token}`.
 
 Access tokens are cached in the integration context and automatically refreshed when they expire.

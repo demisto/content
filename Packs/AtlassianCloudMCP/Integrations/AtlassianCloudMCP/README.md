@@ -4,7 +4,7 @@ Use this integration to connect securely with an Atlassian Cloud Model Context P
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Authorization code | True |
+| Redirect URL or Authorization Code | True |
 
 ## Commands
 
