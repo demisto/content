@@ -142,7 +142,7 @@ configuration:
   type: 12
   required: false
   section: Collect
-- additionalinfo: 'Filter the fetched incidents according to the given query. Query example: "source_ip.value LIKE `192.168.1.*` AND dst = `192.168.1.12`" Note: Can not be used in combination with `Severity` and `Subtype` parameters.'
+- additionalinfo: 'Filter the fetched incidents according to the given query. Query example: "source_ip.value LIKE `192.168.1.*` AND dst = `192.168.1.12`" Note: Can not be used in combination with specific `Severity` and `Subtype` values. Leave them empty or set to "all".'
   display: Fetch Filter
   name: filter_query
   type: 12
