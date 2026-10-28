@@ -234,7 +234,7 @@ def test_fetch_alerts_command(mocker, test_case):
         client_mocker, fetch_time="1 hour", fetch_limit=1, extra_filter="", service_sources="", last_run={}, params={}
     )
     assert len(alerts) == 1
-    assert alerts[0].get("name") == "test alert - da637218501473413212_-1554891308"
+    assert alerts[0].get("name") == "test alert - da444444444444444444_-4444444444"
 
     alerts, _ = fetch_alerts(
         client_mocker, fetch_time="1 hour", fetch_limit=0, extra_filter="", service_sources="", last_run={}, params={}
@@ -3140,7 +3140,7 @@ def test_normalize_get_remote_data_args(args, expected_args, expected_hint):
 
 @pytest.mark.parametrize(
     "remote_id, hint, expected",
-    [("2972395", None, "incident"), ("da637551227677560813_-961444813", None, "alert"), ("123", "alert", "alert")],
+    [("2972395", None, "incident"), ("da111111111111111111_-111111111", None, "alert"), ("123", "alert", "alert")],
 )
 def test_infer_mirror_type(remote_id, hint, expected):
     """

@@ -1,7 +1,7 @@
 {
     "alert": {
         "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#security/alerts_v2/$entity",
-        "id": "da637551227677560813_-961444813",
+        "id": "da111111111111111111_-111111111",
         "title": "Suspicious execution of hidden file",
         "status": "resolved",
         "classification": "truePositive",
@@ -11,12 +11,12 @@
         "comments": [
             {
                 "comment": "Old comment",
-                "createdByDisplayName": "Test@demistodev.onmicrosoft.com",
+                "createdByDisplayName": "test@example.com",
                 "createdDateTime": "2026-10-01T09:00:00Z"
             },
             {
                 "comment": "New comment from Defender",
-                "createdByDisplayName": "Test@demistodev.onmicrosoft.com",
+                "createdByDisplayName": "test@example.com",
                 "createdDateTime": "2026-10-10T09:00:00Z"
             },
             {
@@ -37,7 +37,7 @@
         "lastUpdateDateTime": "2026-10-10T10:00:00Z",
         "comments": [],
         "alerts": [
-            {"id": "da637551227677560813_-961444813", "title": "Suspicious execution of hidden file"}
+            {"id": "da111111111111111111_-111111111", "title": "Suspicious execution of hidden file"}
         ]
     }
 }

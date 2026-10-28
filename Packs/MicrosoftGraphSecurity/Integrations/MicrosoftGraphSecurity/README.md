@@ -44,13 +44,13 @@ For more information, see: <https://github.com/microsoftgraph/security-api-solut
 
 1. User.Read.All - Application (Only required if using the deprecated commands: `msg-get-user` and `msg-get-users`)
 2. SecurityIncident.Read.All - Delegated or Application (required for the command `msg-list-security-incident` and Fetch Incidents)
-3. SecurityIncident.ReadWrite.All - Delegated or Application (required for the command `msg-update-security-incident`, Fetch Incidents, and outgoing incident mirroring)
+3. SecurityIncident.ReadWrite.All - Delegated or Application (required for the command `msg-update-security-incident` and Fetch Incidents<~XSOAR>, and for outgoing incident mirroring</~XSOAR>)
 4. ThreatHunting.Read.All - Delegated or Application (required for the command `msg-advanced-hunting`)
 
 **Alerts**:
 
 1. SecurityAlert.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`)
-2. SecurityAlert.ReadWrite.All - Application (required for updating alerts with the commands: `msg-update-alert` and `msg-create-alert-comment`, and for outgoing alert mirroring)
+2. SecurityAlert.ReadWrite.All - Application (required for updating alerts with the commands: `msg-update-alert` and `msg-create-alert-comment`<~XSOAR>, and for outgoing alert mirroring</~XSOAR>)
 
 **eDiscovery**:
 
