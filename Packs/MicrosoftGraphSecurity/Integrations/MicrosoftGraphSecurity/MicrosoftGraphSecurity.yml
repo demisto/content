@@ -231,7 +231,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Close Mirrored Cortex XSOAR Incident
-  additionalinfo: Whether to close the Cortex XSOAR incident when the Microsoft alert or incident is resolved (or, for incidents, redirected), and reopen it when the Microsoft alert or incident is reopened.
+  additionalinfo: Whether to close the Cortex XSOAR incident when the Microsoft alert or incident resolves (or, for incidents, redirects), and reopen it when the Microsoft alert or incident reopens.
   name: close_incident
   type: 8
   section: Collect
@@ -242,7 +242,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Close Mirrored Microsoft Alert/Incident
-  additionalinfo: Whether to set the Microsoft alert or incident status to Resolved when the Cortex XSOAR incident is closed, and set it back to active (incidents) or new (alerts) when it is reopened. When disabled, status is never sent to Microsoft, including edits to the Microsoft Graph Security Incident/Alert Status field. The status of an incident redirected in Microsoft isn't changed.
+  additionalinfo: Whether to set the Microsoft alert or incident status to Resolved when you close the Cortex XSOAR incident, and set it back to active (incidents) or new (alerts) when you reopen it. If you disable this parameter, the integration never sends the status to Microsoft, including edits to the Microsoft Graph Security Incident/Alert Status field. The integration does not change the status of an incident redirected in Microsoft.
   name: close_out
   type: 8
   section: Collect
@@ -253,7 +253,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Comment Entry Tag (to Microsoft)
-  additionalinfo: The tag for entries that are mirrored as comments to the Microsoft alert or incident. Must be set and different from the Comment Entry Tag (from Microsoft).
+  additionalinfo: The tag for entries that the integration mirrors as comments to the Microsoft alert or incident. You must set this tag and make it different from the Comment Entry Tag (from Microsoft).
   name: comment_tag
   type: 0
   section: Collect
@@ -264,7 +264,7 @@ configuration:
   - marketplacev2
   - platform
 - display: Comment Entry Tag (from Microsoft)
-  additionalinfo: The tag added to entries created from Microsoft alert or incident comments. Must be set and different from the Comment Entry Tag (to Microsoft).
+  additionalinfo: The tag added to entries created from Microsoft alert or incident comments. You must set this tag and make it different from the Comment Entry Tag (to Microsoft).
   name: comment_tag_from_microsoft_graph_security
   type: 0
   section: Collect
@@ -3228,26 +3228,26 @@ script:
       description: The Location header URL returned for the export operation.
       type: String
   - arguments:
-    - description: The last update time (ISO-8601 or UTC timestamp in seconds). Returns the IDs of the alerts and/or incidents (according to **Fetch incidents type**) modified since then.
+    - description: The last update time (ISO-8601 or UTC timestamp in seconds). The command returns the IDs of the alerts and/or incidents (according to Fetch incidents type) that changed after this time.
       name: lastUpdate
-    description: Gets the list of remote incidents/alerts that were modified since the last update time. This method is only used for debugging purposes.
+    description: Gets the list of remote incidents/alerts that changed since the last update time. Use this method for debugging purposes only.
     name: get-modified-remote-data
   - arguments:
-    - description: The remote alert or incident ID.
+    - description: The ID of the remote alert or incident.
       name: id
-    - description: The remote alert ID. Used only when id and incident_id are not provided.
+    - description: The ID of the remote alert. The command uses this argument only if you do not provide id or incident_id.
       name: alert_id
-    - description: The remote incident ID. Used only when id is not provided.
+    - description: The ID of the remote incident. The command uses this argument only if you do not provide id.
       name: incident_id
-    - description: The last update time (ISO-8601 or UTC timestamp in seconds). Only comments created after this time are returned.
+    - description: The last update time (ISO-8601 or UTC timestamp in seconds). The command returns only comments created after this time.
       name: lastUpdate
-    description: Gets remote data from a remote alert/incident. This method does not update the current incident, and should be used for debugging purposes only.
+    description: Gets remote data from a remote alert/incident. This method does not update the current incident. Use it for debugging purposes only.
     name: get-remote-data
   - arguments: []
-    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+    description: Returns the list of fields to map in outgoing mirroring. Use this command for debugging purposes only.
     name: get-mapping-fields
   - arguments: []
-    description: Updates the remote incidents/alerts with local incident changes. This method is only used for debugging purposes and will not update the current incident.
+    description: Updates the remote incidents/alerts with local incident changes. Use this method for debugging purposes only. This method does not update the current incident.
     name: update-remote-system
   dockerimage: demisto/crypto:1.0.0.12833174
   isfetch: true
