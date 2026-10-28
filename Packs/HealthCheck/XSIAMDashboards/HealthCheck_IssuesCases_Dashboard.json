@@ -1,0 +1,494 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Health Check - Issues/Cases",
+            "description": null,
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-5703",
+                    "data": [
+                        {
+                            "key": "xql_1772798270735",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "config timeframe = 30d case_sensitive = false  | dataset = issues  |filter xdm.domain  != \"HEALTH\"| comp count() as Alerts by xdm.issue.detection.method  | sort desc Alerts \n\n\n\n| view graph type = pie subtype = full show_percentage = `false` xaxis = xdm.issue.detection.method yaxis = Alerts //Healthcheck",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "90d",
+                                    "isRelative": true
+                                },
+                                "entityType": "xql-widget-table-5cab1140-669f-4d98-8908-ef52fc2d6da4",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_percentage",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.issue.detection.method"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Alerts"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "drilldown_config": {
+                                    "actionData": {
+                                        "timeRange": "dashboard_timeframe",
+                                        "xqlPhrase": "config timeframe = 30d case_sensitive = false  | dataset = issues  | filter (`xdm.issue.detection.method` = $x_axis.value ) | comp count() as Alerts by xdm.issue.name |sort desc Alerts \n| view graph type = pie subtype = full show_percentage = `false` xaxis = xdm.issue.name  yaxis = Alerts ",
+                                        "timePicker": [],
+                                        "openInNewTab": true
+                                    },
+                                    "actionType": "open_xql_search"
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1773144919377",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "config timeframe = 30d case_sensitive = false | dataset = alerts | filter alert_source = ENUM.XDR_AGENT and action = ENUM.DETECTED__REPORTED_ | join type = inner (dataset = endpoints | fields endpoint_id, endpoint_name, assigned_prevention_policy) as ep ep.endpoint_id = endpoint_id | comp count() as events by assigned_prevention_policy, alert_name | sort desc events | limit 5 //Healthcheck",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "entityType": "xql-widget-table-f7cd0fdf-ffd9-4607-9c1f-3f3ec3c03212",
+                                "time_frame": {
+                                    "to": 1773060717000,
+                                    "from": 1773060717000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "drilldown_config": {
+                                    "actionData": {
+                                        "timeRange": "dashboard_timeframe",
+                                        "xqlPhrase": "config timeframe = 30d case_sensitive = false | dataset = alerts | filter alert_source = ENUM.XDR_AGENT and action = ENUM.DETECTED__REPORTED_| filter alert_name = $clicked.value ",
+                                        "timePicker": [],
+                                        "openInNewTab": true
+                                    },
+                                    "actionType": "open_xql_search"
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"stretch\",\"gridRowsHeight\":\"high-row\"}",
+                                    "columnWidth": "\"stretch\""
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-5387",
+                    "data": [
+                        {
+                            "key": "xql_1773663920960",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "phrase": "config timeframe = 30d | dataset = issues | filter xdm.issue.status.resolution_reason != \"*\"  and xdm.issue.detection.method = \"CORRELATION\" | comp count() as count by xdm.issue.name | sort desc count | limit 10\n\n| view graph type = pie subtype = full show_callouts = `true` show_callouts_names = `true` xaxis = xdm.issue.name yaxis = count default_limit = `false` legend = `false` //Healthcheck",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts_names",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.issue.name"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend",
+                                                "value": "false"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "drilldown_config": {
+                                    "actionData": {
+                                        "timeRange": "dashboard_timeframe",
+                                        "xqlPhrase": "config timeframe = 7d | dataset = issues | filter  xdm.issue.name = \"[004] - Suspected C2 related DNS activity\" and xdm.issue.status.resolution_reason != \"*\"",
+                                        "timePicker": [],
+                                        "openInNewTab": true
+                                    },
+                                    "actionType": "open_xql_search"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-7669",
+                    "data": [
+                        {
+                            "key": "incidentsBySeverity",
+                            "data": {
+                                "type": "Pie",
+                                "width": 50,
+                                "height": 266
+                            }
+                        },
+                        {
+                            "key": "detectionsByAction",
+                            "data": {
+                                "type": "Pie",
+                                "width": 50,
+                                "height": 266,
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "alerts_or_incidents": "incident"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-4560",
+                    "data": [
+                        {
+                            "key": "topIncidentsByAlertSeverity",
+                            "data": {
+                                "type": "Table",
+                                "width": 50,
+                                "height": 400
+                            }
+                        },
+                        {
+                            "key": "incidentsStatusBoard",
+                            "data": {
+                                "type": "Bar",
+                                "width": 50,
+                                "height": 400,
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-834",
+                    "data": [
+                        {
+                            "key": "asmTotalOpenAttackSurfaceIssues",
+                            "data": {
+                                "type": "Dividers",
+                                "width": 100,
+                                "height": 250,
+                                "time_frame": {
+                                    "relativeTime": 604800000
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-7405",
+                    "data": [
+                        {
+                            "key": "detectionsByMitreTactic",
+                            "data": {
+                                "type": "Bar",
+                                "width": 100,
+                                "height": 250,
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "alerts_or_incidents": "incident"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-6035",
+                    "data": [
+                        {
+                            "key": "issuesApproachingDaysOpen",
+                            "data": {
+                                "type": "Table",
+                                "width": 400,
+                                "height": 250
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 2,
+            "global_id": "d401010c11e54ba3a3b8802d34a3db3a",
+            "metadata": {
+                "params": []
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1773144919377",
+            "title": "Non-Prevented Issues",
+            "creation_time": 1774529134491,
+            "description": "",
+            "data": {
+                "phrase": "config timeframe = 30d case_sensitive = false | dataset = alerts | filter alert_source = ENUM.XDR_AGENT and action = ENUM.DETECTED__REPORTED_ | join type = inner (dataset = endpoints | fields endpoint_id, endpoint_name, assigned_prevention_policy) as ep ep.endpoint_id = endpoint_id | comp count() as events by assigned_prevention_policy, alert_name | sort desc events | limit 5 //Healthcheck",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "to": 1773060717000,
+                    "from": 1773060717000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"stretch\",\"gridRowsHeight\":\"high-row\"}",
+                    "columnWidth": "\"stretch\""
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "alerts",
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "wmarydasan@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1773663920960",
+            "title": "Correlation Rules Without Automation",
+            "creation_time": 1774529134112,
+            "description": null,
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = issues | filter xdm.issue.status.resolution_reason != \"*\"  and xdm.issue.detection.method = \"CORRELATION\" | comp count() as count by xdm.issue.name | sort desc count | limit 10\n\n| view graph type = pie subtype = full show_callouts = `true` show_callouts_names = `true` xaxis = xdm.issue.name yaxis = count default_limit = `false` legend = `false` //Healthcheck",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts_names",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.issue.name"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend",
+                                "value": "false"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "issues"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "wmarydasan@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1772798270735",
+            "title": "Noisy Issue Categories - 30d",
+            "creation_time": 1774529134391,
+            "description": "",
+            "data": {
+                "phrase": "config timeframe = 30d case_sensitive = false  | dataset = issues  |filter xdm.domain  != \"HEALTH\"| comp count() as Alerts by xdm.issue.detection.method  | sort desc Alerts \n\n\n\n| view graph type = pie subtype = full show_percentage = `false` xaxis = xdm.issue.detection.method yaxis = Alerts //Healthcheck",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_percentage",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.issue.detection.method"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Alerts"
+                            }
+                        }
+                    ]
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "issues"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "wmarydasan@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        }
+    ],
+    "fromVersion": "6.10.0"
+}
