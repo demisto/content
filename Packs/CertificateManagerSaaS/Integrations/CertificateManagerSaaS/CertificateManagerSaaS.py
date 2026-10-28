@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 DEFAULT_BASE_URL = "https://api.venafi.cloud"
 # CM SaaS authenticates with a custom header, not a standard HTTP auth mechanism.
 # The value is only ever written into the session headers - never logged.
-API_KEY_HEADER = "tppl-api-key"
+API_KEY_HEADER = "tppl-api-key"  # guardrails-disable-line
 # Must track `currentVersion` in pack_metadata.json. Identifies this integration to CyberArk, whose
 # server-side request logs are the only place usage can be aggregated across customers.
 # The platform injects the installed pack version at runtime; the literal is only the fallback outside it.
