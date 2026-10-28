@@ -214,7 +214,7 @@ def get_log_types_from_titles(event_types_to_fetch: list[str]) -> list[LogType]:
 def extract_time_from_event(event: dict, log_type: LogType) -> str | None:
     """Extract the time field value from an event based on log type.
 
-    For alerts: finding_info.created_time (epoch ms) -> converted to ISO 8601.
+    For alerts: the top-level "time" field (epoch ms) -> converted to ISO 8601.
     For audit logs: created_at (ISO 8601 string).
 
     Args:
@@ -225,14 +225,13 @@ def extract_time_from_event(event: dict, log_type: LogType) -> str | None:
         ISO 8601 formatted time string, or None if not found.
     """
     if log_type == LogType.ALERTS:
-        finding_info = event.get("finding_info", {})
-        created_time_ms = finding_info.get("created_time")
-        if created_time_ms:
+        event_time_ms = event.get("time")
+        if event_time_ms:
             try:
-                dt = datetime.fromtimestamp(created_time_ms / 1000, tz=UTC)
+                dt = datetime.fromtimestamp(int(event_time_ms) / 1000, tz=UTC)
                 return dt.strftime(Config.DATE_FORMAT)
             except (ValueError, TypeError, OSError):
-                demisto.debug(f"[Time Extract] Failed to parse alert created_time: {created_time_ms}")
+                demisto.debug(f"[Time Extract] Failed to parse alert time: {event_time_ms}")
                 return None
     else:
         return event.get("created_at")
@@ -260,7 +259,11 @@ def add_time_to_events(events: list[dict], log_type: LogType) -> None:
 
 
 def get_event_id(event: dict) -> str | None:
-    """Extract the event ID from an event dictionary.
+    """Extract the unique event ID from an event dictionary.
+
+    For alerts, KOI's stable per-instance identifier is metadata.notification_event_id
+    (one per affected device); it is the documented key for deduplication and tracking
+    ingestion progress. The event.id observable is not unique as it repeats across devices.
 
     Args:
         event: The event dictionary.
@@ -268,6 +271,11 @@ def get_event_id(event: dict) -> str | None:
     Returns:
         The event ID string, or None if not found.
     """
+    metadata = event.get("metadata")
+    notification_event_id = metadata.get("notification_event_id") if isinstance(metadata, dict) else None
+    if notification_event_id:
+        return str(notification_event_id)
+
     for id_field in ("id", "alert_id", "log_id", "uuid"):
         event_id = event.get(id_field)
         if event_id:
@@ -1192,14 +1200,14 @@ class FetchResult:
 
     log_type: LogType
     new_event_count: int = 0
-    last_run_updates: dict[str, str | list[str]] = field(default_factory=dict)
+    last_run_updates: dict[str, str | int | list[str]] = field(default_factory=dict)
     error: str | None = None
 
 
 def _fetch_single_log_type(
     client: Client,
     log_type: LogType,
-    last_run: dict[str, str | list[str]],
+    last_run: dict[str, str | int | list[str]],
     max_events: int,
     audit_types: list[str] | None,
 ) -> FetchResult:
@@ -1226,11 +1234,38 @@ def _fetch_single_log_type(
     try:
         last_fetch_key = f"last_fetch_{log_type.type_string}"
         previous_ids_key = f"previous_ids_{log_type.type_string}"
+        page_key = f"page_{log_type.type_string}"
+        page_size_key = f"page_size_{log_type.type_string}"
+        window_end_key = f"window_end_{log_type.type_string}"
 
         raw_timestamp = last_run.get(last_fetch_key)
         last_fetch_timestamp: str | None = raw_timestamp if isinstance(raw_timestamp, str) else None
         raw_ids = last_run.get(previous_ids_key)
         last_fetched_ids: list[str] = raw_ids if isinstance(raw_ids, list) else []
+
+        # Resume page: a timestamp holding more events than one fetch can read would be
+        # re-read forever from page 1, so resume deeper instead of exceeding max_fetch.
+        raw_page = last_run.get(page_key)
+        start_page = raw_page if isinstance(raw_page, int) and raw_page > 0 else Config.DEFAULT_PAGE
+        page_size = min(Config.MAX_PAGE_SIZE, max_events)
+
+        # A resume page only addresses the same events under the same page size. If max_fetch
+        # changed (or the size was never saved), restart from page 1; already-sent events are
+        # dropped by dedup.
+        saved_page_size = last_run.get(page_size_key)
+        if start_page > Config.DEFAULT_PAGE and saved_page_size != page_size:
+            reason = f"Page size changed from {saved_page_size} to {page_size}" if saved_page_size else "No saved page size"
+            demisto.debug(f"[Fetch] {log_type.type_string}: {reason}. Restarting from page 1.")
+            start_page = Config.DEFAULT_PAGE
+
+        # Page numbers are only valid against a stable result set, so reuse the original
+        # end time while resuming mid-window. A fresh window is capped at the current time.
+        raw_window_end = last_run.get(window_end_key)
+        if start_page > Config.DEFAULT_PAGE and isinstance(raw_window_end, str):
+            created_before = raw_window_end
+            demisto.debug(f"[Fetch] {log_type.type_string}: Resuming at page {start_page} within window ending {created_before}")
+        else:
+            created_before = get_formatted_utc_time(None)
 
         if last_fetch_timestamp:
             time_input = last_fetch_timestamp
@@ -1243,9 +1278,13 @@ def _fetch_single_log_type(
 
         # Fetch one page at a time and send-and-flush it, so we never hold more than a
         # single page in memory (this is what fixes the OOM).
-        page = 1
-        page_size = min(Config.MAX_PAGE_SIZE, max_events)
+        page = start_page
         fetched = 0
+
+        # Only a full last page means the stuck timestamp may hold more events; a partial
+        # page means it is fully read, so resuming stops.
+        last_page_was_full = False
+        pages_read = 0
 
         # Incremental HWM state (updated per page — never holds all events).
         hwm_time: str | None = None
@@ -1256,7 +1295,7 @@ def _fetch_single_log_type(
             page_events = client.get_events_page(
                 log_type=log_type,
                 created_at_gte=created_after,
-                created_at_lte=None,
+                created_at_lte=created_before,
                 page=page,
                 page_size=page_size,
                 audit_types=audit_types if log_type == LogType.AUDIT else None,
@@ -1265,10 +1304,14 @@ def _fetch_single_log_type(
                 break
 
             raw_count = len(page_events)
+            last_page_was_full = raw_count >= page_size
             # Trim the final page so the total fetched never exceeds max_events.
             remaining = max_events - fetched
             if raw_count > remaining:
                 page_events = page_events[:remaining]
+            else:
+                # Count only fully read pages, so a trimmed page is resumed instead of skipped.
+                pages_read += 1
             fetched += len(page_events)
 
             # Parse each event's time ONCE here: stamp _time/source_log_type and update the
@@ -1288,6 +1331,14 @@ def _fetch_single_log_type(
                 if event_time == hwm_time and (event_id := get_event_id(event)):
                     hwm_ids.add(event_id)
 
+            # A full page sharing one timestamp is the signature of a bucket larger than
+            # the fetch limit, which is what pins the cursor.
+            if last_page_was_full and len({event.get("_time") for event in page_events}) == 1:
+                demisto.debug(
+                    f"[Fetch] {log_type.type_string}: Full page ({raw_count} events) all at {hwm_time}. "
+                    f"Timestamp holds at least {raw_count} events."
+                )
+
             # Dedup against the previous run's IDs, then stream-and-flush this page.
             new_events = deduplicate_events(page_events, last_fetched_ids)
             if new_events:
@@ -1300,7 +1351,7 @@ def _fetch_single_log_type(
             if raw_count < page_size:
                 break
             page += 1
-            if page > Config.MAX_PAGES_PER_FETCH:
+            if page - start_page >= Config.MAX_PAGES_PER_FETCH:
                 break
 
         result.new_event_count = total_new
@@ -1313,9 +1364,34 @@ def _fetch_single_log_type(
             if hwm_time == last_fetch_timestamp:
                 ids_at_last_timestamp = set(last_fetched_ids) | hwm_ids
 
+            # Advance the resume page only while the cursor is stuck and the page was full.
+            # `page` is not always incremented before the loop exits, so use pages_read,
+            # which excludes a trimmed last page so its unread events are fetched next cycle.
+            # Otherwise go back to page 1 with a fresh window. The cursor stays on the stuck
+            # timestamp, so late events at it are still fetched; sent ones are deduplicated.
+            if hwm_time == last_fetch_timestamp and last_page_was_full:
+                next_page = start_page + pages_read
+                demisto.debug(f"[Fetch] {log_type.type_string}: Cursor stuck at {hwm_time}. Resuming at page {next_page}.")
+            else:
+                next_page = Config.DEFAULT_PAGE
+
             result.last_run_updates[last_fetch_key] = hwm_time
             result.last_run_updates[previous_ids_key] = list(ids_at_last_timestamp)
-            demisto.debug(f"[Fetch] {log_type.type_string}: State updated. New HWM: {hwm_time}")
+            result.last_run_updates[page_key] = next_page
+            result.last_run_updates[page_size_key] = page_size
+            # Keep the window end only while mid-window; clearing it opens a fresh window.
+            saved_window_end = created_before if next_page > Config.DEFAULT_PAGE else ""
+            result.last_run_updates[window_end_key] = saved_window_end
+            demisto.debug(
+                f"[Fetch] {log_type.type_string}: State updated. New HWM: {hwm_time}, "
+                f"next page: {next_page}, window end: {saved_window_end}"
+            )
+        elif start_page > Config.DEFAULT_PAGE:
+            # An empty resumed page means the stuck timestamp is fully read. Reset to page 1
+            # and a fresh window; otherwise the same empty page would be requested forever.
+            result.last_run_updates[page_key] = Config.DEFAULT_PAGE
+            result.last_run_updates[window_end_key] = ""
+            demisto.debug(f"[Fetch] {log_type.type_string}: Page {start_page} was empty. Resetting to page 1.")
         else:
             demisto.debug(f"[Fetch] {log_type.type_string}: No events with a time field. State not updated.")
 
@@ -1381,7 +1457,7 @@ def fetch_events_command(client: Client) -> None:
     # Merge results — events were already streamed per page; here we only merge
     # last_run updates and sum counts for logging (no event objects are held).
     total_new_events = 0
-    updated_last_run: dict[str, str | list[str]] = dict(last_run)
+    updated_last_run: dict[str, str | int | list[str]] = dict(last_run)
 
     for result in results:
         if result.error:

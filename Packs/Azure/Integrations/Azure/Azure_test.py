@@ -20,6 +20,8 @@ from Azure import (
     set_webapp_config_command,
     update_webapp_auth_command,
     mysql_flexible_server_param_set_command,
+    postgres_flexible_server_configuration_update_command,
+    POSTGRES_FLEXIBLE_API_VERSION,
     monitor_log_profile_update_command,
     disk_update_command,
     webapp_update_command,
@@ -40,6 +42,10 @@ from Azure import (
     CommandResults,
     DemistoException,
     API_VERSION,
+    NSG_API_VERSION,
+    PUBLIC_IP_API_VERSION,
+    BLOB_SERVICE_API_VERSION,
+    RESOURCE_GROUPS_API_VERSION,
     SCOPE_BY_CONNECTION,
     PREFIX_URL_AZURE,
     storage_container_property_get_command,
@@ -2558,8 +2564,72 @@ def test_azure_client_get_rule(mocker, client):
         f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
         "securityRules/test-rule"
     )
-    client.http_request.assert_called_once_with("GET", full_url=expected_url)
+    client.http_request.assert_called_once_with("GET", full_url=expected_url, params={"api-version": NSG_API_VERSION})
     assert result == mock_response
+
+
+@pytest.mark.parametrize(
+    "method_name, kwargs, expected_api_version",
+    [
+        (
+            "create_or_update_rule",
+            {"security_group": "sg", "rule_name": "r", "properties": {}, "subscription_id": "s", "resource_group_name": "rg"},
+            NSG_API_VERSION,
+        ),
+        (
+            "get_rule",
+            {"security_group": "sg", "rule_name": "r", "subscription_id": "s", "resource_group_name": "rg"},
+            NSG_API_VERSION,
+        ),
+        (
+            "list_security_rules",
+            {"subscription_id": "s", "resource_group_name": "rg", "network_security_group_name": "sg"},
+            NSG_API_VERSION,
+        ),
+        ("list_network_security_groups", {"subscription_id": "s", "resource_group_name": "rg"}, NSG_API_VERSION),
+        (
+            "delete_rule",
+            {"security_group_name": "sg", "security_rule_name": "r", "subscription_id": "s", "resource_group_name": "rg"},
+            NSG_API_VERSION,
+        ),
+        ("list_public_ip_addresses_request", {"subscription_id": "s", "resource_group_name": "rg"}, PUBLIC_IP_API_VERSION),
+        ("get_all_public_ip_details_request", {"subscription_id": "s"}, PUBLIC_IP_API_VERSION),
+        (
+            "storage_blob_service_properties_get_request",
+            {"account_name": "acc", "resource_group_name": "rg", "subscription_id": "s"},
+            BLOB_SERVICE_API_VERSION,
+        ),
+        (
+            "storage_blob_containers_create_update_request",
+            {
+                "subscription_id": "s",
+                "resource_group_name": "rg",
+                "args": {"account_name": "acc", "container_name": "c"},
+                "method": "PUT",
+            },
+            BLOB_SERVICE_API_VERSION,
+        ),
+        (
+            "list_resource_groups_request",
+            {"subscription_id": "s", "filter_by_tag": "", "limit": "1"},
+            RESOURCE_GROUPS_API_VERSION,
+        ),
+    ],
+)
+def test_azure_client_requests_pin_explicit_api_version(mocker, client, method_name, kwargs, expected_api_version):
+    """
+    Given: An Azure client and an ARM request method that previously relied on the implicit default api-version.
+    When: The request method is called.
+    Then: The api-version is passed explicitly in params and is never embedded in, or left dangling on, the URL.
+    """
+    mock_response = mocker.Mock(status_code=200)
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    getattr(client, method_name)(**kwargs)
+
+    call_kwargs = client.http_request.call_args.kwargs
+    assert call_kwargs["params"]["api-version"] == expected_api_version
+    assert "?" not in call_kwargs["full_url"]
 
 
 def test_azure_client_create_policy_assignment(mocker, client):
@@ -2653,9 +2723,11 @@ def test_azure_client_create_rule_success(mocker, client):
     # Verify correct API call was made
     expected_url = (
         f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
-        "securityRules/test-rule?"
+        "securityRules/test-rule"
     )
-    client.http_request.assert_called_once_with("PUT", full_url=expected_url, json_data={"properties": properties})
+    client.http_request.assert_called_once_with(
+        "PUT", full_url=expected_url, params={"api-version": NSG_API_VERSION}, json_data={"properties": properties}
+    )
 
     # Verify response
     assert result == mock_response
@@ -2716,9 +2788,11 @@ def test_azure_client_create_rule_with_complex_properties(mocker, client):
     # Verify correct API call was made
     expected_url = (
         f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
-        "securityRules/complex-rule?"
+        "securityRules/complex-rule"
     )
-    client.http_request.assert_called_once_with("PUT", full_url=expected_url, json_data={"properties": properties})
+    client.http_request.assert_called_once_with(
+        "PUT", full_url=expected_url, params={"api-version": NSG_API_VERSION}, json_data={"properties": properties}
+    )
 
     # Verify response contains complex properties
     assert result == mock_response
@@ -3141,6 +3215,120 @@ def test_flexible_server_param_set_error_handling(mocker, client):
         resource_name=f"{server_name}/{configuration_name}",
         resource_type="MySQL Flexible Server Configuration",
         api_function_name="flexible_server_param_set",
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+    )
+
+
+def test_postgres_flexible_server_configuration_update_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to update a PostgreSQL Flexible Server configuration.
+    When: The postgres_flexible_server_configuration_update_command function is called with valid parameters.
+    Then: The function should return a success message and pass the correct arguments to the client method.
+    """
+    mocker.patch.object(client, "postgres_flexible_server_configuration_update", return_value=None)
+
+    args = {
+        "server_name": "test-postgres-flex",
+        "configuration_name": "log_checkpoints",
+        "source": "user-override",
+        "value": "on",
+    }
+
+    result = postgres_flexible_server_configuration_update_command(client, mock_params, args)
+
+    assert (
+        "Updated the configuration log_checkpoints of the PostgreSQL Flexible Server test-postgres-flex" in result.readable_output
+    )
+    client.postgres_flexible_server_configuration_update.assert_called_once_with(
+        "test-postgres-flex",
+        "log_checkpoints",
+        mock_params.get("subscription_id"),
+        mock_params.get("resource_group_name"),
+        "user-override",
+        "on",
+    )
+
+
+def test_azure_client_postgres_flexible_server_configuration_update_success(mocker, client):
+    """
+    Given: An Azure client and valid PostgreSQL Flexible Server configuration parameters.
+    When: The postgres_flexible_server_configuration_update method is called.
+    Then: The method should make the correct PUT API call and return the response.
+    """
+    mock_response = {
+        "name": "log_checkpoints",
+        "id": (
+            "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.DBforPostgreSQL/flexibleServers/test-postgres-flex/"
+            "configurations/log_checkpoints"
+        ),
+        "properties": {"value": "on", "source": "user-override", "description": "Enables logging of checkpoints"},
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    result = client.postgres_flexible_server_configuration_update(
+        server_name="test-postgres-flex",
+        configuration_name="log_checkpoints",
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        source="user-override",
+        value="on",
+    )
+
+    expected_url = (
+        f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.DBforPostgreSQL/flexibleServers/test-postgres-flex/"
+        "configurations/log_checkpoints"
+    )
+    client.http_request.assert_called_once_with(
+        method="PUT",
+        full_url=expected_url,
+        json_data={"properties": {"source": "user-override", "value": "on"}},
+        params={"api-version": POSTGRES_FLEXIBLE_API_VERSION},
+    )
+
+    assert result == mock_response
+    assert result["name"] == "log_checkpoints"
+    assert result["properties"]["value"] == "on"
+    assert result["properties"]["source"] == "user-override"
+
+
+def test_azure_client_postgres_flexible_server_configuration_update_error_handling(mocker, client):
+    """
+    Given: An Azure client and arguments for updating a PostgreSQL Flexible Server configuration.
+    When: The postgres_flexible_server_configuration_update method is called and an exception occurs.
+    Then: The method should call handle_azure_error with appropriate parameters.
+    """
+    server_name = "test-postgres-flex"
+    configuration_name = "log_checkpoints"
+    subscription_id = "12345678-1234-1234-1234-123456789012"
+    resource_group_name = "test-resource-group"
+    source = "user-override"
+    value = "on"
+
+    mock_exception = Exception("404 Not Found")
+
+    mocker.patch.object(client, "http_request", side_effect=mock_exception)
+    mocker.patch.object(
+        client,
+        "handle_azure_error",
+        side_effect=ValueError("PostgreSQL Flexible Server Configuration not found"),
+    )
+
+    with pytest.raises(ValueError, match="PostgreSQL Flexible Server Configuration not found"):
+        client.postgres_flexible_server_configuration_update(
+            server_name=server_name,
+            configuration_name=configuration_name,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            source=source,
+            value=value,
+        )
+
+    client.handle_azure_error.assert_called_once_with(
+        e=mock_exception,
+        resource_name=f"{server_name}/{configuration_name}",
+        resource_type="PostgreSQL Flexible Server Configuration",
+        api_function_name="postgres_flexible_server_configuration_update",
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
     )
@@ -5599,7 +5787,11 @@ def test_azure_billing_usage_list_command_with_pagination_token(mocker, client, 
     }
     mocker.patch.object(client, "http_request", return_value=mock_response)
 
-    args = {"subscription_id": "test-subscription-id", "next_page_token": "existing-skiptoken"}
+    args = {
+        "subscription_id": "test-subscription-id",
+        "next_page_token": "https://management.azure.com/subscriptions/test-subscription-id/providers/"
+        "Microsoft.Consumption/usageDetails?api-version=2024-08-01&$skiptoken=existing-skiptoken",
+    }
     params = mock_params
 
     result = azure_billing_usage_list_command(client, params, args)
@@ -6040,7 +6232,7 @@ def test_create_network_security_group(mocker, client):
     client.http_request.assert_called_once_with(
         method="PUT",
         full_url="https://management.azure.com/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-nsg",
-        params={"api-version": "2025-05-01"},
+        params={"api-version": NSG_API_VERSION},
         json_data={"location": "eastus"},
     )
 
@@ -8136,10 +8328,19 @@ def test_ip_group_list_client_uses_next_token(mocker, client):
     assert mock_http_request.call_args.kwargs["params"] == {}
 
 
-def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, client):
+INVALID_NEXT_TOKENS = [
+    "https://attacker.example.com/next-page",
+    "https://management.azure.com.attacker.example.com/next-page",
+    "https://management.azure.com@attacker.example.com/next-page",
+    "http://management.azure.com/next-page",
+]
+
+
+@pytest.mark.parametrize("next_token", INVALID_NEXT_TOKENS)
+def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, client, next_token):
     """
     Given:
-        - An AzureClient and a next token pointing at a host that is not the configured Azure management endpoint.
+        - An AzureClient and a next token that is not an HTTPS URL on the configured Azure management endpoint.
     When:
         - Calling the ip_group_list client method with that token.
     Then:
@@ -8148,11 +8349,89 @@ def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, cli
     mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
 
     with pytest.raises(DemistoException, match="Invalid next_token"):
-        client.ip_group_list(
-            subscription_id="sub-id", resource_group_name="test-rg", next_token="https://attacker.example.com/next-page"
-        )
+        client.ip_group_list(subscription_id="sub-id", resource_group_name="test-rg", next_token=next_token)
 
     mock_http_request.assert_not_called()
+
+
+@pytest.mark.parametrize("next_token", INVALID_NEXT_TOKENS)
+def test_list_vm_request_rejects_invalid_next_token(mocker, client, next_token):
+    """
+    Given:
+        - An AzureClient and a next token that is not an HTTPS URL on the configured Azure management endpoint.
+    When:
+        - Calling the list_vm_request client method with that token.
+    Then:
+        - A DemistoException is raised and no request is sent, so that the Azure access token is not leaked.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.list_vm_request(subscription_id="sub-id", resource_group_name="test-rg", next_token=next_token)
+
+    mock_http_request.assert_not_called()
+
+
+def test_billing_usage_list_with_valid_next_page_token(mocker, client):
+    """
+    Given:
+        - An AzureClient and a next page token returned by a previous call to the usage details API.
+    When:
+        - Calling the billing_usage_list client method with that token.
+    Then:
+        - The request is sent to the next page URL, with the api-version from the token replaced by the default one.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+    next_page_token = (
+        "https://management.azure.com/subscriptions/sub-id/providers/Microsoft.Consumption/usageDetails"
+        "?api-version=2019-01-01&$skiptoken=abc"
+    )
+
+    client.billing_usage_list(subscription_id="sub-id", next_page_token=next_page_token)
+
+    mock_http_request.assert_called_once()
+    assert mock_http_request.call_args.kwargs["full_url"].startswith(
+        "https://management.azure.com/subscriptions/sub-id/providers/Microsoft.Consumption/usageDetails"
+    )
+    assert "api-version" not in mock_http_request.call_args.kwargs["full_url"]
+    assert mock_http_request.call_args.kwargs["params"] == {"api-version": "2024-08-01"}
+
+
+@pytest.mark.parametrize("next_page_token", INVALID_NEXT_TOKENS)
+def test_billing_usage_list_rejects_invalid_next_page_token(mocker, client, next_page_token):
+    """
+    Given:
+        - An AzureClient and a next page token that is not an HTTPS URL on the configured Azure management endpoint.
+    When:
+        - Calling the billing_usage_list client method with that token.
+    Then:
+        - A DemistoException is raised and no request is sent, so that the Azure access token is not leaked.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.billing_usage_list(subscription_id="sub-id", next_page_token=next_page_token)
+
+    mock_http_request.assert_not_called()
+
+
+def test_validate_next_link_accepts_gov_host(mocker):
+    """
+    Given:
+        - A next link on the US Gov management host, and the integration configured for a Gov account.
+    When:
+        - Calling validate_next_link with the host taken from PREFIX_URL_AZURE.
+    Then:
+        - The link is returned unchanged, so valid Gov pagination keeps working.
+    """
+    from urllib.parse import urlparse
+
+    from Azure import validate_next_link
+
+    mocker.patch.object(Azure, "PREFIX_URL_AZURE", "https://management.usgovcloudapi.net/subscriptions/")
+    next_link = "https://management.usgovcloudapi.net/subscriptions/sub-id/next-page?$skipToken=abc"
+
+    assert validate_next_link(next_link, urlparse(Azure.PREFIX_URL_AZURE).hostname or "") == next_link
 
 
 def test_ip_group_list_client_by_subscription(mocker, client):
@@ -10762,6 +11041,342 @@ def test_extract_fallback_prefix_returns_empty_for_unknown_handler():
 
     # When / Then: the unknown name yields nothing, and no error is raised
     assert extract_fallback_prefix("no_such_command", symbol_index) == set()
+
+
+""" LOG ANALYTICS TESTS (migrated from the standalone Azure Log Analytics pack) """
+
+LOG_ANALYTICS_ARGS = {
+    "subscription_id": "mock_subscription_id",
+    "resource_group_name": "mock_resource_group",
+    "workspace_name": "mock_workspace",
+}
+
+MOCKED_LA_SAVED_SEARCHES_OUTPUT = {
+    "value": [
+        {
+            "id": "mock_id/mock_saved_search",
+            "etag": "mock_etag",
+            "properties": {"displayName": "mock saved search", "query": "mock_query"},
+        },
+        {"id": "mock_id/another_saved_search", "properties": {"displayName": "another"}},
+    ]
+}
+
+MOCKED_LA_SAVED_SEARCH_OUTPUT = {
+    "id": "mock_id/mock_saved_search",
+    "etag": "mock_etag",
+    "type": "Microsoft.OperationalInsights/savedSearches",
+    "properties": {"category": "mock_category", "displayName": "mock display", "query": "mock_query", "version": 2},
+}
+
+
+def test_log_analytics_saved_searches_list_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_saved_searches_list returns saved searches.
+    When:
+        - log_analytics_saved_searches_list_command is called.
+    Then:
+        - It returns CommandResults with the Azure.LogAnalytics.SavedSearches prefix and the raw API outputs.
+    """
+    from Azure import log_analytics_saved_searches_list_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_saved_searches_list", return_value=MOCKED_LA_SAVED_SEARCHES_OUTPUT)
+
+    result = log_analytics_saved_searches_list_command(client, {}, dict(LOG_ANALYTICS_ARGS))
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.SavedSearches"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["id"] == "mock_id/mock_saved_search"
+    assert result.outputs[0]["properties"]["displayName"] == "mock saved search"
+
+
+def test_log_analytics_saved_search_get_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_saved_search_get returns a saved search.
+    When:
+        - log_analytics_saved_search_get_command is called with saved_search_id.
+    Then:
+        - It returns CommandResults with the raw saved search.
+    """
+    from Azure import log_analytics_saved_search_get_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_saved_search_get", return_value=MOCKED_LA_SAVED_SEARCH_OUTPUT)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"saved_search_id": "mock_saved_search"}
+    result = log_analytics_saved_search_get_command(client, {}, args)
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.SavedSearches"
+    assert result.outputs["id"] == "mock_id/mock_saved_search"
+    assert result.outputs["properties"]["category"] == "mock_category"
+
+
+def test_log_analytics_saved_search_create_update_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_saved_search_create_update returns a saved search.
+    When:
+        - log_analytics_saved_search_create_update_command is called with all required args.
+    Then:
+        - It returns CommandResults and passes the correct properties body to the client.
+    """
+    from Azure import log_analytics_saved_search_create_update_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_saved_search_create_update", return_value=MOCKED_LA_SAVED_SEARCH_OUTPUT)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {
+        "saved_search_id": "mock_saved_search",
+        "category": "mock_category",
+        "display_name": "mock display",
+        "query": "mock_query",
+    }
+    result = log_analytics_saved_search_create_update_command(client, {}, args)
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.SavedSearches"
+    body = client.log_analytics_saved_search_create_update.call_args[1]["data"]
+    assert body["properties"]["category"] == "mock_category"
+    assert body["properties"]["query"] == "mock_query"
+
+
+def test_log_analytics_saved_search_create_update_command_missing_args(mocker):
+    """
+    Given:
+        - An Azure client and args missing category/query/display_name and etag.
+    When:
+        - log_analytics_saved_search_create_update_command is called.
+    Then:
+        - It raises a DemistoException requiring the create fields.
+    """
+    from Azure import log_analytics_saved_search_create_update_command
+
+    client = mocker.MagicMock()
+    args = dict(LOG_ANALYTICS_ARGS) | {"saved_search_id": "mock_saved_search"}
+    with pytest.raises(DemistoException, match="You must specify category"):
+        log_analytics_saved_search_create_update_command(client, {}, args)
+
+
+def test_log_analytics_saved_search_delete_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_saved_search_delete succeeds.
+    When:
+        - log_analytics_saved_search_delete_command is called with saved_search_id.
+    Then:
+        - It returns a success readable output.
+    """
+    from Azure import log_analytics_saved_search_delete_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_saved_search_delete", return_value=None)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"saved_search_id": "mock_saved_search"}
+    result = log_analytics_saved_search_delete_command(client, {}, args)
+
+    assert "Successfully deleted the saved search mock_saved_search" in result.readable_output
+
+
+def test_log_analytics_workspaces_list_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_workspaces_list returns workspaces.
+    When:
+        - log_analytics_workspaces_list_command is called.
+    Then:
+        - It returns CommandResults with the Azure.LogAnalytics.Workspaces prefix.
+    """
+    from Azure import log_analytics_workspaces_list_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(
+        client,
+        "log_analytics_workspaces_list",
+        return_value={
+            "value": [{"name": "mock_workspace", "location": "eastus", "properties": {"provisioningState": "Succeeded"}}]
+        },
+    )
+
+    result = log_analytics_workspaces_list_command(client, {}, dict(LOG_ANALYTICS_ARGS))
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.Workspaces"
+    assert result.outputs[0]["name"] == "mock_workspace"
+
+
+def test_log_analytics_table_get_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_table_get returns a table with search results.
+    When:
+        - log_analytics_table_get_command is called with table_name.
+    Then:
+        - It returns CommandResults with the Azure.LogAnalytics.Tables prefix.
+    """
+    from Azure import log_analytics_table_get_command
+
+    client = mocker.MagicMock()
+    mock_response = {
+        "id": "mock_id",
+        "name": "mock_SRCH",
+        "properties": {
+            "createDate": "2024-01-01",
+            "plan": "Analytics",
+            "provisioningState": "Succeeded",
+            "schema": {
+                "name": "mock_SRCH",
+                "searchResults": {
+                    "query": "AuditLogs",
+                    "description": "mock",
+                    "startSearchTime": "2024-01-01",
+                    "endSearchTime": "2024-01-02",
+                },
+            },
+        },
+    }
+    mocker.patch.object(client, "log_analytics_table_get", return_value=mock_response)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_SRCH"}
+    result = log_analytics_table_get_command(client, {}, args)
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.Tables"
+    assert result.outputs["name"] == "mock_SRCH"
+
+
+def test_log_analytics_table_run_command_first_run(mocker):
+    """
+    Given:
+        - An Azure client and a valid _SRCH table name on the first polling run.
+    When:
+        - log_analytics_table_run_command is called with first_run=True.
+    Then:
+        - It sends the create request and returns a PollResult that continues polling.
+    """
+    from Azure import log_analytics_table_run_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_table_run", return_value=None)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_SRCH", "query": "AuditLogs", "first_run": "true"}
+    result = log_analytics_table_run_command(args, client, {})
+
+    assert result.scheduled_command._args["first_run"] is False
+    client.log_analytics_table_run.assert_called_once()
+
+
+def test_log_analytics_table_run_command_polling_succeeded(mocker):
+    """
+    Given:
+        - An Azure client returning a Succeeded provisioning state on a subsequent polling run.
+    When:
+        - log_analytics_table_run_command is called with first_run=False.
+    Then:
+        - It stops polling and returns CommandResults with the Azure.LogAnalytics.Tables prefix.
+    """
+    from Azure import log_analytics_table_run_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_table_get", return_value={"properties": {"provisioningState": "Succeeded"}})
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_SRCH", "query": "AuditLogs", "first_run": "false"}
+    result = log_analytics_table_run_command(args, client, {})
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.Tables"
+    assert result.outputs["TableName"] == "mock_SRCH"
+
+
+def test_log_analytics_table_run_command_invalid_table_name(mocker):
+    """
+    Given:
+        - An Azure client and a table_name missing the required _SRCH suffix.
+    When:
+        - log_analytics_table_run_command is called.
+    Then:
+        - It raises a DemistoException about the required suffix.
+    """
+    from Azure import log_analytics_table_run_command
+
+    client = mocker.MagicMock()
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_table", "query": "AuditLogs", "first_run": "true"}
+    with pytest.raises(DemistoException, match="_SRCH"):
+        log_analytics_table_run_command(args, client, {})
+
+
+def test_log_analytics_table_run_command_api_failure(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_table_run raises an error from the API call.
+    When:
+        - log_analytics_table_run_command is called with first_run=True.
+    Then:
+        - The raised exception propagates out of the command (terminal failure).
+    """
+    from Azure import log_analytics_table_run_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_table_run", side_effect=DemistoException("API error"))
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_SRCH", "query": "AuditLogs", "first_run": "true"}
+    with pytest.raises(DemistoException, match="API error"):
+        log_analytics_table_run_command(args, client, {})
+
+
+def test_log_analytics_table_delete_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_table_delete succeeds and a valid _SRCH table name.
+    When:
+        - log_analytics_table_delete_command is called.
+    Then:
+        - It returns a success readable output.
+    """
+    from Azure import log_analytics_table_delete_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_table_delete", return_value=None)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_SRCH"}
+    result = log_analytics_table_delete_command(client, {}, args)
+
+    assert "Search job mock_SRCH deleted successfully" in result.readable_output
+
+
+def test_log_analytics_table_delete_command_invalid_table_name(mocker):
+    """
+    Given:
+        - An Azure client and a table_name missing the required _SRCH suffix.
+    When:
+        - log_analytics_table_delete_command is called.
+    Then:
+        - It raises a DemistoException about the disallowed suffix.
+    """
+    from Azure import log_analytics_table_delete_command
+
+    client = mocker.MagicMock()
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_table"}
+    with pytest.raises(DemistoException, match="_SRCH"):
+        log_analytics_table_delete_command(client, {}, args)
+
+
+def test_log_analytics_tags_arg_to_request_format():
+    """
+    Given:
+        - A well-formed 'name=value;name=value' tags string and a malformed one.
+    When:
+        - log_analytics_tags_arg_to_request_format is called.
+    Then:
+        - The well-formed string is parsed to the API list format and the malformed one raises.
+    """
+    from Azure import log_analytics_tags_arg_to_request_format
+
+    assert log_analytics_tags_arg_to_request_format("a=1;b=2") == [
+        {"name": "a", "value": "1"},
+        {"name": "b", "value": "2"},
+    ]
+    assert log_analytics_tags_arg_to_request_format(None) is None
+    with pytest.raises(DemistoException, match="malformed"):
+        log_analytics_tags_arg_to_request_format("a=1;bad")
 
 
 # ---------------------------------------------------------------------------
