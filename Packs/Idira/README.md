@@ -13,6 +13,10 @@ The **Idira** pack lets you trigger identity (workforce) response actions in the
 ## This pack includes
 
 * The **Idira Identity Response** integration, which authenticates to the Idira Identity Security Platform Shared Services (ISPSS) using the OAuth 2.0 client-credentials flow and calls the Identity workforce APIs to run containment actions.
+* Playbooks that run a single containment action on the issue's user (`${issue.userid}` by default):
+  * **Idira - Lock User** - locks the user.
+  * **Idira - Unlock User** - reverses a lock or disable.
+  * **Idira - All Logout** - ends all of the user's active sessions and cookies.
 * Correlation rules that raise alerts on Idira Identity audit events:
   * **Idira - MFA Failure Detected** - a failed or denied MFA challenge.
   * **Idira - Multiple Failed Logins Detected** - 5 or more failed logins for a user from the same source IP within 10 minutes.

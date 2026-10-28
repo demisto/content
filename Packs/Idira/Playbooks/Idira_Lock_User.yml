@@ -1,0 +1,133 @@
+id: Idira - Lock User
+version: -1
+name: Idira - Lock User
+description: Locks the user in the Idira Identity Security Platform, blocking them from authenticating. Reversible with the Idira - Unlock User playbook.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 0a372b0c-d9ac-4fd1-8161-459ca08532ab
+    type: start
+    task:
+      id: 0a372b0c-d9ac-4fd1-8161-459ca08532ab
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: ba7db9a0-3bbe-4451-92df-b8fabb437d68
+    type: regular
+    task:
+      id: ba7db9a0-3bbe-4451-92df-b8fabb437d68
+      version: -1
+      name: Lock the user
+      description: Locks a user, blocking them from authenticating.
+      script: IdiraIdentityResponse|||idira-identity-response-lock-user
+      type: regular
+      iscommand: true
+      brand: IdiraIdentityResponse
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      user_id:
+        simple: ${inputs.UserID}
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: b53b74d0-0809-405a-9bd1-25424ef0156d
+    type: title
+    task:
+      id: b53b74d0-0809-405a-9bd1-25424ef0156d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 450,
+        "y": -110
+      }
+    }
+  }
+inputs:
+- key: UserID
+  value:
+    simple: ${issue.userid}
+  required: true
+  description: The Idira Identity user unique ID. Defaults to the user ID of the issue. Use the idira-identity-response-get-user-by-name command to resolve a username to its unique ID.
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - UserID
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform
+fromversion: 8.11.0
