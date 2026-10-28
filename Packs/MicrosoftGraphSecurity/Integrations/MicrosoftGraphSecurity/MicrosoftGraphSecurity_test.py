@@ -33,6 +33,7 @@ from MicrosoftGraphSecurity import (
     get_list_security_incident_command,
     get_message_user,
     get_users_command,
+    invoke_action_command,
     list_ediscovery_case_command,
     list_ediscovery_custodian_command,
     list_ediscovery_custodian_site_sources_command,
@@ -2359,3 +2360,58 @@ def test_download_export_file_reset_uses_default_not_purview_scope(mocker):
     reset_scope = get_access_token.call_args.kwargs["scope"]
     assert reset_scope == client_mocker.ms_client.scope
     assert reset_scope != "b26e684c-5068-4120-a679-64a5d2c909d9/.default"
+
+
+def test_invoke_action_request(mocker):
+    """
+    Given:
+        - Identity account ID, account ID, action and identity provider.
+    When:
+        - Calling MsGraphClient.invoke_action.
+    Then:
+        - Ensure a POST request is sent to the invokeAction endpoint with the expected body,
+          and that empty (204) responses are allowed.
+    """
+    http_request = mocker.patch.object(client_mocker.ms_client, "http_request")
+
+    client_mocker.invoke_action(
+        account_id="account-1",
+        action="disable",
+        identity_accounts_id="identity-1",
+        identity_provider="activeDirectory",
+    )
+
+    http_request.assert_called_once_with(
+        method="POST",
+        url_suffix="security/identities/identityAccounts/identity-1/invokeAction",
+        json_data={"accountId": "account-1", "action": "disable", "identityProvider": "activeDirectory"},
+        return_empty_response=True,
+    )
+
+
+def test_invoke_action_command(mocker):
+    """
+    Given:
+        - The msg-invoke-action command arguments.
+    When:
+        - Running invoke_action_command.
+    Then:
+        - Ensure the client is called with the mapped arguments and the readable output reports success.
+    """
+    invoke_action = mocker.patch.object(client_mocker, "invoke_action")
+    args = {
+        "identity_accounts_id": "identity-1",
+        "account_id": "account-1",
+        "action": "revokeAllSessions",
+        "identity_provider": "entraID",
+    }
+
+    result = invoke_action_command(client_mocker, args)
+
+    invoke_action.assert_called_once_with(
+        account_id="account-1",
+        action="revokeAllSessions",
+        identity_accounts_id="identity-1",
+        identity_provider="entraID",
+    )
+    assert result.readable_output == "Action: revokeAllSessions was successfully performed for account: account-1."
