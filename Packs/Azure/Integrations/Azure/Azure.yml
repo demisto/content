@@ -3888,113 +3888,115 @@ script:
     - contextPath: Azure.KeyVault.Vault.properties.networkAcls
       description: Rules governing the accessibility of the key vault from specific network locations.
       type: Unknown
-  - name: azure-sql-servers-list
+  - name: azure-sqldb-servers-list
     description: "Lists all SQL servers, optionally filtered by resource group. Required Permissions: Microsoft.Sql/servers/read."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The resource group name. If provided, only servers in this resource group are returned. If omitted, all servers in the subscription are returned.
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
-    - name: next_link
+      required:platform: true
+    - name: next_token
       description: The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets.
       required: false
     outputs:
-    - contextPath: Azure.SQL.Servers
+    - contextPath: Azure.SqlDB.Servers
       description: The list of SQL servers.
       type: Unknown
-    - contextPath: Azure.SQL.Servers.id
+    - contextPath: Azure.SqlDB.Servers.id
       description: The server resource ID.
       type: String
-    - contextPath: Azure.SQL.Servers.name
+    - contextPath: Azure.SqlDB.Servers.name
       description: The server name.
       type: String
-    - contextPath: Azure.SQL.Servers.location
+    - contextPath: Azure.SqlDB.Servers.location
       description: The server location.
       type: String
-    - contextPath: Azure.SQL.Servers.kind
+    - contextPath: Azure.SqlDB.Servers.kind
       description: The kind of server.
       type: String
-    - contextPath: Azure.SQL.Servers.type
+    - contextPath: Azure.SqlDB.Servers.type
       description: The server resource type.
       type: String
-    - contextPath: Azure.SQL.Servers.administratorLogin
+    - contextPath: Azure.SqlDB.Servers.administratorLogin
       description: The username of the server administrator.
       type: String
-    - contextPath: Azure.SQL.Servers.version
+    - contextPath: Azure.SqlDB.Servers.version
       description: The server version.
       type: String
-    - contextPath: Azure.SQL.Servers.state
+    - contextPath: Azure.SqlDB.Servers.state
       description: The server state.
       type: String
-    - contextPath: Azure.SQL.Servers.fullyQualifiedDomainName
+    - contextPath: Azure.SqlDB.Servers.fullyQualifiedDomainName
       description: The fully qualified domain name of the server.
       type: String
-    - contextPath: Azure.SQL.Servers.publicNetworkAccess
+    - contextPath: Azure.SqlDB.Servers.publicNetworkAccess
       description: Whether public endpoint access is enabled.
       type: String
-    - contextPath: Azure.SQL.ServersNextLink
-      description: The URL to the next page of SQL servers. Pass this value as next_link to retrieve the next page.
+    - contextPath: Azure.SqlDB.ServersNextToken
+      description: The URL to the next page of SQL servers. Pass this value as next_token to retrieve the next page.
       type: String
-  - name: azure-sql-db-list
+  - name: azure-sqldb-databases-list
     description: "Lists all databases for a SQL server. Required Permissions: Microsoft.Sql/servers/read, Microsoft.Sql/servers/databases/read."
     arguments:
     - name: server_name
       description: The name of the SQL server.
       required: true
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The resource group name.
-      required: true
-    - name: next_link
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: next_token
       description: The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets.
       required: false
     outputs:
-    - contextPath: Azure.SQL.Databases
+    - contextPath: Azure.SqlDB.Databases
       description: The list of SQL databases.
       type: Unknown
-    - contextPath: Azure.SQL.Databases.id
+    - contextPath: Azure.SqlDB.Databases.id
       description: The database resource ID.
       type: String
-    - contextPath: Azure.SQL.Databases.name
+    - contextPath: Azure.SqlDB.Databases.name
       description: The database name.
       type: String
-    - contextPath: Azure.SQL.Databases.location
+    - contextPath: Azure.SqlDB.Databases.location
       description: The database location.
       type: String
-    - contextPath: Azure.SQL.Databases.kind
+    - contextPath: Azure.SqlDB.Databases.kind
       description: The kind of database.
       type: String
-    - contextPath: Azure.SQL.Databases.type
+    - contextPath: Azure.SqlDB.Databases.type
       description: The database resource type.
       type: String
-    - contextPath: Azure.SQL.Databases.status
+    - contextPath: Azure.SqlDB.Databases.status
       description: The database status.
       type: String
-    - contextPath: Azure.SQL.Databases.managedBy
+    - contextPath: Azure.SqlDB.Databases.managedBy
       description: The resource that manages the database.
       type: String
-    - contextPath: Azure.SQL.Databases.sku
+    - contextPath: Azure.SqlDB.Databases.sku
       description: The database SKU details.
       type: Unknown
-    - contextPath: Azure.SQL.Databases.collation
+    - contextPath: Azure.SqlDB.Databases.collation
       description: The database collation.
       type: String
-    - contextPath: Azure.SQL.Databases.maxSizeBytes
+    - contextPath: Azure.SqlDB.Databases.maxSizeBytes
       description: The maximum size of the database in bytes.
       type: Number
-    - contextPath: Azure.SQL.Databases.zoneRedundant
+    - contextPath: Azure.SqlDB.Databases.zoneRedundant
       description: Whether the database is zone redundant.
       type: Boolean
-    - contextPath: Azure.SQL.DatabasesNextLink
-      description: The URL to the next page of SQL databases. Pass this value as next_link to retrieve the next page.
+    - contextPath: Azure.SqlDB.DatabasesNextToken
+      description: The URL to the next page of SQL databases. Pass this value as next_token to retrieve the next page.
       type: String
-  - name: azure-sql-db-audit-policy-list
+  - name: azure-sqldb-server-auditing-settings-list
     description: "Gets the auditing settings of a SQL database. Required Permissions: Microsoft.Sql/servers/databases/read, Microsoft.Sql/servers/databases/auditingSettings/read."
     arguments:
     - name: server_name
@@ -4004,53 +4006,48 @@ script:
       description: The name of the database.
       required: true
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The resource group name.
-      required: true
-    - name: next_link
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: next_token
       description: The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets.
       required: false
     outputs:
-    - contextPath: Azure.SQL.DBAuditPolicy
+    - contextPath: Azure.SqlDB.ServerAuditingSettings
       description: The list of database audit policies.
       type: Unknown
-    - contextPath: Azure.SQL.DBAuditPolicy.id
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.id
       description: The audit policy resource ID.
       type: String
-    - contextPath: Azure.SQL.DBAuditPolicy.name
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.name
       description: The audit policy name.
       type: String
-    - contextPath: Azure.SQL.DBAuditPolicy.type
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.type
       description: The resource type.
       type: String
-    - contextPath: Azure.SQL.DBAuditPolicy.state
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.state
       description: The policy state (Enabled/Disabled).
       type: String
-    - contextPath: Azure.SQL.DBAuditPolicy.retentionDays
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.retentionDays
       description: The number of days to keep audit logs.
       type: Number
-    - contextPath: Azure.SQL.DBAuditPolicy.isAzureMonitorTargetEnabled
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.isAzureMonitorTargetEnabled
       description: Whether audit events are sent to Azure Monitor.
       type: Boolean
-    - contextPath: Azure.SQL.DBAuditPolicy.storageAccountSubscriptionId
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.storageAccountSubscriptionId
       description: The storage subscription ID.
       type: String
-    - contextPath: Azure.SQL.DBAuditPolicy.serverName
-      description: The name of the server the audit policy belongs to.
-      type: String
-    - contextPath: Azure.SQL.DBAuditPolicy.databaseName
-      description: The name of the database the audit policy belongs to.
-      type: String
-    - contextPath: Azure.SQL.DBAuditPolicy.isManagedIdentityInUse
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.isManagedIdentityInUse
       description: Whether managed identity is used to access blob storage.
       type: Boolean
-    - contextPath: Azure.SQL.DBAuditPolicyNextLink
-      description: The URL to the next page of database audit policies. Pass this value as next_link to retrieve the next page.
+    - contextPath: Azure.SqlDB.ServerAuditingSettingsNextToken
+      description: The URL to the next page of database audit policies. Pass this value as next_token to retrieve the next page.
       type: String
-  - name: azure-sql-db-audit-policy-create-update
+  - name: azure-sqldb-audit-policy-create-update
     description: "Creates or updates the auditing policy for a SQL database. Required Permissions: Microsoft.Sql/servers/databases/auditingSettings/read, Microsoft.Sql/servers/databases/auditingSettings/write."
     arguments:
     - name: server_name
@@ -4107,57 +4104,52 @@ script:
       - 'true'
       - 'false'
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The resource group name.
-      required: true
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     outputs:
-    - contextPath: Azure.SQL.DBAuditPolicy.id
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.id
       description: The audit policy resource ID.
       type: String
-    - contextPath: Azure.SQL.DBAuditPolicy.name
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.name
       description: The audit policy name.
       type: String
-    - contextPath: Azure.SQL.DBAuditPolicy.type
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.type
       description: The resource type.
       type: String
-    - contextPath: Azure.SQL.DBAuditPolicy.state
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.state
       description: The policy state (Enabled/Disabled).
       type: String
-    - contextPath: Azure.SQL.DBAuditPolicy.retentionDays
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.retentionDays
       description: The number of days to keep audit logs.
       type: Number
-    - contextPath: Azure.SQL.DBAuditPolicy.isAzureMonitorTargetEnabled
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.isAzureMonitorTargetEnabled
       description: Whether audit events are sent to Azure Monitor.
       type: Boolean
-    - contextPath: Azure.SQL.DBAuditPolicy.storageAccountSubscriptionId
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.storageAccountSubscriptionId
       description: The storage subscription ID.
       type: String
-    - contextPath: Azure.SQL.DBAuditPolicy.auditActionsAndGroups
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.auditActionsAndGroups
       description: The audit actions and groups.
       type: Unknown
-    - contextPath: Azure.SQL.DBAuditPolicy.isStorageSecondaryKeyInUse
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.isStorageSecondaryKeyInUse
       description: Whether the storage account access key is the secondary key.
       type: Boolean
-    - contextPath: Azure.SQL.DBAuditPolicy.queueDelayMs
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.queueDelayMs
       description: The time in milliseconds before audit actions are forced to be processed.
       type: String
-    - contextPath: Azure.SQL.DBAuditPolicy.storageEndpoint
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.storageEndpoint
       description: The storage endpoint.
       type: String
-    - contextPath: Azure.SQL.DBAuditPolicy.serverName
-      description: The name of the server the audit policy belongs to.
-      type: String
-    - contextPath: Azure.SQL.DBAuditPolicy.databaseName
-      description: The name of the database the audit policy belongs to.
-      type: String
-    - contextPath: Azure.SQL.DBAuditPolicy.isManagedIdentityInUse
+    - contextPath: Azure.SqlDB.ServerAuditingSettings.properties.isManagedIdentityInUse
       description: Whether managed identity is used to access blob storage.
       type: Boolean
-  - name: azure-sql-db-threat-policy-create-update
-    description: "Creates or updates the threat detection policy for a SQL database. Required Permissions: Microsoft.Sql/servers/databases/read, Microsoft.Sql/servers/databases/securityAlertPolicies/write."
+  - name: azure-sqldb-security-alert-policy-create
+    description: "Creates a database's security alert policy. Required Permissions: Microsoft.Sql/servers/databases/read, Microsoft.Sql/servers/databases/securityAlertPolicies/write."
     arguments:
     - name: server_name
       description: The name of the SQL server.
@@ -4197,47 +4189,42 @@ script:
       description: The blob storage endpoint for Threat Detection audit logs.
       required: false
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The resource group name.
-      required: true
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     outputs:
-    - contextPath: Azure.SQL.DBThreatPolicy.id
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.id
       description: The threat policy resource ID.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.name
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.name
       description: The threat policy name.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.type
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.type
       description: The resource type.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.state
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.state
       description: The threat policy state (Enabled/Disabled).
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.retentionDays
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.retentionDays
       description: The number of days to keep Threat Detection audit logs.
       type: Number
-    - contextPath: Azure.SQL.DBThreatPolicy.storageEndpoint
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.storageEndpoint
       description: The Threat Detection audit storage account endpoint.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.emailAccountAdmins
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.emailAccountAdmins
       description: Whether account administrators are emailed on alert.
       type: Boolean
-    - contextPath: Azure.SQL.DBThreatPolicy.emailAddresses
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.emailAddresses
       description: The list of email addresses to which the alert is sent.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.disabledAlerts
+    - contextPath: Azure.SqlDB.SecurityAlertPolicies.properties.disabledAlerts
       description: The list of disabled alerts, or empty string if none are disabled.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.serverName
-      description: The name of the server the threat policy belongs to.
-      type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.databaseName
-      description: The name of the database the threat policy belongs to.
-      type: String
-  - name: azure-sql-firewall-rule-list
+  - name: azure-sqldb-firewall-rules-list
     description: "Retrieves a list of firewall rules or a specific firewall rule for a SQL server. Required Permissions: Microsoft.Sql/servers/firewallRules/read."
     arguments:
     - name: server_name
@@ -4247,38 +4234,39 @@ script:
       description: The name of the firewall rule. If not provided, all firewall rules for the server are returned.
       required: false
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The resource group name.
-      required: true
-    - name: next_link
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: next_token
       description: The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets. Not applicable when firewall_rule_name is provided.
       required: false
     outputs:
-    - contextPath: Azure.SQL.FirewallRule
+    - contextPath: Azure.SqlDB.FirewallRules
       description: The list of SQL server firewall rules.
       type: Unknown
-    - contextPath: Azure.SQL.FirewallRule.id
+    - contextPath: Azure.SqlDB.FirewallRules.id
       description: The firewall rule resource ID.
       type: String
-    - contextPath: Azure.SQL.FirewallRule.name
+    - contextPath: Azure.SqlDB.FirewallRules.name
       description: The firewall rule name.
       type: String
-    - contextPath: Azure.SQL.FirewallRule.type
+    - contextPath: Azure.SqlDB.FirewallRules.type
       description: The resource type.
       type: String
-    - contextPath: Azure.SQL.FirewallRule.properties.startIpAddress
+    - contextPath: Azure.SqlDB.FirewallRules.properties.startIpAddress
       description: The start IP address of the firewall rule.
       type: String
-    - contextPath: Azure.SQL.FirewallRule.properties.endIpAddress
+    - contextPath: Azure.SqlDB.FirewallRules.properties.endIpAddress
       description: The end IP address of the firewall rule.
       type: String
-    - contextPath: Azure.SQL.FirewallRuleNextLink
-      description: The URL to the next page of firewall rules. Pass this value as next_link to retrieve the next page.
+    - contextPath: Azure.SqlDB.FirewallRulesNextToken
+      description: The URL to the next page of firewall rules. Pass this value as next_token to retrieve the next page.
       type: String
-  - name: azure-sql-firewall-rule-create-update
+  - name: azure-sqldb-firewall-rule-create-update
     description: "Creates or updates a firewall rule for a SQL server. Required Permissions: Microsoft.Sql/servers/firewallRules/write."
     arguments:
     - name: server_name
@@ -4294,29 +4282,30 @@ script:
       description: "The end IP address of the firewall rule. Must be IPv4 format. Must be greater than or equal to start_ip_address. Use '0.0.0.0' for all Azure-internal IP addresses."
       required: true
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The resource group name.
-      required: true
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     outputs:
-    - contextPath: Azure.SQL.FirewallRule.id
+    - contextPath: Azure.SqlDB.FirewallRules.id
       description: The firewall rule resource ID.
       type: String
-    - contextPath: Azure.SQL.FirewallRule.name
+    - contextPath: Azure.SqlDB.FirewallRules.name
       description: The firewall rule name.
       type: String
-    - contextPath: Azure.SQL.FirewallRule.type
+    - contextPath: Azure.SqlDB.FirewallRules.type
       description: The resource type.
       type: String
-    - contextPath: Azure.SQL.FirewallRule.properties.startIpAddress
+    - contextPath: Azure.SqlDB.FirewallRules.properties.startIpAddress
       description: The start IP address of the firewall rule.
       type: String
-    - contextPath: Azure.SQL.FirewallRule.properties.endIpAddress
+    - contextPath: Azure.SqlDB.FirewallRules.properties.endIpAddress
       description: The end IP address of the firewall rule.
       type: String
-  - name: azure-sql-firewall-rule-delete
+  - name: azure-sqldb-firewall-rule-delete
     description: "Deletes a firewall rule from a SQL server. Required Permissions: Microsoft.Sql/servers/firewallRules/delete."
     execution: true
     arguments:
@@ -4327,13 +4316,14 @@ script:
       description: The name of the firewall rule to delete.
       required: true
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The resource group name.
-      required: true
-  - name: azure-sql-firewall-rule-replace
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+  - name: azure-sqldb-firewall-rule-replace
     description: "Replaces all firewall rules on a SQL server. Required Permissions: Microsoft.Sql/servers/firewallRules/write."
     execution: true
     arguments:
@@ -4353,26 +4343,27 @@ script:
       description: "The entry ID of a file containing the full request JSON in FirewallRuleList format. If provided, firewall_rule_name, start_ip_address, and end_ip_address must not be set."
       required: false
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The resource group name.
-      required: true
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     outputs:
-    - contextPath: Azure.SQL.FirewallRule.id
+    - contextPath: Azure.SqlDB.FirewallRules.id
       description: The firewall rule resource ID.
       type: String
-    - contextPath: Azure.SQL.FirewallRule.name
+    - contextPath: Azure.SqlDB.FirewallRules.name
       description: The firewall rule name.
       type: String
-    - contextPath: Azure.SQL.FirewallRule.type
+    - contextPath: Azure.SqlDB.FirewallRules.type
       description: The resource type.
       type: String
-    - contextPath: Azure.SQL.FirewallRule.properties.startIpAddress
+    - contextPath: Azure.SqlDB.FirewallRules.properties.startIpAddress
       description: The start IP address of the firewall rule.
       type: String
-    - contextPath: Azure.SQL.FirewallRule.properties.endIpAddress
+    - contextPath: Azure.SqlDB.FirewallRules.properties.endIpAddress
       description: The end IP address of the firewall rule.
       type: String
   - arguments:

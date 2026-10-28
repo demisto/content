@@ -330,36 +330,37 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-keyvault-vault-update",
     ],
     "Microsoft.Sql/servers/read": [
-        "azure-sql-servers-list",
-        "azure-sql-db-list",
+        "azure-sqldb-servers-list",
+        "azure-sqldb-databases-list",
     ],
     "Microsoft.Sql/servers/databases/read": [
-        "azure-sql-db-list",
-        "azure-sql-db-audit-policy-list",
-        "azure-sql-db-threat-policy-create-update",
+        "azure-sqldb-databases-list",
+        "azure-sqldb-audit-policy-list",
+        "azure-sqldb-security-alert-policy-create",
     ],
     "Microsoft.Sql/servers/databases/auditingSettings/read": [
-        "azure-sql-db-audit-policy-list",
-        "azure-sql-db-audit-policy-create-update",
+        "azure-sqldb-server-auditing-settings-list",
+        "azure-sqldb-audit-policy-list",
+        "azure-sqldb-audit-policy-create-update",
     ],
     "Microsoft.Sql/servers/databases/auditingSettings/write": [
-        "azure-sql-db-audit-policy-create-update",
+        "azure-sqldb-audit-policy-create-update",
     ],
     "Microsoft.Sql/servers/databases/securityAlertPolicies/write": [
-        "azure-sql-db-threat-policy-create-update",
+        "azure-sqldb-security-alert-policy-create",
         "azure-sql-db-threat-policy-update",
         "azure-sql-db-threat-policy-update-quick-action",
         "azure-sqldb-security-alert-policy-update",
     ],
     "Microsoft.Sql/servers/firewallRules/read": [
-        "azure-sql-firewall-rule-list",
+        "azure-sqldb-firewall-rule-list",
     ],
     "Microsoft.Sql/servers/firewallRules/write": [
-        "azure-sql-firewall-rule-create-update",
-        "azure-sql-firewall-rule-replace",
+        "azure-sqldb-firewall-rule-create-update",
+        "azure-sqldb-firewall-rule-replace",
     ],
     "Microsoft.Sql/servers/firewallRules/delete": [
-        "azure-sql-firewall-rule-delete",
+        "azure-sqldb-firewall-rule-delete",
     ],
     "Microsoft.Sql/servers/databases/securityAlertPolicies/read": [
         "azure-sql-db-threat-policy-update",
@@ -520,6 +521,10 @@ API_FUNCTION_TO_PERMISSIONS = {
     "postgres_server_update": ["Microsoft.DBforPostgreSQL/servers/read", "Microsoft.DBforPostgreSQL/servers/write"],
     "sql_servers_list": ["Microsoft.Sql/servers/read"],
     "sql_db_list": ["Microsoft.Sql/servers/read", "Microsoft.Sql/servers/databases/read"],
+    "sql_db_server_auditing_settings_list": [
+        "Microsoft.Sql/servers/databases/read",
+        "Microsoft.Sql/servers/databases/auditingSettings/read",
+    ],
     "sql_db_audit_policy_list": [
         "Microsoft.Sql/servers/databases/read",
         "Microsoft.Sql/servers/databases/auditingSettings/read",
@@ -527,10 +532,6 @@ API_FUNCTION_TO_PERMISSIONS = {
     "sql_db_audit_policy_create_update": [
         "Microsoft.Sql/servers/databases/auditingSettings/read",
         "Microsoft.Sql/servers/databases/auditingSettings/write",
-    ],
-    "sql_db_threat_policy_create_update": [
-        "Microsoft.Sql/servers/databases/read",
-        "Microsoft.Sql/servers/databases/securityAlertPolicies/write",
     ],
     "sql_firewall_rule_list": ["Microsoft.Sql/servers/firewallRules/read"],
     "sql_firewall_rule_create_update": ["Microsoft.Sql/servers/firewallRules/write"],
@@ -758,7 +759,7 @@ MONITOR_API_VERSION = "2016-03-01"
 DISKS_API_VERSION = "2024-03-02"
 ACR_API_VERSION = "2023-07-01"
 KEY_VAULT_API_VERSION = "2022-07-01"
-SQL_DB_API_VERSION = "2021-11-01"
+SQL_DB_API_VERSION = "2025-01-01"
 SQL_FIREWALL_API_VERSION = "2023-08-01"
 COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
@@ -3031,7 +3032,7 @@ class AzureClient:
         params = {"api-version": SQL_DB_API_VERSION}
         if next_link:
             demisto.debug("Listing SQL servers (next page).")
-            full_url = next_link
+            full_url = validate_next_link(next_link, urlparse(PREFIX_URL_AZURE).hostname or "")
         else:
             if resource_group_name:
                 full_url = (
@@ -3092,7 +3093,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def sql_db_audit_policy_list(
+    def sql_db_server_auditing_settings_list(
         self, server_name: str, db_name: str, subscription_id: str, resource_group_name: str, next_link: str | None = None
     ):
         """
@@ -3106,7 +3107,7 @@ class AzureClient:
             next_link (str | None): If provided, fetches the next page using this URL.
 
         Returns:
-            dict: The API response containing the audit policy list.
+            dict: The API response containing the database audit settings list.
 
         Raises:
             ValueError: If the database or server is not found.
@@ -3129,7 +3130,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{server_name}/{db_name}",
                 resource_type="SQL Database Audit Policy",
-                api_function_name="sql_db_audit_policy_list",
+                api_function_name="sql_db_server_auditing_settings_list",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -3168,7 +3169,7 @@ class AzureClient:
             storage_account_access_key (str | None): Storage account access key.
             storage_account_subscription_id (str | None): Storage account subscription ID.
             storage_endpoint (str | None): Storage endpoint URL.
-            is_managed_identity_in_use (str | None): Whether managed identity is used.
+            is_managed_identity_in_use (bool | None): Whether managed identity is used.
 
         Returns:
             dict: The API response after applying the update.
@@ -3204,71 +3205,6 @@ class AzureClient:
                 resource_name=f"{server_name}/{db_name}",
                 resource_type="SQL Database Audit Policy",
                 api_function_name="sql_db_audit_policy_create_update",
-                subscription_id=subscription_id,
-                resource_group_name=resource_group_name,
-            )
-
-    def sql_db_threat_policy_create_update(
-        self,
-        server_name: str,
-        db_name: str,
-        subscription_id: str,
-        resource_group_name: str,
-        state: str,
-        disabled_alerts: list | None = None,
-        email_account_admins: bool | None = None,
-        email_addresses: list | None = None,
-        retention_days: int | None = None,
-        storage_account_access_key: str | None = None,
-        storage_endpoint: str | None = None,
-    ):
-        """
-        Creates or updates the threat detection policy for a SQL database.
-
-        Args:
-            server_name (str): Name of the SQL server.
-            db_name (str): Name of the database.
-            subscription_id (str): Azure subscription ID.
-            resource_group_name (str): Name of the resource group.
-            state (str): The state of the threat policy (Enabled/Disabled).
-            disabled_alerts (list | None): List of disabled alert types.
-            email_account_admins (bool | None): Whether to email account admins.
-            email_addresses (list | None): List of email addresses for alerts.
-            retention_days (int | None): Number of days to retain audit logs.
-            storage_account_access_key (str | None): Storage account access key.
-            storage_endpoint (str | None): Storage endpoint URL.
-
-        Returns:
-            dict: The API response after applying the update.
-
-        Raises:
-            ValueError: If the database or server is not found.
-            DemistoException: If there are permission or other API errors.
-        """
-        properties = assign_params(
-            state=state,
-            retentionDays=retention_days,
-            storageAccountAccessKey=storage_account_access_key,
-            storageEndpoint=storage_endpoint,
-            disabledAlerts=disabled_alerts,
-            emailAccountAdmins=email_account_admins,
-            emailAddresses=email_addresses,
-        )
-        data = {"properties": properties} if properties else {}
-        params = {"api-version": SQL_DB_API_VERSION}
-        full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/securityAlertPolicies/default"
-        )
-        demisto.debug(f"Creating/updating SQL DB threat policy for {server_name}/{db_name}.")
-        try:
-            return self.http_request("PUT", full_url=full_url, json_data=data, params=params)
-        except Exception as e:
-            self.handle_azure_error(
-                e=e,
-                resource_name=f"{server_name}/{db_name}",
-                resource_type="SQL Database Threat Policy",
-                api_function_name="sql_db_threat_policy_create_update",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -11031,10 +10967,10 @@ def sql_servers_list_command(client: AzureClient, params: dict, args: Dict[str, 
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = args.get("resource_group_name") or params.get("resource_group_name")
-    next_link = args.get("next_link")
+    next_token = args.get("next_token")
 
     response = client.sql_servers_list(
-        subscription_id=subscription_id, resource_group_name=resource_group_name, next_link=next_link
+        subscription_id=subscription_id, resource_group_name=resource_group_name, next_link=next_token
     )
 
     servers = copy.deepcopy(response.get("value", []))
@@ -11049,8 +10985,8 @@ def sql_servers_list_command(client: AzureClient, params: dict, args: Dict[str, 
 
     outputs = remove_empty_elements(
         {
-            "Azure.SQL.Servers(val.id && val.id == obj.id)": servers,
-            "Azure.SQL(true)": {"ServersNextLink": response.get("nextLink")},
+            "Azure.SqlDB.Servers(val.id && val.id == obj.id)": servers,
+            "Azure.SqlDB(true)": {"ServersNextToken": response.get("nextLink")},
         }
     )
     readable_output = tableToMarkdown(name, servers, headerTransform=pascalToSpace, removeNull=True)
@@ -11076,10 +11012,10 @@ def sql_db_list_command(client: AzureClient, params: dict, args: Dict[str, Any])
     server_name = args.get("server_name", "")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    next_link = args.get("next_link")
+    next_token = args.get("next_token")
 
     response = client.sql_db_list(
-        server_name=server_name, subscription_id=subscription_id, resource_group_name=resource_group_name, next_link=next_link
+        server_name=server_name, subscription_id=subscription_id, resource_group_name=resource_group_name, next_link=next_token
     )
 
     databases = copy.deepcopy(response.get("value", []))
@@ -11093,8 +11029,8 @@ def sql_db_list_command(client: AzureClient, params: dict, args: Dict[str, Any])
 
     outputs = remove_empty_elements(
         {
-            "Azure.SQL.Databases(val.id && val.id == obj.id)": databases,
-            "Azure.SQL(true)": {"DatabasesNextLink": response.get("nextLink")},
+            "Azure.SqlDB.Databases(val.id && val.id == obj.id)": databases,
+            "Azure.SqlDB(true)": {"DatabasesNextToken": response.get("nextLink")},
         }
     )
     readable_output = tableToMarkdown(
@@ -11111,7 +11047,7 @@ def sql_db_list_command(client: AzureClient, params: dict, args: Dict[str, Any])
     )
 
 
-def sql_db_audit_policy_list_command(client: AzureClient, params: dict, args: Dict[str, Any]) -> CommandResults:
+def sql_db_server_auditing_settings_list_command(client: AzureClient, params: dict, args: Dict[str, Any]) -> CommandResults:
     """
     Lists the auditing settings for a SQL database.
 
@@ -11121,37 +11057,31 @@ def sql_db_audit_policy_list_command(client: AzureClient, params: dict, args: Di
         args (dict): Command arguments including server_name and db_name.
 
     Returns:
-        CommandResults: The list of audit policies formatted for display.
+        CommandResults: The list of database audit settings formatted for display.
     """
     server_name = args.get("server_name", "")
     db_name = args.get("db_name", "")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    next_link = args.get("next_link")
+    next_token = args.get("next_token")
 
-    response = client.sql_db_audit_policy_list(
+    response = client.sql_db_server_auditing_settings_list(
         server_name=server_name,
         db_name=db_name,
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
-        next_link=next_link,
+        next_link=next_token,
     )
 
-    policies = copy.deepcopy(response.get("value", []))
-    for policy in policies:
-        policy["serverName"] = server_name
-        policy["databaseName"] = db_name
-        if properties := policy.get("properties", {}):
-            policy.update(properties)
-            del policy["properties"]
+    policies = response.get("value", [])
 
     if not policies:
         return CommandResults(readable_output=f"No audit policies found for database {db_name}.")
 
     outputs = remove_empty_elements(
         {
-            "Azure.SQL.DBAuditPolicy(val.id && val.id == obj.id)": policies,
-            "Azure.SQL(true)": {"DBAuditPolicyNextLink": response.get("nextLink")},
+            "Azure.SqlDB.ServerAuditingSettings(val.id && val.id == obj.id)": policies,
+            "Azure.SqlDB(true)": {"ServerAuditingSettingsNextToken": response.get("nextLink")},
         }
     )
     readable_output = tableToMarkdown(
@@ -11192,40 +11122,27 @@ def sql_db_audit_policy_create_update_command(client: AzureClient, params: dict,
         resource_group_name=resource_group_name,
         state=state,
         audit_actions_groups=argToList(args.get("audit_actions_groups")),
-        is_azure_monitor_target_enabled=argToBoolean(args["is_azure_monitor_target_enabled"])
-        if args.get("is_azure_monitor_target_enabled") is not None
-        else None,
-        is_storage_secondary_key_in_use=argToBoolean(args["is_storage_secondary_key_in_use"])
-        if args.get("is_storage_secondary_key_in_use") is not None
-        else None,
+        is_azure_monitor_target_enabled=arg_to_bool_or_none(args.get("is_azure_monitor_target_enabled")),
+        is_storage_secondary_key_in_use=arg_to_bool_or_none(args.get("is_storage_secondary_key_in_use")),
         queue_delay_ms=args.get("queue_delay_ms"),
-        retention_days=int(args["retention_days"]) if args.get("retention_days") is not None else None,
+        retention_days=arg_to_number(args.get("retention_days")),
         storage_account_access_key=args.get("storage_account_access_key"),
         storage_account_subscription_id=args.get("storage_account_subscription_id"),
         storage_endpoint=args.get("storage_endpoint"),
-        is_managed_identity_in_use=argToBoolean(args["is_managed_identity_in_use"])
-        if args.get("is_managed_identity_in_use") is not None
-        else None,
+        is_managed_identity_in_use=arg_to_bool_or_none(args.get("is_managed_identity_in_use")),
     )
-
-    fixed_response = copy.deepcopy(response)
-    if properties := fixed_response.get("properties", {}):
-        fixed_response["serverName"] = server_name
-        fixed_response["databaseName"] = db_name
-        fixed_response.update(properties)
-        del fixed_response["properties"]
 
     readable_output = tableToMarkdown(
         f"Create Or Update Database Auditing Settings for {server_name}/{db_name}",
-        fixed_response,
+        response,
         headerTransform=pascalToSpace,
         removeNull=True,
     )
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Azure.SQL.DBAuditPolicy",
+        outputs_prefix="Azure.SqlDB.ServerAuditingSettings",
         outputs_key_field="id",
-        outputs=fixed_response,
+        outputs=response,
         raw_response=response,
     )
 
@@ -11250,38 +11167,36 @@ def sql_db_threat_policy_create_update_command(client: AzureClient, params: dict
     disabled_alerts_raw = argToList(args.get("disabled_alerts"))
     disabled_alerts = [""] if "None" in disabled_alerts_raw else disabled_alerts_raw
 
-    response = client.sql_db_threat_policy_create_update(
+    properties = assign_params(
+        state=state,
+        retentionDays=arg_to_number(args.get("retention_days")),
+        storageAccountAccessKey=args.get("storage_account_access_key"),
+        storageEndpoint=args.get("storage_endpoint"),
+        disabledAlerts=disabled_alerts or None,
+        emailAccountAdmins=arg_to_bool_or_none(args.get("email_account_admins")),
+        emailAddresses=argToList(args.get("email_addresses")) or None,
+    )
+    current = {"properties": properties} if properties else {}
+
+    response = client.sql_db_threat_policy_update(
         server_name=server_name,
         db_name=db_name,
         subscription_id=subscription_id,
+        current=current,
         resource_group_name=resource_group_name,
-        state=state,
-        disabled_alerts=disabled_alerts or None,
-        email_account_admins=argToBoolean(args["email_account_admins"]) if args.get("email_account_admins") is not None else None,
-        email_addresses=argToList(args.get("email_addresses")) or None,
-        retention_days=int(args["retention_days"]) if args.get("retention_days") is not None else None,
-        storage_account_access_key=args.get("storage_account_access_key"),
-        storage_endpoint=args.get("storage_endpoint"),
     )
-
-    fixed_response = copy.deepcopy(response)
-    if properties := fixed_response.get("properties", {}):
-        fixed_response["serverName"] = server_name
-        fixed_response["databaseName"] = db_name
-        fixed_response.update(properties)
-        del fixed_response["properties"]
 
     readable_output = tableToMarkdown(
         f"Create Or Update Database Threat Detection Policies for {server_name}/{db_name}",
-        fixed_response,
+        response,
         headerTransform=pascalToSpace,
         removeNull=True,
     )
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Azure.SQL.DBThreatPolicy",
+        outputs_prefix="Azure.SqlDB.SecurityAlertPolicies",
         outputs_key_field="id",
-        outputs=fixed_response,
+        outputs=response,
         raw_response=response,
     )
 
@@ -11302,32 +11217,29 @@ def sql_firewall_rule_list_command(client: AzureClient, params: dict, args: Dict
     firewall_rule_name = args.get("firewall_rule_name")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    next_link = args.get("next_link")
+    next_token = args.get("next_token")
 
     response = client.sql_firewall_rule_list(
         server_name=server_name,
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
         firewall_rule_name=firewall_rule_name,
-        next_link=next_link,
+        next_link=next_token,
     )
 
     if firewall_rule_name:
-        rules = [response]
-        if not rules:
-            return CommandResults(readable_output="No firewall rules were found.")
         readable_output = tableToMarkdown(
             "Firewall Rules",
-            rules,
+            [response],
             headers=["id", "name", "type"],
             headerTransform=pascalToSpace,
             removeNull=True,
         )
         return CommandResults(
             readable_output=readable_output,
-            outputs_prefix="Azure.SQL.FirewallRule",
+            outputs_prefix="Azure.SqlDB.FirewallRules",
             outputs_key_field="id",
-            outputs=rules,
+            outputs=response,
             raw_response=response,
         )
 
@@ -11337,8 +11249,8 @@ def sql_firewall_rule_list_command(client: AzureClient, params: dict, args: Dict
 
     outputs = remove_empty_elements(
         {
-            "Azure.SQL.FirewallRule(val.id && val.id == obj.id)": rules,
-            "Azure.SQL(true)": {"FirewallRuleNextLink": response.get("nextLink")},
+            "Azure.SqlDB.FirewallRules(val.id && val.id == obj.id)": rules,
+            "Azure.SqlDB(true)": {"FirewallRulesNextToken": response.get("nextLink")},
         }
     )
     readable_output = tableToMarkdown(
@@ -11384,7 +11296,7 @@ def sql_firewall_rule_create_update_command(client: AzureClient, params: dict, a
     )
     return CommandResults(
         readable_output=f"Successfully updated the firewall rule {firewall_rule_name}.",
-        outputs_prefix="Azure.SQL.FirewallRule",
+        outputs_prefix="Azure.SqlDB.FirewallRules",
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
@@ -11470,7 +11382,7 @@ def sql_firewall_rule_replace_command(client: AzureClient, params: dict, args: D
     )
     return CommandResults(
         readable_output="Successfully updated the firewall rules.",
-        outputs_prefix="Azure.SQL.FirewallRule",
+        outputs_prefix="Azure.SqlDB.FirewallRules",
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
@@ -13112,15 +13024,15 @@ def main():  # pragma: no cover
             "azure-cr-registry-update": acr_update_command,
             "azure-key-vault-update": update_key_vault_command,
             "azure-key-vault-purge-and-soft-delete-enable-quick-action": update_key_vault_command,
-            "azure-sql-servers-list": sql_servers_list_command,
-            "azure-sql-db-list": sql_db_list_command,
-            "azure-sql-db-audit-policy-list": sql_db_audit_policy_list_command,
-            "azure-sql-db-audit-policy-create-update": sql_db_audit_policy_create_update_command,
-            "azure-sql-db-threat-policy-create-update": sql_db_threat_policy_create_update_command,
-            "azure-sql-firewall-rule-list": sql_firewall_rule_list_command,
-            "azure-sql-firewall-rule-create-update": sql_firewall_rule_create_update_command,
-            "azure-sql-firewall-rule-delete": sql_firewall_rule_delete_command,
-            "azure-sql-firewall-rule-replace": sql_firewall_rule_replace_command,
+            "azure-sqldb-servers-list": sql_servers_list_command,
+            "azure-sqldb-databases-list": sql_db_list_command,
+            "azure-sqldb-server-auditing-settings-list": sql_db_server_auditing_settings_list_command,
+            "azure-sqldb-audit-policy-create-update": sql_db_audit_policy_create_update_command,
+            "azure-sqldb-security-alert-policy-create": sql_db_threat_policy_create_update_command,
+            "azure-sqldb-firewall-rules-list": sql_firewall_rule_list_command,
+            "azure-sqldb-firewall-rule-create-update": sql_firewall_rule_create_update_command,
+            "azure-sqldb-firewall-rule-delete": sql_firewall_rule_delete_command,
+            "azure-sqldb-firewall-rule-replace": sql_firewall_rule_replace_command,
             "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
             "azure-sql-db-threat-policy-update-quick-action": sql_db_threat_policy_update_command,
             "azure-keyvault-vault-update": update_key_vault_command,

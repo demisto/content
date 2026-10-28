@@ -63,7 +63,7 @@ from Azure import (
     nsg_security_rules_list_command,
     sql_servers_list_command,
     sql_db_list_command,
-    sql_db_audit_policy_list_command,
+    sql_db_server_auditing_settings_list_command,
     sql_db_audit_policy_create_update_command,
     sql_db_threat_policy_create_update_command,
     sql_firewall_rule_list_command,
@@ -905,7 +905,7 @@ def test_sql_servers_list_command(mocker, client, mock_params):
     assert result.outputs[servers_key][0].get("name") == "integration"
     assert "SQL Servers List" in result.readable_output
     next_link_key = next(k for k in result.outputs if "true" in k)
-    assert result.outputs[next_link_key].get("ServersNextLink") == "https://management.azure.com/next-page-url"
+    assert result.outputs[next_link_key].get("ServersNextToken") == "https://management.azure.com/next-page-url"
     call_kwargs = client.sql_servers_list.call_args[1]
     assert call_kwargs.get("resource_group_name") is None
     assert call_kwargs.get("next_link") is None
@@ -970,7 +970,7 @@ def test_sql_db_list_command(mocker, client, mock_params):
     assert result.outputs[db_key][0].get("name") == "integration-db"
     assert "Databases for server integration" in result.readable_output
     next_link_key = next(k for k in result.outputs if "true" in k)
-    assert result.outputs[next_link_key].get("DatabasesNextLink") == "https://management.azure.com/next-db-page"
+    assert result.outputs[next_link_key].get("DatabasesNextToken") == "https://management.azure.com/next-db-page"
 
 
 def test_sql_db_list_command_empty(mocker, client, mock_params):
@@ -989,8 +989,8 @@ def test_sql_db_list_command_empty(mocker, client, mock_params):
 
 def test_sql_db_audit_policy_list_command(mocker, client, mock_params):
     """
-    Given: An AzureClient whose sql_db_audit_policy_list returns a list of audit policies with a nextLink.
-    When: sql_db_audit_policy_list_command is called with server_name and db_name.
+    Given: An AzureClient whose sql_db_server_auditing_settings_list returns a list of audit policies with a nextLink.
+    When: sql_db_server_auditing_settings_list_command is called with server_name and db_name.
     Then: It returns CommandResults with the audit policies and the nextLink in outputs.
     """
     raw = {
@@ -1004,30 +1004,33 @@ def test_sql_db_audit_policy_list_command(mocker, client, mock_params):
         ],
         "nextLink": "https://management.azure.com/next-audit-page",
     }
-    mocker.patch.object(client, "sql_db_audit_policy_list", return_value=raw)
+    mocker.patch.object(client, "sql_db_server_auditing_settings_list", return_value=raw)
 
     args = {"server_name": "integration", "db_name": "integration-db"}
-    result = sql_db_audit_policy_list_command(client=client, params=mock_params, args=args)
+    result = sql_db_server_auditing_settings_list_command(client=client, params=mock_params, args=args)
 
-    audit_key = next(k for k in result.outputs if "DBAuditPolicy" in k and "NextLink" not in k)
+    audit_key = next(k for k in result.outputs if "ServerAuditingSettings" in k and "NextToken" not in k)
     assert len(result.outputs[audit_key]) == 1
-    assert result.outputs[audit_key][0].get("type") == "Microsoft.Sql/servers/databases/auditingSettings"
-    assert result.outputs[audit_key][0].get("serverName") == "integration"
-    assert result.outputs[audit_key][0].get("databaseName") == "integration-db"
+    policy = result.outputs[audit_key][0]
+    assert policy.get("type") == "Microsoft.Sql/servers/databases/auditingSettings"
+    # properties are no longer flattened — they remain nested under 'properties'
+    assert policy.get("properties", {}).get("state") == "Enabled"
     assert "Database Audit Settings" in result.readable_output
     next_link_key = next(k for k in result.outputs if "true" in k)
-    assert result.outputs[next_link_key].get("DBAuditPolicyNextLink") == "https://management.azure.com/next-audit-page"
+    assert result.outputs[next_link_key].get("ServerAuditingSettingsNextToken") == "https://management.azure.com/next-audit-page"
 
 
 def test_sql_db_audit_policy_list_command_empty(mocker, client, mock_params):
     """
-    Given: An AzureClient whose sql_db_audit_policy_list returns an empty value list.
-    When: sql_db_audit_policy_list_command is called.
+    Given: An AzureClient whose sql_db_server_auditing_settings_list returns an empty value list.
+    When: sql_db_server_auditing_settings_list_command is called.
     Then: It returns a no-results readable output.
     """
-    mocker.patch.object(client, "sql_db_audit_policy_list", return_value={"value": []})
+    mocker.patch.object(client, "sql_db_server_auditing_settings_list", return_value={"value": []})
 
-    result = sql_db_audit_policy_list_command(client=client, params=mock_params, args={"server_name": "srv", "db_name": "db"})
+    result = sql_db_server_auditing_settings_list_command(
+        client=client, params=mock_params, args={"server_name": "srv", "db_name": "db"}
+    )
 
     assert "No audit policies found" in result.readable_output
     assert not result.outputs
@@ -1056,7 +1059,7 @@ def test_sql_db_audit_policy_create_update_command(mocker, client, mock_params):
     }
     result = sql_db_audit_policy_create_update_command(client=client, params=mock_params, args=args)
 
-    assert result.outputs_prefix == "Azure.SQL.DBAuditPolicy"
+    assert result.outputs_prefix == "Azure.SqlDB.ServerAuditingSettings"
     assert result.outputs_key_field == "id"
     assert "Create Or Update Database Auditing Settings" in result.readable_output
     call_kwargs = client.sql_db_audit_policy_create_update.call_args[1]
@@ -1072,9 +1075,10 @@ def test_sql_db_audit_policy_create_update_command(mocker, client, mock_params):
 
 def test_sql_db_threat_policy_create_update_command(mocker, client, mock_params):
     """
-    Given: An AzureClient whose sql_db_threat_policy_create_update returns an updated policy.
+    Given: An AzureClient whose sql_db_threat_policy_update returns an updated policy.
     When: sql_db_threat_policy_create_update_command is called with state=Enabled.
-    Then: It returns CommandResults with the updated policy and the correct outputs prefix.
+    Then: It returns CommandResults with the updated policy and the correct outputs prefix,
+          and the body passed to sql_db_threat_policy_update contains the correct properties.
     """
     raw = {
         "id": "/sub/rg/srv/db/securityAlertPolicies/default",
@@ -1082,7 +1086,7 @@ def test_sql_db_threat_policy_create_update_command(mocker, client, mock_params)
         "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
         "properties": {"state": "Enabled", "retentionDays": 5, "emailAddresses": ["test1@test.com"]},
     }
-    mocker.patch.object(client, "sql_db_threat_policy_create_update", return_value=raw)
+    mocker.patch.object(client, "sql_db_threat_policy_update", return_value=raw)
 
     args = {
         "server_name": "integration",
@@ -1094,32 +1098,33 @@ def test_sql_db_threat_policy_create_update_command(mocker, client, mock_params)
     }
     result = sql_db_threat_policy_create_update_command(client=client, params=mock_params, args=args)
 
-    assert result.outputs_prefix == "Azure.SQL.DBThreatPolicy"
+    assert result.outputs_prefix == "Azure.SqlDB.SecurityAlertPolicies"
     assert result.outputs_key_field == "id"
     assert "Create Or Update Database Threat Detection Policies" in result.readable_output
-    call_kwargs = client.sql_db_threat_policy_create_update.call_args[1]
-    assert call_kwargs["state"] == "Enabled"
-    assert call_kwargs["email_addresses"] == ["test1@test.com"]
-    # Verify casted arguments: retention_days str→int, email_account_admins str→bool
-    assert call_kwargs["retention_days"] == 5
-    assert isinstance(call_kwargs["retention_days"], int)
-    assert call_kwargs["email_account_admins"] is True
-    assert isinstance(call_kwargs["email_account_admins"], bool)
+    call_kwargs = client.sql_db_threat_policy_update.call_args[1]
+    props = call_kwargs["current"]["properties"]
+    assert props["state"] == "Enabled"
+    assert props["emailAddresses"] == ["test1@test.com"]
+    # Verify casted arguments: retentionDays str→int, emailAccountAdmins str→bool
+    assert props["retentionDays"] == 5
+    assert isinstance(props["retentionDays"], int)
+    assert props["emailAccountAdmins"] is True
+    assert isinstance(props["emailAccountAdmins"], bool)
 
 
 def test_sql_db_threat_policy_create_update_command_none_alerts(mocker, client, mock_params):
     """
     Given: An AzureClient and disabled_alerts set to 'None'.
     When: sql_db_threat_policy_create_update_command is called.
-    Then: The disabled_alerts passed to the client is [''] (empty string sentinel).
+    Then: The disabledAlerts in the body passed to sql_db_threat_policy_update is [''] (empty string sentinel).
     """
-    mocker.patch.object(client, "sql_db_threat_policy_create_update", return_value={"id": "x", "properties": {}})
+    mocker.patch.object(client, "sql_db_threat_policy_update", return_value={"id": "x", "properties": {}})
 
     args = {"server_name": "srv", "db_name": "db", "state": "Enabled", "disabled_alerts": "None"}
     sql_db_threat_policy_create_update_command(client=client, params=mock_params, args=args)
 
-    call_kwargs = client.sql_db_threat_policy_create_update.call_args[1]
-    assert call_kwargs["disabled_alerts"] == [""]
+    call_kwargs = client.sql_db_threat_policy_update.call_args[1]
+    assert call_kwargs["current"]["properties"]["disabledAlerts"] == [""]
 
 
 def test_sql_firewall_rule_list_command(mocker, client, mock_params):
@@ -1154,7 +1159,7 @@ def test_sql_firewall_rule_list_command(mocker, client, mock_params):
     assert result.outputs[fw_key][0].get("name") == "AllowAllWindowsAzureIps"
     assert "Firewall Rules" in result.readable_output
     next_link_key = next(k for k in result.outputs if "true" in k)
-    assert result.outputs[next_link_key].get("FirewallRuleNextLink") == "https://management.azure.com/next-fw-page"
+    assert result.outputs[next_link_key].get("FirewallRulesNextToken") == "https://management.azure.com/next-fw-page"
     call_kwargs = client.sql_firewall_rule_list.call_args[1]
     assert call_kwargs.get("firewall_rule_name") is None
     assert call_kwargs.get("next_link") is None
@@ -1177,12 +1182,11 @@ def test_sql_firewall_rule_list_command_single_rule(mocker, client, mock_params)
     args = {"server_name": "integration", "firewall_rule_name": "test-rule"}
     result = sql_firewall_rule_list_command(client=client, params=mock_params, args=args)
 
-    # Single-rule path: uses outputs_prefix + outputs_key_field
-    assert result.outputs_prefix == "Azure.SQL.FirewallRule"
+    # Single-rule path: uses outputs_prefix + outputs_key_field; outputs is the single rule dict
+    assert result.outputs_prefix == "Azure.SqlDB.FirewallRules"
     assert result.outputs_key_field == "id"
-    assert isinstance(result.outputs, list)
-    assert len(result.outputs) == 1
-    assert result.outputs[0].get("name") == "test-rule"
+    assert isinstance(result.outputs, dict)
+    assert result.outputs.get("name") == "test-rule"
     call_kwargs = client.sql_firewall_rule_list.call_args[1]
     assert call_kwargs.get("firewall_rule_name") == "test-rule"
 
@@ -1224,7 +1228,7 @@ def test_sql_firewall_rule_create_update_command(mocker, client, mock_params):
     result = sql_firewall_rule_create_update_command(client=client, params=mock_params, args=args)
 
     assert "Successfully updated the firewall rule new-rule" in result.readable_output
-    assert result.outputs_prefix == "Azure.SQL.FirewallRule"
+    assert result.outputs_prefix == "Azure.SqlDB.FirewallRules"
     call_kwargs = client.sql_firewall_rule_create_update.call_args[1]
     assert call_kwargs["firewall_rule_name"] == "new-rule"
     assert call_kwargs["start_ip_address"] == "0.0.0.0"
@@ -1277,7 +1281,7 @@ def test_sql_firewall_rule_replace_command(mocker, client, mock_params):
     result = sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
 
     assert "Successfully updated the firewall rules" in result.readable_output
-    assert result.outputs_prefix == "Azure.SQL.FirewallRule"
+    assert result.outputs_prefix == "Azure.SqlDB.FirewallRules"
     call_kwargs = client.sql_firewall_rule_replace.call_args[1]
     assert call_kwargs["firewall_rule_name"] == "replaced-rule"
     assert call_kwargs["start_ip_address"] == "0.0.0.0"
