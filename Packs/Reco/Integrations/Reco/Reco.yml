@@ -121,7 +121,7 @@ description: Reco is the leader in SaaS & AI Security, providing full visibility
 display: Reco
 name: Reco
 script:
-  dockerimage: demisto/python3:3.12.13.10404775
+  dockerimage: demisto/python3:3.12.14.13919218
   isfetch: true
   runonce: false
   script: "-"
