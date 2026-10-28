@@ -1,8 +1,6 @@
-import time
 from datetime import datetime, timedelta, UTC
 
 import demistomock as demisto
-import SailPointIdentityNowEventCollector as sp_event_collector
 from CommonServerPython import DemistoException, arg_to_datetime
 from SailPointIdentityNowEventCollector import (
     CURRENT_TIME_STR,
@@ -381,6 +379,32 @@ def test_fetch_events_batch__partial_page_of_duplicates_stops(mocker):
     assert dedup_cache == previous_id_timestamps
 
 
+def test_fetch_events_batch__logs_api_calls_summary(mocker):
+    """
+    Given:
+        - An API that returns two full pages of new events and then an empty page
+    When:
+        - Calling _fetch_events_batch
+    Then:
+        - Ensure a summary log with the number of API calls (loops) made in the run is written at the end of the run
+    """
+    from SailPointIdentityNowEventCollector import _fetch_events_batch
+
+    mocker.patch("SailPointIdentityNowEventCollector.MAX_EVENTS_PER_API_CALL", 2)
+    debug_mock = mocker.patch.object(demisto, "debug")
+
+    client = mocker.Mock()
+    client.search_events.side_effect = [EVENTS_SEQUENTIAL[:2], EVENTS_SEQUENTIAL[2:4], []]
+
+    all_events, _ = _fetch_events_batch(client, 100, "2022-01-01T00:00:00Z")
+
+    assert all_events == EVENTS_SEQUENTIAL
+    assert client.search_events.call_count == 3
+    assert debug_mock.call_args_list[-1].args[0] == (
+        "Fetch run summary: made 3 API calls (loops) in this run, returning 4 events."
+    )
+
+
 def test_fetch_events_batch__always_requests_full_page(mocker):
     """
     Given:
@@ -690,12 +714,14 @@ def test_parse_event_timestamp__other_formats_fall_back_to_arg_to_datetime(mocke
     Then:
         - Ensure the timestamp is parsed by arg_to_datetime, exactly as before the optimization
     """
-    arg_to_datetime_spy = mocker.spy(sp_event_collector, "arg_to_datetime")
+    arg_to_datetime_spy = mocker.patch("SailPointIdentityNowEventCollector.arg_to_datetime", wraps=arg_to_datetime)
 
     result = parse_event_timestamp(timestamp)
 
     arg_to_datetime_spy.assert_called_once_with(timestamp, required=True)
-    assert result == arg_to_datetime(timestamp, required=True)
+    expected: datetime = arg_to_datetime(timestamp, required=True)  # type: ignore[assignment]
+    assert result == (expected.replace(tzinfo=UTC) if expected.tzinfo is None else expected)
+    assert result.tzinfo is not None
 
 
 def test_parse_event_timestamp__parsed_dates_compare_consistently():
@@ -710,6 +736,41 @@ def test_parse_event_timestamp__parsed_dates_compare_consistently():
     assert parse_event_timestamp("2026-10-13T17:55:49Z") == parse_event_timestamp("2026-10-13T17:55:49+00:00")
 
 
+def test_parse_event_timestamp__naive_fallback_compares_with_fast_path():
+    """
+    Given:
+        - A timestamp without a timezone designator (parsed by the arg_to_datetime fallback, which returns a naive datetime)
+        - The same moment in the SailPoint UTC format (parsed by the fast path, which returns an aware datetime)
+    When:
+        - Comparing the parsed results, as filter_id_timestamps_by_lookback_window does
+    Then:
+        - Ensure the comparison does not raise TypeError (naive vs. aware) and both describe the same moment in UTC
+    """
+    naive_fallback_result = parse_event_timestamp("2026-10-13T17:55:49")
+    fast_path_result = parse_event_timestamp("2026-10-13T17:55:49Z")
+
+    assert naive_fallback_result.utcoffset() == timedelta(0)
+    assert naive_fallback_result == fast_path_result
+    assert naive_fallback_result >= fast_path_result - timedelta(minutes=1)
+
+
+def test_filter_id_timestamps_by_lookback_window__mixed_timestamp_formats(mocker):
+    """
+    Given:
+        - A dedup cache that mixes timestamps with and without a timezone designator (e.g. legacy cache entries)
+    When:
+        - Calling filter_id_timestamps_by_lookback_window with a SailPoint UTC format current date
+    Then:
+        - Ensure no TypeError is raised and the IDs are filtered by the lookback window
+    """
+    mocker.patch.object(demisto, "debug")
+    id_timestamps = {"1": "2022-01-01T00:01:00", "2": "2022-01-01T00:09:00Z", "3": "2022-01-01T00:10:00"}
+
+    result = filter_id_timestamps_by_lookback_window(id_timestamps, "2022-01-01T00:10:00Z", 2)
+
+    assert result == {"2": "2022-01-01T00:09:00Z", "3": "2022-01-01T00:10:00"}
+
+
 def test_filter_id_timestamps_by_lookback_window__large_cache_is_fast(mocker):
     """
     Regression test for XSUP-78955.
@@ -719,20 +780,20 @@ def test_filter_id_timestamps_by_lookback_window__large_cache_is_fast(mocker):
     When:
         - Calling filter_id_timestamps_by_lookback_window
     Then:
-        - Ensure the filtering finishes in a few seconds (it took ~5 minutes with dateparser and hit the docker timeout)
+        - Ensure the slow arg_to_datetime (dateparser) is never called, since it took ~5 minutes for this cache size
+          and hit the docker timeout
         - Ensure only the IDs inside the lookback window are kept
     """
     mocker.patch.object(demisto, "debug")
+    arg_to_datetime_spy = mocker.patch("SailPointIdentityNowEventCollector.arg_to_datetime", wraps=arg_to_datetime)
     newest = datetime(2026, 10, 19, 18, 17, 53, 393000, tzinfo=UTC)
     id_timestamps = {
         f"id_{index}": (newest - timedelta(seconds=index)).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z" for index in range(65000)
     }
 
-    start = time.monotonic()
     filtered = filter_id_timestamps_by_lookback_window(id_timestamps, "2026-10-19T18:17:53.393Z", 5)
-    elapsed = time.monotonic() - start
 
-    assert elapsed < 10
+    arg_to_datetime_spy.assert_not_called()
     # look_back of 5 minutes + 1 minute retention buffer = 360 seconds, inclusive
     assert len(filtered) == 361
     assert "id_360" in filtered
@@ -891,15 +952,16 @@ def test_test_module__success(mocker):
     When:
         - Calling test_module
     Then:
-        - Ensure 'ok' is returned and fetch_events is called with limit 1 and an empty last run
+        - Ensure 'ok' is returned
+        - Ensure a single API call requests only 1 event (not a full page of MAX_EVENTS_PER_API_CALL)
     """
     from SailPointIdentityNowEventCollector import test_module
 
-    fetch_events_mock = mocker.patch("SailPointIdentityNowEventCollector.fetch_events", return_value=({}, []))
     client = mocker.Mock()
+    client.search_events.return_value = []
 
     assert test_module(client) == "ok"
-    fetch_events_mock.assert_called_once_with(client=client, limit=1, look_back=0, last_run={})
+    client.search_events.assert_called_once_with(from_date=CURRENT_TIME_STR, limit=1)
 
 
 def test_test_module__forbidden_returns_authorization_error(mocker):
@@ -913,9 +975,10 @@ def test_test_module__forbidden_returns_authorization_error(mocker):
     """
     from SailPointIdentityNowEventCollector import test_module
 
-    mocker.patch("SailPointIdentityNowEventCollector.fetch_events", side_effect=DemistoException("Error 403 Forbidden"))
+    client = mocker.Mock()
+    client.search_events.side_effect = DemistoException("Error 403 Forbidden")
 
-    assert test_module(mocker.Mock()) == "Authorization Error: make sure API Key is correctly set"
+    assert test_module(client) == "Authorization Error: make sure API Key is correctly set"
 
 
 def test_test_module__other_error_is_raised(mocker):
@@ -929,10 +992,11 @@ def test_test_module__other_error_is_raised(mocker):
     """
     from SailPointIdentityNowEventCollector import test_module
 
-    mocker.patch("SailPointIdentityNowEventCollector.fetch_events", side_effect=DemistoException("Connection timed out"))
+    client = mocker.Mock()
+    client.search_events.side_effect = DemistoException("Connection timed out")
 
     with pytest.raises(DemistoException, match="Connection timed out"):
-        test_module(mocker.Mock())
+        test_module(client)
 
 
 def test_get_events(mocker):

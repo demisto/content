@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timedelta, UTC
 
 import demistomock as demisto
@@ -129,12 +130,8 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        fetch_events(
-            client=client,
-            limit=1,
-            look_back=0,
-            last_run={},
-        )
+        # Request a single event only. fetch_events always requests a full page, which is not needed for a connectivity test.
+        client.search_events(from_date=CURRENT_TIME_STR, limit=1)
 
     except Exception as e:
         if "Forbidden" in str(e):
@@ -242,7 +239,7 @@ def _fetch_events_batch(
     Returns:
         Tuple of (deduplicated events list, updated dedup_cache dict with timestamps)
     """
-    all_events = []
+    all_events: List[Dict] = []
     remaining_events_to_fetch = limit
 
     # Start with previous timestamps and add current run's events to it
@@ -317,7 +314,7 @@ def _fetch_events_batch(
             demisto.debug("API returned fewer events than requested. No more events available.")
             break
 
-    demisto.debug(f"_fetch_events_batch completed after {loop_count} loops, returning {len(all_events)} events")
+    demisto.debug(f"Fetch run summary: made {loop_count} API calls (loops) in this run, returning {len(all_events)} events.")
 
     return all_events, dedup_cache
 
@@ -429,17 +426,22 @@ def parse_event_timestamp(timestamp: str) -> datetime:
 
     arg_to_datetime (dateparser) takes about 5 ms per call, which is too slow for tens of thousands of cached IDs.
     Timestamps in the exact SailPoint UTC format are parsed with datetime.fromisoformat, which gives the same result
-    much faster. Any other format falls back to arg_to_datetime, so it is parsed exactly as before.
+    much faster. Any other format falls back to arg_to_datetime.
+
+    arg_to_datetime returns a naive datetime (already interpreted as UTC) for inputs without a timezone designator,
+    so the fallback result is marked as UTC. This keeps fast-path and fallback results comparable, because comparing
+    naive and aware datetimes raises TypeError.
 
     Args:
         timestamp: The timestamp string to parse.
 
     Returns:
-        The parsed datetime.
+        The parsed timezone-aware datetime.
     """
     if SAILPOINT_UTC_TIMESTAMP_REGEX.match(timestamp):
         return datetime.fromisoformat(timestamp)
-    return arg_to_datetime(timestamp, required=True)  # type: ignore[return-value]
+    parsed: datetime = arg_to_datetime(timestamp, required=True)  # type: ignore[assignment]
+    return parsed.replace(tzinfo=UTC) if parsed.tzinfo is None else parsed
 
 
 def filter_id_timestamps_by_lookback_window(id_timestamps: dict, current_date: str, look_back: int) -> dict:
