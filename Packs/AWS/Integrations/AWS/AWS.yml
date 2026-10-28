@@ -17719,6 +17719,119 @@ script:
         description: The token to use when requesting the next set of items. Empty string if no additional items exist.
         type: String
 
+  - name: aws-ssm-parameters-list
+    description: "Lists the Systems Manager (SSM) Parameter Store parameters in the current AWS account and Region. Returns the parameter metadata only, never the parameter values. Required IAM Permissions: ssm:DescribeParameters, ssm:ListTagsForResource (only when include_tags is true)."
+    arguments:
+      - name: account_id
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: region
+        description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: filters
+        description: "A semicolon-separated list of filters in the format key=<key>,option=<option>,values=<value1>,<value2>. The option pair is optional and defaults to Equals when omitted. Valid filter keys: Name, Type, KeyId, Path, Label, Tier, DataType, and tag:<TagName>. Valid options: Equals, BeginsWith, Contains, Recursive, OneLevel. For example: key=Name,option=Contains,values=prod;key=Type,values=SecureString."
+      - name: include_tags
+        description: Whether to also return the tags of every parameter. Requires an additional API call per returned parameter. To filter by a tag instead, use the tag:<TagName> filter key, which requires no additional calls.
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+        defaultValue: 'false'
+      - name: limit
+        description: The maximum number of parameters to return. Minimum 1, maximum 50. Default is 50.
+      - name: next_token
+        description: The token for the next set of items to return. Received from a previous call. Use AWS.SSM.ParametersNextToken.
+    outputs:
+      - contextPath: AWS.SSM.Parameters.Name
+        description: The name of the parameter.
+        type: String
+      - contextPath: AWS.SSM.Parameters.ARN
+        description: The Amazon Resource Name (ARN) of the parameter.
+        type: String
+      - contextPath: AWS.SSM.Parameters.Type
+        description: The type of the parameter. Either String, StringList, or SecureString.
+        type: String
+      - contextPath: AWS.SSM.Parameters.KeyId
+        description: The alias or ARN of the KMS key used to encrypt the parameter. Applies to SecureString parameters only.
+        type: String
+      - contextPath: AWS.SSM.Parameters.LastModifiedDate
+        description: The date the parameter was last changed or updated.
+        type: Date
+      - contextPath: AWS.SSM.Parameters.LastModifiedUser
+        description: The Amazon Resource Name (ARN) of the AWS user who last changed the parameter.
+        type: String
+      - contextPath: AWS.SSM.Parameters.Description
+        description: The description of the parameter.
+        type: String
+      - contextPath: AWS.SSM.Parameters.AllowedPattern
+        description: A regular expression used to validate the parameter value.
+        type: String
+      - contextPath: AWS.SSM.Parameters.Version
+        description: The parameter version.
+        type: Number
+      - contextPath: AWS.SSM.Parameters.Tier
+        description: The parameter tier. Either Standard, Advanced, or Intelligent-Tiering.
+        type: String
+      - contextPath: AWS.SSM.Parameters.DataType
+        description: The data type of the parameter, such as text or aws:ec2:image. The default is text.
+        type: String
+      - contextPath: AWS.SSM.Parameters.Policies.PolicyText
+        description: The JSON text of the policy.
+        type: String
+      - contextPath: AWS.SSM.Parameters.Policies.PolicyType
+        description: The type of policy. Either Expiration, ExpirationNotification, or NoChangeNotification.
+        type: String
+      - contextPath: AWS.SSM.Parameters.Policies.PolicyStatus
+        description: The status of the policy. Either Pending, Finished, Failed, or InProgress.
+        type: String
+      - contextPath: AWS.SSM.Parameters.Tags.Key
+        description: The name of the tag. Returned only when include_tags is true.
+        type: String
+      - contextPath: AWS.SSM.Parameters.Tags.Value
+        description: The value of the tag. Returned only when include_tags is true.
+        type: String
+      - contextPath: AWS.SSM.ParametersNextToken
+        description: The token to use when requesting the next set of items. Empty string if no additional items exist.
+        type: String
+
   - name: aws-ssm-document-describe
     description: "Describes the specified SSM document. Required IAM Permission: ssm:DescribeDocument."
     arguments:

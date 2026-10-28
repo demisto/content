@@ -400,6 +400,43 @@ def parse_name_value_type_format_filter(filter_string: str | None):
     return filters
 
 
+def parse_parameter_filters(filter_string: str | None) -> list[dict[str, Any]]:
+    """
+    Parses a list representation of SSM Parameter Store filters with the form of
+    'key=<key>,option=<option>,values=<values>'. The option pair is optional (AWS defaults it to Equals).
+    The values pair must be last, so everything after it is treated as a comma-separated list of values.
+    Args:
+        filter_string: The key, option and values list, separated by ';'.
+    Returns:
+        A list of dicts with the form {"Key": <key>, "Values": [<value>], "Option": <option>}
+    """
+    filters: list[dict[str, Any]] = []
+    regex = re.compile(
+        r"^key=(?P<key>[\w:.\-/]+),(?:option=(?P<option>\w+),)?values=(?P<values>[ \w@,.*\-/:]+)$",
+        flags=re.I,
+    )
+    for parameter_filter in argToList(filter_string, separator=";"):
+        if not parameter_filter:
+            continue
+        match_filter = regex.match(parameter_filter.strip())
+        if match_filter is None:
+            raise ValueError(
+                f"Could not parse the filter: {parameter_filter}. Please make sure you provided "
+                "like so: key=<key>,values=<value1>,<value2>;key=<key>,option=<option>,values=<value>..."
+            )
+        filters.append(
+            remove_empty_elements(
+                {
+                    "Key": match_filter["key"],
+                    "Option": match_filter["option"],
+                    "Values": argToList(match_filter["values"]),
+                }
+            )
+        )
+
+    return filters
+
+
 def parse_tag_field(tags_string: str | None) -> list:
     """
     Parses a list representation of key and value with the form of 'key=<name>,value=<value>.
@@ -9448,6 +9485,74 @@ class SSM:
             args_for_next_run=args,
         )
 
+    @staticmethod
+    def parameters_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Lists the SSM Parameter Store parameters in the current AWS account and Region.
+        The AWS API returns the parameter metadata only, it never returns the parameter values.
+
+        Args:
+            client (BotoClient): The boto3 client for SSM service.
+            args (Dict[str, Any]): Command arguments including optional filters, include_tags, limit, and next_token.
+
+        Returns:
+            CommandResults: Results containing the list of SSM parameters with pagination token.
+        """
+        kwargs: Dict[str, Any] = remove_empty_elements(
+            {
+                "ParameterFilters": parse_parameter_filters(args.get("filters")),
+            }
+        )
+        kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
+
+        print_debug_logs(client, f"Listing SSM parameters with {kwargs=}")
+
+        response = client.describe_parameters(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        parameters = response.get("Parameters", [])
+
+        if not parameters:
+            return CommandResults(readable_output="No SSM parameters found.")
+
+        headers = [
+            "Name",
+            "Type",
+            "DataType",
+            "Tier",
+            "Version",
+            "LastModifiedDate",
+            "LastModifiedUser",
+            "Description",
+        ]
+        if argToBoolean(args.get("include_tags", False)):
+            print_debug_logs(client, f"Retrieving tags for {len(parameters)} SSM parameters.")
+            for parameter in parameters:
+                tags_response = client.list_tags_for_resource(ResourceType="Parameter", ResourceId=parameter.get("Name"))
+                parameter["Tags"] = tags_response.get("TagList", [])
+            headers.append("Tags")
+
+        # Outputs are intentionally not cleaned, so a missing NextToken is written as null and clears a stale token.
+        outputs = {
+            "AWS.SSM.Parameters(val.Name && val.Name == obj.Name)": parameters,
+            "AWS.SSM(true)": {"ParametersNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS SSM Parameters",
+                parameters,
+                headers=headers,
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
 
 class CloudWatchLogs:
     service = AWSServices.CloudWatchLogs
@@ -11483,6 +11588,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ssm-commands-list": SSM.command_list_command,
     "aws-ssm-command-cancel": SSM.command_cancel_command,
     "aws-ssm-tags-list": SSM.list_tags_for_resource_command,
+    "aws-ssm-parameters-list": SSM.parameters_list_command,
     "aws-ec2-vpc-delete": EC2.delete_vpc_command,
     "aws-ec2-vpc-endpoint-create": EC2.create_vpc_endpoint_command,
     "aws-ec2-internet-gateway-describe": EC2.describe_internet_gateways_command,
@@ -11554,6 +11660,7 @@ REQUIRED_ACTIONS: list[str] = [
     "ssm:StopAutomationExecution",
     "ssm:ListCommands",
     "ssm:CancelCommand",
+    "ssm:DescribeParameters",
     "kms:CreateGrant",
     "kms:Decrypt",
     "kms:DescribeKey",
