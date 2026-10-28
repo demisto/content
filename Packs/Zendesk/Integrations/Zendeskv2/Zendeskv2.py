@@ -57,6 +57,11 @@ CLOSE_INCIDENT = argToBoolean(params.get("close_incident", False))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 CACHE = None
 ZENDESK_FETCH_TIME_FORMAT = "%Y-%m-%dT%H:%M:00Z"
+OAUTH_TOKEN_SUFFIX = "/oauth/tokens"
+OAUTH_DEFAULT_SCOPE = "read write"
+OAUTH_TOKEN_CONTEXT_KEY = "oauth_token"
+OAUTH_TOKEN_EXPIRY_BUFFER_SECONDS = 60
+OAUTH_TOKEN_EXPIRES_IN_SECONDS = 1800
 
 
 class CacheManager:
@@ -283,8 +288,17 @@ class UpdatedTickets(TicketEvents):
 
 class ZendeskClient(BaseClient):
     def __init__(
-        self, base_url: str, username: str | None = None, password: str | None = None, proxy: bool = False, verify: bool = True
+        self,
+        base_url: str,
+        username: str | None = None,
+        password: str | None = None,
+        proxy: bool = False,
+        verify: bool = True,
+        client_id: str | None = None,
+        client_secret: str | None = None,
+        scope: str | None = None,
     ):
+        oauth_token_url = urljoin(base_url, OAUTH_TOKEN_SUFFIX)
         base_url = urljoin(base_url, "/api/v2/")
         auth = headers = None
         if username and password:
@@ -295,8 +309,73 @@ class ZendeskClient(BaseClient):
 
         super().__init__(base_url, auth=auth, proxy=proxy, verify=verify, headers=headers)
 
+        if client_id and client_secret:
+            access_token = self._get_oauth_access_token(
+                oauth_token_url, client_id or "", client_secret or "", scope or OAUTH_DEFAULT_SCOPE
+            )
+            self._headers = {"Authorization": f"Bearer {access_token}"}
+
+    def _get_oauth_access_token(self, token_url: str, client_id: str, client_secret: str, scope: str) -> str:
+        """Returns a valid OAuth 2.0 access token (Client Credentials grant), reusing a cached one when possible.
+
+        Args:
+            token_url: The Zendesk OAuth token endpoint.
+            client_id: The OAuth client identifier.
+            client_secret: The OAuth client secret.
+            scope: The space-separated OAuth scopes to request.
+
+        Returns:
+            str: The access token.
+        """
+        integration_context = demisto.getIntegrationContext() or {}
+        cached_token = integration_context.get(OAUTH_TOKEN_CONTEXT_KEY) or {}
+        if (
+            cached_token.get("access_token")
+            and cached_token.get("client_id") == client_id
+            and cached_token.get("scope") == scope
+            and cached_token.get("expires_at", 0) > time.time()
+        ):
+            demisto.debug("Using cached Zendesk OAuth access token.")
+            return cached_token["access_token"]
+
+        demisto.debug("Requesting a new Zendesk OAuth access token.")
+        response = self._http_request(
+            "POST",
+            full_url=token_url,
+            data={
+                "grant_type": "client_credentials",
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "scope": scope,
+                "expires_in": OAUTH_TOKEN_EXPIRES_IN_SECONDS,
+            },
+            headers={"Content-Type": "application/x-www-form-urlencoded", "Accept": "application/json"},
+        )
+        access_token = response.get("access_token")
+        if not access_token:
+            raise DemistoException("Failed to obtain an OAuth access token from Zendesk: no access_token in the response.")
+
+        expires_in = arg_to_number(response.get("expires_in")) or OAUTH_TOKEN_EXPIRES_IN_SECONDS
+        integration_context[OAUTH_TOKEN_CONTEXT_KEY] = {
+            "access_token": access_token,
+            "client_id": client_id,
+            "scope": scope,
+            "expires_at": time.time() + expires_in - OAUTH_TOKEN_EXPIRY_BUFFER_SECONDS,
+        }
+        demisto.setIntegrationContext(integration_context)
+        return access_token
+
     @staticmethod
     def error_handler(res: Response) -> None:
+        if res.status_code == 401 and "invalid_token" in res.text:
+            # The saved OAuth token was expired, revoked or invalidated. Drop it so the next run requests a new one.
+            demisto.debug("Zendesk rejected the OAuth access token. Removing it from the integration context.")
+            integration_context = demisto.getIntegrationContext() or {}
+            if integration_context.pop(OAUTH_TOKEN_CONTEXT_KEY, None):
+                demisto.setIntegrationContext(integration_context)
+            if CACHE and CACHE._data:
+                # Otherwise CACHE.save() at the end of the run writes the old token back.
+                CACHE._data.pop(OAUTH_TOKEN_CONTEXT_KEY, None)
         if res.text:
             raise DemistoException(f"Error occurred in Zendesk API: {res.text}")
         res.raise_for_status()
@@ -1321,16 +1400,33 @@ def main():  # pragma: no cover
     verify = not params.get("insecure", False)
     if not verify:
         disable_warnings()
-    client = ZendeskClient(
-        base_url=params["base_url"],
-        username=params["credentials"].get("identifier"),
-        password=params["credentials"]["password"],
-        proxy=params.get("proxy", False),
-        verify=verify,
-    )
+    credentials = params.get("credentials") or {}
+    oauth_credentials = params.get("oauth_credentials") or {}
+    client_id = oauth_credentials.get("identifier")
+    client_secret = oauth_credentials.get("password")
     global CACHE
-    CACHE = CacheManager(client)
     try:
+        if (client_id or client_secret) and (credentials.get("identifier") or credentials.get("password")):
+            raise DemistoException(
+                "More than one authentication method is configured. Provide either the OAuth Client ID and Client Secret, "
+                "or the Username and Password/API key credentials, not both."
+            )
+        if not (client_id and client_secret) and not credentials.get("password"):
+            raise DemistoException(
+                "No authentication method is configured. Provide either the OAuth Client ID and Client Secret, "
+                "or the Username and Password/API key credentials."
+            )
+        client = ZendeskClient(
+            base_url=params["base_url"],
+            username=credentials.get("identifier"),
+            password=credentials.get("password"),
+            proxy=params.get("proxy", False),
+            verify=verify,
+            client_id=client_id,
+            client_secret=client_secret,
+            scope=params.get("scope"),
+        )
+        CACHE = CacheManager(client)
         command = demisto.command()
         args = demisto.args()
         commands: dict[str, Callable] = {
@@ -1377,7 +1473,8 @@ def main():  # pragma: no cover
     except Exception as e:
         return_error(f"An error occurred: {e}", error=e)
     finally:
-        CACHE.save()
+        if CACHE:
+            CACHE.save()
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
