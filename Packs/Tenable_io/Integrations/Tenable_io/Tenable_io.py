@@ -1,5 +1,6 @@
 import gc
 import re  # pylint: disable=W9011
+import resource
 import sys
 import time
 import traceback
@@ -709,6 +710,21 @@ def handle_assets_chunks(client: Client, assets_last_run):  # pylint: disable=W9
     return assets, assets_last_run
 
 
+def log_peak_memory(stage: str) -> None:
+    """
+    Log the peak memory (max RSS) of the process so far, to follow the memory usage of a fetch-assets run.
+
+    Args:
+        stage: A short description of where in the run the measurement is taken.
+    """
+    try:
+        # On Linux (the integration's Docker image) ru_maxrss is in kilobytes.
+        peak_mb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
+        demisto.debug(f"[mem] {stage}: peak RSS so far {peak_mb:.0f} MB")
+    except Exception as e:  # pragma: no cover - diagnostics must never break the fetch
+        demisto.debug(f"[mem] could not read the peak RSS at {stage}: {e}")
+
+
 def send_vulnerabilities_chunk(vulnerabilities: list) -> None:
     """
     Send one chunk of vulnerabilities to XSIAM with the streaming send.
@@ -750,6 +766,9 @@ def persist_vulns_progress(assets_last_run: dict, remaining_chunks: list) -> Non
         # Note: snapshot_id and total_assets are NOT cleaned up here.
         # They belong to the assets snapshot lifecycle and must only be cleaned up
         # in main() AFTER the snapshot has been successfully sealed with the correct items_count.
+        # Cleaning them here was causing the snapshot to never be sealed because:
+        # 1. snapshot_id would be regenerated (new ID with no matching data rows)
+        # 2. total_assets would reset to 0 (sealing path skipped since cumulative_total=0)
     demisto.setAssetsLastRun(assets_last_run)
 
 
@@ -823,6 +842,7 @@ def handle_vulns_chunks(client: Client, assets_last_run) -> tuple[int, dict]:  #
         result = chunk_vulnerabilities = None
         updated_stored_chunks.remove(chunk_id)
         persist_vulns_progress(assets_last_run, updated_stored_chunks)
+        log_peak_memory(f"after vulns chunk {chunk_id} ({chunk_count} sent, {len(updated_stored_chunks)} chunks left)")
 
     if total_sent:
         demisto.updateModuleHealth({"eventsPulled": total_sent})
