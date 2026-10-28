@@ -8776,7 +8776,7 @@ script:
       name: job_type
     - description: The filter to return jobs by ID. Required when "polling" is set to true.
       name: id
-    - description: The target number of the firewall. Used only on a Panorama instance.
+    - description: 'The serial number of the firewall to target. Used only on a Panorama instance. To query Panorama itself (for example, to get the status of a job that was run on Panorama), set this argument to the host from the integration instance Server URL, exactly as written (for example, if the Server URL is "https://10.1.1.1/", use "10.1.1.1"). This queries only Panorama and skips the managed firewalls, which speeds up the command, especially when polling.'
       name: target
     - auto: PREDEFINED
       defaultValue: 'false'
@@ -10819,7 +10819,7 @@ script:
     - contextPath: Panorama.Certificate.devices_using_certificate
       type: Unknown
       description: List of devices using this certificate if it was pushed from Panorama.
-  dockerimage: demisto/pan-os-python:1.0.0.10133006
+  dockerimage: demisto/pan-os-python:1.0.0.13538236
   isfetch: true
   runonce: false
   script: ''
