@@ -7764,6 +7764,7 @@ def run_script_command():
     args = demisto.args()
     script_name = args.get("script_name")
     raw = args.get("raw")
+    command_line = args.get("command_line")
     host_ids = argToList(args.get("host_ids"))
     offline = argToBoolean(args.get("queue_offline", False))
     full_command = ""
@@ -7776,12 +7777,16 @@ def run_script_command():
     full_command = ""  # initialized variable here to avoid pylint errors
     if script_name and raw:
         raise ValueError("Only one of the arguments script_name or raw should be provided, not both.")
+    elif command_line and not script_name:
+        raise ValueError("The command_line argument can only be used together with the script_name argument.")
     elif not script_name and not raw:
         raise ValueError("One of the arguments script_name or raw must be provided, none given.")
     elif script_name:
         full_command = f"runscript -CloudFile={script_name}"
     elif raw:
         full_command = f"runscript -Raw=```{raw}```"
+    if command_line:
+        full_command += f" -CommandLine={command_line}"
     full_command += f" -Timeout={timeout}"
 
     command_type = "runscript"
