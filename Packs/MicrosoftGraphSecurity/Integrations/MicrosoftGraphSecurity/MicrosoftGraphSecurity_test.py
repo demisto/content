@@ -1,4 +1,3 @@
-import copy
 from datetime import datetime, timezone
 import itertools
 import json
@@ -2727,8 +2726,8 @@ def test_get_modified_remote_data_command_types(mocker, fetch_type, expected_url
     """
     Given: the fetch_incidents_type param.
     When: running get-modified-remote-data.
-    Then: only the selected object types are queried, with the lastUpdateDateTime filter, oldest change first
-        ($orderby=lastUpdateDateTime asc), and the Prefer header.
+    Then: only the selected object types are queried (alerts first), with the lastUpdateDateTime filter, oldest change
+        first ($orderby=lastUpdateDateTime asc), $top=50, and the Prefer header.
     """
 
     def router(**kwargs):
@@ -2743,6 +2742,7 @@ def test_get_modified_remote_data_command_types(mocker, fetch_type, expected_url
     assert [u.split("?")[0] for u in urls] == expected_urls
     assert all("$filter=lastUpdateDateTime ge 2026-10-10T10:00:00Z" in u for u in urls)
     assert all("$orderby=lastUpdateDateTime asc" in u for u in urls)
+    assert all(u.endswith("&$top=50") for u in urls)
     assert all(c.kwargs["headers"] == {"Prefer": "include-unknown-enum-members"} for c in http_mock.call_args_list)
 
 
@@ -2780,12 +2780,12 @@ def test_get_modified_remote_data_command_paging(mocker):
 
 def test_get_modified_remote_data_command_no_page_cap(mocker):
     """
-    Given: 8 list pages chained by @odata.nextLink (fewer than MAX_MODIFIED_PAGES), where the last page has no nextLink.
+    Given: 150 list pages chained by @odata.nextLink, where the last page has no nextLink.
     When: running get-modified-remote-data.
-    Then: the page cap isn't reached: all 8 pages are requested, all IDs are returned, and the total is logged with
-        demisto.debug.
+    Then: paging continues past 100 pages: all 150 pages are requested, all IDs are returned, the total is logged with
+        demisto.debug, and the integration context is neither read nor written.
     """
-    total_pages = 8
+    total_pages = 150
     pages = [
         {"value": [{"id": f"a{i}"}], "@odata.nextLink": f"https://graph.microsoft.com/next/{i + 1}"}
         for i in range(total_pages - 1)
@@ -2793,13 +2793,39 @@ def test_get_modified_remote_data_command_no_page_cap(mocker):
     pages.append({"value": [{"id": f"a{total_pages - 1}"}]})
     http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=pages)
     debug_mock = mocker.patch.object(demisto, "debug")
+    get_context_mock = mocker.patch("MicrosoftGraphSecurity.get_integration_context")
+    set_context_mock = mocker.patch("MicrosoftGraphSecurity.set_integration_context")
     res = get_modified_remote_data_command(client_mocker, {"lastUpdate": "2026-10-10T10:00:00Z"}, ALERTS_ONLY_PARAMS)
     assert res.modified_incident_ids == [f"a{i}" for i in range(total_pages)]
     assert http_mock.call_count == total_pages
     assert [c.kwargs["full_url"] for c in http_mock.call_args_list[1:]] == [
         f"https://graph.microsoft.com/next/{i}" for i in range(1, total_pages)
     ]
-    assert any("Listed 8 modified IDs from security/alerts_v2 in 8 page(s)" in c.args[0] for c in debug_mock.call_args_list)
+    assert any("Listed 150 modified IDs from security/alerts_v2 in 150 page(s)" in c.args[0] for c in debug_mock.call_args_list)
+    get_context_mock.assert_not_called()
+    set_context_mock.assert_not_called()
+
+
+def test_list_modified_object_ids_returns_ids_only(mocker):
+    """
+    Given: two list pages chained by @odata.nextLink, with an item without an ID.
+    When: calling list_modified_object_ids.
+    Then: a plain list of the (string) IDs is returned, the first request has the filter, orderby and $top=50, and the
+        next page is followed via full_url.
+    """
+    http_mock = mocker.patch.object(
+        client_mocker.ms_client,
+        "http_request",
+        side_effect=[
+            {"value": [{"id": "a1"}, {"lastUpdateDateTime": "2026-10-10T10:00:00Z"}], "@odata.nextLink": "https://graph/next"},
+            {"value": [{"id": 2}]},
+        ],
+    )
+    assert client_mocker.list_modified_object_ids("security/alerts_v2", "2026-10-10T10:00:00Z") == ["a1", "2"]
+    assert http_mock.call_args_list[0].kwargs["url_suffix"] == (
+        "security/alerts_v2?$filter=lastUpdateDateTime ge 2026-10-10T10:00:00Z&$orderby=lastUpdateDateTime asc&$top=50"
+    )
+    assert http_mock.call_args_list[1].kwargs["full_url"] == "https://graph/next"
 
 
 def _rate_limit_error() -> DemistoException:
@@ -2855,198 +2881,6 @@ def test_http_get_with_rate_limit_does_not_wrap_other_errors(mocker):
         client_mocker.http_get_with_rate_limit(url_suffix="security/alerts_v2")
     assert exc_info.value is error
     assert http_mock.call_count == 1
-
-
-def test_list_modified_object_ids_stops_at_page_limit(mocker):
-    """
-    Given: a Graph API that always returns another @odata.nextLink (an endless pagination loop).
-    When: calling list_modified_object_ids.
-    Then: the loop stops after MAX_MODIFIED_PAGES requests, returns the IDs read so far, the max lastUpdateDateTime seen
-        and capped=True, and logs that the limit was hit.
-    """
-    from MicrosoftGraphSecurity import MAX_MODIFIED_PAGES
-
-    endless_page = {
-        "value": [{"id": "a1", "lastUpdateDateTime": "2026-10-10T11:00:00.1234567Z"}],
-        "@odata.nextLink": "https://graph.microsoft.com/next",
-    }
-    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value=endless_page)
-    debug_mock = mocker.patch.object(demisto, "debug")
-
-    modified_ids, max_last_update, capped = client_mocker.list_modified_object_ids("security/alerts_v2", "2026-10-10T10:00:00Z")
-
-    assert http_mock.call_count == MAX_MODIFIED_PAGES
-    assert modified_ids == ["a1"] * MAX_MODIFIED_PAGES
-    assert capped is True
-    assert max_last_update == datetime(2026, 10, 10, 11, 0, 0, 123456, tzinfo=timezone.utc)  # noqa: UP017
-    assert any(f"Reached the limit of {MAX_MODIFIED_PAGES} pages" in str(call.args[0]) for call in debug_mock.call_args_list)
-
-
-MIRROR_TOKEN_CONTEXT = {"access_token": "fake-token", "valid_until": 123}
-
-
-def _capped_router(timestamps_by_url: dict[str, list[str]]):
-    """
-    Returns an http_request side_effect: for each URL prefix, an endless chain of pages (always with a nextLink) whose
-    items have the given lastUpdateDateTime values, cycling. The first request of each type uses url_suffix, the rest
-    full_url (prefixed with the type URL so the router can tell types apart).
-    """
-    counters: dict[str, int] = dict.fromkeys(timestamps_by_url, 0)
-
-    def router(**kwargs):
-        url = kwargs.get("url_suffix") or kwargs["full_url"]
-        object_url = next(u for u in timestamps_by_url if url.startswith(u) or f"/{u}" in url)
-        timestamps = timestamps_by_url[object_url]
-        ts = timestamps[min(counters[object_url], len(timestamps) - 1)]
-        counters[object_url] += 1
-        return {
-            "value": [{"id": f"{object_url}-{counters[object_url]}", "lastUpdateDateTime": ts}],
-            "@odata.nextLink": f"https://graph.microsoft.com/v1.0/{object_url}?next",
-        }
-
-    return router
-
-
-def _patch_mirror_context(mocker, context: dict):
-    """Patches the integration context getters/setters used by get-modified-remote-data. Returns the set mock."""
-    mocker.patch("MicrosoftGraphSecurity.get_integration_context", side_effect=lambda: copy.deepcopy(context))
-    return mocker.patch("MicrosoftGraphSecurity.set_integration_context")
-
-
-def _first_urls(http_mock) -> list[str]:
-    """The url_suffix of each first-page request."""
-    return [c.kwargs["url_suffix"] for c in http_mock.call_args_list if c.kwargs.get("url_suffix")]
-
-
-def test_get_modified_remote_data_cap_saves_max_per_type(mocker):
-    """
-    Given: both types selected, both listings hit MAX_MODIFIED_PAGES, and the context holds a token.
-    When: running get-modified-remote-data.
-    Then: the max lastUpdateDateTime per type is saved under mirror_last_update, and the token keys are preserved.
-    """
-    set_mock = _patch_mirror_context(mocker, MIRROR_TOKEN_CONTEXT)
-    mocker.patch.object(
-        client_mocker.ms_client,
-        "http_request",
-        side_effect=_capped_router(
-            {
-                "security/alerts_v2": ["2026-10-10T10:00:01Z", "2026-10-10T10:30:00.5Z"],
-                "security/incidents": ["2026-10-10T10:00:02Z", "2026-10-10T10:45:00Z"],
-            }
-        ),
-    )
-    get_modified_remote_data_command(
-        client_mocker, {"lastUpdate": "2026-10-10T10:00:00Z"}, {"fetch_incidents_type": "Alerts,Incidents"}
-    )
-    set_mock.assert_called_once()
-    assert set_mock.call_args.args[0] == {
-        **MIRROR_TOKEN_CONTEXT,
-        "mirror_last_update": {"Alerts": "2026-10-10T10:30:00.500000Z", "Incidents": "2026-10-10T10:45:00Z"},
-    }
-
-
-def test_get_modified_remote_data_uses_saved_start_per_type(mocker):
-    """
-    Given: a saved start for Alerts only, both types selected and not capped.
-    When: running get-modified-remote-data.
-    Then: the Alerts filter uses the saved timestamp, the Incidents filter uses the args lastUpdate.
-    """
-    _patch_mirror_context(mocker, {"mirror_last_update": {"Alerts": "2026-10-09T08:00:00.250000Z"}})
-    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={"value": []})
-    get_modified_remote_data_command(
-        client_mocker, {"lastUpdate": "2026-10-10T10:00:00Z"}, {"fetch_incidents_type": "Alerts,Incidents"}
-    )
-    alerts_url, incidents_url = _first_urls(http_mock)
-    assert "lastUpdateDateTime ge 2026-10-09T08:00:00.250000Z" in alerts_url
-    assert "lastUpdateDateTime ge 2026-10-10T10:00:00Z" in incidents_url
-
-
-def test_get_modified_remote_data_all_pages_read_clears_key(mocker):
-    """
-    Given: a saved start for Alerts, and the Alerts listing is read to its last page.
-    When: running get-modified-remote-data.
-    Then: the saved start was used, and the mirror_last_update key is removed (other keys kept).
-    """
-    set_mock = _patch_mirror_context(mocker, {**MIRROR_TOKEN_CONTEXT, "mirror_last_update": {"Alerts": "2026-10-09T08:00:00Z"}})
-    http_mock = mocker.patch.object(
-        client_mocker.ms_client,
-        "http_request",
-        return_value={"value": [{"id": "a1", "lastUpdateDateTime": "2026-10-09T09:00:00Z"}]},
-    )
-    res = get_modified_remote_data_command(client_mocker, {"lastUpdate": "2026-10-10T10:00:00Z"}, ALERTS_ONLY_PARAMS)
-    assert res.modified_incident_ids == ["a1"]
-    assert "lastUpdateDateTime ge 2026-10-09T08:00:00Z" in _first_urls(http_mock)[0]
-    set_mock.assert_called_once_with(MIRROR_TOKEN_CONTEXT)
-
-
-def test_get_modified_remote_data_no_write_when_unchanged(mocker):
-    """
-    Given: no saved start and the listing isn't capped.
-    When: running get-modified-remote-data.
-    Then: the integration context isn't written.
-    """
-    set_mock = _patch_mirror_context(mocker, MIRROR_TOKEN_CONTEXT)
-    mocker.patch.object(client_mocker.ms_client, "http_request", return_value={"value": [{"id": "a1"}]})
-    get_modified_remote_data_command(client_mocker, {"lastUpdate": "2026-10-10T10:00:00Z"}, ALERTS_ONLY_PARAMS)
-    set_mock.assert_not_called()
-
-
-def test_get_modified_remote_data_failure_keeps_context(mocker):
-    """
-    Given: a saved start for Alerts, Alerts are capped but the Incidents request fails with HTTP 429.
-    When: running get-modified-remote-data.
-    Then: an exception is raised and the integration context isn't written (the next cycle retries from the same point).
-    """
-    set_mock = _patch_mirror_context(mocker, {"mirror_last_update": {"Alerts": "2026-10-09T08:00:00Z"}})
-    alerts_router = _capped_router({"security/alerts_v2": ["2026-10-09T09:00:00Z"]})
-
-    def router(**kwargs):
-        if (kwargs.get("url_suffix") or "").startswith("security/incidents"):
-            raise _rate_limit_error()
-        return alerts_router(**kwargs)
-
-    mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=router)
-    with pytest.raises(DemistoException, match="^API rate limit"):
-        get_modified_remote_data_command(
-            client_mocker, {"lastUpdate": "2026-10-10T10:00:00Z"}, {"fetch_incidents_type": "Alerts,Incidents"}
-        )
-    set_mock.assert_not_called()
-
-
-@pytest.mark.parametrize(
-    "saved, expected_next",
-    [
-        ({}, "2026-10-10T10:00:00.000001Z"),
-        ({"mirror_last_update": {"Alerts": "2026-10-09T08:00:00.500000Z"}}, "2026-10-09T08:00:00.500001Z"),
-    ],
-)
-def test_get_modified_remote_data_stuck_case_moves_forward(mocker, saved, expected_next):
-    """
-    Given: a capped listing where every item has lastUpdateDateTime equal to the start timestamp.
-    When: running get-modified-remote-data.
-    Then: the saved start moves forward by 1 microsecond (the minimum step), so the next cycle doesn't loop on it.
-    """
-    start = saved.get("mirror_last_update", {}).get("Alerts", "2026-10-10T10:00:00Z")
-    set_mock = _patch_mirror_context(mocker, saved)
-    mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=_capped_router({"security/alerts_v2": [start]}))
-    get_modified_remote_data_command(client_mocker, {"lastUpdate": "2026-10-10T10:00:00Z"}, ALERTS_ONLY_PARAMS)
-    assert set_mock.call_args.args[0] == {"mirror_last_update": {"Alerts": expected_next}}
-
-
-def test_get_modified_remote_data_unselected_type_cleaned_up(mocker):
-    """
-    Given: a stale saved start for Incidents while only Alerts are selected.
-    When: running get-modified-remote-data.
-    Then: Incidents aren't queried, and the stale Incidents key is removed.
-    """
-    set_mock = _patch_mirror_context(
-        mocker, {**MIRROR_TOKEN_CONTEXT, "mirror_last_update": {"Incidents": "2026-10-09T08:00:00Z"}}
-    )
-    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={"value": []})
-    get_modified_remote_data_command(client_mocker, {"lastUpdate": "2026-10-10T10:00:00Z"}, ALERTS_ONLY_PARAMS)
-    assert [u.split("?")[0] for u in _first_urls(http_mock)] == ["security/alerts_v2"]
-    assert "lastUpdateDateTime ge 2026-10-10T10:00:00Z" in _first_urls(http_mock)[0]
-    set_mock.assert_called_once_with(MIRROR_TOKEN_CONTEXT)
 
 
 @pytest.mark.parametrize(

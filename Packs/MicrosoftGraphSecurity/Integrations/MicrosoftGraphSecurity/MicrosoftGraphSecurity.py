@@ -42,11 +42,6 @@ MIRROR_TYPE_INCIDENT = "incident"
 
 # Error message that stops the current mirroring sync cycle.
 RATE_LIMIT_ERROR_MESSAGE = "API rate limit"
-# Max pages followed via @odata.nextLink when listing modified alerts/incidents.
-MAX_MODIFIED_PAGES = 100
-# Integration context key holding, per fetch type ("Alerts"/"Incidents"), the lastUpdateDateTime to resume
-# get-modified-remote-data from after a cycle hit MAX_MODIFIED_PAGES. Example: {"Alerts": "2026-10-10T10:00:00.123456Z"}.
-MIRROR_LAST_UPDATE_CONTEXT_KEY = "mirror_last_update"
 GRAPH_RESOLVED_STATUS = "resolved"
 # Incident merged into another incident (redirectIncidentId).
 GRAPH_REDIRECTED_STATUS = "redirected"
@@ -414,43 +409,28 @@ class MsGraphClient:
             "PATCH", url_suffix=cmd_url, json_data=body, resp_type="text", timeout=FETCH_INCIDENTS_TIMEOUT
         )
 
-    def list_modified_object_ids(self, object_url: str, last_update_iso: str) -> tuple[list[str], datetime | None, bool]:
+    def list_modified_object_ids(self, object_url: str, last_update_iso: str) -> list[str]:
         """
         Lists the IDs of alerts/incidents modified since `last_update_iso`, oldest change first
-        ($orderby=lastUpdateDateTime asc), following @odata.nextLink until the last page or until MAX_MODIFIED_PAGES
-        pages were read.
+        ($orderby=lastUpdateDateTime asc), following @odata.nextLink until the last page.
 
         Returns:
-            (modified IDs, the max lastUpdateDateTime seen (or None), whether the page cap was reached).
+            The IDs of the modified objects.
         """
         request: dict[str, Any] = {
             "url_suffix": f"{object_url}?$filter=lastUpdateDateTime ge {last_update_iso}"
             f"&$orderby=lastUpdateDateTime asc&$top={MAX_ITEMS_PER_RESPONSE}"
         }
         modified_ids: list[str] = []
-        max_last_update: datetime | None = None
         pages = 0
-        capped = False
         while request:
-            if pages >= MAX_MODIFIED_PAGES:
-                capped = True
-                demisto.debug(
-                    f"[Mirroring] Reached the limit of {MAX_MODIFIED_PAGES} pages when listing modified IDs from {object_url}, "
-                    f"not following the next link. Max lastUpdateDateTime seen (saved to resume from): {max_last_update}."
-                )
-                break
             response = self.http_get_with_rate_limit(**request)
-            for obj in response.get("value", []):
-                if obj.get("id"):
-                    modified_ids.append(str(obj["id"]))
-                obj_last_update = to_utc_datetime(obj.get("lastUpdateDateTime"))
-                if obj_last_update and (max_last_update is None or obj_last_update > max_last_update):
-                    max_last_update = obj_last_update
+            modified_ids.extend(str(obj["id"]) for obj in response.get("value", []) if obj.get("id"))
             pages += 1
             next_link = response.get("@odata.nextLink")
             request = {"full_url": next_link} if next_link else {}
         demisto.debug(f"[Mirroring] Listed {len(modified_ids)} modified IDs from {object_url} in {pages} page(s).")
-        return modified_ids, max_last_update, capped
+        return modified_ids
 
     def list_ediscovery_cases(self, case_id: str | None):
         url = "security/cases/ediscoveryCases"
@@ -3360,61 +3340,10 @@ def to_graph_filter_iso(dt: datetime) -> str:
     return dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ" if dt.microsecond else "%Y-%m-%dT%H:%M:%SZ")
 
 
-def get_saved_mirror_last_update() -> dict[str, str]:
-    """Returns a copy of the per-type saved mirroring start timestamps from the integration context."""
-    saved = get_integration_context().get(MIRROR_LAST_UPDATE_CONTEXT_KEY)
-    return dict(saved) if isinstance(saved, dict) else {}
-
-
-def get_mirror_start(fetch_type: str, saved: dict[str, str], server_last_update: datetime) -> datetime:
-    """Returns the saved start timestamp of `fetch_type` if there is a valid one, else the server's lastUpdate."""
-    saved_dt = to_utc_datetime(saved.get(fetch_type))
-    if saved_dt:
-        demisto.debug(f"[Mirroring] {fetch_type}: resuming from the saved lastUpdateDateTime {saved[fetch_type]}.")
-        return saved_dt
-    return server_last_update
-
-
-def get_next_mirror_start(fetch_type: str, start: datetime, max_last_update: datetime | None, capped: bool) -> str | None:
-    """
-    Returns the timestamp the next cycle of `fetch_type` should start from, or None when all pages were read
-    (the next cycle uses the server's lastUpdate).
-    """
-    if not capped:
-        return None
-    if max_last_update is None or max_last_update <= start:
-        next_start = to_graph_filter_iso(start + timedelta(microseconds=1))
-        demisto.info(
-            f"[Mirroring] {fetch_type}: all {MAX_MODIFIED_PAGES} pages share lastUpdateDateTime {to_graph_filter_iso(start)}, "
-            f"moving the saved start forward by 1 microsecond to {next_start}."
-        )
-        return next_start
-    return to_graph_filter_iso(max_last_update)
-
-
-def save_mirror_last_update(new_state: dict[str, str]) -> None:
-    """
-    Stores `new_state` under MIRROR_LAST_UPDATE_CONTEXT_KEY (removing the key when empty), keeping all other context keys
-    (e.g. MicrosoftApiModule tokens). The context is re-read here, after the requests, so a token refreshed during them is
-    kept. Nothing is written when the state didn't change.
-    """
-    integration_context = get_integration_context()
-    if (integration_context.get(MIRROR_LAST_UPDATE_CONTEXT_KEY) or {}) == new_state:
-        return
-    if new_state:
-        integration_context[MIRROR_LAST_UPDATE_CONTEXT_KEY] = new_state
-    else:
-        integration_context.pop(MIRROR_LAST_UPDATE_CONTEXT_KEY, None)
-    demisto.debug(f"[Mirroring] Updating the saved mirroring start timestamps to {new_state}.")
-    set_integration_context(integration_context)
-
-
 def get_modified_remote_data_command(client: MsGraphClient, args: dict, params: dict) -> GetModifiedRemoteDataResponse:
     """
-    Returns the IDs of the alerts and/or incidents (per `fetch_incidents_type`) modified since `lastUpdate`.
-    Per type, a start timestamp saved in the integration context (by a previous cycle that hit MAX_MODIFIED_PAGES) is
-    used instead of `lastUpdate`. After all types were listed, the saved timestamp is updated (cap reached) or removed
-    (all pages read). Saved timestamps of types that aren't selected are removed.
+    Returns the IDs of the alerts and/or incidents (per `fetch_incidents_type`) modified since `lastUpdate`,
+    alert IDs first. All pages are read for each selected type.
     """
     last_update = args.get("lastUpdate")
     parsed_date = to_utc_datetime(last_update)
@@ -3422,24 +3351,13 @@ def get_modified_remote_data_command(client: MsGraphClient, args: dict, params: 
         # Raised (not an empty list) so return_error adds "skip update" and the server keeps the same lastUpdate.
         raise DemistoException(f"get-modified-remote-data - failed to parse lastUpdate '{last_update}'.")
     server_last_update = parsed_date.replace(microsecond=0)
+    last_update_iso = to_graph_filter_iso(server_last_update)
     fetch_types = argToList(params.get("fetch_incidents_type"))
-    saved = get_saved_mirror_last_update()
-    new_state: dict[str, str] = {}
     modified_ids: list[str] = []
     for fetch_type, object_url in (("Alerts", CMD_URL), ("Incidents", INCIDENTS_URL)):
-        if fetch_type not in fetch_types:
-            continue
-        start = get_mirror_start(fetch_type, saved, server_last_update)
-        ids, max_last_update, capped = client.list_modified_object_ids(object_url, to_graph_filter_iso(start))
-        modified_ids.extend(ids)
-        if next_start := get_next_mirror_start(fetch_type, start, max_last_update, capped):
-            new_state[fetch_type] = next_start
-    # Written only after all types were listed: if a request raised, the context is unchanged and the next cycle retries.
-    save_mirror_last_update(new_state)
-    demisto.debug(
-        f"[Mirroring] {len(modified_ids)} objects modified since {to_graph_filter_iso(server_last_update)} "
-        f"(types: {fetch_types}, saved starts: {saved})."
-    )
+        if fetch_type in fetch_types:
+            modified_ids.extend(client.list_modified_object_ids(object_url, last_update_iso))
+    demisto.debug(f"[Mirroring] {len(modified_ids)} objects modified since {last_update_iso} (types: {fetch_types}).")
     return GetModifiedRemoteDataResponse(modified_incident_ids=modified_ids)
 
 
