@@ -1,5 +1,3 @@
-# Get Custom Automations
-
 Get the list of custom automations modified in last 30 days
 
 ## Script Data

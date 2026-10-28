@@ -123,11 +123,7 @@ def main():
                     }
                 )
 
-        is_platform_xsiam = demisto.demistoVersion().get("platform") == "unified_platform"
-
-        if not is_platform_xsiam:
-            find_top_used_playbooks(uri_prefix)
-
+        find_top_used_playbooks(uri_prefix)
         return_results(
             CommandResults(
                 readable_output="HealthCheckPlaybookAnalysis Done",
