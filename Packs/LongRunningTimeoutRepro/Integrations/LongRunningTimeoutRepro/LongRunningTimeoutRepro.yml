@@ -1,0 +1,48 @@
+commonfields:
+  id: LongRunningTimeoutRepro
+  version: -1
+name: LongRunningTimeoutRepro
+display: LongRunningTimeoutRepro (XSUP-79350 DO NOT MERGE)
+category: Utilities
+description: "XSUP-79350 platform repro, DO NOT MERGE. A long-running integration that freezes itself once so the server kills it for a missed heartbeat, then logs how long each restart survives."
+configuration:
+  - defaultvalue: "true"
+    display: Long Running Instance
+    hidden: true
+    name: longRunning
+    type: 8
+    required: false
+  - defaultvalue: "true"
+    display: Freeze once to trigger a missed-heartbeat kill
+    name: freeze_enabled
+    type: 8
+    required: false
+  - defaultvalue: "180"
+    display: Freeze after (seconds)
+    name: freeze_after_seconds
+    type: 0
+    required: false
+  - defaultvalue: "30"
+    display: Log interval (seconds)
+    name: log_interval_seconds
+    type: 0
+    required: false
+script:
+  script: ""
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.14.13053055
+  longRunning: true
+  commands:
+    - name: lr-repro-status
+      description: Shows every run of this instance and how long each one stayed up.
+    - name: lr-repro-reset
+      description: Clears the stored runs so the next run freezes again.
+marketplaces:
+  - marketplacev2
+  - platform
+fromversion: 6.9.0
+tests:
+  - No tests
+supportedModules:
+  - xsiam
