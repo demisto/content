@@ -1,0 +1,40 @@
+{
+    "name": "SoChain",
+    "description": "Enrich Bitcoin, Litecoin, Dogecoin and Zcash addresses and transactions with on-chain data from SoChain: activity, balances, counterparties and address poisoning checks.",
+    "support": "developer",
+    "currentVersion": "1.0.0",
+    "author": "SoChain",
+    "url": "https://sochain.com/support",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Free Enricher",
+        "Threat Intelligence"
+    ],
+    "useCases": [
+        "Ransomware",
+        "Incident Response"
+    ],
+    "keywords": [
+        "sochain",
+        "bitcoin",
+        "litecoin",
+        "dogecoin",
+        "zcash",
+        "cryptocurrency",
+        "blockchain",
+        "address poisoning"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ],
+    "created": "2026-10-28T00:00:00Z"
+}
