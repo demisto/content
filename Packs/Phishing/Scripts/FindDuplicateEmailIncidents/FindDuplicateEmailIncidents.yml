@@ -5,7 +5,7 @@ args:
 - description: A comma-separated list of incident types by which to filter. The default is the current incident type. Specify "None" to ignore incident type from deduplication logic.
   name: incidentTypes
 - defaultValue: 30 days ago
-  description: The start date by which to search for duplicated existing incidents. Date format is the same as in the incidents query page. For example, "3 days ago", "2019-01-01T00:00:00 +0200").
+  description: The start date by which to search for duplicated existing incidents. Date format is the same as in the incidents query page. For example, "3 days ago", "2019-01-01T00:00:00 +0200"). This is the correct argument to use; the misspelled *exsitingIncidentsLookback* argument is deprecated.
   name: existingIncidentsLookback
 - description: Additional text by which to query incidents.
   name: query
@@ -14,20 +14,20 @@ args:
   name: limit
 - auto: PREDEFINED
   defaultValue: emailsubject
-  description: Subject of the email.
+  description: The NAME of the incident field that holds the email subject (for example, emailsubject). Do not pass the field value (for example, ${incident.emailsubject}). Values containing whitespace or longer than 100 characters are ignored and the default field name is used.
   name: emailSubject
   predefined:
   - Subject of the email.
 - defaultValue: emailbody
-  description: Body of the email.
+  description: The NAME of the incident field that holds the email body (for example, emailbody). Do not pass the field value (for example, ${incident.emailbody}). Values containing whitespace or longer than 100 characters are ignored and the default field name is used.
   name: emailBody
   predefined:
   - ''
 - defaultValue: emailbodyhtml
-  description: HTML body of the email.
+  description: The NAME of the incident field that holds the email HTML body (for example, emailbodyhtml). Do not pass the field value (for example, ${incident.emailbodyhtml}). Values containing whitespace or longer than 100 characters are ignored and the default field name is used.
   name: emailBodyHTML
 - defaultValue: emailfrom
-  description: Incident fields contains the email from value.
+  description: The NAME of the incident field that holds the email sender address (for example, emailfrom). Do not pass the field value (for example, ${incident.emailfrom}). Values containing whitespace or longer than 100 characters are ignored and the default field name is used.
   name: emailFrom
 - auto: PREDEFINED
   defaultValue: TextOnly
@@ -61,8 +61,9 @@ args:
 - description: A comma-separated list of incident fields to populate.
   name: populateFields
 - defaultValue: 30 days ago
-  description: Deprecated. Use the *existingIncidentsLookback* argument instead.
+  description: Deprecated. Use the *existingIncidentsLookback* argument instead. This argument is ignored by the script.
   name: exsitingIncidentsLookback
+  deprecated: true
 comment: Can be used to find duplicate emails for incidents of type phishing, including  malicious, spam, and legitimate emails.
 commonfields:
   id: FindDuplicateEmailIncidents
