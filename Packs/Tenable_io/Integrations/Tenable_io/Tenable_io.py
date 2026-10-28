@@ -725,6 +725,7 @@ def log_peak_memory(stage: str) -> None:
         demisto.debug(f"[mem] {stage}: peak RSS so far {peak_mb:.0f} MB (high-water mark, never decreases)")
     except Exception as e:  # pragma: no cover - diagnostics must never break the fetch
         demisto.debug(f"[mem] could not read the peak RSS at {stage}: {e}")
+        demisto.debug(traceback.format_exc())
 
 
 def send_vulnerabilities_chunk(vulnerabilities: list) -> None:
@@ -2367,6 +2368,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 assets = run_assets_fetch(client, assets_last_run)
 
             demisto.info(f"Received {len(assets)} assets.")
+            log_peak_memory(f"after downloading assets ({len(assets)} assets)")
 
             demisto.debug(f"new lastrun assets: {assets_last_run}")
             demisto.setAssetsLastRun(assets_last_run)
@@ -2413,6 +2415,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                     # rather than just the count from this single batch
                     should_update_health_module=False,
                 )
+                log_peak_memory(f"after sending assets ({len(assets)} assets)")
                 # Update cumulative asset count AFTER successful send_data_to_xsiam()
                 # This ensures the counter only reflects assets that were actually sent to XSIAM
                 assets_last_run["total_assets"] = cumulative_total
