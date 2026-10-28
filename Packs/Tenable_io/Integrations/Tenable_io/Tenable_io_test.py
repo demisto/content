@@ -838,10 +838,10 @@ def test_handle_vulns_chunks_sends_and_persists_each_chunk(mocker, requests_mock
     sent_batches: list = []
 
     def fake_send(**kwargs):
+        # Record only the size and the flag; production never empties the caller's list.
         sent_batches.append((len(kwargs["data"]), kwargs.get("use_streaming_send")))
-        kwargs["data"].clear()  # simulate the streaming send emptying the list
 
-    mocker.patch.object(Tenable_io, "send_data_to_xsiam_with_retry", side_effect=fake_send)
+    mocker.patch.object(Tenable_io, "send_data_to_xsiam_with_retry", new=fake_send)
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
     for chunk_id in (1, 2, 3):
         requests_mock.get(f"{BASE_URL}/vulns/export/123/chunks/{chunk_id}", json=MOCK_CHUNK_CONTENT * chunk_id)
@@ -884,6 +884,40 @@ def test_handle_vulns_chunks_resumes_after_failure_mid_batch(mocker, requests_mo
         handle_vulns_chunks(client, last_run)
 
     assert persisted_chunks == [[2, 3]]
+    # The chunk that was sent before the failure is still reported in the module health.
+    demisto.updateModuleHealth.assert_called_once_with({"eventsPulled": 1})
+
+
+def test_handle_vulns_chunks_404_after_some_chunks_were_sent(mocker, requests_mock):
+    """
+    Given:
+        - Three vulnerability chunks, where chunk 3 returns 404 after chunks 1 and 2 were sent and saved.
+    When:
+        - handle_vulns_chunks runs.
+    Then:
+        - The vulnerabilities from chunks 1 and 2 are returned and reported in the module health, even though the
+          function returns early on the 404.
+        - A new export is started: the new export UUID and the retry count are stored, and the pending chunk list
+          is cleared.
+    """
+    mock_demisto(mocker)
+    mocker.patch.object(demisto, "updateModuleHealth")
+    mocker.patch.object(demisto, "setAssetsLastRun")
+    mocker.patch.object(Tenable_io, "send_data_to_xsiam_with_retry", new=lambda **kwargs: None)
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.get(f"{BASE_URL}/vulns/export/123/chunks/1", json=MOCK_CHUNK_CONTENT)
+    requests_mock.get(f"{BASE_URL}/vulns/export/123/chunks/2", json=MOCK_CHUNK_CONTENT * 2)
+    requests_mock.get(f"{BASE_URL}/vulns/export/123/chunks/3", status_code=404, json={"status": 404, "error": "Not Found"})
+    requests_mock.post(f"{BASE_URL}/vulns/export", json={"export_uuid": "456"})
+    last_run = {"vuln_export_uuid": "123", "vulns_available_chunks": [1, 2, 3]}
+
+    vulnerabilities_sent, last_run = handle_vulns_chunks(client, last_run)
+
+    assert vulnerabilities_sent == 3
+    demisto.updateModuleHealth.assert_called_once_with({"eventsPulled": 3})
+    assert last_run["vuln_export_uuid"] == "456"
+    assert last_run["vulns_404_retry_count"] == 1
+    assert "vulns_available_chunks" not in last_run
 
 
 def _peak_memory_of_handle_vulns_chunks(mocker, number_of_chunks: int) -> int:
@@ -904,9 +938,12 @@ def _peak_memory_of_handle_vulns_chunks(mocker, number_of_chunks: int) -> int:
             for index in range(records_per_chunk)
         ]
 
-    mocker.patch.object(Client, "download_vulnerabilities_chunk", side_effect=fake_download)
-    # The streaming send empties the list it is given; simulate that so freed records are not kept alive.
-    mocker.patch.object(Tenable_io, "send_data_to_xsiam_with_retry", side_effect=lambda **kwargs: kwargs["data"].clear())
+    # Plain functions (new=) so that the mocks do not record call arguments and keep every chunk alive.
+    # The send does not empty the list, matching production where the retry wrapper streams a copy.
+    mocker.patch.object(
+        Client, "download_vulnerabilities_chunk", new=lambda self, export_uuid, chunk_id: fake_download(export_uuid, chunk_id)
+    )
+    mocker.patch.object(Tenable_io, "send_data_to_xsiam_with_retry", new=lambda **kwargs: None)
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
     last_run = {"vuln_export_uuid": "123", "vulns_available_chunks": list(range(1, number_of_chunks + 1))}
 
@@ -965,6 +1002,36 @@ def test_send_data_to_xsiam_with_retry_streaming_retry_gets_full_data(mocker):
     send_data_to_xsiam_with_retry(data=data, vendor="tenable", product="io_vulnerabilities", use_streaming_send=True)
 
     assert received_sizes == [3, 3]
+    assert len(data) == 3  # the caller's list is never modified
+
+
+def test_send_data_to_xsiam_with_retry_streaming_copies_positional_data(mocker):
+    """
+    Given:
+        - Data passed as the first positional argument, with use_streaming_send=True.
+        - A streaming send that empties its input list and fails with a retryable error on the first attempt.
+    When:
+        - Sending with send_data_to_xsiam_with_retry.
+    Then:
+        - Every attempt gets its own copy of the positional data, so the retry re-sends all of it and the caller's
+          list is not modified.
+    """
+    mocker.patch.object(Tenable_io.time, "sleep")
+    received_sizes: list = []
+
+    def fake_send_data_to_xsiam(*args, **kwargs):
+        received_sizes.append(len(args[0]))
+        args[0].clear()
+        if len(received_sizes) == 1:
+            raise requests.exceptions.ConnectionError("reset")
+
+    mocker.patch.object(Tenable_io, "send_data_to_xsiam", new=fake_send_data_to_xsiam)
+    data = [{"id": "1"}, {"id": "2"}, {"id": "3"}]
+
+    send_data_to_xsiam_with_retry(data, vendor="tenable", product="io_vulnerabilities", use_streaming_send=True)
+
+    assert received_sizes == [3, 3]
+    assert len(data) == 3
 
 
 def test_fetch_audit_logs_no_duplications(mocker, requests_mock):
