@@ -875,29 +875,27 @@ def test_nginx_web_server(port: int, params: dict) -> requests.Response:
     Returns:
         requests.Response: The successful /nginx-test response (its headers identify the owning instance).
     """
-    polling_tries = 1
-    while True:
+    protocol = "https" if params.get("key") else "http"
+    welcome = "Welcome to nginx"
+    last_error: Exception | None = None
+    for _ in range(NGINX_MAX_POLLING_TRIES):
+        # let nginx startup
+        time.sleep(0.5)
         try:
-            # let nginx startup
-            time.sleep(0.5)
-            protocol = "https" if params.get("key") else "http"
             res = requests.get(  # guardrails-disable-line # nosec
                 f"{protocol}://localhost:{port}/nginx-test",  # guardrails-disable-line # nosec
                 verify=False,  # guardrails-disable-line # nosec
                 proxies={"http": "", "https": ""},  # guardrails-disable-line # nosec
             )  # guardrails-disable-line # nosec
             res.raise_for_status()
-            welcome = "Welcome to nginx"
             if welcome not in res.text:
                 raise ValueError(f'Unexpected response from nginx-test (does not contain "{welcome}"): {res.text}')
             return res
         except Exception as ex:
-            if polling_tries < NGINX_MAX_POLLING_TRIES:
-                polling_tries += 1
-                continue
-            err_msg = f"Testing nginx server: {ex}"
-            demisto.error(err_msg)
-            raise DemistoException(err_msg) from ex
+            last_error = ex
+    err_msg = f"Testing nginx server: {last_error}"
+    demisto.error(err_msg)
+    raise DemistoException(err_msg) from last_error
 
 
 def test_nginx_server(port: int, params: dict):
