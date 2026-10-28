@@ -5908,7 +5908,7 @@ script:
       description: The ETag of the DNS zone.
       type: String
     - contextPath: Azure.DNS.Zones.tags
-      description: A dictionary of the tags assigned to the DNS zone.
+      description: The tags assigned to the DNS zone.
       type: Unknown
     - contextPath: Azure.DNS.Zones.properties.maxNumberOfRecordSets
       description: The maximum number of record sets that can be created in the DNS zone.
@@ -5926,16 +5926,16 @@ script:
       description: The type of the DNS zone (Public or Private).
       type: String
     - contextPath: Azure.DNS.Zones.properties.registrationVirtualNetworks
-      description: A list of references to the virtual networks that register hostnames in the private DNS zone.
+      description: The list of references to the virtual networks that register hostnames in the private DNS zone.
       type: Unknown
     - contextPath: Azure.DNS.Zones.properties.resolutionVirtualNetworks
-      description: A list of references to the virtual networks that resolve records in the private DNS zone.
+      description: The list of references to the virtual networks that resolve records in the private DNS zone.
       type: Unknown
     - contextPath: Azure.DNS.ZonesNextToken
       description: The URI to use when requesting the next set of DNS zones.
       type: String
-  - name: azure-dns-record-set-get
-    description: "Retrieves a DNS record set. Required permissions: Microsoft.Network/dnszones/{record_type}/read (for example, Microsoft.Network/dnszones/CNAME/read)."
+  - name: azure-dns-cname-record-set-get
+    description: "Retrieves a DNS record set of type CNAME. Required permissions: Microsoft.Network/dnszones/CNAME/read."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -5949,23 +5949,8 @@ script:
     - name: zone_name
       description: The name of the DNS zone (without a terminating dot).
       required: true
-    - name: record_type
-      description: The type of DNS record in the record set.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - A
-      - AAAA
-      - CAA
-      - CNAME
-      - MX
-      - NS
-      - PTR
-      - SOA
-      - SRV
-      - TXT
     - name: relative_record_set_name
-      description: The name of the record set, relative to the name of the zone. Use @ for the zone apex.
+      description: The name of the CNAME record set, relative to the name of the zone.
       required: true
     outputs:
     - contextPath: Azure.DNS.RecordSets.id
@@ -5993,40 +5978,13 @@ script:
       description: The provisioning state of the record set.
       type: String
     - contextPath: Azure.DNS.RecordSets.properties.targetResource
-      description: A reference to an Azure resource from where the DNS resource value is taken, containing the id field.
+      description: The reference to an Azure resource from where the DNS resource value is taken, containing the id field.
       type: Unknown
-    - contextPath: Azure.DNS.RecordSets.properties.ARecords
-      description: The list of A records in the record set, each containing the ipv4Address field.
-      type: Unknown
-    - contextPath: Azure.DNS.RecordSets.properties.AAAARecords
-      description: The list of AAAA records in the record set, each containing the ipv6Address field.
-      type: Unknown
-    - contextPath: Azure.DNS.RecordSets.properties.MXRecords
-      description: The list of MX records in the record set, each containing the preference and exchange fields.
-      type: Unknown
-    - contextPath: Azure.DNS.RecordSets.properties.NSRecords
-      description: The list of NS records in the record set, each containing the nsdname field.
-      type: Unknown
-    - contextPath: Azure.DNS.RecordSets.properties.PTRRecords
-      description: The list of PTR records in the record set, each containing the ptrdname field.
-      type: Unknown
-    - contextPath: Azure.DNS.RecordSets.properties.SRVRecords
-      description: The list of SRV records in the record set, each containing the priority, weight, port, and target fields.
-      type: Unknown
-    - contextPath: Azure.DNS.RecordSets.properties.TXTRecords
-      description: The list of TXT records in the record set, each containing the value field.
-      type: Unknown
-    - contextPath: Azure.DNS.RecordSets.properties.CNAMERecord
-      description: The CNAME record in the record set, containing the cname field.
-      type: Unknown
-    - contextPath: Azure.DNS.RecordSets.properties.SOARecord
-      description: The SOA record in the record set, containing the host, email, serialNumber, refreshTime, retryTime, expireTime, and minimumTTL fields.
-      type: Unknown
-    - contextPath: Azure.DNS.RecordSets.properties.caaRecords
-      description: The list of CAA records in the record set, each containing the flags, tag, and value fields.
-      type: Unknown
-  - name: azure-dns-record-set-delete
-    description: "Deletes a DNS record set from a DNS zone. This operation cannot be undone. Required permissions: Microsoft.Network/dnszones/{record_type}/delete (for example, Microsoft.Network/dnszones/CNAME/delete)."
+    - contextPath: Azure.DNS.RecordSets.properties.CNAMERecord.cname
+      description: The canonical name for the CNAME record.
+      type: String
+  - name: azure-dns-cname-record-set-delete
+    description: "Deletes a DNS record set of type CNAME from a DNS zone. This operation cannot be undone. Required permissions: Microsoft.Network/dnszones/CNAME/delete."
     execution: true
     arguments:
     - name: subscription_id
@@ -6041,22 +5999,8 @@ script:
     - name: zone_name
       description: The name of the DNS zone (without a terminating dot).
       required: true
-    - name: record_type
-      description: The type of DNS record in the record set. Record sets of type SOA cannot be deleted, they are deleted when the DNS zone is deleted.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - A
-      - AAAA
-      - CAA
-      - CNAME
-      - MX
-      - NS
-      - PTR
-      - SRV
-      - TXT
     - name: relative_record_set_name
-      description: The name of the record set, relative to the name of the zone. Use @ for the zone apex.
+      description: The name of the CNAME record set, relative to the name of the zone.
       required: true
   - description: Gets all resource groups for a subscription. The command is deprecated, please use azure-rm-resource-groups-list.
     name: azure-nsg-resource-group-list

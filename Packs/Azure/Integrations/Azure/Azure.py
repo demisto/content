@@ -493,27 +493,10 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-log-analytics-table-delete",
     ],
     "Microsoft.OperationalInsights/workspaces/searchJobs/write": ["azure-log-analytics-table-run"],
-    # Azure DNS authorizes record set operations per record type. Record sets of type SOA cannot be deleted.
+    # Azure DNS authorizes record set operations per record type. Only CNAME record sets are supported.
     "Microsoft.Network/dnszones/read": ["azure-dns-zones-list"],
-    "Microsoft.Network/dnszones/A/read": ["azure-dns-record-set-get"],
-    "Microsoft.Network/dnszones/AAAA/read": ["azure-dns-record-set-get"],
-    "Microsoft.Network/dnszones/CAA/read": ["azure-dns-record-set-get"],
-    "Microsoft.Network/dnszones/CNAME/read": ["azure-dns-record-set-get"],
-    "Microsoft.Network/dnszones/MX/read": ["azure-dns-record-set-get"],
-    "Microsoft.Network/dnszones/NS/read": ["azure-dns-record-set-get"],
-    "Microsoft.Network/dnszones/PTR/read": ["azure-dns-record-set-get"],
-    "Microsoft.Network/dnszones/SOA/read": ["azure-dns-record-set-get"],
-    "Microsoft.Network/dnszones/SRV/read": ["azure-dns-record-set-get"],
-    "Microsoft.Network/dnszones/TXT/read": ["azure-dns-record-set-get"],
-    "Microsoft.Network/dnszones/A/delete": ["azure-dns-record-set-delete"],
-    "Microsoft.Network/dnszones/AAAA/delete": ["azure-dns-record-set-delete"],
-    "Microsoft.Network/dnszones/CAA/delete": ["azure-dns-record-set-delete"],
-    "Microsoft.Network/dnszones/CNAME/delete": ["azure-dns-record-set-delete"],
-    "Microsoft.Network/dnszones/MX/delete": ["azure-dns-record-set-delete"],
-    "Microsoft.Network/dnszones/NS/delete": ["azure-dns-record-set-delete"],
-    "Microsoft.Network/dnszones/PTR/delete": ["azure-dns-record-set-delete"],
-    "Microsoft.Network/dnszones/SRV/delete": ["azure-dns-record-set-delete"],
-    "Microsoft.Network/dnszones/TXT/delete": ["azure-dns-record-set-delete"],
+    "Microsoft.Network/dnszones/CNAME/read": ["azure-dns-cname-record-set-get"],
+    "Microsoft.Network/dnszones/CNAME/delete": ["azure-dns-cname-record-set-delete"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -678,29 +661,8 @@ API_FUNCTION_TO_PERMISSIONS = {
     ],
     "log_analytics_table_delete": ["Microsoft.OperationalInsights/workspaces/tables/delete"],
     "dns_zones_list": ["Microsoft.Network/dnszones/read"],
-    "dns_record_set_get": [
-        "Microsoft.Network/dnszones/A/read",
-        "Microsoft.Network/dnszones/AAAA/read",
-        "Microsoft.Network/dnszones/CAA/read",
-        "Microsoft.Network/dnszones/CNAME/read",
-        "Microsoft.Network/dnszones/MX/read",
-        "Microsoft.Network/dnszones/NS/read",
-        "Microsoft.Network/dnszones/PTR/read",
-        "Microsoft.Network/dnszones/SOA/read",
-        "Microsoft.Network/dnszones/SRV/read",
-        "Microsoft.Network/dnszones/TXT/read",
-    ],
-    "dns_record_set_delete": [
-        "Microsoft.Network/dnszones/A/delete",
-        "Microsoft.Network/dnszones/AAAA/delete",
-        "Microsoft.Network/dnszones/CAA/delete",
-        "Microsoft.Network/dnszones/CNAME/delete",
-        "Microsoft.Network/dnszones/MX/delete",
-        "Microsoft.Network/dnszones/NS/delete",
-        "Microsoft.Network/dnszones/PTR/delete",
-        "Microsoft.Network/dnszones/SRV/delete",
-        "Microsoft.Network/dnszones/TXT/delete",
-    ],
+    "dns_cname_record_set_get": ["Microsoft.Network/dnszones/CNAME/read"],
+    "dns_cname_record_set_delete": ["Microsoft.Network/dnszones/CNAME/delete"],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -805,25 +767,8 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.OperationalInsights/workspaces/tables/delete",
     "Microsoft.OperationalInsights/workspaces/searchJobs/write",
     "Microsoft.Network/dnszones/read",
-    "Microsoft.Network/dnszones/A/read",
-    "Microsoft.Network/dnszones/AAAA/read",
-    "Microsoft.Network/dnszones/CAA/read",
     "Microsoft.Network/dnszones/CNAME/read",
-    "Microsoft.Network/dnszones/MX/read",
-    "Microsoft.Network/dnszones/NS/read",
-    "Microsoft.Network/dnszones/PTR/read",
-    "Microsoft.Network/dnszones/SOA/read",
-    "Microsoft.Network/dnszones/SRV/read",
-    "Microsoft.Network/dnszones/TXT/read",
-    "Microsoft.Network/dnszones/A/delete",
-    "Microsoft.Network/dnszones/AAAA/delete",
-    "Microsoft.Network/dnszones/CAA/delete",
     "Microsoft.Network/dnszones/CNAME/delete",
-    "Microsoft.Network/dnszones/MX/delete",
-    "Microsoft.Network/dnszones/NS/delete",
-    "Microsoft.Network/dnszones/PTR/delete",
-    "Microsoft.Network/dnszones/SRV/delete",
-    "Microsoft.Network/dnszones/TXT/delete",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -862,6 +807,8 @@ AKS_API_VERSION = "2026-06-01"
 
 IP_GROUPS_API_VERSION = "2025-09-01"
 DNS_API_VERSION = "2018-05-01"
+# Only CNAME record sets are supported by the DNS record set commands.
+DNS_CNAME_RECORD_TYPE = "CNAME"
 
 LOG_ANALYTICS_API_VERSION = "2026-03-01"
 LOG_ANALYTICS_TABLE_NAME_SUFFIX = "_SRCH"
@@ -3686,23 +3633,21 @@ class AzureClient:
                 subscription_id=subscription_id,
             )
 
-    def dns_record_set_get(
+    def dns_cname_record_set_get(
         self,
         subscription_id: str,
         resource_group_name: str,
         zone_name: str,
-        record_type: str,
         relative_record_set_name: str,
     ):
         """
-        Retrieve a DNS record set.
+        Retrieve a DNS record set of type CNAME.
 
         Args:
             subscription_id: The Azure subscription ID.
             resource_group_name: The resource group name.
             zone_name: The name of the DNS zone (without a terminating dot).
-            record_type: The type of DNS record in this record set.
-            relative_record_set_name: The name of the record set, relative to the name of the zone.
+            relative_record_set_name: The name of the CNAME record set, relative to the name of the zone.
 
         Return:
             A dictionary containing the DNS record set information.
@@ -3712,37 +3657,35 @@ class AzureClient:
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.Network/dnsZones/{zone_name}/{record_type}/{relative_record_set_name}"
+            f"/providers/Microsoft.Network/dnsZones/{zone_name}/{DNS_CNAME_RECORD_TYPE}/{relative_record_set_name}"
         )
         try:
             return self.http_request(method="GET", full_url=full_url, params={"api-version": DNS_API_VERSION})
         except Exception as e:
             self.handle_azure_error(
                 e=e,
-                resource_name=f"{zone_name}/{record_type}/{relative_record_set_name}",
+                resource_name=f"{zone_name}/{DNS_CNAME_RECORD_TYPE}/{relative_record_set_name}",
                 resource_type="DNS Record Set",
-                api_function_name="dns_record_set_get",
+                api_function_name="dns_cname_record_set_get",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
 
-    def dns_record_set_delete(
+    def dns_cname_record_set_delete(
         self,
         subscription_id: str,
         resource_group_name: str,
         zone_name: str,
-        record_type: str,
         relative_record_set_name: str,
     ):
         """
-        Delete a DNS record set from a DNS zone. This operation cannot be undone.
+        Delete a DNS record set of type CNAME from a DNS zone. This operation cannot be undone.
 
         Args:
             subscription_id: The Azure subscription ID.
             resource_group_name: The resource group name.
             zone_name: The name of the DNS zone (without a terminating dot).
-            record_type: The type of DNS record in this record set. Record sets of type SOA cannot be deleted.
-            relative_record_set_name: The name of the record set, relative to the name of the zone.
+            relative_record_set_name: The name of the CNAME record set, relative to the name of the zone.
 
         Return:
             The HTTP response object from the delete operation.
@@ -3752,7 +3695,7 @@ class AzureClient:
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.Network/dnsZones/{zone_name}/{record_type}/{relative_record_set_name}"
+            f"/providers/Microsoft.Network/dnsZones/{zone_name}/{DNS_CNAME_RECORD_TYPE}/{relative_record_set_name}"
         )
         try:
             return self.http_request(
@@ -3761,9 +3704,9 @@ class AzureClient:
         except Exception as e:
             self.handle_azure_error(
                 e=e,
-                resource_name=f"{zone_name}/{record_type}/{relative_record_set_name}",
+                resource_name=f"{zone_name}/{DNS_CNAME_RECORD_TYPE}/{relative_record_set_name}",
                 resource_type="DNS Record Set",
-                api_function_name="dns_record_set_delete",
+                api_function_name="dns_cname_record_set_delete",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -9180,9 +9123,9 @@ def dns_zones_list_command(client: AzureClient, params: dict[str, Any], args: di
     )
 
 
-def dns_record_set_get_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+def dns_cname_record_set_get_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
-    Retrieves a DNS record set.
+    Retrieves a DNS record set of type CNAME.
     Args:
         client: The AzureClient
         params: configuration parameters
@@ -9193,14 +9136,12 @@ def dns_record_set_get_command(client: AzureClient, params: dict[str, Any], args
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     zone_name = args.get("zone_name", "")
-    record_type = args.get("record_type", "")
     relative_record_set_name = args.get("relative_record_set_name", "")
 
-    response = client.dns_record_set_get(
+    response = client.dns_cname_record_set_get(
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
         zone_name=zone_name,
-        record_type=record_type,
         relative_record_set_name=relative_record_set_name,
     )
     demisto.debug(f"[Azure] retrieved DNS record set {response.get('name')=} {response.get('id')=}")
@@ -9211,6 +9152,7 @@ def dns_record_set_get_command(client: AzureClient, params: dict[str, Any], args
         "type": response.get("type"),
         "fqdn": properties.get("fqdn"),
         "TTL": properties.get("TTL"),
+        "cname": (properties.get("CNAMERecord") or {}).get("cname"),
         "provisioningState": properties.get("provisioningState"),
         "targetResource": (properties.get("targetResource") or {}).get("id"),
     }
@@ -9218,7 +9160,7 @@ def dns_record_set_get_command(client: AzureClient, params: dict[str, Any], args
         name=f"DNS Record Set {relative_record_set_name}",
         t=readable_record_set,
         removeNull=True,
-        headers=["name", "type", "fqdn", "TTL", "provisioningState", "targetResource"],
+        headers=["name", "type", "fqdn", "TTL", "cname", "provisioningState", "targetResource"],
         headerTransform=pascalToSpace,
     )
 
@@ -9231,9 +9173,9 @@ def dns_record_set_get_command(client: AzureClient, params: dict[str, Any], args
     )
 
 
-def dns_record_set_delete_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+def dns_cname_record_set_delete_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
-    Deletes a DNS record set from a DNS zone.
+    Deletes a DNS record set of type CNAME from a DNS zone.
     Args:
         client: The AzureClient
         params: configuration parameters
@@ -9244,23 +9186,24 @@ def dns_record_set_delete_command(client: AzureClient, params: dict[str, Any], a
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     zone_name = args.get("zone_name", "")
-    record_type = args.get("record_type", "")
     relative_record_set_name = args.get("relative_record_set_name", "")
 
-    response = client.dns_record_set_delete(
+    response = client.dns_cname_record_set_delete(
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
         zone_name=zone_name,
-        record_type=record_type,
         relative_record_set_name=relative_record_set_name,
     )
     if response.status_code == 204:
         message = (
-            f"DNS record set {relative_record_set_name} of type {record_type} in zone {zone_name} with resource group "
-            f"{resource_group_name} and subscription ID {subscription_id} was not found."
+            f"DNS record set {relative_record_set_name} of type {DNS_CNAME_RECORD_TYPE} in zone {zone_name} with resource "
+            f"group {resource_group_name} and subscription ID {subscription_id} was not found."
         )
     else:
-        message = f"DNS record set {relative_record_set_name} of type {record_type} in zone {zone_name} was successfully deleted."
+        message = (
+            f"DNS record set {relative_record_set_name} of type {DNS_CNAME_RECORD_TYPE} in zone {zone_name} "
+            "was successfully deleted."
+        )
 
     return CommandResults(readable_output=message)
 
@@ -13318,8 +13261,8 @@ def main():  # pragma: no cover
             "azure-vn-ip-groups-list": ip_group_list_command,
             "azure-vn-ip-group-delete": ip_group_delete_command,
             "azure-dns-zones-list": dns_zones_list_command,
-            "azure-dns-record-set-get": dns_record_set_get_command,
-            "azure-dns-record-set-delete": dns_record_set_delete_command,
+            "azure-dns-cname-record-set-get": dns_cname_record_set_get_command,
+            "azure-dns-cname-record-set-delete": dns_cname_record_set_delete_command,
             "azure-nsg-resource-group-list": nsg_resource_group_list_command,
             "azure-rm-resource-groups-list": nsg_resource_group_list_command,
             "azure-nsg-network-interfaces-list": nsg_network_interfaces_list_command,

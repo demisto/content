@@ -7916,7 +7916,7 @@ DNS_RECORD_SET_RESPONSE = {
     },
 }
 
-DNS_RECORD_SET_ARGS = {"zone_name": "zone1.com", "record_type": "CNAME", "relative_record_set_name": "www"}
+DNS_RECORD_SET_ARGS = {"zone_name": "zone1.com", "relative_record_set_name": "www"}
 
 
 def test_dns_zones_list_command_success(mocker):
@@ -8091,84 +8091,83 @@ def test_dns_zones_list_client_error_handling(mocker, client):
     assert mock_handle_error.call_args.kwargs["api_function_name"] == "dns_zones_list"
 
 
-def test_dns_record_set_get_command_success(mocker):
+def test_dns_cname_record_set_get_command_success(mocker):
     """
     Given:
-        - An AzureClient whose dns_record_set_get returns a CNAME record set.
+        - An AzureClient whose dns_cname_record_set_get returns a CNAME record set.
     When:
-        - Calling dns_record_set_get_command.
+        - Calling dns_cname_record_set_get_command.
     Then:
         - The record set is returned under Azure.DNS.RecordSets and the client receives the expected arguments.
     """
-    from Azure import dns_record_set_get_command
+    from Azure import dns_cname_record_set_get_command
 
     mock_client = mocker.Mock(spec=AzureClient)
-    mock_client.dns_record_set_get.return_value = DNS_RECORD_SET_RESPONSE
+    mock_client.dns_cname_record_set_get.return_value = DNS_RECORD_SET_RESPONSE
     params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
 
-    result = dns_record_set_get_command(client=mock_client, params=params, args=DNS_RECORD_SET_ARGS)
+    result = dns_cname_record_set_get_command(client=mock_client, params=params, args=DNS_RECORD_SET_ARGS)
 
     assert result.outputs_prefix == "Azure.DNS.RecordSets"
     assert result.outputs_key_field == "id"
     assert result.outputs == DNS_RECORD_SET_RESPONSE
     assert "DNS Record Set www" in result.readable_output
     assert "www.zone1.com." in result.readable_output
-    mock_client.dns_record_set_get.assert_called_once_with(
+    mock_client.dns_cname_record_set_get.assert_called_once_with(
         subscription_id="sub-id",
         resource_group_name="test-rg",
         zone_name="zone1.com",
-        record_type="CNAME",
         relative_record_set_name="www",
     )
 
 
-def test_dns_record_set_get_command_null_target_resource(mocker):
+def test_dns_cname_record_set_get_command_null_target_resource(mocker):
     """
     Given:
-        - An AzureClient whose dns_record_set_get returns a record set with a null targetResource.
+        - An AzureClient whose dns_cname_record_set_get returns a record set with a null targetResource.
     When:
-        - Calling dns_record_set_get_command.
+        - Calling dns_cname_record_set_get_command.
     Then:
         - The command does not fail and the record set is returned as is.
     """
-    from Azure import dns_record_set_get_command
+    from Azure import dns_cname_record_set_get_command
 
     response = {**DNS_RECORD_SET_RESPONSE, "properties": {**DNS_RECORD_SET_RESPONSE["properties"], "targetResource": None}}
     mock_client = mocker.Mock(spec=AzureClient)
-    mock_client.dns_record_set_get.return_value = response
+    mock_client.dns_cname_record_set_get.return_value = response
     params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
 
-    result = dns_record_set_get_command(client=mock_client, params=params, args=DNS_RECORD_SET_ARGS)
+    result = dns_cname_record_set_get_command(client=mock_client, params=params, args=DNS_RECORD_SET_ARGS)
 
     assert result.outputs == response
     assert "Target Resource" not in result.readable_output
 
 
-def test_dns_record_set_get_command_not_found(mocker):
+def test_dns_cname_record_set_get_command_not_found(mocker):
     """
     Given:
-        - An AzureClient whose dns_record_set_get raises a not found error.
+        - An AzureClient whose dns_cname_record_set_get raises a not found error.
     When:
-        - Calling dns_record_set_get_command.
+        - Calling dns_cname_record_set_get_command.
     Then:
         - The ValueError propagates to main() rather than being swallowed.
     """
-    from Azure import dns_record_set_get_command
+    from Azure import dns_cname_record_set_get_command
 
     mock_client = mocker.Mock(spec=AzureClient)
-    mock_client.dns_record_set_get.side_effect = ValueError('DNS Record Set "zone1.com/CNAME/www" was not found.')
+    mock_client.dns_cname_record_set_get.side_effect = ValueError('DNS Record Set "zone1.com/CNAME/www" was not found.')
     params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
 
     with pytest.raises(ValueError, match="was not found"):
-        dns_record_set_get_command(client=mock_client, params=params, args=DNS_RECORD_SET_ARGS)
+        dns_cname_record_set_get_command(client=mock_client, params=params, args=DNS_RECORD_SET_ARGS)
 
 
-def test_dns_record_set_get_client_builds_url(mocker, client):
+def test_dns_cname_record_set_get_client_builds_url(mocker, client):
     """
     Given:
         - An AzureClient and record set identifiers.
     When:
-        - Calling the dns_record_set_get client method.
+        - Calling the dns_cname_record_set_get client method.
     Then:
         - The record set URL is built from the zone, record type and relative name, with the DNS api-version.
     """
@@ -8176,11 +8175,10 @@ def test_dns_record_set_get_client_builds_url(mocker, client):
 
     mock_http_request = mocker.patch.object(client, "http_request", return_value=DNS_RECORD_SET_RESPONSE)
 
-    client.dns_record_set_get(
+    client.dns_cname_record_set_get(
         subscription_id="sub-id",
         resource_group_name="test-rg",
         zone_name="zone1.com",
-        record_type="CNAME",
         relative_record_set_name="www",
     )
 
@@ -8191,87 +8189,85 @@ def test_dns_record_set_get_client_builds_url(mocker, client):
     assert mock_http_request.call_args.kwargs["params"] == {"api-version": DNS_API_VERSION}
 
 
-def test_dns_record_set_get_client_error_handling(mocker, client):
+def test_dns_cname_record_set_get_client_error_handling(mocker, client):
     """
     Given:
         - An AzureClient whose http_request raises a permission error.
     When:
-        - Calling the dns_record_set_get client method.
+        - Calling the dns_cname_record_set_get client method.
     Then:
-        - handle_azure_error is invoked with the dns_record_set_get API function name.
+        - handle_azure_error is invoked with the dns_cname_record_set_get API function name.
     """
     mocker.patch.object(client, "http_request", side_effect=Exception("403 Forbidden"))
     mock_handle_error = mocker.patch.object(client, "handle_azure_error")
 
-    client.dns_record_set_get(
+    client.dns_cname_record_set_get(
         subscription_id="sub-id",
         resource_group_name="test-rg",
         zone_name="zone1.com",
-        record_type="CNAME",
         relative_record_set_name="www",
     )
 
-    assert mock_handle_error.call_args.kwargs["api_function_name"] == "dns_record_set_get"
+    assert mock_handle_error.call_args.kwargs["api_function_name"] == "dns_cname_record_set_get"
     assert mock_handle_error.call_args.kwargs["resource_name"] == "zone1.com/CNAME/www"
 
 
-def test_dns_record_set_delete_command_success(mocker):
+def test_dns_cname_record_set_delete_command_success(mocker):
     """
     Given:
-        - An AzureClient whose dns_record_set_delete returns a 200 OK response.
+        - An AzureClient whose dns_cname_record_set_delete returns a 200 OK response.
     When:
-        - Calling dns_record_set_delete_command.
+        - Calling dns_cname_record_set_delete_command.
     Then:
         - The readable output states the record set was deleted successfully.
     """
-    from Azure import dns_record_set_delete_command
+    from Azure import dns_cname_record_set_delete_command
 
     mock_client = mocker.Mock(spec=AzureClient)
     mock_response = mocker.Mock()
     mock_response.status_code = 200
-    mock_client.dns_record_set_delete.return_value = mock_response
+    mock_client.dns_cname_record_set_delete.return_value = mock_response
     params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
 
-    result = dns_record_set_delete_command(client=mock_client, params=params, args=DNS_RECORD_SET_ARGS)
+    result = dns_cname_record_set_delete_command(client=mock_client, params=params, args=DNS_RECORD_SET_ARGS)
 
     assert result.readable_output == "DNS record set www of type CNAME in zone zone1.com was successfully deleted."
-    mock_client.dns_record_set_delete.assert_called_once_with(
+    mock_client.dns_cname_record_set_delete.assert_called_once_with(
         subscription_id="sub-id",
         resource_group_name="test-rg",
         zone_name="zone1.com",
-        record_type="CNAME",
         relative_record_set_name="www",
     )
 
 
-def test_dns_record_set_delete_command_not_found(mocker):
+def test_dns_cname_record_set_delete_command_not_found(mocker):
     """
     Given:
-        - An AzureClient whose dns_record_set_delete returns a 204 No Content response.
+        - An AzureClient whose dns_cname_record_set_delete returns a 204 No Content response.
     When:
-        - Calling dns_record_set_delete_command.
+        - Calling dns_cname_record_set_delete_command.
     Then:
         - The readable output states the record set was not found.
     """
-    from Azure import dns_record_set_delete_command
+    from Azure import dns_cname_record_set_delete_command
 
     mock_client = mocker.Mock(spec=AzureClient)
     mock_response = mocker.Mock()
     mock_response.status_code = 204
-    mock_client.dns_record_set_delete.return_value = mock_response
+    mock_client.dns_cname_record_set_delete.return_value = mock_response
     params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
 
-    result = dns_record_set_delete_command(client=mock_client, params=params, args=DNS_RECORD_SET_ARGS)
+    result = dns_cname_record_set_delete_command(client=mock_client, params=params, args=DNS_RECORD_SET_ARGS)
 
     assert "was not found" in result.readable_output
 
 
-def test_dns_record_set_delete_client_builds_request(mocker, client):
+def test_dns_cname_record_set_delete_client_builds_request(mocker, client):
     """
     Given:
         - An AzureClient and record set identifiers.
     When:
-        - Calling the dns_record_set_delete client method.
+        - Calling the dns_cname_record_set_delete client method.
     Then:
         - A DELETE request is sent to the record set URL and the raw response is requested.
     """
@@ -8279,11 +8275,10 @@ def test_dns_record_set_delete_client_builds_request(mocker, client):
 
     mock_http_request = mocker.patch.object(client, "http_request")
 
-    client.dns_record_set_delete(
+    client.dns_cname_record_set_delete(
         subscription_id="sub-id",
         resource_group_name="test-rg",
         zone_name="zone1.com",
-        record_type="CNAME",
         relative_record_set_name="www",
     )
 
@@ -8293,27 +8288,26 @@ def test_dns_record_set_delete_client_builds_request(mocker, client):
     assert mock_http_request.call_args.kwargs["resp_type"] == "response"
 
 
-def test_dns_record_set_delete_client_error_handling(mocker, client):
+def test_dns_cname_record_set_delete_client_error_handling(mocker, client):
     """
     Given:
         - An AzureClient whose http_request raises a permission error.
     When:
-        - Calling the dns_record_set_delete client method.
+        - Calling the dns_cname_record_set_delete client method.
     Then:
-        - handle_azure_error is invoked with the dns_record_set_delete API function name.
+        - handle_azure_error is invoked with the dns_cname_record_set_delete API function name.
     """
     mocker.patch.object(client, "http_request", side_effect=Exception("403 Forbidden"))
     mock_handle_error = mocker.patch.object(client, "handle_azure_error")
 
-    client.dns_record_set_delete(
+    client.dns_cname_record_set_delete(
         subscription_id="sub-id",
         resource_group_name="test-rg",
         zone_name="zone1.com",
-        record_type="CNAME",
         relative_record_set_name="www",
     )
 
-    assert mock_handle_error.call_args.kwargs["api_function_name"] == "dns_record_set_delete"
+    assert mock_handle_error.call_args.kwargs["api_function_name"] == "dns_cname_record_set_delete"
 
 
 def test_dns_permissions_are_registered():
@@ -8323,16 +8317,18 @@ def test_dns_permissions_are_registered():
     When:
         - Inspecting the permission mappings.
     Then:
-        - Every per-record-type permission is mapped to its command and API function, and SOA cannot be deleted.
+        - Only the CNAME record set permissions are mapped to their commands and API functions.
     """
     from Azure import API_FUNCTION_TO_PERMISSIONS, PERMISSIONS_TO_COMMANDS, REQUIRED_ROLE_PERMISSIONS
 
-    assert PERMISSIONS_TO_COMMANDS["Microsoft.Network/dnszones/CNAME/read"] == ["azure-dns-record-set-get"]
-    assert PERMISSIONS_TO_COMMANDS["Microsoft.Network/dnszones/CNAME/delete"] == ["azure-dns-record-set-delete"]
-    assert "Microsoft.Network/dnszones/SOA/delete" not in API_FUNCTION_TO_PERMISSIONS["dns_record_set_delete"]
-    assert "Microsoft.Network/dnszones/A/read" in API_FUNCTION_TO_PERMISSIONS["dns_record_set_get"]
+    assert PERMISSIONS_TO_COMMANDS["Microsoft.Network/dnszones/CNAME/read"] == ["azure-dns-cname-record-set-get"]
+    assert PERMISSIONS_TO_COMMANDS["Microsoft.Network/dnszones/CNAME/delete"] == ["azure-dns-cname-record-set-delete"]
+    assert API_FUNCTION_TO_PERMISSIONS["dns_cname_record_set_get"] == ["Microsoft.Network/dnszones/CNAME/read"]
+    assert API_FUNCTION_TO_PERMISSIONS["dns_cname_record_set_delete"] == ["Microsoft.Network/dnszones/CNAME/delete"]
     assert "Microsoft.Network/dnszones/read" in REQUIRED_ROLE_PERMISSIONS
-    assert "Microsoft.Network/dnszones/TXT/delete" in REQUIRED_ROLE_PERMISSIONS
+    assert "Microsoft.Network/dnszones/CNAME/read" in REQUIRED_ROLE_PERMISSIONS
+    assert "Microsoft.Network/dnszones/CNAME/delete" in REQUIRED_ROLE_PERMISSIONS
+    assert "Microsoft.Network/dnszones/A/read" not in REQUIRED_ROLE_PERMISSIONS
 
 
 # ---------------------------------------------------------------------------
