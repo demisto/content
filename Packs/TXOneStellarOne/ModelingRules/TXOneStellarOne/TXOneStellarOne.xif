@@ -1,0 +1,58 @@
+[MODEL:dataset="txone_stellarone_raw"]
+alter
+    get_user = coalesce(suser, username, activeuser, accessuser, threatuser),
+    get_host_os = coalesce(cs2, agentos),
+    get_target_file = arrayindex(regextract(coalesce(filepath, path), "[^\\\/]+$"),0),
+    get_file_path = coalesce(filepath, accessimagepath, threatimagepath, path),
+    get_proc_id = coalesce(to_string(pid), processid),
+    get_cs1_event_msg = if(cs1label = "Detailed Event Message", cs1),
+    get_cs1_client_ip = if(cs1label = "clientIpAddress", cs1),
+    get_outcome = coalesce(to_string(status), to_string(actionresult), result),
+    get_host = coalesce(agentendpoint, dvchost)
+| alter
+    get_file_name = coalesce(filename, get_target_file),
+    get_description = coalesce(get_cs1_event_msg, msg, detailmsg, `desc`),
+    get_src_ip = coalesce(src, clientip, agentip, get_cs1_client_ip)
+
+| alter //XDM Mapping
+    xdm.observer.version = cefdeviceversion,
+    xdm.observer.name = coalesce(dvchost, agentendpoint, dvc, serverip),
+    xdm.observer.unique_identifier = deviceexternalid,
+    xdm.event.type = cefname,
+    xdm.event.operation_sub_type = act,
+    xdm.event.id = eventid,
+    xdm.event.original_event_type = cefdeviceeventclassid,
+    xdm.event.description = get_description,
+    xdm.alert.severity = to_string(cefseverity),
+    xdm.alert.name = threatname,
+    xdm.alert.original_threat_name = threatname,
+    xdm.alert.original_threat_id = threatattackid,
+    xdm.source.host.hostname = get_host,
+    // xdm.source.user.group.guid = agentgrpguid,
+    xdm.source.user.groups = arraycreate(coalesce(agentgrpname, userrole)),
+    xdm.source.host.os = get_host_os,
+    xdm.source.host.os_family = if(
+        get_host_os ~= "(?i)windows", XDM_CONST.OS_FAMILY_WINDOWS,
+        get_host_os ~= "(?i)linux", XDM_CONST.OS_FAMILY_LINUX,
+        get_host_os ~= "(?i)mac|darwin", XDM_CONST.OS_FAMILY_MACOS,
+        get_host_os),
+    xdm.source.user.username = get_user,
+    xdm.source.ipv4 = if(is_ipv4(get_src_ip), get_src_ip),
+    xdm.source.ipv6 = if(is_ipv6(get_src_ip), get_src_ip),
+    xdm.target.ipv4 = if(is_ipv4(dst), dst),
+    xdm.target.ipv6 = if(is_ipv6(dst), dst),
+    xdm.target.host.hostname = if(is_ipv4(dst) = FALSE and is_ipv6(dst) = FALSE, dst),
+    xdm.target.file.filename = get_file_name,
+    xdm.target.file.path = get_file_path,
+    xdm.target.process.pid = if(get_proc_id ~= "\d+", to_integer(get_proc_id)),
+    xdm.target.process.name = arrayindex(regextract(blockedprocess, "[^\\\/]+$"),0),
+    xdm.target.host.device_category = devicetype,
+    xdm.event.outcome = if(
+        get_outcome = "0", XDM_CONST.OUTCOME_UNKNOWN,
+        get_outcome = "1", XDM_CONST.OUTCOME_SUCCESS,
+        get_outcome = "2", XDM_CONST.OUTCOME_FAILED,
+        get_outcome ~= "(?i)block|fail|denied",XDM_CONST.OUTCOME_FAILED,
+        get_outcome ~= "(?i)success|allow|approved", XDM_CONST.OUTCOME_SUCCESS,
+        get_outcome),
+    xdm.event.outcome_reason = get_outcome,
+    xdm.logon.logon_guid = logguid;

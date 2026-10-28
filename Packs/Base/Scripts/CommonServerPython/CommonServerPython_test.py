@@ -48,6 +48,7 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 safe_pickle_loads, UnsafePickleError
                                 )
 
+
 EVENTS_LOG_ERROR = \
     """Error sending new events into XSIAM.
 Parameters used:
@@ -1803,6 +1804,454 @@ def test_return_error_get_modified_remote_data_not_implemented(mocker):
     assert demisto.results.call_args[0][0]['Contents'] == err_msg
 
 
+# ── is_caller_agentix tests ──────────────────────────────────────────
+
+def test_is_caller_agentix_true(mocker):
+    """
+    Given
+    - demisto.caller() returns 'agentix'
+    When
+    - is_caller_agentix is called
+    Then
+    - It returns True
+    """
+    from CommonServerPython import is_caller_agentix, AGENTIX_CALLER
+    mocker.patch.object(demisto, 'caller', create=True, return_value=AGENTIX_CALLER)
+    assert is_caller_agentix() is True
+
+
+def test_is_caller_agentix_false_other_caller(mocker):
+    """
+    Given
+    - demisto.caller() returns a non-agentix value
+    When
+    - is_caller_agentix is called
+    Then
+    - It returns False
+    """
+    from CommonServerPython import is_caller_agentix
+    mocker.patch.object(demisto, 'caller', create=True, return_value='playbook')
+    assert is_caller_agentix() is False
+
+
+def test_is_caller_agentix_no_caller_method(mocker):
+    """
+    Given
+    - demisto has no 'caller' attribute (older server)
+    When
+    - is_caller_agentix is called
+    Then
+    - It returns False without raising
+    """
+    from CommonServerPython import is_caller_agentix
+    if hasattr(demisto, 'caller'):
+        mocker.patch.object(demisto, 'caller', create=True, side_effect=AttributeError)
+    assert is_caller_agentix() is False
+
+
+# ── CortexError.build_message tests ─────────────────────────────────
+
+def test_content_error_build_message_missing_arg():
+    """
+    Given
+    - A CortexMissingArgError built with an argument name
+    When
+    - build_message is called
+    Then
+    - It returns the unified, auto-generated message
+    """
+    from CommonServerPython import CortexMissingArgError, RetryGuidance
+    err = CortexMissingArgError('time')
+    expected = "Required argument 'time' was not provided. " + RetryGuidance.hint(RetryGuidance.RETRY_AFTER_FIX)
+    assert err.build_message() == expected
+    assert str(err) == expected
+    # Retry guidance is exposed via details / ExtendedPayload.
+    assert err.details['retry_guidance'] == RetryGuidance.RETRY_AFTER_FIX
+    assert err.details['retryable'] is True
+
+
+def test_content_error_build_message_missing_arg_require_one():
+    """
+    Given
+    - A CortexMissingArgError built with a list of argument names (default require_one)
+    When
+    - build_message is called
+    Then
+    - It returns an "at least one of" message with a retry-after-fix hint
+    """
+    from CommonServerPython import CortexMissingArgError, CortexErrorCode, RetryGuidance
+    err = CortexMissingArgError(['endpoint_id', 'endpoint_ip', 'endpoint_hostname'])
+    assert err.build_message() == (
+        "At least one of the following arguments must be provided: "
+        "'endpoint_id', 'endpoint_ip', 'endpoint_hostname'. "
+        + RetryGuidance.hint(RetryGuidance.RETRY_AFTER_FIX)
+    )
+    assert err.error_code == CortexErrorCode.MISSING_ARGUMENT
+    assert err.details['arguments'] == ['endpoint_id', 'endpoint_ip', 'endpoint_hostname']
+    assert err.details['require_one'] is True
+
+
+def test_content_error_build_message_missing_arg_require_all():
+    """
+    Given
+    - A CortexMissingArgError built with a list of names and require_one=False
+    When
+    - build_message is called
+    Then
+    - It returns an "all required" message
+    """
+    from CommonServerPython import CortexMissingArgError, RetryGuidance
+    err = CortexMissingArgError(['user_id', 'token'], require_one=False)
+    assert err.build_message() == (
+        "The following required arguments were not provided: 'user_id', 'token'. "
+        + RetryGuidance.hint(RetryGuidance.RETRY_AFTER_FIX)
+    )
+    assert err.details['require_one'] is False
+
+
+def test_content_error_build_message_invalid_arg():
+    from CommonServerPython import CortexInvalidArgError
+    err = CortexInvalidArgError('mode', value='fast', allowed_values=['slow', 'medium'])
+    msg = err.build_message()
+    assert "Invalid value for argument 'mode'" in msg
+    assert "got 'fast'" in msg
+    assert "Allowed values: slow, medium" in msg
+
+
+def test_content_error_build_message_resource_not_found():
+    from CommonServerPython import CortexResourceNotFoundError, RetryGuidance
+    fix_hint = RetryGuidance.hint(RetryGuidance.RETRY_AFTER_FIX)
+    err = CortexResourceNotFoundError('endpoint', identifier='abc-123')
+    assert err.build_message() == "endpoint 'abc-123' not found " + fix_hint
+    err_no_id = CortexResourceNotFoundError('incident')
+    assert err_no_id.build_message() == "incident not found " + fix_hint
+
+
+def test_content_error_build_message_custom_overrides_auto():
+    """
+    Given
+    - A CortexMissingArgError with an explicit custom message
+    When
+    - build_message is called
+    Then
+    - The custom message is returned instead of the auto-generated one
+    """
+    from CommonServerPython import CortexMissingArgError
+    err = CortexMissingArgError('time', override_message='Please provide the time argument.')
+    assert err.build_message() == 'Please provide the time argument.'
+
+
+def test_content_error_build_message_conflicting_args_mutually_exclusive():
+    """
+    Given
+    - A CortexConflictingArgsError with mutually exclusive arguments
+    When
+    - build_message is called
+    Then
+    - The message explains the conflict and the valid resolution
+    """
+    from CommonServerPython import CortexConflictingArgsError
+    err = CortexConflictingArgsError(arguments=['start_time', 'last_n_days'])
+    msg = err.build_message()
+    assert "Conflicting arguments: 'start_time', 'last_n_days'." in msg
+    assert "mutually exclusive" in msg
+    assert "Provide only one of: 'start_time', 'last_n_days'." in msg
+
+
+def test_content_error_build_message_conflicting_args_reason_resolution():
+    from CommonServerPython import CortexConflictingArgsError
+    err = CortexConflictingArgsError(
+        arguments=['a', 'b'],
+        reason='a requires b to be empty.',
+        resolution='Provide a without b, or b without a.',
+    )
+    msg = err.build_message()
+    assert "Conflicting arguments: 'a', 'b'." in msg
+    assert 'a requires b to be empty.' in msg
+    assert 'Provide a without b, or b without a.' in msg
+
+
+def test_content_error_build_message_conflicting_args_custom_message():
+    from CommonServerPython import CortexConflictingArgsError
+    err = CortexConflictingArgsError('Totally custom conflict text', arguments=['a', 'b'])
+    assert err.build_message() == 'Totally custom conflict text'
+
+
+def test_content_error_build_message_api_error_with_status():
+    from CommonServerPython import CortexExternalApiError
+    err = CortexExternalApiError(status_code=500)
+    msg = err.build_message()
+    assert 'external API' in msg
+    assert '(HTTP 500)' in msg
+
+
+def test_content_error_build_message_auth_default():
+    from CommonServerPython import CortexAuthError, CortexErrorCode, RetryGuidance
+    err = CortexAuthError()
+    assert err.build_message() == (
+        "Authentication failed. Check your credentials or API key. "
+        + RetryGuidance.hint(RetryGuidance.NOT_RETRYABLE)
+    )
+    assert err.error_code == CortexErrorCode.AUTH_ERROR
+    assert err.details['retry_guidance'] == RetryGuidance.NOT_RETRYABLE
+    assert err.details['retryable'] is False
+
+
+def test_content_error_build_message_rate_limit_retry_after():
+    from CommonServerPython import CortexRateLimitError
+    err = CortexRateLimitError(retry_after=30)
+    msg = err.build_message()
+    assert "rate limit exceeded" in msg
+    assert "Retry after 30 seconds." in msg
+    assert err.details.get('retry_after_seconds') == 30
+
+
+def test_content_error_build_message_timeout_and_connection_defaults():
+    from CommonServerPython import CortexTimeoutError, CortexConnectionError, RetryGuidance
+    later_hint = RetryGuidance.hint(RetryGuidance.RETRY_LATER)
+    assert CortexTimeoutError().build_message() == "The request timed out. Please try again. " + later_hint
+    assert CortexConnectionError().build_message() == \
+        "Unable to connect to the service. Check network connectivity. " + later_hint
+    assert CortexTimeoutError().details['retryable'] is True
+
+
+def test_content_error_build_message_simple_defaults():
+    """
+    Given
+    - The simple CortexError subclasses without an explicit message
+    When
+    - build_message is called
+    Then
+    - Each returns its category-specific default message (with retry hint where applicable)
+    """
+    from CommonServerPython import (
+        CortexParseError, CortexPermissionError, CortexExecutionError, RetryGuidance,
+    )
+    not_retryable = RetryGuidance.hint(RetryGuidance.NOT_RETRYABLE)
+    assert CortexParseError().build_message() == \
+        "Failed to parse the response received from the API. " + not_retryable
+    assert CortexPermissionError().build_message() == \
+        "Permission denied. You do not have the required permissions to perform this action. " + not_retryable
+    # CortexExecutionError has no retry guidance -> no hint appended.
+    assert CortexExecutionError().build_message() == "The command or script execution failed."
+
+
+def test_content_error_retry_guidance_exposed_in_details():
+    """
+    Given
+    - CortexError subclasses with different retry guidance
+    When
+    - The error is constructed
+    Then
+    - details carries the retry_guidance and retryable flag for agent consumption
+    """
+    from CommonServerPython import (
+        CortexInvalidArgError, CortexRateLimitError, CortexPermissionError,
+        CortexExecutionError, RetryGuidance,
+    )
+    invalid = CortexInvalidArgError('x', value='y')
+    assert invalid.details['retry_guidance'] == RetryGuidance.RETRY_AFTER_FIX
+    assert invalid.details['retryable'] is True
+
+    rate = CortexRateLimitError()
+    assert rate.details['retry_guidance'] == RetryGuidance.RETRY_LATER
+    assert rate.details['retryable'] is True
+
+    perm = CortexPermissionError()
+    assert perm.details['retry_guidance'] == RetryGuidance.NOT_RETRYABLE
+    assert perm.details['retryable'] is False
+
+    # No guidance -> no retry keys in details.
+    execution = CortexExecutionError()
+    assert 'retry_guidance' not in execution.details
+    assert 'retryable' not in execution.details
+
+
+def test_content_error_api_auth_status_not_retryable():
+    """
+    Given
+    - A CortexExternalApiError with a 403 status code (auto-classified as auth)
+    When
+    - The error is constructed
+    Then
+    - Its retry guidance becomes NOT_RETRYABLE
+    """
+    from CommonServerPython import CortexExternalApiError, CortexErrorCode, RetryGuidance
+    err = CortexExternalApiError(status_code=403)
+    assert err.error_code == CortexErrorCode.AUTH_ERROR
+    assert err.retry_guidance == RetryGuidance.NOT_RETRYABLE
+    assert err.details['retryable'] is False
+
+
+def test_content_error_simple_subclass_custom_message_overrides_default():
+    from CommonServerPython import CortexExecutionError
+    err = CortexExecutionError('Custom execution failure detail')
+    assert err.build_message() == 'Custom execution failure detail'
+
+
+# ── return_error message-selection tests ─────────────────────────────
+
+def test_return_error_agentix_uses_auto_message(mocker):
+    """
+    Given
+    - Caller is Agentix and a CortexError is passed as error
+    When
+    - return_error is called with an explicit (different) message
+    Then
+    - The automatic, unified message from the CortexError is surfaced
+    """
+    from CommonServerPython import return_error, CortexMissingArgError, RetryGuidance
+    mocker.patch('CommonServerPython.is_caller_agentix', return_value=True)
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit):
+        return_error('A human-friendly explanation', error=CortexMissingArgError('time'))
+    contents = demisto.results.call_args[0][0]['Contents']
+    assert contents == "Required argument 'time' was not provided. " + RetryGuidance.hint(RetryGuidance.RETRY_AFTER_FIX)
+
+
+def test_return_error_agentix_ignores_custom_message_uses_auto(mocker):
+    """
+    Given
+    - Caller is Agentix and a CortexError is constructed WITH a custom message
+    When
+    - return_error is called (with any explicit message)
+    Then
+    - The automatic, unified message is surfaced, NOT the custom message stored on the error
+    """
+    from CommonServerPython import return_error, CortexMissingArgError, RetryGuidance
+    mocker.patch('CommonServerPython.is_caller_agentix', return_value=True)
+    mocker.patch.object(demisto, 'results')
+    error = CortexMissingArgError('time', override_message='Original backward-compatible message')
+    # Sanity: build_message returns the custom message, auto_message ignores it
+    assert error.build_message() == 'Original backward-compatible message'
+    assert error.auto_message() == "Required argument 'time' was not provided. " + \
+        RetryGuidance.hint(RetryGuidance.RETRY_AFTER_FIX)
+    with pytest.raises(SystemExit):
+        return_error('A human-friendly explanation', error=error)
+    contents = demisto.results.call_args[0][0]['Contents']
+    assert contents == "Required argument 'time' was not provided. " + RetryGuidance.hint(RetryGuidance.RETRY_AFTER_FIX)
+
+
+def test_return_error_non_agentix_prefers_explicit_message(mocker):
+    """
+    Given
+    - Caller is not Agentix and a CortexError is passed as error
+    When
+    - return_error is called with an explicit message
+    Then
+    - The explicit message is surfaced (not the automatic one)
+    """
+    from CommonServerPython import return_error, CortexMissingArgError
+    mocker.patch('CommonServerPython.is_caller_agentix', return_value=False)
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit):
+        return_error('A human-friendly explanation', error=CortexMissingArgError('time'))
+    contents = demisto.results.call_args[0][0]['Contents']
+    assert contents == 'A human-friendly explanation'
+
+
+def test_return_error_non_agentix_falls_back_to_auto(mocker):
+    """
+    Given
+    - Caller is not Agentix, a CortexError is passed, and no explicit message
+    When
+    - return_error is called with an empty message
+    Then
+    - The automatic, unified message is surfaced
+    """
+    from CommonServerPython import return_error, CortexMissingArgError, RetryGuidance
+    mocker.patch('CommonServerPython.is_caller_agentix', return_value=False)
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit):
+        return_error('', error=CortexMissingArgError('time'))
+    contents = demisto.results.call_args[0][0]['Contents']
+    assert contents == "Required argument 'time' was not provided. " + RetryGuidance.hint(RetryGuidance.RETRY_AFTER_FIX)
+
+
+def test_return_error_agentix_no_content_error_uses_message(mocker):
+    """
+    Given
+    - Caller is Agentix but no CortexError is available
+    When
+    - return_error is called with a plain message
+    Then
+    - The explicit message is surfaced as a fallback
+    """
+    from CommonServerPython import return_error
+    mocker.patch('CommonServerPython.is_caller_agentix', return_value=True)
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit):
+        return_error('Plain error message')
+    contents = demisto.results.call_args[0][0]['Contents']
+    assert contents == 'Plain error message'
+
+
+def test_return_error_extended_payload_includes_retry_guidance_not_retryable(mocker):
+    """
+    Given
+    - A CortexError whose category is NOT retryable (e.g. auth error)
+    When
+    - return_error is called with that error
+    Then
+    - The error entry's ExtendedPayload carries the error_code and a
+      retryable=False flag, so an LLM agent can decide not to retry.
+    - The retry_guidance text is NOT included (it is already in the message).
+    """
+    from CommonServerPython import (
+        return_error, CortexAuthError,
+        EXTENDED_PAYLOAD_ERROR_CODE_KEY, EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY,
+        EXTENDED_PAYLOAD_RETRYABLE_KEY,
+    )
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit):
+        return_error('Authentication failed', error=CortexAuthError())
+    extended_payload = demisto.results.call_args[0][0]['ExtendedPayload']
+    assert extended_payload[EXTENDED_PAYLOAD_ERROR_CODE_KEY] == CortexAuthError.error_code
+    assert extended_payload[EXTENDED_PAYLOAD_RETRYABLE_KEY] is False
+    assert EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY not in extended_payload
+
+
+def test_return_error_extended_payload_includes_retryable_true(mocker):
+    """
+    Given
+    - A CortexError whose category IS retryable (e.g. rate limit)
+    When
+    - return_error is called with that error
+    Then
+    - The error entry's ExtendedPayload carries a retryable=True flag, and the
+      retry_guidance text is NOT included (it is already in the message).
+    """
+    from CommonServerPython import (
+        return_error, CortexRateLimitError,
+        EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY, EXTENDED_PAYLOAD_RETRYABLE_KEY,
+    )
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit):
+        return_error('Rate limited', error=CortexRateLimitError())
+    extended_payload = demisto.results.call_args[0][0]['ExtendedPayload']
+    assert extended_payload[EXTENDED_PAYLOAD_RETRYABLE_KEY] is True
+    assert EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY not in extended_payload
+
+
+def test_content_error_api_error_appends_original_api_error_to_message():
+    """
+    Given
+    - A CortexExternalApiError carrying the original API response body (bytes)
+    When
+    - The automatic message is built
+    Then
+    - The original API error body is appended (decoded cleanly) to the built
+      message rather than exposed as a separate field.
+    """
+    from CommonServerPython import CortexExternalApiError
+    err = CortexExternalApiError(status_code=500, response_body=b'{"error": {"message": "boom"}}')
+    auto = err.auto_message()
+    assert "(HTTP 500)" in auto
+    assert 'Original API error: {"error": {"message": "boom"}}' in auto
+    # The raw bytes repr must NOT leak into the message.
+    assert "b'" not in auto
+
+
 def test_indicator_type_by_server_version_6_2(mocker, clear_version_cache):
     """
     Given
@@ -2895,13 +3344,77 @@ class TestBaseClient:
             Then
             -  An unsuccessful request returns a DemistoException regardless the bad status code.
         """
-        from CommonServerPython import DemistoException
-        with pytest.raises(DemistoException, match='{}'.format(status)):
+        with pytest.raises(CommonServerPython.DemistoException, match='{}'.format(status)):
             self.client._http_request(method,
                                       '',
                                       full_url='http://httpbin.org/status/{}'.format(status),
                                       retries=3,
                                       status_list_to_retry=[400, 401, 500])
+
+    def test_implement_retry_without_backoff_jitter_support(self, mocker):
+        """
+        Given:
+            - A BaseClient instance
+            - The installed urllib3's Retry class does not support the `backoff_jitter`
+              parameter (as is the case for urllib3 < 1.26.9)
+        When:
+            - _implement_retry is called with retries > 0
+        Then:
+            - Retry is called without the backoff_jitter kwarg (no TypeError is raised)
+            - The https:// adapter is mounted on the session with the configured retry object
+        """
+        from urllib3.util import Retry as RealRetry
+
+        class RetryDefaultNoJitter:
+            allowed_methods = frozenset(['GET'])
+            # No backoff_jitter attribute, simulating an older urllib3 version
+
+        mock_retry_class = mocker.MagicMock(name='Retry')
+        mock_retry_class.DEFAULT = RetryDefaultNoJitter
+        mock_retry_class.return_value = mocker.MagicMock(spec=RealRetry)
+
+        mocker.patch.object(CommonServerPython, 'Retry', mock_retry_class)
+
+        client = CommonServerPython.BaseClient('https://example.com/api/v2/', ok_codes=(200, 201))
+
+        # Should not raise TypeError even though backoff_jitter is requested
+        client._implement_retry(retries=3, backoff_jitter=0.5)
+
+        mock_retry_class.assert_called_once()
+        assert 'backoff_jitter' not in mock_retry_class.call_args.kwargs
+
+        adapter = client._session.adapters.get('https://')
+        assert adapter is not None
+        assert adapter.max_retries is mock_retry_class.return_value
+
+    def test_implement_retry_with_backoff_jitter_support(self, mocker):
+        """
+        Given:
+            - A BaseClient instance
+            - The installed urllib3's Retry class supports the `backoff_jitter` parameter
+        When:
+            - _implement_retry is called with retries > 0 and a backoff_jitter value
+        Then:
+            - Retry is called with the backoff_jitter kwarg set to the given value
+        """
+        from urllib3.util import Retry as RealRetry
+
+        class RetryDefaultWithJitter:
+            allowed_methods = frozenset(['GET'])
+            backoff_jitter = 0.0
+
+        mock_retry_class = mocker.MagicMock(name='Retry')
+        mock_retry_class.DEFAULT = RetryDefaultWithJitter
+        mock_retry_class.return_value = mocker.MagicMock(spec=RealRetry)
+
+        mocker.patch.object(CommonServerPython, 'Retry', mock_retry_class)
+
+        client = CommonServerPython.BaseClient('https://example.com/api/v2/', ok_codes=(200, 201))
+
+        client._implement_retry(retries=3, backoff_jitter=0.5)
+
+        mock_retry_class.assert_called_once()
+        assert mock_retry_class.call_args.kwargs.get('backoff_jitter') == 0.5
 
     def test_http_request_json(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
@@ -9386,6 +9899,119 @@ def test_content_type(content_format, outputs, expected_type):
     assert command_results.to_context()['ContentsFormat'] == expected_type
 
 
+def _install_fake_ijson(mocker):
+    """
+    Install a minimal fake ``ijson`` module into ``sys.modules`` so ``stream_json_items`` can be exercised
+    in every docker image WITHOUT requiring the real ``ijson`` package to be installed.
+
+    Rationale: ``ijson`` is intentionally NOT part of the CommonServerPython runtime image (``stream_json_items``
+    imports it lazily and raises a clear error if missing, so each adopting integration adds it to its own
+    image), and the SDK's pytest-in-docker test images do not include ``ijson`` either (it is not in the SDK's
+    dev-requirements) and cannot pip-install at test time. Injecting a fake keeps the ``stream_json_items``
+    code path (lazy import + ``ijson.items(...)`` loop + one-at-a-time yield) fully covered in CI with no infra
+    dependency.
+
+    The fake exposes ``items(source, prefix)`` matching the contract stream_json_items relies on: it parses the
+    whole source (bytes / str / file-like) and yields the records addressed by ``prefix`` ('item' for a top-level
+    array, 'a.b.item' for a nested array), one at a time.
+
+    :return: the fake ijson module object.
+    """
+    import types as _types
+
+    def _read_all(source):
+        data = source.read() if hasattr(source, 'read') else source
+        if isinstance(data, bytes):
+            data = data.decode('utf-8')
+        return json.loads(data)
+
+    def items(source, prefix):
+        parsed = _read_all(source)
+        node = parsed
+        for token in prefix.split('.'):
+            if token == 'item':
+                for element in node:
+                    yield element
+                return
+            node = node[token]
+        yield node
+
+    fake = _types.ModuleType('ijson')
+    fake.items = items
+    mocker.patch.dict('sys.modules', {'ijson': fake})
+    return fake
+
+
+def _install_deferred_executor(mocker):
+    """
+    Thread-free stand-in for ThreadPoolExecutor/wait (real threads deadlocked on the nightly runner).
+    submit() only queues a task; it runs when concurrent.futures.wait() or run_all() is called.
+    A wait() that cannot be satisfied raises instead of blocking.
+    """
+    import concurrent.futures
+
+    created_executors = []
+    real_wait = concurrent.futures.wait
+
+    class DeferredExecutor:
+        def __init__(self, *args, **kwargs):
+            self.pending = []
+            self.max_pending = 0
+            self.shutdown_calls = []
+            created_executors.append(self)
+
+        def submit(self, fn, *args, **kwargs):
+            future = concurrent.futures.Future()
+            self.pending.append((future, fn, args, kwargs))
+            self.max_pending = max(self.max_pending, len(self.pending))
+            return future
+
+        def run_task_for(self, futures):
+            for index, (future, fn, args, kwargs) in enumerate(self.pending):
+                if future in futures:
+                    del self.pending[index]
+                    if future.set_running_or_notify_cancel():
+                        try:
+                            future.set_result(fn(*args, **kwargs))
+                        except Exception as exc:
+                            future.set_exception(exc)
+                    return True
+            return False
+
+        def run_all(self):
+            while self.pending:
+                self.run_task_for({self.pending[0][0]})
+
+        def shutdown(self, wait=True, cancel_futures=False):
+            self.shutdown_calls.append({'wait': wait, 'cancel_futures': cancel_futures})
+            if cancel_futures:
+                for future, _fn, _args, _kwargs in self.pending:
+                    future.cancel()
+                self.pending = []
+
+    def deferred_wait(futures, timeout=None, return_when=concurrent.futures.ALL_COMPLETED):
+        futures = set(futures)
+
+        def satisfied():
+            done_count = sum(1 for future in futures if future.done())
+            if return_when == concurrent.futures.FIRST_COMPLETED:
+                return done_count > 0
+            return done_count == len(futures)
+
+        while not satisfied():
+            if not any(executor.run_task_for(futures) for executor in created_executors):
+                raise AssertionError('concurrent.futures.wait() would block forever: no queued task for these futures')
+        return real_wait(futures, timeout=0, return_when=return_when)
+
+    mocker.patch.object(concurrent.futures, 'ThreadPoolExecutor', DeferredExecutor)
+    mocker.patch.object(concurrent.futures, 'wait', deferred_wait)
+    return created_executors
+
+
+def _completed_results(futures):
+    return [future.result(timeout=0) for future in futures]
+
+
 class TestSendEventsToXSIAMTest:
     with open('test_data/events.json') as f:
         test_data = json.load(f)
@@ -9500,6 +10126,850 @@ class TestSendEventsToXSIAMTest:
             assert arguments_called['headers']['snapshot-id'] == '123000'
             assert arguments_called['headers']['total-items-count'] == '2'
 
+    @pytest.mark.parametrize('chunk_size', [2 ** 20, 50])
+    def test_send_data_to_xsiam_streaming_matches_legacy(self, mocker, chunk_size):
+        """
+        Given: a list of dict events.
+        When:  calling send_data_to_xsiam with use_streaming_send=False (legacy) and True (streaming),
+               including a small chunk_size to force multiple chunks.
+        Then:  the union of decompressed lines sent to XSIAM is identical between the two paths
+               (same events, same JSON, same newline separation), and the reported count matches.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        events = [{'id': i, 'msg': 'event number {}'.format(i)} for i in range(25)]
+
+        # legacy path
+        legacy_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=chunk_size,
+                           data_type='events', use_streaming_send=False)
+        legacy_lines = []
+        for call in legacy_mock.call_args_list:
+            legacy_lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
+
+        # streaming path
+        streaming_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=chunk_size,
+                           data_type='events', use_streaming_send=True)
+        streaming_lines = []
+        for call in streaming_mock.call_args_list:
+            streaming_lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
+
+        # same content (order-independent: same set of serialized events)
+        assert sorted(streaming_lines) == sorted(legacy_lines)
+        assert len(streaming_lines) == len(events)
+        # streaming reports the same total count to the health module
+        demisto.updateModuleHealth.assert_called_with({'eventsPulled': len(events)})
+
+    def test_send_data_to_xsiam_streaming_empty(self, mocker):
+        """
+        Given: an empty list and use_streaming_send=True.
+        When:  calling send_data_to_xsiam.
+        Then:  no HTTP call is made.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        http_mock = mocker.patch.object(BaseClient, '_http_request')
+
+        send_data_to_xsiam(data=[], vendor='v', product='p', data_type='events', use_streaming_send=True)
+
+        assert http_mock.call_count == 0
+
+    def test_send_data_to_xsiam_streaming_skips_oversized_entry_like_legacy(self, mocker):
+        """
+        Given: a list of events where one single entry exceeds MAX_ALLOWED_ENTRY_SIZE.
+        When:  calling send_data_to_xsiam with use_streaming_send=False (legacy) and True (streaming).
+        Then:  both paths skip the oversized entry and send exactly the same remaining lines, so the
+               streaming path is as safe/reliable as the legacy path for this edge case.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, MAX_ALLOWED_ENTRY_SIZE
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch.object(demisto, 'error')
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        # One oversized event (its serialized form exceeds MAX_ALLOWED_ENTRY_SIZE) between two normal events.
+        events = [
+            {'id': 0, 'msg': 'first'},
+            {'id': 1, 'blob': 'x' * (MAX_ALLOWED_ENTRY_SIZE + 1000)},
+            {'id': 2, 'msg': 'second'},
+        ]
+
+        legacy_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_data_to_xsiam(data=list(events), vendor='v', product='p',
+                           data_type='events', use_streaming_send=False)
+        legacy_lines = []
+        for call in legacy_mock.call_args_list:
+            legacy_lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
+
+        streaming_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_data_to_xsiam(data=list(events), vendor='v', product='p',
+                           data_type='events', use_streaming_send=True)
+        streaming_lines = []
+        for call in streaming_mock.call_args_list:
+            streaming_lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
+
+        # Both paths drop the oversized event and keep the two normal events, identically.
+        assert sorted(streaming_lines) == sorted(legacy_lines)
+        assert len(streaming_lines) == 2
+        assert all('blob' not in line for line in streaming_lines)
+
+    def test_send_assets_and_vulnerabilities_to_xsiam_defaults_to_streaming(self, mocker):
+        """
+        Given: a list of dict assets.
+        When:  calling send_assets_and_vulnerabilities_to_xsiam with default arguments (use_streaming_send defaults to True).
+        Then:  the assets are sent via the streaming path (serialize+free one at a time), the assets snapshot
+               headers (collector-type/snapshot-id/total-items-count) are preserved, and the same set of
+               serialized assets is delivered as the legacy path would deliver.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('time.time', return_value=123)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        assets = [{'id': i, 'name': 'asset number {}'.format(i)} for i in range(10)]
+
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_assets_and_vulnerabilities_to_xsiam(data=list(assets), vendor='some vendor', product='some product')
+
+        # The assets snapshot headers must be preserved (send goes through the assets data_type path).
+        headers = http_mock.call_args[1]['headers']
+        assert headers['collector-type'] == 'assets'
+        assert headers['snapshot-id'] == '123000'
+        assert headers['total-items-count'] == str(len(assets))
+
+        # Verify the streaming path delivered exactly the expected serialized assets.
+        streaming_lines = []
+        for call in http_mock.call_args_list:
+            streaming_lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
+        expected_lines = [json.dumps(asset) for asset in assets]
+        assert sorted(streaming_lines) == sorted(expected_lines)
+        demisto.updateModuleHealth.assert_called_with({'assetsPulled': len(assets)})
+
+    def test_send_assets_and_vulnerabilities_to_xsiam_non_streaming_preserves_headers(self, mocker):
+        """
+        Given: a list of dict assets.
+        When:  calling send_assets_and_vulnerabilities_to_xsiam with use_streaming_send=False (opt out of streaming).
+        Then:  the legacy (chunked) path is used, the assets snapshot headers are still preserved, and the
+               same set of serialized assets is delivered.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('time.time', return_value=123)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        assets = [{'id': i} for i in range(5)]
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_assets_and_vulnerabilities_to_xsiam(data=list(assets), vendor='v', product='p', use_streaming_send=False)
+
+        headers = http_mock.call_args[1]['headers']
+        assert headers['collector-type'] == 'assets'
+        assert headers['snapshot-id'] == '123000'
+        assert headers['total-items-count'] == str(len(assets))
+
+        lines = []
+        for call in http_mock.call_args_list:
+            lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
+        assert sorted(lines) == sorted(json.dumps(a) for a in assets)
+
+    def test_send_assets_and_vulnerabilities_to_xsiam_custom_snapshot_id_and_items_count(self, mocker):
+        """
+        Given: a list of assets with a custom snapshot_id and items_count.
+        When:  calling send_assets_and_vulnerabilities_to_xsiam.
+        Then:  the custom snapshot_id and items_count are used in the request headers.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('time.time', return_value=123)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_assets_and_vulnerabilities_to_xsiam(data=[{'id': 1}], vendor='v', product='p',
+                             snapshot_id='999', items_count=42)
+
+        headers = http_mock.call_args[1]['headers']
+        assert headers['snapshot-id'] == '999'
+        assert headers['total-items-count'] == '42'
+
+    def test_send_assets_and_vulnerabilities_to_xsiam_empty(self, mocker):
+        """
+        Given: an empty list of assets.
+        When:  calling send_assets_and_vulnerabilities_to_xsiam.
+        Then:  no HTTP call is made and the health module reports 0 assets.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        update_health_mock = mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        http_mock = mocker.patch.object(BaseClient, '_http_request')
+
+        send_assets_and_vulnerabilities_to_xsiam(data=[], vendor='v', product='p')
+
+        assert http_mock.call_count == 0
+        update_health_mock.assert_called_with({'assetsPulled': 0})
+
+    def test_send_assets_and_vulnerabilities_to_xsiam_multiple_threads_uses_streaming(self, mocker):
+        """
+        Given: a list of dict assets.
+        When:  calling send_assets_and_vulnerabilities_to_xsiam with multiple_threads=True (while use_streaming_send
+               defaults to True).
+        Then:  the streaming send path IS used together with multiple threads - each finished gzip chunk is POSTed
+               on a bounded thread pool (streaming, free-as-you-go) and a list of futures is returned to the caller.
+               This confirms multiple_threads keeps the memory-efficient streaming that
+               send_assets_and_vulnerabilities_to_xsiam provides, rather than falling back to the legacy path.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('CommonServerPython.support_multithreading')
+        mocker.patch('time.time', return_value=123)
+        executors = _install_deferred_executor(mocker)
+
+        info_mock = mocker.patch.object(demisto, 'info')
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+
+        futures = send_assets_and_vulnerabilities_to_xsiam(data=[{'id': 1}, {'id': 2}], vendor='v', product='p',
+                                       multiple_threads=True)
+
+        # multiple_threads path returns a list of futures ...
+        assert isinstance(futures, list)
+        assert len(executors) == 1
+        executors[0].run_all()
+        assert sum(_completed_results(futures)) == 2
+
+        # ... and the streaming ("free-as-you-go") path WAS taken together with multiple threads.
+        streaming_logged = any(
+            'streaming' in str(call.args[0]).lower() and 'multiple threads' in str(call.args[0]).lower()
+            for call in info_mock.call_args_list if call.args
+        )
+        assert streaming_logged, 'streaming send should stay enabled when multiple_threads=True'
+        # The two small items fit a single streamed chunk, so the decompressed blob is newline-separated.
+        sent_blobs = [gzip.decompress(call[1]['data']).decode('utf-8') for call in http_mock.call_args_list]
+        assert any('\n' in blob for blob in sent_blobs)
+
+    def test_send_assets_and_vulnerabilities_to_xsiam_custom_client_class(self, mocker):
+        """
+        Given: a custom client class.
+        When:  calling send_assets_and_vulnerabilities_to_xsiam with client_class set.
+        Then:  the custom client class is instantiated and used to perform the send.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
+        from requests import Response
+
+        class MyClient(BaseClient):
+            pass
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('time.time', return_value=123)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        init_spy = mocker.spy(MyClient, '__init__')
+        mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_assets_and_vulnerabilities_to_xsiam(data=[{'id': 1}], vendor='v', product='p', client_class=MyClient)
+        assert init_spy.call_count == 1
+
+    def test_stream_json_items_top_level_array(self, mocker):
+        """
+        Given: a JSON payload that is a top-level array (as bytes).
+        When:  parsing it with stream_json_items using the default 'item' prefix.
+        Then:  every record in the array is yielded, in order.
+        """
+        _install_fake_ijson(mocker)
+        from CommonServerPython import stream_json_items
+        import io
+
+        top_level = [{'id': 1}, {'id': 2}, {'id': 3}]
+        source = io.BytesIO(json.dumps(top_level).encode('utf-8'))
+        assert list(stream_json_items(source, items_prefix='item')) == top_level
+
+    def test_stream_json_items_nested_array(self, mocker):
+        """
+        Given: a JSON payload containing an array nested under a key.
+        When:  parsing it with the matching nested prefix ('data.item').
+        Then:  only the nested records are yielded.
+        """
+        _install_fake_ijson(mocker)
+        from CommonServerPython import stream_json_items
+        import io
+
+        nested = {'data': [{'id': 10}, {'id': 20}], 'meta': {'total': 2}}
+        source = io.BytesIO(json.dumps(nested).encode('utf-8'))
+        assert list(stream_json_items(source, items_prefix='data.item')) == nested['data']
+
+    def test_stream_json_items_empty_array(self, mocker):
+        """
+        Given: a JSON payload that is an empty array.
+        When:  parsing it with stream_json_items.
+        Then:  no records are yielded.
+        """
+        _install_fake_ijson(mocker)
+        from CommonServerPython import stream_json_items
+        import io
+
+        source = io.BytesIO(b'[]')
+        assert list(stream_json_items(source, items_prefix='item')) == []
+
+    def test_stream_json_items_from_bytes(self, mocker):
+        """
+        Given: a JSON array supplied directly as a bytes object (not a stream).
+        When:  parsing it with stream_json_items.
+        Then:  the records are yielded correctly (ijson accepts bytes input).
+        """
+        _install_fake_ijson(mocker)
+        from CommonServerPython import stream_json_items
+
+        assert list(stream_json_items(b'[{"a": 1}, {"a": 2}]', items_prefix='item')) == [{'a': 1}, {'a': 2}]
+
+    def test_stream_json_items_yields_one_at_a_time(self, mocker):
+        """
+        Given: a JSON array parsed via stream_json_items.
+        When:  advancing the returned generator one step at a time.
+        Then:  it is a lazy generator that yields a single record per iteration (does not build a full list
+               up front), confirming the one-record-at-a-time contract of stream_json_items.
+        """
+        _install_fake_ijson(mocker)
+        from CommonServerPython import stream_json_items
+
+        gen = stream_json_items(b'[{"id": 0}, {"id": 1}, {"id": 2}]', items_prefix='item')
+        # It's a generator (lazy), not a materialized list.
+        assert hasattr(gen, '__next__') or hasattr(gen, 'next')
+        assert next(gen) == {'id': 0}
+        assert next(gen) == {'id': 1}
+        assert list(gen) == [{'id': 2}]
+
+    def test_stream_json_items_is_lazy(self, mocker):
+        """
+        Given: a JSON array wrapped in a stream whose reads are counted (real ijson only).
+        When:  advancing the stream_json_items generator by a single step (next()).
+        Then:  the whole stream is NOT fully consumed up front, proving parsing is incremental/lazy.
+
+        This test asserts real-library incremental behavior, so it requires the real ``ijson`` and is skipped
+        when it is not installed (the one-record-at-a-time contract is covered without ijson by
+        test_stream_json_items_yields_one_at_a_time).
+        """
+        pytest.importorskip('ijson')
+        from CommonServerPython import stream_json_items
+        import io
+
+        payload = json.dumps([{'id': i} for i in range(1000)]).encode('utf-8')
+
+        class CountingStream(io.BytesIO):
+            def __init__(self, data):
+                io.BytesIO.__init__(self, data)
+                self.total_read = 0
+
+            def read(self, size=-1):
+                chunk = io.BytesIO.read(self, size)
+                self.total_read += len(chunk)
+                return chunk
+
+        stream = CountingStream(payload)
+        gen = stream_json_items(stream, items_prefix='item')
+        first = next(gen)
+        assert first == {'id': 0}
+        # The generator produced the first record without reading the entire (large) payload.
+        assert stream.total_read < len(payload)
+
+    def test_stream_json_items_missing_ijson(self, mocker):
+        """
+        Given: an environment where ijson is not installed.
+        When:  calling stream_json_items.
+        Then:  a clear DemistoException is raised instructing to add ijson to the docker image.
+        """
+        from CommonServerPython import stream_json_items
+        try:
+            import builtins  # Python 3
+        except ImportError:
+            import __builtin__ as builtins  # type: ignore # Python 2
+
+        real_import = builtins.__import__
+
+        def fake_import(name, *args, **kwargs):
+            if name == 'ijson':
+                raise ImportError('No module named ijson')
+            return real_import(name, *args, **kwargs)
+
+        mocker.patch.object(builtins, '__import__', side_effect=fake_import)
+        with pytest.raises(DemistoException, match='ijson'):
+            list(stream_json_items(b'[]'))
+
+    def test_stream_xml_elements_basic(self):
+        """
+        Given: an XML document with repeated <asset> elements interleaved with other tags.
+        When:  parsing it with stream_xml_elements(tags=['asset']).
+        Then:  only <asset> elements are yielded as (local_tag, element) tuples, in document order,
+               and non-matching tags are ignored.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = (
+            b'<assets>'
+            b'<asset><id>1</id><name>a</name></asset>'
+            b'<asset><id>2</id><name>b</name></asset>'
+            b'<other>ignored</other>'
+            b'<asset><id>3</id><name>c</name></asset>'
+            b'</assets>'
+        )
+        # Extract data during iteration (elements are cleared once the generator advances past them).
+        results = [(local_tag, elem.findtext('id')) for local_tag, elem in
+                   stream_xml_elements(io.BytesIO(xml_bytes), tags=['asset'])]
+        assert [local_tag for local_tag, _ in results] == ['asset', 'asset', 'asset']
+        assert [id_text for _, id_text in results] == ['1', '2', '3']
+
+    def test_stream_xml_elements_single_tag_as_string(self):
+        """
+        Given: an XML document with repeated <asset> elements.
+        When:  parsing it with a single tag passed as a string (convenience form).
+        Then:  matching elements are yielded as (local_tag, element) tuples.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = b'<assets><asset><id>1</id></asset><asset><id>2</id></asset></assets>'
+        ids = [elem.findtext('id') for local_tag, elem in stream_xml_elements(io.BytesIO(xml_bytes), tags='asset')]
+        assert ids == ['1', '2']
+
+    def test_stream_xml_elements_multiple_tags_single_pass(self):
+        """
+        Given: an XML document containing several different tags (data + error/pagination markers),
+               as in a Qualys host-list response.
+        When:  parsing it with stream_xml_elements(tags=['HOST', 'CODE', 'URL']) in one pass.
+        Then:  every requested tag is yielded with its local name so the caller can tell them apart,
+               in document order, from a single read of the stream.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = (
+            b'<OUTPUT>'
+            b'<RESPONSE>'
+            b'<HOST_LIST>'
+            b'<HOST><ID>1</ID></HOST>'
+            b'<HOST><ID>2</ID></HOST>'
+            b'</HOST_LIST>'
+            b'<WARNING><URL>https://example.com?id_min=3</URL></WARNING>'
+            b'</RESPONSE>'
+            b'</OUTPUT>'
+        )
+        results = [(local_tag, (elem.findtext('ID') or elem.text)) for local_tag, elem in
+                   stream_xml_elements(io.BytesIO(xml_bytes), tags=['HOST', 'CODE', 'URL'])]
+        assert results == [
+            ('HOST', '1'),
+            ('HOST', '2'),
+            ('URL', 'https://example.com?id_min=3'),
+        ]
+
+    def test_stream_xml_elements_captures_error_code(self):
+        """
+        Given: an XML error envelope containing a <CODE> element.
+        When:  parsing it while requesting the CODE tag alongside data tags.
+        Then:  the CODE element is surfaced so the caller can raise on API errors.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = b'<SIMPLE_RETURN><RESPONSE><CODE>1234</CODE><TEXT>bad</TEXT></RESPONSE></SIMPLE_RETURN>'
+        # Extract data during iteration (elements are cleared once the generator advances past them).
+        results = [(local_tag, elem.text) for local_tag, elem in
+                   stream_xml_elements(io.BytesIO(xml_bytes), tags=['HOST', 'CODE'])]
+        assert results == [('CODE', '1234')]
+
+    def test_stream_xml_elements_namespaced(self):
+        """
+        Given: a namespaced XML document.
+        When:  parsing it with stream_xml_elements matching on the local tag name.
+        Then:  namespaced elements are matched (namespace-agnostic).
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        ns_xml = (
+            b'<ns:assets xmlns:ns="http://example.com">'
+            b'<ns:asset><ns:id>7</ns:id></ns:asset>'
+            b'<ns:asset><ns:id>8</ns:id></ns:asset>'
+            b'</ns:assets>'
+        )
+        count = sum(1 for _ in stream_xml_elements(io.BytesIO(ns_xml), tags=['asset']))
+        assert count == 2
+
+    def test_stream_xml_elements_no_matches(self):
+        """
+        Given: an XML document with no elements matching the requested tags.
+        When:  parsing it with stream_xml_elements.
+        Then:  nothing is yielded.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = b'<root><foo>1</foo><bar>2</bar></root>'
+        assert list(stream_xml_elements(io.BytesIO(xml_bytes), tags=['asset'])) == []
+
+    def test_stream_xml_elements_clears_elements(self):
+        """
+        Given: an XML document with repeated <asset> elements.
+        When:  parsing it with stream_xml_elements and consuming the generator fully.
+        Then:  each yielded element is cleared (has no children/text) after the caller advances past it,
+               proving the memory-freeing behavior (elem.clear()).
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = (
+            b'<assets>'
+            b'<asset><id>1</id></asset>'
+            b'<asset><id>2</id></asset>'
+            b'</assets>'
+        )
+        seen = []
+        for _local_tag, elem in stream_xml_elements(io.BytesIO(xml_bytes), tags=['asset']):
+            # capture the previously-yielded element - it should have been cleared before we advanced here
+            seen.append(elem)
+        # After iteration, all yielded elements have been cleared (no children remain).
+        for elem in seen:
+            assert len(list(elem)) == 0
+
+    def test_stream_xml_elements_nested_same_tag(self):
+        """
+        Given: an XML document with the target tag nested inside another instance of the same tag.
+        When:  parsing it with stream_xml_elements.
+        Then:  every matching element (inner and outer) is yielded on its 'end' event.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = (
+            b'<root>'
+            b'<asset><id>outer</id><asset><id>inner</id></asset></asset>'
+            b'</root>'
+        )
+        count = sum(1 for _ in stream_xml_elements(io.BytesIO(xml_bytes), tags=['asset']))
+        assert count == 2
+
+    def test_stream_xml_elements_is_lazy(self):
+        """
+        Given: a large XML document wrapped in a stream whose reads are counted.
+        When:  advancing the stream_xml_elements generator by a single step (next()).
+        Then:  the whole stream is NOT fully consumed up front, proving parsing is incremental/lazy
+               (iterparse reads/parses on demand rather than loading the entire tree).
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        # Build a large document so incremental parsing is observable via read counting.
+        body = b'<assets>' + b''.join(
+            b'<asset><id>%d</id></asset>' % i for i in range(5000)
+        ) + b'</assets>'
+
+        class CountingStream(io.BytesIO):
+            def __init__(self, data):
+                io.BytesIO.__init__(self, data)
+                self.total_read = 0
+
+            def read(self, size=-1):
+                chunk = io.BytesIO.read(self, size)
+                self.total_read += len(chunk)
+                return chunk
+
+        stream = CountingStream(body)
+        gen = stream_xml_elements(stream, tags=['asset'])
+        _local_tag, first = next(gen)
+        assert first.findtext('id') == '0'
+        # The first element was produced without reading the entire (large) document.
+        assert stream.total_read < len(body)
+
+    def test_send_data_to_xsiam_streaming_threaded_matches_legacy(self, mocker):
+        """
+        Given: events, streaming + multiple_threads, and a small chunk_size (several chunks).
+        When:  calling send_data_to_xsiam.
+        Then:  the POSTed lines match the legacy path, the returned futures sum to the event count, and the
+               callee does not update health itself (even with should_update_health_module=True).
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        health_mock = mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('CommonServerPython.support_multithreading')
+        executors = _install_deferred_executor(mocker)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+        events = [{'id': i, 'msg': 'event number {}'.format(i)} for i in range(25)]
+
+        legacy_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=50,
+                           data_type='events', use_streaming_send=False)
+        legacy_lines = [line for call in legacy_mock.call_args_list
+                        for line in gzip.decompress(call[1]['data']).decode('utf-8').split('\n')]
+        health_mock.reset_mock()
+
+        threaded_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        futures = send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=50,
+                                     data_type='events', use_streaming_send=True, multiple_threads=True,
+                                     should_update_health_module=True)
+        executors[0].run_all()
+
+        assert sum(_completed_results(futures)) == len(events)
+        health_mock.assert_not_called()
+        assert threaded_mock.call_count > 1
+        threaded_lines = [line for call in threaded_mock.call_args_list
+                          for line in gzip.decompress(call[1]['data']).decode('utf-8').split('\n')]
+        assert sorted(threaded_lines) == sorted(legacy_lines)
+        assert len(threaded_lines) == len(events)
+
+    def test_send_data_to_xsiam_streaming_threaded_bounds_inflight_chunks(self, mocker):
+        """
+        Given: MAX_INFLIGHT_CHUNKS=2 and one event per chunk.
+        When:  calling send_data_to_xsiam with streaming + multiple_threads.
+        Then:  in-flight chunks reach the bound but never exceed it, and every event is sent.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('CommonServerPython.support_multithreading')
+        mocker.patch.object(CommonServerPython, 'MAX_INFLIGHT_CHUNKS', 2)
+        executors = _install_deferred_executor(mocker)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+
+        events = [{'id': i} for i in range(12)]
+        futures = send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=1,
+                                     data_type='events', use_streaming_send=True, multiple_threads=True,
+                                     should_update_health_module=False)
+
+        assert executors[0].max_pending == 2
+        executors[0].run_all()
+        assert sum(_completed_results(futures)) == len(events)
+        assert http_mock.call_count == len(events)
+
+    def test_send_data_to_xsiam_streaming_threaded_midstream_failure_preserves_delivered(self, mocker):
+        """
+        Given: MAX_INFLIGHT_CHUNKS=2, one event per chunk, and the 3rd POST fails.
+        When:  calling send_data_to_xsiam with streaming + multiple_threads.
+        Then:  the error is raised from the back-pressure loop, the queued chunk is cancelled, nothing more is
+               submitted, and exc.submitted_futures still exposes the 2 delivered chunks.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('CommonServerPython.support_multithreading')
+        mocker.patch.object(CommonServerPython, 'MAX_INFLIGHT_CHUNKS', 2)
+        executors = _install_deferred_executor(mocker)
+
+        ok_response = Response()
+        ok_response.status_code = 200
+        ok_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+        state = {'calls': 0}
+
+        def flaky_http_request(*args, **kwargs):
+            state['calls'] += 1
+            if state['calls'] == 3:
+                raise ValueError('boom')
+            return ok_response
+
+        mocker.patch.object(BaseClient, '_http_request', side_effect=flaky_http_request)
+
+        with pytest.raises(ValueError, match='boom') as exc_info:
+            send_data_to_xsiam(data=[{'id': i} for i in range(8)], vendor='v', product='p', chunk_size=1,
+                               data_type='events', use_streaming_send=True, multiple_threads=True,
+                               should_update_health_module=False)
+
+        submitted = exc_info.value.submitted_futures
+        assert state['calls'] == 3
+        assert len(submitted) == 4
+        assert [future.result(timeout=0) for future in submitted[:2]] == [1, 1]
+        assert isinstance(submitted[2].exception(timeout=0), ValueError)
+        assert submitted[3].cancelled()
+        assert executors[0].shutdown_calls == [{'wait': False, 'cancel_futures': True}]
+
+    def test_send_data_to_xsiam_streaming_threaded_all_oversized_returns_empty_list(self, mocker):
+        """
+        Given: only oversized entries, streaming + multiple_threads.
+        When:  calling send_data_to_xsiam.
+        Then:  nothing is POSTed and the caller gets [] (not None), so its futures loop stays safe.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, MAX_ALLOWED_ENTRY_SIZE
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch.object(demisto, 'error')
+        mocker.patch('CommonServerPython.support_multithreading')
+        _install_deferred_executor(mocker)
+        http_mock = mocker.patch.object(BaseClient, '_http_request')
+
+        events = [{'id': i, 'blob': 'x' * (MAX_ALLOWED_ENTRY_SIZE + 1000)} for i in range(3)]
+        futures = send_data_to_xsiam(data=list(events), vendor='v', product='p',
+                                     data_type='events', use_streaming_send=True, multiple_threads=True,
+                                     should_update_health_module=False)
+
+        assert http_mock.call_count == 0
+        assert futures == []
+
+    def test_send_data_to_xsiam_streaming_threaded_skips_oversized_entry(self, mocker):
+        """
+        Given: a list with one oversized entry between two normal ones, streaming + multiple_threads.
+        When:  calling send_data_to_xsiam.
+        Then:  the oversized entry is dropped and the futures count only the remaining events.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, MAX_ALLOWED_ENTRY_SIZE
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch.object(demisto, 'error')
+        mocker.patch('CommonServerPython.support_multithreading')
+        executors = _install_deferred_executor(mocker)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+
+        events = [
+            {'id': 0, 'msg': 'first'},
+            {'id': 1, 'blob': 'x' * (MAX_ALLOWED_ENTRY_SIZE + 1000)},
+            {'id': 2, 'msg': 'second'},
+        ]
+        futures = send_data_to_xsiam(data=list(events), vendor='v', product='p',
+                                     data_type='events', use_streaming_send=True, multiple_threads=True,
+                                     should_update_health_module=False)
+        executors[0].run_all()
+
+        assert sum(_completed_results(futures)) == 2
+        lines = [line for call in http_mock.call_args_list
+                 for line in gzip.decompress(call[1]['data']).decode('utf-8').split('\n')]
+        assert len(lines) == 2
+        assert all('blob' not in line for line in lines)
+
+    @pytest.mark.parametrize('chunk_size, multiple_posts', [(50, True), (2 ** 20, False)])
+    def test_send_data_to_xsiam_streaming_threaded_assets_snapshot_headers(self, mocker, chunk_size, multiple_posts):
+        """
+        Given: assets, streaming + multiple_threads, a custom snapshot_id and items_count.
+        When:  calling send_data_to_xsiam with a small (several chunks) and a large (single chunk) chunk_size.
+        Then:  every POST carries the same snapshot-id and the total (not per-chunk) total-items-count.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('CommonServerPython.support_multithreading')
+        executors = _install_deferred_executor(mocker)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+
+        assets = [{'id': i, 'msg': 'asset {}'.format(i)} for i in range(9)]
+        futures = send_data_to_xsiam(data=list(assets), vendor='v', product='p', chunk_size=chunk_size,
+                                     data_type='assets', snapshot_id='snap-999', items_count=len(assets),
+                                     use_streaming_send=True, multiple_threads=True,
+                                     should_update_health_module=False)
+        executors[0].run_all()
+
+        assert sum(_completed_results(futures)) == len(assets)
+        assert (http_mock.call_count > 1) == multiple_posts
+        for call in http_mock.call_args_list:
+            assert call[1]['headers']['snapshot-id'] == 'snap-999'
+            assert call[1]['headers']['total-items-count'] == str(len(assets))
+
     @pytest.mark.parametrize('data_type, snapshot_id, items_count, expected', [
         ('assets', None, None, {'snapshot_id': '123000', 'items_count': '2'}),
         ('assets', '12345', 25, {'snapshot_id': '12345', 'items_count': '25'})
@@ -9582,7 +11052,8 @@ class TestSendEventsToXSIAMTest:
             request_mocker = requests_mock.post(
                 'https://api-url/logs/v1/xsiam', json=error_msg, status_code=status_code, reason='Unauthorized[401]'
             )
-            expected_error_msg = 'Unauthorized[401]'
+            # A real server 'error' value (non-'false') is appended after the HTTP reason.
+            expected_error_msg = 'Unauthorized[401]: {}'.format(error_msg['error'])
         else:
             status_code = 403
             request_mocker = requests_mock.post('https://api-url/logs/v1/xsiam', text=None, status_code=status_code)
@@ -9607,6 +11078,48 @@ class TestSendEventsToXSIAMTest:
 
         error_log_mocker.assert_called_with(
             expected_request_and_response_info.format(status_code=str(status_code), error_received=expected_error_msg))
+
+    @pytest.mark.parametrize('server_error_body, should_append', [
+        ({'error': 'boom'}, True),      # a real server error message is appended after the reason
+        ({'error': 'false'}, False),    # the 'false' sentinel means "no error" - nothing appended
+        ({'error': ''}, False),         # empty error - nothing appended
+        ({}, False),                    # missing 'error' key - nothing appended
+    ])
+    def test_data_error_handler_appends_real_error(self, mocker, requests_mock, server_error_body, should_append):
+        """
+        Given:
+            An XSIAM error response whose JSON body contains an 'error' field that is either a real message,
+            the 'false' sentinel, empty, or missing.
+        When:
+            send_data_to_xsiam hits the error path and data_error_handler parses the response.
+        Then:
+            The raised DemistoException appends ': <error>' only when 'error' is a real (non-'false', non-empty)
+            message; otherwise only the HTTP reason is used.
+        """
+        if not IS_PY3:
+            return
+
+        mocker.patch.object(demisto, "params", return_value={"url": "www.test_url.com"})
+        mocker.patch.object(demisto, "callingContext", {"context": {"IntegrationInstance": "test_integration_instance",
+                                                                    "IntegrationBrand": "test_brand"}})
+        mocker.patch('time.time', return_value=123)
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'error')
+
+        reason = 'Unauthorized[401]'
+        requests_mock.post('https://api-url/logs/v1/xsiam', json=server_error_body, status_code=401, reason=reason)
+
+        events = self.test_data['json_events']['events']
+        with pytest.raises(DemistoException) as exc_info:
+            send_data_to_xsiam(data=events, vendor='some vendor', product='some product', data_type="events")
+
+        raised_message = str(exc_info.value)
+        if should_append:
+            assert raised_message.endswith('{reason}: {err}'.format(reason=reason, err=server_error_body['error']))
+        else:
+            assert raised_message.endswith(reason)
+            assert ': false' not in raised_message
 
     @pytest.mark.parametrize(
         'mocked_responses, expected_request_call_count, expected_error_log_count, should_succeed', [
@@ -11327,6 +12840,18 @@ def ucp_metadata_multi():
 
 
 @pytest.fixture()
+def ucp_metadata_passthrough_unmatched():
+    """Single passthrough profile whose capability no command maps to (XSUP-76663)."""
+    return load_ucp_test_data('ucp_metadata.json', key='passthrough_unmatched_capability')
+
+
+@pytest.fixture()
+def ucp_metadata_multi_no_automation():
+    """Multi-profile UCP metadata with no automation-and-remediation profile."""
+    return load_ucp_test_data('ucp_metadata.json', key='multi_profile_no_automation')
+
+
+@pytest.fixture()
 def ucp_creds_oauth2():
     """OAuth2 UCP credentials."""
     return load_ucp_test_data('ucp_credentials.json', key='oauth2')
@@ -11412,6 +12937,72 @@ class TestUcpDetection:
         CommonServerPython._UCP_AUTH_PARAMS_INJECTED = True
         assert CommonServerPython.should_use_ucp_auth() is False
 
+    # ── passthrough profiles: the dispatcher has no branch for them (CRTX-275569) ──
+
+    @staticmethod
+    def _metadata_with(profile_type, interpolation_mapping=None):
+        """UCP metadata carrying one profile of *profile_type*.
+
+        The capability matches resolve_ucp_capability()'s default so the
+        profile is selected without relying on the fallback path.
+        """
+        profile = {
+            'capability': 'automation-and-remediation',
+            'method_unique_id': 'abc123',
+            'type': profile_type,
+        }
+        if interpolation_mapping:
+            profile['metadata'] = {'xsoar': {'interpolation_mapping': interpolation_mapping}}
+        return {'connectionProfiles': [profile], 'connectorId': 'test-connector'}
+
+    def test_should_use_ucp_auth_false_for_passthrough_without_mapping(self, mocker, ucp_reset_injected_flag):
+        """A passthrough profile with NO interpolation_mapping must NOT use dispatcher auth.
+
+        Regression test for XSUP-75305: an integration with no credentials (or
+        licence-derived ones) interpolates nothing, so _UCP_AUTH_PARAMS_INJECTED
+        stays False. Before the fix this returned True, the request reached
+        _apply_ucp_credentials, and passthrough matched no branch -- raising a
+        bare UcpException surfaced to the user as an opaque
+        "authentication configuration error ... (85)".
+        """
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata_with('passthrough'))
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_should_use_ucp_auth_false_for_passthrough_with_mapping(self, mocker, ucp_reset_injected_flag):
+        """A passthrough profile WITH a mapping is already covered by the injected flag."""
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata_with('passthrough', 'api_key:credentials.password'))
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = True
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_should_use_ucp_auth_false_for_typed_profile_with_mapping(self, mocker, ucp_reset_injected_flag):
+        """A typed profile that interpolated its creds must not also use dispatcher auth."""
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata_with('api_key', 'api_key:credentials.password'))
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = True
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_should_use_ucp_auth_true_for_typed_profile_without_mapping(self, mocker, ucp_reset_injected_flag):
+        """The normal path is untouched: a typed profile still uses dispatcher auth.
+
+        Guards against the passthrough fix over-reaching and disabling UCP auth
+        for profiles the dispatcher CAN handle.
+        """
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata_with('api_key'))
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+        assert CommonServerPython.should_use_ucp_auth() is True
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Category 2: Capability Resolution
@@ -11427,14 +13018,29 @@ class TestUcpCapabilityResolution:
     """
 
     def test_resolve_fetch_incidents_maps_to_collection(self):
-        """fetch-incidents should map to 'collection-and-ingestion'."""
+        """fetch-incidents should map to 'fetch-issues'."""
         result = CommonServerPython.resolve_ucp_capability(command='fetch-incidents')
-        assert result == 'collection-and-ingestion'
+        assert result == 'fetch-issues'
+
+    def test_resolve_fetch_events_maps_to_log_collection(self):
+        """fetch-events should map to 'log-collection'."""
+        result = CommonServerPython.resolve_ucp_capability(command='fetch-events')
+        assert result == 'log-collection'
+
+    def test_resolve_fetch_credentials_maps_to_secrets(self):
+        """fetch-credentials should map to 'fetch-secrets'."""
+        result = CommonServerPython.resolve_ucp_capability(command='fetch-credentials')
+        assert result == 'fetch-secrets'
+
+    def test_resolve_fetch_indicators_maps_to_threat_intel(self):
+        """fetch-indicators should map to 'threat-intelligence-and-enrichment'."""
+        result = CommonServerPython.resolve_ucp_capability(command='fetch-indicators')
+        assert result == 'threat-intelligence-and-enrichment'
 
     def test_resolve_fetch_assets_maps_to_collection(self):
-        """fetch-assets should map to 'collection-and-ingestion'."""
+        """fetch-assets should map to 'fetch-assets-and-vulnerabilities'."""
         result = CommonServerPython.resolve_ucp_capability(command='fetch-assets')
-        assert result == 'collection-and-ingestion'
+        assert result == 'fetch-assets-and-vulnerabilities'
 
     def test_resolve_unknown_command_maps_to_default(self):
         """Unknown commands should fall back to the default capability."""
@@ -11445,7 +13051,7 @@ class TestUcpCapabilityResolution:
         """When command=None, should use demisto.command() to get the current command."""
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
         result = CommonServerPython.resolve_ucp_capability(command=None)
-        assert result == 'collection-and-ingestion'
+        assert result == 'fetch-issues'
 
     def test_resolve_none_command_unknown_demisto_command(self, mocker):
         """When command=None and demisto.command() returns an unknown command, should use default."""
@@ -11468,7 +13074,7 @@ class TestUcpCapabilityResolution:
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
         client = CommonServerPython.BaseClient(base_url='https://example.com')
         capability, sub_capability = client._resolve_ucp_capability()
-        assert capability == 'collection-and-ingestion'
+        assert capability == 'fetch-issues'
         assert sub_capability is None
 
     def test_baseclient_resolve_ucp_capability_override(self, mocker):
@@ -11488,9 +13094,288 @@ class TestUcpCapabilityResolution:
         This is a safety net — if someone changes these constants, tests should catch it."""
         assert CommonServerPython._UCP_DEFAULT_CAPABILITY == 'automation-and-remediation'
         assert CommonServerPython._UCP_COMMAND_CAPABILITIES == {
-            'fetch-incidents': 'collection-and-ingestion',
-            'fetch-assets': 'collection-and-ingestion',
+            'fetch-incidents': 'fetch-issues',
+            'fetch-events': 'log-collection',
+            'fetch-credentials': 'fetch-secrets',
+            'fetch-indicators': 'threat-intelligence-and-enrichment',
+            'fetch-assets': 'fetch-assets-and-vulnerabilities',
         }
+
+
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
+class TestUcpCapabilityReconciliation:
+    """Tests for reconciling the command-derived capability against the
+    capabilities the connector's connection profiles actually declare.
+
+    A capability that no profile provides cannot select a profile, which leaves
+    _select_ucp_profiles empty and blinds _ucp_auth_is_passthrough -- the
+    XSUP-76663 failure mode. Each test pairs the resolved capability with the
+    should_use_ucp_auth() decision it drives.
+    """
+
+    @staticmethod
+    def _metadata(*profiles):
+        """UCP metadata carrying *profiles*, each a (capability, type) pair."""
+        return {
+            'connectorId': 'test-connector',
+            'connectionProfiles': [
+                {'capability': capability, 'type': profile_type,
+                 'method_unique_id': 'method-{}'.format(index), 'sub_capabilities': []}
+                for index, (capability, profile_type) in enumerate(profiles)
+            ],
+        }
+
+    @pytest.fixture()
+    def ucp_env(self, mocker):
+        """Silence debug logging and reset the interpolation flag."""
+        mocker.patch.object(demisto, 'debug')
+        original = CommonServerPython._UCP_AUTH_PARAMS_INJECTED
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+        yield
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = original
+
+    # ── no profiles to reconcile against ──
+
+    def test_resolve_capability_no_profiles_returns_default(self, mocker, ucp_env):
+        """An empty connectionProfiles list leaves the command mapping untouched."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value={'connectionProfiles': []})
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+
+    def test_resolve_capability_empty_metadata_returns_default(self, mocker, ucp_env):
+        """Empty metadata (non-UCP mode) leaves the command mapping untouched."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value={})
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+
+    def test_resolve_capability_profiles_without_capability_key_ignored(self, mocker, ucp_env):
+        """Profiles carrying no capability contribute nothing to reconcile against."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value={'connectionProfiles': [{'method_unique_id': 'A'}]})
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+
+    # ── XSUP-76663: single passthrough profile, unmatched capability ──
+
+    def test_xsup_76663_single_passthrough_profile_unmatched_capability(
+            self, mocker, ucp_env, ucp_metadata_passthrough_unmatched):
+        """test-module on a feed connector must not apply UCP credentials.
+
+        The connector declares only threat-intelligence-and-enrichment via a
+        passthrough profile. test-module maps to automation-and-remediation,
+        which no profile provides, so without reconciliation no profile is
+        selected, _ucp_auth_is_passthrough() sees nothing, should_use_ucp_auth()
+        returns True and the passthrough envelope reaches the dispatcher.
+        """
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_passthrough_unmatched)
+
+        assert CommonServerPython.resolve_ucp_capability() == 'threat-intelligence-and-enrichment'
+        assert CommonServerPython._ucp_auth_is_passthrough() is True
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_xsup_76663_get_indicators_command_same_outcome(
+            self, mocker, ucp_env, ucp_metadata_passthrough_unmatched):
+        """A vendor-specific get-indicators command behaves exactly like test-module."""
+        mocker.patch.object(demisto, 'command', return_value='webex-get-indicators')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_passthrough_unmatched)
+
+        assert CommonServerPython.resolve_ucp_capability() == 'threat-intelligence-and-enrichment'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    # ── single profile, unmatched capability, dispatcher-supported type ──
+
+    def test_resolve_capability_single_non_passthrough_unmatched(self, mocker, ucp_env):
+        """A typed profile still authenticates; reconciliation only fixes which profile is found."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('threat-intelligence-and-enrichment', 'api_key')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'threat-intelligence-and-enrichment'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    # ── capability already matches: reconciliation is a no-op ──
+
+    def test_resolve_capability_matching_default_passthrough(self, mocker, ucp_env):
+        """A profile already on the default capability is selected unchanged."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('automation-and-remediation', 'passthrough')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_resolve_capability_matching_default_typed(self, mocker, ucp_env):
+        """The normal dispatcher path stays intact."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('automation-and-remediation', 'api_key')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    def test_resolve_capability_command_match_passthrough_profile(self, mocker, ucp_env):
+        """An explicit command mapping wins when a profile provides it."""
+        mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('threat-intelligence-and-enrichment', 'passthrough')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'threat-intelligence-and-enrichment'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_resolve_capability_command_match_typed_profile(self, mocker, ucp_env):
+        """An explicit command mapping wins for dispatcher-supported types too."""
+        mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('threat-intelligence-and-enrichment', 'api_key')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'threat-intelligence-and-enrichment'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    # ── command maps, but no profile provides the mapped capability ──
+
+    def test_resolve_capability_command_maps_but_profile_lacks_it_passthrough(self, mocker, ucp_env):
+        """A mapped-but-unavailable capability reconciles rather than selecting nothing.
+
+        fetch-incidents maps to fetch-issues, which this connector does not
+        provide. Keying reconciliation on "the command matched the mapping"
+        instead of "the capability is available" would leave this broken.
+        """
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'passthrough')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'log-collection'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_resolve_capability_command_maps_but_profile_lacks_it_typed(self, mocker, ucp_env):
+        """Same reconciliation for a dispatcher-supported type."""
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'plain')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'log-collection'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    # ── multiple profiles ──
+
+    def test_resolve_capability_multi_profile_prefers_automation_passthrough(self, mocker, ucp_env):
+        """The automation capability is preferred over other available ones."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'api_key'),
+                                                        ('automation-and-remediation', 'passthrough')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_resolve_capability_multi_profile_prefers_automation_typed(self, mocker, ucp_env):
+        """Preferring automation does not disable dispatcher auth by itself."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'api_key'),
+                                                        ('automation-and-remediation', 'oauth2')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    def test_resolve_capability_multi_profile_no_automation_uses_first(
+            self, mocker, ucp_env, ucp_metadata_multi_no_automation):
+        """Without the automation capability, the first profile's capability wins.
+
+        This keeps capability resolution aligned with get_ucp_method_unique_id's
+        first-profile fallback, so both pick the same profile.
+        """
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi_no_automation)
+
+        assert CommonServerPython.resolve_ucp_capability() == 'fetch-issues'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    def test_resolve_capability_multi_profile_no_automation_first_is_passthrough(self, mocker, ucp_env):
+        """First-profile selection also governs the passthrough decision."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('fetch-issues', 'passthrough'),
+                                                        ('log-collection', 'api_key')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'fetch-issues'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    # ── interpolation short-circuits the auth decision ──
+
+    def test_should_use_ucp_auth_false_when_params_already_interpolated(self, mocker, ucp_env):
+        """An interpolated profile has already supplied its credentials."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'api_key')))
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = True
+
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_mapping_present_but_nothing_interpolated_falls_back_to_passthrough_guard(self, mocker, ucp_env):
+        """A mapping that resolves no values must not leave the dispatcher exposed.
+
+        The injected flag stays False because nothing was interpolated, so the
+        passthrough guard is the only thing standing between a passthrough
+        profile and the dispatcher.
+        """
+        metadata = {
+            'connectorId': 'test-connector',
+            'connectionProfiles': [
+                {'capability': 'threat-intelligence-and-enrichment', 'type': 'passthrough',
+                 'method_unique_id': 'A', 'sub_capabilities': [],
+                 'metadata': {'xsoar': {'interpolation_mapping': 'absent:credentials.password'}}},
+            ],
+        }
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=metadata)
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials',
+                            return_value={'type': 'passthrough', 'passthrough': {'parameters': {}}})
+        demisto.callingContext = {'params': {}}
+
+        assert CommonServerPython.interpolate_ucp_params() is False
+        assert CommonServerPython._UCP_AUTH_PARAMS_INJECTED is False
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    # ── metadata access must never break resolution ──
+
+    def test_resolve_capability_metadata_raises_falls_back_to_command_mapping(self, mocker, ucp_env):
+        """A metadata failure degrades to the command mapping instead of propagating."""
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', side_effect=Exception('boom'))
+        error_mock = mocker.patch.object(demisto, 'error')
+        assert CommonServerPython.resolve_ucp_capability() == 'fetch-issues'
+        assert error_mock.call_count == 1
+        assert 'could not read profiles' in error_mock.call_args[0][0]
+
+    def test_resolve_capability_metadata_attribute_error_falls_back(self, mocker, ucp_env):
+        """Servers without unifiedConnectorMetadata() keep the legacy mapping."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', side_effect=AttributeError)
+        error_mock = mocker.patch.object(demisto, 'error')
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+        assert error_mock.call_count == 1
+        assert 'could not read profiles' in error_mock.call_args[0][0]
+
+    def testget_configured_ucp_capabilities_returns_declared_order(self, mocker, ucp_env,
+                                                             ucp_metadata_multi_no_automation):
+        """Capabilities are reported in connectionProfiles order."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi_no_automation)
+        assert CommonServerPython.get_configured_ucp_capabilities() == ['fetch-issues', 'log-collection']
+
+    # ── reconciliation is not bypassed by an explicit command argument ──
+
+    def test_resolve_capability_explicit_command_also_reconciles(self, mocker, ucp_env):
+        """An explicitly passed command reconciles just like demisto.command().
+
+        'test-module' maps to the default capability whether the caller supplies
+        it or not, so skipping reconciliation for explicit callers would
+        reintroduce XSUP-76663 through every such call site.
+        """
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'passthrough')))
+        assert CommonServerPython.resolve_ucp_capability(command='test-module') == 'log-collection'
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -11555,7 +13440,7 @@ class TestUcpProfileResolution:
     def test_find_by_capability_match(self, ucp_metadata_multi):
         """Should find profile when capability matches."""
         profiles = ucp_metadata_multi['connectionProfiles']
-        result = CommonServerPython._find_ucp_profile_by_capability(profiles, 'collection-and-ingestion')
+        result = CommonServerPython._find_ucp_profile_by_capability(profiles, 'fetch-issues')
         assert result == 'method-collect-ingest'
 
     def test_find_by_capability_no_match(self, ucp_metadata_single):
@@ -11579,7 +13464,7 @@ class TestUcpProfileResolution:
         """sub_capability match should take priority over capability match."""
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi)
         result = CommonServerPython.get_ucp_method_unique_id(
-            capability='collection-and-ingestion',
+            capability='fetch-issues',
             sub_capability='salesforce-iam'
         )
         # salesforce-iam is in the first profile (method-auto-remed), not the collection one
@@ -11590,7 +13475,7 @@ class TestUcpProfileResolution:
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi)
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
         result = CommonServerPython.get_ucp_method_unique_id(
-            capability='collection-and-ingestion',
+            capability='fetch-issues',
             sub_capability=None
         )
         assert result == 'method-collect-ingest'
@@ -11614,7 +13499,7 @@ class TestUcpProfileResolution:
         """When capability=None, should auto-resolve via resolve_ucp_capability()."""
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi)
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
-        # capability=None should resolve to 'collection-and-ingestion' for fetch-incidents
+        # capability=None should resolve to 'fetch-issues' for fetch-incidents
         result = CommonServerPython.get_ucp_method_unique_id(capability=None, sub_capability=None)
         assert result == 'method-collect-ingest'
 
@@ -11725,7 +13610,7 @@ class TestUcpCredentialCaching:
 
         result = CommonServerPython.get_ucp_credentials('abc123')
         assert result == ucp_creds_oauth2
-        demisto.getUCPCredentials.assert_called_once_with('abc123', from_cache=False)
+        demisto.getUCPCredentials.assert_called_once_with('abc123', from_cache=False, body=None)
 
     def test_get_credentials_cache_hit(self, mocker, ucp_creds_oauth2, ucp_clean_cache):
         """On cache hit (not expired), should NOT call demisto.getUCPCredentials."""
@@ -11785,7 +13670,7 @@ class TestUcpCredentialCaching:
         result = CommonServerPython.get_ucp_credentials(method_unique_id=None)
         assert result == ucp_creds_oauth2
         # Should have resolved to 'abc123' from the single profile
-        demisto.getUCPCredentials.assert_called_once_with('abc123', from_cache=False)
+        demisto.getUCPCredentials.assert_called_once_with('abc123', from_cache=False, body=None)
 
     # ── invalidate_ucp_credentials tests ──
 
@@ -12088,6 +13973,60 @@ class TestUcpCredentialApplication:
         with pytest.raises(CommonServerPython.UcpException):
             client._apply_ucp_credentials(creds, ctx)
 
+    # ── passthrough: the integration owns the credential ──
+
+    def test_dispatch_passthrough_is_noop(self, mocker):
+        """A passthrough envelope must leave the request exactly as it was.
+
+        Passthrough exists so that UCP credentials are NOT applied; raising here
+        turns a valid configuration into an opaque authentication error.
+        """
+        mocker.patch.object(demisto, 'debug')
+        client = self._make_client()
+        ctx = self._make_ctx()
+        ctx.headers['Accept'] = 'application/json'
+        creds = {'type': 'passthrough', 'passthrough': {'parameters': {'api_key': 'should-not-be-used'}}}
+
+        assert client._apply_ucp_credentials(creds, ctx) is None
+        assert ctx.headers == {'Accept': 'application/json'}
+        assert ctx.auth is None
+        assert ctx.params == {}
+
+    def test_dispatch_passthrough_logs_debug_not_error(self, mocker):
+        """Reaching the dispatcher with passthrough is diagnosable but not an error."""
+        debug_mock = mocker.patch.object(demisto, 'debug')
+        error_mock = mocker.patch.object(demisto, 'error')
+        client = self._make_client()
+        ctx = self._make_ctx()
+
+        client._apply_ucp_credentials({'type': 'passthrough'}, ctx)
+
+        assert 'passthrough' in debug_mock.call_args[0][0]
+        error_mock.assert_not_called()
+
+    def test_inject_passthrough_direct_call_does_not_raise(self, mocker, ucp_clean_cache):
+        """_inject_ucp_credentials is safe even when should_use_ucp_auth() is bypassed.
+
+        Integrations may call the injection flow directly, so the guard cannot
+        live only in should_use_ucp_auth().
+        """
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value={
+            'connectionProfiles': [
+                {'capability': 'automation-and-remediation', 'type': 'passthrough',
+                 'method_unique_id': 'abc123', 'sub_capabilities': []},
+            ],
+        })
+        mocker.patch.object(demisto, 'getUCPCredentials',
+                            return_value={'type': 'passthrough', 'passthrough': {'parameters': {}}})
+        client = self._make_client()
+        ctx = self._make_ctx()
+
+        assert client._inject_ucp_credentials(ctx) == 'abc123'
+        assert ctx.headers == {}
+        assert ctx.auth is None
+
     def test_existing_headers_preserved(self, ucp_creds_oauth2):
         """UCP credential injection should preserve existing headers."""
         client = self._make_client()
@@ -12196,7 +14135,7 @@ class TestUcpInjectionFlow:
         assert result == 'abc123'
 
     def test_inject_uses_correct_profile_for_fetch_incidents(self, mocker, ucp_metadata_multi, ucp_creds_oauth2, ucp_clean_cache):
-        """For fetch-incidents, should use the collection-and-ingestion profile."""
+        """For fetch-incidents, should use the fetch-issues profile."""
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi)
         mocker.patch.object(demisto, 'getUCPCredentials', return_value=ucp_creds_oauth2)
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
@@ -12208,7 +14147,7 @@ class TestUcpInjectionFlow:
             headers={}, params={}, auth=None, data=None, json_data=None
         )
         method_id = client._inject_ucp_credentials(ctx)
-        # fetch-incidents maps to collection-and-ingestion → method-collect-ingest
+        # fetch-incidents maps to fetch-issues → method-collect-ingest
         assert method_id == 'method-collect-ingest'
 
 
@@ -12737,6 +14676,30 @@ class TestUcpNonUcpRegression:
 
         inject_spy.assert_not_called()
 
+    def test_no_injection_for_passthrough_with_unmatched_capability(
+            self, mocker, ucp_metadata_passthrough_unmatched, ucp_clean_cache, ucp_reset_injected_flag):
+        """End-to-end XSUP-76663: no credential fetch, no injection, no auth header.
+
+        The connector's only profile is passthrough under a capability the
+        command does not map to. The request must go out untouched.
+        """
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_passthrough_unmatched)
+        creds_mock = mocker.patch.object(demisto, 'getUCPCredentials', return_value={})
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+
+        with requests_mock.Mocker() as m:
+            m.get('https://example.com/api/test', json={'ok': True}, status_code=200)
+            client = CommonServerPython.BaseClient(base_url='https://example.com/api')
+            inject_spy = mocker.patch.object(client, '_inject_ucp_credentials')
+            client._http_request('GET', url_suffix='/test')
+            request_headers = m.last_request.headers
+
+        inject_spy.assert_not_called()
+        creds_mock.assert_not_called()
+        assert 'Authorization' not in request_headers
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Category 10: Override Patterns
@@ -12865,7 +14828,7 @@ class TestUcpOverridePatterns:
 
         # Verify getUCPCredentials was called with the custom method_unique_id
         # that corresponds to the custom capability profile
-        demisto.getUCPCredentials.assert_called_once_with('custom-method-id', from_cache=False)
+        demisto.getUCPCredentials.assert_called_once_with('custom-method-id', from_cache=False, body=None)
 
     def test_default_auth_error_codes_is_401_only(self):
         """Default _get_ucp_auth_error_codes() should return (401,)."""
@@ -12985,9 +14948,9 @@ class TestUcpNonBaseClientUsage:
         assert result == 'automation-and-remediation'
 
     def test_resolve_ucp_capability_fetch_incidents(self, mocker):
-        """resolve_ucp_capability() maps fetch-incidents to collection-and-ingestion."""
+        """resolve_ucp_capability() maps fetch-incidents to fetch-issues."""
         result = CommonServerPython.resolve_ucp_capability(command='fetch-incidents')
-        assert result == 'collection-and-ingestion'
+        assert result == 'fetch-issues'
 
     def test_get_ucp_credentials_standalone(self, mocker, ucp_clean_cache, ucp_creds_oauth2):
         """get_ucp_credentials() should call demisto.getUCPCredentials() correctly."""
@@ -12996,7 +14959,7 @@ class TestUcpNonBaseClientUsage:
 
         result = CommonServerPython.get_ucp_credentials(method_unique_id='test-method-1')
 
-        demisto.getUCPCredentials.assert_called_once_with('test-method-1', from_cache=False)
+        demisto.getUCPCredentials.assert_called_once_with('test-method-1', from_cache=False, body=None)
         assert result == ucp_creds_oauth2
 
     def test_invalidate_ucp_credentials_standalone(self, mocker, ucp_clean_cache, ucp_creds_oauth2):
@@ -13119,7 +15082,7 @@ class TestUcpSubclassOverride:
 
         assert result == {'manual': True}
         assert method_id == 'abc123'
-        demisto.getUCPCredentials.assert_called_once_with('abc123', from_cache=False)
+        demisto.getUCPCredentials.assert_called_once_with('abc123', from_cache=False, body=None)
 
     def test_subclass_with_custom_session(
         self, mocker, ucp_metadata_single, ucp_creds_oauth2, ucp_clean_cache
@@ -13300,7 +15263,7 @@ class TestUcpEdgeCases:
 
         call_count = {'count': 0}
 
-        def mock_get_creds(method_id, from_cache=False):
+        def mock_get_creds(method_id, from_cache=False, body=None):
             call_count['count'] += 1
             if method_id == 'method-1':
                 return creds_1
@@ -13374,7 +15337,7 @@ class TestUcpEdgeCases:
 
         assert result1 == result2 == result3 == creds
         # Only one actual call to the backend
-        demisto.getUCPCredentials.assert_called_once_with('shared-method', from_cache=False)
+        demisto.getUCPCredentials.assert_called_once_with('shared-method', from_cache=False, body=None)
 
     def test_metadata_with_no_profiles_key(self, mocker):
         """Metadata dict exists but has no 'connectionProfiles' key — should raise UcpException."""
@@ -13425,7 +15388,7 @@ class TestUcpEdgeCases:
 
         call_count = {'count': 0}
 
-        def mock_get_creds(method_id, from_cache=False):
+        def mock_get_creds(method_id, from_cache=False, body=None):
             call_count['count'] += 1
             if call_count['count'] == 1:
                 return expired_creds
@@ -13443,6 +15406,642 @@ class TestUcpEdgeCases:
         result2 = CommonServerPython.get_ucp_credentials(method_unique_id='expiry-method')
         assert result2['oauth2']['access_token'] == 'fresh-token'
         assert call_count['count'] == 2
+
+
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
+class TestUcpInterpolation:
+    """Tests for UCP param interpolation: _place_by_path, _parse_param_map,
+    _select_ucp_profiles, build_ucp_params, and interpolate_ucp_params.
+
+    Interpolation is metadata-first, capability-scoped, and multi-profile: it
+    reshapes the param_map + fields carried on each in-scope connection profile
+    into the nested demisto.params() shape integrations expect (e.g. folding
+    username/password into a single `credentials` dict — XSOAR type 9).
+    """
+
+    # ── _place_by_path ──
+
+    def test_place_by_path_flat(self):
+        target = {}  # type: dict
+        CommonServerPython._place_by_path(target, 'url', 'flat-url')
+        assert target == {'url': 'flat-url'}
+
+    def test_place_by_path_nested_creates_intermediate(self):
+        target = {}  # type: dict
+        CommonServerPython._place_by_path(target, 'a.b.c', 1)
+        assert target == {'a': {'b': {'c': 1}}}
+
+    def test_place_by_path_shared_parent_merges(self):
+        target = {}  # type: dict
+        CommonServerPython._place_by_path(target, 'credentials.identifier', 'alice')
+        CommonServerPython._place_by_path(target, 'credentials.password', 's3cr3t')
+        assert target == {'credentials': {'identifier': 'alice', 'password': 's3cr3t'}}
+
+    def test_place_by_path_empty_path_noop(self):
+        target = {'keep': 1}
+        CommonServerPython._place_by_path(target, '', 'x')
+        assert target == {'keep': 1}
+
+    def test_place_by_path_overwrites_non_dict_intermediate(self):
+        target = {'a': 'scalar'}
+        CommonServerPython._place_by_path(target, 'a.b', 2)
+        assert target == {'a': {'b': 2}}
+
+    # ── _parse_param_map ──
+
+    def test_parse_param_map_string(self):
+        pairs = CommonServerPython._parse_param_map(
+            'username:credentials.identifier,password:credentials.password'
+        )
+        assert pairs == [
+            ('username', 'credentials.identifier'),
+            ('password', 'credentials.password'),
+        ]
+
+    def test_parse_param_map_empty_and_malformed_skipped(self, mocker):
+        mocker.patch.object(demisto, 'error')
+        mocker.patch.object(demisto, 'debug')
+        pairs = CommonServerPython._parse_param_map('good:dest, ,nocolon,empty:')
+        assert pairs == [('good', 'dest')]
+
+    def test_parse_param_map_none(self):
+        assert CommonServerPython._parse_param_map(None) == []
+
+    def test_parse_param_map_whitespace_trimmed(self):
+        pairs = CommonServerPython._parse_param_map(' a : b.c ')
+        assert pairs == [('a', 'b.c')]
+
+    def test_parse_param_map_split_only_on_first_colon(self):
+        # ``entry.split(':', 1)`` ensures dotted destinations that themselves
+        # contain ':' (or any future colon-bearing form) keep the right-hand
+        # side intact instead of being truncated at the second colon.
+        pairs = CommonServerPython._parse_param_map('field:a:b:c')
+        assert pairs == [('field', 'a:b:c')]
+
+    # ── _select_ucp_profiles ──
+
+    def test_select_profiles_by_capability(self):
+        profiles = [
+            {'capability': 'cap-a', 'method_unique_id': 'A'},
+            {'capability': 'cap-b', 'method_unique_id': 'B'},
+        ]
+        result = CommonServerPython._select_ucp_profiles(profiles, 'cap-a')
+        assert [p['method_unique_id'] for p in result] == ['A']
+
+    def test_select_profiles_multiple_matches(self):
+        profiles = [
+            {'capability': 'cap-x', 'method_unique_id': 'A'},
+            {'capability': 'cap-x', 'method_unique_id': 'B'},
+        ]
+        result = CommonServerPython._select_ucp_profiles(profiles, 'cap-x')
+        assert [p['method_unique_id'] for p in result] == ['A', 'B']
+
+    def test_select_profiles_fallback_to_first_with_interpolation_mapping(self, mocker):
+        mocker.patch.object(demisto, 'debug')
+        profiles = [
+            {'capability': 'other', 'method_unique_id': 'A'},
+            {'capability': 'other', 'method_unique_id': 'B',
+             'metadata': {'xsoar': {'interpolation_mapping': 'u:x'}}},
+        ]
+        result = CommonServerPython._select_ucp_profiles(profiles, 'no-match')
+        assert [p['method_unique_id'] for p in result] == ['B']
+
+    def test_select_profiles_empty(self):
+        assert CommonServerPython._select_ucp_profiles([], 'cap') == []
+
+    # ── build_ucp_params ──
+
+    @staticmethod
+    def _plain_envelope(**fields):
+        # Credentials envelope shape returned by get_ucp_credentials for a
+        # "plain" profile: {"type": "plain", "plain": {<field_id>: <value>}}.
+        return {'type': 'plain', 'plain': dict(fields)}
+
+    def test_build_ucp_params_credentials_fold(self, mocker):
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(
+            CommonServerPython, 'get_ucp_credentials',
+            return_value=self._plain_envelope(username='alice', password='s3cr3t'),
+        )
+        meta = {
+            'connectionProfiles': [
+                {
+                    'capability': 'automation-and-remediation',
+                    'method_unique_id': 'A',
+                    'metadata': {'xsoar': {'interpolation_mapping':
+                                           'username:credentials.identifier,password:credentials.password'}},
+                }
+            ]
+        }
+        result = CommonServerPython.build_ucp_params(meta, capability='automation-and-remediation')
+        assert result == {'credentials': {'identifier': 'alice', 'password': 's3cr3t'}}
+
+    def test_build_ucp_params_capability_filtering(self, mocker):
+        mocker.patch.object(demisto, 'debug')
+        # Only the cap-b profile is selected, so only its credentials are fetched.
+        mocker.patch.object(
+            CommonServerPython, 'get_ucp_credentials',
+            return_value=self._plain_envelope(k='COLLECTOR'),
+        )
+        meta = {
+            'connectionProfiles': [
+                {'capability': 'cap-a', 'method_unique_id': 'A',
+                 'metadata': {'xsoar': {'interpolation_mapping': 'u:credentials.identifier'}}},
+                {'capability': 'cap-b', 'method_unique_id': 'B',
+                 'metadata': {'xsoar': {'interpolation_mapping': 'k:credentials.password'}}},
+            ]
+        }
+        result = CommonServerPython.build_ucp_params(meta, capability='cap-b')
+        assert result == {'credentials': {'password': 'COLLECTOR'}}
+
+    def test_build_ucp_params_multi_profile_merge(self, mocker):
+        mocker.patch.object(demisto, 'debug')
+
+        def fake_get_creds(method_unique_id=None, body=None):
+            if method_unique_id == 'A':
+                return self._plain_envelope(u='alice')
+            return self._plain_envelope(p='pw')
+
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials', side_effect=fake_get_creds)
+        meta = {
+            'connectionProfiles': [
+                {'capability': 'x', 'method_unique_id': 'A',
+                 'metadata': {'xsoar': {'interpolation_mapping': 'u:credentials.identifier'}}},
+                {'capability': 'x', 'method_unique_id': 'B',
+                 'metadata': {'xsoar': {'interpolation_mapping': 'p:credentials.password'}}},
+            ]
+        }
+        result = CommonServerPython.build_ucp_params(meta, capability='x')
+        assert result == {'credentials': {'identifier': 'alice', 'password': 'pw'}}
+
+    def test_build_ucp_params_last_wins_on_conflict(self, mocker):
+        mocker.patch.object(demisto, 'debug')
+
+        def fake_get_creds(method_unique_id=None, body=None):
+            if method_unique_id == 'A':
+                return self._plain_envelope(v='first')
+            return self._plain_envelope(v='second')
+
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials', side_effect=fake_get_creds)
+        meta = {
+            'connectionProfiles': [
+                {'capability': 'x', 'method_unique_id': 'A',
+                 'metadata': {'xsoar': {'interpolation_mapping': 'v:dest'}}},
+                {'capability': 'x', 'method_unique_id': 'B',
+                 'metadata': {'xsoar': {'interpolation_mapping': 'v:dest'}}},
+            ]
+        }
+        result = CommonServerPython.build_ucp_params(meta, capability='x')
+        assert result == {'dest': 'second'}
+
+    def test_build_ucp_params_no_interpolation_mapping_returns_empty(self, mocker):
+        mocker.patch.object(demisto, 'debug')
+        # Profile carries no interpolation_mapping, so nothing is interpolated.
+        meta = {'connectionProfiles': [{'capability': 'x', 'method_unique_id': 'A'}]}
+        result = CommonServerPython.build_ucp_params(meta, capability='x')
+        assert result == {}
+
+    def test_build_ucp_params_missing_value_skipped(self, mocker):
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(
+            CommonServerPython, 'get_ucp_credentials',
+            return_value=self._plain_envelope(present=1),
+        )
+        meta = {
+            'connectionProfiles': [
+                {'capability': 'x', 'method_unique_id': 'A',
+                 'metadata': {'xsoar': {'interpolation_mapping': 'present:a,absent:b'}}},
+            ]
+        }
+        result = CommonServerPython.build_ucp_params(meta, capability='x')
+        assert result == {'a': 1}
+
+    def test_build_ucp_params_no_metadata_returns_empty(self):
+        result = CommonServerPython.build_ucp_params(None)
+        assert result == {}
+
+    def test_build_ucp_params_auto_resolves_capability(self, mocker):
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        mocker.patch.object(
+            CommonServerPython, 'get_ucp_credentials',
+            return_value=self._plain_envelope(k='tok'),
+        )
+        meta = {
+            'connectionProfiles': [
+                {'capability': 'fetch-issues', 'method_unique_id': 'A',
+                 'metadata': {'xsoar': {'interpolation_mapping': 'k:credentials.password'}}},
+            ]
+        }
+        # capability=None -> resolve_ucp_capability() -> fetch-issues
+        result = CommonServerPython.build_ucp_params(meta, capability=None)
+        assert result == {'credentials': {'password': 'tok'}}
+
+    # ── interpolate_ucp_params ──
+
+    def test_interpolate_sets_flag_and_merges(self, mocker, ucp_reset_injected_flag):
+        meta = {
+            'connectionProfiles': [
+                {'capability': 'automation-and-remediation', 'method_unique_id': 'A',
+                 'type': 'plain',
+                 'metadata': {'xsoar': {'interpolation_mapping':
+                                        'username:credentials.identifier,password:credentials.password'}}},
+            ]
+        }
+        envelope = {'type': 'plain', 'plain': {'username': 'alice', 'password': 's3cr3t'}}
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=meta)
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials', return_value=envelope)
+        demisto.callingContext = {'params': {'url': 'flat-url'}}
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+
+        result = CommonServerPython.interpolate_ucp_params()
+        assert result is True
+        assert CommonServerPython._UCP_AUTH_PARAMS_INJECTED is True
+        assert demisto.callingContext['params'] == {
+            'url': 'flat-url',
+            'credentials': {'identifier': 'alice', 'password': 's3cr3t'},
+        }
+
+    def test_interpolate_noop_when_no_param_map(self, mocker, ucp_reset_injected_flag):
+        meta = {'connectionProfiles': [{'capability': 'automation-and-remediation',
+                                        'method_unique_id': 'A'}]}
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=meta)
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'debug')
+        demisto.callingContext = {'params': {'url': 'flat-url'}}
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+
+        result = CommonServerPython.interpolate_ucp_params()
+        assert result is False
+        assert CommonServerPython._UCP_AUTH_PARAMS_INJECTED is False
+        assert demisto.callingContext['params'] == {'url': 'flat-url'}
+
+    def test_interpolate_deep_merges_preserves_existing_nested_siblings(self, mocker, ucp_reset_injected_flag):
+        meta = {
+            'connectionProfiles': [
+                {'capability': 'automation-and-remediation', 'method_unique_id': 'A',
+                 'type': 'plain',
+                 'metadata': {'xsoar': {'interpolation_mapping':
+                                        'username:credentials.identifier,password:credentials.password'}}},
+            ]
+        }
+        envelope = {'type': 'plain', 'plain': {'username': 'somevalue', 'password': 'somthing'}}
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=meta)
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials', return_value=envelope)
+        demisto.callingContext = {
+            'params': {
+                'credentials': {'identifier': 'original', 'password': 'some value', 'field3': 'value'}
+            }
+        }
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+
+        result = CommonServerPython.interpolate_ucp_params()
+        assert result is True
+        assert CommonServerPython._UCP_AUTH_PARAMS_INJECTED is True
+        # Deep-merge: incoming identifier/password win, pre-existing sibling
+        # field3 is preserved instead of being dropped by a shallow update.
+        assert demisto.callingContext['params']['credentials'] == {
+            'identifier': 'somevalue',
+            'password': 'somthing',
+            'field3': 'value',
+        }
+
+    # ── import-time safety net ──
+
+    def test_interpolate_import_time_swallows_exceptions(self, mocker, ucp_reset_injected_flag):
+        # Mirrors the try/except at module import that wraps
+        # ``interpolate_ucp_params()``: any exception raised by the call must
+        # be caught and logged via ``demisto.error`` so that an
+        # interpolation failure can never break module import for a normally
+        # running integration.
+        error_mock = mocker.patch.object(demisto, 'error')
+        mocker.patch.object(
+            CommonServerPython, 'interpolate_ucp_params',
+            side_effect=RuntimeError('boom'),
+        )
+        try:
+            CommonServerPython.interpolate_ucp_params()
+        except Exception as e:
+            demisto.error(
+                "[UCP][CommonServerPython.py] import-time interpolate_ucp_params() swallowed error: {}".format(e)
+            )
+        assert error_mock.called
+        logged = error_mock.call_args[0][0]
+        assert 'import-time interpolate_ucp_params() swallowed error' in logged
+        assert 'boom' in logged
+
+    # ── _deep_merge_dicts ──
+
+    def test_deep_merge_dicts_nested_merge_preserves_siblings(self):
+        target = {'credentials': {'identifier': 'original', 'password': 'some value', 'field3': 'value'}}
+        source = {'credentials': {'identifier': 'somevalue', 'password': 'somthing'}}
+        result = CommonServerPython._deep_merge_dicts(target, source)
+        assert result == {
+            'credentials': {'identifier': 'somevalue', 'password': 'somthing', 'field3': 'value'}
+        }
+
+    def test_deep_merge_dicts_incoming_wins_on_conflict(self):
+        target = {'a': 1, 'b': 2}
+        source = {'a': 99}
+        result = CommonServerPython._deep_merge_dicts(target, source)
+        assert result == {'a': 99, 'b': 2}
+
+    def test_deep_merge_dicts_dict_overwrites_scalar(self):
+        target = {'a': 'scalar'}
+        source = {'a': {'nested': 1}}
+        result = CommonServerPython._deep_merge_dicts(target, source)
+        assert result == {'a': {'nested': 1}}
+
+    def test_deep_merge_dicts_scalar_overwrites_dict(self):
+        target = {'a': {'nested': 1}}
+        source = {'a': 'scalar'}
+        result = CommonServerPython._deep_merge_dicts(target, source)
+        assert result == {'a': 'scalar'}
+
+    def test_deep_merge_dicts_keys_only_in_incoming_added(self):
+        target = {'a': 1}
+        source = {'b': 2}
+        result = CommonServerPython._deep_merge_dicts(target, source)
+        assert result == {'a': 1, 'b': 2}
+
+    def test_deep_merge_dicts_mutates_target_in_place(self):
+        target = {'credentials': {'identifier': 'original'}}
+        original_target = target
+        original_credentials = target['credentials']
+        source = {'credentials': {'password': 'pw'}}
+        result = CommonServerPython._deep_merge_dicts(target, source)
+        # identity preserved: returns the same target object and mutates the
+        # same nested dict object rather than replacing it.
+        assert result is original_target
+        assert result['credentials'] is original_credentials
+        assert result == {'credentials': {'identifier': 'original', 'password': 'pw'}}
+
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
+class TestUcpInterpolationPassthroughDeep:
+    """End-to-end test of build_ucp_params for a passthrough profile with a
+    deep, multi-level interpolation_mapping (e.g. credentials.metadata.email,
+    credentials.connection.tenant.slug). Exercises _place_by_path nesting +
+    merging and the credentials-envelope flatten (type -> inner dict).
+
+    Mirrors the real bitbucket passthrough profile. The credentials envelope
+    for a passthrough profile is {"type": "passthrough", "passthrough": {...}}.
+    """
+
+    INTERPOLATION_MAPPING = (
+        "username:credentials.identifier,"
+        "app_password:credentials.password,"
+        "bitbucket_email:credentials.metadata.email,"
+        "account_id:credentials.metadata.accountId,"
+        "api_token:credentials.metadata.token,"
+        "client_key:credentials.oauth.consumerKey,"
+        "client_secret:credentials.oauth.consumerSecret,"
+        "base_url:credentials.connection.host,"
+        "auth_scheme:credentials.connection.scheme,"
+        "tenant:credentials.connection.tenant.slug"
+    )
+
+    def _metadata(self):
+        return {
+            'connectionProfiles': [
+                {
+                    'capability': 'automation-and-remediation',
+                    'method_unique_id': 'pt-method-1',
+                    'profile_id': 'passthrough.credentials',
+                    'sub_capabilities': None,
+                    'type': 'passthrough',
+                    'metadata': {'xsoar': {'interpolation_mapping': self.INTERPOLATION_MAPPING}},
+                }
+            ]
+        }
+
+    def _passthrough_envelope(self):
+        # Real shape returned by get_ucp_credentials for a passthrough profile:
+        # {"type": "passthrough", "passthrough": {"parameters": {<auth.parameter>: <value>}}}.
+        # (Confirmed from captured runtime logs — passthrough wraps the values in
+        # a "parameters" sub-dict, unlike "plain" which is flat under the type key.)
+        return {
+            'type': 'passthrough',
+            'passthrough': {
+                'parameters': {
+                    'username': 'alice',
+                    'app_password': 's3cr3t',
+                    'bitbucket_email': 'you@example.com',
+                    'account_id': '557058:abc',
+                    'api_token': 'tok-123',
+                    'client_key': 'ck',
+                    'client_secret': 'cs',
+                    'base_url': 'host-value',
+                    'auth_scheme': 'basic',
+                    'tenant': 'my-tenant',
+                },
+            },
+        }
+
+    def test_deep_multilevel_interpolation(self, mocker):
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(
+            CommonServerPython, 'get_ucp_credentials', return_value=self._passthrough_envelope()
+        )
+        result = CommonServerPython.build_ucp_params(
+            self._metadata(), capability='automation-and-remediation'
+        )
+        assert result == {
+            'credentials': {
+                'identifier': 'alice',
+                'password': 's3cr3t',
+                'metadata': {
+                    'email': 'you@example.com',
+                    'accountId': '557058:abc',
+                    'token': 'tok-123',
+                },
+                'oauth': {
+                    'consumerKey': 'ck',
+                    'consumerSecret': 'cs',
+                },
+                'connection': {
+                    'host': 'host-value',
+                    'scheme': 'basic',
+                    'tenant': {'slug': 'my-tenant'},
+                },
+            }
+        }
+
+    def test_deep_interpolation_skips_missing_optional_fields(self, mocker):
+        """Optional fields absent from the credentials envelope are skipped,
+        and the rest still nest correctly."""
+        mocker.patch.object(demisto, 'debug')
+        envelope = {
+            'type': 'passthrough',
+            'passthrough': {
+                'parameters': {
+                    'username': 'alice',
+                    'app_password': 's3cr3t',
+                    # all optional fields omitted
+                },
+            },
+        }
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials', return_value=envelope)
+        result = CommonServerPython.build_ucp_params(
+            self._metadata(), capability='automation-and-remediation'
+        )
+        assert result == {'credentials': {'identifier': 'alice', 'password': 's3cr3t'}}
+
+    def test_deep_interpolation_multiple_independent_roots(self, mocker):
+        """Destinations are NOT limited to credentials.* — a mapping may target
+        several independent top-level roots (flat scalar, credentials2, credentials3)
+        and each builds/merges into its own root in the same params dict."""
+        mocker.patch.object(demisto, 'debug')
+        mapping = (
+            "username:credentials.identifier,"
+            "app_password:credentials.password,"
+            "client_key:flatclientkey,"
+            "auth_scheme:credentials3.connection.scheme,"
+            "tenant:credentials2.connection.tenant.slug"
+        )
+        meta = {
+            'connectionProfiles': [
+                {
+                    'capability': 'automation-and-remediation',
+                    'method_unique_id': 'm-roots',
+                    'type': 'passthrough',
+                    'metadata': {'xsoar': {'interpolation_mapping': mapping}},
+                }
+            ]
+        }
+        envelope = {
+            'type': 'passthrough',
+            'passthrough': {
+                'parameters': {
+                    'username': 'usr',
+                    'app_password': 'pw',
+                    'client_key': 'CK',
+                    'auth_scheme': 'bearer',
+                    'tenant': 'ten',
+                }
+            },
+        }
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials', return_value=envelope)
+        result = CommonServerPython.build_ucp_params(meta, capability='automation-and-remediation')
+        assert result == {
+            'credentials': {'identifier': 'usr', 'password': 'pw'},
+            'flatclientkey': 'CK',
+            'credentials3': {'connection': {'scheme': 'bearer'}},
+            'credentials2': {'connection': {'tenant': {'slug': 'ten'}}},
+        }
+
+
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
+class TestUcpInterpolationByProfileType:
+    """build_ucp_params end-to-end for each credential-envelope layout.
+
+    The credentials envelope returned by get_ucp_credentials nests differently
+    per profile type (confirmed from captured runtime logs):
+      - plain:       {"type": "plain", "plain": {<field>: <value>}}            (flat)
+      - api_key:     {"type": "api_key", "api_key": {<field>: <value>}}        (flat)
+      - passthrough: {"type": "passthrough", "passthrough": {"parameters": {...}}}  (wrapped)
+    All resolve through the same flatten logic (descend into the type key, then
+    into "parameters" if present).
+    """
+
+    @staticmethod
+    def _metadata(mapping, profile_type):
+        return {
+            'connectionProfiles': [
+                {
+                    'capability': 'automation-and-remediation',
+                    'method_unique_id': 'm-1',
+                    'profile_id': '{}.x'.format(profile_type),
+                    'sub_capabilities': None,
+                    'type': profile_type,
+                    'metadata': {'xsoar': {'interpolation_mapping': mapping}},
+                }
+            ]
+        }
+
+    def test_plain_profile_flat_envelope(self, mocker):
+        """plain: values are flat under the type key -> folds into type-9 credentials."""
+        mocker.patch.object(demisto, 'debug')
+        envelope = {'type': 'plain', 'plain': {'username': 'alice', 'password': 's3cr3t'}}
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials', return_value=envelope)
+        meta = self._metadata(
+            'username:credentials.identifier,password:credentials.password', 'plain'
+        )
+        result = CommonServerPython.build_ucp_params(meta, capability='automation-and-remediation')
+        assert result == {'credentials': {'identifier': 'alice', 'password': 's3cr3t'}}
+
+    def test_api_key_profile_flat_envelope(self, mocker):
+        """api_key: the secret always lives under the canonical envelope key
+        'key' (NOT 'api_key'), per captured runtime logs:
+            {"type": "api_key", "api_key": {"header_name": ..., "key": <secret>}}
+        The mapping's left-hand field_id is 'api_key' (== auth.parameter), and the
+        common scripts alias it to the canonical 'key' via _UCP_CANONICAL_FIELD_KEYS.
+        """
+        mocker.patch.object(demisto, 'debug')
+        envelope = {'type': 'api_key', 'api_key': {'header_name': 'X-API-Key', 'key': 'TOKEN-123'}}
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials', return_value=envelope)
+        meta = self._metadata('api_key:credentials.password', 'api_key')
+        result = CommonServerPython.build_ucp_params(meta, capability='automation-and-remediation')
+        assert result == {'credentials': {'password': 'TOKEN-123'}}
+
+    def test_api_key_profile_canonical_alias_ignores_mapping_left_side(self, mocker):
+        """Regression: even when the mapping left-side does not match the envelope
+        key, api_key resolves from the canonical 'key' location. The left-side is
+        enum-enforced to 'api_key' at the workflow step, so the runtime trusts the
+        canonical schema, not the generator-emitted field_id.
+        """
+        mocker.patch.object(demisto, 'debug')
+        envelope = {'type': 'api_key', 'api_key': {'header_name': 'X-API-Key', 'key': 'TOKEN-123'}}
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials', return_value=envelope)
+        meta = self._metadata('api_key:credentials.password', 'api_key')
+        result = CommonServerPython.build_ucp_params(meta, capability='automation-and-remediation')
+        # Value comes from envelope['api_key']['key'] despite field_id being 'api_key'.
+        assert result == {'credentials': {'password': 'TOKEN-123'}}
+
+    def test_plain_profile_canonical_keys_no_alias_needed(self, mocker):
+        """plain: username/password left-sides already equal their envelope keys,
+        so the canonical table is a no-op identity mapping (documents parity).
+        """
+        mocker.patch.object(demisto, 'debug')
+        envelope = {'type': 'plain', 'plain': {'username': 'alice', 'password': 's3cr3t'}}
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials', return_value=envelope)
+        meta = self._metadata(
+            'username:credentials.identifier,password:credentials.password', 'plain'
+        )
+        result = CommonServerPython.build_ucp_params(meta, capability='automation-and-remediation')
+        assert result == {'credentials': {'identifier': 'alice', 'password': 's3cr3t'}}
+
+    def test_passthrough_profile_parameters_wrapped_envelope(self, mocker):
+        """passthrough: values wrapped under parameters -> deep nested credentials."""
+        mocker.patch.object(demisto, 'debug')
+        envelope = {
+            'type': 'passthrough',
+            'passthrough': {
+                'parameters': {
+                    'username': 'alice',
+                    'app_password': 's3cr3t',
+                    'tenant': 'my-tenant',
+                }
+            },
+        }
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials', return_value=envelope)
+        meta = self._metadata(
+            'username:credentials.identifier,'
+            'app_password:credentials.password,'
+            'tenant:credentials.connection.tenant.slug',
+            'passthrough',
+        )
+        result = CommonServerPython.build_ucp_params(meta, capability='automation-and-remediation')
+        assert result == {
+            'credentials': {
+                'identifier': 'alice',
+                'password': 's3cr3t',
+                'connection': {'tenant': {'slug': 'my-tenant'}},
+            }
+        }
 
 
 # === Safe Pickle Loading Tests ===

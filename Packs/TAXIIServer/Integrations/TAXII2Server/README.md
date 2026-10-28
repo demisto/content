@@ -343,3 +343,15 @@ There are no input arguments for this command.
 >|api_roots|default|description|title|
 >|---|---|---|---|
 >| https:<span>//</span>foo.cooo.com/inc/threatintel/ | https:<span>//</span>foo.cooo.com/inc/threatintel/ | This integration provides TAXII Services for system indicators (Outbound feed). | Cortex XSOAR TAXII2 Server |
+
+## Troubleshooting
+
+### 429 Too Many Requests error
+
+NGINX prevents concurrent builds of the same cache entry. If multiple requests for the same cache entry (matching the URL and parameters) arrive simultaneously, NGINX builds the entry for the first request and rejects the others with an HTTP `429 Too Many Requests` rather than queuing them. Requests for different entries are still processed in parallel. If a request triggers a refresh of an existing cache entry, the previous data is served (HTTP `200`) with no `429`.
+
+This is expected behavior. Retry the request after a short delay; once the initial build finishes populating the cache, retries are served from the cache (HTTP `200`).
+
+### [Errno 98] Address in use error
+
+Each instance uses three consecutive ports: the configured **Listen Port**, port + 1, and port + 2. NGINX listens on the configured port (public), the Python process listens on port + 1, and NGINX uses port + 2 internally for its fail-fast cache fetch tier. For example, if configured for port 9009, ports 9009, 9010, and 9011 must all be free. Ensure no other instance uses a **Listen Port** within 2 of another, or an `[Errno 98] Address in use` error will occur. When running without `--network=host`, ports + 1 and + 2 are not exposed to the machine.

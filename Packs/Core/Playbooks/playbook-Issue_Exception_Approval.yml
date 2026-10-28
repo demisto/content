@@ -114,6 +114,9 @@ tasks:
       - "4"
     note: false
     quietmode: 0
+    scriptarguments:
+      using:
+        simple: Built-in Mail Sender
     separatecontext: false
     skipunavailable: false
     sla:
@@ -220,6 +223,8 @@ tasks:
         simple: Cortex Issue Exception Request ${ruleName} Approved
       to:
         simple: ${requestorEmail}
+      using:
+        simple: Built-In Mail Sender
     separatecontext: false
     skipunavailable: false
     task:
@@ -259,6 +264,8 @@ tasks:
         simple: Cortex Issue Exception Request ${ruleName} Rejected
       to:
         simple: ${requestorEmail}
+      using:
+        simple: Built-In Mail Sender
     separatecontext: false
     skipunavailable: false
     task:
@@ -301,6 +308,8 @@ tasks:
         simple: Cortex Issue Exception Request ${ruleName} Expired
       to:
         simple: ${requestorEmail}, ${approverEmail}
+      using:
+        simple: Built-In Mail Sender
     separatecontext: false
     skipunavailable: false
     task:

@@ -1,0 +1,7 @@
+fromversion: 8.15.0
+id: HelloWorld_ModelingRule
+name: HelloWorld Modeling Rule
+rules: ''
+schema: ''
+supportedModules:
+- xsiam

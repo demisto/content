@@ -1,0 +1,32 @@
+{
+    "id": "incident_infobloxcloudexpiringindays",
+    "version": -1,
+    "modified": "2026-08-05T16:58:38.404686238+05:30",
+    "name": "Infoblox Cloud Expiring In Days",
+    "ownerOnly": false,
+    "description": "The total number of days remaining for expiry.",
+    "cliName": "infobloxcloudexpiringindays",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Infoblox Cloud IQ for TD Insight"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

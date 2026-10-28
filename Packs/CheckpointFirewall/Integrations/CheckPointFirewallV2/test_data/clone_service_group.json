@@ -1,0 +1,33 @@
+{
+  "uid": "sg-9999",
+  "name": "cloned-service-group",
+  "type": "service-group",
+  "members": [
+    {
+      "uid": "m-001",
+      "name": "http",
+      "type": "service-tcp",
+      "domain": {
+        "uid": "d-001",
+        "name": "SMC User",
+        "domain-type": "domain"
+      }
+    }
+  ],
+  "groups": [],
+  "comments": "",
+  "color": "black",
+  "tags": [],
+  "domain": {
+    "uid": "d-001",
+    "name": "SMC User",
+    "domain-type": "domain"
+  },
+  "meta-info": {
+    "lock": "unlocked",
+    "validation-state": "ok",
+    "last-modifier": "admin",
+    "creator": "admin"
+  },
+  "read-only": false
+}

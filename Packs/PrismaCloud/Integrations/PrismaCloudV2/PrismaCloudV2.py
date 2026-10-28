@@ -60,6 +60,9 @@ INCIDENT_OUTGOING_MIRROR_DISMISSAL_NOTE = "Closed by XSOAR"
 PAGE_NUMBER_DEFAULT_VALUE = 1
 PAGE_SIZE_DEFAULT_VALUE = 50
 PAGE_SIZE_MAX_VALUE = 10000
+# The maximum number of alerts the alert search API accepts in a single request.
+# Higher limits are handled by paginating over the API's "nextPageToken".
+ALERT_SEARCH_MAX_LIMIT = 10000
 
 DEFAULT_LIMIT = "50"
 
@@ -763,6 +766,11 @@ class Client(BaseClient):
         sort_by: Optional[List[str]] = None,
     ):
         params = assign_params(detailed=detailed)
+        if limit is not None and limit > ALERT_SEARCH_MAX_LIMIT:
+            demisto.debug(
+                f"Requested alert search limit {limit} exceeds the API maximum, using {ALERT_SEARCH_MAX_LIMIT} instead."
+            )
+            limit = ALERT_SEARCH_MAX_LIMIT
         data = remove_empty_values(
             {
                 "limit": limit,
@@ -1983,6 +1991,49 @@ def alert_filter_list_command(client: Client) -> CommandResults:
     return command_results
 
 
+def alert_search_paginated_request(
+    client: Client,
+    time_range: Dict[str, Any],
+    filters: List[str],
+    limit: Optional[int] = None,
+    detailed: Optional[str] = None,
+    page_token: Optional[str] = None,
+    sort_by: Optional[List[str]] = None,
+) -> tuple[List[Dict[str, Any]], Optional[str], Any]:
+    """
+    Searches alerts, automatically paginating until the requested limit is reached.
+
+    A single alert search API request can not return more than ALERT_SEARCH_MAX_LIMIT results, so higher limits are
+    fulfilled by following the "nextPageToken" returned by the API instead of dropping the extra results.
+
+    Returns:
+        A tuple of the alerts found, the token of the next page, and the total number of alerts matching the search.
+    """
+    alerts: List[Dict[str, Any]] = []
+    total_rows: Any = 0
+    next_page_token = page_token
+    is_first_page = True
+    has_more_pages = True
+
+    while has_more_pages:
+        page_limit = min(limit - len(alerts), ALERT_SEARCH_MAX_LIMIT) if limit is not None else None
+        response = client.alert_search_request(time_range, filters, page_limit, detailed, next_page_token, sort_by)
+
+        alerts_before_page = len(alerts)
+        alerts.extend(response.get("items") or [])
+        next_page_token = response.get("nextPageToken")
+        if is_first_page:
+            total_rows = response.get("totalRows", 0)
+            is_first_page = False
+        demisto.debug(f"Finished alert search request, got {len(alerts) - alerts_before_page} items, {len(alerts)} in total.")
+
+        # there is a 'nextPageToken' value even if we already got all the results, so we also require the page to add
+        # new alerts, both to detect the end of the results and to make sure the loop always progresses
+        has_more_pages = bool(limit is not None and len(alerts) < limit and len(alerts) > alerts_before_page and next_page_token)
+
+    return alerts[:limit] if limit is not None else alerts, next_page_token, total_rows
+
+
 def alert_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     filters = argToList(args.get("filters"))
     detailed = args.get("detailed", "true")
@@ -1997,9 +2048,9 @@ def alert_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
     sort_by = [f'{sort_field}:{args.get("sort_direction")}'] if (sort_field := args.get("sort_field")) else None
 
-    response = client.alert_search_request(time_filter, filters, limit, detailed, next_token, sort_by)
-    response_items = response.get("items", [])
-    next_page_token = response.get("nextPageToken")
+    response_items, next_page_token, total_rows = alert_search_paginated_request(
+        client, time_filter, filters, limit, detailed, next_token, sort_by
+    )
     for response_item in response_items:
         change_timestamp_to_datestring_in_dict(response_item)
 
@@ -2034,7 +2085,7 @@ def alert_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
         "PrismaCloud.Alert(val.id && val.id == obj.id)": response_items,  # values are appended to list based on id
     }
     command_results = CommandResults(
-        readable_output=f'Showing {len(readable_responses)} of {response.get("totalRows", 0)} results:\n'
+        readable_output=f"Showing {len(readable_responses)} of {total_rows} results:\n"
         + tableToMarkdown("Alerts Details:", readable_responses, headers=headers, removeNull=True, headerTransform=pascalToSpace)
         + f"### Next Page Token:\n{next_page_token}",
         outputs=output,

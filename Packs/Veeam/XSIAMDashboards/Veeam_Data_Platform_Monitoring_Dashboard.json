@@ -1,6 +1,7 @@
 {
   "dashboards_data": [
     {
+      "id": "9b572c78d0f645ada74ca06c1273b13f",
       "name": "Veeam Data Platform Monitoring",
       "description": "Aggregated information about jobs run on Veeam Backup & Replication servers.",
       "status": "ENABLED",

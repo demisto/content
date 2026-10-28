@@ -20,7 +20,7 @@ ignore=BA125,BA129
 [file:SOCRadarThreatFusion.yml]
 ignore=BA125
 
-[file:FeedSOCRadarThreatFeed.yml]
+[file:FeedSOCRadarThreatFeedV2.yml]
 ignore:BA125
 
 [file:SOCRadarIncidents.yml]
@@ -28,3 +28,21 @@ ignore=BA125
 
 [file:SOCRadarIncidentsV4.yml]
 ignore=BA125
+
+[file:incidentfield-SOCRadar_Incident_Link.json]
+ignore=IF115
+
+[file:incidentfield-SOCRadar_Company_ID.json]
+ignore=IF115
+
+[file:incidentfield-SOCRadar_Detection_And_Analysis.json]
+ignore=IF115
+
+[file:incidentfield-SOCRadar_Post_Incident_Analysis.json]
+ignore=IF115
+
+[file:incidentfield-SOCRadar_Response.json]
+ignore=IF115
+
+[file:playbook-SOCRadar_Incident.yml]
+ignore=PB119

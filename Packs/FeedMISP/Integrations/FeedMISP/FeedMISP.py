@@ -293,6 +293,16 @@ def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: Op
     return params
 
 
+def get_attributes_from_response(response: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Safely extracts the list of attributes from a MISP search response.
+    Args:
+        response: The raw response returned from client.search_query.
+    Returns: The list of attribute dicts, or an empty list if none are present.
+    """
+    return response.get("response", {}).get("Attribute", [])
+
+
 def get_ip_type(ip_attribute: Dict[str, Any]) -> str:
     """
     Returns the correct FeedIndicatorType for attributes of type ip
@@ -607,16 +617,16 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     search_query_per_page = client.search_query(params_dict)
     demisto.debug(f"params_dict: {params_dict}")
 
-    while len(search_query_per_page.get("response", {}).get("Attribute", [])):
-        demisto.debug(f'search_query_per_page number of attributes:\
-                      {len(search_query_per_page.get("response", {}).get("Attribute", []))} page: {params_dict["page"]}')
-        search_query_per_page.get("response", {}).get("Attribute", []).sort(key=lambda x: x["timestamp"], reverse=False)
+    attributes = get_attributes_from_response(search_query_per_page)
+    while attributes:
+        demisto.debug(f"search_query_per_page number of attributes: {len(attributes)} page: {params_dict['page']}")
+        attributes.sort(key=lambda x: x["timestamp"], reverse=False)
         indicators = build_indicators(
             client, search_query_per_page, attribute_types, tlp_color, params.get("url"), reputation, feed_tags
         )
 
         total_fetched_indicators += len(indicators)
-        latest_indicator = search_query_per_page["response"]["Attribute"]
+        latest_indicator = attributes
         latest_indicator_timestamp = arg_to_number(latest_indicator[-1]["timestamp"])
         latest_indicator_value = latest_indicator[-1]["value"]
 
@@ -639,17 +649,24 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
             return
 
         search_query_per_page = client.search_query(params_dict)
+        attributes = get_attributes_from_response(search_query_per_page)
+
     if error_message := search_query_per_page.get("Error"):
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {error_message}")
-    demisto.setLastRun(
-        {"last_indicator_timestamp": last_run.get("candidate_timestamp"), "last_indicator_value": last_run.get("candidate_value")}
-    )
+
+    candidate_timestamp = last_run.get("candidate_timestamp")
+    candidate_value = last_run.get("candidate_value")
+    if candidate_timestamp is None:
+        # No candidate was produced this run.
+        demisto.debug("No candidate produced this run; leaving existing lastRun unchanged")
+        return
+    demisto.setLastRun({"last_indicator_timestamp": candidate_timestamp, "last_indicator_value": candidate_value})
 
 
 def main():  # pragma: no cover
     params = demisto.params()
     base_url = params.get("url").rstrip("/")
-    timeout = arg_to_number(params.get("timeout")) or 60
+    timeout = arg_to_number(params.get("timeout", 60)) or 60
     insecure = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     performance = argToBoolean(params.get("performance") or False)

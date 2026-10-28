@@ -22,15 +22,20 @@ from CyberArkISP import (  # noqa: E402
     Client,
     Config,
     ContextKeys,
+    DefaultValues,
     add_time_to_events,
+    compute_last_run,
     deduplicate_events,
     fetch_events_command,
     fetch_events_with_pagination,
+    finalize_event_stream,
     generate_telemetry_header,
     get_events_command,
     get_formatted_time,
+    iter_event_pages,
     parse_date_or_use_current,
     parse_integration_params,
+    stream_page_to_xsiam,
     test_module,
 )
 
@@ -576,9 +581,18 @@ def test_create_stream_query_success(mocker, client, date_from, date_to, expecte
     assert APIKeys.SORT_MODEL.value in json_data[APIKeys.QUERY.value]
     assert APIKeys.PAGE_SIZE.value in json_data[APIKeys.QUERY.value]
 
+    # CyberArk's SIEM Audit createQuery API rejects a page size greater than 500
+    # with HTTP 400 "Bad request syntax or unsupported method" (XSUP-72963).
+    assert json_data[APIKeys.QUERY.value][APIKeys.PAGE_SIZE.value] == 500
+
     filter_model = json_data[APIKeys.QUERY.value][APIKeys.FILTER_MODEL.value][APIKeys.DATE.value]
     for key in expected_filter_keys:
         assert key in filter_model
+
+
+def test_default_page_size_within_cyberark_limit():
+    """The default page size must not exceed CyberArk's documented maximum of 500 (XSUP-72963)."""
+    assert int(DefaultValues.PAGE_SIZE.value) <= 500
 
 
 def test_create_stream_query_missing_cursor_ref(mocker, client):
@@ -1114,21 +1128,32 @@ def test_get_events_command_with_date_to(mocker, client):
 def test_fetch_events_command_scenarios(
     mocker, client, test_case, last_run, params, mock_events, expected_last_run, expected_events_sent
 ):
-    """Tests fetch_events_command under various scenarios."""
+    """Tests fetch_events_command under various scenarios (streaming pipeline)."""
     mocker.patch.object(demisto, "getLastRun", return_value=last_run)
     mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
     mocker.patch.object(demisto, "params", return_value=params)
-    mocker.patch.object(CyberArkISP, "fetch_events_with_pagination", return_value=mock_events)
+    # iter_event_pages is a generator; mock it to yield the events as one page.
+    mocker.patch.object(CyberArkISP, "iter_event_pages", return_value=iter([mock_events]))
     mocker.patch.object(CyberArkISP, "add_time_to_events")
-    mocker.patch.object(CyberArkISP, "send_events_to_xsiam")
+    # multiple_threads=True returns futures; return [] so finalize has nothing to await.
+    send_mock = mocker.patch.object(CyberArkISP, "send_events_to_xsiam", return_value=[])
 
     fetch_events_command(client)
 
     demisto.setLastRun.assert_called_once_with(expected_last_run)  # type: ignore[attr-defined]
+    # The page is streamed via stream_page_to_xsiam, which annotates _time then
+    # sends asynchronously (multiple_threads=True, health update deferred).
     CyberArkISP.add_time_to_events.assert_called_once_with(expected_events_sent)  # type: ignore[attr-defined]
-    CyberArkISP.send_events_to_xsiam.assert_called_once_with(  # type: ignore[attr-defined]
-        events=expected_events_sent, vendor=Config.VENDOR, product=Config.PRODUCT
+    send_mock.assert_called_once_with(
+        events=expected_events_sent,
+        vendor=Config.VENDOR,
+        product=Config.PRODUCT,
+        multiple_threads=True,
+        should_update_health_module=False,
     )
+    # Health is updated exactly once at the end of the cycle.
+    demisto.updateModuleHealth.assert_called_once_with({"eventsPulled": len(expected_events_sent)})  # type: ignore[attr-defined]
 
 
 def test_fetch_events_command_with_deduplication(mocker, client):
@@ -1143,22 +1168,28 @@ def test_fetch_events_command_with_deduplication(mocker, client):
         demisto, "getLastRun", return_value={"last_fetch": "2024-01-01 00:00:00", "last_fetched_uuids": ["1", "2"]}
     )
     mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
     mocker.patch.object(demisto, "params", return_value={"max_fetch": 100})
-    mocker.patch.object(CyberArkISP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(CyberArkISP, "iter_event_pages", return_value=iter([mock_events]))
     mocker.patch.object(CyberArkISP, "add_time_to_events")
-    mocker.patch.object(CyberArkISP, "send_events_to_xsiam")
+    mocker.patch.object(CyberArkISP, "send_events_to_xsiam", return_value=[])
 
     fetch_events_command(client)
 
-    CyberArkISP.add_time_to_events.assert_called_once_with([{"uuid": "3", "timestamp": 1704153600000}])  # type: ignore[attr-defined]
-    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-02 00:00:00", "last_fetched_uuids": ["3"]})  # type: ignore[attr-defined]
+    # Only the non-duplicate event (uuid 3) is sent.
+    new_event = [{"uuid": "3", "timestamp": 1704153600000}]
+    CyberArkISP.add_time_to_events.assert_called_once_with(new_event)  # type: ignore[attr-defined]
+    demisto.setLastRun.assert_called_once_with(  # type: ignore[attr-defined]
+        {"last_fetch": "2024-01-02 00:00:00", "last_fetched_uuids": ["3"]}
+    )
 
 
 def test_fetch_events_command_all_duplicates(mocker, client):
     """Tests fetch_events_command when all fetched events are duplicates.
 
     Even when all events are duplicates, we still update the last run timestamp
-    to prevent infinite loops of fetching the same duplicates.
+    to prevent infinite loops of fetching the same duplicates, and we never
+    dispatch a send.
     """
     mock_events = [
         {"uuid": "1", "timestamp": 1704067200000},
@@ -1169,18 +1200,22 @@ def test_fetch_events_command_all_duplicates(mocker, client):
         demisto, "getLastRun", return_value={"last_fetch": "2024-01-01 00:00:00", "last_fetched_uuids": ["1", "2"]}
     )
     mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
     mocker.patch.object(demisto, "params", return_value={"max_fetch": 100})
-    mocker.patch.object(CyberArkISP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(CyberArkISP, "iter_event_pages", return_value=iter([mock_events]))
     mocker.patch.object(CyberArkISP, "add_time_to_events")
-    mocker.patch.object(CyberArkISP, "send_events_to_xsiam")
+    mocker.patch.object(CyberArkISP, "send_events_to_xsiam", return_value=[])
 
     fetch_events_command(client)
 
-    # No events sent to XSIAM (all duplicates)
+    # No events sent to XSIAM (all duplicates).
     CyberArkISP.add_time_to_events.assert_not_called()  # type: ignore[attr-defined]
     CyberArkISP.send_events_to_xsiam.assert_not_called()  # type: ignore[attr-defined]
 
-    # But we still update last run to advance the high-water mark
+    # Health still reports zero new events for this cycle.
+    demisto.updateModuleHealth.assert_called_once_with({"eventsPulled": 0})  # type: ignore[attr-defined]
+
+    # But we still update last run to advance the high-water mark.
     demisto.setLastRun.assert_called_once_with(  # type: ignore[attr-defined]
         {"last_fetch": "2024-01-01 00:00:00", "last_fetched_uuids": ["1", "2"]}
     )
@@ -1190,32 +1225,177 @@ def test_fetch_events_command_no_events(mocker, client):
     """Tests fetch_events_command when no events are fetched."""
     mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
     mocker.patch.object(demisto, "params", return_value={})
-    mocker.patch.object(CyberArkISP, "fetch_events_with_pagination", return_value=[])
-    mocker.patch.object(CyberArkISP, "send_events_to_xsiam")
+    mocker.patch.object(CyberArkISP, "iter_event_pages", return_value=iter([]))
+    mocker.patch.object(CyberArkISP, "send_events_to_xsiam", return_value=[])
 
     fetch_events_command(client)
 
     CyberArkISP.send_events_to_xsiam.assert_not_called()  # type: ignore[attr-defined]
     demisto.setLastRun.assert_not_called()  # type: ignore[attr-defined]
+    # A cycle that found nothing still reports a zero pull so health reflects it ran.
+    demisto.updateModuleHealth.assert_called_once_with({"eventsPulled": 0})  # type: ignore[attr-defined]
 
 
 def test_fetch_events_command_timestamp_conversion_error(mocker, client):
-    """Tests fetch_events_command handles timestamp conversion errors."""
+    """Tests fetch_events_command handles timestamp conversion errors.
+
+    A non-integer timestamp cannot advance the high-water mark, so last-run is
+    left unchanged (no setLastRun call) and the cycle reports zero pulled.
+    """
     mock_events = [{"uuid": "1", "timestamp": "invalid"}]
 
     mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
     mocker.patch.object(demisto, "params", return_value={})
-    mocker.patch.object(CyberArkISP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(CyberArkISP, "iter_event_pages", return_value=iter([mock_events]))
     mocker.patch.object(CyberArkISP, "add_time_to_events")
-    mocker.patch.object(CyberArkISP, "send_events_to_xsiam")
+    mocker.patch.object(CyberArkISP, "send_events_to_xsiam", return_value=[])
 
     fetch_events_command(client)
 
-    demisto.setLastRun.assert_called_once()  # type: ignore[attr-defined]
-    call_args = demisto.setLastRun.call_args[0][0]  # type: ignore[attr-defined]
-    assert call_args["last_fetch"] == "invalid"
+    # The string timestamp is ignored for HWM tracking; last-run stays unchanged.
+    demisto.setLastRun.assert_not_called()  # type: ignore[attr-defined]
+    # The single event (a non-duplicate) is still streamed to XSIAM.
+    CyberArkISP.add_time_to_events.assert_called_once_with(mock_events)  # type: ignore[attr-defined]
+    demisto.updateModuleHealth.assert_called_once_with({"eventsPulled": 1})  # type: ignore[attr-defined]
+
+
+# ========================================
+# Tests: streaming pipeline helpers (CIAC-16907)
+# ========================================
+
+
+def test_iter_event_pages_yields_pages_lazily(mocker, client):
+    """iter_event_pages should yield each page as a generator (not accumulate)."""
+    mocker.patch.object(client, "create_stream_query", return_value="cursor-1")
+    mocker.patch.object(
+        client,
+        "get_stream_results",
+        side_effect=[
+            ([{"uuid": "1", "timestamp": 1}, {"uuid": "2", "timestamp": 2}], "cursor-2"),
+            ([{"uuid": "3", "timestamp": 3}], None),
+        ],
+    )
+
+    pages = list(iter_event_pages(client, "2024-01-01 00:00:00", max_events=100))
+
+    assert len(pages) == 2
+    assert pages[0] == [{"uuid": "1", "timestamp": 1}, {"uuid": "2", "timestamp": 2}]
+    assert pages[1] == [{"uuid": "3", "timestamp": 3}]
+
+
+def test_iter_event_pages_truncates_final_page_to_max_events(mocker, client):
+    """The cumulative number of yielded events must never exceed max_events."""
+    mocker.patch.object(client, "create_stream_query", return_value="cursor-1")
+    mocker.patch.object(
+        client,
+        "get_stream_results",
+        side_effect=[
+            ([{"uuid": "1", "timestamp": 1}, {"uuid": "2", "timestamp": 2}], "cursor-2"),
+            ([{"uuid": "3", "timestamp": 3}, {"uuid": "4", "timestamp": 4}], "cursor-3"),
+        ],
+    )
+
+    pages = list(iter_event_pages(client, "2024-01-01 00:00:00", max_events=3))
+
+    total = sum(len(p) for p in pages)
+    assert total == 3
+    # Second page truncated from 2 -> 1 to honour the limit.
+    assert pages[1] == [{"uuid": "3", "timestamp": 3}]
+
+
+def test_iter_event_pages_empty_first_page(mocker, client):
+    """An immediately empty page stops iteration with no yields."""
+    mocker.patch.object(client, "create_stream_query", return_value="cursor-1")
+    mocker.patch.object(client, "get_stream_results", return_value=([], None))
+
+    pages = list(iter_event_pages(client, "2024-01-01 00:00:00", max_events=100))
+
+    assert pages == []
+
+
+def test_stream_page_to_xsiam_dispatches_async(mocker):
+    """stream_page_to_xsiam annotates _time then sends with multiple_threads=True."""
+    add_time_mock = mocker.patch.object(CyberArkISP, "add_time_to_events")
+    sentinel_future = object()
+    send_mock = mocker.patch.object(CyberArkISP, "send_events_to_xsiam", return_value=[sentinel_future])
+
+    events = [{"uuid": "1", "timestamp": 1}]
+    futures = stream_page_to_xsiam(events)
+
+    add_time_mock.assert_called_once_with(events)
+    send_mock.assert_called_once_with(
+        events=events,
+        vendor=Config.VENDOR,
+        product=Config.PRODUCT,
+        multiple_threads=True,
+        should_update_health_module=False,
+    )
+    assert futures == [sentinel_future]
+
+
+def test_stream_page_to_xsiam_empty_is_noop(mocker):
+    """An empty page must not call send_events_to_xsiam."""
+    send_mock = mocker.patch.object(CyberArkISP, "send_events_to_xsiam")
+
+    assert stream_page_to_xsiam([]) == []
+    send_mock.assert_not_called()
+
+
+def test_finalize_event_stream_awaits_futures_and_updates_health(mocker):
+    """finalize_event_stream waits on all futures then updates module health once."""
+    update_health = mocker.patch.object(demisto, "updateModuleHealth")
+
+    completed = []
+
+    class _FakeFuture:
+        def __init__(self, name):
+            self.name = name
+
+        def result(self):
+            completed.append(self.name)
+
+    # as_completed is patched to simply iterate the futures in order.
+    mocker.patch.object(CyberArkISP, "as_completed", side_effect=lambda fs: list(fs))
+
+    futures = [_FakeFuture("a"), _FakeFuture("b")]
+    finalize_event_stream(futures, total_events_sent=5)  # type: ignore[arg-type]
+
+    assert completed == ["a", "b"]
+    update_health.assert_called_once_with({"eventsPulled": 5})
+
+
+def test_finalize_event_stream_propagates_send_failure(mocker):
+    """A failure inside a send future must surface to the platform."""
+    mocker.patch.object(demisto, "updateModuleHealth")
+    mocker.patch.object(CyberArkISP, "as_completed", side_effect=lambda fs: list(fs))
+
+    class _FailingFuture:
+        def result(self):
+            raise RuntimeError("send failed")
+
+    with pytest.raises(RuntimeError, match="send failed"):
+        finalize_event_stream([_FailingFuture()], total_events_sent=1)  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize(
+    "latest_timestamp,uuids,expected",
+    [
+        (None, [], {}),
+        (
+            1704067200000,
+            ["a", "b"],
+            {"last_fetch": "2024-01-01 00:00:00", "last_fetched_uuids": ["a", "b"]},
+        ),
+        ("invalid", ["x"], {"last_fetch": "invalid", "last_fetched_uuids": ["x"]}),
+    ],
+)
+def test_compute_last_run(latest_timestamp, uuids, expected):
+    """compute_last_run formats the high-water mark or returns {} when absent."""
+    assert compute_last_run(latest_timestamp, uuids) == expected
 
 
 # ========================================
@@ -1318,7 +1498,9 @@ def test_main_fetch_events_success(mocker):
     )
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(CyberArkISP, "fetch_events_with_pagination", return_value=[])
+    mocker.patch.object(demisto, "updateModuleHealth")
+    # fetch-events now streams via iter_event_pages; mock it to yield no pages.
+    mocker.patch.object(CyberArkISP, "iter_event_pages", return_value=iter([]))
 
     CyberArkISP.main()
 
@@ -1668,6 +1850,12 @@ def test_fetch_assets_seals_with_fresh_snapshot_id_on_next_cycle(mocker, redrock
             _redrock_response([{"ID": "u1"}], full_count=1),
         ],
     )
+    # snapshot_id is derived from time.time() in milliseconds. On a fast machine
+    # both cycles can execute within the same millisecond, making the two ids
+    # collide and the assertion below flake. Pin time.time to two distinct
+    # values so the test deterministically exercises the fresh-id-per-cycle
+    # behaviour rather than relying on wall-clock resolution.
+    mocker.patch("CyberArkISP.time.time", side_effect=[1_700_000_000.000, 1_700_000_001.000])
     set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
     send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
 

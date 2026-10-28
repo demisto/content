@@ -1,4 +1,6 @@
 {
+  "id": "Employee_Health_Check_layout_rule",
+  "name": "Employee Health Check Layout Rule",
   "rule_id": "Employee_Health_Check_layout_rule",
   "layout_id": "Employee Health Check",
   "description": "",
@@ -7,9 +9,9 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "Employee Health Check"
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Employee Health Check"
         }
       ]
     }

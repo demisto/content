@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: Ubiquiti_Unifi_ModelingRule
+name: Ubiquiti Unifi Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam

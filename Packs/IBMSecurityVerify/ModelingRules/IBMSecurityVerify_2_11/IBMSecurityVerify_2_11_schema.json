@@ -1,0 +1,32 @@
+{
+    "ibm_security_verify_raw": {
+        "data": {
+            "type": "string",
+            "is_array": false
+        },
+        "geoip": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "tenantname": {
+            "type": "string",
+            "is_array": false
+        },
+        "servicename": {
+            "type": "string",
+            "is_array": false
+        },
+        "tenantid": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

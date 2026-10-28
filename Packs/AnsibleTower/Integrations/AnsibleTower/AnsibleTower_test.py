@@ -79,6 +79,32 @@ def test_api_request_remove_fields():
             assert response.get("summary_fields", None) is None
 
 
+def test_client_base_url_legacy():
+    """
+    Given:
+        - is_aap_gateway is False (default)
+    When:
+        - Client is initialized
+    Then:
+        - base_url should use the legacy /api/v2/ endpoint
+    """
+    client = Client(API_URL, "username", "password", True, False)
+    assert client._base_url == "https://example/api/v2/"
+
+
+def test_client_base_url_aap_gateway():
+    """
+    Given:
+        - is_aap_gateway is True
+    When:
+        - Client is initialized
+    Then:
+        - base_url should use the new /api/controller/v2/ endpoint
+    """
+    client = Client(API_URL, "username", "password", True, False, is_aap_gateway=True)
+    assert client._base_url == "https://example/api/controller/v2/"
+
+
 @pytest.mark.parametrize("command, args, response, expected_result, output_prefix", test_data)
 def test_check_command_result_output(command, args, response, expected_result, output_prefix, mocker):
     """

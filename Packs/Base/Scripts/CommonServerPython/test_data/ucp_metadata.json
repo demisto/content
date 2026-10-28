@@ -21,7 +21,7 @@
                 "type": "oauth2"
             },
             {
-                "capability": "collection-and-ingestion",
+                "capability": "fetch-issues",
                 "method_unique_id": "method-collect-ingest",
                 "sub_capabilities": [],
                 "type": "oauth2"
@@ -30,5 +30,43 @@
         "connectorId": "salesforce",
         "handlerId": "xsoar-salesforce-iam",
         "instanceId": "5c10f7cb-e575-4a52-a5b3-cec02706e6b6"
+    },
+    "passthrough_unmatched_capability": {
+        "connectorId": "cisco-security",
+        "handlerId": "xsoar-cisco-webex-feed",
+        "instanceId": "c1b92f5c-c78e-4a16-91aa-5cbab35c2e99",
+        "labels": {
+            "xsoar-integration-id": "Cisco WebEx Feed",
+            "xsoar-pack-id": "CiscoWebExFeed"
+        },
+        "connectionProfiles": [
+            {
+                "capability": "threat-intelligence-and-enrichment",
+                "method_unique_id": "91a444cef02e0c04dc5dfc04a5e2e772",
+                "profile_id": "passthrough.cisco_webex_feed",
+                "sub_capabilities": ["threat-intelligence-and-enrichment_cisco-webex-feed"],
+                "type": "passthrough",
+                "metadata": {"xsoar": {"interpolated": true}}
+            }
+        ]
+    },
+    "multi_profile_no_automation": {
+        "connectionProfiles": [
+            {
+                "capability": "fetch-issues",
+                "method_unique_id": "method-fetch-issues",
+                "sub_capabilities": [],
+                "type": "api_key"
+            },
+            {
+                "capability": "log-collection",
+                "method_unique_id": "method-log-collection",
+                "sub_capabilities": [],
+                "type": "passthrough"
+            }
+        ],
+        "connectorId": "test-connector",
+        "handlerId": "xsoar-test-handler",
+        "instanceId": "0f1e2d3c-4b5a-6978-8796-a5b4c3d2e1f0"
     }
 }

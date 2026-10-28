@@ -391,6 +391,29 @@ tasks:
           right:
             value:
               simple: AWS,GCP,Azure,On Prem
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: alert.asmenrichmentstatus
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmenrichmentstatus.source
+                      iscontext: true
+                    right:
+                      value:
+                        simple: On Prem
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmenrichmentstatus.record_exists
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "false"
+            iscontext: true
       - - operator: isNotEmpty
           left:
             value:

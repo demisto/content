@@ -1,7 +1,7 @@
 [
   {
     "request": {
-      "url": "/api/v1.0/jsonrpc/internal",
+      "url": "/api/v1.2/jsonrpc/incidents",
       "method": "getLiveSearchQueryTaskResult",
       "payload": {
         "jsonrpc": "2.0",

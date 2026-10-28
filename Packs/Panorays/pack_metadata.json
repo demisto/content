@@ -1,0 +1,34 @@
+{
+    "name": "Panorays",
+    "description": "The Panorays pack enables organizations to monitor their own security posture and the security posture of their supply chain by ingesting findings from the Panorays platform, creating incidents for critical supplier findings and automating third-party risk response.",
+    "support": "partner",
+    "currentVersion": "1.2.0",
+    "author": "Panorays",
+    "url": "https://panorays.com",
+    "email": "support@panorays.com",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [
+        "Security",
+        "Compliance"
+    ],
+    "useCases": [
+        "Vulnerability Management",
+        "Compliance"
+    ],
+    "keywords": [
+        "Panorays",
+        "TPRM",
+        "Vendor Risk Management",
+        "Supply Chain Security",
+        "SaaS Security",
+        "Risk Assessment",
+        "External Security Posture"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ]
+}

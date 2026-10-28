@@ -1,0 +1,16 @@
+{
+  "uid": "as-1234",
+  "name": "updated-section",
+  "type": "access-section",
+  "domain": {
+    "uid": "d-001",
+    "name": "SMC User",
+    "domain-type": "domain"
+  },
+  "meta-info": {
+    "lock": "unlocked",
+    "validation-state": "ok",
+    "last-modifier": "admin",
+    "creator": "admin"
+  }
+}

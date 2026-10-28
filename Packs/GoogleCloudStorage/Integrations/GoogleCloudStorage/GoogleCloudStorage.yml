@@ -396,7 +396,7 @@ script:
       description: Name of the bucket that stores the file to delete.
     description: Deletes a file (object) from a bucket.
     execution: true
-  dockerimage: demisto/google-cloud-storage:1.0.0.4885491
+  dockerimage: demisto/google-cloud-storage:1.0.0.10120494
   runonce: false
   script: ''
   type: python

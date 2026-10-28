@@ -7,8 +7,7 @@ EMAIL_INTEGRATIONS = [
     "EWS v2",
     "Agari Phishing Defense",
     "MicrosoftGraphMail",
-    "SecurityAndCompliance",
-    "SecurityAndComplianceV2",
+    "Microsoft Graph",
 ]
 
 

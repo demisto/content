@@ -10,4 +10,6 @@ ignore=BA101
 [file:classifier-TrendMicroCAS.json]
 ignore=BA101
 
+[file:playbook-Trend_Micro_CAS_-_Indicators_Hunting.yml]
+ignore=PB118,PB119
 

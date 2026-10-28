@@ -27,14 +27,12 @@
                     {
                         "toDate": "2025-12-20T00:00:00.000Z",
                         "fromDate": "2025-12-19T00:00:00.000Z",
-                        "campaigns": null,
                         "score": 100,
                         "grade": "A"
                     },
                     {
                         "toDate": "2025-12-21T00:00:00.000Z",
                         "fromDate": "2025-12-20T00:00:00.000Z",
-                        "campaigns": null,
                         "score": 100,
                         "grade": "A"
                     }
@@ -49,12 +47,10 @@
                     {
                         "toDate": "2025-12-20T00:00:00.000Z",
                         "fromDate": "2025-12-19T00:00:00.000Z",
-                        "campaigns": null,
                         "score": 16.799999999999997,
                         "grade": "F"
                     },
                     {
-                        "campaigns": null,
                         "fromDate": "2025-12-20T00:00:00.000Z",
                         "toDate": "2025-12-21T00:00:00.000Z",
                         "score": 16.799999999999997,
@@ -71,12 +67,10 @@
                     {
                         "toDate": "2025-12-20T00:00:00.000Z",
                         "fromDate": "2025-12-19T00:00:00.000Z",
-                        "campaigns": null,
                         "score": 13.304484362357712,
                         "grade": "F"
                     },
                     {
-                        "campaigns": null,
                         "fromDate": "2025-12-20T00:00:00.000Z",
                         "toDate": "2025-12-21T00:00:00.000Z",
                         "score": 13.304484362357712,

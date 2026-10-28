@@ -59,6 +59,35 @@ def test_with_non_qr_code_file(mocker: MockerFixture):
     assert result.readable_output == "No QR code was found in the image."
 
 
+def test_with_empty_file(mocker: MockerFixture, tmp_path):
+    """
+    Given:
+        An empty (zero-byte) file, such as a broken inline email image.
+
+    When:
+        - Calling the ReadQRCode script.
+
+    Then:
+        Return a warning entry instead of an error, without attempting to parse the file.
+    """
+    from ReadQRCode import extract_info_from_qr_code
+
+    empty_file = tmp_path / "empty.png"
+    empty_file.write_bytes(b"")
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": str(empty_file)},
+    )
+    read_mock = mocker.patch("ReadQRCode.read_qr_code")
+
+    result = extract_info_from_qr_code("entry_id")
+
+    assert result.readable_output == "The file is empty. No QR code could be read."
+    assert result.entry_type == EntryType.WARNING
+    read_mock.assert_not_called()
+
+
 def test_with_non_image_file(mocker: MockerFixture):
     """
     Given:

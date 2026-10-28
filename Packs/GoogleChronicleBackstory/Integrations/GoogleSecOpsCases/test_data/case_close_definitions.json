@@ -1,0 +1,24 @@
+{
+  "caseCloseDefinitions": [
+    {
+      "name": "projects/google-001/locations/us/instances/00000000-0000-0000-0000-000000000001/caseCloseDefinitions/1",
+      "closeReason": "MAINTENANCE",
+      "rootCause": "Rule under construction"
+    },
+    {
+      "name": "projects/google-001/locations/us/instances/00000000-0000-0000-0000-000000000001/caseCloseDefinitions/2",
+      "closeReason": "INCONCLUSIVE",
+      "rootCause": "No clear conclusion"
+    },
+    {
+      "name": "projects/google-001/locations/us/instances/00000000-0000-0000-0000-000000000001/caseCloseDefinitions/3",
+      "closeReason": "NOT_MALICIOUS",
+      "rootCause": "Similar case is already under investigation"
+    },
+    {
+      "name": "projects/google-001/locations/us/instances/00000000-0000-0000-0000-000000000001/caseCloseDefinitions/4",
+      "closeReason": "MALICIOUS",
+      "rootCause": "Irrelevant TCP/UDP port"
+    }
+  ]
+}

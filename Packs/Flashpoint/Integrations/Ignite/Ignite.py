@@ -27,6 +27,8 @@ DEFAULT_LIMIT = 10
 DEFAULT_REPORT_LIMIT = 5
 DEFAULT_REPUTATION_LIMIT = 5
 DEFAULT_REPUTATION_CONTEXT_LIMIT = 50  # Default max entries for both relationships and enrichments per reputation result
+DEFAULT_MESSAGE_MAX_LENGTH = 500  # Max characters to keep from a community search indicator's "message" field.
+MESSAGE_TRUNCATION_SUFFIX = "... [message truncated, full content available in raw_response]"
 MAX_PAGE_SIZE = 1000
 MAX_FETCH_LIMIT = 200
 MAX_PRODUCT = 10000
@@ -202,12 +204,15 @@ ALERT_SOURCES_MAPPING = {
     "Communities": "communities",
     "Images": "media",
     "Marketplaces": "marketplaces",
+    "Reports": "reports",
+    "Vulnerabilities": "vulnerabilities",
 }
 
 ALERT_RESOURCE_URL = {
     "communities": "/search/context/communities/{}",
     "marketplaces": "/search/context/marketplaces/{}",
     "media": "/search/results/media?include.date=all+time&include.media_id={}",
+    "reports": "/cti/intelligence/report/{}",
 }
 
 ALERT_STATUS_MAPPING = {
@@ -363,6 +368,7 @@ class Client(BaseClient):
         proxy,
         create_relationships,
         reputation_enrichments_limit: int = DEFAULT_REPUTATION_CONTEXT_LIMIT,
+        message_max_length: int = DEFAULT_MESSAGE_MAX_LENGTH,
     ):
         """Initialize class object.
 
@@ -384,6 +390,10 @@ class Client(BaseClient):
         :type reputation_enrichments_limit: ``int``
         :param reputation_enrichments_limit: Maximum number of enrichment entries stored per reputation
             command result. Lower values improve performance; higher values preserve more details.
+
+        :type message_max_length: ``int``
+        :param message_max_length: Maximum number of characters kept from a community search indicator's
+            "message" field. Lower values reduce context size; higher values preserve more content.
         """
         self.url = url
 
@@ -397,6 +407,7 @@ class Client(BaseClient):
         self.proxy = proxy
         self.create_relationships = create_relationships
         self.reputation_enrichments_limit = reputation_enrichments_limit
+        self.message_max_length = message_max_length
 
         super().__init__(base_url=self.url, headers=self.headers, verify=self.verify, proxy=self.proxy)
 
@@ -954,10 +965,12 @@ def prepare_incidents_from_alerts_data(
         alert["tag_as_list"] = list(tags.keys())
 
         origin = alert.get("reason", {}).get("origin")
-        source = alert.get("source")
-        resource_url = alert.get("resource", {}).get("url")
+        source = alert.get("source") or ""
+        resource_url = (alert.get("resource") or {}).get("url")
         if not resource_url and origin == "searches":
             resource_url = get_resource_url(source, alert.get("resource", {}).get("id"), platform_url)
+        if source and source.lower() == "vulnerabilities":
+            resource_url = (alert.get("resource") or {}).get("ignite_search_url")
 
         alert["resource"].update({"url": resource_url})
 
@@ -1423,6 +1436,9 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
     :rtype: ``tuple[dict, dict]``
     """
     tags = argToList(args.get("tags"))
+    vulnerability_ids = [
+        vulnerability_id.replace("FP-VULN-", "") for vulnerability_id in argToList(args.get("vulnerability_ids"))
+    ]
     products = argToList(args.get("products"))
     vendors = argToList(args.get("vendors"))
     cwe_ids = argToList(args.get("cwe_ids"))
@@ -1464,6 +1480,9 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
 
     valid_cwe_ids = [cwe_id for cwe_id in cwe_ids if cwe_id.isdigit()]
     invalid_cwe_ids = [cwe_id for cwe_id in cwe_ids if not cwe_id.isdigit()]
+
+    valid_vulnerability_ids = [vulnerability_id for vulnerability_id in vulnerability_ids if vulnerability_id.isdigit()]
+    invalid_vulnerability_ids = [vulnerability_id for vulnerability_id in vulnerability_ids if not vulnerability_id.isdigit()]
 
     valid_location = [LOCATION_MAPPING[loc] for loc in locations if loc in LOCATION_MAPPING]
     invalid_location = [loc for loc in locations if loc not in LOCATION_MAPPING]
@@ -1521,6 +1540,9 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
     if invalid_cwe_ids:
         errors.append(MESSAGES["INVALID_INT_PARAMS_PROVIDED"].format(invalid_cwe_ids, "CWE IDs"))
 
+    if invalid_vulnerability_ids:
+        errors.append(MESSAGES["INVALID_INT_PARAMS_PROVIDED"].format(invalid_vulnerability_ids, "Vulnerability IDs"))
+
     if invalid_location:
         errors.append(
             MESSAGES["INVALID_MULTI_PARAMS_PROVIDED"].format(
@@ -1546,6 +1568,7 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
     # Build payload (filters and search criteria)
 
     payload = assign_params(
+        ids=",".join(valid_vulnerability_ids),
         tags=",".join(tags),
         min_epss_score=min_epss_score,
         max_epss_score=max_epss_score,
@@ -1883,7 +1906,7 @@ def get_resource_url(source: str, resource_id: str, platform_url: str):
     if not resource_id:
         raise ValueError(MESSAGES["MISSING_DATA"].format("alerts"))
 
-    resource_url = platform_url + ALERT_RESOURCE_URL[source].format(resource_id)
+    resource_url = platform_url + ALERT_RESOURCE_URL.get(source, "").format(resource_id)
 
     return resource_url
 
@@ -2025,6 +2048,21 @@ def html_to_text(html) -> str:
     text = re.sub(r"&#(\d+);", lambda m: chr(int(m.group(1))), text)
 
     return text.strip()
+
+
+def truncate_message(message: str | None, max_length: int = DEFAULT_MESSAGE_MAX_LENGTH) -> str | None:
+    """
+    Cut a free-text message down to `max_length` characters.
+
+    :param message: The raw message text to truncate.
+    :param max_length: Maximum number of characters to keep.
+
+    :return: The truncated message, unchanged if it was already short enough or not a non-empty string.
+    """
+    if not message or not isinstance(message, str) or len(message) <= max_length:
+        return message
+
+    return message[:max_length].rstrip() + MESSAGE_TRUNCATION_SUFFIX
 
 
 def prepare_hr_for_vulnerability(vulnerability: dict, platform_url: str, is_reputation: bool = False) -> str:
@@ -3289,15 +3327,27 @@ def ip_lookup_command(client: Client, ip: str, exact_match: bool = False) -> Com
 
             limited_indicators = []
             for indicator in indicators:
-                for enr_key, enr_val in indicator.get("enrichments", {}).items():
+                limited_indicator = deepcopy(indicator)
+
+                for enr_key, enr_val in limited_indicator.get("enrichments", {}).items():
                     if isinstance(enr_val, list) and len(enr_val) > client.reputation_enrichments_limit:
                         demisto.debug(
                             f"Community search for IP {ip}: enrichments[{enr_key}] truncated to "
                             f"{client.reputation_enrichments_limit} entries for indicator "
-                            f"{indicator.get('id', 'unknown')}. Full data available in raw_response."
+                            f"{limited_indicator.get('id', 'unknown')}. Full data available in raw_response."
                         )
-                        indicator["enrichments"][enr_key] = enr_val[: client.reputation_enrichments_limit]
-                limited_indicators.append(indicator)
+                        limited_indicator["enrichments"][enr_key] = enr_val[: client.reputation_enrichments_limit]
+
+                raw_message = limited_indicator.get("message")
+                truncated_message = truncate_message(raw_message, client.message_max_length)
+                if truncated_message != raw_message:
+                    demisto.debug(
+                        f"Community search for IP {ip}: message truncated for indicator "
+                        f"{limited_indicator.get('id', 'unknown')}. Full content available in raw_response."
+                    )
+                    limited_indicator["message"] = truncated_message
+
+                limited_indicators.append(limited_indicator)
             command_results = CommandResults(
                 outputs_prefix=OUTPUT_PREFIX["IP_COMMUNITY_SEARCH"],
                 outputs_key_field="id",
@@ -4686,6 +4736,8 @@ def main():
         or DEFAULT_REPUTATION_CONTEXT_LIMIT
     )
 
+    message_max_length = arg_to_number(params.get("message_max_length", DEFAULT_MESSAGE_MAX_LENGTH)) or DEFAULT_MESSAGE_MAX_LENGTH
+
     config_exact_match = argToBoolean(params.get("ioc_enrichment_exact_match", False))
 
     # if your Client class inherits from BaseClient, system proxy is handled
@@ -4706,7 +4758,7 @@ def main():
             "X-FP-IntegrationVersion": INTEGRATION_VERSION,
         }
         validate_params(command, params)
-        client = Client(url, headers, verify, proxy, create_relationships, reputation_enrichments_limit)
+        client = Client(url, headers, verify, proxy, create_relationships, reputation_enrichments_limit, message_max_length)
 
         COMMAND_TO_FUNCTION: dict = {
             "flashpoint-ignite-intelligence-report-search": get_reports_command,

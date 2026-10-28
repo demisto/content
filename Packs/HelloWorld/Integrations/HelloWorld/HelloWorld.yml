@@ -33,17 +33,36 @@ configuration:
   type: 8
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '10'
   display: Maximum number of alerts per fetch
   name: max_fetch
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - displaypassword: API Key
   name: credentials
   required: true
@@ -291,7 +310,7 @@ script:
     - contextPath: IP.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   runonce: false
   script: '-'

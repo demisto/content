@@ -1,0 +1,103 @@
+{
+    "version": -1,
+    "fromVersion": "6.8.0",
+    "name": "Darkmon Ransomware Mention",
+    "id": "Darkmon Ransomware Mention",
+    "group": "incident",
+    "description": "Layout for Darkmon Ransomware Mention incidents.",
+    "system": false,
+    "marketplaces": [
+        "xsoar",
+        "platform"
+    ],
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Summary",
+                "type": "summary"
+            },
+            {
+                "id": "darkmon",
+                "name": "Darkmon",
+                "type": "custom",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "i": "darkmon-overview",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonvictimname",
+                                "height": 22,
+                                "id": "field-incident_darkmonvictimname",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonthreatactor",
+                                "height": 22,
+                                "id": "field-incident_darkmonthreatactor",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonpublishedat",
+                                "height": 22,
+                                "id": "field-incident_darkmonpublishedat",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonscreenshoturl",
+                                "height": 22,
+                                "id": "field-incident_darkmonscreenshoturl",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Darkmon Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    }
+                ]
+            },
+            {
+                "id": "investigation",
+                "name": "Investigation",
+                "type": "investigation"
+            },
+            {
+                "id": "war_room",
+                "name": "War Room",
+                "type": "warRoom"
+            }
+        ]
+    },
+    "supportedModules": [
+        "cloud_posture",
+        "cloud",
+        "cloud_runtime_security",
+        "edr",
+        "asm",
+        "tim",
+        "cloud_appsec",
+        "xsiam",
+        "exposure_management",
+        "agentix",
+        "email_security"
+    ]
+}

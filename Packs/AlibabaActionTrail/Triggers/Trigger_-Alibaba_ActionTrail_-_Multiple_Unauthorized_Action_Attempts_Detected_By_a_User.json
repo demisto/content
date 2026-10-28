@@ -8,12 +8,11 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "Alibaba ActionTrail - multiple unauthorized action attempts detected by a user"
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Alibaba ActionTrail - multiple unauthorized action attempts detected by a user"
         }
       ]
     }
   }
 }
-

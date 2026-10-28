@@ -91,6 +91,35 @@ def test_get_cloud_credentials_missing_account_id():
     assert "Missing AWS Account ID for AWS" in str(excinfo.value)
 
 
+def test_get_cloud_credentials_non_string_account_id(mocker):
+    """
+    Given: A valid cloud type and a non-string account_id (int).
+    When: The get_cloud_credentials function is called.
+    Then: The account_id is converted to a string and included as a string in the API request.
+    """
+
+    cloud_info = {"connectorID": "test-connector-id", "outpostID": "test-outpost-id"}
+    mock_context = {"CloudIntegrationInfo": cloud_info}
+
+    mocker.patch.object(demisto, "callingContext", {"context": mock_context})
+    mocker.patch.object(demisto, "debug")
+
+    credentials = {"access_token": "test-access-token", "expiration_time": 1672531200000}
+    api_response = {
+        "status": 200,
+        "data": json.dumps({"data": credentials}),
+    }
+    mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
+
+    non_string_account_id: Any = 123456789012
+    result = get_cloud_credentials(CloudTypes.AWS.value, account_id=non_string_account_id)
+
+    assert result == credentials
+    call_args = demisto._platformAPICall.call_args[1]
+    assert call_args["data"]["request_data"]["account_id"] == "123456789012"
+    assert isinstance(call_args["data"]["request_data"]["account_id"], str)
+
+
 def test_get_cloud_credentials_api_error(mocker):
     """
     Given: A valid cloud type but the API returns an error.
@@ -1118,3 +1147,70 @@ def test_is_gov_account_empty_accounts_list_no_account(mocker):
     debug_call_args = demisto.debug.call_args[0][0]
     expected_debug_log = "[COOC API] There are no account_id='' or accounts_info=[] for the connector_id='test-connector-id'."
     assert expected_debug_log == debug_call_args
+
+
+@pytest.mark.parametrize(
+    "timeout,expected",
+    [
+        (None, (60, 10)),
+        ("", (60, 10)),
+        ("30", (30, 10)),
+        ("45,15", (45, 15)),
+        (120, (120, 10)),
+        (0, (0, 10)),
+        ("0", (0, 10)),
+        (" 30 ", (30, 10)),
+        ("45, 15", (45, 15)),
+        (" 45 , 15 ", (45, 15)),
+    ],
+)
+def test_get_timeout_valid_inputs(timeout, expected):
+    """
+    Given: Various valid timeout values (None, empty string, read-only string, read+connect string,
+        integer, zero, and strings containing surrounding spaces).
+    When: get_timeout is called.
+    Then: Returns the correct (read_timeout, connect_timeout) tuple.
+    """
+    from COOCApiModule import get_timeout
+
+    assert get_timeout(timeout) == expected
+
+
+def test_get_timeout_malformed_raises():
+    """
+    Given: A malformed (non-numeric) timeout string.
+    When: get_timeout is called.
+    Then: Raises DemistoException with a message about read timeout.
+    """
+    from COOCApiModule import get_timeout
+    from CommonServerPython import DemistoException
+
+    with pytest.raises(DemistoException, match="read timeout"):
+        get_timeout("not-a-number")
+
+
+def test_get_timeout_too_many_values_raises():
+    """
+    Given: A timeout string with more than 2 comma-separated values.
+    When: get_timeout is called.
+    Then: Raises DemistoException with a message about too many values.
+    """
+    from COOCApiModule import get_timeout
+    from CommonServerPython import DemistoException
+
+    with pytest.raises(DemistoException, match="Too many timeout values"):
+        get_timeout("60,10,5")
+
+
+@pytest.mark.parametrize("bad_timeout", [-5, "-5", "60,-1"])
+def test_get_timeout_negative_raises(bad_timeout):
+    """
+    Given: A timeout value (int or string) containing a negative number.
+    When: get_timeout is called.
+    Then: Raises DemistoException because timeout values must not be negative.
+    """
+    from COOCApiModule import get_timeout
+    from CommonServerPython import DemistoException
+
+    with pytest.raises(DemistoException, match="Timeout values must not be negative."):
+        get_timeout(bad_timeout)

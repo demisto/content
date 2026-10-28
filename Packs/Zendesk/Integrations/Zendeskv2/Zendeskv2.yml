@@ -16,18 +16,36 @@ configuration:
   type: 0
   required: true
   section: Connect
+  additionalinfo: The URL of your Zendesk server. For example, https://demisto.zendesk.com.
+- display: Client ID
+  displaypassword: Client Secret
+  name: oauth_credentials
+  type: 9
+  required: false
+  section: Connect
+  additionalinfo: The OAuth 2.0 client identifier (the 'Unique identifier' of the OAuth client in Zendesk) and client secret.
+- display: Scope
+  name: scope
+  type: 0
+  defaultvalue: read write
+  required: false
+  section: Connect
+  additionalinfo: The OAuth scope requested at token acquisition, as a space-separated list (e.g., 'tickets:read users:read'). Defaults to 'read write' when empty.
 - display: Username (or '<username>/token' when using API key).
   additionalinfo: example 'admin@org.com' when using the password, or 'admin@org.com/token' when using an API key.
   displaypassword: Password/API key
   name: credentials
   type: 9
-  required: true
+  required: false
   section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Connect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: 'Selects which direction you want the incidents mirrored. You can mirror **Incoming** only (from Zendesk to Cortex XSOAR), **Outgoing** only (from Cortex XSOAR to Zendesk), or both **Incoming And Outgoing**.'
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -134,6 +152,9 @@ configuration:
   section: Collect
   defaultvalue: '50'
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -146,12 +167,18 @@ configuration:
   type: 19
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   defaultvalue: Zendesk Ticket
   type: 13
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -178,8 +205,8 @@ script:
       description: The user's ID to retrieve.
     - name: user_name
       description: |-
-        The user's name. 
-        Required permissions to use this argument: Agents. 
+        The user's name.
+        Required permissions to use this argument: Agents.
     - name: external_id
       description: The user's unique identifier from another system.
     - name: role
@@ -679,8 +706,8 @@ script:
     arguments:
     - name: organization_id
       description: |-
-        The ID of a specific organization. 
-        Required permissions: Admins, Agents. 
+        The ID of a specific organization.
+        Required permissions: Admins, Agents.
     - name: limit
       default: true
       description: Maximum number of results to return. Default is 50.
@@ -863,7 +890,7 @@ script:
     arguments:
     - name: limit
       default: true
-      description: Maximum number of results to return.
+      description: Maximum number of results to return. Default is 50.
     - name: page_size
       description: The page size (used for pagination).
     - name: page_number
@@ -902,7 +929,7 @@ script:
       Required permissions: Agents. 
     arguments:
     - name: query
-      description: 'Query to search for tickets. For more information about the search syntax, see https://developer.zendesk.com/rest_api/docs/core/search. '
+      description: 'The query to search for tickets. For more information about the search syntax, see https://developer.zendesk.com/rest_api/docs/core/search.'
     - name: ticket_id
       isArray: true
       description: The ID of a specific ticket.
@@ -1081,15 +1108,22 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - name: collaborators
+    - name: file_id
       isArray: true
+      description: A comma-separated list of entry IDs of attachments.
+    - name: filename
+      description: A comma-separated list of filenames to upload if you provide file_id. Default is the original filename.
+      isArray: true
+    - name: collaborators
       description: Users to add as CC's when creating a ticket.
+      isArray: true
     - name: description
-      required: true
       description: The ticket description.
+      required: true
     - name: recipient
       description: The original recipient email address of the ticket.
     - name: status
+      description: The state of the ticket.
       auto: PREDEFINED
       predefined:
       - new
@@ -1098,8 +1132,8 @@ script:
       - hold
       - solved
       - closed
-      description: The state of the ticket.
     - name: priority
+      description: The urgency with which the ticket should be addressed.
       auto: PREDEFINED
       predefined:
       - urgent
@@ -1107,19 +1141,18 @@ script:
       - normal
       - low
       defaultValue: normal
-      description: The urgency with which the ticket should be addressed.
     - name: due_at
       description: If this is a ticket of type "task" it has a due date. Due date format uses ISO 8601 format.
     - name: email_ccs
-      isArray: true
       description: An array of agents or end users email CCs to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'.
+      isArray: true
     - name: external_id
       description: An ID you can use to link Zendesk Support tickets to local records.
     - name: forum_topic_id
       description: The topic in the Zendesk Web portal this ticket originated from, if any.
     - name: followers
-      isArray: true
       description: An array of agent followers to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'.
+      isArray: true
     - name: group_id
       description: The group this ticket is assigned to.
     - name: organization_id
@@ -1127,8 +1160,8 @@ script:
     - name: problem_id
       description: For tickets of type "incident", the ID of the problem the incident is linked to.
     - name: tags
+      description: 'The tags applied to this ticket.'
       isArray: true
-      description: The tags applied to this ticket.
     - name: via_followup_source_id
       description: The ID of a closed ticket when creating a follow-up ticket.
     - name: custom_fields
@@ -1285,9 +1318,16 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: file_id
+      description: A comma-separated list of entry IDs of attachments.
+      isArray: true
+    - name: filename
+      description: A comma-separated list of filenames to upload if you provide file_id. Default is the original filename.
+      isArray: true
     - name: recipient
       description: The original recipient email address of the ticket.
     - name: status
+      description: The state of the ticket.
       auto: PREDEFINED
       predefined:
       - open
@@ -1295,15 +1335,14 @@ script:
       - hold
       - solved
       - closed
-      description: The state of the ticket.
     - name: priority
+      description: The urgency with which the ticket should be addressed.
       auto: PREDEFINED
       predefined:
       - urgent
       - high
       - normal
       - low
-      description: The urgency with which the ticket should be addressed.
     - name: due_at
       description: If this is a ticket of type "task" it has a due date. Due date format uses ISO 8601 format.
     - name: email_ccs
@@ -1312,17 +1351,17 @@ script:
     - name: external_id
       description: An ID you can use to link Zendesk Support tickets to local records.
     - name: followers
-      isArray: true
       description: An array of agent followers to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'.
+      isArray: true
     - name: group_id
       description: The ID of the group this ticket is assigned to.
     - name: organization
       description: The ID of the organization of the requester.
     - name: problem_id
-      description: For tickets of type "incident", the ID of the problem the incident is linked to.
+      description: 'For tickets of type "incident", the ID of the problem the incident is linked to.'
     - name: tags
-      isArray: true
       description: The tags applied to this ticket.
+      isArray: true
     - name: custom_fields
       description: 'Custom fields for the ticket (this is a JSON-formatted argument see: https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets#setting-custom-field-values).'
     - name: brand_id
@@ -1528,14 +1567,14 @@ script:
     - name: file_id
       required: true
       isArray: true
-      description: The file entry ID.
+      description: A comma-separated list of entry IDs of attachments.
     - name: comment
       required: true
       description: The comment body for the attached file.
     - name: filename
       default: true
       isArray: true
-      description: The filename to upload. Default is the original filename.
+      description: A comma-separated list of filenames to upload if you provide file_id. Default is the original filename.
   - name: zendesk-attachment-get
     description: |-
       Get attachment.
@@ -1599,7 +1638,7 @@ script:
     name: get-modified-remote-data
   - description: Updates local incident changes in the remote incident. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.12.13.9059085
+  dockerimage: demisto/python3:3.12.15.14069087
   isfetch: true
   subtype: python3
   ismappable: true

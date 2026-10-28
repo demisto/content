@@ -27,14 +27,14 @@ ENDPOINTS = {
     "REFRESH_TOKEN_ENDPOINT": "/api/refresh-token",
     "GET_ENTITIES_ENDPOINT": "/api/secopsPublisher/entities",
     "PUSH_BREACH_POINT_ENDPOINT": "/api/entityInventory/applyImportedLabelsOnEntities",
-    "GET_SECURITY_SCORE_ENDPOINT": "/api/systemReport/riskScoreV2",
+    "GET_SECURITY_SCORE_ENDPOINT": "/api/scenarios/v2/scenarios/riskScore",
     "GET_CHOKE_POINTS_BY_SEVERITY_ENDPOINT": "/api/v2/reports/data/scenariosChokePointsReport/chokePointsEntities",
     "GET_CRITICAL_ASSETS_BY_SEVERITY_ENDPOINT": '/api/v2/reports/data/scenariosCriticalAssetsReport/entities?filter={"isAsset":true}',  # noqa: E501
     "GET_COMPROMISING_EXPOSURES_ENDPOINT": "/api/v2/reports/data/defaultReport/attackTechniques/techniques",
 }
 
 REQUEST_PARAMS = {
-    "SECURITY_SCORE": {"timeId": "timeAgo_days_30", "resolution": "1"},
+    "SECURITY_SCORE": {"timeId": "timeAgo_days_30"},
     "CHOKE_POINTS": {"entitiesCategory": "all", "suppressed": "false", "pageSize": "3", "sort": "-chokePointScore"},
     "CRITICAL_ASSETS": {"pageSize": "3", "sort": "-riskScore", "entitiesCategory": "all"},
     "COMPROMISING_EXPOSURES": {"pageSize": "3", "sort": "-criticalAssets"},

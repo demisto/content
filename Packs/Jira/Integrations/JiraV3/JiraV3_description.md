@@ -8,7 +8,7 @@ Configure your Jira instance based on the type of your deployment:
 ##### Cloud ID
 
 1. Go to your [Admin page](https://admin.atlassian.com/).
-2. Click the **Products** tab on the top banner and choose the appropriate site under **Sites and Products** on the left side bar. Your Cloud ID will appear in the URL:
+2. Click the **Apps** tab on the top banner and choose the appropriate site under **Sites** on the left side bar. Your Cloud ID will appear in the URL:
 `https://admin.atlassian.com/s/{cloud_id}/users`
 
 #### Authentication Methods

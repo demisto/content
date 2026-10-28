@@ -1543,3 +1543,65 @@ def test_fetch_vulnerabilities_analysis_client_method(mocker):
         },
     )
     assert result == mock_response
+
+
+@pytest.mark.parametrize("proxy_param", [True, False])
+def test_fetch_assets_passes_proxy_to_send_data_to_xsiam(mocker, proxy_param):
+    """
+    Given:
+    - The fetch-assets command with assets and vulnerabilities to send to XSIAM,
+      and a configured "proxy" integration parameter.
+
+    When:
+    - Running main() for the fetch-assets command.
+
+    Then:
+    - send_data_to_xsiam should be called with add_proxy_to_request matching the
+      configured proxy parameter for both the assets and the vulnerabilities calls
+      (XSUP-71738).
+    """
+    import demistomock as demisto
+    import Tenable_sc
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "server": "https://www.tenable_sc_url_mock.com",
+            "unsecure": True,
+            "proxy": proxy_param,
+            "credentials": {"identifier": "_api_key_", "password": "secret_key"},
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="fetch-assets")
+    mocker.patch.object(demisto, "getAssetsLastRun", return_value={})
+    mocker.patch.object(demisto, "setAssetsLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
+
+    # Mock the Client (used as a context manager) so no real connection logic runs.
+    mock_client = mocker.MagicMock()
+    mock_client_class = mocker.patch.object(Tenable_sc, "Client")
+    mock_client_class.return_value.__enter__.return_value = mock_client
+
+    # Avoid running the real fetch logic; return one asset and one vulnerability.
+    mocker.patch.object(Tenable_sc, "run_assets_fetch", return_value=[{"id": "1"}])
+    mocker.patch.object(
+        Tenable_sc,
+        "run_vulns_fetch",
+        return_value=[{"id": "v1", "lastSeen": "1709568000"}],
+    )
+    mocker.patch.object(Tenable_sc, "skip_fetch_assets", return_value=False)
+    mocker.patch.object(Tenable_sc, "is_assets_fetch_in_progress", return_value=False)
+    mocker.patch.object(Tenable_sc, "is_vulns_fetch_in_progress", return_value=False)
+
+    send_data_mock = mocker.patch.object(Tenable_sc, "send_data_to_xsiam")
+
+    Tenable_sc.main()
+
+    # One call for assets, one call for vulnerabilities.
+    assert send_data_mock.call_count == 2
+    for call in send_data_mock.call_args_list:
+        assert call.kwargs["add_proxy_to_request"] is proxy_param
+
+    # The Client itself should also receive the configured proxy parameter.
+    assert mock_client_class.call_args.kwargs["proxy"] is proxy_param

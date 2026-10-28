@@ -1,0 +1,22 @@
+{
+    "id": "Darkmon - Auto-Disable Allowlist",
+    "version": -1,
+    "name": "Darkmon - Auto-Disable Allowlist",
+    "description": "Comma-separated usernames or DNs that must NEVER be auto-disabled (e.g. ceo@acme.com, svc-monitor). Override for the Compromised Employee Auto-Disable playbook.",
+    "type": "plain_text",
+    "fromVersion": "6.8.0",
+    "itemVersion": "",
+    "locked": false,
+    "nameLocked": false,
+    "packID": "Darkmon",
+    "system": false,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
+}

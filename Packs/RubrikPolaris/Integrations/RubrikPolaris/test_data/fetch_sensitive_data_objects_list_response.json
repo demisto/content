@@ -1,0 +1,927 @@
+[
+    {
+        "data": {
+            "policyObj": {
+                "id": "00000000-0000-0000-0000-000000000001",
+                "snapshotFid": "00000000-0000-0000-0000-000000000011",
+                "snapshotTimestamp": 1782332206131,
+                "shareType": "UNKNOWN_SHARE_TYPE",
+                "riskLevel": "HIGH_RISK",
+                "objectStatus": {
+                    "policyStatuses": [],
+                    "latestSnapshotResult": {
+                        "snapshotTime": 1782678433990,
+                        "snapshotFid": "00000000-0000-0000-0000-000000000011",
+                        "__typename": "SnapshotResult"
+                    },
+                    "__typename": "ObjectStatus"
+                },
+                "rootFileResult": {
+                    "hits": {
+                        "totalHits": 90,
+                        "violations": 90,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "analyzerGroupResults": [
+                        {
+                            "analyzerGroup": {
+                                "groupType": "CUSTOM",
+                                "id": "4139e844-ffd4-4784-bc71-4b069c4281f3",
+                                "name": "Geographical",
+                                "__typename": "AnalyzerGroup"
+                            },
+                            "hits": {
+                                "totalHits": 83,
+                                "violations": 83,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            },
+                            "__typename": "AnalyzerGroupResult"
+                        },
+                        {
+                            "analyzerGroup": {
+                                "groupType": "CUSTOM",
+                                "id": "45985db2-9a0d-4664-90a5-2198ff189833",
+                                "name": "Personal",
+                                "__typename": "AnalyzerGroup"
+                            },
+                            "hits": {
+                                "totalHits": 7,
+                                "violations": 7,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            },
+                            "__typename": "AnalyzerGroupResult"
+                        }
+                    ],
+                    "analyzerResults": [
+                        {
+                            "analyzer": {
+                                "id": "2289e94f-e703-5198-9569-f30724a49650",
+                                "name": "Country"
+                            },
+                            "hits": {
+                                "totalHits": 34,
+                                "violations": 34,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            }
+                        },
+                        {
+                            "analyzer": {
+                                "id": "d5631af1-bbcd-5306-a444-a6001c936fb3",
+                                "name": "Phone Number"
+                            },
+                            "hits": {
+                                "totalHits": 7,
+                                "violations": 7,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            }
+                        }
+                    ],
+                    "filesWithHits": {
+                        "totalHits": 1,
+                        "violations": 1,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessFiles": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessFolders": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessFilesWithHits": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "staleFiles": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "staleFilesWithHits": {
+                        "totalHits": 1,
+                        "violations": 1,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessStaleFiles": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "sensitiveHits": {
+                        "highRiskHits": {
+                            "totalHits": 7,
+                            "violatedHits": 7,
+                            "__typename": "SummaryHits"
+                        },
+                        "mediumRiskHits": {
+                            "totalHits": 0,
+                            "violatedHits": 0,
+                            "__typename": "SummaryHits"
+                        },
+                        "lowRiskHits": {
+                            "totalHits": 0,
+                            "violatedHits": 0,
+                            "__typename": "SummaryHits"
+                        },
+                        "noRiskHits": {
+                            "totalHits": 83,
+                            "violatedHits": 83,
+                            "__typename": "SummaryHits"
+                        },
+                        "totalHits": {
+                            "totalHits": 90,
+                            "violatedHits": 90,
+                            "__typename": "SummaryHits"
+                        },
+                        "__typename": "SensitiveHits"
+                    },
+                    "numActivities": 0,
+                    "numActivitiesDelta": 0,
+                    "__typename": "FileResult"
+                },
+                "snappable": {
+                    "id": "00000000-0000-0000-0000-000000000001",
+                    "name": "Adele Vance",
+                    "objectType": "O365Onedrive",
+                    "slaAssignment": "Unassigned",
+                    "logicalPath": [
+                        {
+                            "fid": "00000000-0000-0000-0000-000000000010",
+                            "name": "us-east-1",
+                            "objectType": "AwsNativeRegion",
+                            "__typename": "PathNode"
+                        }
+                    ],
+                    "physicalPath": [],
+                    "effectiveSlaDomain": {
+                        "id": "UNPROTECTED",
+                        "name": "UNPROTECTED",
+                        "isRetentionLockedSla": false,
+                        "retentionLockMode": "NO_MODE",
+                        "haPolicy": null,
+                        "__typename": "GlobalSlaReply",
+                        "description": ""
+                    },
+                    "__typename": "O365Onedrive"
+                },
+                "__typename": "PolicyObj",
+                "osType": "NONE",
+                "isUserAccessEnabledObject": false,
+                "policySummaries": [
+                    {
+                        "id": "4139e844-ffd4-4784-bc71-4b069c4281f3",
+                        "name": "Geographical",
+                        "colorEnum": "COLOR_001",
+                        "__typename": "ClassificationPolicySummary"
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "data": {
+            "policyObj": {
+                "id": "00000000-0000-0000-0000-000000000002",
+                "snapshotFid": "00000000-0000-0000-0000-000000000005",
+                "snapshotTimestamp": 1782418890131,
+                "shareType": "UNKNOWN_SHARE_TYPE",
+                "riskLevel": "MEDIUM_RISK",
+                "objectStatus": {
+                    "policyStatuses": [],
+                    "latestSnapshotResult": {
+                        "snapshotTime": 1782678433990,
+                        "snapshotFid": "00000000-0000-0000-0000-000000000005",
+                        "__typename": "SnapshotResult"
+                    },
+                    "__typename": "ObjectStatus"
+                },
+                "rootFileResult": {
+                    "hits": {
+                        "totalHits": 45,
+                        "violations": 45,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "analyzerGroupResults": [
+                        {
+                            "analyzerGroup": {
+                                "groupType": "CUSTOM",
+                                "id": "45985db2-9a0d-4664-90a5-2198ff189833",
+                                "name": "Personal",
+                                "__typename": "AnalyzerGroup"
+                            },
+                            "hits": {
+                                "totalHits": 45,
+                                "violations": 45,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            },
+                            "__typename": "AnalyzerGroupResult"
+                        }
+                    ],
+                    "analyzerResults": [
+                        {
+                            "analyzer": {
+                                "id": "d5631af1-bbcd-5306-a444-a6001c936fb3",
+                                "name": "Phone Number"
+                            },
+                            "hits": {
+                                "totalHits": 45,
+                                "violations": 45,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            }
+                        }
+                    ],
+                    "filesWithHits": {
+                        "totalHits": 2,
+                        "violations": 2,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessFiles": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessFolders": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessFilesWithHits": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "staleFiles": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "staleFilesWithHits": {
+                        "totalHits": 2,
+                        "violations": 2,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessStaleFiles": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "sensitiveHits": {
+                        "highRiskHits": {
+                            "totalHits": 45,
+                            "violatedHits": 45,
+                            "__typename": "SummaryHits"
+                        },
+                        "mediumRiskHits": {
+                            "totalHits": 0,
+                            "violatedHits": 0,
+                            "__typename": "SummaryHits"
+                        },
+                        "lowRiskHits": {
+                            "totalHits": 0,
+                            "violatedHits": 0,
+                            "__typename": "SummaryHits"
+                        },
+                        "noRiskHits": {
+                            "totalHits": 0,
+                            "violatedHits": 0,
+                            "__typename": "SummaryHits"
+                        },
+                        "totalHits": {
+                            "totalHits": 45,
+                            "violatedHits": 45,
+                            "__typename": "SummaryHits"
+                        },
+                        "__typename": "SensitiveHits"
+                    },
+                    "numActivities": 0,
+                    "numActivitiesDelta": 0,
+                    "__typename": "FileResult"
+                },
+                "snappable": {
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "name": "rubrik-tm-use-cases",
+                    "objectType": "AWS_NATIVE_S3_BUCKET",
+                    "slaAssignment": "Unassigned",
+                    "logicalPath": [
+                        {
+                            "fid": "00000000-0000-0000-0000-000000000007",
+                            "name": "us-east-1",
+                            "objectType": "AwsNativeRegion",
+                            "__typename": "PathNode"
+                        },
+                        {
+                            "fid": "00000000-0000-0000-0000-000000000004",
+                            "name": "rubrik-tme-lab",
+                            "objectType": "AwsNativeAccount",
+                            "__typename": "PathNode"
+                        }
+                    ],
+                    "physicalPath": [],
+                    "effectiveSlaDomain": {
+                        "id": "UNPROTECTED",
+                        "name": "UNPROTECTED",
+                        "isRetentionLockedSla": false,
+                        "retentionLockMode": "NO_MODE",
+                        "haPolicy": null,
+                        "__typename": "GlobalSlaReply",
+                        "description": ""
+                    },
+                    "__typename": "AwsNativeS3Bucket"
+                },
+                "__typename": "PolicyObj",
+                "osType": "NONE",
+                "isUserAccessEnabledObject": false,
+                "policySummaries": [
+                    {
+                        "id": "45985db2-9a0d-4664-90a5-2198ff189833",
+                        "name": "Personal",
+                        "colorEnum": "COLOR_002",
+                        "__typename": "ClassificationPolicySummary"
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "data": {
+            "policyObj": {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "snapshotFid": "00000000-0000-0000-0000-000000000009",
+                "snapshotTimestamp": 1781902279172,
+                "shareType": "UNKNOWN_SHARE_TYPE",
+                "riskLevel": "HIGH_RISK",
+                "objectStatus": {
+                    "policyStatuses": [],
+                    "latestSnapshotResult": {
+                        "snapshotTime": 1782678433990,
+                        "snapshotFid": "00000000-0000-0000-0000-000000000009",
+                        "__typename": "SnapshotResult"
+                    },
+                    "__typename": "ObjectStatus"
+                },
+                "rootFileResult": {
+                    "hits": {
+                        "totalHits": 20,
+                        "violations": 20,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "analyzerGroupResults": [
+                        {
+                            "analyzerGroup": {
+                                "groupType": "CUSTOM",
+                                "id": "9165196a-ecac-47eb-b3c6-06fab3858b3d",
+                                "name": "HIPAA",
+                                "__typename": "AnalyzerGroup"
+                            },
+                            "hits": {
+                                "totalHits": 20,
+                                "violations": 20,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            },
+                            "__typename": "AnalyzerGroupResult"
+                        }
+                    ],
+                    "analyzerResults": [
+                        {
+                            "analyzer": {
+                                "id": "98d8726e-ad1a-5700-b86f-37f7aa6d308e",
+                                "name": "City"
+                            },
+                            "hits": {
+                                "totalHits": 20,
+                                "violations": 20,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            }
+                        }
+                    ],
+                    "filesWithHits": {
+                        "totalHits": 1,
+                        "violations": 1,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessFiles": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessFolders": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessFilesWithHits": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "staleFiles": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "staleFilesWithHits": {
+                        "totalHits": 1,
+                        "violations": 1,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessStaleFiles": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "sensitiveHits": {
+                        "highRiskHits": {
+                            "totalHits": 20,
+                            "violatedHits": 20,
+                            "__typename": "SummaryHits"
+                        },
+                        "mediumRiskHits": {
+                            "totalHits": 0,
+                            "violatedHits": 0,
+                            "__typename": "SummaryHits"
+                        },
+                        "lowRiskHits": {
+                            "totalHits": 0,
+                            "violatedHits": 0,
+                            "__typename": "SummaryHits"
+                        },
+                        "noRiskHits": {
+                            "totalHits": 0,
+                            "violatedHits": 0,
+                            "__typename": "SummaryHits"
+                        },
+                        "totalHits": {
+                            "totalHits": 20,
+                            "violatedHits": 20,
+                            "__typename": "SummaryHits"
+                        },
+                        "__typename": "SensitiveHits"
+                    },
+                    "numActivities": 0,
+                    "numActivitiesDelta": 0,
+                    "__typename": "FileResult"
+                },
+                "snappable": {
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "name": "rubrik-tm-data",
+                    "objectType": "NutanixVirtualMachine",
+                    "slaAssignment": "Derived",
+                    "logicalPath": [
+                        {
+                            "fid": "00000000-0000-0000-0000-000000000010",
+                            "name": "Production",
+                            "objectType": "NutanixCluster",
+                            "__typename": "PathNode"
+                        }
+                    ],
+                    "physicalPath": [
+                        {
+                            "fid": "00000000-0000-0000-0000-000000000010",
+                            "name": "Production",
+                            "objectType": "NutanixCluster",
+                            "__typename": "PathNode"
+                        }
+                    ],
+                    "effectiveSlaDomain": {
+                        "id": "00000000-0000-0000-0000-000000000000",
+                        "name": "Gold",
+                        "isRetentionLockedSla": false,
+                        "retentionLockMode": "NO_MODE",
+                        "haPolicy": null,
+                        "__typename": "GlobalSlaReply",
+                        "description": "Rubrik default Gold level SLA Domain policy"
+                    },
+                    "__typename": "NutanixVm"
+                },
+                "__typename": "PolicyObj",
+                "osType": "NONE",
+                "isUserAccessEnabledObject": false,
+                "policySummaries": [
+                    {
+                        "id": "9165196a-ecac-47eb-b3c6-06fab3858b3d",
+                        "name": "HIPAA",
+                        "colorEnum": "COLOR_003",
+                        "__typename": "ClassificationPolicySummary"
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "data": {
+            "policyObj": {
+                "id": "00000000-0000-0000-0000-000000000004",
+                "snapshotFid": "00000000-0000-0000-0000-000000000012",
+                "snapshotTimestamp": 1782504600000,
+                "shareType": "UNKNOWN_SHARE_TYPE",
+                "riskLevel": "LOW_RISK",
+                "objectStatus": {
+                    "policyStatuses": [],
+                    "latestSnapshotResult": {
+                        "snapshotTime": 1782678433990,
+                        "snapshotFid": "00000000-0000-0000-0000-000000000012",
+                        "__typename": "SnapshotResult"
+                    },
+                    "__typename": "ObjectStatus"
+                },
+                "rootFileResult": {
+                    "hits": {
+                        "totalHits": 5,
+                        "violations": 5,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "analyzerGroupResults": [
+                        {
+                            "analyzerGroup": {
+                                "groupType": "CUSTOM",
+                                "id": "45985db2-9a0d-4664-90a5-2198ff189833",
+                                "name": "Personal",
+                                "__typename": "AnalyzerGroup"
+                            },
+                            "hits": {
+                                "totalHits": 5,
+                                "violations": 5,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            },
+                            "__typename": "AnalyzerGroupResult"
+                        }
+                    ],
+                    "analyzerResults": [
+                        {
+                            "analyzer": {
+                                "id": "d5631af1-bbcd-5306-a444-a6001c936fb3",
+                                "name": "Phone Number"
+                            },
+                            "hits": {
+                                "totalHits": 5,
+                                "violations": 5,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            }
+                        }
+                    ],
+                    "filesWithHits": {
+                        "totalHits": 1,
+                        "violations": 1,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessFiles": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessFolders": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessFilesWithHits": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "staleFiles": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "staleFilesWithHits": {
+                        "totalHits": 1,
+                        "violations": 1,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessStaleFiles": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "sensitiveHits": {
+                        "highRiskHits": {
+                            "totalHits": 0,
+                            "violatedHits": 0,
+                            "__typename": "SummaryHits"
+                        },
+                        "mediumRiskHits": {
+                            "totalHits": 0,
+                            "violatedHits": 0,
+                            "__typename": "SummaryHits"
+                        },
+                        "lowRiskHits": {
+                            "totalHits": 5,
+                            "violatedHits": 5,
+                            "__typename": "SummaryHits"
+                        },
+                        "noRiskHits": {
+                            "totalHits": 0,
+                            "violatedHits": 0,
+                            "__typename": "SummaryHits"
+                        },
+                        "totalHits": {
+                            "totalHits": 5,
+                            "violatedHits": 5,
+                            "__typename": "SummaryHits"
+                        },
+                        "__typename": "SensitiveHits"
+                    },
+                    "numActivities": 0,
+                    "numActivitiesDelta": 0,
+                    "__typename": "FileResult"
+                },
+                "snappable": {
+                    "id": "00000000-0000-0000-0000-000000000004",
+                    "name": "rubrik-tm-low-risk",
+                    "objectType": "AWS_NATIVE_S3_BUCKET",
+                    "slaAssignment": "Unassigned",
+                    "logicalPath": [
+                        {
+                            "fid": "00000000-0000-0000-0000-000000000007",
+                            "name": "us-east-1",
+                            "objectType": "AwsNativeRegion",
+                            "__typename": "PathNode"
+                        }
+                    ],
+                    "effectiveSlaDomain": {
+                        "id": "UNPROTECTED",
+                        "name": "UNPROTECTED",
+                        "isRetentionLockedSla": false,
+                        "retentionLockMode": "NO_MODE",
+                        "__typename": "GlobalSlaReply"
+                    },
+                    "__typename": "AwsNativeS3Bucket"
+                },
+                "__typename": "PolicyObj",
+                "osType": "NONE",
+                "isUserAccessEnabledObject": false,
+                "policySummaries": [
+                    {
+                        "id": "45985db2-9a0d-4664-90a5-2198ff189833",
+                        "name": "Personal",
+                        "colorEnum": "COLOR_002",
+                        "__typename": "ClassificationPolicySummary"
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "data": {
+            "policyObj": {
+                "id": "00000000-0000-0000-0000-000000000005",
+                "snapshotFid": "00000000-0000-0000-0000-000000000013",
+                "snapshotTimestamp": 1782505200000,
+                "shareType": "UNKNOWN_SHARE_TYPE",
+                "riskLevel": "HIGH_RISK",
+                "objectStatus": {
+                    "policyStatuses": [],
+                    "latestSnapshotResult": {
+                        "snapshotTime": 1782678433990,
+                        "snapshotFid": "00000000-0000-0000-0000-000000000013",
+                        "__typename": "SnapshotResult"
+                    },
+                    "__typename": "ObjectStatus"
+                },
+                "rootFileResult": {
+                    "hits": {
+                        "totalHits": 12,
+                        "violations": 12,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "analyzerGroupResults": [
+                        {
+                            "analyzerGroup": {
+                                "groupType": "CUSTOM",
+                                "id": "45985db2-9a0d-4664-90a5-2198ff189833",
+                                "name": "Personal",
+                                "__typename": "AnalyzerGroup"
+                            },
+                            "hits": {
+                                "totalHits": 12,
+                                "violations": 12,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            },
+                            "__typename": "AnalyzerGroupResult"
+                        }
+                    ],
+                    "analyzerResults": [
+                        {
+                            "analyzer": {
+                                "id": "d5631af1-bbcd-5306-a444-a6001c936fb3",
+                                "name": "Phone Number"
+                            },
+                            "hits": {
+                                "totalHits": 12,
+                                "violations": 12,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            }
+                        }
+                    ],
+                    "filesWithHits": {"totalHits": 1, "violations": 1, "violationsDelta": 0, "totalHitsDelta": 0, "__typename": "Hits"},
+                    "openAccessFiles": {"totalHits": 0, "violations": 0, "violationsDelta": 0, "totalHitsDelta": 0, "__typename": "Hits"},
+                    "openAccessFolders": {"totalHits": 0, "violations": 0, "violationsDelta": 0, "totalHitsDelta": 0, "__typename": "Hits"},
+                    "openAccessFilesWithHits": {"totalHits": 0, "violations": 0, "violationsDelta": 0, "totalHitsDelta": 0, "__typename": "Hits"},
+                    "staleFiles": {"totalHits": 0, "violations": 0, "violationsDelta": 0, "totalHitsDelta": 0, "__typename": "Hits"},
+                    "staleFilesWithHits": {"totalHits": 1, "violations": 1, "violationsDelta": 0, "totalHitsDelta": 0, "__typename": "Hits"},
+                    "openAccessStaleFiles": {"totalHits": 0, "violations": 0, "violationsDelta": 0, "totalHitsDelta": 0, "__typename": "Hits"},
+                    "sensitiveHits": {
+                        "highRiskHits": {"totalHits": 12, "violatedHits": 12, "__typename": "SummaryHits"},
+                        "mediumRiskHits": {"totalHits": 0, "violatedHits": 0, "__typename": "SummaryHits"},
+                        "lowRiskHits": {"totalHits": 0, "violatedHits": 0, "__typename": "SummaryHits"},
+                        "noRiskHits": {"totalHits": 0, "violatedHits": 0, "__typename": "SummaryHits"},
+                        "totalHits": {"totalHits": 12, "violatedHits": 12, "__typename": "SummaryHits"},
+                        "__typename": "SensitiveHits"
+                    },
+                    "numActivities": 0,
+                    "numActivitiesDelta": 0,
+                    "__typename": "FileResult"
+                },
+                "snappable": {
+                    "id": "00000000-0000-0000-0000-000000000005",
+                    "name": "rubrik-tm-azure-vm",
+                    "objectType": "AzureNativeVirtualMachine",
+                    "slaAssignment": "Unassigned",
+                    "logicalPath": [],
+                    "effectiveSlaDomain": {
+                        "id": "UNPROTECTED",
+                        "name": "UNPROTECTED",
+                        "isRetentionLockedSla": false,
+                        "retentionLockMode": "NO_MODE",
+                        "__typename": "GlobalSlaReply"
+                    },
+                    "__typename": "AzureNativeVirtualMachine"
+                },
+                "__typename": "PolicyObj",
+                "osType": "NONE",
+                "isUserAccessEnabledObject": false,
+                "policySummaries": [
+                    {
+                        "id": "45985db2-9a0d-4664-90a5-2198ff189833",
+                        "name": "Personal",
+                        "colorEnum": "COLOR_002",
+                        "__typename": "ClassificationPolicySummary"
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "data": {
+            "policyObj": {
+                "id": "00000000-0000-0000-0000-000000000006",
+                "snapshotFid": "00000000-0000-0000-0000-000000000014",
+                "snapshotTimestamp": 1782505800000,
+                "shareType": "UNKNOWN_SHARE_TYPE",
+                "riskLevel": "HIGH_RISK",
+                "objectStatus": {
+                    "policyStatuses": [],
+                    "latestSnapshotResult": {
+                        "snapshotTime": 1782678433990,
+                        "snapshotFid": "00000000-0000-0000-0000-000000000014",
+                        "__typename": "SnapshotResult"
+                    },
+                    "__typename": "ObjectStatus"
+                },
+                "rootFileResult": {
+                    "hits": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "analyzerGroupResults": [],
+                    "analyzerResults": [],
+                    "filesWithHits": {"totalHits": 0, "violations": 0, "violationsDelta": 0, "totalHitsDelta": 0, "__typename": "Hits"},
+                    "openAccessFiles": {"totalHits": 0, "violations": 0, "violationsDelta": 0, "totalHitsDelta": 0, "__typename": "Hits"},
+                    "openAccessFolders": {"totalHits": 0, "violations": 0, "violationsDelta": 0, "totalHitsDelta": 0, "__typename": "Hits"},
+                    "openAccessFilesWithHits": {"totalHits": 0, "violations": 0, "violationsDelta": 0, "totalHitsDelta": 0, "__typename": "Hits"},
+                    "staleFiles": {"totalHits": 0, "violations": 0, "violationsDelta": 0, "totalHitsDelta": 0, "__typename": "Hits"},
+                    "staleFilesWithHits": {"totalHits": 0, "violations": 0, "violationsDelta": 0, "totalHitsDelta": 0, "__typename": "Hits"},
+                    "openAccessStaleFiles": {"totalHits": 0, "violations": 0, "violationsDelta": 0, "totalHitsDelta": 0, "__typename": "Hits"},
+                    "sensitiveHits": {
+                        "highRiskHits": {"totalHits": 0, "violatedHits": 0, "__typename": "SummaryHits"},
+                        "mediumRiskHits": {"totalHits": 0, "violatedHits": 0, "__typename": "SummaryHits"},
+                        "lowRiskHits": {"totalHits": 0, "violatedHits": 0, "__typename": "SummaryHits"},
+                        "noRiskHits": {"totalHits": 0, "violatedHits": 0, "__typename": "SummaryHits"},
+                        "totalHits": {"totalHits": 0, "violatedHits": 0, "__typename": "SummaryHits"},
+                        "__typename": "SensitiveHits"
+                    },
+                    "numActivities": 0,
+                    "numActivitiesDelta": 0,
+                    "__typename": "FileResult"
+                },
+                "snappable": {
+                    "id": "00000000-0000-0000-0000-000000000006",
+                    "name": "rubrik-tm-no-hits",
+                    "objectType": "AWS_NATIVE_S3_BUCKET",
+                    "slaAssignment": "Unassigned",
+                    "logicalPath": [],
+                    "effectiveSlaDomain": {
+                        "id": "UNPROTECTED",
+                        "name": "UNPROTECTED",
+                        "isRetentionLockedSla": false,
+                        "retentionLockMode": "NO_MODE",
+                        "__typename": "GlobalSlaReply"
+                    },
+                    "__typename": "AwsNativeS3Bucket"
+                },
+                "__typename": "PolicyObj",
+                "osType": "NONE",
+                "isUserAccessEnabledObject": false,
+                "policySummaries": []
+            }
+        }
+    }
+]

@@ -1,0 +1,30 @@
+{
+    "id": "incident_vegaalerteventsloadedfor",
+    "version": -1,
+    "name": "Vega Alert Events Loaded For",
+    "ownerOnly": false,
+    "description": "Vega alert ID that the cached alert events table was fetched for.",
+    "cliName": "vegaalerteventsloadedfor",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": true,
+    "associatedTypes": [
+        "Vega Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

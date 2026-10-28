@@ -20,13 +20,14 @@ from ForcepointSecurityManagementCenter import (
     list_rule_command,
     delete_rule_command,
     create_rule_command,
+    engine_refresh_command,
     IPList,
     Host,
     DomainName,
     FirewallPolicy,
     DemistoException,
 )
-from smc.api.exceptions import ElementNotFound
+from smc.api.exceptions import ElementNotFound, TaskRunFailed
 from smc.base.collection import CollectionManager
 
 
@@ -112,14 +113,31 @@ class mock_Policy:
         return
 
 
+class mock_Task:
+    def __init__(self, href: str, in_progress: bool = True):
+        self.href = href
+        self.in_progress = in_progress
+
+    def update_status(self):
+        return self
+
+
+class mock_Poller:
+    def __init__(self, task: mock_Task):
+        self.task = task
+
+
 class mock_Engine:
-    def __init__(self, name: str, comment: str):
+    def __init__(self, name: str, comment: str = ""):
         self.name = name
         self.comment = comment
         self.pending_changes = mock_Changes()
 
     def objects(self):
         return mock_GenericRuleEntity()
+
+    def refresh(self):
+        return mock_Poller(mock_Task(href=self.name))
 
 
 class mock_Changes:
@@ -636,3 +654,89 @@ def test_update_rule_command(mocker):
     response = update_rule_command(args)
 
     assert "The rule name to the policy name was updated successfully." in response.readable_output
+
+
+def test_engine_refresh_command_initiation(mocker):
+    """
+    Given:
+        - engine_name argument
+    When:
+        - Calling engine_refresh_command for the first time (no task_ids)
+    Then:
+        - Ensure refresh is initiated, task_ids are returned in args_for_next_run, and continue_to_poll is True
+    """
+    args = {"engine_name": ["engine1", "engine2"]}
+    mocker.patch("ForcepointSecurityManagementCenter.Engine", side_effect=lambda name: mock_Engine(name))
+    mocker.patch("ForcepointSecurityManagementCenter.Task", side_effect=lambda d: mock_Task(d.get("follower")))
+
+    result = engine_refresh_command(args)
+
+    assert result.scheduled_command is not None
+    assert result.scheduled_command._command is not None
+    assert result.scheduled_command._command == "forcepoint-smc-engine-refresh"
+    assert result.scheduled_command._args is not None
+    assert "task_ids" in result.scheduled_command._args
+    assert result.scheduled_command._args["task_ids"] == ["engine1", "engine2"]
+
+
+def test_engine_refresh_command_polling_in_progress(mocker):
+    """
+    Given:
+        - task_ids and engine_name arguments
+    When:
+        - Calling engine_refresh_command while tasks are still in progress
+    Then:
+        - Ensure continue_to_poll is True
+    """
+    args = {"engine_name": ["engine1"], "task_ids": ["engine1"]}
+    mocker.patch("ForcepointSecurityManagementCenter.Task", side_effect=lambda d: mock_Task(d.get("follower"), in_progress=True))
+
+    result = engine_refresh_command(args)
+
+    assert result.scheduled_command is not None
+    assert result.scheduled_command._command is not None
+    assert result.scheduled_command._command == "forcepoint-smc-engine-refresh"
+    assert result.scheduled_command._args is not None
+    assert "task_ids" in result.scheduled_command._args
+    assert result.scheduled_command._args["task_ids"] == ["engine1"]
+
+
+def test_engine_refresh_command_polling_complete(mocker):
+    """
+    Given:
+        - task_ids and engine_name arguments
+    When:
+        - Calling engine_refresh_command when all tasks are finished
+    Then:
+        - Ensure continue_to_poll is False and success message is returned
+    """
+    args = {"engine_name": ["engine1", "engine2"], "task_ids": ["engine1", "engine2"]}
+    mocker.patch("ForcepointSecurityManagementCenter.Task", side_effect=lambda d: mock_Task(d.get("follower"), in_progress=False))
+
+    result = engine_refresh_command(args)
+
+    assert result.scheduled_command is None
+    assert "refreshed successfully" in result.readable_output
+
+
+def test_engine_refresh_command_failure(mocker):
+    """
+    Given:
+        - engine_name argument
+    When:
+        - engine.refresh() raises TaskRunFailed
+    Then:
+        - Ensure DemistoException is raised with the correct engine names
+    """
+    args = {"engine_name": ["engine1", "engine2"]}
+
+    def mock_engine_side_effect(name):
+        engine = mock_Engine(name)
+        if name == "engine2":
+            mocker.patch.object(engine, "refresh", side_effect=TaskRunFailed("Locked"))
+        return engine
+
+    mocker.patch("ForcepointSecurityManagementCenter.Engine", side_effect=mock_engine_side_effect)
+
+    with pytest.raises(DemistoException, match=r"Failed to initiate refresh tasks for engines \(engine2\)"):
+        engine_refresh_command(args)

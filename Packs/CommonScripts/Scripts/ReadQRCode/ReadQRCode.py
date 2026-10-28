@@ -31,6 +31,8 @@ class StderrRedirect:
 def read_qr_code(filename: str) -> list:
     with StderrRedirect():  # redirect stderr to catch cv2 warnings which are sent directly to stderr
         img = cv2.imread(filename)
+        if img is None:
+            raise TypeError(f"Could not read image from file: {filename}")
         demisto.debug(f"loaded file: {filename}")
         text = [d.data.decode() for d in pyzbar.decode(img, symbols=[pyzbar.ZBarSymbol.QRCODE])]
         demisto.debug(f"pybar decode: {text}")
@@ -53,6 +55,12 @@ def extract_indicators_from_text(text: list) -> dict:
 def extract_info_from_qr_code(entry_id: str) -> CommandResults:
     try:
         filename = demisto.getFilePath(entry_id)["path"]
+        if os.path.getsize(filename) == 0:
+            demisto.debug(f"File with entry ID {entry_id} is empty, skipping QR code reading.")
+            return CommandResults(
+                readable_output="The file is empty. No QR code could be read.",
+                entry_type=EntryType.WARNING,
+            )
         text = read_qr_code(filename)
         if not any(text):
             return CommandResults(readable_output="No QR code was found in the image.")

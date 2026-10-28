@@ -1,6 +1,6 @@
-Use Trend Micro Cloud App Security integration to protect against ransomware, phishing, malware, and unauthorized transmission of sensitive data for cloud applications, such as Microsoft 365, Box, Dropbox, Google G Suite and Salesforce.
+Use TrendAI™ Cloud App Security integration to protect against ransomware, phishing, malware, and unauthorized transmission of sensitive data for cloud applications, such as Microsoft 365, Box, Dropbox, Google G Suite and Salesforce.
 
-## Configure TrendMicro Cloud App Security in Cortex
+## Configure TrendAI™ Cloud App Security in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |

@@ -304,5 +304,9 @@
             }
         }
     },
-    "layout": "cveRep"
+    "layout": "cveRep",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

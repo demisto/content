@@ -11,8 +11,11 @@ DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 class Client(BaseClient):
-    def __init__(self, input_url: str, username: str, password: str, verify_certificate: bool, proxy: bool):
-        base_url = urljoin(input_url, "/api/v2/")
+    def __init__(
+        self, input_url: str, username: str, password: str, verify_certificate: bool, proxy: bool, is_aap_gateway: bool = False
+    ):
+        endpoint_prefix = "/api/controller/v2/" if is_aap_gateway else "/api/v2/"
+        base_url = urljoin(input_url, endpoint_prefix)
         headers = {
             "Content-Type": "application/json",
         }
@@ -23,11 +26,11 @@ class Client(BaseClient):
         self,
         method: str,
         url_suffix: str,
-        params: dict = None,
-        json_data: dict = None,
-        empty_valid_codes: list = None,
+        params: dict | None = None,
+        json_data: dict | None = None,
+        empty_valid_codes: list | None = None,
         return_empty_response: bool = False,
-        ok_codes: list = None,
+        ok_codes: list | None = None,
     ) -> dict:
         response = self._http_request(
             method=method,
@@ -556,12 +559,18 @@ def main() -> None:
 
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
+    is_aap_gateway = params.get("is_aap_gateway", False)
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
 
     try:
         client = Client(
-            input_url=base_url, username=username, password=password, verify_certificate=verify_certificate, proxy=proxy
+            input_url=base_url,
+            username=username,
+            password=password,
+            verify_certificate=verify_certificate,
+            proxy=proxy,
+            is_aap_gateway=is_aap_gateway,
         )
 
         if command == "test-module":

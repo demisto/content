@@ -1,0 +1,102 @@
+id: Test ETDXsoarConnector
+version: -1
+name: Test ETDXsoarConnector
+description: Test playbook for the Cisco ETD XSOAR Connector.
+fromversion: 6.10.0
+starttaskid: "0"
+
+tasks:
+  "0":
+    id: "0"
+    taskid: 9f4f3e8d-1111-4444-9999-aaaaaaaaaaaa
+    type: start
+    task:
+      id: 9f4f3e8d-1111-4444-9999-aaaaaaaaaaaa
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "#none#":
+      - "1"
+    separatecontext: false
+
+  "1":
+    id: "1"
+    taskid: 9f4f3e8d-2222-4444-9999-bbbbbbbbbbbb
+    type: collection
+    task:
+      id: 9f4f3e8d-2222-4444-9999-bbbbbbbbbbbb
+      version: -1
+      name: Enter Test Parameters
+      description: Provide a valid Cisco ETD Message ID to test the remediation command.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    form:
+      title: Cisco ETD Test
+      questions:
+      - id: 12345678-1234-1234-1234-123456789012
+        labelarg:
+          simple: ETD Message ID
+        type: shortText
+        required: true
+
+  "2":
+    id: "2"
+    taskid: 9f4f3e8d-3333-4444-9999-cccccccccccc
+    type: regular
+    task:
+      id: 9f4f3e8d-3333-4444-9999-cccccccccccc
+      version: -1
+      name: Execute Move Message
+      description: Executes the Cisco ETD remediation command.
+      script: ETDXsoarConnector|||cisco-etd-move-message
+      type: regular
+      iscommand: true
+      brand: ETDXsoarConnector
+    scriptarguments:
+      message_id:
+        simple: ${Cisco ETD Test.Answers.0}
+      verdict:
+        simple: neutral
+      folder:
+        simple: inbox
+    nexttasks:
+      "#none#":
+      - "3"
+
+  "3":
+    id: "3"
+    taskid: 9f4f3e8d-4444-4444-9999-dddddddddddd
+    type: title
+    task:
+      id: 9f4f3e8d-4444-4444-9999-dddddddddddd
+      version: -1
+      name: Test Passed
+      type: title
+      iscommand: false
+      brand: ""
+
+      description: ''
+view: |
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 700,
+        "width": 500,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)

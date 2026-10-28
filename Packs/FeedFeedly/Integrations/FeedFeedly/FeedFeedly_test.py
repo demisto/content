@@ -49,3 +49,28 @@ def test_build_iterator(requests_mock):
     ttp_tags = {"T1112", "T1125", "T1132.001", "T1566", "T1566.001"}
 
     assert set(report["fields"]["tags"]) == feedly_tags | threat_tags | ttp_tags
+
+
+def test_build_iterator_with_instance_tags(requests_mock):
+    """
+    Given:
+        - An instance configured with feed_tags
+    When:
+        - Fetching indicators from the stream
+    Then:
+        - The instance-level tags are merged onto every fetched indicator
+    """
+    with open("test_data/api_call_mock.txt") as file:
+        response = file.read()
+    requests_mock.get(URL, text=response)
+    client = Client(
+        base_url=URL,
+        verify=False,
+        proxy=False,
+        feed_tags=["incoming_feed", "source_feedly"],
+    )
+    indicators = client.fetch_indicators_from_stream("tag/enterpriseName/category/uuid", 0)
+
+    for indicator in indicators:
+        tags = set(indicator["fields"].get("tags", []))
+        assert {"incoming_feed", "source_feedly"} <= tags

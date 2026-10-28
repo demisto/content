@@ -25,5 +25,9 @@
   "excludedBrands": [],
   "expiration": 20160,
   "defaultMapping": {},
-  "layout": "domainRepUnified"
+  "layout": "domainRepUnified",
+  "supportedModules": [
+    "agentix",
+    "xsiam"
+  ]
 }

@@ -1,0 +1,22 @@
+{
+    "cliName": "panoraysfindinginsertts",
+    "description": "The timestamp when the Panorays finding was first detected.",
+    "group": 0,
+    "id": "incident_panoraysfindinginsertts",
+    "name": "Panorays Finding Insert Timestamp",
+    "associatedTypes": [
+        "Panorays Finding",
+        "Panorays Supplier Finding"
+    ],
+    "associatedToAll": false,
+    "type": "shortText",
+    "content": true,
+    "unsearchable": true,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "system": false,
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

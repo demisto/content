@@ -5,7 +5,7 @@ from csv import DictReader
 
 import pytest
 from CommonServerPython import argToList
-from FeedRecordedFuture import Client, fetch_indicators_command, get_indicator_type, get_indicators_command, requests
+from FeedRecordedFuture import Client, fetch_indicators_command, get_indicator_type, get_indicators_command, main, requests
 from pytest_mock import MockerFixture
 
 
@@ -27,6 +27,7 @@ class TestStreamCompressedData:
         response_mocker = requests.Response()
         response_mocker.raw = io.BytesIO(gzip_compressed_data)
         response_mocker.encoding = "utf-8"
+        response_mocker.headers["Content-Type"] = "application/gzip;charset=utf-8"
         return response_mocker
 
     def test_stream_compressed_data_iterations(self, mocker: MockerFixture, mock_response: requests.Response):
@@ -80,6 +81,38 @@ class TestStreamCompressedData:
         # We want to check if the code is able to decode the chunks correctly
         with open("test_data/test_gzip_compressed.txt") as file:
             assert file.read() == file_content
+
+    def test_stream_compressed_data_uncompressed_content(self):
+        """
+        Given:
+        - A response with HTTP 200 whose body is NOT gzip-compressed (plain text), and whose Content-Type
+          header reflects that (e.g. 'text/plain'), even though the request asked for gzip.
+          This reproduces XSUP-72509, where the Recorded Future API intermittently returns uncompressed
+          content for a risk list (e.g. recentReportedCnc) despite gzip=True being requested.
+
+        When:
+        - Fetching indicators using the connectApi service, which calls 'stream_compressed_data'.
+
+        Then:
+        - The plain text content is written to the output file as-is, without raising a
+          zlib.error (Error -3 while decompressing data: incorrect header check).
+        """
+        import io
+
+        plain_text_data = "indicator,risk\n1.2.3.4,90\nexample.com,10\n"
+        response_mocker = requests.Response()
+        response_mocker.raw = io.BytesIO(plain_text_data.encode("utf-8"))
+        response_mocker.encoding = "utf-8"
+        response_mocker.headers["Content-Type"] = "text/plain; charset=UTF-8"
+
+        client = Client(indicator_type="ip", api_token="123", services=["connectApi"])
+        client.stream_compressed_data(response=response_mocker, chunk_size=1024)
+
+        with open("response.txt") as file_stream:
+            file_content = file_stream.read()
+        os.remove("response.txt")
+
+        assert file_content == plain_text_data
 
 
 GET_INDICATOR_TYPE_INPUTS = [
@@ -595,3 +628,57 @@ def test_client_init_with_null_values():
      - Verify that no errors were thrown (especially the part that check that malicious_threshold <= suspicious_threshold)
     """
     Client(indicator_type="ip", api_token="123", services=["fusion"], malicious_threshold=None, suspicious_threshold=None)
+
+
+@pytest.mark.parametrize(
+    "services_param",
+    [
+        ["connectApi"],
+        '["connectApi"]',
+        "connectApi",
+    ],
+)
+def test_main_services_param_normalization(mocker, services_param: list | str):
+    """
+    Given:
+     - The 'services' parameter from demisto.params() in different formats:
+       1. A native list (first configuration).
+       2. A JSON-encoded string (after save and re-edit on XSIAM).
+       3. A plain string.
+
+    When:
+     - Running main() with the 'test-module' command.
+
+    Then:
+     - Verify the client is initialized with a proper list of services and test_module completes without
+       raising a 'Service unknown' error.
+    """
+    mocker.patch.object(
+        Client,
+        "build_iterator",
+    )
+    mocker.patch.object(
+        Client,
+        "get_batches_from_file",
+    )
+    mocker.patch(
+        "demistomock.params",
+        return_value={
+            "credentials_api_token": {"password": "dummytoken"},
+            "indicator_type": "ip",
+            "services": services_param,
+            "polling_timeout": "20",
+            "insecure": False,
+            "proxy": False,
+            "threshold": "65",
+            "suspicious_threshold": "25",
+            "risk_score_threshold": "0",
+            "performance": True,
+        },
+    )
+    mocker.patch("demistomock.command", return_value="test-module")
+    mock_return_outputs = mocker.patch("FeedRecordedFuture.return_outputs")
+
+    main()
+
+    mock_return_outputs.assert_called_once_with("ok", {}, {})

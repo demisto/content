@@ -8,18 +8,16 @@
     "filter": {
       "OR": [
         {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "DropBox - Massive File Alterations"
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "DropBox - Massive File Alterations"
         },
         {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "DropBox - Massive File Downloads"
-
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "DropBox - Massive File Downloads"
         }
       ]
     }
   }
 }
-

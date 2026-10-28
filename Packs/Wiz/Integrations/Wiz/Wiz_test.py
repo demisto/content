@@ -1866,9 +1866,10 @@ def test_mirror_limit_validation(mock_check_api, _mock_get_ctx, _mock_set_ctx, l
     assert call_variables["first"] == expected_first
 
 
+@patch("Wiz._get_issue_type", return_value="THREAT_DETECTION")
 @patch("Wiz.reject_or_resolve_issue")
-def test_handle_field_changes_status_resolved(mock_resolve):
-    """Test _handle_field_changes with resolved status"""
+def test_handle_field_changes_status_resolved(mock_resolve, _mock_type):
+    """Test _handle_field_changes with resolved status (Threat Detection issue is resolvable)"""
     from Wiz import _handle_field_changes
 
     mock_resolve.return_value = {}
@@ -1965,9 +1966,10 @@ def test_handle_field_changes_clear_due_date(mock_clear_due):
     mock_clear_due.assert_called_once_with(issue_id="11111111-1111-1111-1111-111111111111")
 
 
+@patch("Wiz._get_issue_type", return_value="THREAT_DETECTION")
 @patch("Wiz.reject_or_resolve_issue")
-def test_handle_incident_closed(mock_resolve):
-    """Test _handle_incident_closed resolves issue in Wiz"""
+def test_handle_incident_closed(mock_resolve, _mock_type):
+    """Test _handle_incident_closed resolves a Threat Detection issue in Wiz"""
     from Wiz import _handle_incident_closed
 
     mock_resolve.return_value = {}
@@ -2290,6 +2292,122 @@ def test_mirror_status_to_wiz_rejected_default_reason(mock_resolve):
     )
 
 
+# ===== Outgoing-mirror RESOLVED guard: only Threat Detection issues may be resolved =====
+
+
+def _issue_type_response(issue_type):
+    """Build a PULL_ISSUES_QUERY-shaped response carrying a single issue of the given type."""
+    return {
+        "data": {
+            "issues": {
+                "nodes": [{"id": "11111111-1111-1111-1111-111111111111", "type": issue_type}],
+                "pageInfo": {"hasNextPage": False, "endCursor": ""},
+            }
+        }
+    }
+
+
+@patch("Wiz.reject_or_resolve_issue")
+@patch("Wiz._get_issue_type", return_value="THREAT_DETECTION")
+def test_mirror_status_to_wiz_resolved_threat_detection(mock_type, mock_resolve):
+    """A mirrored 'resolved' on a Threat Detection issue DOES push RESOLVED to Wiz."""
+    from Wiz import _mirror_status_to_wiz
+
+    mock_resolve.return_value = {}
+    _mirror_status_to_wiz(
+        "11111111-1111-1111-1111-111111111111",
+        "resolved",
+        {"resolutionReason": "ISSUE_FIXED"},
+    )
+
+    mock_type.assert_called_once_with("11111111-1111-1111-1111-111111111111")
+    mock_resolve.assert_called_once_with(
+        "11111111-1111-1111-1111-111111111111", "ISSUE_FIXED", "Status mirrored from Cortex XSOAR", "RESOLVED"
+    )
+
+
+@patch("Wiz.reject_or_resolve_issue")
+@patch("Wiz._get_issue_type", return_value="TOXIC_COMBINATION")
+def test_mirror_status_to_wiz_resolved_non_threat_skipped(mock_type, mock_resolve):
+    """A mirrored 'resolved' on a non-Threat-Detection issue must NOT push RESOLVED to Wiz.
+
+    Regression for WZ-118281: previously the mirror fired RESOLVED for any type, the Wiz
+    backend rejected it ('changing to resolved status is not allowed'), and the error was
+    silently swallowed - leaving the Wiz issue open while the XSOAR incident closed.
+    """
+    from Wiz import _mirror_status_to_wiz
+
+    _mirror_status_to_wiz(
+        "11111111-1111-1111-1111-111111111111",
+        "resolved",
+        {"resolutionReason": "ISSUE_FIXED"},
+    )
+
+    mock_resolve.assert_not_called()
+
+
+@patch("Wiz.reject_or_resolve_issue")
+@patch("Wiz._get_issue_type", return_value="TOXIC_COMBINATION")
+def test_handle_incident_closed_non_threat_skipped(mock_type, mock_resolve):
+    """Closing an XSOAR incident mirrored to a non-Threat-Detection issue must NOT push RESOLVED."""
+    from Wiz import _handle_incident_closed
+
+    _handle_incident_closed("11111111-1111-1111-1111-111111111111")
+
+    mock_resolve.assert_not_called()
+
+
+@patch("Wiz.reject_or_resolve_issue")
+@patch("Wiz.checkAPIerrors")
+def test_mirror_status_to_wiz_resolved_non_threat_skipped_via_api(mock_check_api, mock_resolve):
+    """End-to-end guard through the real _get_issue_type: a TOXIC_COMBINATION lookup skips RESOLVED."""
+    from Wiz import _mirror_status_to_wiz
+
+    mock_check_api.return_value = _issue_type_response("TOXIC_COMBINATION")
+    _mirror_status_to_wiz("11111111-1111-1111-1111-111111111111", "resolved", {})
+
+    mock_resolve.assert_not_called()
+
+
+@patch("Wiz.reject_or_resolve_issue")
+@patch("Wiz._get_issue_type", return_value=None)
+def test_mirror_status_to_wiz_resolved_unknown_issue_skipped(mock_type, mock_resolve):
+    """When the issue type can't be resolved (issue not found → None), the mirror must NOT push RESOLVED."""
+    from Wiz import _mirror_status_to_wiz
+
+    _mirror_status_to_wiz("11111111-1111-1111-1111-111111111111", "resolved", {})
+
+    mock_resolve.assert_not_called()
+
+
+@patch("Wiz.checkAPIerrors")
+def test_get_issue_type_returns_none_when_not_found(mock_check_api):
+    """_get_issue_type returns None when the API responds with no matching nodes."""
+    from Wiz import _get_issue_type
+
+    mock_check_api.return_value = {"data": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False, "endCursor": ""}}}}
+
+    assert _get_issue_type("11111111-1111-1111-1111-111111111111") is None
+
+
+@patch("Wiz.reject_or_resolve_issue")
+@patch("Wiz._get_issue_type", return_value="TOXIC_COMBINATION")
+def test_mirror_status_to_wiz_rejected_non_threat_still_pushes(mock_type, mock_resolve):
+    """The guard is RESOLVED-only: REJECTED is valid for any issue type and must still be pushed."""
+    from Wiz import _mirror_status_to_wiz
+
+    mock_resolve.return_value = {}
+    _mirror_status_to_wiz(
+        "11111111-1111-1111-1111-111111111111",
+        "rejected",
+        {"resolutionReason": "FALSE_POSITIVE"},
+    )
+
+    mock_resolve.assert_called_once_with(
+        "11111111-1111-1111-1111-111111111111", "FALSE_POSITIVE", "Status mirrored from Cortex XSOAR", "REJECTED"
+    )
+
+
 # ===== GAP #3: _handle_field_changes with wizissueduedate key =====
 
 
@@ -2484,8 +2602,9 @@ def test_update_remote_system_close_explicit_reason_overrides_close_reason(mock_
     mock_closed.assert_called_once_with("11111111-1111-1111-1111-111111111111", resolution_reason="EXCEPTION")
 
 
+@patch("Wiz._get_issue_type", return_value="THREAT_DETECTION")
 @patch("Wiz.reject_or_resolve_issue")
-def test_mirror_status_to_wiz_resolved_uses_close_reason_fallback(mock_reject_resolve):
+def test_mirror_status_to_wiz_resolved_uses_close_reason_fallback(mock_reject_resolve, _mock_type):
     """_mirror_status_to_wiz on 'resolved' status path also respects the closeReason fallback."""
     from Wiz import _mirror_status_to_wiz
 

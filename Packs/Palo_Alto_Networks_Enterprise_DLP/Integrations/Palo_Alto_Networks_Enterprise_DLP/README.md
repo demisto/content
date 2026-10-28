@@ -1,8 +1,11 @@
 Palo Alto Networks Enterprise DLP discovers and protects company data across every data channel and repository. Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.
 This integration was integrated and tested with version 2.0 of Palo Alto Networks Enterprise DLP.
 
-**Note**:  
-This integration currently supports fetching DLP incidents from "NGFW" and "Prisma Access" channels only.
+**Note**:
+Incidents are fetched from every control point the tenant can see. Use the *DLP Channels* parameter to narrow the fetch to specific control points.
+
+**Note**:
+Starting from version 2.4.0, incidents are fetched from the Enterprise DLP v4 incident inventory API (`/v4/api/incidents`). This API returns a summary of each incident, so fetched incidents no longer include several attributes that the previous incident notifications API returned under `incidentDetails`. These include the URL, source and destination IP addresses, user name, email, department, location and manager, upload or download direction, asset size and hash, data patterns, device information and every data profile except the last one. The fields mapped by the default *Data Loss Prevention* mapper are still populated. If you mapped any of these attributes in a custom mapper, layout or playbook, they are now empty. You can still view these attributes in the incident details in Strata Cloud Manager.
 
 ### Setup
 
@@ -24,7 +27,20 @@ Make sure the toggle at the bottom is switched on.
 | Maximum number of incidents per fetch | Default value is 50. | False |
 | First fetch timestamp | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default value is 60 minutes. | False |
 | Fetch Lookback Window (minutes) | The number of minutes to look back during each fetch to capture late-indexed incidents. Default value is 0. | False |
-| DLP Regions | Possible values: `US` (United States), `EU` (European Union), `AP` (Asia-Pacific), `UK` (United Kingdom), `CA` (Canada), `AU` (Australia), `IN` (India), `JP` (Japan), `BR` (Brazil), `PAR` (Paris), `SUI` (Switzerland). | False |
+| DLP Regions | The regions to fetch incidents from. When empty, incidents are fetched from every region the tenant can see. Possible values: `US` (United States), `EU` (European Union), `SG` (Singapore), `UK` (United Kingdom), `CA` (Canada), `AU` (Australia), `IN` (India), `JP` (Japan), `BR` (Brazil), `FR` (France), `CH` (Switzerland), `SA` (Saudi Arabia). | False |
+| DLP Channels | The control points to fetch incidents from. Possible values: `NGFW`, `PRISMA_ACCESS`, `PRISMA_ACCESS_BROWSER`, `ENDPOINT_DLP`, `SAAS_API`, `EMAIL_DLP`. When empty, incidents are fetched from every channel. | False |
+| DLP Severities | The severities to fetch. Possible values: `Critical`, `High`, `Medium`, `Low`, `Informational`. The severity is stored as a number, so the selected value is translated before the query is sent - `Critical` becomes `5` and `Informational` becomes `1`. When empty, incidents of every severity are fetched. | False |
+| DLP Incident Statuses | The incident statuses to fetch. Possible values: `New`, `open`, `under_investigation`, `closed`. When empty, incidents of every status are fetched. | False |
+| DLP Priorities | The priorities to fetch. Possible values: `P1`, `P2`, `P3`, `P4`, `P5`. When empty, incidents of every priority are fetched. | False |
+| DLP Data Profile IDs | A comma-separated list of data profile IDs to fetch incidents for. These are numeric IDs, not profile names - a profile name matches nothing. When empty, incidents for every data profile are fetched. | False |
+| DLP Data Pattern IDs | A comma-separated list of data pattern IDs to fetch incidents for. These are numeric IDs, not pattern names - a pattern name matches nothing. When empty, incidents for every data pattern are fetched. | False |
+| DLP Incident Tags | A comma-separated list of incident tags to fetch. When empty, incidents are fetched regardless of their tags. | False |
+| DLP Report IDs | A comma-separated list of report IDs to fetch incidents for. When empty, incidents are fetched regardless of their report ID. | False |
+| DLP URL Domains | A comma-separated list of URL domains to fetch incidents for, for example "drive.google.com". When empty, incidents are fetched regardless of their URL. | False |
+| DLP Assets | A comma-separated list of asset names to fetch incidents for, for example a file name. When empty, incidents are fetched regardless of their asset name. | False |
+| DLP Actions | The actions taken on the incident to fetch. Possible values: `alert`, `block`, `allow`. When empty, incidents are fetched regardless of the action taken. | False |
+| DLP Policy Types | The policy types to fetch. Possible values: `Data in Motion`, `Data at Rest`, `Peripheral Control`. When empty, incidents of every policy type are fetched. | False |
+| DLP Sub Policy Types | A comma-separated list of sub policy types to fetch. When empty, incidents are fetched regardless of their sub policy type. | False |
 | Data profiles to allow exemption | A comma-separated list of data profile names to request an exemption. Use "\*" to allow everything. | False |
 | Bot Message | The message to send to the user to ask for feedback. | False |
 
@@ -48,6 +64,7 @@ Fetches DLP reports associated with a report ID.
 | --- | --- | --- |
 | report_id | DLP report ID. | Required |
 | fetch_snippets | If True, includes snippets with the reports. Possible values are: true, false. Default is false. | Optional |
+| service_name | The DLP service that the report belongs to. Determines which backend the report is retrieved from. When empty, the request does not specify a service and the server retrieves the report from Prisma Access. Possible values are: ngfw, prisma-access, prisma-saas, prisma-access-browser, endpoint-dlp. | Optional |
 
 #### Context Output
 
@@ -71,6 +88,19 @@ Fetches DLP reports associated with a report ID.
 | DLP.Report.DataProfiles.DataPatterns.OccurrenceOperatorType | String | The occurrence operator type \(e.g., "more_than_equal_to", "between"\). |
 | DLP.Report.DataProfiles.DataPatterns.OccurrenceLow | Number | The low bound for "between" operator type. |
 | DLP.Report.DataProfiles.DataPatterns.OccurrenceHigh | Number | The high bound for "between" operator type. |
+
+#### Command example
+
+```!pan-dlp-get-report report_id=3165792284 service_name=prisma-saas```
+
+#### Human Readable Output
+
+>### DLP Report for profile: Sample-Data-Profile
+>
+>|DataPatternName|ConfidenceFrequency|MatchedConfidenceLevel|
+>|---|---|---|
+>| National Id - US Social Security Number - SSN | Low: 30<br>Medium: 0<br>High: 30 | high |
+>| Credit Card Number | Low: 30<br>Medium: 30<br>High: 30 | high |
 
 ### pan-dlp-update-incident
 
@@ -167,12 +197,13 @@ There is no context output for this command.
 
 In case specific DLP incidents are not appearing on the Cortex tenant, verify the following:
 
-1. **DLP Regions Configuration**
+1. **Incident Filter Configuration**
+   - Every configured *DLP* filter parameter narrows the fetch, and the filters are combined with AND. An incident is fetched only if it matches all of them.
+   - Leave a filter empty to stop it narrowing the fetch. Clearing every filter fetches all incidents the tenant can see.
+   - Check the Strata Cloud Manager incident details to confirm the values the incidents actually carry, and make sure each configured filter includes them.
+   - The free-text filters are matched exactly and are case-sensitive. *DLP Data Profile IDs* and *DLP Data Pattern IDs* take numeric IDs - a profile or pattern name matches nothing.
+
+2. **DLP Regions Configuration**
    - Check the Strata Cloud Manager to confirm which regions generated the incidents.
    - **Note**: The *DLP Regions* dropdown menu shows all currently-supported regions.
    - Ensure all regions where incidents originated are selected from the dropdown menu.
-
-2. **Strata Cloud Manager (SCM) Channel Support**
-   - Verify the channel in SCM console under the incident details.
-   - **Note**: Only incidents from the "NGFW" and "Prisma Access" SCM channels are supported.
-   - Incidents from other channels, such as Endpoint DLP, will not be fetched by this integration.

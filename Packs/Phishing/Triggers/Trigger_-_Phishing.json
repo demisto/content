@@ -8,9 +8,9 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "Phishing"
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Phishing"
         }
       ]
     }

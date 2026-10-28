@@ -6,5 +6,9 @@
   "details": "ssdeep",
   "enhancementScriptNames": [],
   "disabled": true,
-  "fromVersion": "5.0.0"
+  "fromVersion": "5.0.0",
+  "supportedModules": [
+    "agentix",
+    "xsiam"
+  ]
 }

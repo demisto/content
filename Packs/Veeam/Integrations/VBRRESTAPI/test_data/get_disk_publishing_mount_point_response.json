@@ -1,0 +1,30 @@
+{
+    "mountState": "Mounted",
+    "id": "bce89e03-9269-4cb0-aa49-c8b04d4273d5",
+    "initiatorName": "SRV99\\Administrator",
+    "backupId": "bdc74451-8719-4a66-9791-21a4bbd2d048",
+    "backupName": "Backup Job 1 - linbase01",
+    "restorePointId": "170bcae5-f2c4-4547-972e-15349aa04609",
+    "restorePointName": "linbase01",
+    "info": {
+        "mode": "ISCSI",
+        "serverPort": 0,
+        "serverIps": [
+            "172.24.28.134"
+        ],
+        "disks": [
+            {
+                "diskId": "FA4DAB4887080CBCFBA9028A72BD9BF2",
+                "diskName": "/tmp/Veeam.Mount.Disks.01e91972-4e66-4787-84b5-efc189508544/linbase01-flat.vmdk_1",
+                "accessLink": "",
+                "mountPoints": []
+            },
+            {
+                "diskId": "FA4DAB4887080CBCFBA9028A72BD9BF2",
+                "diskName": "/tmp/Veeam.Mount.Disks.01e91972-4e66-4787-84b5-efc189508544/linbase01-flat.vmdk_2",
+                "accessLink": "",
+                "mountPoints": []
+            }
+        ]
+    }
+}

@@ -103,8 +103,8 @@ class Client(BaseClient):
                     if self.should_error:
                         raise e
                     return_warning(f"{e.res.text} response received from server", exit=True)
-                elif res_status == 504:
-                    demisto.debug("The status code is 504")
+                elif res_status in (500, 504):
+                    demisto.debug(f"The status code is {res_status}")
                     if self.should_error:
                         raise e
                     result = {}

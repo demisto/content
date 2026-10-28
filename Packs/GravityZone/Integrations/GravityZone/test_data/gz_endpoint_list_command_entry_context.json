@@ -6,7 +6,10 @@
             "IP": "IP_158",
             "OS": "Windows 10 Pro",
             "MAC": "005056b1ef97",
-            "Vendor": "GravityZone"
+            "Vendor": "GravityZone",
+            "FQDN": "ENDPOINT_FQDN",
+            "CompanyID": "COMPANY_ID",
+            "GroupID": "GROUP_ID"
         },
         {
             "ID": "685e4b4170db527d0f254033",
@@ -14,7 +17,10 @@
             "IP": "IP_93",
             "OS": "Linux Ubuntu 24.04.2 LTS",
             "MAC": "ENDPOINT_MAC",
-            "Vendor": "GravityZone"
+            "Vendor": "GravityZone",
+            "FQDN": "ENDPOINT_FQDN",
+            "CompanyID": "COMPANY_ID",
+            "GroupID": "GROUP_ID"
         },
         {
             "ID": "6940eb0b646e8e69399ce4a6",
@@ -22,7 +28,10 @@
             "IP": "IP_214",
             "OS": "Windows 10 Enterprise",
             "MAC": "ENDPOINT_MAC",
-            "Vendor": "GravityZone"
+            "Vendor": "GravityZone",
+            "FQDN": "ENDPOINT_FQDN",
+            "CompanyID": "COMPANY_ID",
+            "GroupID": "GROUP_ID"
         },
         {
             "ID": "ENDPOINT_ID",
@@ -30,7 +39,10 @@
             "IP": "ENDPOINT_IP",
             "OS": "Windows 10 Pro",
             "MAC": "ENDPOINT_MAC",
-            "Vendor": "GravityZone"
+            "Vendor": "GravityZone",
+            "FQDN": "ENDPOINT_FQDN",
+            "CompanyID": "COMPANY_ID",
+            "GroupID": "GROUP_ID"
         }
     ]
 }

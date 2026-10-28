@@ -1,0 +1,23 @@
+[
+    {
+        "name": "Google SecOps Case: DESKTOP-001",
+        "occurred": "2026-05-01T23:29:54.883000Z",
+        "rawJSON": "{\"name\": \"projects/dummy_project_id/locations/us/instances/dummy_instance_id/cases/101\", \"lastModifyingUserId\": \"00000000-0000-0000-0000-000000000001\", \"createTime\": \"1777678194883\", \"updateTime\": \"1778744358605\", \"displayName\": \"DESKTOP-001\", \"alertCount\": 41, \"stage\": \"Triage\", \"priority\": \"PRIORITY_MEDIUM\", \"important\": false, \"incident\": false, \"assignee\": \"00000000-0000-0000-0000-000000000001\", \"type\": \"EXTERNAL\", \"overflowCase\": false, \"environment\": \"Default Environment\", \"status\": \"CLOSED\", \"workflowStatus\": \"TERMINATED\", \"sla\": {\"expirationStatus\": \"NO_SLA\"}, \"alertsSla\": {\"expirationStatus\": \"NO_SLA\"}, \"source\": \"Server\", \"involvedSuspiciousEntity\": false, \"products\": [{\"displayName\": \"TestName\", \"alert\": \"DESKTOP-001_HOST#52949-2026-05-01T23:29:46.950093\"}, {\"displayName\": \"TestName\", \"alert\": \"DESKTOP-001_HOST#52949-2026-05-01T23:30:10.184295\"}], \"closureDetails\": {\"reason\": \"NOT_MALICIOUS\", \"rootCause\": \"Human error\", \"caseClosedAction\": \"MANUALLY\", \"comment\": \" \\nAll attached playbooks and playbook blocks have been terminated.\\nAll Alerts were closed.\"}, \"caseId\": \"101\", \"severity\": 2}",
+        "severity": 2,
+        "dbotMirrorId": "case-101"
+    },
+    {
+        "name": "Google SecOps Case: Test_WebProps_MultiDomain",
+        "occurred": "2026-05-03T12:33:36.680000Z",
+        "rawJSON": "{\"name\": \"projects/dummy_project_id/locations/us/instances/dummy_instance_id/cases/102\", \"lastModifyingUserId\": \"00000000-0000-0000-0000-000000000002\", \"createTime\": \"1777811616680\", \"updateTime\": \"1777811624244\", \"displayName\": \"Test_WebProps_MultiDomain\", \"alertCount\": 1, \"stage\": \"Triage\", \"priority\": \"PRIORITY_INFO\", \"important\": false, \"incident\": false, \"assignee\": \"00000000-0000-0000-0000-000000000002\", \"type\": \"EXTERNAL\", \"overflowCase\": false, \"environment\": \"Default Environment\", \"status\": \"OPENED\", \"workflowStatus\": \"NONE\", \"sla\": {\"expirationStatus\": \"NO_SLA\"}, \"alertsSla\": {\"expirationStatus\": \"NO_SLA\"}, \"source\": \"User\", \"involvedSuspiciousEntity\": false, \"tags\": [{\"displayName\": \"Manual Case\", \"priority\": 0}], \"caseId\": \"102\", \"severity\": 0.5}",
+        "severity": 0.5,
+        "dbotMirrorId": "case-102"
+    },
+    {
+        "name": "Google SecOps Case: Test_Rescan_IP",
+        "occurred": "2026-05-07T01:39:18.871000Z",
+        "rawJSON": "{\"name\": \"projects/dummy_project_id/locations/us/instances/dummy_instance_id/cases/103\", \"lastModifyingUserId\": \"00000000-0000-0000-0000-000000000003\", \"createTime\": \"1778117958871\", \"updateTime\": \"1778117967162\", \"displayName\": \"Test_Rescan_IP\", \"alertCount\": 1, \"stage\": \"Triage\", \"priority\": \"PRIORITY_INFO\", \"important\": false, \"incident\": false, \"assignee\": \"00000000-0000-0000-0000-000000000003\", \"type\": \"EXTERNAL\", \"overflowCase\": false, \"environment\": \"Default Environment\", \"status\": \"OPENED\", \"workflowStatus\": \"NONE\", \"sla\": {\"expirationStatus\": \"NO_SLA\"}, \"alertsSla\": {\"expirationStatus\": \"NO_SLA\"}, \"source\": \"User\", \"involvedSuspiciousEntity\": false, \"tags\": [{\"displayName\": \"Manual Case\", \"priority\": 0}], \"caseId\": \"103\", \"severity\": 0.5}",
+        "severity": 0.5,
+        "dbotMirrorId": "case-103"
+    }
+]

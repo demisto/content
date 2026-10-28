@@ -1,0 +1,31 @@
+{
+    "id": "incident_vegalastupdated",
+    "version": -1,
+    "name": "Vega Last Updated",
+    "ownerOnly": false,
+    "description": "The timestamp of the last update to this alert or incident in Vega (e.g. 2023-10-25T14:30:00Z). Alerts use updatedAt. Incidents use lastUpdated.",
+    "cliName": "vegalastupdated",
+    "type": "date",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Vega Alert",
+        "Vega Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

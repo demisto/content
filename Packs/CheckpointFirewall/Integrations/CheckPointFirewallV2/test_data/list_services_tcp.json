@@ -1,0 +1,41 @@
+{
+  "from": 1,
+  "to": 2,
+  "total": 2,
+  "objects": [
+    {
+      "uid": "svc-tcp-uid-1234",
+      "name": "test-tcp-service-1",
+      "type": "service-tcp",
+      "port": "80",
+      "domain": {
+        "uid": "domain-uid-5678",
+        "name": "SMC User",
+        "domain-type": "domain"
+      },
+      "groups": [],
+      "meta-info": {
+        "creator": "admin",
+        "last-modifier": "admin"
+      },
+      "read-only": false
+    },
+    {
+      "uid": "svc-tcp-uid-5678",
+      "name": "test-tcp-service-2",
+      "type": "service-tcp",
+      "port": "443",
+      "domain": {
+        "uid": "domain-uid-5678",
+        "name": "SMC User",
+        "domain-type": "domain"
+      },
+      "groups": [],
+      "meta-info": {
+        "creator": "admin",
+        "last-modifier": "admin"
+      },
+      "read-only": false
+    }
+  ]
+}
