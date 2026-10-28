@@ -249,6 +249,8 @@ def main() -> None:
             print_df_to_markdown(connection_lost, "Connection lost endpoints")
 
     except Exception as e:
+        demisto.error(traceback.format_exc())
+        return_error(f"Failed to execute HealthCheckInsightsEndpointManagement. Error: {str(e)}", error=e)
         return_error(f"Failed to execute HealthCheckInsightsEndpointManagement. Error: {str(e)}")
 
 
