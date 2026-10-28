@@ -1,22 +1,7 @@
-id: HealthCheck
-version: 4
+id: HealthCheck-xsiam
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: HealthCheck
-    packName: System Diagnostics and Health Check
-    itemVersion: 3.5.0
-    fromServerVersion: 8.10.0
-    toServerVersion: ''
-    definitionid: ''
-    prevname: ''
-    isoverridable: false
-    supportedModules: []
-vcShouldKeepItemLegacyProdMachine: false
-aclrelations: []
-aclowner:
-  id: ''
-  type: ''
-  name: ''
+  contentitemfields: {}
 name: HealthCheck-xsiam
 description: HealthCheck XSIAM main playbook.
 starttaskid: '0'
@@ -31,8 +16,7 @@ tasks:
       name: ''
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
+      description: ''
     nexttasks:
       '#none#':
       - '8'
@@ -60,8 +44,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '48'
@@ -91,8 +73,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '48'
@@ -118,8 +98,6 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '44'
@@ -145,8 +123,6 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '7'
@@ -173,8 +149,6 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '18'
@@ -201,8 +175,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '22'
@@ -231,8 +203,6 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '55'
@@ -259,8 +229,6 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '24'
@@ -287,8 +255,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '25'
@@ -327,8 +293,6 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     separatecontext: false
     continueonerrortype: ''
     view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 3460\n  }\n}"
@@ -351,8 +315,6 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '12'
@@ -379,8 +341,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '63'
@@ -407,8 +367,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '46'
@@ -438,8 +396,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '47'
@@ -469,8 +425,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '57'
@@ -498,8 +452,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
+      description: ''
     nexttasks:
       '#none#':
       - '49'
@@ -531,8 +484,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '17'
@@ -559,8 +510,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '17'
@@ -587,8 +536,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '17'
@@ -615,8 +562,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '17'
@@ -643,8 +588,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '17'
@@ -671,8 +614,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '17'
@@ -697,8 +638,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
+      description: ''
     nexttasks:
       '#none#':
       - '56'
@@ -725,8 +665,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '60'
@@ -756,8 +694,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     separatecontext: false
     continueonerrortype: ''
     view: "{\n  \"position\": {\n    \"x\": 1555,\n    \"y\": 960\n  }\n}"
@@ -779,8 +715,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
+      description: ''
     nexttasks:
       '#none#':
       - '59'
@@ -807,8 +742,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '60'
@@ -836,8 +769,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
+      description: ''
     nexttasks:
       '#none#':
       - '61'
@@ -859,12 +791,11 @@ tasks:
       id: 8c89e5c5-8c8b-43fe-a1f1-18a63e069977
       version: -1
       name: Check for outdated engines
+      description: Identifies engines running an outdated version.
       scriptName: HealthCheckOutdatedEngines
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '62'
@@ -889,12 +820,11 @@ tasks:
       id: 10bcbd57-e16f-4341-915b-95b9b2381e67
       version: -1
       name: Check for disconnected engines
+      description: Identifies disconnected engines.
       scriptName: HealthCheckDisconnectedEngines
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '23'
@@ -924,8 +854,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '43'
@@ -954,8 +882,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ''
-      playbooktaskmissingcomponent:
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - '45'
@@ -969,7 +895,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-outlinetasks: {}
 system: true
 view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3470,\n      \"width\": 2530,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
 inputs: []
@@ -982,7 +907,10 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-dirtyInputs: true
 adopted: true
-possibleresponses: []
 fromversion: 8.10.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+- platform

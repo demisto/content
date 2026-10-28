@@ -6,7 +6,7 @@ comment: Get the license data from an uploaded license file (Cortex XSOAR 6) or 
 commonfields:
   id: HealthCheckLicenseData
   version: -1
-dockerimage: demisto/python3:3.12.13.11879924
+dockerimage: demisto/python3:3.12.15.14069087
 enabled: true
 name: HealthCheckLicenseData
 outputs:

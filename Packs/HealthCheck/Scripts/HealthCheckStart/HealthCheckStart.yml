@@ -7,12 +7,13 @@ name: HealthCheckStart
 script: "-"
 subtype: python3
 type: python
-dockerimage: demisto/python3:3.12.12.7090913
+dockerimage: demisto/python3:3.12.15.14069087
 runas: DBotWeakRole
 runonce: false
 tags: []
 fromversion: 8.3.0
 marketplaces:
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)

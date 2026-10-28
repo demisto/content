@@ -1,6 +1,8 @@
 {
+    "id": "HealthCheck_issue_Layout_Rule",
+    "name": "HealthCheck issue Layout Rule",
     "rule_id": "HealthCheck_issue_Layout_Rule",
-    "layout_id": "HealthCheck issue Layout",
+    "layout_id": "HealthCheckIssueLayout",
     "description": "HealthCheck and BPA Layout Rule",
     "rule_name": "HealthCheck issue Layout Rule",
     "alerts_filter": {

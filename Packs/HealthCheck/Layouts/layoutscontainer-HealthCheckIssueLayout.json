@@ -1,35 +1,10 @@
 {
-    "id": "HealthCheck issue Layout",
-    "version": 4,
-    "cacheVersn": 0,
-    "modified": "2026-07-13T11:18:03.133725786Z",
-    "sizeInBytes": 0,
-    "packID": "HealthCheck",
-    "packName": "System Diagnostics and Health Check",
-    "itemVersion": "3.5.0",
-    "fromServerVersion": "8.0.0",
-    "toServerVersion": "99.99.99",
-    "propagationLabels": [
-        "all"
-    ],
-    "packPropagationLabels": [
-        "all"
-    ],
-    "definitionId": "",
-    "isOverridable": false,
-    "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
+    "id": "HealthCheckIssueLayout",
+    "version": -1,
     "name": "HealthCheckIssueLayout",
-    "description": "",
-    "prevName": "HealthCheckIssueLayout",
     "system": true,
-    "locked": false,
     "group": "incident",
-    "detached": false,
     "detailsV2": {
-        "TypeName": "",
         "tabs": [
             {
                 "id": "summary",
@@ -712,13 +687,6 @@
             }
         ]
     },
-    "edit": null,
-    "details": null,
-    "close": null,
-    "quickView": null,
-    "quickViewV2": null,
-    "mobile": null,
-    "indicatorsDetails": null,
-    "indicatorsQuickView": null,
-    "fromVersion": "8.10.0"
+    "fromVersion": "8.10.0",
+    "description": ""
 }

@@ -1,10 +1,10 @@
 {
     "trigger_id": "e3926de65301631f979be7d6c49d9680",
-    "playbook_id": "HealthCheck",
+    "playbook_id": "HealthCheck-xsiam",
     "suggestion_reason": "Trigger the Healthcheck and BPA playbook",
     "description": "Description - HealthCheck and BPA Automation Rule",
     "trigger_name": "HealthCheck and BPA",
-    "fromVersion": "8.0.0",
+    "fromVersion": "8.10.0",
     "alerts_filter": {
         "filter": {
             "AND": [
@@ -20,6 +20,5 @@
                 }
             ]
         }
-    },
-    "AUTOMATION_TYPE": "playbook"
+    }
 }
