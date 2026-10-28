@@ -3654,7 +3654,7 @@ def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, 
         remainder, seal_count = close_snapshot_if_empty(remainder, total_sent, snapshot_id, "vulnerabilities")
         send_snapshot_batch(remainder, "vulnerabilities", snapshot_id, items_count=seal_count)
     except RECOVERABLE_PAGE_ERRORS as e:  # pylint: disable=catching-non-exception
-        demisto.error(f"[Vulnerabilities] Run failed, the next run retries the stage. Error: {e}")
+        demisto.error(f"[Vulnerabilities] Run failed, the next run retries the stage. Error: {e}\n{traceback.format_exc()}")
         return schedule_next_assets_run_immediately(count_assets_failure(last_run, str(e), e))
     finally:
         if raw_response is not None:
