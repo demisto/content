@@ -21,7 +21,7 @@ def get_xsiam_license_data():
         contents = res[0].get("Contents", {}).get("response", {})
         details = contents.get("reply", {})
 
-        license_type_key = next((key for key in details if re.match(r"purchased_xsiam_(?!gb).*$", key)), None)
+        license_type_key: str = next((key for key in details if re.match(r"purchased_xsiam_(?!gb).*$", key)), "")
         if not license_type_key:
             return_error("No purchased XSIAM license was found in the tenant info response.")
 
@@ -31,7 +31,7 @@ def get_xsiam_license_data():
         split[0] = split[0].upper()
         licenseType = " ".join(split)
 
-        licenseDetails = []
+        licenseDetails: list[dict[str, Any]] = []
 
         licenseDetails.append({"field": "License Type", "value": licenseType})
 
@@ -76,7 +76,7 @@ def get_xsiam_license_data():
             item = item.removesuffix("_is_trial").replace("_", " ")
             item = item.upper() if item == "xth" else item.title()
             trialNames.append(item)
-        licenseDetails.append({"field": "Modules \ Features in Trial", "value": ",\n".join(trialNames)})
+        licenseDetails.append({"field": "Modules \\ Features in Trial", "value": ",\n".join(trialNames)})
 
         expirations = {
             key: value
