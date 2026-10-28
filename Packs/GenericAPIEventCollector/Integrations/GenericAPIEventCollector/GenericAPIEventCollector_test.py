@@ -1021,6 +1021,46 @@ def test_fetch_events_pagination_stops_when_cursor_does_not_advance():
     assert client.requests[1].request_json == {"next": "abc"}
 
 
+def test_fetch_events_pagination_stops_at_configured_limit():
+    """
+    Given: a limit of 2 and an API that keeps returning pages with an advancing cursor.
+    When: fetch_events paginates.
+    Then: it stops once the limit is reached instead of paging up to MAX_INCIDENTS_TO_FETCH.
+    """
+    client = RecordingClient([{"items": [{"datetime": "2026-10-12T00:00:00"}], "next": str(page)} for page in range(5)])
+    params = {"limit": "2", "pagination_needed": "true", "pagination_field_name": "next", "pagination_flag": "next"}
+
+    run_fetch(client, params, {"@first_fetch_datetime": "2026-10-11T00:00:00"})
+
+    assert len(client.requests) == 2
+
+
+@patch("GenericAPIEventCollector.demisto.error")
+def test_fetch_events_skips_event_with_non_integer_id(mock_error):
+    """
+    Given: ID type "integer" and one event whose ID is not a number.
+    When: fetch_events runs.
+    Then: that event is skipped and logged, the other events are kept, and the cursor stays numeric.
+    """
+    client = RecordingClient(
+        [
+            {
+                "items": [
+                    {"datetime": "2026-10-12T00:00:00", "seq": 5},
+                    {"datetime": "2026-10-12T00:00:01", "seq": "not-a-number"},
+                ]
+            }
+        ]
+    )
+    params = {"id_keys": "seq", "id_type": "integer"}
+
+    next_run, events = run_fetch(client, params, {"@first_fetch_datetime": "2026-10-11T00:00:00"})
+
+    assert [event["seq"] for event in events] == [5]
+    assert next_run["@last_fetched_id"] == "5"
+    mock_error.assert_called_once()
+
+
 def test_fetch_events_integer_id_cursor_accepts_events_with_old_timestamps():
     """
     Given: a feed ordered by an integer update sequence whose timestamp is the original content date

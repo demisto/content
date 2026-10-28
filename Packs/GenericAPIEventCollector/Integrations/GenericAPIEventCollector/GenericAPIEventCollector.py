@@ -265,6 +265,8 @@ def fetch_events(
             return_error("ID type was not specified")
             return {}, []
 
+    # Stop paginating once the configured per-fetch limit is reached; the next fetch continues from the saved cursor.
+    fetch_limit: int = min(arg_to_number(params.get("limit")) or MAX_INCIDENTS_TO_FETCH, MAX_INCIDENTS_TO_FETCH)
     previous_page_value: Any = None
     while pagination_needed:
         raw_events = client.search_events(
@@ -277,7 +279,7 @@ def fetch_events(
         # Stop on an empty page or a cursor that did not advance, otherwise APIs that always return
         # the pagination flag (e.g. a sequence cursor) would loop forever.
         if pagination_needed and (
-            not events_list or next_page_value in (None, previous_page_value) or len(all_events_list) >= MAX_INCIDENTS_TO_FETCH
+            not events_list or next_page_value in (None, previous_page_value) or len(all_events_list) >= fetch_limit
         ):
             demisto.debug(f"Stopping pagination: page size {len(events_list)}, next page value {next_page_value}")
             pagination_needed = False
@@ -312,7 +314,12 @@ def fetch_events(
         # Some APIs wrap the ID in a one-item list, e.g. Group-IB breacheddb addInfo.updateTimestampLong.
         if isinstance(current_id, list) and len(current_id) == 1:
             current_id = current_id[0]
-        current_id_int = arg_to_number(current_id) if id_type_lower == IdTypes.INTEGER.value else None
+        try:
+            current_id_int = arg_to_number(current_id) if id_type_lower == IdTypes.INTEGER.value else None
+        except ValueError as e:
+            # Skip the event so a non-numeric ID is never saved as the integer cursor.
+            demisto.error(f"Skipping event with a non-integer ID {current_id!r}: {e}")
+            continue
 
         # An integer ID above the last fetched ID is new even if its timestamp is older, e.g. feeds
         # ordered by an update sequence where the timestamp is the original content date.
