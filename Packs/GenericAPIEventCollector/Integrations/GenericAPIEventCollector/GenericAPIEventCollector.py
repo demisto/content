@@ -299,7 +299,7 @@ def fetch_events(
     # region Collect all events based on their last fetch time.
     latest_created_datetime: datetime = last_fetched_datetime
     last_fetched_id: Any | None = last_run.get(PlaceHolders.LAST_FETCHED_ID.value)
-    previous_fetched_id: Any | None = last_fetched_id
+    previous_id_int = arg_to_number(last_fetched_id) if id_type_lower == IdTypes.INTEGER.value else None
     returned_event_list: list[dict[str, Any]] = []
     for event in all_events_list:
         try:
@@ -313,7 +313,6 @@ def fetch_events(
         if isinstance(current_id, list) and len(current_id) == 1:
             current_id = current_id[0]
         current_id_int = arg_to_number(current_id) if id_type_lower == IdTypes.INTEGER.value else None
-        previous_id_int = arg_to_number(previous_fetched_id) if id_type_lower == IdTypes.INTEGER.value else None
 
         # An integer ID above the last fetched ID is new even if its timestamp is older, e.g. feeds
         # ordered by an update sequence where the timestamp is the original content date.
