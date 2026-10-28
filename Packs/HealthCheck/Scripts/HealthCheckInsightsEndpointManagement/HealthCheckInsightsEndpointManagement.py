@@ -251,7 +251,7 @@ def main() -> None:
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f"Failed to execute HealthCheckInsightsEndpointManagement. Error: {str(e)}", error=e)
-        return_error(f"Failed to execute HealthCheckInsightsEndpointManagement. Error: {str(e)}")
+        return_error(f"Failed to execute HealthCheckInsightsEndpointManagement. Error: {str(e)}", error=e)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
