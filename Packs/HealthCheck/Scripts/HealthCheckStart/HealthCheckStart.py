@@ -79,7 +79,7 @@ def main() -> None:
             reply = response.get("reply", response)
         except (KeyError, IndexError, TypeError) as e:
             return_error(
-                f"Unexpected response structure from /public_api/v1/issue: {e}\n{traceback.format_exc()}",
+                f"Unexpected response structure from /public_api/v1/issue: {e}",
                 error=e,
             )
             return
