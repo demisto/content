@@ -22,5 +22,6 @@
         "xsiam"
     ],
     "managed": true,
-    "source": "agentix"
+    "source": "agentix",
+    "internal": true
 }
