@@ -24,7 +24,6 @@ def get_xsiam_license_data():
         license_type_key = next((key for key in details if re.match(r"purchased_xsiam_(?!gb).*$", key)), None)
         if not license_type_key:
             return_error("No purchased XSIAM license was found in the tenant info response.")
-            return
 
         licenseTypeString = license_type_key.removeprefix("purchased_")
         licenseType = licenseTypeString.replace("_", " ").title()
