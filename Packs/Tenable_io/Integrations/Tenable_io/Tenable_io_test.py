@@ -886,6 +886,61 @@ def test_handle_vulns_chunks_resumes_after_failure_mid_batch(mocker, requests_mo
     assert persisted_chunks == [[2, 3]]
 
 
+def _peak_memory_of_handle_vulns_chunks(mocker, number_of_chunks: int) -> int:
+    """Run handle_vulns_chunks over `number_of_chunks` synthetic chunks and return the traced peak memory in bytes."""
+    import tracemalloc
+
+    records_per_chunk = 500
+
+    def fake_download(export_uuid, chunk_id):
+        # A fresh list per call, with records of about 1 KB shaped like Tenable vulnerability rows.
+        return [
+            {
+                "asset": {"uuid": f"asset-{chunk_id}-{index}", "hostname": f"host-{index}"},
+                "plugin": {"id": index, "name": "plugin", "description": "x" * 600},
+                "output": "y" * 300,
+                "received": "2026-10-28T00:00:00Z",
+            }
+            for index in range(records_per_chunk)
+        ]
+
+    mocker.patch.object(Client, "download_vulnerabilities_chunk", side_effect=fake_download)
+    # The streaming send empties the list it is given; simulate that so freed records are not kept alive.
+    mocker.patch.object(Tenable_io, "send_data_to_xsiam_with_retry", side_effect=lambda **kwargs: kwargs["data"].clear())
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    last_run = {"vuln_export_uuid": "123", "vulns_available_chunks": list(range(1, number_of_chunks + 1))}
+
+    tracemalloc.start()
+    try:
+        vulnerabilities_sent, _ = handle_vulns_chunks(client, last_run)
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    assert vulnerabilities_sent == records_per_chunk * number_of_chunks
+    return peak
+
+
+def test_handle_vulns_chunks_peak_memory_does_not_grow_with_chunks(mocker):
+    """
+    Given:
+        - One vulnerability chunk in one run, and eight chunks of the same size in another run.
+    When:
+        - handle_vulns_chunks runs.
+    Then:
+        - The peak memory for eight chunks stays close to the peak for one chunk, because each chunk is sent and
+          released before the next one is downloaded. Before XSUP-79661 all chunks were accumulated in one list,
+          so the peak grew about 8x.
+    """
+    mock_demisto(mocker)
+    mocker.patch.object(demisto, "updateModuleHealth")
+    mocker.patch.object(demisto, "setAssetsLastRun")
+
+    peak_one_chunk = _peak_memory_of_handle_vulns_chunks(mocker, number_of_chunks=1)
+    peak_eight_chunks = _peak_memory_of_handle_vulns_chunks(mocker, number_of_chunks=8)
+
+    assert peak_eight_chunks < 2 * peak_one_chunk, f"{peak_eight_chunks=} {peak_one_chunk=}"
+
+
 def test_send_data_to_xsiam_with_retry_streaming_retry_gets_full_data(mocker):
     """
     Given:
