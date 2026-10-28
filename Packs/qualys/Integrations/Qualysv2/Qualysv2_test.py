@@ -4041,9 +4041,7 @@ def test_fetch_and_send_vulnerabilities_streamed_connection_broken_keeps_stage(m
     mock_error.assert_called_once()
 
 
-def test_fetch_and_send_vulnerabilities_streamed_connection_broken_raises_at_threshold(
-    mocker: MockerFixture, client: Client
-):
+def test_fetch_and_send_vulnerabilities_streamed_connection_broken_raises_at_threshold(mocker: MockerFixture, client: Client):
     """
     Given:
         - A vulnerabilities stream whose connection drops, with one failure left before the threshold.
