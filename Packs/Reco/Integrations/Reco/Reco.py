@@ -226,6 +226,9 @@ class RecoClient(BaseClient):
         risk_levels: list of severity names, e.g. ["HIGH", "CRITICAL"].  Multiple
         values are combined with OR so a single call fetches all matching severities.
 
+        API errors are raised rather than swallowed, so a failed call is never mistaken
+        for "no new alerts" and shows up as a failure in XSOAR.
+
         Sorted ascending by createdAt (rather than the API's default descending order) so
         that fetch_incidents can page through a burst via `start_index` without ever
         skipping alerts, regardless of how many share the same fetch window.
@@ -237,12 +240,9 @@ class RecoClient(BaseClient):
         filter_parts: list[str] = ['status ne "ALERT_STATUS_PREVIEW"']
 
         if risk_levels:
-            if len(risk_levels) == 1:
-                filter_parts.append(f'severity eq "{risk_levels[0]}"')
-            else:
-                # Use the SCIM `in` operator - cleaner than a chain of OR clauses
-                vals = ", ".join(f'"{r}"' for r in risk_levels)
-                filter_parts.append(f"severity in [{vals}]")
+            # `eq` clauses joined with `or` - the External API rejects the SCIM `in` operator (HTTP 500).
+            severity_clauses = " or ".join(f'severity eq "{r}"' for r in risk_levels)
+            filter_parts.append(f"({severity_clauses})" if len(risk_levels) > 1 else severity_clauses)
 
         if source:
             filter_parts.append(f'apps co "{source}"')
@@ -254,21 +254,17 @@ class RecoClient(BaseClient):
         scim_filter = " and ".join(filter_parts)
         demisto.debug(f"get_alerts SCIM filter: {scim_filter!r}")
 
-        try:
-            response = self._external_api_list(
-                "alerts/list",
-                filters=scim_filter,
-                count=limit,
-                start_index=start_index,
-                sort_by="createdAt",
-                sort_order="ascending",
-            )
-            alerts = response.get("alerts", [])
-            demisto.info(f"get_alerts: fetched {len(alerts)} alerts (total={response.get('totalResults', '?')})")
-            return alerts
-        except Exception as e:
-            demisto.error(f"get_alerts error: {str(e)}")
-            return []
+        response = self._external_api_list(
+            "alerts/list",
+            filters=scim_filter,
+            count=limit,
+            start_index=start_index,
+            sort_by="createdAt",
+            sort_order="ascending",
+        )
+        alerts = response.get("alerts", [])
+        demisto.info(f"get_alerts: fetched {len(alerts)} alerts (total={response.get('totalResults', '?')})")
+        return alerts
 
     def get_single_alert(self, alert_id: str) -> dict[str, Any]:
         """Get full alert detail including policy violations via the external API."""
@@ -845,10 +841,14 @@ class RecoClient(BaseClient):
 
     # --- API key validation ---
 
-    def validate_api_key(self) -> str:
-        """Validate the API token by making a minimal external API call."""
+    def validate_api_key(self, risk_levels: list[str] | None = None) -> str:
+        """Validate the API token with the same alerts query fetch-incidents sends.
+
+        Going through get_alerts (rather than an unfiltered call) means a filter the API
+        rejects fails the Test button instead of only surfacing later during fetch.
+        """
         try:
-            self._external_api_list("alerts/list", count=1)
+            self.get_alerts(risk_levels=risk_levels, limit=1)
             return "ok"
         except Exception as e:
             demisto.error(f"validate_api_key error: {str(e)}")
@@ -1712,7 +1712,7 @@ def main() -> None:  # pragma: no cover
             return_results(CommandResults(raw_response=response, readable_output=f"Visibility event {entity_id} resolved"))
 
         elif command == "test-module":
-            return_results(reco_client.validate_api_key())
+            return_results(reco_client.validate_api_key(parse_minimum_risk_level(params.get("risk_level"))))
 
         elif command == "reco-get-risky-users":
             return_results(get_risky_users_from_reco(reco_client))

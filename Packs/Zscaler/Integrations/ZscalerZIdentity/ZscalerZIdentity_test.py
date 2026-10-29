@@ -32,6 +32,8 @@ from ZscalerZIdentity import (
     ip_command,
     domain_command,
     SUSPICIOUS_CATEGORIES,
+    DEFAULT_BASE_URL,
+    build_api_base_url,
 )
 from CommonServerPython import DemistoException, Common, CommandResults
 
@@ -576,7 +578,7 @@ class TestCategoryCommands:
             "ipRanges": [],
         }
         unrelated_err = DemistoException(
-            "The request failed with error 400.\nMessage: " '{"code":"QUOTA_EXCEEDED","message":"URL quota exceeded"}'
+            'The request failed with error 400.\nMessage: {"code":"QUOTA_EXCEEDED","message":"URL quota exceeded"}'
         )
         api_request_mock = mocker.patch.object(
             mock_client,
@@ -1395,3 +1397,77 @@ class TestErrorHandler:
         cleared_ctx = mock_set_ctx.call_args[0][0]
         assert "access_token" not in cleared_ctx
         assert "token_expires_at" not in cleared_ctx
+
+
+# ---- Unit tests: configurable base URL (XSUP-79151) ----
+
+
+class TestBuildApiBaseUrl:
+    def test_empty_value_falls_back_to_default(self):
+        """
+        Given: No base URL configured (empty string).
+        When: build_api_base_url is called.
+        Then: The previous hardcoded base URL is returned.
+        """
+        assert build_api_base_url("") == "https://api.zsapi.net/zia/api/v1"
+
+    def test_full_base_url_is_kept(self):
+        """
+        Given: A full base URL that already ends with /zia/api/v1.
+        When: build_api_base_url is called.
+        Then: It is returned as is.
+        """
+        assert build_api_base_url("https://api.example.com/zia/api/v1") == "https://api.example.com/zia/api/v1"
+
+    def test_host_only_gets_zia_path_appended(self):
+        """
+        Given: Only a host, without the /zia/api/v1 path.
+        When: build_api_base_url is called.
+        Then: The ZIA API path is appended.
+        """
+        assert build_api_base_url("https://api.example.com") == "https://api.example.com/zia/api/v1"
+
+    def test_trailing_slash_and_whitespace_are_stripped(self):
+        """
+        Given: A base URL with surrounding whitespace and a trailing slash.
+        When: build_api_base_url is called.
+        Then: The result contains no trailing slash or whitespace.
+        """
+        assert build_api_base_url("  https://api.example.com/zia/api/v1/  ") == "https://api.example.com/zia/api/v1"
+
+    def test_missing_scheme_defaults_to_https(self):
+        """
+        Given: A base URL without a scheme.
+        When: build_api_base_url is called.
+        Then: https:// is prepended.
+        """
+        assert build_api_base_url("api.example.com/zia/api/v1") == "https://api.example.com/zia/api/v1"
+
+
+class TestClientBaseUrl:
+    def test_client_defaults_to_previous_base_url(self, mock_client):
+        """
+        Given: A Client created without a base_url argument.
+        When: Its base URL is inspected.
+        Then: The previous hardcoded base URL is used, preserving existing behavior.
+        """
+        assert mock_client._base_url == DEFAULT_BASE_URL
+
+    def test_client_uses_configured_base_url(self):
+        """
+        Given: A Client created with a custom base URL.
+        When: Its base URL is inspected.
+        Then: The custom base URL is used instead of the default.
+        """
+        client = Client(
+            server_url="www.testdomain.zslogin.net",
+            client_id="test_client_id",
+            client_secret="test_client_secret",
+            verify=False,
+            proxy=False,
+            reliability="C - Fairly reliable",
+            auto_activate=True,
+            suspicious_categories=list(SUSPICIOUS_CATEGORIES),
+            base_url="https://api.example.com/zia/api/v1",
+        )
+        assert client._base_url == "https://api.example.com/zia/api/v1"
