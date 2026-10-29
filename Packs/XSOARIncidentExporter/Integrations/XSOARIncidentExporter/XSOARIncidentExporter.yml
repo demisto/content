@@ -166,7 +166,7 @@ script:
     - contextPath: XSOARExporter.CloseSync.ClosedAlerts
       description: The details of closed alerts.
       type: Unknown
-  dockerimage: demisto/python3:3.10.14.100715
+  dockerimage: demisto/python3:3.12.15.14069087
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
