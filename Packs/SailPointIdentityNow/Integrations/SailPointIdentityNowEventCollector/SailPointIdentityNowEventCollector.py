@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timedelta, UTC
 
 import demistomock as demisto
@@ -15,6 +16,8 @@ VENDOR = "sailpoint"
 PRODUCT = "identitynow"
 CURRENT_TIME_STR = datetime.now(tz=UTC).strftime(DATE_FORMAT)
 MAX_EVENTS_PER_API_CALL = 10000  # API limitation
+# The exact UTC ISO-8601 format returned by SailPoint (e.g. 2026-10-13T17:55:49.151Z) and used in CURRENT_TIME_STR.
+SAILPOINT_UTC_TIMESTAMP_REGEX = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?Z$")
 
 """ CLIENT CLASS """
 
@@ -127,12 +130,8 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        fetch_events(
-            client=client,
-            limit=1,
-            look_back=0,
-            last_run={},
-        )
+        # Request a single event only. fetch_events always requests a full page, which is not needed for a connectivity test.
+        client.search_events(from_date=CURRENT_TIME_STR, limit=1)
 
     except Exception as e:
         if "Forbidden" in str(e):
@@ -240,7 +239,7 @@ def _fetch_events_batch(
     Returns:
         Tuple of (deduplicated events list, updated dedup_cache dict with timestamps)
     """
-    all_events = []
+    all_events: List[Dict] = []
     remaining_events_to_fetch = limit
 
     # Start with previous timestamps and add current run's events to it
@@ -252,19 +251,20 @@ def _fetch_events_batch(
 
     while remaining_events_to_fetch > 0:
         loop_count += 1
-        current_batch_to_fetch = min(remaining_events_to_fetch, MAX_EVENTS_PER_API_CALL)
 
+        # Always request a full page. Requesting fewer events than a page (e.g. the remaining count) may return
+        # only events that were already fetched at the boundary timestamp, which prevents the fetch from advancing.
         demisto.debug(f"Loop {loop_count}: API call with from_date: {current_from_date}, remaining: {remaining_events_to_fetch}")
-        events = client.search_events(from_date=current_from_date, limit=current_batch_to_fetch)
+        events = client.search_events(from_date=current_from_date, limit=MAX_EVENTS_PER_API_CALL)
 
         if not events:
             demisto.debug("No events fetched. Exiting the loop.")
             break
 
         # If we got fewer events than requested, API has no more events
-        if len(events) < current_batch_to_fetch:
+        if len(events) < MAX_EVENTS_PER_API_CALL:
             demisto.debug(
-                f"Got {len(events)} events, requested {current_batch_to_fetch}. "
+                f"Got {len(events)} events, requested {MAX_EVENTS_PER_API_CALL}. "
                 f"API has no more events. Will process these and exit."
             )
             should_break_after_processing = True
@@ -272,8 +272,15 @@ def _fetch_events_batch(
             should_break_after_processing = False
 
         events_before_dedup = len(events)
+        page_last_created = events[-1]["created"]
         events = dedup_events(events, list(dedup_cache.keys()), prev_date)
         demisto.debug(f"After dedup: {events_before_dedup} -> {len(events)} events.")
+
+        if len(events) > remaining_events_to_fetch:
+            # Keep only the events that fit in the fetch limit. The dedup cache and the next run are built only
+            # from the kept events, so the events that were cut off are fetched in the next run.
+            demisto.debug(f"Truncating {len(events)} new events to the remaining limit of {remaining_events_to_fetch}.")
+            events = events[:remaining_events_to_fetch]
 
         if events:
             # Add the batch of events to the total
@@ -290,17 +297,24 @@ def _fetch_events_batch(
             # Only decrease remaining by NEW events after dedup
             remaining_events_to_fetch -= len(events)
             demisto.debug(f"Fetched {len(events)} new events, {remaining_events_to_fetch} remaining")
-        else:
-            # All events are duplicates - exit loop
-            demisto.debug(f"Loop {loop_count}: All {events_before_dedup} events were duplicates. " f"Exiting loop.")
+        elif should_break_after_processing:
+            # Partial page of duplicates - the API has no new events yet
+            demisto.debug(f"Loop {loop_count}: All {events_before_dedup} events were duplicates. No new events available.")
             break
+        else:
+            # Full page of duplicates - advance the from_date to the last event of the page and keep fetching
+            current_from_date = page_last_created
+            demisto.debug(
+                f"Loop {loop_count}: All {events_before_dedup} events were duplicates (full page). "
+                f"Updated from_date to: {current_from_date}"
+            )
 
         # Break if API returned fewer events than requested (no more events available)
         if should_break_after_processing:
             demisto.debug("API returned fewer events than requested. No more events available.")
             break
 
-    demisto.debug(f"_fetch_events_batch completed after {loop_count} loops, returning {len(all_events)} events")
+    demisto.debug(f"Fetch run summary: made {loop_count} API calls (loops) in this run, returning {len(all_events)} events.")
 
     return all_events, dedup_cache
 
@@ -406,6 +420,30 @@ def dedup_events(events: List[Dict], last_fetched_ids: list, prev_date: str = No
     return deduped_events
 
 
+def parse_event_timestamp(timestamp: str) -> datetime:
+    """
+    Parses an event timestamp into a timezone-aware datetime.
+
+    arg_to_datetime (dateparser) takes about 5 ms per call, which is too slow for tens of thousands of cached IDs.
+    Timestamps in the exact SailPoint UTC format are parsed with datetime.fromisoformat, which gives the same result
+    much faster. Any other format falls back to arg_to_datetime.
+
+    arg_to_datetime returns a naive datetime (already interpreted as UTC) for inputs without a timezone designator,
+    so the fallback result is marked as UTC. This keeps fast-path and fallback results comparable, because comparing
+    naive and aware datetimes raises TypeError.
+
+    Args:
+        timestamp: The timestamp string to parse.
+
+    Returns:
+        The parsed timezone-aware datetime.
+    """
+    if SAILPOINT_UTC_TIMESTAMP_REGEX.match(timestamp):
+        return datetime.fromisoformat(timestamp)
+    parsed: datetime = arg_to_datetime(timestamp, required=True)  # type: ignore[assignment]
+    return parsed.replace(tzinfo=UTC) if parsed.tzinfo is None else parsed
+
+
 def filter_id_timestamps_by_lookback_window(id_timestamps: dict, current_date: str, look_back: int) -> dict:
     """
     Filters ID-timestamp mappings to only keep those within the lookback time window.
@@ -422,7 +460,7 @@ def filter_id_timestamps_by_lookback_window(id_timestamps: dict, current_date: s
     if not id_timestamps:
         return id_timestamps
 
-    current_datetime = arg_to_datetime(current_date, required=True)
+    current_datetime = parse_event_timestamp(current_date)
     # Add 1 minute buffer to lookback for better cache retention
     retention_minutes = look_back + 1 if look_back > 0 else look_back
     lookback_cutoff = current_datetime - timedelta(minutes=retention_minutes)  # type: ignore
@@ -433,7 +471,7 @@ def filter_id_timestamps_by_lookback_window(id_timestamps: dict, current_date: s
     removed_count = 0
     removed_ids = []
     for event_id, timestamp in id_timestamps.items():
-        event_datetime = arg_to_datetime(timestamp, required=True)
+        event_datetime = parse_event_timestamp(timestamp)
         if event_datetime >= lookback_cutoff:  # type: ignore
             filtered_id_timestamps[event_id] = timestamp
         else:
@@ -535,5 +573,5 @@ def main() -> None:  # pragma: no cover
 
 """ ENTRY POINT """
 
-if __name__ in ("__main__", "__builtin__", "builtins"):
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()
