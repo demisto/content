@@ -61,7 +61,7 @@ STORAGE_RESOURCE = "https://storage.azure.com/"
 DEFAULT_AZURE_AD_ENDPOINT = "https://login.microsoftonline.com"
 
 PERMISSIONS_TO_COMMANDS = {
-    "Microsoft.ResourceGraph/operations/read": ["azure-rg-list-operations"],
+    "Microsoft.ResourceGraph/operations/read": ["azure-rg-list-operations", "azure-rg-operations-list"],
     "Microsoft.ResourceGraph/resources/read": ["azure-rg-query"],
     "Microsoft.Network/networkSecurityGroups/read": ["azure-nsg-security-groups-list", "azure-vn-security-groups-list"],
     "Microsoft.Network/networkSecurityGroups/securityRules/read": [
@@ -11382,7 +11382,7 @@ def firewall_service_tag_list_command(client: AzureClient, params: dict[str, Any
     )
 
 
-def resource_graph_list_operations_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+def resource_graph_operations_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
     Lists all available Azure Resource Graph operations and their descriptions.
 
@@ -12910,7 +12910,8 @@ def main():  # pragma: no cover
     handle_proxy()
     try:
         commands_with_params_and_args = {
-            "azure-rg-list-operations": resource_graph_list_operations_command,
+            "azure-rg-list-operations": resource_graph_operations_list_command,
+            "azure-rg-operations-list": resource_graph_operations_list_command,
             "azure-rg-query": resource_graph_query_resources_command,
             "azure-nsg-security-rule-update": update_security_rule_command,
             "azure-vn-security-rule-update": update_security_rule_command,
