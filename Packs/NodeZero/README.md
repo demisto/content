@@ -73,11 +73,12 @@ The event collector runs independently of the **NodeZero** integration, so you c
 
 The **NodeZero Overview** dashboard shows the NodeZero events from the last 30 days. To narrow the dashboard to one or more pentests, pick them in the **Pentest** filter. The filter lists each pentest by name, completion date and pentest ID, newest first. **Hours since last ingest** always covers all pentests.
 
-- **Key counts**: critical weaknesses, weaknesses in the CISA Known Exploited Vulnerabilities catalog, weaknesses known to be used in ransomware campaigns, and weaknesses NodeZero proved by exploiting them.
+- **Key counts**: critical weaknesses, weaknesses in the CISA Known Exploited Vulnerabilities catalog, weaknesses known to be used in ransomware campaigns, weaknesses NodeZero proved by exploiting them, and weaknesses that lead to a compromise.
 - **Ingestion health**: events ingested per day, the number of pentests ingested, hours since the last event was ingested, and a per-pentest table that compares the events ingested with the number of weaknesses NodeZero reported.
 - **Weaknesses by severity**: a breakdown by severity, and weaknesses found per day by severity.
-- **Impacts and categories**: weaknesses by the downstream impacts they lead to, such as host or domain compromise, and by NodeZero category.
-- **Top weaknesses and hosts**: the 25 most common weaknesses and the 25 hosts with the most weaknesses.
+- **Impacts, categories and proof**: weaknesses by the downstream impacts they lead to, such as host or domain compromise, by NodeZero category, and the weaknesses NodeZero did not prove, by the reason it reported.
+- **Top weaknesses and hosts**: the 25 most common weaknesses with their highest severity, and the 15 hosts with the most weaknesses, split by severity. Weaknesses with no host are left out of the hosts chart.
+- **Fix first**: the 100 highest-priority weaknesses, ordered by severity, then attack paths, then score, with the NodeZero portal URL of each.
 
 ### Sample XQL queries
 
