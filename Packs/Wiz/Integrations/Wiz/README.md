@@ -1,6 +1,18 @@
 Agentless, context-aware and full-stack security and compliance across AWS, Azure, GCP, OCI, Kubernetes, and other supported cloud platforms.
 This integration was integrated and tested with Wiz
 
+## Prerequisites
+
+Notes are stored as Wiz Issue comments. The service account needs the following scopes:
+
+| Operation | Scope |
+| --- | --- |
+| `wiz-set-issue-note`, note arguments of `wiz-reject-issue` / `wiz-resolve-issue` / `wiz-reopen-issue`, outgoing note mirroring | `write:comments` |
+| `wiz-clear-issue-note` | `read:comments` + `write:comments` + `admin:comments` (to delete other authors' comments) |
+| Incoming note mirroring | `read:comments` |
+
+`admin:comments` does not replace `read:comments` or `write:comments`. Without it, clearing other authors' comments can fail after some comments have already been deleted.
+
 ## Configure Wiz in Cortex
 
 | **Parameter** | **Description** | **Required** |
