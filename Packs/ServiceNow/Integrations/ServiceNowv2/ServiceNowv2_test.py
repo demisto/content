@@ -23,6 +23,7 @@ from ServiceNowv2 import (
     Client,
     ServiceNowClient,
     add_comment_command,
+    create_event_command,
     add_link_command,
     add_tag_command,
     check_assigned_to_field,
@@ -3103,6 +3104,190 @@ def test_generic_api_call_command(command, args, response, mocker):
     mocker.patch.object(client, "send_request", return_value=response)
     result = command(client, args)
     assert result.outputs == response
+
+
+def _make_client() -> Client:
+    """Return a minimal Client instance suitable for unit tests."""
+    return Client(
+        "server_url",
+        "sc_server_url",
+        "cr_server_url",
+        "username",
+        "password",
+        "verify",
+        "fetch_time",
+        "sysparm_query",
+        "sysparm_limit",
+        "timestamp_field",
+        "ticket_type",
+        "get_attachments",
+        "incident_name",
+    )
+
+
+@pytest.mark.parametrize(
+    "args, expected_events",
+    [
+        # Mode 3: individual field arguments (single-event mode).
+        (
+            {
+                "source": "SCOM",
+                "node": "web-server-01",
+                "type": "CPU Utilization",
+                "resource": "CPU",
+                "severity": "2",
+                "description": "CPU usage exceeded 90%",
+            },
+            [
+                {
+                    "source": "SCOM",
+                    "node": "web-server-01",
+                    "type": "CPU Utilization",
+                    "resource": "CPU",
+                    "severity": "2",
+                    "description": "CPU usage exceeded 90%",
+                }
+            ],
+        ),
+        # Mode 2a: JSON array passed via the 'events' argument (bulk mode).
+        (
+            {
+                "events": '[{"source": "Nagios", "node": "db-01", "severity": "1"}, '
+                '{"source": "Nagios", "node": "db-02", "severity": "3"}]',
+            },
+            [
+                {"source": "Nagios", "node": "db-01", "severity": "1"},
+                {"source": "Nagios", "node": "db-02", "severity": "3"},
+            ],
+        ),
+        # Mode 2b: JSON object passed via 'events' — auto-wrapped into a list.
+        (
+            {"events": '{"source": "SCOM", "node": "web-01", "severity": "3"}'},
+            [{"source": "SCOM", "node": "web-01", "severity": "3"}],
+        ),
+        # Mode 1: raw JSON object via 'raw_event' — takes priority over 'events'.
+        (
+            {
+                "raw_event": '{"source": "Zabbix", "node": "app-01", "severity": "1"}',
+                "events": '[{"source": "ignored"}]',  # should be ignored
+            },
+            [{"source": "Zabbix", "node": "app-01", "severity": "1"}],
+        ),
+    ],
+)
+def test_create_event_command_sends_correct_payload(args, expected_events, mocker):
+    """
+    Given:
+        - Case 1: Individual event field arguments (single-event mode).
+        - Case 2a: A JSON array passed via the 'events' argument (bulk mode).
+        - Case 2b: A JSON object passed via 'events' (auto-wrapped to list).
+        - Case 3: A raw JSON object via 'raw_event' (takes priority over 'events').
+    When:
+        - Running create_event_command.
+    Then:
+        - The client's create_event method is called with the correct list of event dicts.
+        - CommandResults are returned with the expected outputs.
+    """
+    client = _make_client()
+    snow_response = {"result": {"status": "inserted", "message": ""}}
+    mock_create_event = mocker.patch.object(client, "create_event", return_value=snow_response)
+
+    result = create_event_command(client, args)
+
+    mock_create_event.assert_called_once_with(expected_events)
+    assert result.outputs == snow_response["result"]
+    assert "ServiceNow Event Management" in result.readable_output
+
+
+def test_create_event_command_no_fields_raises(mocker):
+    """
+    Given:
+        - No event fields and no 'events' argument are provided.
+    When:
+        - Running create_event_command.
+    Then:
+        - A DemistoException is raised with a helpful message.
+    """
+    from CommonServerPython import DemistoException
+
+    client = _make_client()
+    mocker.patch.object(client, "create_event", return_value={})
+
+    with pytest.raises(DemistoException, match="Provide at least one event field"):
+        create_event_command(client, {})
+
+
+def test_create_event_command_invalid_events_json_raises(mocker):
+    """
+    Given:
+        - The 'events' argument contains invalid JSON.
+    When:
+        - Running create_event_command.
+    Then:
+        - A DemistoException is raised indicating the JSON parse failure.
+    """
+    from CommonServerPython import DemistoException
+
+    client = _make_client()
+    mocker.patch.object(client, "create_event", return_value={})
+
+    with pytest.raises(DemistoException, match="Failed to parse 'events' argument as JSON"):
+        create_event_command(client, {"events": "not-valid-json"})
+
+
+def test_create_event_command_events_invalid_type_raises(mocker):
+    """
+    Given:
+        - The 'events' argument is valid JSON but neither a list nor a dict
+          (e.g. a bare number).
+    When:
+        - Running create_event_command.
+    Then:
+        - A DemistoException is raised indicating the value must be a JSON array or object.
+    """
+    from CommonServerPython import DemistoException
+
+    client = _make_client()
+    mocker.patch.object(client, "create_event", return_value={})
+
+    with pytest.raises(DemistoException, match="must be a JSON array or a JSON object"):
+        create_event_command(client, {"events": "42"})
+
+
+def test_create_event_command_invalid_raw_event_json_raises(mocker):
+    """
+    Given:
+        - The 'raw_event' argument contains invalid JSON.
+    When:
+        - Running create_event_command.
+    Then:
+        - A DemistoException is raised indicating the JSON parse failure.
+    """
+    from CommonServerPython import DemistoException
+
+    client = _make_client()
+    mocker.patch.object(client, "create_event", return_value={})
+
+    with pytest.raises(DemistoException, match="Failed to parse 'raw_event' argument as JSON"):
+        create_event_command(client, {"raw_event": "not-valid-json"})
+
+
+def test_create_event_command_raw_event_not_dict_raises(mocker):
+    """
+    Given:
+        - The 'raw_event' argument is valid JSON but not an object (e.g. a list).
+    When:
+        - Running create_event_command.
+    Then:
+        - A DemistoException is raised indicating the value must be a JSON object.
+    """
+    from CommonServerPython import DemistoException
+
+    client = _make_client()
+    mocker.patch.object(client, "create_event", return_value={})
+
+    with pytest.raises(DemistoException, match="must be a JSON object"):
+        create_event_command(client, {"raw_event": '[{"source": "SCOM"}]'})
 
 
 @pytest.mark.parametrize(

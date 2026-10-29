@@ -1271,6 +1271,28 @@ class Client(BaseClient):
         """
         return self.send_request(f"change/standard/{template}", "POST", body={}, cr_api=True)
 
+    def create_event(self, events: list[dict]) -> dict:
+        """Create one or more events in ServiceNow Event Management.
+
+        Sends events to the /api/global/em/jsonv2 webhook endpoint which writes
+        to the em_events table.
+
+        Args:
+            events: List of event dictionaries. Each event may contain fields
+                    such as source, node, type, resource, severity, description,
+                    time_of_event, and additional_info.
+
+        Returns:
+            Response dict from ServiceNow.
+        """
+        body = {"records": events}
+        return self.send_request(
+            path="",
+            method="POST",
+            body=body,
+            custom_api="/api/global/em/jsonv2",
+        )
+
     def get_co_tasks(self, sys_id: str) -> dict:
         """Get item details from service catalog by sending a GET request to the Change Request REST API.
 
@@ -3748,6 +3770,101 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Ite
     return item
 
 
+def create_event_command(client: Client, args: dict) -> CommandResults:
+    """Create one or more events in ServiceNow Event Management.
+
+    Pushes events to the /api/global/em/jsonv2 endpoint which writes to the
+    em_events table.
+
+    Three input modes (evaluated in priority order):
+    1. ``raw_event`` — a raw JSON string representing a single event object.
+    2. ``events``   — a JSON string that is either a list of event objects
+                      (bulk) or a single event object (auto-wrapped).
+    3. Individual field arguments (``source``, ``node``, ``type``, etc.).
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args().
+
+    Returns:
+        CommandResults with the ServiceNow response.
+    """
+    raw_event_arg = args.get("raw_event")
+    events_arg = args.get("events")
+
+    if raw_event_arg:
+        # Mode 1: raw JSON string for a single event object.
+        try:
+            parsed = json.loads(raw_event_arg) if isinstance(raw_event_arg, str) else raw_event_arg
+        except json.JSONDecodeError as exc:
+            raise DemistoException(f"Failed to parse 'raw_event' argument as JSON: {exc}") from exc
+        if not isinstance(parsed, dict):
+            raise DemistoException("The 'raw_event' argument must be a JSON object (single event dict).")
+        events: list[dict] = [parsed]
+
+    elif events_arg:
+        # Mode 2: JSON list (bulk) or JSON object (single, auto-wrapped).
+        try:
+            parsed = json.loads(events_arg) if isinstance(events_arg, str) else events_arg
+        except json.JSONDecodeError as exc:
+            raise DemistoException(f"Failed to parse 'events' argument as JSON: {exc}") from exc
+        if isinstance(parsed, dict):
+            # Caller passed a single event object — wrap it automatically.
+            events = [parsed]
+        elif isinstance(parsed, list):
+            events = parsed
+        else:
+            raise DemistoException("The 'events' argument must be a JSON array or a JSON object.")
+
+    else:
+        # Mode 3: build a single event from individual field arguments.
+        event: dict = {}
+        for field in (
+            "source",
+            "node",
+            "type",
+            "resource",
+            "severity",
+            "description",
+            "time_of_event",
+            "additional_info",
+            "message_key",
+            "metric_name",
+            "metric_value",
+        ):
+            value = args.get(field)
+            if value is not None:
+                event[field] = value
+        if not event:
+            raise DemistoException(
+                "Provide at least one event field (e.g. 'source', 'node', 'type'), "
+                "a raw JSON event via 'raw_event', or a JSON list via the 'events' argument."
+            )
+        events = [event]
+
+    result = client.create_event(events)
+
+    if not result:
+        return CommandResults(readable_output="No response received from ServiceNow Event Management.")
+
+    # The em/jsonv2 endpoint returns {"result": {"status": "...", ...}} on success.
+    result_data = result.get("result", result)
+
+    human_readable = tableToMarkdown(
+        "ServiceNow Event Management - Created Event(s)",
+        result_data if isinstance(result_data, list) else [result_data],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="ServiceNow.Event",
+        outputs_key_field="",
+        outputs=result_data,
+        readable_output=human_readable,
+        raw_response=result,
+    )
+
+
 def generic_api_call_command(client: Client, args: dict) -> Union[str, CommandResults]:
     """make a call to ServiceNow api
     Args:
@@ -3969,6 +4086,8 @@ def main():
             demisto.results(get_ticket_command(client, args))
         elif command == "servicenow-delete-ticket":
             return_results(delete_ticket_command(client, args))
+        elif command == "servicenow-create-event":
+            return_results(create_event_command(client, args))
         elif command == "servicenow-generic-api-call":
             return_results(generic_api_call_command(client, args))
         elif command == "get-remote-data":
