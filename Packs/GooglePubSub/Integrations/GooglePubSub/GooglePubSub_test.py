@@ -956,6 +956,20 @@ class TestAuthentication:
 
         assert get_base_credential_config(None, json.dumps(WIF_CONFIG)) == WIF_CONFIG
 
+    def test_get_base_credential_config_service_account_with_literal_newlines(self):
+        """
+        Given: A Service Account key JSON whose private_key contains literal (unescaped) line breaks.
+        When: get_base_credential_config is called.
+        Then: The key is parsed leniently and the private_key keeps its line breaks.
+        """
+        from GooglePubSub import get_base_credential_config
+
+        raw_key = '{"type": "service_account", "private_key": "-----BEGIN PRIVATE KEY-----\nabc\n-----END PRIVATE KEY-----\n"}'
+
+        result = get_base_credential_config(raw_key, None)
+
+        assert result["private_key"] == "-----BEGIN PRIVATE KEY-----\nabc\n-----END PRIVATE KEY-----\n"
+
     @pytest.mark.parametrize(
         "service_account_key, wif_config, expected_error",
         [
@@ -1091,3 +1105,34 @@ class TestAuthentication:
                 impersonate_service_account="user@example.com",
             )
         client_mock.assert_not_called()
+
+    @pytest.mark.parametrize(
+        "params, expected_hint_present",
+        [
+            ({"credentials": {"password": json.dumps(SA_KEY)}}, False),
+            ({"credentials": {"password": json.dumps(SA_KEY)}, "impersonate_service_account": TARGET_SA}, True),
+        ],
+    )
+    def test_init_google_client_refresh_error(self, mocker, params, expected_hint_present):
+        """
+        Given: A base credential (optionally with an impersonation target) that fails to obtain an access token.
+        When: init_google_client is called and the client creation raises RefreshError.
+        Then: A readable error with the refresh reason is raised, including the Token Creator hint only when impersonating.
+        """
+        import GooglePubSub
+        from CommonServerPython import DemistoException
+        from google.auth.exceptions import RefreshError
+
+        mocker.patch.object(
+            GooglePubSub, "PubSubClient", side_effect=RefreshError("Permission 'iam.serviceAccounts.getAccessToken' denied")
+        )
+
+        with pytest.raises(DemistoException) as e:
+            GooglePubSub.init_google_client(
+                default_subscription="sub", default_project="proj", default_max_msgs="50", insecure=False, proxy=False, **params
+            )
+
+        error_message = str(e.value)
+        assert "Failed to obtain an access token" in error_message
+        assert "Reason: Permission 'iam.serviceAccounts.getAccessToken' denied" in error_message
+        assert ("roles/iam.serviceAccountTokenCreator" in error_message) == expected_hint_present

@@ -10,6 +10,7 @@ import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from google.auth import aws, identity_pool, impersonated_credentials
 from google.auth.credentials import Credentials
+from google.auth.exceptions import RefreshError
 from google.oauth2 import service_account
 from google_auth_httplib2 import AuthorizedHttp
 from googleapiclient import discovery
@@ -48,7 +49,14 @@ WIF_IN_SA_FIELD_ERROR = (
 )
 INVALID_IMPERSONATION_EMAIL_ERROR = (
     "The 'Service Account to impersonate' parameter must be a service account email "
-    "(e.g., target-sa@my-project.iam.gserviceaccount.com), not a key file. Received: '{}'."
+    "(e.g., target-sa@my-project.iam.gserviceaccount.com), not a key file."
+)
+CREDENTIALS_REFRESH_ERROR = (
+    "Failed to obtain an access token using the configured credentials. " "Make sure the base credential is valid and active."
+)
+IMPERSONATION_REFRESH_ERROR_HINT = (
+    " When 'Service Account to impersonate' is configured, make sure the base identity has the "
+    "'Service Account Token Creator' role (roles/iam.serviceAccountTokenCreator) on the target service account."
 )
 INVALID_WIF_CONFIG_TYPE_ERROR = (
     "The 'Workload Identity Federation configuration (JSON)' parameter must contain a credential configuration "
@@ -521,7 +529,7 @@ def get_base_credential_config(service_account_key: str | None, wif_config: str 
         return wif_config_dict
 
     try:
-        service_account_dict = json.loads(str(service_account_key))
+        service_account_dict = json.loads(str(service_account_key), strict=False)
     except ValueError as e:
         raise DemistoException(SA_KEY_PARSE_ERROR) from e
     if not isinstance(service_account_dict, dict):
@@ -542,7 +550,7 @@ def get_impersonation_target(impersonate_service_account: str | None) -> str | N
         return None
     local_part, _, domain = target.partition("@")
     if not local_part or not domain.endswith(SERVICE_ACCOUNT_EMAIL_SUFFIX):
-        raise DemistoException(INVALID_IMPERSONATION_EMAIL_ERROR.format(target))
+        raise DemistoException(INVALID_IMPERSONATION_EMAIL_ERROR)
     return target
 
 
@@ -588,6 +596,13 @@ def init_google_client(
             **kwargs,
         )
         return client
+    except RefreshError as e:
+        error_message = CREDENTIALS_REFRESH_ERROR
+        if impersonation_target:
+            error_message += IMPERSONATION_REFRESH_ERROR_HINT
+        if e.args:
+            error_message += f" Reason: {e.args[0]}"
+        raise DemistoException(error_message) from e
     except ValueError as e:
         error_message = WIF_CONFIG_PARSE_ERROR if wif_config else SA_KEY_PARSE_ERROR
         raise DemistoException(f"{error_message} Reason: {e}") from e
