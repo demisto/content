@@ -5963,6 +5963,7 @@
         }
     ],
     "skipped_tests": {
+        "Mail Sender (New) Test": "Gmail CI service-account key is invalid (invalid_grant: Invalid signature for token) - CIAC-14453",
         "Zendesk V2 TEST": "Zendesk API returns 'Couldn't authenticate you' on the test instance (zendesk-user-list / zendesk-user-create), the credentials need to be fixed.",
         "Test XDR Playbook general commands": "xdr-get-endpoint-device-control-violations fails because no device-control violations exist on the XDR lab tenants — CRTX-261310",
         "Test - Netcraft": "Netcraft tenant is out of takedown credits, causing the test playbook to fail.",
