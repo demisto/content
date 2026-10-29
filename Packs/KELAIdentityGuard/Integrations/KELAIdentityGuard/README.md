@@ -22,11 +22,9 @@ This integration was integrated and tested with the Identity Guard module of the
 | Minimum severity to fetch | Only fetch incidents/cookie incidents at or above this severity. Doesn't apply to bot-market alerts (no severity field in the API). | False |
 | Fetch bot-market alerts | Include bot-market alerts in the automatic fetch. Uncheck to exclude this source. | False |
 | Fetch compromised session-cookie incidents | Include cookie incidents in the automatic fetch. Uncheck to exclude this source. | False |
+| Incidents Fetch Interval | The interval, in minutes, between fetch cycles for this instance. Default is 1. | False |
 | Trust any certificate (not secure) | Skip TLS certificate validation. | False |
 | Use system proxy settings | Route requests through the configured system proxy. | False |
-
-The interval between fetch cycles is Cortex's built-in "Incidents Fetch Interval" setting on
-the instance (not configured in this pack).
 
 ## Commands
 
@@ -58,6 +56,8 @@ Search Identity Guard incidents for a workspace, with rich filtering, sorting an
 | created_date_end | End of the created-date range. | Optional |
 | updated_date_start | Start of the updated-date range. | Optional |
 | updated_date_end | End of the updated-date range. | Optional |
+| source_date_start | Start of the source-date range. | Optional |
+| source_date_end | End of the source-date range. | Optional |
 | sort_by | Field to sort by (createdDate/updatedDate/sourceDate). | Optional |
 | order | Sort order (asc/desc). | Optional |
 | limit | Page size. Default is 50. | Optional |
@@ -146,6 +146,12 @@ Search Identity Guard bot-market alerts (bots/webmails offered for sale) for a w
 | services | Comma-separated marketplace names (e.g. RussianMarket). | Optional |
 | is_archived | Whether to return only archived alerts. | Optional |
 | is_deleted | Whether to return only deleted alerts. | Optional |
+| created_date_start | Start of the created-date range. | Optional |
+| created_date_end | End of the created-date range. | Optional |
+| updated_date_start | Start of the updated-date range. | Optional |
+| updated_date_end | End of the updated-date range. | Optional |
+| posted_date_start | Start of the posted-date range. | Optional |
+| posted_date_end | End of the posted-date range. | Optional |
 | sort_by | Field to sort by (createdDate/updatedDate/postedDate). | Optional |
 | order | Sort order (asc/desc). | Optional |
 | limit | Maximum number of results to return (page size). | Optional |
@@ -230,6 +236,12 @@ permission on Identity Guard.
 | session_hash | Filter by a specific session hash. | Optional |
 | linked_usernames | Whether to return only incidents linked to usernames. | Optional |
 | archived | Whether to return only archived incidents. | Optional |
+| created_date_start | Start of the created-date range. | Optional |
+| created_date_end | End of the created-date range. | Optional |
+| source_date_start | Start of the source-date range. | Optional |
+| source_date_end | End of the source-date range. | Optional |
+| updated_date_start | Start of the updated-date range. | Optional |
+| updated_date_end | End of the updated-date range. | Optional |
 | sort_by | Field to sort by (createdDate/sourceDate/updatedDate). | Optional |
 | order | Sort order (asc/desc). | Optional |
 | limit | Maximum number of results to return (page size). | Optional |

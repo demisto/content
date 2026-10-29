@@ -35,9 +35,8 @@ This pack covers the three Identity Guard "search" endpoints that return inciden
      either way).
 4. Click **Test** to validate the connection.
 
-Note: the interval between fetch cycles is controlled by Cortex's built-in "Incidents Fetch
-Interval" setting on the instance (shown automatically for any fetch-enabled integration) - it isn't
-configured in this pack.
+Note: the interval between fetch cycles is set with the instance's "Incidents Fetch Interval"
+setting (in minutes, default 1).
 
 ## API reference
 

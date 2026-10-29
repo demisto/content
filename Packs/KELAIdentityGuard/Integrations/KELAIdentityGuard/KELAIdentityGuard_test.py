@@ -1,9 +1,11 @@
 from datetime import UTC, datetime, timedelta
 from unittest.mock import MagicMock, patch
+from urllib.parse import quote, quote_plus
 
 import pytest
 from pytest_mock import MockerFixture
 
+import KELAIdentityGuard
 from KELAIdentityGuard import (
     DATE_FORMAT,
     search_incidents_command,
@@ -14,6 +16,8 @@ from KELAIdentityGuard import (
     normalize_severity,
     cookie_severity_to_xsoar,
     fetch_incidents,
+    main,
+    mask_secret,
     test_module as run_test_module,
 )
 
@@ -144,6 +148,18 @@ def test_date_range_filter_rejects_unparseable_dates():
         date_range_filter({"created_date_start": "not a date"}, "created_date")
 
 
+def test_date_range_filter_converts_offsets_to_utc():
+    """
+    Given: start/end dates with a non-UTC offset and with an explicit Z.
+    When: date_range_filter runs.
+    Then: both are sent to the API as UTC, so the filter window doesn't shift with the offset.
+    """
+    result = date_range_filter(
+        {"source_date_start": "2024-01-15T12:34:56+02:00", "source_date_end": "2024-01-16T00:00:00Z"}, "source_date"
+    )
+    assert result == {"startDate": "2024-01-15T10:34:56.000Z", "endDate": "2024-01-16T00:00:00.000Z"}
+
+
 def test_normalize_severity_handles_label_and_int():
     assert normalize_severity("critical") == 3
     assert normalize_severity(2) == 2
@@ -178,6 +194,61 @@ def test_module_requires_workspace_id():
     with pytest.raises(ValueError, match="Default Workspace ID"):
         run_test_module(client, {})
     client.search_incidents.assert_not_called()
+
+
+def test_mask_secret():
+    """
+    Given: a text that contains the API key in raw and URL-encoded forms.
+    When: mask_secret runs.
+    Then: every form is replaced, and an empty key leaves the text unchanged.
+    """
+    secret = "key/with+chars="
+    text = f"raw={secret} quoted={quote(secret, safe='')} plus={quote_plus(secret)}"
+    masked = mask_secret(text, secret)
+    assert secret not in masked
+    assert quote(secret, safe="") not in masked
+    assert quote_plus(secret) not in masked
+    assert masked.count("<API_KEY>") == 3
+    assert mask_secret("nothing to hide", "") == "nothing to hide"
+
+
+def test_main_never_logs_or_returns_the_api_key(mocker: MockerFixture):
+    """
+    Given: a request that fails the way ContentClient fails, with an error chained to an HTTP error whose
+           message holds the request URL, including the apiToken query parameter.
+    When: main() handles the failure.
+    Then: neither the logged traceback nor the error returned to the user contains the API key.
+    """
+    api_key = "SuperSecretKey123"
+    demisto_mock = mocker.patch("KELAIdentityGuard.demisto")
+    demisto_mock.params.return_value = {
+        "url": "https://api.ke-la.com/bots-client-api/v1",
+        "credentials": {"password": api_key},
+        "workspace_id": "ws-1",
+    }
+    demisto_mock.args.return_value = {}
+    demisto_mock.command.return_value = "kela-identityguard-search-incidents"
+
+    def failing_request(*_args, **_kwargs):
+        try:
+            raise RuntimeError(
+                "Client error '401 Unauthorized' for url "
+                f"'https://api.ke-la.com/bots-client-api/v1/search-incidents?apiToken={api_key}'"
+            )
+        except RuntimeError as exc:
+            raise KELAIdentityGuard.ContentClientAuthenticationError(f"Authentication failed: key {api_key}") from exc
+
+    mocker.patch.object(KELAIdentityGuard.Client, "search_incidents", side_effect=failing_request)
+    return_error = mocker.patch("KELAIdentityGuard.return_error")
+
+    main()
+
+    logged = [str(call) for call in demisto_mock.error.call_args_list + demisto_mock.debug.call_args_list]
+    assert any("apiToken=<API_KEY>" in line for line in logged)
+    assert all(api_key not in line for line in logged)
+    message = return_error.call_args.args[0]
+    assert "Authentication failed" in message
+    assert api_key not in message
 
 
 @patch("KELAIdentityGuard.demisto")
@@ -311,18 +382,17 @@ def test_fetch_incidents_respects_source_toggles(mock_demisto):
 
 
 # ############################################################################
-# Regression tests for the duplicate-incident bug (v1.0.2)
+# Fetch de-duplication tests
 #
-# The KELA API treats dateFilters.createdDate.startDate as INCLUSIVE. v1.0.1 used the
-# newest createdDate as the next startDate and had no ID-level dedup, so the record
-# sitting exactly at the watermark was returned - and re-created in XSOAR - every cycle.
+# The KELA API treats dateFilters.createdDate.startDate as INCLUSIVE. Using the newest
+# createdDate as the next startDate without ID-level dedup would return the record sitting
+# exactly at the watermark - and re-create it in Cortex - every cycle.
 # ############################################################################
 
 # Relative to "now" so the records always fall inside the "3 days" first-fetch window.
 _BASE = datetime.now(UTC).replace(microsecond=0) - timedelta(days=1)
 T0 = _BASE.strftime(DATE_FORMAT)
 T1 = (_BASE + timedelta(minutes=30)).strftime(DATE_FORMAT)
-T2 = (_BASE + timedelta(hours=1, minutes=30)).strftime(DATE_FORMAT)
 FIRST_RUN_PARAMS = {
     "workspace_id": "ws-1",
     "max_fetch": "50",
@@ -375,7 +445,7 @@ def test_fetch_does_not_recreate_incident_sitting_exactly_at_the_watermark(mock_
     When:
         - fetch_incidents runs many cycles with nothing new arriving.
     Then:
-        - The incident is created exactly once. v1.0.1 created it on every cycle.
+        - The incident is created exactly once, not once per cycle.
     """
     fake = FakeKela([{"incidentId": "A", "severity": "NON_CRITICAL", "createdDate": T0}])
     state = FakeDemisto()
@@ -422,29 +492,53 @@ def test_fetch_picks_up_new_records_without_duplicating_old_ones(mock_demisto):
 
 
 @patch("KELAIdentityGuard.demisto")
-def test_fetch_upgrade_from_v1_0_1_last_run_does_not_duplicate(mock_demisto):
+def test_fetch_compares_dates_as_utc_datetimes_not_strings(mock_demisto):
     """
     Given:
-        - A last run written by v1.0.1: watermark present, no ID list. The record at the
-          watermark was already created by the old version.
+        - A watermark stored as "...T10:00:00.000Z" with record A already ingested at it.
+        - An API that returns the same instant in another format ("...T12:00:00+02:00"), plus a
+          record B one millisecond later written with real milliseconds ("...T10:00:00.001Z").
     When:
-        - The new version runs several cycles.
+        - fetch_incidents runs twice.
     Then:
-        - Nothing is re-created, and a genuinely new record is still picked up once.
+        - A is recognised as the record at the watermark and is not re-created, B is created once,
+          and the watermark keeps the API's own string so no precision is lost.
     """
-    fake = FakeKela([{"incidentId": "A", "severity": "NON_CRITICAL", "createdDate": T0}])
-    state = FakeDemisto({"last_fetch_incidents": T0})
+    day = (datetime.now(UTC) - timedelta(days=1)).strftime("%Y-%m-%d")
+    records = [
+        {"incidentId": "A", "severity": "NON_CRITICAL", "createdDate": f"{day}T12:00:00+02:00"},
+        {"incidentId": "B", "severity": "NON_CRITICAL", "createdDate": f"{day}T10:00:00.001Z"},
+    ]
+    client = MagicMock()
+    client.search_incidents.return_value = {"results": records}
+    state = FakeDemisto({"last_fetch_incidents": f"{day}T10:00:00.000Z", "last_ids_incidents": ["A"]})
     state.attach(mock_demisto)
-    client = _client_for(fake)
 
     fetch_incidents(client, FIRST_RUN_PARAMS)
+    client.search_incidents.return_value = {"results": records[1:]}
     fetch_incidents(client, FIRST_RUN_PARAMS)
-    assert state.created == []
 
-    fake.records.append({"incidentId": "B", "severity": "NON_CRITICAL", "createdDate": T2})
-    fetch_incidents(client, FIRST_RUN_PARAMS)
-    fetch_incidents(client, FIRST_RUN_PARAMS)
     assert state.created == ["KELA Identity Guard incident B"]
+    assert state.last_run["last_fetch_incidents"] == f"{day}T10:00:00.001Z"
+    assert state.last_run["last_ids_incidents"] == ["B"]
+
+
+@patch("KELAIdentityGuard.demisto")
+def test_fetch_first_fetch_window_starts_in_utc(mock_demisto):
+    """
+    Given: no last run and first_fetch="3 days".
+    When: fetch_incidents runs.
+    Then: the startDate sent to the API is 3 days before now in UTC (not shifted by the engine's timezone).
+    """
+    client = MagicMock()
+    client.search_incidents.return_value = {"results": []}
+    FakeDemisto().attach(mock_demisto)
+
+    fetch_incidents(client, FIRST_RUN_PARAMS)
+
+    start = client.search_incidents.call_args.args[1]["filters"]["dateFilters"]["createdDate"]["startDate"]
+    sent = datetime.strptime(start, DATE_FORMAT).replace(tzinfo=UTC)
+    assert abs((datetime.now(UTC) - timedelta(days=3) - sent).total_seconds()) < 120
 
 
 @patch("KELAIdentityGuard.demisto")

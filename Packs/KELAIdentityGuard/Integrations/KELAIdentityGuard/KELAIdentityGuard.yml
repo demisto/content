@@ -65,6 +65,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '0 - low'
   display: Minimum severity to fetch
   name: min_severity
@@ -77,22 +80,31 @@ configuration:
   - 1 - medium
   - 2 - high
   - 3 - critical
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 'true'
   display: Fetch bot-market alerts (bots/webmails for sale)
   name: fetch_bot_markets
   type: 8
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 'true'
   display: Fetch compromised session-cookie incidents
   name: fetch_cookie_incidents
   type: 8
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
-  section: Connect
+  section: Collect
   required: false
   supportedModules:
   - agentix
@@ -168,6 +180,10 @@ script:
       description: ISO 8601 date-time or relative date for the updated-date range start.
     - name: updated_date_end
       description: ISO 8601 date-time or relative date for the updated-date range end.
+    - name: source_date_start
+      description: ISO 8601 date-time or relative date for the source-date range start.
+    - name: source_date_end
+      description: ISO 8601 date-time or relative date for the source-date range end.
     - name: sort_by
       description: Field to sort by.
       defaultValue: updatedDate
@@ -282,6 +298,18 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: created_date_start
+      description: ISO 8601 date-time or relative date (e.g., "7 days ago") for the created-date range start.
+    - name: created_date_end
+      description: ISO 8601 date-time or relative date for the created-date range end.
+    - name: updated_date_start
+      description: ISO 8601 date-time or relative date for the updated-date range start.
+    - name: updated_date_end
+      description: ISO 8601 date-time or relative date for the updated-date range end.
+    - name: posted_date_start
+      description: ISO 8601 date-time or relative date for the posted-date range start.
+    - name: posted_date_end
+      description: ISO 8601 date-time or relative date for the posted-date range end.
     - name: sort_by
       description: Field to sort by.
       defaultValue: updatedDate
@@ -383,6 +411,18 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: created_date_start
+      description: ISO 8601 date-time or relative date (e.g., "7 days ago") for the created-date range start.
+    - name: created_date_end
+      description: ISO 8601 date-time or relative date for the created-date range end.
+    - name: source_date_start
+      description: ISO 8601 date-time or relative date for the source-date range start.
+    - name: source_date_end
+      description: ISO 8601 date-time or relative date for the source-date range end.
+    - name: updated_date_start
+      description: ISO 8601 date-time or relative date for the updated-date range start.
+    - name: updated_date_end
+      description: ISO 8601 date-time or relative date for the updated-date range end.
     - name: sort_by
       description: Field to sort by.
       defaultValue: updatedDate

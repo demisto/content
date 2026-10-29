@@ -3,9 +3,11 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa: F401
 
 from ContentClientApiModule import *  # noqa: F401
-from BaseContentApiModule import *  # noqa: F401
 
+import traceback
+from datetime import UTC, datetime
 from typing import Any
+from urllib.parse import quote, quote_plus
 
 # ############################################################################
 # Endpoints, auth scheme and field names below were confirmed against KELA's
@@ -98,6 +100,38 @@ class Client(ContentClient):
 # ############################################################################
 
 
+def mask_secret(text: str, secret: str | None) -> str:
+    """Remove the API key (raw and URL-encoded) from a text so it never reaches the UI or logs."""
+    if not secret:
+        return text
+    for variant in {secret, quote(secret, safe=""), quote_plus(secret)}:
+        text = text.replace(variant, "<API_KEY>")
+    return text
+
+
+def parse_date_utc(value: Any, arg_name: str) -> datetime:
+    """Parse an absolute or relative date ("2024-01-15T12:34:56Z", "3 days") as a timezone-aware UTC datetime."""
+    parsed = arg_to_datetime(
+        value, arg_name=arg_name, required=True, settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True}
+    )
+    if parsed is None:  # unreachable with required=True, narrows the type for mypy
+        raise ValueError(f'Missing "{arg_name}"')
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=UTC)
+    return parsed.astimezone(UTC)
+
+
+def api_date_to_utc(value: str) -> datetime:
+    """Parse a createdDate returned by the KELA API (ISO 8601) as a timezone-aware UTC datetime."""
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError:
+        return parse_date_utc(value, "createdDate")
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=UTC)
+    return parsed.astimezone(UTC)
+
+
 def csv_arg(args: dict[str, Any], key: str) -> list[str] | None:
     value = args.get(key)
     if not value:
@@ -120,15 +154,9 @@ def date_range_filter(args: dict[str, Any], prefix: str) -> dict[str, str] | Non
         return None
     date_filter: dict[str, str] = {}
     if start:
-        parsed_start = dateparser.parse(start)
-        if not parsed_start:
-            raise ValueError(f"Invalid date format for '{prefix}_start': {start}")
-        date_filter["startDate"] = parsed_start.strftime(DATE_FORMAT)
+        date_filter["startDate"] = parse_date_utc(start, f"{prefix}_start").strftime(DATE_FORMAT)
     if end:
-        parsed_end = dateparser.parse(end)
-        if not parsed_end:
-            raise ValueError(f"Invalid date format for '{prefix}_end': {end}")
-        date_filter["endDate"] = parsed_end.strftime(DATE_FORMAT)
+        date_filter["endDate"] = parse_date_utc(end, f"{prefix}_end").strftime(DATE_FORMAT)
     return date_filter
 
 
@@ -339,18 +367,19 @@ def _fetch_source(
     time.
 
     Last-run state per source:
-        last_fetch_<source>: createdDate watermark (ISO string)
+        last_fetch_<source>: createdDate watermark (the API's own ISO string, sent back as-is
+                             as the next startDate so no precision is lost)
         last_ids_<source>:   IDs of records whose createdDate == the watermark
+
+    Dates are compared as timezone-aware UTC datetimes, never as strings, so a different
+    precision or offset in the API's createdDate cannot break the ordering or the dedup.
     """
     ts_key = f"last_fetch_{state_key}"
     ids_key = f"last_ids_{state_key}"
 
     last_fetch = last_run.get(ts_key) or default_start
-    stored_ids = last_run.get(ids_key)
-    # Upgrade path from <= 1.0.1: a watermark exists but the ID list does not. Everything
-    # at the watermark was already created by the old version, so skip it by timestamp.
-    legacy_state = bool(last_run.get(ts_key)) and stored_ids is None
-    seen_ids = set(stored_ids or [])
+    last_fetch_dt = api_date_to_utc(last_fetch)
+    seen_ids = set(last_run.get(ids_key) or [])
 
     payload = {
         "filters": {**filters, "dateFilters": {"createdDate": {"startDate": last_fetch}}},
@@ -363,16 +392,16 @@ def _fetch_source(
     raw_items = response.get("results", [])
 
     incidents: list[dict[str, Any]] = []
-    watermark = last_fetch
+    watermark, watermark_dt = last_fetch, last_fetch_dt
     ids_at_watermark = set(seen_ids)
     new_count = 0
 
     for raw in raw_items:
         record_id = raw.get(id_field)
         created_date = raw.get("createdDate") or last_fetch
+        created_dt = api_date_to_utc(created_date)
 
-        if created_date == last_fetch and (record_id in seen_ids or legacy_state):
-            ids_at_watermark.add(record_id)  # remember it (matters for the legacy upgrade path)
+        if created_dt == last_fetch_dt and record_id in seen_ids:
             continue  # the inclusive-boundary record we already ingested
         if new_count >= max_fetch:
             break
@@ -380,10 +409,10 @@ def _fetch_source(
 
         # Advance the watermark for EVERY record processed (even ones filtered out by
         # min_severity), otherwise a trailing low-severity record would be re-read forever.
-        if created_date > watermark:
-            watermark = created_date
+        if created_dt > watermark_dt:
+            watermark, watermark_dt = created_date, created_dt
             ids_at_watermark = set()
-        if created_date == watermark and record_id is not None:
+        if created_dt == watermark_dt and record_id is not None:
             ids_at_watermark.add(record_id)
 
         severity = get_severity(raw)
@@ -399,7 +428,7 @@ def _fetch_source(
         )
 
     # If the watermark did not move (nothing new), keep the IDs we already knew.
-    if watermark == last_fetch and not legacy_state:
+    if watermark_dt == last_fetch_dt:
         ids_at_watermark = seen_ids | ids_at_watermark
     return incidents, {
         ts_key: watermark,
@@ -425,7 +454,7 @@ def fetch_incidents(client: Client, params: dict[str, Any]) -> None:
 
     last_run = demisto.getLastRun() or {}
     first_fetch = params.get("first_fetch") or "3 days"
-    default_start = dateparser.parse(first_fetch).strftime(DATE_FORMAT)  # type: ignore[union-attr]
+    default_start = parse_date_utc(first_fetch, "first_fetch").strftime(DATE_FORMAT)
 
     all_incidents: list[dict[str, Any]] = []
     # Start from the previous state so a disabled source keeps its watermark.
@@ -530,8 +559,9 @@ def main() -> None:
             raise NotImplementedError(f"Command '{command}' is not implemented.")
 
     except Exception as e:
-        demisto.debug(traceback.format_exc())
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}", error=e)
+        # The traceback can include the request URL, which carries the API key as a query parameter.
+        demisto.error(mask_secret(traceback.format_exc(), api_key))
+        return_error(f"Failed to execute {command} command.\nError:\n{mask_secret(str(e), api_key)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
