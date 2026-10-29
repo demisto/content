@@ -1,0 +1,51 @@
+{
+  "data": {
+    "searchCertificates": {
+      "totalCount": 4,
+      "pageInfo": { "hasNextPage": false, "endCursor": null },
+      "nodes": [
+        {
+          "id": "cert-critical",
+          "fingerprint": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "status": "ACTIVE",
+          "subject": { "dn": "CN=crit.example.com", "commonName": ["crit.example.com"] },
+          "issuer": { "dn": "CN=Example Issuing CA", "commonName": ["Example Issuing CA"] },
+          "validity": { "from": "2026-01-01T00:00:00Z", "to": "2026-09-27T00:00:00Z", "period": 23155200 },
+          "applications": [{ "id": "app-0001", "name": "Storefront" }],
+          "machineInstallations": { "totalCount": 0, "nodes": [] },
+          "tlsServerEndpoints": { "totalCount": 0, "nodes": [] }
+        },
+        {
+          "id": "cert-high",
+          "fingerprint": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+          "status": "ACTIVE",
+          "subject": { "dn": "CN=high.example.com", "commonName": ["high.example.com"] },
+          "issuer": { "dn": "CN=Example Issuing CA", "commonName": ["Example Issuing CA"] },
+          "validity": { "from": "2026-01-01T00:00:00Z", "to": "2026-10-15T00:00:00Z", "period": 24710400 },
+          "machineInstallations": { "totalCount": 0, "nodes": [] },
+          "tlsServerEndpoints": { "totalCount": 0, "nodes": [] }
+        },
+        {
+          "id": "cert-late",
+          "fingerprint": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+          "status": "ACTIVE",
+          "subject": { "dn": "CN=late.example.com", "commonName": ["late.example.com"] },
+          "issuer": { "dn": "CN=Example Issuing CA", "commonName": ["Example Issuing CA"] },
+          "validity": { "from": "2026-01-01T00:00:00Z", "to": "2026-10-22T06:00:00Z", "period": 25315200 },
+          "machineInstallations": { "totalCount": 0, "nodes": [] },
+          "tlsServerEndpoints": { "totalCount": 0, "nodes": [] }
+        },
+        {
+          "id": "cert-without-expiry",
+          "fingerprint": "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+          "status": "ACTIVE",
+          "subject": { "dn": "CN=broken.example.com", "commonName": ["broken.example.com"] },
+          "issuer": { "dn": "CN=Example Issuing CA", "commonName": ["Example Issuing CA"] },
+          "validity": null,
+          "machineInstallations": { "totalCount": 0, "nodes": [] },
+          "tlsServerEndpoints": { "totalCount": 0, "nodes": [] }
+        }
+      ]
+    }
+  }
+}

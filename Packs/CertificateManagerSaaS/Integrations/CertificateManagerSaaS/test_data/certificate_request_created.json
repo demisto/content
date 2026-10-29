@@ -1,0 +1,19 @@
+{
+  "certificateRequests": [
+    {
+      "id": "7d3f1a20-2222-11ef-9a11-0242ac120002",
+      "status": "REQUESTED",
+      "applicationId": "b00701b0-886f-11ed-9f39-3d586ab80cf2",
+      "certificateIssuingTemplateId": "a305d810-886f-11ed-9ccf-dbf748eb1ae0",
+      "companyId": "c1c1c1c1-886f-11ed-9ccf-dbf748eb1ae0",
+      "subjectDN": "CN=new.example.com, O=Example Ltd, C=GB",
+      "keyType": "RSA",
+      "keyLength": 2048,
+      "validityPeriod": "P1Y",
+      "creationDate": "2026-09-23T09:00:00.000+0000",
+      "modificationDate": "2026-09-23T09:00:00.000+0000",
+      "certificateIds": [],
+      "tags": ["cortex"]
+    }
+  ]
+}

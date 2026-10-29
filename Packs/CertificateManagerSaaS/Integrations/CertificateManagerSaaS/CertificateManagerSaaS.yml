@@ -1,0 +1,959 @@
+category: IT Services
+provider: Palo Alto Networks
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: CertificateManagerSaaS
+  version: -1
+name: CertificateManagerSaaS
+display: Certificate Manager SaaS
+description: Search, inspect and enrich certificates held in CyberArk Certificate Manager SaaS, including where each certificate is installed and which application owns it.
+configuration:
+- name: url
+  display: Server URL
+  defaultvalue: https://api.venafi.cloud
+  additionalinfo: The regional API host for your tenant. US is the bare host (https://api.venafi.cloud); the other regions are subdomains - https://api.eu.venafi.cloud, https://api.uk.venafi.cloud, https://api.au.venafi.cloud, https://api.sg.venafi.cloud, https://api.ca.venafi.cloud. An API key issued in one region is rejected by every other region.
+  type: 0
+  required: true
+  section: Connect
+- name: credentials
+  display: API Key
+  displaypassword: API Key
+  additionalinfo: The Certificate Manager SaaS API key. Only the password half of the credential is used - leave the user name empty, or pick a saved credential from the vault.
+  type: 9
+  required: true
+  hiddenusername: true
+  section: Connect
+- name: keystore_passphrase
+  display: Keystore passphrase
+  displaypassword: Keystore passphrase
+  additionalinfo: Encrypts the private key in a keystore download when the command gets no passphrase argument. Pick a saved credential from the vault; only the password is used.
+  type: 9
+  required: false
+  hiddenusername: true
+  section: Connect
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- name: integrationReliability
+  display: Source Reliability
+  defaultvalue: C - Fairly reliable
+  additionalinfo: Reliability of the source providing the intelligence data.
+  type: 15
+  required: false
+  section: Collect
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  advanced: true
+- name: reported_key_compromise_score
+  display: Score reported key compromise as
+  defaultvalue: Suspicious
+  additionalinfo: The verdict for a KEY_COMPROMISE revocation that is reported but not done - failed, waiting for approval, or still not revoked on the CA's revocation list. A confirmed or unverifiable key-compromise revocation is always Malicious.
+  type: 15
+  required: false
+  section: Collect
+  options:
+  - Suspicious
+  - Malicious
+- name: incidentFetchInterval
+  display: Incidents Fetch Interval
+  defaultvalue: '1'
+  additionalinfo: How often the platform polls this instance for expiring certificates, in minutes.
+  type: 19
+  required: false
+  section: Collect
+  advanced: true
+- name: isFetch
+  display: Fetch incidents
+  additionalinfo: When selected, expiring certificates and failed key-compromise revocations are polled for and turned into incidents.
+  type: 8
+  required: false
+  section: Collect
+- name: incidentType
+  display: Incident type
+  type: 13
+  required: false
+  section: Collect
+- name: first_fetch
+  display: First fetch time
+  defaultvalue: 30 days
+  additionalinfo: How far back the first fetch reaches. An incident occurs when a certificate crosses an expiry threshold, so a value at least as large as "Expiry window (days)" picks up every certificate already inside the window on the first run - with one incident per certificate, for the most severe threshold it has crossed.
+  type: 0
+  required: false
+  section: Collect
+- name: fetch_expiry_days
+  display: Expiry window (days)
+  defaultvalue: '30'
+  additionalinfo: Watch certificates expiring within this many days (current, active versions only; a renewed certificate's old version raises no incident). One incident is created per threshold crossed - 30 days (High) and 7 days (Critical); a wider window adds a Medium incident when it is entered. Applied as a server-side filter, so the size of the tenant does not affect the cost of a fetch.
+  type: 0
+  required: false
+  section: Collect
+- name: max_fetch
+  display: Maximum number of incidents per fetch
+  defaultvalue: '50'
+  type: 0
+  required: false
+  section: Collect
+- name: look_back
+  display: Look back (minutes)
+  defaultvalue: '1440'
+  additionalinfo: How far before the last run to re-scan, in minutes. A certificate starts matching the expiry filter at the moment it crosses the threshold, which can be before the fetch that first returns it; without a look back those certificates are skipped permanently. Already-created incidents are deduplicated, so a larger value costs bookkeeping rather than duplicates.
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+script:
+  isfetch: true
+  commands:
+  - name: certificate
+    description: Enriches certificate indicators from the Certificate Manager SaaS inventory. Accepts certificate fingerprints (hexadecimal digests, with or without separators).
+    arguments:
+    - name: certificate
+      description: A comma-separated list of certificate fingerprints.
+      default: true
+      isArray: true
+      required: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Certificate.SubjectDN
+      description: The subject distinguished name of the certificate.
+      type: String
+    - contextPath: Certificate.IssuerDN
+      description: The issuer distinguished name of the certificate.
+      type: String
+    - contextPath: Certificate.Name
+      description: The names of the certificate.
+      type: String
+    - contextPath: Certificate.SerialNumber
+      description: The serial number of the certificate.
+      type: String
+    - contextPath: Certificate.ValidityNotBefore
+      description: The timestamp from which the certificate is valid.
+      type: Date
+    - contextPath: Certificate.ValidityNotAfter
+      description: The timestamp at which the certificate expires.
+      type: Date
+    - contextPath: Certificate.SHA256
+      description: The SHA-256 digest of the certificate.
+      type: String
+    - contextPath: Certificate.SHA1
+      description: The SHA-1 digest of the certificate.
+      type: String
+    - contextPath: Certificate.MD5
+      description: The MD5 digest of the certificate.
+      type: String
+    - contextPath: Certificate.SignatureAlgorithm
+      description: The signature algorithm of the certificate.
+      type: String
+    - contextPath: Certificate.SubjectAlternativeName.Value
+      description: A subject alternative name of the certificate.
+      type: String
+    - contextPath: Certificate.PublicKey.Algorithm
+      description: The public key algorithm of the certificate.
+      type: String
+    - contextPath: Certificate.PublicKey.Length
+      description: The public key length of the certificate.
+      type: Number
+    - contextPath: CertManagerSaaS.Certificate.ID
+      description: The Certificate Manager SaaS identifier of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Fingerprint
+      description: The fingerprint of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CommonName
+      description: The first subject common name of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Status
+      description: The Certificate Manager SaaS status of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.ValidTo
+      description: The timestamp at which the certificate expires.
+      type: Date
+    - contextPath: CertManagerSaaS.Certificate.DaysUntilExpiry
+      description: Whole days remaining until the certificate expires. Negative once expired.
+      type: Number
+    - contextPath: CertManagerSaaS.Certificate.SourceBrand
+      description: The brand of the integration that returned the certificate. Route follow-up commands for this certificate to that integration.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.SourceInstance
+      description: The name of the integration instance that returned the certificate. Pass it as using= to send follow-up commands to the tenant that holds the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.UnresolvedCertificate.Fingerprint
+      description: A fingerprint that could not be enriched.
+      type: String
+    - contextPath: CertManagerSaaS.UnresolvedCertificate.Reason
+      description: Why the fingerprint could not be enriched. No reputation is produced for these.
+      type: String
+  - name: cmsaas-certificate-search
+    description: 'Searches the Certificate Manager SaaS certificate inventory. Only "fingerprint" is filtered server-side; the remaining criteria are applied client-side while paging through the inventory, so a broad search may need "max_pages" raised.'
+    arguments:
+    - name: fingerprint
+      description: An exact certificate fingerprint. Filtered server-side.
+      required: false
+    - name: common_name
+      description: A case-insensitive substring matched against the subject common name and the subject alternative names.
+      required: false
+    - name: issuer
+      description: A case-insensitive substring matched against the issuer common name and the issuer distinguished name.
+      required: false
+    - name: status
+      description: The certificate status, matched exactly and case-insensitively.
+      required: false
+    - name: expires_in_days
+      description: Keep only certificates expiring within this many days.
+      required: false
+    - name: limit
+      description: Maximum number of certificates to return.
+      defaultValue: '50'
+      required: false
+    - name: max_pages
+      description: Maximum number of 100-certificate pages to scan while applying the client-side criteria.
+      defaultValue: '50'
+      required: false
+    outputs:
+    - contextPath: CertManagerSaaS.Certificate.ID
+      description: The Certificate Manager SaaS identifier of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Name
+      description: The Certificate Manager SaaS name of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Fingerprint
+      description: The fingerprint of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.SerialNumber
+      description: The serial number of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Status
+      description: The Certificate Manager SaaS status of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CommonName
+      description: The first subject common name of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.SubjectDN
+      description: The subject distinguished name of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.IssuerCommonName
+      description: The first issuer common name of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.IssuerDN
+      description: The issuer distinguished name of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.ValidFrom
+      description: The timestamp from which the certificate is valid.
+      type: Date
+    - contextPath: CertManagerSaaS.Certificate.ValidTo
+      description: The timestamp at which the certificate expires.
+      type: Date
+    - contextPath: CertManagerSaaS.Certificate.ValidityPeriodSeconds
+      description: The validity period of the certificate, in seconds.
+      type: Number
+    - contextPath: CertManagerSaaS.Certificate.DaysUntilExpiry
+      description: Whole days remaining until the certificate expires. Negative once expired.
+      type: Number
+    - contextPath: CertManagerSaaS.Certificate.IsSelfSigned
+      description: Whether the certificate is self-signed.
+      type: Boolean
+    - contextPath: CertManagerSaaS.Certificate.IsCA
+      description: Whether the certificate is a certificate authority certificate.
+      type: Boolean
+    - contextPath: CertManagerSaaS.Certificate.IsPublic
+      description: Whether the certificate was issued by a public certificate authority. Can be absent.
+      type: Boolean
+    - contextPath: CertManagerSaaS.Certificate.SignatureAlgorithm
+      description: The signature algorithm of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.SignatureHashAlgorithm
+      description: The signature hash algorithm of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.KeyUsages
+      description: The key usage extension values of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Origins
+      description: How the certificate entered the Certificate Manager SaaS inventory.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.LastModifiedTime
+      description: When the certificate record was last modified.
+      type: Date
+    - contextPath: CertManagerSaaS.Certificate.SubjectAlternativeNames
+      description: The subject alternative names of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.PublicKey.Algorithm
+      description: The public key algorithm of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.PublicKey.Length
+      description: The public key length of the certificate.
+      type: Number
+    - contextPath: CertManagerSaaS.Certificate.PublicKey.Curve
+      description: The elliptic curve of the certificate public key.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Applications.ID
+      description: The identifier of an application the certificate is assigned to.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Applications.Name
+      description: The name of an application the certificate is assigned to.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Installations.ID
+      description: The identifier of a machine installation of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Installations.Status
+      description: The status of a machine installation of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Installations.MachineID
+      description: The identifier of the machine the certificate is installed on.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Installations.MachineName
+      description: The operator-assigned label of the machine the certificate is installed on.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Installations.PluginName
+      description: The name of the machine plugin that manages the installation.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CloudInstallations.ID
+      description: The identifier of a cloud keystore installation of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CloudInstallations.Status
+      description: The status of a cloud keystore installation of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CloudInstallations.KeystoreID
+      description: The identifier of the cloud keystore holding the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CloudInstallations.KeystoreName
+      description: The name of the cloud keystore holding the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CloudInstallations.KeystoreType
+      description: The type of the cloud keystore holding the certificate, for example AWS Certificate Manager or Azure Key Vault.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CloudInstallations.ProviderName
+      description: The name of the cloud provider connection the keystore belongs to.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.InstallationLocations
+      description: Where the certificate is installed, one readable entry per machine or cloud keystore installation.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Revocation.Status
+      description: The revocation status of the certificate. Absent when the certificate was never revoked.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Revocation.Reason
+      description: The reason the certificate was revoked.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Revocation.Comment
+      description: The comment stored with the revocation.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Revocation.Error
+      description: The error the CA returned for a failed revocation.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.GlobalRevocation.Status
+      description: Whether the issuing CA's revocation list shows the certificate revoked (REVOKED, NOT_REVOKED or UNKNOWN). Checked against public CAs' revocation lists about every six hours; usually UNKNOWN for private CAs.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.GlobalRevocation.Reason
+      description: The revocation reason on the CA's revocation list.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.GlobalRevocation.RevokedTime
+      description: When the CA revoked the certificate, from its revocation list.
+      type: Date
+    - contextPath: CertManagerSaaS.Certificate.TLSEndpoints.ID
+      description: The identifier of a TLS server endpoint serving the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.TLSEndpoints.ServerName
+      description: The server name of a TLS server endpoint serving the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.TLSEndpoints.IPAddress
+      description: The IP address of a TLS server endpoint serving the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.TLSEndpoints.Port
+      description: The port of a TLS server endpoint serving the certificate.
+      type: Number
+    - contextPath: CertManagerSaaS.Certificate.TLSEndpoints.DeploymentStatus
+      description: The deployment status of a TLS server endpoint serving the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.SourceBrand
+      description: The brand of the integration that returned the certificate. Route follow-up commands for this certificate to that integration.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.SourceInstance
+      description: The name of the integration instance that returned the certificate. Pass it as using= to send follow-up commands to the tenant that holds the certificate.
+      type: String
+  - name: cmsaas-certificate-get
+    description: Retrieves a single certificate by fingerprint, including its machine installations and TLS server endpoints.
+    arguments:
+    - name: fingerprint
+      description: The certificate fingerprint, with or without separators.
+      required: true
+    - name: include_machine_details
+      description: Whether to resolve each installation's device host from the machine detail endpoint. Roughly half of machines carry no host - cloud connectors expose a vault name instead.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+      required: false
+    outputs:
+    - contextPath: CertManagerSaaS.Certificate.ID
+      description: The Certificate Manager SaaS identifier of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Fingerprint
+      description: The fingerprint of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CommonName
+      description: The first subject common name of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.SubjectDN
+      description: The subject distinguished name of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.IssuerDN
+      description: The issuer distinguished name of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Status
+      description: The Certificate Manager SaaS status of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.ValidTo
+      description: The timestamp at which the certificate expires.
+      type: Date
+    - contextPath: CertManagerSaaS.Certificate.DaysUntilExpiry
+      description: Whole days remaining until the certificate expires. Negative once expired.
+      type: Number
+    - contextPath: CertManagerSaaS.Certificate.Installations.MachineID
+      description: The identifier of the machine the certificate is installed on.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Installations.MachineName
+      description: The operator-assigned label of the machine the certificate is installed on.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Installations.PluginName
+      description: The name of the machine plugin that manages the installation.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CloudInstallations.ID
+      description: The identifier of a cloud keystore installation of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CloudInstallations.Status
+      description: The status of a cloud keystore installation of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CloudInstallations.KeystoreID
+      description: The identifier of the cloud keystore holding the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CloudInstallations.KeystoreName
+      description: The name of the cloud keystore holding the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CloudInstallations.KeystoreType
+      description: The type of the cloud keystore holding the certificate, for example AWS Certificate Manager or Azure Key Vault.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CloudInstallations.ProviderName
+      description: The name of the cloud provider connection the keystore belongs to.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.InstallationLocations
+      description: Where the certificate is installed, one readable entry per machine or cloud keystore installation.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Revocation.Status
+      description: The revocation status of the certificate. Absent when the certificate was never revoked.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Revocation.Reason
+      description: The reason the certificate was revoked.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Revocation.Comment
+      description: The comment stored with the revocation.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Revocation.Error
+      description: The error the CA returned for a failed revocation.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.GlobalRevocation.Status
+      description: Whether the issuing CA's revocation list shows the certificate revoked (REVOKED, NOT_REVOKED or UNKNOWN). Checked against public CAs' revocation lists about every six hours; usually UNKNOWN for private CAs.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.GlobalRevocation.Reason
+      description: The revocation reason on the CA's revocation list.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.GlobalRevocation.RevokedTime
+      description: When the CA revoked the certificate, from its revocation list.
+      type: Date
+    - contextPath: CertManagerSaaS.Certificate.Installations.Host
+      description: The normalized device host of the installation. Present only when "include_machine_details" is true and the machine exposes one.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.SourceBrand
+      description: The brand of the integration that returned the certificate. Route follow-up commands for this certificate to that integration.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.SourceInstance
+      description: The name of the integration instance that returned the certificate. Pass it as using= to send follow-up commands to the tenant that holds the certificate.
+      type: String
+  - name: cmsaas-certificate-list-expiring
+    description: Lists certificates expiring within a window, soonest first. Only the current, active version of each certificate is listed; replaced (renewed) and retired versions are left out. The window is applied as a server-side filter, so the size of the tenant does not affect the cost of the search.
+    arguments:
+    - name: days
+      description: The expiry window, in days.
+      defaultValue: '30'
+      required: false
+    - name: include_expired
+      description: Whether to include certificates that have already expired.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+      required: false
+    - name: limit
+      description: Maximum number of certificates to return.
+      defaultValue: '50'
+      required: false
+    - name: max_pages
+      description: Maximum number of 100-certificate pages to scan.
+      defaultValue: '50'
+      required: false
+    outputs:
+    - contextPath: CertManagerSaaS.Certificate.ID
+      description: The Certificate Manager SaaS identifier of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Fingerprint
+      description: The fingerprint of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CommonName
+      description: The first subject common name of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.IssuerCommonName
+      description: The first issuer common name of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Status
+      description: The Certificate Manager SaaS status of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.ValidTo
+      description: The timestamp at which the certificate expires.
+      type: Date
+    - contextPath: CertManagerSaaS.Certificate.DaysUntilExpiry
+      description: Whole days remaining until the certificate expires. Negative once expired.
+      type: Number
+    - contextPath: CertManagerSaaS.Certificate.Applications.Name
+      description: The name of an application the certificate is assigned to.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.SourceBrand
+      description: The brand of the integration that returned the certificate. Route follow-up commands for this certificate to that integration.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.SourceInstance
+      description: The name of the integration instance that returned the certificate. Pass it as using= to send follow-up commands to the tenant that holds the certificate.
+      type: String
+  - name: cmsaas-application-list
+    description: Lists the applications defined in Certificate Manager SaaS.
+    arguments:
+    - name: limit
+      description: Maximum number of applications to return.
+      defaultValue: '50'
+      required: false
+    outputs:
+    - contextPath: CertManagerSaaS.Application.ID
+      description: The identifier of the application.
+      type: String
+    - contextPath: CertManagerSaaS.Application.Name
+      description: The name of the application.
+      type: String
+    - contextPath: CertManagerSaaS.Application.Description
+      description: The description of the application.
+      type: String
+  - name: cmsaas-machine-list
+    description: Lists the machines known to Certificate Manager SaaS. This endpoint returns metadata only - use cmsaas-machine-get for a machine's connection details.
+    arguments:
+    - name: limit
+      description: Maximum number of machines to return.
+      defaultValue: '50'
+      required: false
+    outputs:
+    - contextPath: CertManagerSaaS.Machine.ID
+      description: The identifier of the machine.
+      type: String
+    - contextPath: CertManagerSaaS.Machine.Name
+      description: The operator-assigned label of the machine.
+      type: String
+    - contextPath: CertManagerSaaS.Machine.Status
+      description: The status of the machine.
+      type: String
+    - contextPath: CertManagerSaaS.Machine.PluginID
+      description: The identifier of the plugin that manages the machine.
+      type: String
+    - contextPath: CertManagerSaaS.Machine.EdgeInstanceID
+      description: The identifier of the VSatellite the machine is reached through.
+      type: String
+    - contextPath: CertManagerSaaS.Machine.CreationDate
+      description: When the machine record was created.
+      type: Date
+    - contextPath: CertManagerSaaS.Machine.ModificationDate
+      description: When the machine record was last modified.
+      type: Date
+  - name: cmsaas-machine-get
+    description: Retrieves a single machine, including its connection details. This is the only place a device host is exposed.
+    arguments:
+    - name: machine_identifier
+      description: The identifier of the machine. Matches CertManagerSaaS.Certificate.Installations.MachineID.
+      required: true
+    outputs:
+    - contextPath: CertManagerSaaS.Machine.ID
+      description: The identifier of the machine.
+      type: String
+    - contextPath: CertManagerSaaS.Machine.Name
+      description: The operator-assigned label of the machine.
+      type: String
+    - contextPath: CertManagerSaaS.Machine.Status
+      description: The status of the machine.
+      type: String
+    - contextPath: CertManagerSaaS.Machine.PluginID
+      description: The identifier of the plugin that manages the machine.
+      type: String
+    - contextPath: CertManagerSaaS.Machine.Host
+      description: The normalized device host. Absent for cloud connectors, which expose a vault name instead of an address.
+      type: String
+    - contextPath: CertManagerSaaS.Machine.Port
+      description: The port used to reach the machine.
+      type: Number
+    - contextPath: CertManagerSaaS.Machine.ConnectionDetails
+      description: The non-secret connection details of the machine (address, port, vault or project identifiers). Only allow-listed keys are returned.
+      type: Unknown
+  - name: cmsaas-certificate-revoke
+    description: 'Revokes a certificate. This command is destructive and cannot be undone: restrict it through Integration Permissions if only some analysts should be able to run it.'
+    arguments:
+    - name: fingerprint
+      description: The SHA-1 fingerprint of the certificate to revoke, with or without separators. Certificate Manager SaaS keys revocation on the SHA-1 fingerprint; a digest of any other length is rejected before the call is made.
+      required: true
+    - name: reason
+      description: The revocation reason recorded with the certificate authority.
+      auto: PREDEFINED
+      predefined:
+      - UNSPECIFIED
+      - KEY_COMPROMISE
+      - AFFILIATION_CHANGED
+      - SUPERSEDED
+      - CESSATION_OF_OPERATION
+      defaultValue: UNSPECIFIED
+      required: false
+    - name: comment
+      description: Free text stored on the revocation. Use it to record the case or incident this revocation was performed for, so the action is traceable from Certificate Manager SaaS back to Cortex.
+      required: false
+    outputs:
+    - contextPath: CertManagerSaaS.Certificate.ID
+      description: The Certificate Manager SaaS identifier of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Fingerprint
+      description: The fingerprint of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.CommonName
+      description: The first subject common name of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Status
+      description: The Certificate Manager SaaS status of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.ValidTo
+      description: The timestamp at which the certificate expires.
+      type: Date
+    - contextPath: CertManagerSaaS.Certificate.Revocation.Status
+      description: The revocation status of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Revocation.Reason
+      description: The reason the certificate was revoked.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Revocation.Comment
+      description: The comment stored with the revocation.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.Revocation.Error
+      description: The error the CA returned for a failed revocation.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.GlobalRevocation.Status
+      description: Whether the issuing CA's revocation list shows the certificate revoked (REVOKED, NOT_REVOKED or UNKNOWN). Checked against public CAs' revocation lists about every six hours; usually UNKNOWN for private CAs.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.GlobalRevocation.Reason
+      description: The revocation reason on the CA's revocation list.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.GlobalRevocation.RevokedTime
+      description: When the CA revoked the certificate, from its revocation list.
+      type: Date
+    - contextPath: CertManagerSaaS.Certificate.SourceBrand
+      description: The brand of the integration that returned the certificate. Route follow-up commands for this certificate to that integration.
+      type: String
+    - contextPath: CertManagerSaaS.Certificate.SourceInstance
+      description: The name of the integration instance that returned the certificate. Pass it as using= to send follow-up commands to the tenant that holds the certificate.
+      type: String
+  - name: cmsaas-certificate-request
+    description: Requests a new certificate. Supply "certificate_signing_request" to submit your own CSR, or "common_name" to have Certificate Manager SaaS generate the key pair and the CSR.
+    arguments:
+    - name: application_id
+      description: The identifier of the application the certificate is requested for. Matches CertManagerSaaS.Application.ID.
+      required: true
+    - name: certificate_issuing_template_id
+      description: The identifier of the certificate issuing template to issue under.
+      required: true
+    - name: common_name
+      description: The subject common name. Required unless a certificate signing request is supplied.
+      required: false
+    - name: sans
+      description: A comma-separated list of DNS subject alternative names.
+      isArray: true
+      required: false
+    - name: ip_sans
+      description: A comma-separated list of IP address subject alternative names.
+      isArray: true
+      required: false
+    - name: organization
+      description: The subject organization.
+      required: false
+    - name: organizational_units
+      description: A comma-separated list of subject organizational units.
+      isArray: true
+      required: false
+    - name: locality
+      description: The subject locality.
+      required: false
+    - name: state
+      description: The subject state or province.
+      required: false
+    - name: country
+      description: The subject country, as a two-letter code.
+      required: false
+    - name: key_type
+      description: The key algorithm. Only used when Certificate Manager SaaS generates the key pair.
+      auto: PREDEFINED
+      predefined:
+      - RSA
+      - EC
+      required: false
+    - name: key_length
+      description: The RSA key length, in bits.
+      required: false
+    - name: key_curve
+      description: The elliptic curve, used when "key_type" is EC.
+      auto: PREDEFINED
+      predefined:
+      - P256
+      - P384
+      - P521
+      - ED25519
+      required: false
+    - name: validity_period
+      description: 'The requested validity, as an ISO 8601 duration: P1Y for one year, P90D for ninety days, PT2880H for one hundred and twenty days. Omit it to use the issuing template default.'
+      required: false
+    - name: certificate_signing_request
+      description: A certificate signing request in PEM format. Supplying it switches the request to "client provides the CSR" mode.
+      required: false
+    - name: existing_certificate_id
+      description: The identifier of the certificate being renewed. Mutually exclusive with "existing_certificate_fingerprint".
+      required: false
+    - name: existing_certificate_fingerprint
+      description: The SHA-1 fingerprint of the certificate being renewed. Mutually exclusive with "existing_certificate_id". A renewal with a service-generated key keeps the old certificate's subject and subject alternative names; only the key settings apply.
+      required: false
+    - name: tags
+      description: A comma-separated list of tags to store on the request.
+      isArray: true
+      required: false
+    outputs:
+    - contextPath: CertManagerSaaS.CertificateRequest.ID
+      description: The identifier of the certificate request.
+      type: String
+    - contextPath: CertManagerSaaS.CertificateRequest.Status
+      description: The status of the certificate request.
+      type: String
+    - contextPath: CertManagerSaaS.CertificateRequest.ApplicationID
+      description: The identifier of the application the certificate was requested for.
+      type: String
+    - contextPath: CertManagerSaaS.CertificateRequest.CertificateIssuingTemplateID
+      description: The identifier of the certificate issuing template the request was issued under.
+      type: String
+    - contextPath: CertManagerSaaS.CertificateRequest.CertificateIDs
+      description: The identifiers of the certificates the request produced.
+      type: String
+    - contextPath: CertManagerSaaS.CertificateRequest.SubjectDN
+      description: The subject distinguished name of the certificate request.
+      type: String
+    - contextPath: CertManagerSaaS.CertificateRequest.CreationDate
+      description: When the certificate request was created.
+      type: Date
+  - name: cmsaas-certificate-request-status
+    description: Retrieves the status of a certificate request, including the identifiers of any certificates it produced and the reason it failed.
+    arguments:
+    - name: request_id
+      description: The identifier of the certificate request. Matches CertManagerSaaS.CertificateRequest.ID.
+      required: true
+    outputs:
+    - contextPath: CertManagerSaaS.CertificateRequest.ID
+      description: The identifier of the certificate request.
+      type: String
+    - contextPath: CertManagerSaaS.CertificateRequest.Status
+      description: 'The status of the certificate request: NEW, PENDING, PENDING_APPROVAL, PENDING_FINAL_APPROVAL, REJECTED_APPROVAL, REQUESTED, ISSUED, REJECTED, CANCELLED, REVOKED, FAILED or DELETED.'
+      type: String
+    - contextPath: CertManagerSaaS.CertificateRequest.CertificateIDs
+      description: The identifiers of the certificates the request produced. Use one of these with cmsaas-certificate-download.
+      type: String
+    - contextPath: CertManagerSaaS.CertificateRequest.SubjectDN
+      description: The subject distinguished name of the certificate request.
+      type: String
+    - contextPath: CertManagerSaaS.CertificateRequest.KeyType
+      description: The key algorithm of the certificate request.
+      type: String
+    - contextPath: CertManagerSaaS.CertificateRequest.KeyLength
+      description: The key length of the certificate request.
+      type: Number
+    - contextPath: CertManagerSaaS.CertificateRequest.KeyCurve
+      description: The elliptic curve of the certificate request.
+      type: String
+    - contextPath: CertManagerSaaS.CertificateRequest.ValidityPeriod
+      description: The validity period of the certificate request, as an ISO 8601 duration.
+      type: String
+    - contextPath: CertManagerSaaS.CertificateRequest.CreationDate
+      description: When the certificate request was created.
+      type: Date
+    - contextPath: CertManagerSaaS.CertificateRequest.ModificationDate
+      description: When the certificate request was last modified.
+      type: Date
+    - contextPath: CertManagerSaaS.CertificateRequest.CertificateAuthorityOrderID
+      description: The order identifier assigned by the certificate authority.
+      type: String
+    - contextPath: CertManagerSaaS.CertificateRequest.ErrorCode
+      description: The error code, when the request failed.
+      type: Number
+    - contextPath: CertManagerSaaS.CertificateRequest.ErrorMessage
+      description: The error message, when the request failed.
+      type: String
+  - name: cmsaas-certificate-download
+    description: Downloads a certificate as a war-room file. This endpoint is keyed on the certificate identifier, not the fingerprint - take it from CertManagerSaaS.Certificate.ID or from a completed certificate request.
+    arguments:
+    - name: certificate_id
+      description: The identifier of the certificate. Matches CertManagerSaaS.Certificate.ID.
+      required: true
+    - name: format
+      description: The encoding of the downloaded payload. PEM is text and is also placed in the context; DER is binary and is returned as a file only.
+      auto: PREDEFINED
+      predefined:
+      - PEM
+      - DER
+      defaultValue: PEM
+      required: false
+    - name: chain_order
+      description: Which certificates of the chain to include, and in what order. Only meaningful for PEM. Omit it to use the tenant default.
+      auto: PREDEFINED
+      predefined:
+      - EE_ONLY
+      - EE_FIRST
+      - ROOT_FIRST
+      required: false
+    - name: container_format
+      description: The container the certificate is exported in. Omit it to use the tenant default.
+      auto: PREDEFINED
+      predefined:
+      - RAW
+      - PKCS7
+      required: false
+    outputs:
+    - contextPath: CertManagerSaaS.CertificateContents.ID
+      description: The identifier of the downloaded certificate.
+      type: String
+    - contextPath: CertManagerSaaS.CertificateContents.Format
+      description: The encoding of the downloaded payload.
+      type: String
+    - contextPath: CertManagerSaaS.CertificateContents.FileName
+      description: The name of the war-room file entry.
+      type: String
+    - contextPath: CertManagerSaaS.CertificateContents.Contents
+      description: The PEM payload. Present only when "format" is PEM.
+      type: String
+    - contextPath: File.Name
+      description: The name of the downloaded file.
+      type: String
+    - contextPath: File.EntryID
+      description: The war-room entry identifier of the downloaded file.
+      type: String
+    - contextPath: File.Size
+      description: The size of the downloaded file, in bytes.
+      type: Number
+    - contextPath: File.SHA256
+      description: The SHA-256 digest of the downloaded file.
+      type: String
+    - contextPath: File.Type
+      description: The type of the downloaded file.
+      type: String
+  - name: cmsaas-certificate-keystore-download
+    description: 'Downloads a certificate with its private key as war-room files. The private key is encrypted with the passphrase and never goes into the context. Works only for a private key that a VSatellite generated. Restrict this command through Integration Permissions: anyone who can see the war room and knows the passphrase can use the key.'
+    arguments:
+    - name: certificate_id
+      description: The identifier of the certificate. Matches CertManagerSaaS.Certificate.ID, or a certificate ID of a completed certificate request.
+      required: true
+    - name: passphrase
+      description: The passphrase that encrypts the private key (and the PKCS12 file). Leave it empty to use the instance's Keystore passphrase setting, which can come from a saved credential. Anyone who knows it can use the key.
+      required: false
+      secret: true
+    - name: format
+      description: 'The keystore format. PEM returns two files: the encrypted private key (.key) and the certificate chain, leaf first (.pem). PKCS12 returns one .p12 file.'
+      auto: PREDEFINED
+      predefined:
+      - PEM
+      - PKCS12
+      defaultValue: PEM
+      required: false
+    outputs:
+    - contextPath: CertManagerSaaS.Keystore.CertificateID
+      description: The identifier of the certificate.
+      type: String
+    - contextPath: CertManagerSaaS.Keystore.Format
+      description: The keystore format (PEM or PKCS12).
+      type: String
+    - contextPath: CertManagerSaaS.Keystore.PrivateKeyFileName
+      description: The name of the war-room file with the encrypted private key. PEM only.
+      type: String
+    - contextPath: CertManagerSaaS.Keystore.ChainFileName
+      description: The name of the war-room file with the certificate chain, leaf first. PEM only.
+      type: String
+    - contextPath: CertManagerSaaS.Keystore.KeystoreFileName
+      description: The name of the war-room PKCS12 file. PKCS12 only.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The war-room entry identifier of the file.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file, in bytes.
+      type: Number
+    - contextPath: File.Extension
+      description: The extension of the file.
+      type: String
+    - contextPath: File.Type
+      description: The type of the file.
+      type: String
+    - contextPath: File.Info
+      description: Information about the file.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.13737394
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultclassifier: CertManagerSaaS - Fetch Classifier
+defaultmapperin: CertManagerSaaS - Fetch Incoming Mapper
+fromversion: 6.10.0
+tests:
+- CertificateManagerSaaS - Test
