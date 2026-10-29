@@ -18,7 +18,7 @@ configuration:
   type: 0
   required: true
   additionalinfo: REST API port of the Cyber Triage server. Default is 9443.
-- displaypassword: API Key
+- displaypassword: API Authentication Token
   name: api_auth_token
   type: 9
   hiddenusername: true
