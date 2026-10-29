@@ -1016,6 +1016,39 @@ def test_search_events_outbound_http_log(mocker):
     assert called_kwargs["params"]["sysparm_display_value"] == "false"
 
 
+def test_client_uses_increased_request_timeout(mocker):
+    """
+    Given:
+        - A Client created with the default configuration.
+    When:
+        - Calling search_events, which performs the HTTP request through BaseClient.
+    Then:
+        - The request is sent with the increased timeout (REQUEST_TIMEOUT) instead of the 60-second default.
+    """
+    client = Client(
+        use_oauth=False,
+        username="test",
+        password="test",
+        client_id="",
+        client_secret="",
+        server_url="https://test.com",
+        verify=False,
+        proxy=False,
+        api_version=None,
+        fetch_limit_audit=1,
+        fetch_limit_syslog=1,
+        fetch_limit_case=1,
+    )
+    mock_response = mocker.MagicMock(status_code=200)
+    mock_response.json.return_value = {"result": []}
+    mock_session_request = mocker.patch.object(client.sn_client._session, "request", return_value=mock_response)
+
+    client.search_events(from_time="2023-01-01 00:00:00", log_type=LogType.AUDIT)
+
+    assert ServiceNowEventCollector.REQUEST_TIMEOUT == 180
+    assert mock_session_request.call_args.kwargs["timeout"] == 180
+
+
 def test_fetch_events_outbound_http_advances_time_and_dedups_across_runs(mocker):
     """
     Regression test for XSUP duplicate outbound_http events (descending-order bug).

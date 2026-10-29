@@ -11,6 +11,7 @@ VENDOR = "servicenow"
 PRODUCT = "servicenow"
 LOGS_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"  # New format for processing events
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSIAM
+REQUEST_TIMEOUT = 180  # seconds. Large ServiceNow instances can take longer than the 60-second default to respond.
 
 """ CLIENT CLASS """
 
@@ -76,6 +77,7 @@ class Client:
             headers={},
             proxy=proxy,
         )
+        self.sn_client.timeout = max(self.sn_client.timeout, REQUEST_TIMEOUT)
         self.server_url = server_url
         self.api_version = api_version
         self.fetch_limits = {
