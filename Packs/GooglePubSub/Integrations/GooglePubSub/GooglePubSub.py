@@ -8,8 +8,12 @@ import demistomock as demisto
 import httplib2
 import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
+from google.auth import aws, identity_pool, impersonated_credentials
+from google.auth.credentials import Credentials
+from google.auth.exceptions import RefreshError
+from google.oauth2 import service_account
+from google_auth_httplib2 import AuthorizedHttp
 from googleapiclient import discovery
-from oauth2client import service_account
 
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
@@ -23,6 +27,41 @@ SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 ISO_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 LAST_RUN_TIME_KEY = "fetch_time"
 LAST_RUN_FETCHED_KEY = "fetched_ids"
+EXTERNAL_ACCOUNT_TYPE = "external_account"
+AWS_SUBJECT_TOKEN_TYPE = "urn:ietf:params:aws:token-type:aws4_request"
+SERVICE_ACCOUNT_IMPERSONATION_URL_KEY = "service_account_impersonation_url"
+SERVICE_ACCOUNT_EMAIL_SUFFIX = ".gserviceaccount.com"
+SA_KEY_PARSE_ERROR = "Failed to parse Service Account Private Key in json format, please make sure you entered it correctly"
+WIF_CONFIG_PARSE_ERROR = (
+    "Failed to parse the Workload Identity Federation configuration in json format, please make sure you entered it correctly"
+)
+BOTH_BASE_CREDENTIALS_ERROR = (
+    "Both 'Service account private key (JSON)' and 'Workload Identity Federation configuration (JSON)' "
+    "are configured. Provide exactly one of them."
+)
+NO_BASE_CREDENTIALS_ERROR = (
+    "No base credential is configured. Provide exactly one of 'Service account private key (JSON)' or "
+    "'Workload Identity Federation configuration (JSON)'. 'Service Account to impersonate' cannot be used on its own."
+)
+WIF_IN_SA_FIELD_ERROR = (
+    "The 'Service account private key (JSON)' parameter contains a Workload Identity Federation "
+    "configuration (type: external_account). Move it to the 'Workload Identity Federation configuration (JSON)' parameter."
+)
+INVALID_IMPERSONATION_EMAIL_ERROR = (
+    "The 'Service Account to impersonate' parameter must be a service account email "
+    "(e.g., target-sa@my-project.iam.gserviceaccount.com), not a key file."
+)
+CREDENTIALS_REFRESH_ERROR = (
+    "Failed to obtain an access token using the configured credentials. " "Make sure the base credential is valid and active."
+)
+IMPERSONATION_REFRESH_ERROR_HINT = (
+    " When 'Service Account to impersonate' is configured, make sure the base identity has the "
+    "'Service Account Token Creator' role (roles/iam.serviceAccountTokenCreator) on the target service account."
+)
+INVALID_WIF_CONFIG_TYPE_ERROR = (
+    "The 'Workload Identity Federation configuration (JSON)' parameter must contain a credential configuration "
+    "of type 'external_account'."
+)
 
 """ HELPER CLASSES """
 
@@ -74,24 +113,61 @@ class BaseGoogleClient:
         scopes: list,
         proxy: bool,
         insecure: bool,
+        impersonate_service_account: str | None = None,
         **kwargs,
     ):
         """
         :param service_name: The name of the service. You can find this and the service  here
          https://github.com/googleapis/google-api-python-client/blob/master/docs/dyn/index.md
         :param service_version: The version of the API.
-        :param client_secret: A string of the generated credentials.json
+        :param client_secret: The base credential dict (Service Account key or Workload Identity Federation configuration)
         :param scopes: The scope needed for the project. (i.e. ['https://www.googleapis.com/auth/cloud-platform'])
         :param proxy: Proxy flag
         :param insecure: Insecure flag
+        :param impersonate_service_account: Optional email of a target service account to impersonate
         :param kwargs: Potential arguments dict
         """
-        credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(client_secret, scopes=scopes)
+        credentials = self.build_credentials(client_secret, scopes, impersonate_service_account)
         if proxy or insecure:
-            http_client = credentials.authorize(self.get_http_client_with_proxy(proxy, insecure))
-            self.service = discovery.build(service_name, service_version, http=http_client)
+            http_client = AuthorizedHttp(credentials=credentials, http=self.get_http_client_with_proxy(proxy, insecure))
+            self.service = discovery.build(service_name, service_version, http=http_client, cache_discovery=False)
         else:
-            self.service = discovery.build(service_name, service_version, credentials=credentials)
+            self.service = discovery.build(service_name, service_version, credentials=credentials, cache_discovery=False)
+
+    @staticmethod
+    def build_credentials(client_secret: dict, scopes: list, impersonate_service_account: str | None = None) -> Credentials:
+        """
+        Build google-auth credentials from the base credential, optionally wrapped with service account impersonation.
+        :param client_secret: Service Account key dict or Workload Identity Federation (external_account) configuration dict
+        :param scopes: The OAuth scopes to request
+        :param impersonate_service_account: Optional target service account email. When set, it overrides any
+         service_account_impersonation_url embedded in a Workload Identity Federation configuration.
+        :return: google-auth credentials
+        """
+        credentials: Credentials
+        if client_secret.get("type") == EXTERNAL_ACCOUNT_TYPE:
+            wif_config = client_secret
+            if impersonate_service_account:
+                # The explicit impersonation parameter takes precedence over the embedded impersonation URL.
+                wif_config = {key: value for key, value in client_secret.items() if key != SERVICE_ACCOUNT_IMPERSONATION_URL_KEY}
+            if wif_config.get("subject_token_type") == AWS_SUBJECT_TOKEN_TYPE:
+                demisto.debug("Loading AWS Workload Identity Federation credentials.")
+                credentials = aws.Credentials.from_info(wif_config, scopes=scopes)
+            else:
+                demisto.debug("Loading identity pool Workload Identity Federation credentials.")
+                credentials = identity_pool.Credentials.from_info(wif_config, scopes=scopes)
+        else:
+            demisto.debug("Loading Service Account key credentials.")
+            credentials = service_account.Credentials.from_service_account_info(client_secret, scopes=scopes)
+
+        if impersonate_service_account:
+            demisto.debug("Wrapping the base credentials with service account impersonation.")
+            credentials = impersonated_credentials.Credentials(
+                source_credentials=credentials,
+                target_principal=impersonate_service_account,
+                target_scopes=scopes,
+            )
+        return credentials
 
     @staticmethod
     def get_http_client_with_proxy(proxy, insecure):
@@ -431,6 +507,53 @@ class PubSubClient(BaseGoogleClient):
 """ HELPER FUNCTIONS"""
 
 
+def get_base_credential_config(service_account_key: str | None, wif_config: str | None) -> dict:
+    """
+    Validates that exactly one base credential is configured and returns it as a dict.
+    :param service_account_key: The Service Account private key JSON string
+    :param wif_config: The Workload Identity Federation configuration JSON string
+    :return: The parsed base credential dict
+    """
+    if service_account_key and wif_config:
+        raise DemistoException(BOTH_BASE_CREDENTIALS_ERROR)
+    if not service_account_key and not wif_config:
+        raise DemistoException(NO_BASE_CREDENTIALS_ERROR)
+
+    if wif_config:
+        try:
+            wif_config_dict = json.loads(wif_config)
+        except ValueError as e:
+            raise DemistoException(WIF_CONFIG_PARSE_ERROR) from e
+        if not isinstance(wif_config_dict, dict) or wif_config_dict.get("type") != EXTERNAL_ACCOUNT_TYPE:
+            raise DemistoException(INVALID_WIF_CONFIG_TYPE_ERROR)
+        return wif_config_dict
+
+    try:
+        service_account_dict = json.loads(str(service_account_key), strict=False)
+    except ValueError as e:
+        raise DemistoException(SA_KEY_PARSE_ERROR) from e
+    if not isinstance(service_account_dict, dict):
+        raise DemistoException(SA_KEY_PARSE_ERROR)
+    if service_account_dict.get("type") == EXTERNAL_ACCOUNT_TYPE:
+        raise DemistoException(WIF_IN_SA_FIELD_ERROR)
+    return service_account_dict
+
+
+def get_impersonation_target(impersonate_service_account: str | None) -> str | None:
+    """
+    Normalizes and validates the 'Service Account to impersonate' parameter.
+    :param impersonate_service_account: The raw parameter value
+    :return: The stripped service account email, or None when impersonation is not configured
+    """
+    target = (impersonate_service_account or "").strip()
+    if not target:
+        return None
+    local_part, _, domain = target.partition("@")
+    if not local_part or not domain.endswith(SERVICE_ACCOUNT_EMAIL_SUFFIX):
+        raise DemistoException(INVALID_IMPERSONATION_EMAIL_ERROR)
+    return target
+
+
 def init_google_client(
     default_subscription,
     default_project,
@@ -438,6 +561,8 @@ def init_google_client(
     insecure,
     credentials: dict = None,
     service_account_json: str = None,
+    wif_credentials: dict = None,
+    impersonate_service_account: str = None,
     **kwargs,
 ) -> PubSubClient:
     """
@@ -447,28 +572,40 @@ def init_google_client(
     :param default_project: Default project to use
     :param default_max_msgs: Max messages to pull per fetch
     :param insecure: Flag - do not validate https certs
+    :param credentials: The Service Account private key credentials (password holds the JSON)
+    :param wif_credentials: The Workload Identity Federation configuration credentials (password holds the JSON)
+    :param impersonate_service_account: Optional email of a target service account to impersonate
     :param kwargs:
     :return:
     """
+    service_account_key = (credentials or {}).get("password") or service_account_json
+    wif_config = (wif_credentials or {}).get("password")
+    client_secret = get_base_credential_config(service_account_key, wif_config)
+    impersonation_target = get_impersonation_target(impersonate_service_account)
     try:
-        service_account_json = json.loads(
-            str(credentials.get("password") if isinstance(credentials, dict) else service_account_json)
-        )
         client = PubSubClient(
             default_project=default_project,
             default_subscription=default_subscription,
             default_max_msgs=default_max_msgs,
             service_name=SERVICE_NAME,
             service_version=SERVICE_VERSION,
-            client_secret=service_account_json,
+            client_secret=client_secret,
             scopes=SCOPES,
             insecure=insecure,
+            impersonate_service_account=impersonation_target,
             **kwargs,
         )
         return client
+    except RefreshError as e:
+        error_message = CREDENTIALS_REFRESH_ERROR
+        if impersonation_target:
+            error_message += IMPERSONATION_REFRESH_ERROR_HINT
+        if e.args:
+            error_message += f" Reason: {e.args[0]}"
+        raise DemistoException(error_message) from e
     except ValueError as e:
-        return_error("Failed to parse Service Account Private Key in json format, please make sure you entered it correctly")
-        raise e
+        error_message = WIF_CONFIG_PARSE_ERROR if wif_config else SA_KEY_PARSE_ERROR
+        raise DemistoException(f"{error_message} Reason: {e}") from e
 
 
 def message_to_incident(message):
@@ -1356,10 +1493,10 @@ def handle_fetch_results(
 
 def main():
     params = demisto.params()
-    client = init_google_client(**params)
     command = demisto.command()
     LOG(f"Command being called is {command}")
     try:
+        client = init_google_client(**params)
         commands = {
             "gcp-pubsub-topic-publish-message": publish_message_command,
             "gcp-pubsub-topic-messages-pull": pull_messages_command,
