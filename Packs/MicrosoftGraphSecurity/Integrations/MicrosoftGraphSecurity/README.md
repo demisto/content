@@ -26,7 +26,7 @@ You can narrow what is fetched using the **Alerts Filter** and **Incidents Filte
 ## Important Notes
 
 * Due to API limitations, the ***msg-search-alerts*** command does not filter Office 365 provider alerts.\
-For more information, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
+For more information, see: <https://github.com/microsoftgraph/security-api-solutions/issues/56>.
 * The following properties are supported as filters:
   * *Alerts Filter* parameter (and alert *filter* arguments): assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional alert query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
   * *Incidents Filter* parameter: assignedTo, classification, createdDateTime, determination, lastUpdateDateTime, severity, and status. See [Microsoft optional incident query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-incidents?view=graph-rest-1.0&tabs=http#optional-query-parameters).
@@ -44,13 +44,13 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 
 1. User.Read.All - Application (Only required if using the deprecated commands: `msg-get-user` and `msg-get-users`)
 2. SecurityIncident.Read.All - Delegated or Application (required for the command `msg-list-security-incident` and Fetch Incidents)
-3. SecurityIncident.ReadWrite.All - Delegated or Application (required for the command `msg-update-security-incident` and Fetch Incidents)
+3. SecurityIncident.ReadWrite.All - Delegated or Application (required for the command `msg-update-security-incident` and Fetch Incidents<~XSOAR>, and for outgoing incident mirroring</~XSOAR>)
 4. ThreatHunting.Read.All - Delegated or Application (required for the command `msg-advanced-hunting`)
 
 **Alerts**:
 
 1. SecurityAlert.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`)
-2. SecurityAlert.ReadWrite.All - Application (required for updating alerts with the commands: `msg-update-alert` and `msg-create-alert-comment`)
+2. SecurityAlert.ReadWrite.All - Application (required for updating alerts with the commands: `msg-update-alert` and `msg-create-alert-comment`<~XSOAR>, and for outgoing alert mirroring</~XSOAR>)
 
 **eDiscovery**:
 
@@ -101,7 +101,90 @@ More information about defining this permission can be found [here](https://lear
     | Incidents Filter | Use this field to filter fetched incidents according to their properties. Applies only when fetching Incidents. Filter should be in the format "\{property\} eq '\{property-value\}'". Multiple filters can be applied separated with " and ", for example "severity eq 'high' and status eq 'active'". | False |
     | Microsoft 365 Defender context | When selected, the hunting query result is also saved to the Microsoft 365 Defender context path. Relevant only for the msg-advanced-hunting command. | False |
 
+<~XSOAR>
+
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Incident Mirroring Direction | The direction to mirror alerts and incidents: Incoming \(Microsoft to Cortex XSOAR\), Outgoing \(Cortex XSOAR to Microsoft\), or Incoming And Outgoing. | False |
+    | Close Mirrored Cortex XSOAR Incident | Incoming mirroring. When selected, the Cortex XSOAR incident is closed when the Microsoft alert or incident is resolved \(or, for incidents, redirected\), and reopened when the Microsoft alert or incident is reopened. | False |
+    | Close Mirrored Microsoft Alert/Incident | Outgoing mirroring. When selected, the Microsoft alert or incident status is set to Resolved when the Cortex XSOAR incident is closed. | False |
+    | Comment Entry Tag (to Microsoft) | Entries with this tag are mirrored as comments to the Microsoft alert or incident. Must be set and different from the Comment Entry Tag \(from Microsoft\). | False |
+    | Comment Entry Tag (from Microsoft) | The tag added to entries created from Microsoft alert or incident comments. Must be set and different from the Comment Entry Tag \(to Microsoft\). | False |
+
+</~XSOAR>
+
 4. Click **Test** to validate the URLs, token, and connection.
+
+<~XSOAR>
+
+## Configure Incident Mirroring
+
+You can mirror Microsoft Graph Security alerts and incidents with Cortex XSOAR incidents (Cortex XSOAR 6.10.0 and later).
+
+### Setup
+
+1. Select **Fetches incidents**.
+2. Under **Classifier**, select **Graph Security Classifier** (selected by default). It routes alerts to **Graph Security Alert** and incidents to **Graph Security Incident**. If you fetch only one type, you can instead select the matching incident type under **Incident type**.
+3. Under **Mapper (incoming)**, select **Graph Security Mapper - Incoming**. This mapper covers both alerts and incidents.
+4. Under **Mapper (outgoing)**, select **Graph Security Mapper - Outgoing**. This mapper covers both alerts and incidents.
+5. In **Incident Mirroring Direction**, select the direction:
+
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Incoming | Changes in Microsoft alerts and incidents, including description and comments, are reflected in Cortex XSOAR incidents. For incidents, the resolving comment (close notes) is also reflected. |
+    | Outgoing | Changes in Cortex XSOAR incidents are reflected in Microsoft, including classification/determination (based on Microsoft Graph Security Classification) and tagged comments. Status is sent only when Close Mirrored Microsoft Alert/Incident is enabled. For alerts, customDetails is also sent. For incidents, severity, displayName, description, and customTags are also sent; resolvingComment is sent only when Close Mirrored Microsoft Alert/Incident is enabled. |
+    | Incoming And Outgoing | Changes are reflected in both directions. |
+
+6. Optional: Select the **Close Mirrored Cortex XSOAR Incident** checkbox to close the Cortex XSOAR incident when the Microsoft alert or incident is resolved or redirected, and reopen it when the Microsoft alert or incident is active again.
+7. Optional: Select the **Close Mirrored Microsoft Alert/Incident** checkbox to resolve the Microsoft alert or incident when the Cortex XSOAR incident is closed.
+8. Optional: In **Comment Entry Tag (to Microsoft)**, change the tag (default: `CommentToMicrosoftGraphSecurity`). War Room entries with this tag are sent to Microsoft as alert or incident comments.
+9. Optional: In **Comment Entry Tag (from Microsoft)**, change the tag (default: `CommentFromMicrosoftGraphSecurity`). Microsoft alert or incident comments are added to the War Room with this tag. The two tags must be set and different.
+
+The two close options in steps 6 and 7 control closing and status. Comments and the other field changes are mirrored based on **Incident Mirroring Direction** and the comment tags, with or without these options. When **Close Mirrored Microsoft Alert/Incident** is disabled, status is never sent to Microsoft: closing, reopening, or editing the Microsoft Graph Security Incident/Alert Status field in Cortex XSOAR doesn't change the Microsoft status.
+
+Newly fetched incidents are mirrored in the selected direction. This setting doesn't affect existing incidents.
+
+### Incoming (Microsoft → Cortex XSOAR)
+
+Requires **Incoming** or **Incoming And Outgoing**.
+
+* Field changes and comments are mirrored in.
+* Comments are added to the War Room with the **Comment Entry Tag (from Microsoft)** tag.
+* Only the types selected in **Fetch incidents type** are mirrored in.
+* If you remove a type, items of that type that were already fetched stop getting Microsoft changes.
+* Only the fields in the Outgoing row of the table in step 5 are mirrored out. All other mapped fields, such as the assigned user, the alert severity and the alert description, are mirrored in only.
+
+With **Close Mirrored Cortex XSOAR Incident** selected:
+
+* The Cortex XSOAR incident closes when the Microsoft alert or incident is Resolved.
+* An incident also closes when Microsoft redirects it, which means Microsoft merged it into another incident. A redirected incident closes as **Resolved**.
+* The Cortex XSOAR incident reopens when the Microsoft incident status changes to Active, In progress or Awaiting action, or the alert status changes to New or In progress.
+* The close reason comes from the Microsoft classification. True positive and Informational map to **Resolved**, False positive to **False Positive**, and Unknown to **Other**.
+* For incidents, the close notes come from the Microsoft resolving comment. For alerts, and for incidents without a resolving comment, the close notes are `Resolved in Microsoft Graph Security.` For a redirected incident, the close notes name the target incident.
+
+### Outgoing (Cortex XSOAR → Microsoft)
+
+Requires **Outgoing** or **Incoming And Outgoing**.
+
+* The fields in the table in step 5 are mirrored out.
+* Entries with the **Comment Entry Tag (to Microsoft)** tag are sent as comments that start with `(<user name>):` and end with `Mirrored from Cortex XSOAR`.
+* The classification is sent only when you change the **Microsoft Graph Security Classification** field.
+* Alert **Additional Data** is sent as `key: value` items. Items without a key are sent under the `xsoarTags` key.
+
+With **Close Mirrored Microsoft Alert/Incident** selected:
+
+* Closing the Cortex XSOAR incident sets the Microsoft status to `resolved`.
+* The close comment `Closed in Cortex XSOAR as: <close reason>`, with `Comment: <close notes>` on a new line, replaces the incident resolving comment or is posted as an alert comment. Without a close reason or notes, `Closed in Cortex XSOAR.` is sent, but an existing incident resolving comment is kept.
+* Reopening the Cortex XSOAR incident sets the Microsoft status back to `active` (incidents) or `new` (alerts), unless you set another status in the same change.
+* Status changes aren't sent for an incident that Microsoft redirected (merged into another incident), because Microsoft Graph can't reopen it.
+
+### Notes
+
+* Files aren't mirrored.
+* Comments can't be edited or deleted through mirroring.
+
+</~XSOAR>
 
 ## Commands
 
@@ -1168,7 +1251,7 @@ Get a list of the userSource objects associated with an eDiscoveryCustodian. Use
 
 >|Display Name|Email|User Source Id|Hold Status|Created Date Time|Created By Name|Created By UPN|Created By App Name|Site Web Url|Included Sources|
 >|---|---|---|---|---|---|---|---|---|---|
->| testbox2 | testbox2@yoursite.onmicrosoft.com | 0af7ca2b-84bc-4cff-930d-5d301cc4caf3 | notApplied | 2023-07-06T08:04:21.1548801Z | Content Test | ContentTest@yoursite.onmicrosoft.com | Cortex XSOAR - MS Graph Security Dev | https://yourdev-my.sharepoint.com/personal/testbox2_yourdev_onmicrosoft_com | mailbox,site |
+>| testbox2 | testbox2@yoursite.onmicrosoft.com | 0af7ca2b-84bc-4cff-930d-5d301cc4caf3 | notApplied | 2023-07-06T08:04:21.1548801Z | Content Test | ContentTest@yoursite.onmicrosoft.com | Cortex XSOAR - MS Graph Security Dev | <https://yourdev-my.sharepoint.com/personal/testbox2_yourdev_onmicrosoft_com> | mailbox,site |
 
 ### msg-list-ediscovery-custodian-site-sources
 
@@ -2581,7 +2664,7 @@ Get a list of the ediscoveryHoldPolicy objects and their properties.
 ### msg-export-result-ediscovery-data
 
 ***
-Export results from an estimated ediscoverySearch. For details, see Manage a collection estimate (https://learn.microsoft.com/en-us/purview/ediscovery-create-draft-collection#manage-a-collection-estimate).
+Export results from an estimated ediscoverySearch. For details, see Manage a collection estimate (<https://learn.microsoft.com/en-us/purview/ediscovery-create-draft-collection#manage-a-collection-estimate>).
 
 #### Base Command
 
@@ -2674,7 +2757,7 @@ Get a list of the caseOperation objects and their properties, or retrieve a spec
 | operation_id | The ID of the operation. | Optional |
 | limit | Number of total results to return. Default is 50. | Optional |
 | all_results | Show all results if true. Possible values are: true, false. Default is false. | Optional |
-| download_file | Download the export report when an export file link is available. This only applies if `operation_id` is provided. For authorization or permission errors while downloading, see: https://learn.microsoft.com/en-us/graph/api/security-caseoperation-get?view=graph-rest-1.0&tabs=http#response-1. Possible values are: true, false. Default is false. | Optional |
+| download_file | Download the export report when an export file link is available. This only applies if `operation_id` is provided. For authorization or permission errors while downloading, see: <https://learn.microsoft.com/en-us/graph/api/security-caseoperation-get?view=graph-rest-1.0&tabs=http#response-1>. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -2746,7 +2829,7 @@ Create a new ediscoveryHoldPolicy object.
 | case_id | The ID of the eDiscovery case. | Required |
 | display_name | The display name of the legal hold policy. | Required |
 | description | The description of the legal hold policy. | Optional |
-| content_query | KQL query specifying content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&preserve-view=true). | Optional |
+| content_query | KQL query specifying content to be held in the specified locations. Learn about KQL (<https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&preserve-view=true>). | Optional |
 
 #### Context Output
 
@@ -2838,7 +2921,82 @@ Update the properties of an ediscoveryHoldPolicy object.
 | case_id | The ID of the eDiscovery case. | Required |
 | hold_policy_id | The policy ID that is intended to be updated. | Required |
 | description | The description of the legal hold policy. | Optional |
-| content_query | KQL query specifying content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&preserve-view=true). | Optional |
+| content_query | KQL query specifying content to be held in the specified locations. Learn about KQL (<https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&preserve-view=true>). | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### get-remote-data
+
+***
+Gets remote data from a remote alert/incident. This method does not update the current incident, and should be used for debugging purposes only.
+
+#### Base Command
+
+`get-remote-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The remote alert or incident ID. | Optional |
+| alert_id | The remote alert ID. Used only when id and incident_id are not provided. | Optional |
+| incident_id | The remote incident ID. Used only when id is not provided. | Optional |
+| lastUpdate | The last update time (ISO-8601 or UTC timestamp in seconds). Only comments created after this time are returned. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### get-modified-remote-data
+
+***
+Gets the list of remote incidents/alerts that were modified since the last update time. This method is only used for debugging purposes.
+
+#### Base Command
+
+`get-modified-remote-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| lastUpdate | The last update time (ISO-8601 or UTC timestamp in seconds). Returns the IDs of the alerts and/or incidents (according to **Fetch incidents type**) modified since then. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### update-remote-system
+
+***
+Updates the remote incidents/alerts with local incident changes. This method is only used for debugging purposes and will not update the current incident.
+
+#### Base Command
+
+`update-remote-system`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### get-mapping-fields
+
+***
+Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+
+#### Base Command
+
+`get-mapping-fields`
+
+#### Input
+
+There are no input arguments for this command.
 
 #### Context Output
 
