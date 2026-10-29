@@ -1,0 +1,15 @@
+{
+    "type": "Executive Brief",
+    "name": "Key Developments: XYZ (July 20-27, 2026)",
+    "bodyexecutivebrief": "**Summary:** Summary of the report.\n\n**Report ID:** 00000000000000000001\n\n**Source:** [Flashpoint Ignite](https://mock_dummy.com/cti/intelligence/report/00000000000000000001)\n\n**Ingested:** 2026-07-27T21:12:56.445+00:00\n\n**Actors:** ActorOne, ActorTwo\n\n**Report Body**\n\n---\n\n# Key Developments: XYZ\n\nReport Body data with a [link](https://mock_dummy.com/home/ddw/forums/threads/00000000000000000001).",
+    "description": "Summary of the report.",
+    "published": "2026-07-27T21:12:56.445+00:00",
+    "modified": "2026-07-27T21:12:56.445+00:00",
+    "tags": [
+        "AI",
+        "Key Developments: XYZ",
+        "Cybersecurity & Internet Governance"
+    ],
+    "reportstatus": "Published",
+    "value": "00000000000000000001"
+}
