@@ -1,3 +1,4 @@
+import json
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
@@ -57,7 +58,8 @@ def write_data(sheet: str, data_item: dict | list, data_headers: list | None, wo
             row += 1
             for header in data_headers:
                 item_value = item.get(header)
-                if item_value is not None and item_value != "":
+                if item_value not in (None, "", []):
+                    worksheet.write(row, col, format_cell_value(item_value), border)
                     worksheet.write(row, col, format_cell_value(item_value), border)
                 col += 1
 
