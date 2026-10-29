@@ -4607,6 +4607,97 @@ Deletes an IP group resource. Required permissions: Microsoft.Network/ipGroups/d
 
 There is no context output for this command.
 
+### azure-dns-zones-list
+
+***
+Lists the DNS zones in all resource groups in a subscription. Use the next_token argument to view the next page of results. Required permissions: Microsoft.Network/dnszones/read.
+
+#### Base Command
+
+`azure-dns-zones-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | The maximum number of DNS zones to return. Must be between 1 and 1000. If not specified, Azure returns up to 100 zones. | Optional |
+| next_token | The token for retrieving the next page of results. Use the Azure.DNS.ZonesNextToken value from the previous response. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.DNS.Zones.id | String | The DNS zone resource ID. |
+| Azure.DNS.Zones.name | String | The name of the DNS zone. |
+| Azure.DNS.Zones.type | String | The resource type. |
+| Azure.DNS.Zones.location | String | The resource location. |
+| Azure.DNS.Zones.etag | String | The ETag of the DNS zone. |
+| Azure.DNS.Zones.tags | Unknown | The tags assigned to the DNS zone. |
+| Azure.DNS.Zones.properties.maxNumberOfRecordSets | Number | The maximum number of record sets that can be created in the DNS zone. |
+| Azure.DNS.Zones.properties.maxNumberOfRecordsPerRecordSet | Number | The maximum number of records per record set that can be created in the DNS zone. |
+| Azure.DNS.Zones.properties.numberOfRecordSets | Number | The current number of record sets in the DNS zone. |
+| Azure.DNS.Zones.properties.nameServers | Unknown | The name servers for the DNS zone. |
+| Azure.DNS.Zones.properties.zoneType | String | The type of the DNS zone \(Public or Private\). |
+| Azure.DNS.Zones.properties.registrationVirtualNetworks | Unknown | The list of references to the virtual networks that register hostnames in the private DNS zone. |
+| Azure.DNS.Zones.properties.resolutionVirtualNetworks | Unknown | The list of references to the virtual networks that resolve records in the private DNS zone. |
+| Azure.DNS.ZonesNextToken | String | The URI to use when requesting the next set of DNS zones. |
+
+### azure-dns-cname-record-set-get
+
+***
+Retrieves a DNS record set of type CNAME. Required permissions: Microsoft.Network/dnszones/CNAME/read.
+
+#### Base Command
+
+`azure-dns-cname-record-set-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+| zone_name | The name of the DNS zone \(without a terminating dot\). | Required |
+| relative_record_set_name | The name of the CNAME record set, relative to the name of the zone. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.DNS.RecordSets.id | String | The ID of the record set. |
+| Azure.DNS.RecordSets.name | String | The name of the record set. |
+| Azure.DNS.RecordSets.type | String | The type of the record set. |
+| Azure.DNS.RecordSets.etag | String | The ETag of the record set. |
+| Azure.DNS.RecordSets.properties.metadata | Unknown | The metadata attached to the record set. |
+| Azure.DNS.RecordSets.properties.TTL | Number | The TTL \(time-to-live\) of the records in the record set. |
+| Azure.DNS.RecordSets.properties.fqdn | String | The fully qualified domain name of the record set. |
+| Azure.DNS.RecordSets.properties.provisioningState | String | The provisioning state of the record set. |
+| Azure.DNS.RecordSets.properties.targetResource | Unknown | The reference to an Azure resource from where the DNS resource value is taken, containing the id field. |
+| Azure.DNS.RecordSets.properties.CNAMERecord.cname | String | The canonical name for the CNAME record. |
+
+### azure-dns-cname-record-set-delete
+
+***
+Deletes a DNS record set of type CNAME from a DNS zone. This operation cannot be undone. Required permissions: Microsoft.Network/dnszones/CNAME/delete.
+
+#### Base Command
+
+`azure-dns-cname-record-set-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+| zone_name | The name of the DNS zone \(without a terminating dot\). | Required |
+| relative_record_set_name | The name of the CNAME record set, relative to the name of the zone. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
 ### azure-firewall-list
 
 ***
