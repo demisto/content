@@ -1,3 +1,6 @@
+sectionorder:
+- Connect
+- Collect
 category: Data Enrichment & Threat Intelligence
 provider: Filigran
 commonfields:
@@ -8,12 +11,14 @@ configuration:
   name: base_url
   required: true
   type: 0
+  section: Connect
 - display: API Key (leave empty. Fill in the API key in the password field.)
   displaypassword: API Key
   name: credentials
   type: 9
   hiddenusername: true
   required: false
+  section: Connect
 - additionalinfo: 'The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL. Other types will not cause automatic indicator creation in XSOAR.'
   defaultvalue: ALL
   display: Indicator types to fetch
@@ -31,16 +36,19 @@ configuration:
   - URL
   required: true
   type: 16
+  section: Collect
 - defaultvalue: '500'
   display: Max indicators per fetch
   name: max_indicator_to_fetch
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   type: 8
   required: false
+  section: Collect
 - additionalinfo: Indicators from this integration instance will get this reputation. If none of the options is chosen, the indicator reputation will be set according to the indicator data.
   display: Indicator Reputation
   name: feedReputation
@@ -51,6 +59,7 @@ configuration:
   - Bad
   type: 18
   required: false
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -64,6 +73,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. If none of the options is chosen, the TLP color will be set according to the indicator data.
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -74,6 +84,7 @@ configuration:
   - WHITE
   type: 15
   required: false
+  section: Collect
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -84,44 +95,53 @@ configuration:
   - suddenDeath
   type: 17
   required: false
+  section: Collect
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
   type: 1
   required: false
+  section: Collect
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   required: false
+  section: Collect
 - additionalinfo: CSV values are supported.
   display: Tags
   name: feedTags
   type: 0
   required: false
+  section: Collect
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Score minimum value
   name: score_start
   additionalinfo: 'Score minimum value to filter by. Values range is 1-100. '
   type: 0
   required: false
+  section: Collect
 - display: Score maximum value
   name: score_end
   additionalinfo: 'Score maximum value to filter by. Values range is 1-100. '
   type: 0
   required: false
+  section: Collect
 description: Ingest indicators from the OpenCTI feed. Compatible with OpenCTI 5.12.17 and above.
 display: OpenCTI Feed 4.X
 name: OpenCTI Feed 4.X
