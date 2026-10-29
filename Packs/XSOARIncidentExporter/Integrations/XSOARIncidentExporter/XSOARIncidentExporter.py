@@ -158,7 +158,7 @@ def build_description(incident: dict) -> str:
     lines.append(f'Name: {incident.get("name", "")}')
     lines.append(f'Type: {incident.get("type", "")}')
     status_val = incident.get("status")
-    lines.append(f"Status: {status_names.get(status_val, str(status_val))}")
+    lines.append(f"Status: {status_names.get(status_val, str(status_val))}")  # type: ignore[arg-type]
     sev = incident.get("severity", 0)
     lines.append(f"Severity: {severity_names.get(sev, str(sev))}")
     lines.append(f'Owner: {incident.get("owner", "")}')
@@ -566,23 +566,23 @@ def main() -> None:  # pragma: no cover
             result = test_module(xsiam_client, xsoar_client)
             return_results(result)
         elif command == "xsoar-exporter-push-incidents":
-            result = push_incidents_command(
+            result = push_incidents_command(  # type: ignore[assignment]
                 xsiam_client, xsoar_client, args, default_query, default_max, elevate_low, timestamp_offset
             )
             return_results(result)
         elif command == "xsoar-exporter-push-incident":
-            result = push_single_incident_command(xsiam_client, xsoar_client, args, elevate_low, timestamp_offset)
+            result = push_single_incident_command(xsiam_client, xsoar_client, args, elevate_low, timestamp_offset)  # type: ignore[assignment]
             return_results(result)
         elif command == "xsoar-exporter-sync-new-incidents":
-            result = sync_new_incidents_command(
+            result = sync_new_incidents_command(  # type: ignore[assignment]
                 xsiam_client, xsoar_client, args, default_query, default_max, elevate_low, timestamp_offset
             )
             return_results(result)
         elif command == "xsoar-exporter-reset-sync":
-            result = reset_sync_command()
+            result = reset_sync_command()  # type: ignore[assignment]
             return_results(result)
         elif command == "xsoar-exporter-sync-close-status":
-            result = sync_close_status_command(xsiam_client, args)
+            result = sync_close_status_command(xsiam_client, args)  # type: ignore[assignment]
             return_results(result)
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
