@@ -68,7 +68,7 @@ script:
   type: python
   commands:
   - name: "proofpoint-es-get-last-run-results"
-    description: Retrieves the results of a connection attempt to Proofpoint, indicating whether it was successful or failed and why. If event fetching has been initiated, this command provides the results of the most recent fetch attempt.
+    description: Retrieves the results of a connection attempt to Proofpoint, indicating whether it was successful or failed and why. If event fetching has been initiated, this command provides the results of the most recent fetch attempt for each event type.
   - name: "proofpoint-es-get-events"
     description: "Retrieves events from the Proofpoint Email Security PoD archive for a specified time range to backfill gaps in fetched events. This command is intended for development and debugging purposes and is to be used with caution after consulting with engineering, as it may create duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism."
     arguments:
