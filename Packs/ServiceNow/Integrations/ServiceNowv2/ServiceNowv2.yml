@@ -1758,6 +1758,81 @@ script:
       description: state of task.
       type: Unknown
   - arguments:
+    - description: >-
+        The source of the event (e.g. "SCOM", "Nagios"). Identifies the
+        monitoring tool or system that generated the event.
+      name: source
+    - description: >-
+        The node (hostname or IP address) where the event occurred
+        (e.g. "web-server-01").
+      name: node
+    - description: >-
+        The event type or alert name as defined in the monitoring tool
+        (e.g. "CPU Utilization", "High Memory Usage").
+      name: type
+    - description: >-
+        The resource on the node that triggered the event
+        (e.g. "CPU", "disk:/var").
+      name: resource
+    - auto: PREDEFINED
+      description: >-
+        Severity of the event. Maps to ServiceNow em_event severity values:
+        0 = Clear, 1 = Critical, 2 = Major, 3 = Minor, 4 = Warning, 5 = Info.
+      name: severity
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+    - description: Human-readable description of the event.
+      name: description
+    - description: >-
+        Time the event occurred, in the format "YYYY-MM-DD HH:MM:SS"
+        (UTC). Defaults to the current time if omitted.
+      name: time_of_event
+    - description: >-
+        A JSON string of additional key-value pairs to attach to the event
+        (e.g. '{"cpu_usage": "95%"}').
+      name: additional_info
+    - description: >-
+        A unique key used to deduplicate events. Events with the same
+        message_key are treated as updates to the same alert.
+      name: message_key
+    - description: Name of the metric associated with the event.
+      name: metric_name
+    - description: Value of the metric associated with the event.
+      name: metric_value
+    - description: >-
+        A raw JSON object representing a single event (e.g.
+        '{"source":"SCOM","node":"web-01","severity":"2"}'). Takes priority
+        over all other arguments when provided. Use this for Postman-style
+        copy-paste of a full event payload.
+      name: raw_event
+    - description: >-
+        A JSON value for creating one or more events in a single call.
+        Accepts either a JSON array of event objects (bulk mode) or a single
+        JSON object (auto-wrapped). Each object may contain any of the fields
+        above. When provided, all individual field arguments are ignored.
+        Takes priority over individual field arguments but is overridden by
+        'raw_event'.
+      name: events
+    description: >-
+      Creates one or more events in ServiceNow Event Management by posting to
+      the /api/global/em/jsonv2 webhook endpoint (em_events table). Supports
+      three input modes (in priority order): (1) raw_event — a raw JSON object
+      for a single event; (2) events — a JSON array or object; (3) individual
+      field arguments (source, node, type, resource, severity, etc.).
+    name: servicenow-create-event
+    outputs:
+    - contextPath: ServiceNow.Event.status
+      description: Status returned by ServiceNow Event Management.
+      type: String
+    - contextPath: ServiceNow.Event.message
+      description: Message returned by ServiceNow Event Management.
+      type: String
+  - arguments:
     - auto: PREDEFINED
       defaultValue: 'GET'
       description: action to be performed on path.
