@@ -1,3 +1,8 @@
+import atexit
+import os
+import signal
+import sys
+import threading
 from contextlib import ExitStack, contextmanager
 from functools import partial
 from threading import Event, Lock, Thread
@@ -34,6 +39,80 @@ OPEN_TIMEOUT = 10  # Timeout for opening the WebSocket connection in seconds
 CLOSE_TIMEOUT = 60  # Timeout for closing the connection in seconds
 MAX_MESSAGE_SIZE: int | None = None  # Disable the 1 MiB default size limit on incoming messages
 RECEIVE_TIMEOUT = 1  # Timeout for receiving events in seconds
+
+# XSUP-79350 lifecycle diagnostics (temporary). They show whether a long-running container
+# is stopped from the outside (signal) or ends by itself (main() returns/raises, interpreter exit).
+# All output goes through demisto.info (never stderr: stderr output marks the run as failed).
+DIAG_PREFIX = "PP-DIAG"
+DIAG_LOG_WAIT_SECONDS = 2
+DIAG_SIGNALS = (signal.SIGTERM, signal.SIGINT, signal.SIGHUP)
+_diag_previous_handlers: dict[int, Any] = {}
+_diag_installed = False
+
+
+def diag_process_age() -> str:
+    """Return how long this process has been alive (from /proc), so it can be compared with the engine's container start."""
+    try:
+        with open("/proc/self/stat") as stat_file:
+            start_ticks = int(stat_file.read().rsplit(")", 1)[1].split()[19])
+        with open("/proc/uptime") as uptime_file:
+            system_uptime = float(uptime_file.read().split()[0])
+        return f"{system_uptime - start_ticks / os.sysconf('SC_CLK_TCK'):.2f}s"
+    except Exception:
+        return "unknown"
+
+
+def diag_alive_threads() -> str:
+    return ",".join(sorted(thread.name for thread in threading.enumerate()))
+
+
+def diag_log(message: str) -> None:
+    demisto.info(f"{DIAG_PREFIX} pid={os.getpid()} age={diag_process_age()} {message}")
+
+
+def diag_log_bounded(message: str) -> None:
+    """Log from a helper thread and wait at most DIAG_LOG_WAIT_SECONDS, so a held stdout lock can never block the caller."""
+    logger_thread = Thread(target=diag_log, args=(message,), daemon=True, name="pp-diag-log")
+    logger_thread.start()
+    logger_thread.join(DIAG_LOG_WAIT_SECONDS)
+
+
+def _diag_on_signal(signum: int, frame: Any) -> None:
+    """Record the signal, then re-deliver it to the handler that was installed before us (default: terminate).
+
+    The handler itself does not log: it only restores the previous handler and hands the work to a thread,
+    so it cannot deadlock if the signal interrupted a write that holds the stdout lock.
+    """
+    previous_handler = _diag_previous_handlers.get(signum)
+    signal.signal(signum, previous_handler if previous_handler is not None else signal.SIG_DFL)
+
+    def log_and_redeliver() -> None:
+        diag_log_bounded(f"received signal {signal.Signals(signum).name}; threads=[{diag_alive_threads()}]")
+        os.kill(os.getpid(), signum)
+
+    Thread(target=log_and_redeliver, daemon=True, name="pp-diag-signal").start()
+
+
+def _diag_on_interpreter_exit() -> None:
+    diag_log_bounded(f"interpreter exiting; threads=[{diag_alive_threads()}]")
+
+
+def install_lifecycle_diagnostics() -> None:
+    """Install the signal and exit hooks once per process and log the process context."""
+    global _diag_installed
+    if _diag_installed:
+        return
+    _diag_installed = True
+    atexit.register(_diag_on_interpreter_exit)
+    if threading.current_thread() is threading.main_thread():
+        for diag_signal in DIAG_SIGNALS:
+            _diag_previous_handlers[diag_signal] = signal.getsignal(diag_signal)
+            signal.signal(diag_signal, _diag_on_signal)
+    previous = {signal.Signals(sig).name: str(handler) for sig, handler in _diag_previous_handlers.items()}
+    diag_log(
+        f"long-running start ppid={os.getppid()} host={os.uname().nodename} python={sys.version.split()[0]} "
+        f"signal_hooks={bool(_diag_previous_handlers)} previous_handlers={previous} threads=[{diag_alive_threads()}]"
+    )
 
 
 class EventConnection:
@@ -533,7 +612,12 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
                 consecutive_failures = 0
                 fetch_interval = max(1, fetch_interval // len(event_types))  # Divide the fetch interval equally among event types
 
+                diag_log(f"connected all {len(connections)} event types, entering fetch loop")
+                cycle = 0
                 while True:
+                    cycle += 1
+                    if cycle <= 3 or cycle % 100 == 0:
+                        diag_log(f"fetch cycle #{cycle}")
                     should_skip_sleeping: List[bool] = []
                     perform_long_running_loop(connections, fetch_interval, should_skip_sleeping)
                     # sleep for a bit to not throttle the CPU
@@ -546,7 +630,10 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
                         )
                         time.sleep(FETCH_SLEEP)
                         demisto.info(f"Finished sleeping {FETCH_SLEEP} seconds.")
-        except Exception as e:
+        except BaseException as e:
+            if not isinstance(e, Exception):
+                diag_log(f"long-running loop interrupted by {type(e).__name__}({e}); threads=[{diag_alive_threads()}]")
+                raise
             consecutive_failures += 1
             err = f"Got an error while running in long running {e}. {traceback.format_exc()}"
             demisto.updateModuleHealth(err, is_error=True)
@@ -615,8 +702,11 @@ def main():  # pragma: no cover
     api_key = params.get("api_key", {}).get("password", "")
     fetch_interval = int(params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS))
     event_types = argToList(params.get("event_types")) or EVENT_TYPES
+    is_long_running = command == "long-running-execution"
+    if is_long_running:
+        install_lifecycle_diagnostics()
     try:
-        if command == "long-running-execution":
+        if is_long_running:
             if params.get("isFetchEvents", False):
                 demisto.debug("Fetching events is enabled for this instance. Starting long running execution.")
                 return_results(long_running_execution_command(host, cluster_id, api_key, fetch_interval, event_types))
@@ -643,8 +733,16 @@ def main():  # pragma: no cover
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
+        if is_long_running:
+            diag_log(f"main() returned normally; threads=[{diag_alive_threads()}]")
     except Exception:
+        if is_long_running:
+            diag_log(f"main() caught an exception, calling return_error: {traceback.format_exc()}")
         return_error(f"Failed to execute {command} command.\nError:\n{traceback.format_exc()}")
+    except BaseException as e:
+        if is_long_running:
+            diag_log(f"main() interrupted by {type(e).__name__}({e}); threads=[{diag_alive_threads()}]")
+        raise
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
