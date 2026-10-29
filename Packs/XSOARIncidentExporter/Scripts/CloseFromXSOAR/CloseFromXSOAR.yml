@@ -31,5 +31,7 @@ outputs:
   description: Whether the case was closed or no action was taken.
   type: String
 fromversion: 6.10.0
+marketplaces:
+- marketplacev2
 tests:
 - No tests (auto formatted)
