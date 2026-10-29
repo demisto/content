@@ -1,0 +1,75 @@
+name: Panorays Axis MCP
+display: Panorays Axis MCP
+description: Connects securely with the Panorays Axis Model Context Protocol (MCP) server and accesses its tools in real time.
+category: Vulnerability Management
+provider: Panorays
+sectionorder:
+- Connect
+commonfields:
+  id: Panorays Axis MCP
+  version: -1
+configuration:
+  - name: auth_type
+    section: Connect
+    display: Authentication Type
+    type: 15
+    required: true
+    defaultvalue: Bearer
+    options:
+      - Bearer
+      - OAuth 2.0 Authorization Code
+    additionalinfo: The authentication method.
+  - name: token
+    type: 9
+    displaypassword: API Token
+    hiddenusername: true
+    section: Connect
+    additionalinfo: The Panorays API token. Required for Bearer authentication.
+  - name: oauth_credentials
+    type: 9
+    display: Client ID
+    displaypassword: Client Secret
+    section: Connect
+    additionalinfo: The Client ID and Client Secret provided by Panorays support. Required for OAuth authentication.
+  - name: auth_code
+    type: 9
+    displaypassword: Authorization code
+    hiddenusername: true
+    section: Connect
+    additionalinfo: The authorization code returned after running the `!panorays-mcp-generate-login-url` command and authenticating. Required for OAuth authentication.
+  - name: redirect_uri
+    section: Connect
+    display: Redirect URI
+    type: 0
+    advanced: true
+    defaultvalue: https://oproxy.demisto.ninja/authcode
+    additionalinfo: The redirect URI registered on the Panorays OAuth client. Must match the URI configured by Panorays support.
+script:
+  commands:
+  - arguments: []
+    description: Retrieves a list of available tools in the Panorays Axis MCP server.
+    name: list-tools
+    hidden: true
+    outputs: []
+  - arguments:
+    - name: name
+      description: The name of the tool to call.
+      required: true
+    - name: arguments
+      description: The parameters for the tool execution.
+    description: Calls a specific tool on the Panorays Axis MCP server with optional input parameters.
+    name: call-tool
+    hidden: true
+    outputs: []
+  - description: Tests the authentication configuration with the MCP server.
+    name: panorays-mcp-auth-test
+  - description: Generates an authentication login URL. Only available for OAuth authentication.
+    name: panorays-mcp-generate-login-url
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/mcp:1.0.0.13526390
+  mcp: true
+fromversion: 8.13.0
+tests:
+- No tests (auto formatted)
