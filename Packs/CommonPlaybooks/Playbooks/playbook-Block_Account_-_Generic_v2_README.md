@@ -59,6 +59,7 @@ This playbook does not use any sub-playbooks.
 | Tag | PAN-OS Tag name to apply to the username that you want to block. | Bad Account | Optional |
 | NamingConvention | In case you are using naming convention in your IDP, please specify a prefix for special/service accounts \(use comma separated\) |  | Optional |
 | UserVerification | Possible values:True/False. Default:True.<br/>Specify if User Verification is Requrired | True | Optional |
+| IAMUserDomain | The IAM users domain. The domain will be appended to the username. E.g., username@IAMUserDomain. |  | Optional |
 
 ## Playbook Outputs
 
