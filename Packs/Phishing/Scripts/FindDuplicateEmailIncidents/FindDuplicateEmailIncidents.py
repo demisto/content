@@ -55,6 +55,28 @@ URL_REGEX = (
 )
 
 IGNORE_INCIDENT_TYPE_VALUE = "None"
+MAX_FIELD_NAME_LENGTH = 100
+
+
+def get_field_name_arg(input_args: dict, arg_name: str, default_field_name: str) -> str:
+    """Return the incident field NAME given in `arg_name`, falling back to `default_field_name`.
+
+    The email arguments expect an incident field name (e.g. "emailbody"), not a field value
+    (e.g. "${incident.emailbody}"). A value containing whitespace or longer than
+    MAX_FIELD_NAME_LENGTH characters is treated as a misconfiguration and ignored.
+    """
+    field_name = input_args.get(arg_name)
+    if not field_name:
+        return default_field_name
+    field_name = str(field_name).strip()
+    if not field_name or re.search(r"\s", field_name) or len(field_name) > MAX_FIELD_NAME_LENGTH:
+        demisto.debug(
+            f"Argument '{arg_name}' looks like a field value rather than an incident field name "
+            f"(length={len(field_name)}). Expected a field name such as '{default_field_name}', not "
+            f"'${{incident.{default_field_name}}}'. Falling back to '{default_field_name}'."
+        )
+        return default_field_name
+    return field_name
 
 
 def get_existing_incidents(input_args, current_incident_type):
@@ -424,10 +446,10 @@ def main():
     demisto.debug("Starting FindDuplicateEmailIncidents script.")
     input_args = demisto.args()
     demisto.debug(f"Script arguments: {input_args}")
-    EMAIL_BODY_FIELD = input_args.get("emailBody", EMAIL_BODY_FIELD)
-    EMAIL_SUBJECT_FIELD = input_args.get("emailSubject", EMAIL_SUBJECT_FIELD)
-    EMAIL_HTML_FIELD = input_args.get("emailBodyHTML", EMAIL_HTML_FIELD)
-    FROM_FIELD = input_args.get("emailFrom", FROM_FIELD)
+    EMAIL_BODY_FIELD = get_field_name_arg(input_args, "emailBody", EMAIL_BODY_FIELD)
+    EMAIL_SUBJECT_FIELD = get_field_name_arg(input_args, "emailSubject", EMAIL_SUBJECT_FIELD)
+    EMAIL_HTML_FIELD = get_field_name_arg(input_args, "emailBodyHTML", EMAIL_HTML_FIELD)
+    FROM_FIELD = get_field_name_arg(input_args, "emailFrom", FROM_FIELD)
     FROM_POLICY = input_args.get("fromPolicy", FROM_POLICY)
     max_incidents_to_return = input_args.get("maxIncidentsToReturn", "20")
 
