@@ -2,6 +2,17 @@
 
 Agentless cloud security platform for detecting and addressing cloud issues, detections, and threats.
 
+## Prerequisites
+
+Threat comments are stored as Wiz Issue comments. The service account needs the following scopes:
+
+| Operation | Scope |
+| --- | --- |
+| `wiz-defend-set-threat-comment`, note arguments of `wiz-defend-resolve-threat` / `wiz-defend-reopen-threat` | `write:comments` |
+| `wiz-defend-clear-threat-comments` | `read:comments` + `write:comments` + `admin:comments` (to delete other authors' comments) |
+
+`admin:comments` does not replace `read:comments` or `write:comments`. Without it, clearing other authors' comments can fail after some comments have already been deleted.
+
 ## Configure WizDefend on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -239,17 +250,6 @@ When the Wiz API returns a detection without a description, the integration auto
 ### Note truncation
 
 `wiz-defend-set-threat-comment` and `wiz-defend-resolve-threat` truncate any note input longer than 1400 characters (suffixed with `... [truncated]`) to avoid Wiz API errors.
-
-### Required permissions
-
-Threat comments are stored as Wiz Issue comments. The service account needs the following scopes:
-
-| Operation | Scope |
-| --- | --- |
-| `wiz-defend-set-threat-comment`, note arguments of `wiz-defend-resolve-threat` / `wiz-defend-reopen-threat` | `write:comments` |
-| `wiz-defend-clear-threat-comments` | `read:comments` + `write:comments` + `admin:comments` (to delete other authors' comments) |
-
-`admin:comments` does not replace `read:comments` or `write:comments`. Without it, clearing other authors' comments can fail after some comments have already been deleted.
 
 ## Known Limitations
 

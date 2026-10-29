@@ -281,7 +281,7 @@ test_reject_issue_response = {
     }
 }
 
-# Define the return values: issue-type lookup, updateIssue, then the comment create
+# Define the return values
 resolve_issues_return_values = [test_get_issues_response, test_reject_issue_response, {"data": {}}]
 
 

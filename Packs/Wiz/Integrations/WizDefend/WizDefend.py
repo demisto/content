@@ -1551,7 +1551,7 @@ def get_entries(query, variables, wiz_type, raise_errors=False):
 
     except Exception as e:
         error_message = f"Received an error while performing an API call.\nError info: {str(e)}"
-        demisto.error(error_message)
+        demisto.error(f"{error_message}\n{traceback.format_exc()}")
         if raise_errors:
             raise
         return_error(error_message)
@@ -1573,7 +1573,7 @@ def query_single_issue(issue_id):
     return query_issues(issue_variables, paginate=False)
 
 
-def get_issue_comments(issue_id):
+def get_issue_comments(issue_id: str) -> list[dict]:
     """Needs read:comments, so keep it off the fetch and get paths."""
     comments: list[dict] = []
     after = None
@@ -3639,7 +3639,7 @@ def set_issue_note(issue_id, comment, raise_errors=False):
     return get_entries(CREATE_COMMENT_QUERY, variables, WizApiResponse.CREATE_COMMENT, raise_errors=raise_errors)
 
 
-def _note_warning(issue_id, note):
+def _note_warning(issue_id: str, note: str) -> str:
     try:
         set_issue_note(issue_id, note, raise_errors=True)
     except Exception as e:

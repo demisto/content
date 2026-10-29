@@ -2489,12 +2489,12 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
     return _add_note_after_status_update(issue_id, reject_or_resolve_comment, response)
 
 
-def _add_note_after_status_update(issue_id, note, response):
+def _add_note_after_status_update(issue_id: str, note: str, response: dict) -> dict:
     try:
         set_issue_comment(issue_id, note)
     except Exception as e:
         warning = f"The issue status was updated, but the note could not be added: {e}"
-        demisto.error(warning)
+        demisto.error(f"[add_note_after_status_update] {warning}\n{traceback.format_exc()}")
         response["warning"] = warning
     return response
 
@@ -2565,7 +2565,7 @@ def _get_issue(issue_id, is_evidence=False):
     return issue_response
 
 
-def get_issue_comments(issue_id):
+def get_issue_comments(issue_id: str) -> list[dict]:
     """Needs read:comments, so keep it off the fetch and get paths."""
     comments: list[dict] = []
     after = None
@@ -2958,10 +2958,10 @@ def get_remote_data_command(args):
         try:
             entries = _build_new_note_entries(get_issue_comments(issue_id), last_update)
         except Exception as e:
-            # Only a missing scope is skipped; other errors must keep lastUpdate unadvanced.
+            # Other errors must re-raise so lastUpdate is not advanced.
             if "read:comments" not in str(e):
                 raise
-            demisto.info(f"get_remote_data: skipping comments for issue {issue_id}: {e}")
+            demisto.info(f"[get_remote_data] skipping comments for issue {issue_id}: {e}")
     return GetRemoteDataResponse(issue, entries)
 
 
