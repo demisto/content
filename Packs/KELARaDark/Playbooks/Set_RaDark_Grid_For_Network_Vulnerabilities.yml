@@ -1,5 +1,5 @@
 deprecated: true
-description: 'Deprecated. Use the KELA Monitor integration instead. Set grid for RaDark - Network Vulnerabilities incidents.'
+description: 'Deprecated. No available replacement. Set grid for RaDark - Network Vulnerabilities incidents.'
 id: Set RaDark Grid For Network Vulnerabilities
 inputs: []
 name: Set RaDark Grid For Network Vulnerabilities

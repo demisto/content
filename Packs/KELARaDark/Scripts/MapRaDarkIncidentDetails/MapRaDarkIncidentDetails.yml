@@ -1,7 +1,7 @@
 args:
 - description: Detailed items as a dictionary.
   name: itemDetails
-comment: Deprecated. Use the KELA Monitor integration instead.
+comment: Deprecated. No available replacement. Map details to an RaDark incident.
 commonfields:
   id: MapRaDarkIncidentDetails
   version: -1

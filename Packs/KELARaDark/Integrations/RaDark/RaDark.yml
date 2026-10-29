@@ -61,6 +61,12 @@ configuration:
   - Hacking Discussions
   required: true
   type: 16
+- additionalinfo: When selected (default), passwords are replaced by ******** in the War Room tables and context of radark-email-enrich and radark-incident-get-items. Clear it to show them as RaDark returns them.
+  defaultvalue: "true"
+  display: Mask passwords
+  name: mask_sensitive_data
+  type: 8
+  required: false
 description: Deprecated. Use the KELA Monitor integration instead.
 display: RaDark (Deprecated)
 name: RaDark
@@ -70,7 +76,8 @@ script:
     - description: The unique ID of an incident that requires enrichment.
       name: incident_id
       required: true
-    description: Fetch all items for an incident by the given incident ID.
+    deprecated: true
+    description: Deprecated. No available replacement. Fetch all items for an incident by the given incident ID.
     name: radark-incident-get-items
     outputs:
     - contextPath: Radark.itemDetails.items.item_id
@@ -179,7 +186,8 @@ script:
     - description: The email address tested for leaked credentials.
       name: email
       required: true
-    description: Search a specific email address to get all exposed leaked credentials collected by RaDark.
+    deprecated: true
+    description: Deprecated. No available replacement. Search a specific email address to get all exposed leaked credentials collected by RaDark.
     name: radark-email-enrich
     outputs:
     - contextPath: Radark.emailDetails.emails.email
@@ -207,13 +215,15 @@ script:
     - description: The unique ID of an item that should be marked as handled on RaDark.
       name: item_id
       required: true
-    description: Mark item as handled on RaDark.
+    deprecated: true
+    description: Deprecated. No available replacement. Mark item as handled on RaDark.
     name: radark-item-handle
   - arguments:
     - description: The unique ID of an item that should requires purchase.
       name: item_id
       required: true
-    description: Request to purchase an item offered for sale on an automated store.
+    deprecated: true
+    description: Deprecated. No available replacement. Request to purchase an item offered for sale on an automated store.
     name: radark-item-purchase
   dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true

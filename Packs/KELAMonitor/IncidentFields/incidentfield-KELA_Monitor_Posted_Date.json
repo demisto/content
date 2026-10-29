@@ -1,0 +1,40 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "KELA Monitor Hacking Discussion",
+        "KELA Monitor Instant Messaging",
+        "KELA Monitor Leaked Credentials",
+        "KELA Monitor Network Vulnerability",
+        "KELA Monitor Credit Cards",
+        "KELA Monitor Compromised Accounts",
+        "KELA Monitor Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "kelamonitorposteddate",
+    "closeForm": false,
+    "content": true,
+    "description": "Date the data was originally published (UTC).",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_kelamonitorposteddate",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "KELA Monitor Posted Date",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "date",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

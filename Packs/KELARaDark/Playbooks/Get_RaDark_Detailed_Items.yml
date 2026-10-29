@@ -1,5 +1,5 @@
 deprecated: true
-description: 'Deprecated. Use the KELA Monitor integration instead. Enriches RaDark incident with detailed items.'
+description: 'Deprecated. No available replacement. Enriches RaDark incident with detailed items.'
 id: Get RaDark Detailed Items
 inputs: []
 name: Get RaDark Detailed Items

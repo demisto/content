@@ -1,2 +1,4 @@
-!kela-monitor-incident-list incident_type=leaked_credentials severities=high,critical from_date="7 days" limit=20
-!kela-monitor-incident-scroll scroll_id=<SCROLL_ID>
+!kela-monitor-incident-list incident_type=hacking_discussions limit=2
+!kela-monitor-incident-scroll scroll_id=${KELA.Monitor.Scroll.scrollId} monitor_id=${KELA.Monitor.Scroll.monitorId}
+!kela-monitor-incident-list incident_type=instant_messaging text="example.com" from_date="30 days" limit=5
+!kela-monitor-incident-list incident_type=leaked_credentials severities=high,critical from_date="7 days" first_appearance=true limit=20

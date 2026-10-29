@@ -1,3 +1,7 @@
+Deprecated. Use the KELA Monitor integration instead.
+
+RaDark is now KELA Monitor. For new deployments, use the KELA Monitor pack. If you move a monitor to KELA Monitor, disable this instance before you enable fetching in KELA Monitor, otherwise every incident is created twice. The four commands of this integration have no replacement in KELA Monitor.
+
 This integration enables you to fetch incidents and manage your RaDark monitor from Cortex XSOAR.
 This integration was integrated and tested with version 2 of RaDark
 
@@ -15,6 +19,7 @@ This integration was integrated and tested with version 2 of RaDark
 | Incident type |  | False |
 | Max incidents to fetch each fetching | Maximum supported: 1000 | False |
 | Incident types to fetch | Set which incident types to fetch from RaDark. | True |
+| Mask passwords | When selected (default), passwords are replaced by ******** in the War Room tables and context of radark-email-enrich and radark-incident-get-items. Clear it to show them as RaDark returns them. | False |
 
 ## Commands
 
@@ -24,7 +29,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### radark-incident-get-items
 
 ***
-Fetch all items for an incident by the given incident ID.
+Deprecated. No available replacement. Fetch all items for an incident by the given incident ID.
 
 #### Base Command
 
@@ -110,7 +115,7 @@ Fetch all items for an incident by the given incident ID.
 ### radark-email-enrich
 
 ***
-Search a specific email address to get all exposed leaked credentials collected by RaDark.
+Deprecated. No available replacement. Search a specific email address to get all exposed leaked credentials collected by RaDark.
 
 #### Base Command
 
@@ -169,7 +174,7 @@ Search a specific email address to get all exposed leaked credentials collected 
 ### radark-item-handle
 
 ***
-Mark item as handled on RaDark.
+Deprecated. No available replacement. Mark item as handled on RaDark.
 
 #### Base Command
 
@@ -196,7 +201,7 @@ There is no context output for this command.
 ### radark-item-purchase
 
 ***
-Request to purchase an item offered for sale on an automated store.
+Deprecated. No available replacement. Request to purchase an item offered for sale on an automated store.
 
 #### Base Command
 
