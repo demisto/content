@@ -1,0 +1,707 @@
+category: Authentication & Identity Management
+provider: Workday
+commonfields:
+  id: Workday -fix
+  version: -1
+configuration:
+- defaultvalue: https://wd5-impl-services1.workday.com/ccx/service
+  display: Server URL (e.g. https://example.net)
+  name: base_url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Tenant name
+  name: tenant_name
+  type: 4
+  hidden: true
+  required: false
+- displaypassword: Tenant name
+  name: cred_tenant_name
+  type: 9
+  hiddenusername: true
+  required: false
+- display: Token
+  name: token
+  type: 4
+  hidden: true
+  required: false
+- displaypassword: Token
+  name: cred_token
+  type: 9
+  hiddenusername: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Workday offers enterprise-level software solutions for financial management, human resources, and planning.
+display: Workday -fix
+name: Workday -fix
+script:
+  commands:
+  - arguments:
+    - description: Employee ID of the worker for which to get information.
+      name: employee_id
+    - defaultValue: '50'
+      description: The maximum number of results to return. Default is 50.
+      name: count
+    - defaultValue: '1'
+      description: The page from which to get the employees' data.
+      name: page
+    - defaultValue: '3'
+      description: The number of managers to display.
+      name: managers
+    description: Returns information for the specified workers.
+    name: workday-list-workers
+    outputs:
+    - contextPath: Workday.Worker.Worker_ID
+      description: The ID for the employee or contingent worker.
+      type: String
+    - contextPath: Workday.Worker.User_ID
+      description: Text attribute identifying the User Name.
+      type: String
+    - contextPath: Workday.Worker.Country
+      description: The worker Country.
+      type: String
+    - contextPath: Workday.Worker.Legal_First_Name
+      description: The worker First Name (Given Name).
+      type: String
+    - contextPath: Workday.Worker.Legal_Last_Name
+      description: The worker Last Name (Family Name).
+      type: String
+    - contextPath: Workday.Worker.Preferred_First_Name
+      description: The worker preferred First Name (Preferred Name).
+      type: String
+    - contextPath: Workday.Worker.Preferred_Last_Name
+      description: The worker preferred Last Name (Preferred Name).
+      type: String
+    - contextPath: Workday.Worker.Position_ID
+      description: Text attribute identifying the Position ID.
+      type: String
+    - contextPath: Workday.Worker.Position_Title
+      description: Text attribute identifying the Position Title.
+      type: String
+    - contextPath: Workday.Worker.Business_Title
+      description: Business title for the position.
+      type: String
+    - contextPath: Workday.Worker.Start_Date
+      description: Date the worker first started work in this position.
+      type: String
+    - contextPath: Workday.Worker.End_Employment_Reason_Reference
+      description: Termination/End Additional Job Reason.
+      type: String
+    - contextPath: Workday.Worker.Worker_Type
+      description: The worker type for the position.
+      type: String
+    - contextPath: Workday.Worker.Position_Time_Type
+      description: The position time type.
+      type: String
+    - contextPath: Workday.Worker.Scheduled_Weekly_Hours
+      description: Scheduled weekly hours for the position.
+      type: String
+    - contextPath: Workday.Worker.Default_Weekly_Hours
+      description: Standard weekly hours for the position.
+      type: String
+    - contextPath: Workday.Worker.Full_Time_Equivalent_Percentage
+      description: Full-time equivalent percentage for the position.
+      type: String
+    - contextPath: Workday.Worker.Exclude_from_Headcount
+      description: If Y, the position will be excluded from headcount reporting.
+      type: String
+    - contextPath: Workday.Worker.Pay_Rate_Type
+      description: Pay rate type for the position.
+      type: String
+    - contextPath: Workday.Worker.Job_Profile_Name
+      description: The name of the job profile.
+      type: String
+    - contextPath: Workday.Worker.Work_Shift_Required
+      description: Returns true if a work shift is required on the position where this job profile is used.
+      type: String
+    - contextPath: Workday.Worker.Critical_Job
+      description: Returns true if the job profile is considered a critical job.
+      type: String
+    - contextPath: Workday.Worker.Business_Site_id
+      description: Business Site ID.
+      type: String
+    - contextPath: Workday.Worker.Business_Site_Name
+      description: The name of the location.
+      type: String
+    - contextPath: Workday.Worker.Business_Site_Type
+      description: The type of a location.
+      type: String
+    - contextPath: Workday.Worker.Business_Site_Address.Address_ID
+      description: Business site address ID.
+      type: String
+    - contextPath: Workday.Worker.Business_Site_Address.Formatted_Address
+      description: The formatted address in the format specified for the country.
+      type: String
+    - contextPath: Workday.Worker.Business_Site_Address.Country
+      description: Country of the address.
+      type: String
+    - contextPath: Workday.Worker.Business_Site_Address.Postal_Code
+      description: The postal code part of the address.
+      type: String
+    - contextPath: Workday.Worker.End_Date
+      description: The effective date of the end employment business process.
+      type: String
+    - contextPath: Workday.Worker.Pay_Through_Date
+      description: The pay through date for the end of employment.
+      type: String
+    - contextPath: Workday.Worker.Active
+      description: Boolean attribute identifying whether the Worker is Active.
+      type: String
+    - contextPath: Workday.Worker.Hire_Date
+      description: The most recent hire date for the employee or contract start date for the contingent worker.
+      type: String
+    - contextPath: Workday.Worker.Hire_Reason
+      description: Reason for Hire from the most recent Hire event.
+      type: String
+    - contextPath: Workday.Worker.First_Day_of_Work
+      description: First Day of Work (only applies to the Payroll web service).
+      type: String
+    - contextPath: Workday.Worker.Retired
+      description: Boolean attribute identifying whether the Worker is currently retired.
+      type: String
+    - contextPath: Workday.Worker.Days_Unemployed
+      description: Number of days unemployed since the employee first joined the work force. Used only for China.
+      type: String
+    - contextPath: Workday.Worker.Terminated
+      description: Boolean attribute identifying whether the Worker is currently Terminated.
+      type: String
+    - contextPath: Workday.Worker.Termination_Date
+      description: Most recent Termination Date.
+      type: String
+    - contextPath: Workday.Worker.Primary_Termination_Reason
+      description: The primary reason for the worker's most recent termination.
+      type: String
+    - contextPath: Workday.Worker.Primary_Termination_Category
+      description: Reference to primary termination reason category.
+      type: String
+    - contextPath: Workday.Worker.Termination_Involuntary
+      description: Indicates if the termination was involuntary.
+      type: String
+    - contextPath: Workday.Worker.Rehire
+      description: Returns "Yes" if the worker is a rehire based on the most recent hire event.
+      type: String
+    - contextPath: Workday.Worker.Termination_Last_Day_of_Work
+      description: Last day worked for the worker's termination event.
+      type: String
+    - contextPath: Workday.Worker.Resignation_Date
+      description: Date the employee submitted their resignation.
+      type: String
+    - contextPath: Workday.Worker.Has_International_Assignment
+      description: Indicates whether the worker has internaitonal assignment.
+      type: String
+    - contextPath: Workday.Worker.Home_Country_Reference
+      description: Contains the home country for worker's primary job (ISO_3166-1_Alpha-2_Code).
+      type: String
+    - contextPath: Workday.Worker.Photo
+      description: Worker's photo in base64.
+      type: String
+    - contextPath: Workday.Worker.Addresses.Address_ID
+      description: Worker's address ID.
+      type: String
+    - contextPath: Workday.Worker.Addresses.Formatted_Address
+      description: The formatted address in the format specified for the country.
+      type: String
+    - contextPath: Workday.Worker.Addresses.Country
+      description: Country for the worker's address.
+      type: String
+    - contextPath: Workday.Worker.Addresses.Region
+      description: The ID of the region (ISO_3166-2_Code).
+      type: String
+    - contextPath: Workday.Worker.Addresses.Region_Descriptor
+      description: The region part of the address. Typically this contains the state/province information.
+      type: String
+    - contextPath: Workday.Worker.Addresses.Postal_Code
+      description: The postal code part of the address.
+      type: String
+    - contextPath: Workday.Worker.Addresses.Type
+      description: Address type.
+      type: String
+    - contextPath: Workday.Worker.Emails.Email_Address
+      description: Email address information.
+      type: String
+    - contextPath: Workday.Worker.Emails.Type
+      description: Usage type.
+      type: String
+    - contextPath: Workday.Worker.Emails.Primary
+      description: Indicates if the communication method is primary.
+      type: String
+    - contextPath: Workday.Worker.Emails.Public
+      description: Indicates if the email address is public.
+      type: String
+    - contextPath: Workday.Worker.Phones.ID
+      description: Phone ID.
+      type: String
+    - contextPath: Workday.Worker.Phones.Phone_Number
+      description: Phone number.
+      type: String
+    - contextPath: Workday.Worker.Phones.Type
+      description: Phone Device Type.
+      type: String
+    - contextPath: Workday.Worker.Phones.Usage
+      description: Phone usage data.
+      type: String
+    - contextPath: Workday.Worker.Manager.Manager_ID
+      description: The manager worker ID.
+      type: String
+    - contextPath: Workday.Worker.Manager.Manager_Name
+      description: The manager name.
+      type: String
+  runonce: false
+  script: >
+    register_module_line('Workday', 'start', __line__())
+
+    CONSTANT_PACK_VERSION = '1.5.24'
+
+    demisto.debug('pack id = Workday, pack version = 1.5.24')
+
+
+
+    # IMPORTS
+
+    from xml.sax.saxutils import escape
+
+
+    # Disable insecure warnings
+
+    import urllib3
+
+
+
+    urllib3.disable_warnings()
+
+
+    # CONSTANTS
+
+    DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
+    API_VERSION = "v47.0"
+
+    HEADERS = [
+        "Worker_ID",
+        "User_ID",
+        "Country",
+        "Preferred_First_Name",
+        "Preferred_Last_Name",
+        "Active",
+        "Position_Title",
+        "Start_Date",
+        "End_Date",
+        "Terminated",
+        "Termination_Date",
+    ]
+
+
+    GET_EMPLOYEES_REQ = """
+
+    <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bsvc="urn:com.workday/bsvc">
+        <soapenv:Header>
+            <wsse:Security soapenv:mustUnderstand="1"
+            xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+            xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                <wsse:UsernameToken wsu:Id="UsernameToken-{token}">
+                    <wsse:Username>{username}</wsse:Username>
+                    <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0
+                    #PasswordText">{password}</wsse:Password>
+                </wsse:UsernameToken>
+            </wsse:Security>
+        </soapenv:Header>
+        <soapenv:Body>
+            <bsvc:Get_Workers_Request bsvc:version="{api_version}">
+                <bsvc:Response_Filter>
+                    <bsvc:Page>{page}</bsvc:Page>
+                    <bsvc:Count>{count}</bsvc:Count>
+                </bsvc:Response_Filter>
+                <bsvc:Response_Group>
+                    <bsvc:Include_Reference>1</bsvc:Include_Reference>
+                    <bsvc:Include_Personal_Information>1</bsvc:Include_Personal_Information>
+                    <bsvc:Include_Employment_Information>1</bsvc:Include_Employment_Information>
+                    <bsvc:Include_Management_Chain_Data>1</bsvc:Include_Management_Chain_Data>
+                    <bsvc:Include_Photo>1</bsvc:Include_Photo>
+                </bsvc:Response_Group>
+            </bsvc:Get_Workers_Request>
+        </soapenv:Body>
+    </soapenv:Envelope>
+
+    """
+
+
+    GET_EMPLOYEE_BY_ID = """
+
+    <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bsvc="urn:com.workday/bsvc">
+        <soapenv:Header>
+            <wsse:Security soapenv:mustUnderstand="1"
+            xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+            xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                <wsse:UsernameToken wsu:Id="UsernameToken-{token}">
+                    <wsse:Username>{username}</wsse:Username>
+                    <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0
+                    #PasswordText">{password}</wsse:Password>
+                </wsse:UsernameToken>
+            </wsse:Security>
+        </soapenv:Header>
+        <soapenv:Body>
+            <bsvc:Get_Workers_Request bsvc:version="{api_version}">
+                <bsvc:Request_References bsvc:Skip_Non_Existing_Instances="false">
+                    <bsvc:Worker_Reference>
+                        <bsvc:ID bsvc:type="Employee_ID">{employee_id}</bsvc:ID>
+                    </bsvc:Worker_Reference>
+                </bsvc:Request_References>
+                <bsvc:Response_Group>
+                    <bsvc:Include_Reference>1</bsvc:Include_Reference>
+                    <bsvc:Include_Personal_Information>1</bsvc:Include_Personal_Information>
+                    <bsvc:Include_Employment_Information>1</bsvc:Include_Employment_Information>
+                    <bsvc:Include_Management_Chain_Data>1</bsvc:Include_Management_Chain_Data>
+                    <bsvc:Include_Photo>1</bsvc:Include_Photo>
+                </bsvc:Response_Group>
+            </bsvc:Get_Workers_Request>
+        </soapenv:Body>
+    </soapenv:Envelope>
+
+    """
+
+
+
+    def convert_to_json(response):
+        raw_json_response = json.loads(xml2json(response))
+        workers_data = (
+            raw_json_response.get("Envelope", {})
+            .get("Body", {})
+            .get("Get_Workers_Response", {})
+            .get("Response_Data", {})
+            .get("Worker")
+        )
+        return raw_json_response, workers_data
+
+
+    def _as_dict(value) -> dict:
+        """Returns the value if it is a dict, otherwise an empty dict (xml2json renders empty elements as None)."""
+        return value if isinstance(value, dict) else {}
+
+
+    def _as_list(value) -> list:
+        """Returns the value as a list (xml2json renders a single element as a dict and a missing one as None)."""
+        if value is None:
+            return []
+        return value if isinstance(value, list) else [value]
+
+
+    def _primary_or_first(value) -> dict:
+        """Returns the element marked as primary (or the first one) when Workday returns a list, e.g. multiple jobs."""
+        items = [_as_dict(item) for item in _as_list(value)]
+        for item in items:
+            if item.get("@{urn:com.workday/bsvc}Primary_Job") == "1":
+                return item
+        return items[0] if items else {}
+
+
+    def get_reference_id(reference, index: int) -> str | None:
+        """Returns the text of the ID at the given position of a Workday reference, or None if it does not exist.
+
+        Workday references hold a list of IDs of different types (e.g. WID first, then a readable ID).
+        Not every tenant returns every reference or every ID type, so missing values must not raise.
+        """
+        ids = _as_list(_as_dict(reference).get("ID"))
+        if index >= len(ids):
+            return None
+        return _as_dict(ids[index]).get("#text")
+
+
+    def _to_bool(value) -> bool | None:
+        return bool(int(value)) if value not in (None, "") else None
+
+
+    def _position_context(position: dict) -> dict:
+        job_profile = _as_dict(position.get("Job_Profile_Summary_Data"))
+        business_site = _as_dict(position.get("Business_Site_Summary_Data"))
+        site_address = business_site.get("Address_Data")
+        site_address = _as_dict(site_address[-1] if isinstance(site_address, list) and site_address else site_address)
+        return {
+            "Position_ID": position.get("Position_ID"),
+            "Position_Title": position.get("Position_Title"),
+            "Business_Title": position.get("Business_Title"),
+            "Start_Date": position.get("Start_Date"),
+            "End_Employment_Reason_Reference": get_reference_id(position.get("End_Employment_Reason_Reference"), 1) or "",
+            "Worker_Type": get_reference_id(position.get("Worker_Type_Reference"), 1),
+            "Position_Time_Type": get_reference_id(position.get("Position_Time_Type_Reference"), 1),
+            "Scheduled_Weekly_Hours": position.get("Scheduled_Weekly_Hours"),
+            "Default_Weekly_Hours": position.get("Default_Weekly_Hours"),
+            "Full_Time_Equivalent_Percentage": position.get("Full_Time_Equivalent_Percentage"),
+            "Exclude_from_Headcount": position.get("Exclude_from_Headcount"),
+            "Pay_Rate_Type": get_reference_id(position.get("Pay_Rate_Type_Reference"), 1) or "",
+            "Job_Profile_Name": job_profile.get("Job_Profile_Name"),
+            "Work_Shift_Required": job_profile.get("Work_Shift_Required"),
+            "Critical_Job": job_profile.get("Critical_Job"),
+            "Business_Site_id": get_reference_id(business_site.get("Location_Reference"), 1),
+            "Business_Site_Name": business_site.get("Name"),
+            "Business_Site_Type": get_reference_id(business_site.get("Location_Type_Reference"), 1),
+            "Business_Site_Address": {
+                "Address_ID": site_address.get("Address_ID"),
+                "Formatted_Address": site_address.get("@{urn:com.workday/bsvc}Formatted_Address"),
+                "Country": get_reference_id(site_address.get("Country_Reference"), 1),
+                "Postal_Code": site_address.get("Postal_Code"),
+            },
+            "End_Date": position.get("End_Date"),
+            "Pay_Through_Date": position.get("Pay_Through_Date"),
+        }
+
+
+    def _status_context(worker_status: dict) -> dict:
+        return {
+            "Active": _to_bool(worker_status.get("Active")),
+            "Hire_Date": worker_status.get("Hire_Date"),
+            "Hire_Reason": get_reference_id(worker_status.get("Hire_Reason_Reference"), 2),
+            "First_Day_of_Work": worker_status.get("First_Day_of_Work"),
+            "Retired": worker_status.get("Retired"),
+            # Number of days unemployed since the employee first joined the work force. Used only for China:
+            "Days_Unemployed": worker_status.get("Days_Unemployed"),
+            "Terminated": _to_bool(worker_status.get("Terminated")),
+            "Rehire": worker_status.get("Rehire"),
+            "Resignation_Date": worker_status.get("Resignation_Date"),
+        }
+
+
+    def _termination_context(worker_status: dict) -> dict:
+        return {
+            "Termination_Date": worker_status.get("Termination_Date"),
+            "Primary_Termination_Reason": get_reference_id(worker_status.get("Primary_Termination_Reason_Reference"), 2),
+            "Primary_Termination_Category": get_reference_id(worker_status.get("Primary_Termination_Category_Reference"), 1),
+            "Termination_Involuntary": worker_status.get("Termination_Involuntary"),
+            "Termination_Last_Day_of_Work": worker_status.get("Termination_Last_Day_of_Work"),
+        }
+
+
+    def _addresses_context(addresses) -> list:
+        addresses_context = []
+        for address in map(_as_dict, _as_list(addresses)):
+            type_data = _as_dict(_as_dict(address.get("Usage_Data")).get("Type_Data"))
+            addresses_context.append(
+                {
+                    "Address_ID": address.get("Address_ID"),
+                    "Formatted_Address": address.get("@{urn:com.workday/bsvc}Formatted_Address"),
+                    "Country": get_reference_id(address.get("Country_Reference"), 1) or "",
+                    "Region": get_reference_id(address.get("Country_Region_Reference"), 2) or "",
+                    "Region_Descriptor": address.get("Country_Region_Descriptor", ""),
+                    "Postal_Code": address.get("Postal_Code"),
+                    "Type": get_reference_id(type_data.get("Type_Reference"), 1) or "",
+                }
+            )
+        return addresses_context
+
+
+    def _emails_context(emails) -> list:
+        emails_context = []
+        for email in map(_as_dict, _as_list(emails)):
+            usage_data = _as_dict(email.get("Usage_Data"))
+            type_data = _as_dict(usage_data.get("Type_Data"))
+            emails_context.append(
+                {
+                    "Email_Address": email.get("Email_Address"),
+                    "Type": get_reference_id(type_data.get("Type_Reference"), 1) or "",
+                    "Primary": _to_bool(type_data.get("@{urn:com.workday/bsvc}Primary")),
+                    "Public": _to_bool(usage_data.get("@{urn:com.workday/bsvc}Public")),
+                }
+            )
+        return emails_context
+
+
+    def _phones_context(phones) -> list:
+        phones_context = []
+        for phone in map(_as_dict, _as_list(phones)):
+            type_data = _as_dict(_as_dict(phone.get("Usage_Data")).get("Type_Data"))
+            phones_context.append(
+                {
+                    "ID": phone.get("ID"),
+                    "Phone_Number": phone.get("@{urn:com.workday/bsvc}E164_Formatted_Phone"),
+                    "Type": get_reference_id(phone.get("Phone_Device_Type_Reference"), 1),
+                    "Usage": get_reference_id(type_data.get("Type_Reference"), 1),
+                }
+            )
+        return phones_context
+
+
+    def _managers_context(management_chain_data, num_of_managers: int) -> list:
+        chain = _as_dict(_as_dict(management_chain_data).get("Worker_Supervisory_Management_Chain_Data"))
+        managers = _as_list(chain.get("Management_Chain_Data"))
+        # Taking the n'th managers from the end of the list (descending from top level manager (ceo))
+        managers_context = []
+        for level in managers[-num_of_managers:]:
+            manager = _primary_or_first(_as_dict(level).get("Manager"))
+            managers_context.append(
+                {
+                    "Manager_ID": get_reference_id(manager.get("Worker_Reference"), 1),
+                    "Manager_Name": manager.get("Worker_Descriptor"),
+                }
+            )
+        return managers_context
+
+
+    def _worker_context(worker: dict, num_of_managers: int) -> dict:
+        personal_data = _as_dict(worker.get("Personal_Data"))
+        employment_data = _as_dict(worker.get("Employment_Data"))
+        name_detail = _as_dict(_as_dict(_as_dict(personal_data.get("Name_Data")).get("Legal_Name_Data")).get("Name_Detail_Data"))
+        international_assignment = _as_dict(employment_data.get("International_Assignment_Summary_Data"))
+
+        worker_context = {
+            "Worker_ID": worker.get("Worker_ID"),
+            "User_ID": worker.get("User_ID"),
+            "Country": get_reference_id(name_detail.get("Country_Reference"), 1),
+            "Legal_First_Name": name_detail.get("First_Name"),
+            "Legal_Last_Name": name_detail.get("Last_Name"),
+            "Preferred_First_Name": name_detail.get("First_Name"),
+            "Preferred_Last_Name": name_detail.get("Last_Name"),
+            "Has_International_Assignment": international_assignment.get("Has_International_Assignment"),
+            "Home_Country_Reference": get_reference_id(international_assignment.get("Home_Country_Reference"), 1),
+            "Photo": _as_dict(worker.get("Photo_Data")).get("Image"),
+        }
+
+        position = _as_dict(_primary_or_first(employment_data.get("Worker_Job_Data")).get("Position_Data"))
+        if position:
+            worker_context.update(_position_context(position))
+
+        worker_status = _as_dict(employment_data.get("Worker_Status_Data"))
+        if worker_status:
+            worker_context.update(_status_context(worker_status))
+        if worker_status.get("Terminated") == "1":
+            worker_context.update(_termination_context(worker_status))
+
+        contact_data = _as_dict(personal_data.get("Contact_Data"))
+        worker_context["Addresses"] = _addresses_context(contact_data.get("Address_Data"))
+        if emails := _emails_context(contact_data.get("Email_Address_Data")):
+            worker_context["Emails"] = emails
+        if phones := _phones_context(contact_data.get("Phone_Data")):
+            worker_context["Phones"] = phones
+        if managers := _managers_context(worker.get("Management_Chain_Data"), num_of_managers):
+            worker_context["Managers"] = managers
+
+        return worker_context
+
+
+    def create_worker_context(workers, num_of_managers):
+        return [_worker_context(_as_dict(_as_dict(worker).get("Worker_Data")), num_of_managers) for worker in _as_list(workers)]
+
+
+    class Client(BaseClient):
+        """
+        Client will implement the service API, and should not contain any Demisto logic.
+        Should only do requests and return data.
+        """
+
+        def __init__(self, tenant_url, verify_certificate, proxy, tenant_name, token, username, password):
+            headers = {"content-type": "text/xml;charset=UTF-8"}
+            super().__init__(base_url=tenant_url, verify=verify_certificate, proxy=proxy, headers=headers)
+            self.tenant_name = tenant_name
+            self.token = token
+            self.username = username
+            self.password = password
+
+        def list_workers(self, page, count, employee_id=None) -> tuple:
+            # Values are embedded in an XML document, so XML special characters (& < > " ') must be escaped.
+            xml_safe_params = {
+                "token": escape(str(self.token), {'"': "&quot;", "'": "&apos;"}),
+                "username": escape(str(self.username)),
+                "password": escape(str(self.password)),
+                "api_version": API_VERSION,
+            }
+            if employee_id:
+                body = GET_EMPLOYEE_BY_ID.format(employee_id=escape(str(employee_id)), **xml_safe_params)
+            else:
+                body = GET_EMPLOYEES_REQ.format(page=page, count=count, **xml_safe_params)
+            raw_response = self._http_request(method="POST", url_suffix="", data=body, resp_type="text", timeout=120)
+            return convert_to_json(raw_response)
+
+
+    def test_module(client: Client, args: dict) -> str:
+        try:
+            client.list_workers(page="1", count="1")
+        except Exception as e:
+            raise DemistoException(f"Test failed. Please check your parameters. \n {e}")
+        return "ok"
+
+
+    def list_workers_command(client: Client, args: dict) -> CommandResults:
+        count = int(args.get("count", "1"))
+        page = int(args.get("page", "1"))
+        num_of_managers = int(args.get("managers", "3"))
+        employee_id = args.get("employee_id")
+        raw_json_response, workers_data = client.list_workers(page, count, employee_id)
+        workers_context = create_worker_context(workers_data, num_of_managers)
+        workers_readable = tableToMarkdown("Workers", workers_context, removeNull=True, headers=HEADERS)
+
+        return CommandResults(
+            readable_output=workers_readable,
+            outputs_prefix="Workday.Worker",
+            outputs_key_field="Worker_ID",
+            outputs=workers_context,
+            raw_response=raw_json_response,
+        )
+
+
+    def main():
+        """
+        PARSE AND VALIDATE INTEGRATION PARAMS
+        """
+        params = demisto.params()
+        user: str = params.get("credentials", {}).get("identifier")
+        base_url: str = params.get("base_url", "").rstrip("/")
+        tenant_name: str = params.get("cred_tenant_name", {}).get("password") or params.get("tenant_name", None)
+        username = f"{user}@{tenant_name}"
+        password: str = params.get("credentials", {}).get("password")
+        token = params.get("cred_token", {}).get("password") or params.get("token")
+        if not (token and tenant_name):
+            raise DemistoException("Token and Tenant name must be provided.")
+        verify_certificate: bool = not params.get("insecure", False)
+        proxy: bool = params.get("proxy", False)
+
+        tenant_url = f"{base_url}/{tenant_name}/Staffing/"
+
+        commands = {
+            "test-module": test_module,
+            "workday-list-workers": list_workers_command,
+        }
+
+        command = demisto.command()
+        LOG(f"Command being called is {command}")
+
+        try:
+            client = Client(
+                tenant_url=tenant_url,
+                verify_certificate=verify_certificate,
+                proxy=proxy,
+                tenant_name=tenant_name,
+                token=token,
+                username=username,
+                password=password,
+            )
+
+            if command in commands:
+                return_results(commands[command](client, demisto.args()))
+
+        except Exception as e:
+            return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
+
+
+    if __name__ in ("__main__", "__builtin__", "builtins"):
+        main()
+
+    register_module_line('Workday', 'end', __line__())
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.13.10116658
+  nativeimage:
+  - '8.8'
+  - '8.6'
+fromversion: 5.0.0
+tests:
+- Workday - Test
+image: data:image/png;base64,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
+detaileddescription: "\n1. Using the task 'Create Integration system user' create an account with username and password\n2. Create an Integration System Security Group (Unconstrained) using the 'Create Security Group' task\n3. Based on what data needs to be pulled in through the integration, update the Domain Security Policy Permissions as well as Business Process Security Policy Permissions.\n\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/workday)"

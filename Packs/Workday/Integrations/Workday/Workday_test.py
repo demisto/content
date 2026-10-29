@@ -278,16 +278,18 @@ def test_api_request_returns_expected_data(mocker):
     main()
 
 
-def _sent_request_body(mocker, list_workers_kwargs: dict) -> str:
+def _sent_request_body(
+    mocker, list_workers_kwargs: dict, token: str = "token", username: str = "username", password: str = "password"
+) -> str:
     """Runs Client.list_workers with a mocked _http_request and returns the SOAP body that was sent."""
     soap_client = Client(
         tenant_url="https://test.workday.com/XSOAR",
         verify_certificate=False,
         proxy=False,
         tenant_name="tenant_name",
-        token="token",
-        username="username",
-        password="password",
+        token=token,
+        username=username,
+        password=password,
     )
     http_request = mocker.patch.object(
         soap_client, "_http_request", return_value=util_read_file("test_data/xml_raw_response.txt")
@@ -399,3 +401,104 @@ def test_list_workers_sends_configured_api_version(mocker, list_workers_kwargs):
     body = http_request.call_args.kwargs["data"]
     request = ET.fromstring(body.strip()).find(".//{urn:com.workday/bsvc}Get_Workers_Request")
     assert request.get("{urn:com.workday/bsvc}version") == "v34.0"
+
+
+WSSE_NS = "{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd}"
+WSU_ID = "{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd}Id"
+
+
+@pytest.mark.parametrize("list_workers_kwargs", LIST_WORKERS_VARIANTS)
+@pytest.mark.parametrize(
+    "username, password",
+    [
+        pytest.param("isu&user@tenant_name", "p&ss<wo>rd", id="ampersand_and_angle_brackets"),
+        pytest.param("isu_user@tenant_name", "pa\"ss'word", id="quotes"),
+        pytest.param("isu_user@tenant_name", "&already-escaped", id="already_escaped_text_is_sent_literally"),
+    ],
+)
+def test_list_workers_escapes_xml_special_characters_in_credentials(mocker, list_workers_kwargs, username, password):
+    """
+    Given:
+    - A Workday client whose username or password contains XML special characters.
+    When:
+    - Calling list_workers (with and without an employee ID).
+    Then:
+    - Ensure the SOAP body is well-formed XML (Workday otherwise returns 'Client.validationError - Invalid request')
+      and the credentials reach Workday unchanged.
+    """
+    import xml.etree.ElementTree as ET
+
+    body = _sent_request_body(mocker, list_workers_kwargs, username=username, password=password)
+
+    envelope = ET.fromstring(body.strip())  # raises ParseError if the body is not well-formed
+    assert envelope.find(f".//{WSSE_NS}Username").text == username
+    assert envelope.find(f".//{WSSE_NS}Password").text == password
+
+
+def test_list_workers_escapes_employee_id(mocker):
+    """
+    Given:
+    - An employee ID containing XML special characters.
+    When:
+    - Calling list_workers with that employee ID.
+    Then:
+    - Ensure the SOAP body is well-formed XML and the employee ID is sent unchanged.
+    """
+    import xml.etree.ElementTree as ET
+
+    body = _sent_request_body(mocker, {"page": "1", "count": "1", "employee_id": "12<34&"})
+
+    worker_id = ET.fromstring(body.strip()).find(".//{urn:com.workday/bsvc}Worker_Reference/{urn:com.workday/bsvc}ID")
+    assert worker_id.text == "12<34&"
+
+
+@pytest.mark.parametrize("list_workers_kwargs", LIST_WORKERS_VARIANTS)
+@pytest.mark.parametrize(
+    "token, expected_id",
+    [
+        pytest.param("xsoar-Token_1.0", "UsernameToken-xsoar-Token_1.0", id="valid_token_unchanged"),
+        pytest.param("abc def", "UsernameToken-abc_def", id="space"),
+        pytest.param("a+b/c=", "UsernameToken-a_b_c_", id="base64_characters"),
+        pytest.param('a"b&c<d>', "UsernameToken-a_b_c_d_", id="xml_special_characters"),
+        pytest.param("a:b@c", "UsernameToken-a_b_c", id="colon_and_at_sign"),
+    ],
+)
+def test_list_workers_sanitizes_token_for_wsu_id(mocker, list_workers_kwargs, token, expected_id):
+    """
+    Given:
+    - A token that may contain characters that are not allowed in an XML ID (xsd:ID / NCName).
+    When:
+    - Calling list_workers (with and without an employee ID).
+    Then:
+    - Ensure the body is well-formed and the wsu:Id of the UsernameToken only contains letters, digits, '.', '-' and '_'.
+    """
+    import xml.etree.ElementTree as ET
+
+    body = _sent_request_body(mocker, list_workers_kwargs, token=token)
+
+    username_token = ET.fromstring(body.strip()).find(f".//{WSSE_NS}UsernameToken")
+    assert username_token.get(WSU_ID) == expected_id
+
+
+@pytest.mark.parametrize(
+    "token, expected",
+    [
+        pytest.param("xsoar", "xsoar", id="valid"),
+        pytest.param("  a b  ", "__a_b__", id="spaces"),
+        pytest.param("טוקן", "____", id="non_ascii"),
+        pytest.param("", "", id="empty"),
+        pytest.param(12345, "12345", id="not_a_string"),
+    ],
+)
+def test_sanitize_wsu_id_token(token, expected):
+    """
+    Given:
+    - A token value.
+    When:
+    - Calling sanitize_wsu_id_token.
+    Then:
+    - Ensure every character outside [A-Za-z0-9._-] is replaced with '_'.
+    """
+    from Workday import sanitize_wsu_id_token
+
+    assert sanitize_wsu_id_token(token) == expected
