@@ -7745,7 +7745,7 @@ def test_storage_fileshare_content_list_command_success(mocker, client, mock_par
     """
     Given: An Azure client with a mocked list_directories_and_files_request returning directory content XML.
     When: The storage_fileshare_content_list_command function is called with a share name.
-    Then: The function returns CommandResults with the Azure.Storage.FileShare prefix and parsed content.
+    Then: The function returns CommandResults with the Azure.Storage.FileShares prefix and parsed content.
     """
     from Azure import storage_fileshare_content_list_command
 
@@ -7781,7 +7781,7 @@ def test_storage_fileshare_content_list_command_success(mocker, client, mock_par
     result = storage_fileshare_content_list_command(client, mock_params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Storage.FileShare"
+    assert result.outputs_prefix == "Azure.Storage.FileShares"
     assert result.outputs.get("Name") == "mock-share"
     assert result.outputs.get("Content").get("File")[0].get("Name") == "mock_file.png"
     assert result.outputs.get("Content").get("Directory")[0].get("Name") == "mock_directory"

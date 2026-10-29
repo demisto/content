@@ -1594,25 +1594,25 @@ script:
     - name: prefix
       description: Filters the results to return only entries whose name begins with the specified prefix.
     outputs:
-    - contextPath: Azure.Storage.FileShare.Name
+    - contextPath: Azure.Storage.FileShares.Name
       description: Share name.
       type: String
-    - contextPath: Azure.Storage.FileShare.Content.Path
+    - contextPath: Azure.Storage.FileShares.Content.Path
       description: Directory path.
       type: String
-    - contextPath: Azure.Storage.FileShare.Content.DirectoryId
+    - contextPath: Azure.Storage.FileShares.Content.DirectoryId
       description: Directory ID.
       type: String
-    - contextPath: Azure.Storage.FileShare.Content.File.FileId
+    - contextPath: Azure.Storage.FileShares.Content.File.FileId
       description: File ID.
       type: String
-    - contextPath: Azure.Storage.FileShare.Content.File.Name
+    - contextPath: Azure.Storage.FileShares.Content.File.Name
       description: File name.
       type: String
-    - contextPath: Azure.Storage.FileShare.Content.Directory.FileId
+    - contextPath: Azure.Storage.FileShares.Content.Directory.FileId
       description: Directory ID.
       type: String
-    - contextPath: Azure.Storage.FileShare.Content.Directory.Name
+    - contextPath: Azure.Storage.FileShares.Content.Directory.Name
       description: Directory name.
       type: String
 
@@ -1694,6 +1694,37 @@ script:
       description: The name of the file to retrieve.
     - name: directory_path
       description: The path to the directory where the file resides.
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
 
   - name: azure-storage-fileshare-file-delete
     description: "Deletes a file from a share. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete, Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action. These are included in the Storage File Data Privileged Contributor role."

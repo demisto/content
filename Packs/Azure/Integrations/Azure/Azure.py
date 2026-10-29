@@ -4293,7 +4293,7 @@ def storage_fileshare_content_list_command(client: AzureClient, params: dict, ar
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Azure.Storage.FileShare",
+        outputs_prefix="Azure.Storage.FileShares",
         outputs_key_field="Name",
         outputs=outputs,
         raw_response=raw_response,
