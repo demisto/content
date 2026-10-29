@@ -1,8 +1,6 @@
 Pushes Cortex XSOAR 6 or Cortex XSOAR 8 incidents to Cortex XSIAM as parsed alerts using the Insert Parsed Alerts API.
 
-
 ## Configure XSOAR Incident Exporter in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -37,17 +35,17 @@ Pushes Cortex XSOAR incidents matching a query to Cortex XSIAM as parsed alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The incident query filter to override the configured one. | Optional | 
-| max_incidents | The maximum number of incidents to push. | Optional | 
-| from_date | The start date for incident search in ISO 8601 format (e.g., 2024-01-01T00:00:00Z). | Optional | 
-| to_date | The end date for incident search in ISO 8601 format (e.g., 2024-01-01T00:00:00Z). | Optional | 
+| query | The incident query filter to override the configured one. | Optional |
+| max_incidents | The maximum number of incidents to push. | Optional |
+| from_date | The start date for incident search in ISO 8601 format (e.g., 2024-01-01T00:00:00Z). | Optional |
+| to_date | The end date for incident search in ISO 8601 format (e.g., 2024-01-01T00:00:00Z). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| XSOARExporter.Push.PushedCount | Number | The number of incidents pushed. | 
-| XSOARExporter.Push.Incidents | Unknown | The list of pushed incident IDs and names. | 
+| XSOARExporter.Push.PushedCount | Number | The number of incidents pushed. |
+| XSOARExporter.Push.Incidents | Unknown | The list of pushed incident IDs and names. |
 
 ### xsoar-exporter-push-incident
 
@@ -62,13 +60,13 @@ Pushes a single Cortex XSOAR incident to Cortex XSIAM as a parsed alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The Cortex XSOAR incident ID to push. | Required | 
+| incident_id | The Cortex XSOAR incident ID to push. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| XSOARExporter.Push.PushedIncident | Unknown | The details of the pushed incident. | 
+| XSOARExporter.Push.PushedIncident | Unknown | The details of the pushed incident. |
 
 ### xsoar-exporter-sync-new-incidents
 
@@ -83,17 +81,17 @@ Finds and pushes only new Cortex XSOAR incidents that have not been synced yet.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The incident query filter to override the configured one. | Optional | 
-| max_incidents | The maximum number of incidents to sync. | Optional | 
-| from_date | The sync timestamp override in ISO 8601 format (e.g., 2024-01-01T00:00:00Z). | Optional | 
+| query | The incident query filter to override the configured one. | Optional |
+| max_incidents | The maximum number of incidents to sync. | Optional |
+| from_date | The sync timestamp override in ISO 8601 format (e.g., 2024-01-01T00:00:00Z). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| XSOARExporter.Sync.SyncedCount | Number | The number of new incidents synced. | 
-| XSOARExporter.Sync.Incidents | Unknown | The list of synced incident IDs and names. | 
-| XSOARExporter.Sync.LastSyncedID | Number | The highest incident ID that has been synced. | 
+| XSOARExporter.Sync.SyncedCount | Number | The number of new incidents synced. |
+| XSOARExporter.Sync.Incidents | Unknown | The list of synced incident IDs and names. |
+| XSOARExporter.Sync.LastSyncedID | Number | The highest incident ID that has been synced. |
 
 ### xsoar-exporter-reset-sync
 
@@ -112,6 +110,7 @@ Resets the sync state so the next sync will send all incidents.
 #### Context Output
 
 There is no context output for this command.
+
 ### xsoar-exporter-sync-close-status
 
 ***
@@ -125,12 +124,12 @@ Queries Cortex XSIAM for open XSOAR-sourced alerts and resolves those whose XSOA
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| max_alerts | The maximum number of alerts to process per run. | Optional | 
+| max_alerts | The maximum number of alerts to process per run. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| XSOARExporter.CloseSync.ClosedCount | Number | The number of alerts closed. | 
-| XSOARExporter.CloseSync.SkippedCount | Number | The number of open alerts skipped. | 
-| XSOARExporter.CloseSync.ClosedAlerts | Unknown | The details of closed alerts. | 
+| XSOARExporter.CloseSync.ClosedCount | Number | The number of alerts closed. |
+| XSOARExporter.CloseSync.SkippedCount | Number | The number of open alerts skipped. |
+| XSOARExporter.CloseSync.ClosedAlerts | Unknown | The details of closed alerts. |
