@@ -4,8 +4,6 @@ from MCPApiModule import *
 
 import asyncio
 
-from urllib.parse import unquote
-
 
 SERVICENOW_AUTH_TYPE = AuthMethods.AUTHORIZATION_CODE.value
 SERVICENOW_SCOPE = "mcp_server"
@@ -58,7 +56,9 @@ async def main() -> None:  # pragma: no cover
         server_name = params.get("server_name", "")
         client_id = params.get("oauth_credentials", {}).get("identifier")
         client_secret = params.get("oauth_credentials", {}).get("password")
-        auth_code = unquote(params.get("auth_code", {}).get("password") or "")
+        auth_code = params.get("auth_code", {}).get("password") or ""
+        # Not url-decoded here: MCPApiModule.parse_authorization_response accepts either a
+        # bare code or a full redirect URL and decodes each form correctly.
         redirect_uri = params.get("redirect_uri", "") or REDIRECT_URI
         verify: bool = not argToBoolean(params.get("insecure", False))
 

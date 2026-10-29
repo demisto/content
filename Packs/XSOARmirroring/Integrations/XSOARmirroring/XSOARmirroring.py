@@ -144,6 +144,14 @@ class Client(BaseClient):
             json_data={"id": incident_id, "version": incident_ver, "closeNotes": close_notes, "closeReason": close_reason},
         )
 
+    def _get_multipart_headers(self) -> dict[str, str]:
+        """Returns the client headers without "Content-Type".
+
+        For multipart uploads, `requests` must generate the "multipart/form-data; boundary=..." header itself.
+        Sending the client's default "Content-Type: application/json" makes XSOAR 8 reject the upload.
+        """
+        return {key: value for key, value in (self._headers or {}).items() if key.lower() != "content-type"}
+
     def add_incident_entry(self, incident_id: str | None, entry: dict[str, Any]):
         if entry.get("type") == 3:
             path_res = demisto.getFilePath(entry.get("id"))
@@ -153,6 +161,7 @@ class Client(BaseClient):
                 self._http_request(
                     method="POST",
                     url_suffix=f"/entry/upload/{incident_id}",
+                    headers=self._get_multipart_headers(),
                     files={"file": (full_file_name, file_to_send, "application/octet-stream")},
                 )
 

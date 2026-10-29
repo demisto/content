@@ -195,6 +195,28 @@ def test_handle_alert_events_query_finished_status(client, requests_mock):
     assert is_ready is True
 
 
+def test_handle_alert_events_query_ready_removes_stale_job_uuid(client, requests_mock):
+    """When events are ready, a stale job_uuid from a previous (expired) job must be removed from the alert."""
+    requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=util_load_json("test_data/SekoiaXDR_query_events.json"))
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f",
+        json=util_load_json("test_data/SekoiaXDR_query_events_status.json"),
+    )
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f/events",
+        json=util_load_json("test_data/SekoiaXDR_retrieve_events.json"),
+    )
+    alert = util_load_json("test_data/SekoiaXDR_get_alert.json")
+    alert["job_uuid"] = "expired-job"
+
+    result_alert, is_ready = SekoiaXDR.handle_alert_events_query(
+        client, alert, "2024-04-25T10:00:23Z", "now", "alert_short_ids:ALL1A4SKUiU2"
+    )
+
+    assert is_ready is True
+    assert "job_uuid" not in result_alert
+
+
 def test_handle_alert_events_query_in_progress_status(client, requests_mock):
     mock_response = util_load_json("test_data/SekoiaXDR_query_events.json")
     requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=mock_response)
@@ -1149,6 +1171,151 @@ def test_get_remote_data_with_cached_alert(client, requests_mock, mocker):
     # Should return the alert with events
     assert result is not None
     assert "events" in result.mirrored_object
+
+
+def test_get_remote_data_cached_alert_job_gone_persists_new_job(client, requests_mock, mocker):
+    """A 410 Gone on a cached events job must recreate the job and persist it, so the expired job is not polled forever."""
+    alert_cached = util_load_json("test_data/SekoiaXDR_get_alert.json")
+    alert_cached["job_uuid"] = "expired-job"
+    cache = {"mirroring_cache": [{"alert": alert_cached, "entries": []}]}
+    mocker.patch.object(SekoiaXDR, "get_integration_context", return_value=cache)
+    set_context = mocker.patch.object(SekoiaXDR, "set_integration_context")
+
+    requests_mock.get(MOCK_URL + "/v1/sic/conf/events/search/jobs/expired-job", status_code=410, json={})
+    requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=util_load_json("test_data/SekoiaXDR_query_events.json"))
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f",
+        json=util_load_json("test_data/SekoiaXDR_query_events_status_in_progress.json"),
+    )
+
+    result = SekoiaXDR.get_remote_data_command(
+        client=client,
+        args={"lastUpdate": "2023-06-28T13:21:45", "id": "ALL1A4SKUiU2"},
+        close_incident=False,
+        close_note="",
+        mirror_events=True,
+        mirror_kill_chain=False,
+        reopen_incident=False,
+    )
+
+    assert result is None
+    set_context.assert_called_once()
+    persisted_alert = set_context.call_args[0][0]["mirroring_cache"][0]["alert"]
+    assert persisted_alert["job_uuid"] == "df904d2e-2c57-488f"
+    assert persisted_alert["events_job_attempts"] == 1
+
+
+def test_is_events_job_done(client, requests_mock):
+    """Status 2 is done, 0/1 are still running and 3 (canceled) raises."""
+    url = MOCK_URL + "/v1/sic/conf/events/search/jobs/job"
+    for job_status, expected in ((0, False), (1, False), (2, True)):
+        requests_mock.get(url, json={"status": job_status})
+        assert SekoiaXDR.is_events_job_done(client, "job") is expected
+
+    requests_mock.get(url, json={"status": 3})
+    with pytest.raises(DemistoException, match="canceled"):
+        SekoiaXDR.is_events_job_done(client, "job")
+
+
+def test_get_remote_data_cached_alert_job_canceled_recreates_job(client, requests_mock, mocker):
+    """A canceled cached events job must be recreated instead of being polled forever."""
+    alert_cached = util_load_json("test_data/SekoiaXDR_get_alert.json")
+    alert_cached["job_uuid"] = "canceled-job"
+    cache = {"mirroring_cache": [{"alert": alert_cached, "entries": []}]}
+    mocker.patch.object(SekoiaXDR, "get_integration_context", return_value=cache)
+    set_context = mocker.patch.object(SekoiaXDR, "set_integration_context")
+
+    requests_mock.get(MOCK_URL + "/v1/sic/conf/events/search/jobs/canceled-job", json={"status": 3})
+    requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=util_load_json("test_data/SekoiaXDR_query_events.json"))
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f",
+        json=util_load_json("test_data/SekoiaXDR_query_events_status_in_progress.json"),
+    )
+
+    result = SekoiaXDR.get_remote_data_command(
+        client=client,
+        args={"lastUpdate": "2023-06-28T13:21:45", "id": "ALL1A4SKUiU2"},
+        close_incident=False,
+        close_note="",
+        mirror_events=True,
+        mirror_kill_chain=False,
+        reopen_incident=False,
+    )
+
+    assert result is None
+    persisted_alert = set_context.call_args[0][0]["mirroring_cache"][0]["alert"]
+    assert persisted_alert["job_uuid"] == "df904d2e-2c57-488f"
+    assert persisted_alert["events_job_attempts"] == 1
+
+
+def test_get_remote_data_cached_alert_job_gone_max_attempts(client, requests_mock, mocker):
+    """After MAX_EVENTS_JOB_ATTEMPTS, the alert is mirrored without events and removed from the cache."""
+    alert_cached = util_load_json("test_data/SekoiaXDR_get_alert.json")
+    alert_cached["job_uuid"] = "expired-job"
+    alert_cached["events_job_attempts"] = SekoiaXDR.MAX_EVENTS_JOB_ATTEMPTS
+    cache = {"mirroring_cache": [{"alert": alert_cached, "entries": []}]}
+    mocker.patch.object(SekoiaXDR, "get_integration_context", return_value=cache)
+    mocker.patch.object(SekoiaXDR, "set_integration_context")
+    create_job = requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json={})
+    requests_mock.get(MOCK_URL + "/v1/sic/conf/events/search/jobs/expired-job", status_code=410, json={})
+
+    result = SekoiaXDR.get_remote_data_command(
+        client=client,
+        args={"lastUpdate": "2023-06-28T13:21:45", "id": "ALL1A4SKUiU2"},
+        close_incident=False,
+        close_note="",
+        mirror_events=True,
+        mirror_kill_chain=False,
+        reopen_incident=False,
+    )
+
+    assert result is not None
+    assert "job_uuid" not in result.mirrored_object
+    assert "events_job_attempts" not in result.mirrored_object
+    assert cache["mirroring_cache"] == []
+    assert not create_job.called
+
+
+def test_fetch_incidents_cached_job_gone_ready_on_recreate(client, requests_mock, mocker):
+    """A cached fetch incident whose job is gone is emitted once a recreated job returns its events."""
+    alert_cached = util_load_json("test_data/SekoiaXDR_get_alert.json")
+    alert_cached["job_uuid"] = "expired-job"
+    cache = {"fetch_cache": [{"name": "cached", "rawJSON": alert_cached}]}
+    mocker.patch.object(SekoiaXDR, "get_integration_context", return_value=cache)
+    set_context = mocker.patch.object(SekoiaXDR, "set_integration_context")
+
+    requests_mock.get(MOCK_URL + "/v1/sic/conf/events/search/jobs/expired-job", status_code=410, json={})
+    requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=util_load_json("test_data/SekoiaXDR_query_events.json"))
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f",
+        json=util_load_json("test_data/SekoiaXDR_query_events_status.json"),
+    )
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f/events",
+        json=util_load_json("test_data/SekoiaXDR_retrieve_events.json"),
+    )
+    requests_mock.get(MOCK_URL + "/v1/sic/alerts", json={"items": [], "total": 0})
+
+    _, incidents = SekoiaXDR.fetch_incidents(
+        client=client,
+        max_results=10,
+        last_run={"last_fetch": 1714036855},
+        first_fetch_time=None,
+        alert_status=None,
+        alert_urgency=None,
+        alert_type=None,
+        fetch_mode="Fetch With All Events",
+        mirror_direction="None",
+        fetch_with_assets=False,
+        fetch_with_kill_chain=False,
+    )
+
+    assert len(incidents) == 1
+    raw_json = json.loads(incidents[0]["rawJSON"])
+    assert "events" in raw_json
+    assert "job_uuid" not in raw_json
+    assert "events_job_attempts" not in raw_json
+    assert set_context.call_args_list[0][0][0]["fetch_cache"] == []
 
 
 def test_get_remote_data_close_incident_when_closed(client, requests_mock, mocker):

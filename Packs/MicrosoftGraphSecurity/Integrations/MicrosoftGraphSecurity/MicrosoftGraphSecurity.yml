@@ -17,7 +17,6 @@ configuration:
   - US GCC
   - US GCC-High
   - DoD
-  - Germany
   - China
   - Custom
   additionalinfo: When selecting the Custom option, the Host URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
@@ -216,6 +215,65 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
+- display: Incident Mirroring Direction
+  additionalinfo: 'The direction to mirror alerts and incidents: Incoming (Microsoft to Cortex XSOAR), Outgoing (Cortex XSOAR to Microsoft), or Incoming And Outgoing.'
+  name: mirror_direction
+  type: 15
+  section: Collect
+  required: false
+  defaultvalue: None
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  hidden:
+  - marketplacev2
+  - platform
+- display: Close Mirrored Cortex XSOAR Incident
+  additionalinfo: Whether to close the Cortex XSOAR incident when the Microsoft alert or incident resolves (or, for incidents, redirects), and reopen it when the Microsoft alert or incident reopens.
+  name: close_incident
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: 'false'
+  hidden:
+  - marketplacev2
+  - platform
+- display: Close Mirrored Microsoft Alert/Incident
+  additionalinfo: Whether to set the Microsoft alert or incident status to Resolved when you close the Cortex XSOAR incident, and set it back to active (incidents) or new (alerts) when you reopen it. If you disable this parameter, the integration never sends the status to Microsoft, including edits to the Microsoft Graph Security Incident/Alert Status field. The integration does not change the status of an incident redirected in Microsoft.
+  name: close_out
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: 'false'
+  hidden:
+  - marketplacev2
+  - platform
+- display: Comment Entry Tag (to Microsoft)
+  additionalinfo: The tag for entries that the integration mirrors as comments to the Microsoft alert or incident. You must set this tag and make it different from the Comment Entry Tag (from Microsoft).
+  name: comment_tag
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: CommentToMicrosoftGraphSecurity
+  hidden:
+  - marketplacev2
+  - platform
+- display: Comment Entry Tag (from Microsoft)
+  additionalinfo: The tag added to entries created from Microsoft alert or incident comments. You must set this tag and make it different from the Comment Entry Tag (to Microsoft).
+  name: comment_tag_from_microsoft_graph_security
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: CommentFromMicrosoftGraphSecurity
+  hidden:
+  - marketplacev2
+  - platform
 - display: Microsoft 365 Defender context
   name: microsoft_365_defender_context
   defaultvalue: "false"
@@ -839,6 +897,39 @@ script:
     description: Generate the login URL used for authorization code flow.
     execution: false
     name: msg-generate-login-url
+  - arguments:
+    - description: The identifier of the accounts that are monitored for suspicious or malicious activity by Microsoft Defender for Identity.
+      isArray: false
+      name: identity_accounts_id
+      required: true
+    - description: The identifier of the account to perform the action on.
+      isArray: false
+      name: account_id
+      required: true
+    - auto: PREDEFINED
+      description: The type of action to perform on the account.
+      isArray: false
+      name: action
+      predefined:
+      - 'disable'
+      - 'enable'
+      - 'forcePasswordReset'
+      - 'revokeAllSessions'
+      - 'requireUserToSignInAgain'
+      - 'markUserAsCompromised'
+      required: true
+    - auto: PREDEFINED
+      description: The identity provider associated with the account.
+      isArray: false
+      name: identity_provider
+      predefined:
+      - 'entraID'
+      - 'activeDirectory'
+      - 'okta'
+      required: true
+    description: 'Perform actions such as revoking accounts and forcing password reset for identity accounts that are observed in Microsoft Defender for Identity. Requires the SecurityIdentitiesActions.ReadWrite.All permission (Delegated or Application). For delegated access, the signed-in user must have at least the Security Administrator role. Supported in the Worldwide (global) cloud only. To learn more about the possible actions, see https://learn.microsoft.com/en-us/graph/api/security-identityaccounts-invokeaction?view=graph-rest-1.0&tabs=http.'
+    execution: true
+    name: msg-invoke-action
   - arguments:
     - description: The name of the eDiscovery case.
       isArray: false
@@ -3169,8 +3260,33 @@ script:
     - contextPath: MsGraph.eDiscoveryCase.Export.Location
       description: The Location header URL returned for the export operation.
       type: String
-  dockerimage: demisto/crypto:1.0.0.10120494
+  - arguments:
+    - description: The last update time (ISO-8601 or UTC timestamp in seconds). The command returns the IDs of the alerts and/or incidents (according to Fetch incidents type) that changed after this time.
+      name: lastUpdate
+    description: Gets the list of remote incidents/alerts that changed since the last update time. Use this method for debugging purposes only.
+    name: get-modified-remote-data
+  - arguments:
+    - description: The ID of the remote alert or incident.
+      name: id
+    - description: The ID of the remote alert. The command uses this argument only if you do not provide id or incident_id.
+      name: alert_id
+    - description: The ID of the remote incident. The command uses this argument only if you do not provide id.
+      name: incident_id
+    - description: The last update time (ISO-8601 or UTC timestamp in seconds). The command returns only comments created after this time.
+      name: lastUpdate
+    description: Gets remote data from a remote alert/incident. This method does not update the current incident. Use it for debugging purposes only.
+    name: get-remote-data
+  - arguments: []
+    description: Returns the list of fields to map in outgoing mirroring. Use this command for debugging purposes only.
+    name: get-mapping-fields
+  - arguments: []
+    description: Updates the remote incidents/alerts with local incident changes. Use this method for debugging purposes only. This method does not update the current incident.
+    name: update-remote-system
+  dockerimage: demisto/crypto:1.0.0.12833174
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   runonce: false
   script: '-'
   subtype: python3
@@ -3185,3 +3301,6 @@ tests:
 - MSG-ediscovery-tpb
 - MSG-Threat-Assessment-test
 fromversion: 5.0.0
+defaultclassifier: Graph Security Classifier
+defaultmapperin: Graph Security Mapper - Incoming
+defaultmapperout: Graph Security Mapper - Outgoing

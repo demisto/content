@@ -1863,7 +1863,7 @@
         },
         {
             "integrations": "McAfee ESM v2",
-            "instance_names": "v11.1.3",
+            "instance_names": "v11.7.1",
             "playbookID": "McAfee ESM v2 - Test v11.1.3",
             "fromversion": "5.0.0"
         },
@@ -1876,7 +1876,7 @@
         },
         {
             "integrations": "McAfee ESM v2",
-            "instance_names": "v11.1.3",
+            "instance_names": "v11.7.1",
             "playbookID": "McAfee ESM Watchlists - Test v11.1.3",
             "fromversion": "5.0.0"
         },
@@ -4356,7 +4356,7 @@
         {
             "playbookID": "McAfee ESM v2 - Test",
             "fromversion": "5.0.0",
-            "instance_names": "v11.1.3",
+            "instance_names": "v11.7.1",
             "integrations": [
                 "McAfee ESM v2"
             ]
@@ -4364,7 +4364,7 @@
         {
             "playbookID": "McAfee ESM Watchlists - Test",
             "fromversion": "5.0.0",
-            "instance_names": "v11.1.3",
+            "instance_names": "v11.7.1",
             "integrations": [
                 "McAfee ESM v2"
             ]
@@ -5963,6 +5963,8 @@
         }
     ],
     "skipped_tests": {
+        "Mail Sender (New) Test": "Gmail CI service-account key is invalid (invalid_grant: Invalid signature for token) - CIAC-14453",
+        "Zendesk V2 TEST": "Zendesk API returns 'Couldn't authenticate you' on the test instance (zendesk-user-list / zendesk-user-create), the credentials need to be fixed.",
         "Test XDR Playbook general commands": "xdr-get-endpoint-device-control-violations fails because no device-control violations exist on the XDR lab tenants — CRTX-261310",
         "Test - Netcraft": "Netcraft tenant is out of takedown credits, causing the test playbook to fail.",
         "Tanium Threat Response V2 Test": "The creds were expired, opened a ticket CRTX-155635",
