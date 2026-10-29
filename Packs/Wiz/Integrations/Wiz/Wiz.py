@@ -1,4 +1,5 @@
 import time
+import traceback
 import uuid
 
 from CommonServerPython import *
@@ -10,6 +11,7 @@ API_REQUEST_TIMEOUT = 115  # seconds; keep under the upstream gateway timeout to
 WIZ_HTTP_QUERIES_LIMIT = 500  # Request limit during run
 WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
 MAX_NOTE_LENGTH = 1400  # Hard limit for issue note text length enforced by the Wiz API
+MAX_COMMENT_PAGES = 100
 WIZ = "wiz"
 
 WIZ_VERSION = "1.8.0"
@@ -2569,13 +2571,14 @@ def get_issue_comments(issue_id: str) -> list[dict]:
     """Needs read:comments, so keep it off the fetch and get paths."""
     comments: list[dict] = []
     after = None
-    while True:
+    for _ in range(MAX_COMMENT_PAGES):
         data = checkAPIerrors(ISSUE_COMMENTS_QUERY, {"id": issue_id, "after": after})
         page = (data["data"]["issue"]["commentThread"] or {}).get("comments") or {}
         comments.extend(page.get("nodes") or [])
         if not (page.get("pageInfo") or {}).get("hasNextPage"):
             return comments
         after = page["pageInfo"]["endCursor"]
+    raise DemistoException(f"Issue {issue_id} has more than {MAX_COMMENT_PAGES} pages of comments.")
 
 
 def _get_issue_type(issue_id):

@@ -24,6 +24,7 @@ FETCH_INTERVAL_MAXIMUM_MIN = 600
 DEFAULT_FETCH_BACK = "12 hours"
 MAX_FETCH_BUFFER = 15  # Percentage buffer for fetch interval calculations
 MAX_NOTE_LENGTH = 1400  # Hard limit for issue note text length enforced by the Wiz API
+MAX_COMMENT_PAGES = 100
 
 
 # Threats
@@ -1577,13 +1578,14 @@ def get_issue_comments(issue_id: str) -> list[dict]:
     """Needs read:comments, so keep it off the fetch and get paths."""
     comments: list[dict] = []
     after = None
-    while True:
+    for _ in range(MAX_COMMENT_PAGES):
         issue, _ = get_entries(ISSUE_COMMENTS_QUERY, {"id": issue_id, "after": after}, WizApiResponse.ISSUE)
         page = (issue.get("commentThread") or {}).get("comments") or {}
         comments.extend(page.get("nodes") or [])
         if not (page.get("pageInfo") or {}).get("hasNextPage"):
             return comments
         after = page["pageInfo"]["endCursor"]
+    raise DemistoException(f"Issue {issue_id} has more than {MAX_COMMENT_PAGES} pages of comments.")
 
 
 def query_api(query, variables, wiz_type, paginate=True, max_fetch=API_MAX_FETCH):

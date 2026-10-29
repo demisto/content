@@ -3023,6 +3023,12 @@ def test_get_issue_comments_paginates(mock_get_entries):
     mock_get_entries.side_effect = [({"commentThread": None}, None)]
     assert get_issue_comments(issue_id) == []
 
+    endless = {"commentThread": {"comments": {"nodes": [], "pageInfo": {"hasNextPage": True, "endCursor": "same"}}}}
+    mock_get_entries.side_effect = None
+    mock_get_entries.return_value = (endless, None)
+    with pytest.raises(DemistoException, match="pages of comments"):
+        get_issue_comments(issue_id)
+
 
 def test_fetch_queries_do_not_select_comments():
     assert "commentThread" not in PULL_DETECTIONS_QUERY

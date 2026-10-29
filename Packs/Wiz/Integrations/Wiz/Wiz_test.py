@@ -2947,6 +2947,10 @@ def test_get_issue_comments_paginates(mock_check_api):
     mock_check_api.return_value = {"data": {"issue": {"commentThread": None}}}
     assert get_issue_comments("12345678-1111-2222-3333-444444444444") == []
 
+    mock_check_api.return_value = page([{"id": "c"}], True, "same")
+    with pytest.raises(DemistoException, match="pages of comments"):
+        get_issue_comments("12345678-1111-2222-3333-444444444444")
+
 
 def test_fetch_query_does_not_select_comments():
     """commentThread needs read:comments, so it must stay off the fetch query."""
