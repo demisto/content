@@ -834,8 +834,19 @@ def test_create_web_acl_with_rules_json(mocker):
     from AWSWAF import create_web_acl_command
 
     client = MockedBoto3Client()
-    rules = [{"Name": "rule1", "Priority": 1, "Statement": {}, "Action": {"Block": {}},
-              "VisibilityConfig": {"SampledRequestsEnabled": True, "CloudWatchMetricsEnabled": True, "MetricName": "rule1"}}]
+    rules = [
+        {
+            "Name": "rule1",
+            "Priority": 1,
+            "Statement": {},
+            "Action": {"Block": {}},
+            "VisibilityConfig": {
+                "SampledRequestsEnabled": True,
+                "CloudWatchMetricsEnabled": True,
+                "MetricName": "rule1",
+            },
+        }
+    ]
     args = {
         "name": "test-acl",
         "scope": "Regional",
@@ -895,8 +906,10 @@ def test_associate_web_acl_command(mocker):
     from AWSWAF import associate_web_acl_command
 
     client = MockedBoto3Client()
-    args = {"web_acl_arn": "arn:aws:wafv2:us-east-1:123:webacl/test/id",
-            "resource_arn": "arn:aws:elasticloadbalancing:us-east-1:123:loadbalancer/app/my-alb/123"}
+    args = {
+        "web_acl_arn": "arn:aws:wafv2:us-east-1:123:webacl/test/id",
+        "resource_arn": "arn:aws:elasticloadbalancing:us-east-1:123:loadbalancer/app/my-alb/123",
+    }
     associate_mock = mocker.patch.object(client, "associate_web_acl")
     associate_web_acl_command(client=client, args=args)
     associate_mock.assert_called_with(

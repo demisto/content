@@ -485,7 +485,7 @@ def create_ip_set_command(client: "WAFV2Client", args: dict) -> CommandResults:
     response = client.create_ip_set(**kwargs)
     outputs = response.get("Summary", {})
 
-    readable_output = f'AWS Waf ip set with id {outputs.get("Id", "")} was created successfully'
+    readable_output = f"AWS Waf ip set with id {outputs.get('Id', '')} was created successfully"
 
     return CommandResults(
         readable_output=readable_output,
@@ -536,7 +536,7 @@ def update_ip_set_command(client: "WAFV2Client", args: dict) -> CommandResults:
 
     response = client.update_ip_set(**kwargs)
 
-    readable_output = f'AWS Waf ip set with id {args.get("id", "")} was updated successfully.'
+    readable_output = f"AWS Waf ip set with id {args.get('id', '')} was updated successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -574,7 +574,7 @@ def delete_ip_set_command(client: "WAFV2Client", args: dict) -> CommandResults:
 
     response = client.delete_ip_set(**kwargs)
 
-    readable_output = f'AWS Waf ip set with id {args.get("id", "")} was deleted successfully'
+    readable_output = f"AWS Waf ip set with id {args.get('id', '')} was deleted successfully"
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -598,7 +598,7 @@ def create_regex_set_command(client: "WAFV2Client", args: dict) -> CommandResult
     response = client.create_regex_pattern_set(**kwargs)
     outputs = response.get("Summary", {})
 
-    readable_output = f'AWS Waf regex set with id {outputs.get("Id", "")} was created successfully'
+    readable_output = f"AWS Waf regex set with id {outputs.get('Id', '')} was created successfully"
 
     return CommandResults(
         readable_output=readable_output,
@@ -649,7 +649,7 @@ def update_regex_set_command(client: "WAFV2Client", args: dict) -> CommandResult
 
     response = client.update_regex_pattern_set(**kwargs)
 
-    readable_output = f'AWS Waf ip set with id {args.get("Id", "")} was updated successfully.'
+    readable_output = f"AWS Waf ip set with id {args.get('Id', '')} was updated successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -687,7 +687,7 @@ def delete_regex_set_command(client: "WAFV2Client", args: dict) -> CommandResult
 
     response = client.delete_regex_pattern_set(**kwargs)
 
-    readable_output = f'AWS Waf regex set with id {args.get("id", "")} was deleted successfully'
+    readable_output = f"AWS Waf regex set with id {args.get('id', '')} was deleted successfully"
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -743,7 +743,7 @@ def delete_rule_group_command(client: "WAFV2Client", args: dict) -> CommandResul
 
     response = client.delete_rule_group(**kwargs)
 
-    readable_output = f'AWS Waf rule group with id {args.get("id", "")} was deleted successfully'
+    readable_output = f"AWS Waf rule group with id {args.get('id', '')} was deleted successfully"
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -776,7 +776,7 @@ def create_rule_group_command(client: "WAFV2Client", args: dict) -> CommandResul
     response = client.create_rule_group(**kwargs)
     outputs = response.get("Summary", {})
 
-    readable_output = f'AWS Waf rule group with id {outputs.get("Id", "")} was created successfully'
+    readable_output = f"AWS Waf rule group with id {outputs.get('Id', '')} was created successfully"
 
     return CommandResults(
         readable_output=readable_output,
@@ -804,7 +804,7 @@ def create_ip_rule_command(client: "WAFV2Client", args: dict) -> CommandResults:
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf ip rule with name {args.get("rule_name", "")} was created successfully.'
+    readable_output = f"AWS Waf ip rule with name {args.get('rule_name', '')} was created successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -826,7 +826,7 @@ def create_country_rule_command(client: "WAFV2Client", args: dict) -> CommandRes
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf country rule with name {args.get("rule_name", "")} was created successfully.'
+    readable_output = f"AWS Waf country rule with name {args.get('rule_name', '')} was created successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -848,7 +848,7 @@ def create_string_match_rule_command(client: "WAFV2Client", args: dict) -> Comma
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf string match rule with name {args.get("rule_name", "")} was created successfully.'
+    readable_output = f"AWS Waf string match rule with name {args.get('rule_name', '')} was created successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -869,7 +869,7 @@ def delete_rule_command(client: "WAFV2Client", args: dict) -> CommandResults:
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf rule with id {args.get("Id", "")} was deleted successfully.'
+    readable_output = f"AWS Waf rule with id {args.get('Id', '')} was deleted successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -890,7 +890,7 @@ def add_ip_statement_command(client: "WAFV2Client", args: dict) -> CommandResult
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf ip statement was added to rule with name {args.get("rule_name", "")} successfully.'
+    readable_output = f"AWS Waf ip statement was added to rule with name {args.get('rule_name', '')} successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -912,7 +912,7 @@ def add_country_statement_command(client: "WAFV2Client", args: dict) -> CommandR
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf country statement was added to rule with name {args.get("rule_name", "")} successfully.'
+    readable_output = f"AWS Waf country statement was added to rule with name {args.get('rule_name', '')} successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -934,7 +934,7 @@ def add_string_match_statement_command(client: "WAFV2Client", args: dict) -> Com
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf string match statement was added to rule with name {args.get("rule_name", "")} successfully.'
+    readable_output = f"AWS Waf string match statement was added to rule with name {args.get('rule_name', '')} successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -956,7 +956,7 @@ def add_json_statement_command(client: "WAFV2Client", args: dict) -> CommandResu
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf json statement was added to rule with name {args.get("rule_name", "")} successfully.'
+    readable_output = f"AWS Waf json statement was added to rule with name {args.get('rule_name', '')} successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -1072,7 +1072,7 @@ def create_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
     response = client.create_web_acl(**kwargs)
     outputs = response.get("Summary", {})
 
-    readable_output = f'AWS Waf web ACL with id {outputs.get("Id", "")} was created successfully'
+    readable_output = f"AWS Waf web ACL with id {outputs.get('Id', '')} was created successfully"
 
     return CommandResults(
         readable_output=readable_output,
@@ -1113,7 +1113,7 @@ def update_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
 
     response = client.update_web_acl(**kwargs)
 
-    readable_output = f'AWS Waf web ACL with id {args.get("id", "")} was updated successfully.'
+    readable_output = f"AWS Waf web ACL with id {args.get('id', '')} was updated successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -1128,7 +1128,7 @@ def delete_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
 
     response = client.delete_web_acl(**kwargs)
 
-    readable_output = f'AWS Waf web ACL with id {args.get("id", "")} was deleted successfully'
+    readable_output = f"AWS Waf web ACL with id {args.get('id', '')} was deleted successfully"
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -1142,7 +1142,7 @@ def associate_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResul
 
     response = client.associate_web_acl(**kwargs)
 
-    readable_output = f'AWS Waf web ACL was associated with resource {args.get("resource_arn", "")} successfully.'
+    readable_output = f"AWS Waf web ACL was associated with resource {args.get('resource_arn', '')} successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -1153,7 +1153,7 @@ def disassociate_web_acl_command(client: "WAFV2Client", args: dict) -> CommandRe
 
     response = client.disassociate_web_acl(**kwargs)
 
-    readable_output = f'AWS Waf web ACL was disassociated from resource {args.get("resource_arn", "")} successfully.'
+    readable_output = f"AWS Waf web ACL was disassociated from resource {args.get('resource_arn', '')} successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -1288,7 +1288,7 @@ def tag_resource_command(client: "WAFV2Client", args: dict) -> CommandResults:
 
     response = client.tag_resource(**kwargs)
 
-    readable_output = f'AWS Waf resource {args.get("resource_arn", "")} was tagged successfully.'
+    readable_output = f"AWS Waf resource {args.get('resource_arn', '')} was tagged successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -1304,7 +1304,7 @@ def untag_resource_command(client: "WAFV2Client", args: dict) -> CommandResults:
 
     response = client.untag_resource(**kwargs)
 
-    readable_output = f'AWS Waf resource {args.get("resource_arn", "")} was untagged successfully.'
+    readable_output = f"AWS Waf resource {args.get('resource_arn', '')} was untagged successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -1356,14 +1356,16 @@ def get_sampled_requests_command(client: "WAFV2Client", args: dict) -> CommandRe
     table_data = []
     for req in sampled_requests:
         request_info = req.get("Request", {})
-        table_data.append({
-            "Action": req.get("Action"),
-            "ClientIP": request_info.get("ClientIP"),
-            "Country": request_info.get("Country"),
-            "Method": request_info.get("Method"),
-            "URI": request_info.get("URI"),
-            "Timestamp": req.get("Timestamp"),
-        })
+        table_data.append(
+            {
+                "Action": req.get("Action"),
+                "ClientIP": request_info.get("ClientIP"),
+                "Country": request_info.get("Country"),
+                "Method": request_info.get("Method"),
+                "URI": request_info.get("URI"),
+                "Timestamp": req.get("Timestamp"),
+            }
+        )
 
     readable_output = tableToMarkdown(
         f"Sampled Requests (Population Size: {response.get('PopulationSize', 0)})",
