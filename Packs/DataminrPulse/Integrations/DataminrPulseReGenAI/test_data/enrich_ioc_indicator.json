@@ -1,0 +1,246 @@
+{
+    "input": [
+        {
+            "alertId": "DUMMY_ALERT_ID_1",
+            "alertTimestamp": "2026-05-18T14:22:00Z",
+            "alertType": {
+                "id": "alert",
+                "name": "Alert"
+            },
+            "metadata": {
+                "cyber": {
+                    "addresses": [
+                        {
+                            "ip": "0.0.0.1",
+                            "port": 22
+                        },
+                        {
+                            "ip": "127.0.0.1"
+                        },
+                        {
+                            "ip": "NOT_AN_IP"
+                        }
+                    ],
+                    "URL": [
+                        {
+                            "name": "http://malicious.example.com/payload"
+                        },
+                        {
+                            "name": "not a url"
+                        }
+                    ],
+                    "hashValues": [
+                        {
+                            "type": "SHA-256",
+                            "value": "DEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF"
+                        },
+                        {
+                            "type": "MD5",
+                            "value": "JUNK_HASH_VALUE"
+                        }
+                    ],
+                    "malware": [
+                        {
+                            "name": "DUMMY_MALWARE"
+                        }
+                    ],
+                    "threatActors": [
+                        {
+                            "name": "DUMMY_ACTOR"
+                        }
+                    ]
+                }
+            },
+            "intelAgents": [
+                {
+                    "summary": [
+                        {
+                            "title": "Background Information",
+                            "data": {
+                                "ipAddress": "0.0.0.2",
+                                "url": "http://intel.example.com/beacon"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "alertId": "DUMMY_ALERT_ID_2",
+            "alertTimestamp": "2026-05-19T09:10:00Z",
+            "alertType": {
+                "id": "flash",
+                "name": "Flash"
+            },
+            "metadata": {
+                "cyber": {
+                    "addresses": [
+                        {
+                            "ip": "0.0.0.1"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outputs": [
+        {
+            "type": "IP",
+            "value": "0.0.0.1",
+            "verdict": "Malicious",
+            "score": 3,
+            "firstSeen": "2026-05-18T14:22:00Z",
+            "lastSeen": "2026-05-19T09:10:00Z",
+            "sourceTimeStamp": "2026-05-19T09:10:00Z",
+            "feed": "Dataminr Pulse",
+            "alertIds": [
+                "DUMMY_ALERT_ID_1",
+                "DUMMY_ALERT_ID_2"
+            ],
+            "alertTypes": [
+                "Alert",
+                "Flash"
+            ],
+            "relatedMalware": [
+                "Malware: [DUMMY_MALWARE]"
+            ],
+            "relatedThreatActors": [
+                "Threat Actor: [DUMMY_ACTOR]"
+            ],
+            "port": 22
+        },
+        {
+            "type": "IP",
+            "value": "127.0.0.1",
+            "verdict": "Suspicious",
+            "score": 2,
+            "firstSeen": "2026-05-18T14:22:00Z",
+            "lastSeen": "2026-05-18T14:22:00Z",
+            "sourceTimeStamp": "2026-05-18T14:22:00Z",
+            "feed": "Dataminr Pulse",
+            "alertIds": [
+                "DUMMY_ALERT_ID_1"
+            ],
+            "alertTypes": [
+                "Alert"
+            ],
+            "relatedMalware": [
+                "Malware: [DUMMY_MALWARE]"
+            ],
+            "relatedThreatActors": [
+                "Threat Actor: [DUMMY_ACTOR]"
+            ]
+        },
+        {
+            "type": "URL",
+            "value": "http://malicious.example.com/payload",
+            "verdict": "Suspicious",
+            "score": 2,
+            "firstSeen": "2026-05-18T14:22:00Z",
+            "lastSeen": "2026-05-18T14:22:00Z",
+            "sourceTimeStamp": "2026-05-18T14:22:00Z",
+            "feed": "Dataminr Pulse",
+            "alertIds": [
+                "DUMMY_ALERT_ID_1"
+            ],
+            "alertTypes": [
+                "Alert"
+            ],
+            "relatedMalware": [
+                "Malware: [DUMMY_MALWARE]"
+            ],
+            "relatedThreatActors": [
+                "Threat Actor: [DUMMY_ACTOR]"
+            ]
+        },
+        {
+            "type": "URL",
+            "value": "not a url",
+            "verdict": "Suspicious",
+            "score": 2,
+            "firstSeen": "2026-05-18T14:22:00Z",
+            "lastSeen": "2026-05-18T14:22:00Z",
+            "sourceTimeStamp": "2026-05-18T14:22:00Z",
+            "feed": "Dataminr Pulse",
+            "alertIds": [
+                "DUMMY_ALERT_ID_1"
+            ],
+            "alertTypes": [
+                "Alert"
+            ],
+            "relatedMalware": [
+                "Malware: [DUMMY_MALWARE]"
+            ],
+            "relatedThreatActors": [
+                "Threat Actor: [DUMMY_ACTOR]"
+            ]
+        },
+        {
+            "type": "File",
+            "value": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+            "verdict": "Suspicious",
+            "score": 2,
+            "firstSeen": "2026-05-18T14:22:00Z",
+            "lastSeen": "2026-05-18T14:22:00Z",
+            "sourceTimeStamp": "2026-05-18T14:22:00Z",
+            "feed": "Dataminr Pulse",
+            "alertIds": [
+                "DUMMY_ALERT_ID_1"
+            ],
+            "alertTypes": [
+                "Alert"
+            ],
+            "relatedMalware": [
+                "Malware: [DUMMY_MALWARE]"
+            ],
+            "relatedThreatActors": [
+                "Threat Actor: [DUMMY_ACTOR]"
+            ],
+            "hashType": "sha256"
+        },
+        {
+            "type": "IP",
+            "value": "0.0.0.2",
+            "verdict": "Suspicious",
+            "score": 2,
+            "firstSeen": "2026-05-18T14:22:00Z",
+            "lastSeen": "2026-05-18T14:22:00Z",
+            "sourceTimeStamp": "2026-05-18T14:22:00Z",
+            "feed": "Dataminr Pulse",
+            "alertIds": [
+                "DUMMY_ALERT_ID_1"
+            ],
+            "alertTypes": [
+                "Alert"
+            ],
+            "relatedMalware": [
+                "Malware: [DUMMY_MALWARE]"
+            ],
+            "relatedThreatActors": [
+                "Threat Actor: [DUMMY_ACTOR]"
+            ]
+        },
+        {
+            "type": "URL",
+            "value": "http://intel.example.com/beacon",
+            "verdict": "Suspicious",
+            "score": 2,
+            "firstSeen": "2026-05-18T14:22:00Z",
+            "lastSeen": "2026-05-18T14:22:00Z",
+            "sourceTimeStamp": "2026-05-18T14:22:00Z",
+            "feed": "Dataminr Pulse",
+            "alertIds": [
+                "DUMMY_ALERT_ID_1"
+            ],
+            "alertTypes": [
+                "Alert"
+            ],
+            "relatedMalware": [
+                "Malware: [DUMMY_MALWARE]"
+            ],
+            "relatedThreatActors": [
+                "Threat Actor: [DUMMY_ACTOR]"
+            ]
+        }
+    ]
+}
