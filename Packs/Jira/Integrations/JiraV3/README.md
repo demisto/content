@@ -3310,3 +3310,264 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The Jira user timezone was successfully cleared from the cache
+
+### jira-get-service-desk-id-by-project
+
+***
+Returns the Jira Service Management service desks, optionally filtered by project key.
+
+#### Base Command
+
+`jira-get-service-desk-id-by-project`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_key | The project key used to filter service desks. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.ServiceDesk | Object | The paginated API response containing service desks. |
+| Jira.ServiceDesk._expands | Array | The available response expansions. |
+| Jira.ServiceDesk.size | Number | The number of service desks in the API response page before project-key filtering. |
+| Jira.ServiceDesk.start | Number | The index of the first item in the API response page. |
+| Jira.ServiceDesk.limit | Number | The maximum number of items per API response page. |
+| Jira.ServiceDesk.isLastPage | Boolean | Whether the API response page is the last page. |
+| Jira.ServiceDesk._links.base | String | The base URL of the Service Management API. |
+| Jira.ServiceDesk._links.context | String | The context path of the API. |
+| Jira.ServiceDesk._links.next | String | The URL of the next page, when available. |
+| Jira.ServiceDesk._links.prev | String | The URL of the previous page, when available. |
+| Jira.ServiceDesk.values | Array | The service desks in the returned page that match the project key, if supplied. |
+| Jira.ServiceDesk.values.id | String | The service desk ID. |
+| Jira.ServiceDesk.values.projectId | String | The project ID. |
+| Jira.ServiceDesk.values.projectName | String | The project name. |
+| Jira.ServiceDesk.values.projectKey | String | The project key. |
+| Jira.ServiceDesk.values._links.self | String | The URL of the service desk. |
+
+The command returns the API response object unchanged except for filtering `values` by `project_key`, when supplied. Field names retain the API's original casing. Service desk IDs are available at `Jira.ServiceDesk.values.id`, not directly under `Jira.ServiceDesk`.
+
+**Pagination:** Only the default API page is fetched. The command does not expose `start` or `limit` arguments or automatically follow `_links.next`. Project-key filtering applies only to that page and does not update the pagination metadata, so `size` may differ from the number of entries in `values`. An empty filtered list does not necessarily mean the project has no service desk.
+
+#### Command example
+
+```text
+!jira-get-service-desk-id-by-project project_key="SUP"
+```
+
+#### Context Example
+
+Illustrative response for a single matching service desk:
+
+```json
+{
+  "Jira": {
+    "ServiceDesk": {
+      "_expands": [],
+      "size": 1,
+      "start": 0,
+      "limit": 50,
+      "isLastPage": true,
+      "_links": {
+        "base": "https://your-domain.atlassian.net/rest/servicedeskapi",
+        "context": ""
+      },
+      "values": [
+        {
+          "id": "10",
+          "projectId": "10010",
+          "projectName": "Support",
+          "projectKey": "SUP",
+          "_links": {
+            "self": "https://your-domain.atlassian.net/rest/servicedeskapi/servicedesk/10"
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+### jira-get-request-types
+
+***
+Returns the request types for a Jira Service Management service desk.
+
+#### Base Command
+
+`jira-get-request-types`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| service_desk_id | The ID of the service desk. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.RequestType | Object | The paginated API response containing request types. |
+| Jira.RequestType._expands | Array | The available response expansions. |
+| Jira.RequestType.size | Number | The number of request types in the returned page. |
+| Jira.RequestType.start | Number | The index of the first item in the returned page. |
+| Jira.RequestType.limit | Number | The maximum number of items per page. |
+| Jira.RequestType.isLastPage | Boolean | Whether the returned page is the last page. |
+| Jira.RequestType._links.base | String | The base URL of the Service Management API. |
+| Jira.RequestType._links.context | String | The context path of the API. |
+| Jira.RequestType._links.next | String | The URL of the next page, when available. |
+| Jira.RequestType._links.prev | String | The URL of the previous page, when available. |
+| Jira.RequestType.values | Array | The request types in the returned page. |
+| Jira.RequestType.values._expands | Array | The available request type expansions. |
+| Jira.RequestType.values.id | String | The request type ID. |
+| Jira.RequestType.values.name | String | The request type name. |
+| Jira.RequestType.values.description | String | The request type description. |
+| Jira.RequestType.values.helpText | String | The help text displayed for the request type, when available. |
+| Jira.RequestType.values.issueTypeId | String | The associated issue type ID. |
+| Jira.RequestType.values.serviceDeskId | String | The service desk ID. |
+| Jira.RequestType.values.portalId | String | The customer portal ID. |
+| Jira.RequestType.values.groupIds | Array | The IDs of the groups containing the request type. |
+| Jira.RequestType.values.icon | Object | The request type icon, including its ID and URLs. |
+| Jira.RequestType.values._links.self | String | The URL of the request type. |
+
+The command stores the full API response under `Jira.RequestType`, retaining the API's original field casing. Request type IDs are available at `Jira.RequestType.values.id`.
+
+**Pagination:** Only the default API page is fetched. The command does not expose `start` or `limit` arguments or automatically follow `_links.next`.
+
+#### Command example
+
+```text
+!jira-get-request-types service_desk_id="10"
+```
+
+#### Context Example
+
+Illustrative response with optional request type fields omitted:
+
+```json
+{
+  "Jira": {
+    "RequestType": {
+      "_expands": [],
+      "size": 1,
+      "start": 0,
+      "limit": 50,
+      "isLastPage": true,
+      "_links": {
+        "base": "https://your-domain.atlassian.net/rest/servicedeskapi",
+        "context": ""
+      },
+      "values": [
+        {
+          "_expands": [],
+          "id": "20",
+          "name": "Report a problem",
+          "description": "Report a problem to the support team.",
+          "issueTypeId": "10001",
+          "serviceDeskId": "10",
+          "portalId": "1",
+          "groupIds": ["1"],
+          "_links": {
+            "self": "https://your-domain.atlassian.net/rest/servicedeskapi/servicedesk/10/requesttype/20"
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+### jira-get-service-desk-organizations
+
+***
+Returns a page of organizations associated with a service desk.
+
+#### Base Command
+
+`jira-get-service-desk-organizations`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| service_desk_id | The ID of the service desk. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.ServiceDeskOrganization | Object | The paginated API response containing organizations. |
+| Jira.ServiceDeskOrganization._expands | Array | The available response expansions. |
+| Jira.ServiceDeskOrganization.size | Number | The number of organizations in the returned page. |
+| Jira.ServiceDeskOrganization.start | Number | The index of the first item in the returned page. |
+| Jira.ServiceDeskOrganization.limit | Number | The maximum number of items per page. |
+| Jira.ServiceDeskOrganization.isLastPage | Boolean | Whether the returned page is the last page. |
+| Jira.ServiceDeskOrganization._links.base | String | The base URL of the Service Management API. |
+| Jira.ServiceDeskOrganization._links.context | String | The context path of the API. |
+| Jira.ServiceDeskOrganization._links.next | String | The URL of the next page, when available. |
+| Jira.ServiceDeskOrganization._links.prev | String | The URL of the previous page, when available. |
+| Jira.ServiceDeskOrganization.values | Array | The organizations in the returned page. |
+| Jira.ServiceDeskOrganization.values.id | String | The organization ID. |
+| Jira.ServiceDeskOrganization.values.name | String | The organization name. |
+| Jira.ServiceDeskOrganization.values.scimManaged | Boolean | Whether the organization is managed through SCIM, when returned by the API. |
+| Jira.ServiceDeskOrganization.values._links.self | String | The URL of the organization. |
+
+The command stores the full API response under `Jira.ServiceDeskOrganization`, retaining the API's original field casing. Organization IDs are available at `Jira.ServiceDeskOrganization.values.id`.
+
+**Pagination:** Only the default API page is fetched. The command does not expose `start` or `limit` arguments or automatically follow `_links.next`. The example below illustrates a non-final API page; its `start` and `limit` values are response metadata, not command arguments.
+
+#### Command example
+
+```text
+!jira-get-service-desk-organizations service_desk_id="10001"
+```
+
+#### Context Example
+
+```json
+{
+  "Jira": {
+    "ServiceDeskOrganization": {
+      "_expands": [],
+      "size": 3,
+      "start": 3,
+      "limit": 3,
+      "isLastPage": false,
+      "_links": {
+        "base": "https://your-domain.atlassian.net/rest/servicedeskapi",
+        "context": "context",
+        "next": "https://your-domain.atlassian.net/rest/servicedeskapi/servicedesk/10001/organization?start=6&limit=3",
+        "prev": "https://your-domain.atlassian.net/rest/servicedeskapi/servicedesk/10001/organization?start=0&limit=3"
+      },
+      "values": [
+        {
+          "_links": {
+            "self": "https://your-domain.atlassian.net/rest/servicedeskapi/organization/1"
+          },
+          "id": "1",
+          "name": "Charlie Cakes Franchises",
+          "scimManaged": false
+        },
+        {
+          "_links": {
+            "self": "https://your-domain.atlassian.net/rest/servicedeskapi/organization/2"
+          },
+          "id": "2",
+          "name": "Atlas Coffee Co",
+          "scimManaged": false
+        },
+        {
+          "_links": {
+            "self": "https://your-domain.atlassian.net/rest/servicedeskapi/organization/3"
+          },
+          "id": "3",
+          "name": "The Adjustment Bureau",
+          "scimManaged": false
+        }
+      ]
+    }
+  }
+}
+```
