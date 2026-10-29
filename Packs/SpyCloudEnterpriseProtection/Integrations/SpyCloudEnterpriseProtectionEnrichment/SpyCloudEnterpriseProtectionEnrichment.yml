@@ -351,6 +351,7 @@ script:
         5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all.
         20 ->High severity. This severity value is given to breach records where we have an email address and a plaintext password.
         25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.
+        30 -> Critical severity. This severity value is given to SpyCloud Access Data records. These records connect a known identity to stolen session details and include a signal that the stolen session token has been tested and works.
       isArray: false
       name: severity
       predefined:
@@ -463,7 +464,7 @@ script:
       description: Subdomain and SLD extracted from 'target_url' field.
       type: String
     - contextPath: SpyCloud.Domain.severity
-      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.'
+      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address. 30 -> Critical severity. This severity value is given to SpyCloud Access Data records. These records connect a known identity to stolen session details and include a signal that the stolen session token has been tested and works.'
       type: Number
     - contextPath: SpyCloud.Domain.document_id
       description: UUID v4 string which uniquely identifies this breach record in our data set.
@@ -515,6 +516,7 @@ script:
         5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all.
         20 ->High severity. This severity value is given to breach records where we have an email address and a plaintext password.
         25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.
+        30 -> Critical severity. This severity value is given to SpyCloud Access Data records. These records connect a known identity to stolen session details and include a signal that the stolen session token has been tested and works.
       isArray: false
       name: severity
       predefined:
@@ -627,7 +629,7 @@ script:
       description: Subdomain and SLD extracted from 'target_url' field.
       type: String
     - contextPath: SpyCloud.Username.severity
-      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.'
+      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address. 30 -> Critical severity. This severity value is given to SpyCloud Access Data records. These records connect a known identity to stolen session details and include a signal that the stolen session token has been tested and works.'
       type: Number
     - contextPath: SpyCloud.Username.document_id
       description: UUID v4 string which uniquely identifies this breach record in our data set.
@@ -679,6 +681,7 @@ script:
         5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all.
         20 ->High severity. This severity value is given to breach records where we have an email address and a plaintext password.
         25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.
+        30 -> Critical severity. This severity value is given to SpyCloud Access Data records. These records connect a known identity to stolen session details and include a signal that the stolen session token has been tested and works.
       isArray: false
       name: severity
       predefined:
@@ -791,7 +794,7 @@ script:
       description: Subdomain and SLD extracted from 'target_url' field.
       type: String
     - contextPath: SpyCloud.IPAddress.severity
-      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.'
+      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address. 30 -> Critical severity. This severity value is given to SpyCloud Access Data records. These records connect a known identity to stolen session details and include a signal that the stolen session token has been tested and works.'
       type: Number
     - contextPath: SpyCloud.IPAddress.document_id
       description: UUID v4 string which uniquely identifies this breach record in our data set.
@@ -843,6 +846,7 @@ script:
         5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all.
         20 ->High severity. This severity value is given to breach records where we have an email address and a plaintext password.
         25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.
+        30 -> Critical severity. This severity value is given to SpyCloud Access Data records. These records connect a known identity to stolen session details and include a signal that the stolen session token has been tested and works.
       isArray: false
       name: severity
       predefined:
@@ -955,7 +959,7 @@ script:
       description: Subdomain and SLD extracted from 'target_url' field.
       type: String
     - contextPath: SpyCloud.EmailAddress.severity
-      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.'
+      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address. 30 -> Critical severity. This severity value is given to SpyCloud Access Data records. These records connect a known identity to stolen session details and include a signal that the stolen session token has been tested and works.'
       type: Number
     - contextPath: SpyCloud.EmailAddress.document_id
       description: UUID v4 string which uniquely identifies this breach record in our data set.
@@ -1007,6 +1011,7 @@ script:
         5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all.
         20 ->High severity. This severity value is given to breach records where we have an email address and a plaintext password.
         25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.
+        30 -> Critical severity. This severity value is given to SpyCloud Access Data records. These records connect a known identity to stolen session details and include a signal that the stolen session token has been tested and works.
       isArray: false
       name: severity
       predefined:
@@ -1119,7 +1124,7 @@ script:
       description: Subdomain and SLD extracted from 'target_url' field.
       type: String
     - contextPath: SpyCloud.Password.severity
-      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.'
+      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address. 30 -> Critical severity. This severity value is given to SpyCloud Access Data records. These records connect a known identity to stolen session details and include a signal that the stolen session token has been tested and works.'
       type: Number
     - contextPath: SpyCloud.Password.document_id
       description: UUID v4 string which uniquely identifies this breach record in our data set.
@@ -1171,6 +1176,7 @@ script:
         5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all.
         20 ->High severity. This severity value is given to breach records where we have an email address and a plaintext password.
         25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.
+        30 -> Critical severity. This severity value is given to SpyCloud Access Data records. These records connect a known identity to stolen session details and include a signal that the stolen session token has been tested and works.
       isArray: false
       name: severity
       predefined:
@@ -1299,7 +1305,7 @@ script:
       description: Subdomain and SLD extracted from 'target_url' field.
       type: String
     - contextPath: SpyCloud.Watchlist.severity
-      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.'
+      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address. 30 -> Critical severity. This severity value is given to SpyCloud Access Data records. These records connect a known identity to stolen session details and include a signal that the stolen session token has been tested and works.'
       type: Number
     - contextPath: SpyCloud.Watchlist.document_id
       description: UUID v4 string which uniquely identifies this breach record in our data set.
@@ -1407,7 +1413,7 @@ script:
       description: Subdomain and SLD extracted from 'target_url' field.
       type: String
     - contextPath: SpyCloud.CompassDeviceData.severity
-      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.'
+      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address. 30 -> Critical severity. This severity value is given to SpyCloud Access Data records. These records connect a known identity to stolen session details and include a signal that the stolen session token has been tested and works.'
       type: Number
     - contextPath: SpyCloud.CompassDeviceData.document_id
       description: UUID v4 string which uniquely identifies this breach record in our data set.
@@ -1559,7 +1565,7 @@ script:
       description: Subdomain and SLD extracted from 'target_url' field.
       type: String
     - contextPath: SpyCloud.CompassDataList.severity
-      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.'
+      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address. 30 -> Critical severity. This severity value is given to SpyCloud Access Data records. These records connect a known identity to stolen session details and include a signal that the stolen session token has been tested and works.'
       type: Number
     - contextPath: SpyCloud.CompassDataList.document_id
       description: UUID v4 string which uniquely identifies this breach record in our data set.
@@ -1687,7 +1693,7 @@ script:
       description: Subdomain and SLD extracted from 'target_url' field.
       type: String
     - contextPath: SpyCloud.CompassDeviceList.severity
-      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.'
+      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address. 30 -> Critical severity. This severity value is given to SpyCloud Access Data records. These records connect a known identity to stolen session details and include a signal that the stolen session token has been tested and works.'
       type: Number
     - contextPath: SpyCloud.CompassDeviceList.document_id
       description: UUID v4 string which uniquely identifies this breach record in our data set.
@@ -1815,7 +1821,7 @@ script:
       description: Subdomain and SLD extracted from 'target_url' field.
       type: String
     - contextPath: SpyCloud.CompassApplicationData.severity
-      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address.'
+      description: 'Severity is a numeric code representing severity of a breach record. This can be used in API requests to ensure only Breach Records with plaintext password are returned. Possible values are: 2 -> Email only severity. This record is part of an email-only list. 5 -> Informational severity. This severity value is given to breach records where we have a non-crackable password hash, or no password at all. 20 -> High severity. This severity value is given to breach records where we have an email address and a plaintext password. 25 -> Critical severity. This severity value is given to breach records recovered from an infected machine (botnet data). These records will always have a plaintext password and most will have an email address. 30 -> Critical severity. This severity value is given to SpyCloud Access Data records. These records connect a known identity to stolen session details and include a signal that the stolen session token has been tested and works.'
       type: Number
     - contextPath: SpyCloud.CompassApplicationData.document_id
       description: UUID v4 string which uniquely identifies this breach record in our data set.

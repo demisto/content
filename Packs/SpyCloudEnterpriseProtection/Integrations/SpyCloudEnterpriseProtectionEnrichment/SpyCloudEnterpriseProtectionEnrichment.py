@@ -190,8 +190,8 @@ def create_spycloud_args(args: dict) -> dict:
         until_modification_date = until_modification_date.strftime("%Y-%m-%d")
     severity_list = argToList(args.get("severity", []))
     for severity in severity_list:
-        if severity not in ["2", "5", "25", "20"]:
-            raise DemistoException("Invalid input Error: supported values for severity are: 2, 5, 20, 25")
+        if severity not in ["2", "5", "20", "25", "30"]:
+            raise DemistoException("Invalid input Error: supported values for severity are: 2, 5, 20, 25, 30")
     spycloud_args["since"] = since
     spycloud_args["until"] = until
     spycloud_args["type"] = args.get("type", "")
