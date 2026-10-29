@@ -6,6 +6,9 @@
     "author": "SoChain",
     "url": "https://sochain.com/support",
     "email": "",
+    "githubUser": [
+        "doersf"
+    ],
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],

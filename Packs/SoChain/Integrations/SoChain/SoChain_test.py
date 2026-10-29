@@ -1,6 +1,9 @@
 import json
+from unittest.mock import AsyncMock
 
+import httpx
 import pytest
+import respx
 import SoChain
 from CommonServerPython import Common, DBotScoreReliability, DemistoException
 from SoChain import (
@@ -24,6 +27,24 @@ NO_CHECK = {"status": "fail", "data": {"error_message": "No address poisoning ch
 def util_load_json(path: str) -> dict:
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
+
+
+@pytest.fixture(autouse=True)
+def mock_support_multithreading(mocker):
+    """ContentClient calls support_multithreading(), which needs the real demisto object."""
+    mocker.patch("ContentClientApiModule.support_multithreading")
+
+
+@pytest.fixture
+def respx_mock():
+    """Mocks every httpx request; a request to an unmocked URL fails the test."""
+    with respx.mock(assert_all_called=False) as mock:
+        yield mock
+
+
+def mock_get(respx_mock, path: str, json: dict, status_code: int = 200, headers: dict | None = None) -> respx.Route:
+    """Answers GET {BASE_URL}/{path} (any query string) with the given JSON."""
+    return respx_mock.get(f"{BASE_URL}/{path}").mock(return_value=httpx.Response(status_code, json=json, headers=headers))
 
 
 @pytest.fixture
@@ -51,15 +72,16 @@ def test_split_scheme(value, expected):
     assert split_scheme(value) == expected
 
 
-def test_test_module(client, requests_mock):
-    requests_mock.get(f"{BASE_URL}/is_valid_address/BTC/{GENESIS}", json=VALID)
+def test_test_module(client, respx_mock):
+    mock_get(respx_mock, f"is_valid_address/BTC/{GENESIS}", json=VALID)
     assert SoChain.test_module(client) == "ok"
 
 
-def test_bad_api_key(requests_mock):
+def test_bad_api_key(respx_mock):
     """A 401 names the key as the problem."""
-    requests_mock.get(
-        f"{BASE_URL}/is_valid_address/BTC/{GENESIS}",
+    mock_get(
+        respx_mock,
+        f"is_valid_address/BTC/{GENESIS}",
         status_code=401,
         json={"status": "fail", "data": {"error_message": "Invalid API key."}},
     )
@@ -67,22 +89,38 @@ def test_bad_api_key(requests_mock):
         SoChain.test_module(Client(base_url=BASE_URL, verify=True, proxy=False, api_key="bad"))
 
 
-def test_rate_limited(client, requests_mock):
-    """A 429 passes on Retry-After and where to get a key."""
-    requests_mock.get(
-        f"{BASE_URL}/address_summary/BTC/{GENESIS}",
+def test_rate_limited(client, respx_mock):
+    """A 429 passes on Retry-After and where to get a key, at once: it is not retried."""
+    route = mock_get(
+        respx_mock,
+        f"address_summary/BTC/{GENESIS}",
         status_code=429,
         headers={"Retry-After": "120"},
         json={"status": "fail", "data": {"error_message": "Too many requests"}},
     )
     with pytest.raises(DemistoException, match="Retry after 120 seconds.*sochain.com/dashboard"):
         address_summary_command(client, {"address": GENESIS, "network": "BTC"})
+    assert route.call_count == 1
 
 
-def test_address_summary_detects_network(client, requests_mock):
+def test_server_error_retried(client, respx_mock, mocker):
+    """A 5xx is retried (3 attempts in all), then reported with SoChain's message."""
+    mocker.patch("ContentClientApiModule.anyio.sleep", new=AsyncMock())
+    route = mock_get(
+        respx_mock,
+        f"address_summary/BTC/{GENESIS}",
+        status_code=503,
+        json={"status": "fail", "data": {"error_message": "Try again soon"}},
+    )
+    with pytest.raises(DemistoException, match=r"SoChain API error \(503\): Try again soon"):
+        address_summary_command(client, {"address": GENESIS, "network": "BTC"})
+    assert route.call_count == 3
+
+
+def test_address_summary_detects_network(client, respx_mock):
     """Without a network, the first network where is_valid_address says yes is used."""
-    requests_mock.get(f"{BASE_URL}/is_valid_address/BTC/{GENESIS}", json=VALID)
-    requests_mock.get(f"{BASE_URL}/address_summary/BTC/{GENESIS}", json=util_load_json("test_data/address_summary.json"))
+    mock_get(respx_mock, f"is_valid_address/BTC/{GENESIS}", json=VALID)
+    mock_get(respx_mock, f"address_summary/BTC/{GENESIS}", json=util_load_json("test_data/address_summary.json"))
 
     result = address_summary_command(client, {"address": GENESIS})
 
@@ -95,23 +133,23 @@ def test_address_summary_detects_network(client, requests_mock):
     assert result.outputs["FirstActiveTime"] == "2011-05-13T21:04:05Z"
 
 
-def test_address_detection_order(client, requests_mock):
+def test_address_detection_order(client, respx_mock):
     """An address valid on DOGE only is checked against BTC and LTC first."""
     address = "DH5yaieqoZN36fDVciNyRueRGvGLR3mr7L"
-    requests_mock.get(f"{BASE_URL}/is_valid_address/BTC/{address}", json=INVALID)
-    requests_mock.get(f"{BASE_URL}/is_valid_address/LTC/{address}", json=INVALID)
-    requests_mock.get(f"{BASE_URL}/is_valid_address/DOGE/{address}", json=VALID)
-    requests_mock.get(f"{BASE_URL}/address_summary/DOGE/{address}", json=util_load_json("test_data/address_summary.json"))
+    mock_get(respx_mock, f"is_valid_address/BTC/{address}", json=INVALID)
+    mock_get(respx_mock, f"is_valid_address/LTC/{address}", json=INVALID)
+    mock_get(respx_mock, f"is_valid_address/DOGE/{address}", json=VALID)
+    mock_get(respx_mock, f"address_summary/DOGE/{address}", json=util_load_json("test_data/address_summary.json"))
 
     result = address_summary_command(client, {"address": address})
 
     assert result.outputs["Network"] == "DOGE"
-    assert [r.url.split("/")[-2] for r in requests_mock.request_history[:3]] == ["BTC", "LTC", "DOGE"]
+    assert [call.request.url.path.split("/")[-2] for call in respx_mock.calls[:3]] == ["BTC", "LTC", "DOGE"]
 
 
-def test_address_not_valid_anywhere(client, requests_mock):
+def test_address_not_valid_anywhere(client, respx_mock):
     for network in ("BTC", "LTC", "DOGE", "ZEC"):
-        requests_mock.get(f"{BASE_URL}/is_valid_address/{network}/nope", json=INVALID)
+        mock_get(respx_mock, f"is_valid_address/{network}/nope", json=INVALID)
     with pytest.raises(DemistoException, match="not a valid address on BTC, LTC, DOGE, ZEC"):
         address_summary_command(client, {"address": "nope"})
 
@@ -121,10 +159,10 @@ def test_unsupported_network(client):
         address_summary_command(client, {"address": GENESIS, "network": "ETH"})
 
 
-def test_crypto_no_lookalikes(client, requests_mock):
+def test_crypto_no_lookalikes(client, respx_mock):
     """An active address without findings: Unknown score, and the message says no look-alikes were found."""
-    requests_mock.get(f"{BASE_URL}/address_summary/BTC/{GENESIS}", json=util_load_json("test_data/address_summary.json"))
-    requests_mock.get(f"{BASE_URL}/address_poisoning/BTC/{GENESIS}", json=util_load_json("test_data/address_poisoning_none.json"))
+    mock_get(respx_mock, f"address_summary/BTC/{GENESIS}", json=util_load_json("test_data/address_summary.json"))
+    mock_get(respx_mock, f"address_poisoning/BTC/{GENESIS}", json=util_load_json("test_data/address_poisoning_none.json"))
 
     results = crypto_reputation_command(client, {"crypto": f"bitcoin:{GENESIS}"}, DBotScoreReliability.C)
 
@@ -137,16 +175,14 @@ def test_crypto_no_lookalikes(client, requests_mock):
     assert indicator.dbot_score.message == "No address poisoning look-alikes found."
     assert results[0].outputs["Poisoning"]["LookalikesFound"] is False
     # The network came from the scheme, so is_valid_address was not called.
-    assert not any("is_valid_address" in r.url for r in requests_mock.request_history)
+    assert not any("is_valid_address" in str(call.request.url) for call in respx_mock.calls)
 
 
-def test_crypto_lookalikes_found_is_not_bad(client, requests_mock):
+def test_crypto_lookalikes_found_is_not_bad(client, respx_mock):
     """Look-alikes make the address a target, not a bad actor: the score stays Unknown."""
     address = "bc1qtestvictimaddress0000000000000000000000"
-    requests_mock.get(f"{BASE_URL}/address_summary/BTC/{address}", json=util_load_json("test_data/address_summary.json"))
-    requests_mock.get(
-        f"{BASE_URL}/address_poisoning/BTC/{address}", json=util_load_json("test_data/address_poisoning_findings.json")
-    )
+    mock_get(respx_mock, f"address_summary/BTC/{address}", json=util_load_json("test_data/address_summary.json"))
+    mock_get(respx_mock, f"address_poisoning/BTC/{address}", json=util_load_json("test_data/address_poisoning_findings.json"))
 
     result = crypto_reputation_command(client, {"crypto": address, "network": "BTC"}, DBotScoreReliability.C)[0]
 
@@ -160,11 +196,11 @@ def test_crypto_lookalikes_found_is_not_bad(client, requests_mock):
     assert "Look-alike addresses" in result.readable_output
 
 
-def test_crypto_network_without_check(client, requests_mock):
+def test_crypto_network_without_check(client, respx_mock):
     """A 404 from the poisoning check (a network without it) still enriches the address."""
     address = "tmTestAddress0000000000000000000000"
-    requests_mock.get(f"{BASE_URL}/address_summary/ZECTEST/{address}", json=util_load_json("test_data/address_summary.json"))
-    requests_mock.get(f"{BASE_URL}/address_poisoning/ZECTEST/{address}", status_code=404, json=NO_CHECK)
+    mock_get(respx_mock, f"address_summary/ZECTEST/{address}", json=util_load_json("test_data/address_summary.json"))
+    mock_get(respx_mock, f"address_poisoning/ZECTEST/{address}", status_code=404, json=NO_CHECK)
 
     result = crypto_reputation_command(client, {"crypto": address, "network": "ZECTEST"}, DBotScoreReliability.C)[0]
 
@@ -173,7 +209,7 @@ def test_crypto_network_without_check(client, requests_mock):
     assert result.indicator.dbot_score.message == "The address poisoning check is not available for this network."
 
 
-def test_crypto_unused_address(client, requests_mock):
+def test_crypto_unused_address(client, respx_mock):
     """A valid address with no transactions gets 'No results found.'"""
     summary = {
         "status": "success",
@@ -188,8 +224,8 @@ def test_crypto_unused_address(client, requests_mock):
             "last_active": None,
         },
     }
-    requests_mock.get(f"{BASE_URL}/address_summary/LTC/Lunused", json=summary)
-    requests_mock.get(f"{BASE_URL}/address_poisoning/LTC/Lunused", json=util_load_json("test_data/address_poisoning_none.json"))
+    mock_get(respx_mock, "address_summary/LTC/Lunused", json=summary)
+    mock_get(respx_mock, "address_poisoning/LTC/Lunused", json=util_load_json("test_data/address_poisoning_none.json"))
 
     result = crypto_reputation_command(client, {"crypto": "litecoin:Lunused"}, DBotScoreReliability.C)[0]
 
@@ -198,12 +234,13 @@ def test_crypto_unused_address(client, requests_mock):
     assert result.outputs["FirstActiveTime"] is None
 
 
-def test_crypto_invalid_address(client, requests_mock):
+def test_crypto_invalid_address(client, respx_mock):
     """A string that isn't an address on any network gets an Unknown score and no SoChain context."""
     for network in ("BTC", "LTC", "DOGE", "ZEC"):
-        requests_mock.get(f"{BASE_URL}/is_valid_address/{network}/nope", json=INVALID)
-    requests_mock.get(
-        f"{BASE_URL}/address_summary/BTC/notbtc",
+        mock_get(respx_mock, f"is_valid_address/{network}/nope", json=INVALID)
+    mock_get(
+        respx_mock,
+        "address_summary/BTC/notbtc",
         status_code=404,
         json={"status": "fail", "data": {"error_message": "Unable to fetch address summary. Invalid address?"}},
     )
@@ -215,8 +252,8 @@ def test_crypto_invalid_address(client, requests_mock):
     assert all(r.outputs is None for r in results)
 
 
-def test_transaction(client, requests_mock):
-    requests_mock.get(f"{BASE_URL}/transaction/BTC/{TXID}", json=util_load_json("test_data/transaction.json"))
+def test_transaction(client, respx_mock):
+    mock_get(respx_mock, f"transaction/BTC/{TXID}", json=util_load_json("test_data/transaction.json"))
 
     result = transaction_command(client, {"txid": TXID, "network": "btc"})
 
@@ -234,14 +271,12 @@ def test_transaction_needs_network(client):
         transaction_command(client, {"txid": TXID})
 
 
-def test_address_counterparties(client, requests_mock):
-    requests_mock.get(
-        f"{BASE_URL}/address_counterparties/BTC/{GENESIS}", json=util_load_json("test_data/address_counterparties.json")
-    )
+def test_address_counterparties(client, respx_mock):
+    mock_get(respx_mock, f"address_counterparties/BTC/{GENESIS}", json=util_load_json("test_data/address_counterparties.json"))
 
     result = address_counterparties_command(client, {"address": GENESIS, "network": "BTC", "limit": "3"})
 
-    assert requests_mock.last_request.qs == {"limit": ["3"]}
+    assert dict(respx_mock.calls.last.request.url.params) == {"limit": "3"}
     assert result.outputs["WindowBlocks"] == 4320
     assert result.outputs["Counterparties"][0] == {
         "Address": "bc1qdux37a0pzr44lrhc8vm44uellvplgyh7g73epq",
@@ -257,15 +292,13 @@ def test_limit_out_of_range(client):
         address_counterparties_command(client, {"address": GENESIS, "network": "BTC", "limit": "500"})
 
 
-def test_address_poisoning(client, requests_mock):
+def test_address_poisoning(client, respx_mock):
     address = "bc1qtestvictimaddress0000000000000000000000"
-    requests_mock.get(
-        f"{BASE_URL}/address_poisoning/BTC/{address}", json=util_load_json("test_data/address_poisoning_findings.json")
-    )
+    mock_get(respx_mock, f"address_poisoning/BTC/{address}", json=util_load_json("test_data/address_poisoning_findings.json"))
 
     result = address_poisoning_command(client, {"address": address, "network": "BTC"})
 
-    assert requests_mock.last_request.qs == {"limit": ["50"]}
+    assert dict(respx_mock.calls.last.request.url.params) == {"limit": "50"}
     assert result.outputs_prefix == "SoChain.AddressPoisoning"
     assert result.outputs["LookalikesFound"] is True
     assert result.outputs["Findings"][0]["Sender"] == "bc1qrealpartner00000000000000000000000lookalike"

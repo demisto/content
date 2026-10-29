@@ -1,7 +1,11 @@
+import traceback
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from CommonServerUserPython import *  # noqa: F401
 
-from typing import Any
+from ContentClientApiModule import *  # noqa: F401
 
 """ CONSTANTS """
 
@@ -36,26 +40,37 @@ MAX_LIMIT = 100
 """ CLIENT CLASS """
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """Client for the SoChain API v3. Every lookup works without a key; a key raises the request limits."""
 
     def __init__(self, base_url: str, verify: bool, proxy: bool, api_key: str | None = None):
         headers = {"Accept": "application/json"}
         if api_key:
             headers["API-KEY"] = api_key
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
+        super().__init__(
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            headers=headers,
+            client_name=INTEGRATION_NAME,
+            # Retry only server errors. A 429 is a daily or monthly limit, so waiting on its Retry-After
+            # (up to a day) would hang the command; it is reported at once instead.
+            retry_policy=RetryPolicy(max_attempts=3, retryable_status_codes=(500, 502, 503, 504)),  # type: ignore[call-arg]
+            diagnostic_mode=is_debug_mode(),
+        )
 
     def _get(self, url_suffix: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
-        response = self._http_request(
-            method="GET",
-            url_suffix=url_suffix,
-            params=params,
-            error_handler=self._error_handler,
-        )
+        try:
+            response = self._http_request(method="GET", url_suffix=url_suffix, params=params)
+        except ContentClientError as e:
+            # ContentClient raises on any non-2xx answer; turn it into a message that says what to do.
+            if e.response is not None:
+                self._error_handler(e.response)
+            raise
         return response.get("data") or {}
 
     @staticmethod
-    def _error_handler(res: requests.Response) -> None:
+    def _error_handler(res: httpx.Response) -> None:
         try:
             message = res.json().get("data", {}).get("error_message") or res.text
         except ValueError:
@@ -457,7 +472,8 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
+        demisto.debug(traceback.format_exc())
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}", error=e)
 
 
 """ ENTRY POINT """
