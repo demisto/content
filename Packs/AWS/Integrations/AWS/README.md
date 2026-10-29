@@ -6619,10 +6619,10 @@ Lists the Systems Manager (SSM) Parameter Store parameters in the current AWS ac
 | AWS.SSM.Parameters.ARN | String | The Amazon Resource Name \(ARN\) of the parameter. |
 | AWS.SSM.Parameters.Type | String | The type of the parameter. Either String, StringList, or SecureString. |
 | AWS.SSM.Parameters.KeyId | String | The alias or ARN of the KMS key used to encrypt the parameter. Applies to SecureString parameters only. |
-| AWS.SSM.Parameters.LastModifiedDate | Date | The date the parameter was last changed or updated. |
+| AWS.SSM.Parameters.LastModifiedDate | Date | The date the parameter was last changed or updated, in ISO 8601 format \(for example, 2024-01-15T12:34:56\). |
 | AWS.SSM.Parameters.LastModifiedUser | String | The Amazon Resource Name \(ARN\) of the AWS user who last changed the parameter. |
 | AWS.SSM.Parameters.Description | String | The description of the parameter. |
-| AWS.SSM.Parameters.AllowedPattern | String | A regular expression used to validate the parameter value. |
+| AWS.SSM.Parameters.AllowedPattern | String | The regular expression used to validate the parameter value. |
 | AWS.SSM.Parameters.Version | Number | The parameter version. |
 | AWS.SSM.Parameters.Tier | String | The parameter tier. Either Standard, Advanced, or Intelligent-Tiering. |
 | AWS.SSM.Parameters.DataType | String | The data type of the parameter, such as text or aws:ec2:image. The default is text. |

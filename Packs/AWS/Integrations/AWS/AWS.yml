@@ -17776,7 +17776,8 @@ script:
           - 'false'
         defaultValue: 'false'
       - name: limit
-        description: The maximum number of parameters to return. Minimum 1, maximum 50. Default is 50.
+        description: The maximum number of parameters to return. Minimum 1, maximum 50.
+        defaultValue: '50'
       - name: next_token
         description: The token for the next set of items to return. Received from a previous call. Use AWS.SSM.ParametersNextToken.
     outputs:
@@ -17793,7 +17794,7 @@ script:
         description: The alias or ARN of the KMS key used to encrypt the parameter. Applies to SecureString parameters only.
         type: String
       - contextPath: AWS.SSM.Parameters.LastModifiedDate
-        description: The date the parameter was last changed or updated.
+        description: 'The date the parameter was last changed or updated, in ISO 8601 format (for example, 2024-01-15T12:34:56).'
         type: Date
       - contextPath: AWS.SSM.Parameters.LastModifiedUser
         description: The Amazon Resource Name (ARN) of the AWS user who last changed the parameter.
@@ -17802,7 +17803,7 @@ script:
         description: The description of the parameter.
         type: String
       - contextPath: AWS.SSM.Parameters.AllowedPattern
-        description: A regular expression used to validate the parameter value.
+        description: The regular expression used to validate the parameter value.
         type: String
       - contextPath: AWS.SSM.Parameters.Version
         description: The parameter version.
