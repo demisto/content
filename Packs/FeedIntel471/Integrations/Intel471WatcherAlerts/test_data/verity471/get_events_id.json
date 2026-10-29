@@ -1,0 +1,204 @@
+{
+  "activity": {
+    "first_seen_ts": "2026-01-01T00:00:00Z",
+    "last_seen_ts": "2026-01-01T00:00:00Z"
+  },
+  "classification": {
+    "girs": [
+      {
+        "name": "string",
+        "path": "string"
+      }
+    ]
+  },
+  "data": {
+    "arguments": [
+      "string"
+    ],
+    "attack_targets": [
+      {
+        "key": "string"
+      }
+    ],
+    "attack_type": "string",
+    "bot_settings": {
+      "encryption": [
+        {
+          "algorithm": "string",
+          "context": "string",
+          "key": "string"
+        }
+      ],
+      "exit_country": "string",
+      "settings": [
+        {
+          "key": "string"
+        }
+      ]
+    },
+    "command": "string",
+    "component_type": "string",
+    "config_file": {
+      "md5": "string",
+      "sha1": "string",
+      "sha256": "string",
+      "size": 0,
+      "ssdeep": "string",
+      "type": "string"
+    },
+    "controller": {
+      "ipv4": {
+        "geo_ip": {
+          "city": "string",
+          "country": "string",
+          "country_code": "string",
+          "isp": {
+            "autonomous_system": "string",
+            "isp": "string",
+            "network": "string",
+            "organization": "string"
+          },
+          "subdivision": [
+            "string"
+          ]
+        },
+        "ip_address": "string"
+      },
+      "url": "string"
+    },
+    "controllers": [
+      {
+        "url": "string"
+      }
+    ],
+    "encryption": [
+      {
+        "algorithm": "string",
+        "context": "string",
+        "key": "string"
+      }
+    ],
+    "exfil_location": "string",
+    "file": {
+      "md5": "string",
+      "sha1": "string",
+      "sha256": "string",
+      "size": 0,
+      "ssdeep": "string",
+      "type": "string"
+    },
+    "function": "string",
+    "inject_type": "string",
+    "location": {
+      "ipv4": {
+        "geo_ip": {
+          "city": "string",
+          "country": "string",
+          "country_code": "string",
+          "isp": {
+            "autonomous_system": "string",
+            "isp": "string",
+            "network": "string",
+            "organization": "string"
+          },
+          "subdivision": [
+            "string"
+          ]
+        },
+        "ip_address": "string"
+      },
+      "url": "string"
+    },
+    "parameters": [
+      {
+        "key": "string"
+      }
+    ],
+    "plugin_name": "string",
+    "plugin_type": "string",
+    "recipient_domains": [
+      {
+        "count": 0,
+        "domain": "string"
+      }
+    ],
+    "recipient_file": {
+      "md5": "string",
+      "sha1": "string",
+      "sha256": "string",
+      "size": 0,
+      "ssdeep": "string",
+      "type": "string"
+    },
+    "redirects": [
+      {
+        "address": "string",
+        "host": "string"
+      }
+    ],
+    "senders": [
+      "string"
+    ],
+    "service_type": "string",
+    "settings": {
+      "items": [
+        "string"
+      ]
+    },
+    "target_type": "string",
+    "template": {
+      "attachments": {
+        "md5": "string",
+        "sha1": "string",
+        "sha256": "string",
+        "size": 0,
+        "ssdeep": "string",
+        "type": "string"
+      },
+      "body": "string",
+      "headers": "string",
+      "raw_content": {
+        "md5": "string",
+        "sha1": "string",
+        "sha256": "string",
+        "size": 0,
+        "ssdeep": "string",
+        "type": "string"
+      },
+      "sender": "string",
+      "subject": "string"
+    },
+    "triggers": [
+      {
+        "trigger": "string"
+      }
+    ]
+  },
+  "id": "string",
+  "kill_chain_phases": [
+    {
+      "kill_chain_name": "string",
+      "phase_name": "string"
+    }
+  ],
+  "threat": {
+    "data": {
+      "bulletproof_hosting": {
+        "provider": "string"
+      },
+      "malware": {
+        "component": "string",
+        "family": "string",
+        "id": "string",
+        "variant": "string",
+        "version": "string"
+      },
+      "malware_family": {
+        "id": "string",
+        "name": "string"
+      }
+    },
+    "type": "malware"
+  },
+  "type": "string"
+}

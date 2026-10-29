@@ -1,0 +1,114 @@
+{
+  "activity": {
+    "first_seen_ts": "2026-01-01T00:00:00Z",
+    "last_seen_ts": "2026-01-01T00:00:00Z"
+  },
+  "basic_info": {
+    "account_balance": "string",
+    "activation_region": "string",
+    "additional_info": "string",
+    "available_games": [
+      "string"
+    ],
+    "bank_name": "string",
+    "country": "string",
+    "email_domain": "string",
+    "free_insurance_time": "string",
+    "game_statistics": [
+      "string"
+    ],
+    "in_game_items": {
+      "agents_amount": "string",
+      "arena": "string",
+      "cars_amount": "string",
+      "cash_amount": "string",
+      "free_name_change": "string",
+      "maxed_weapons": "string",
+      "operators": [
+        "string"
+      ],
+      "skins": [
+        "string"
+      ],
+      "skins_amount": "string",
+      "trophies": "string"
+    },
+    "last_activity_ts": "2026-01-01T00:00:00Z",
+    "last_order": "string",
+    "link": "string",
+    "negative_points": [
+      "string"
+    ],
+    "origin_country": "string",
+    "platform": "string",
+    "points": "string",
+    "positive_points": [
+      "string"
+    ],
+    "product_types": [
+      "string"
+    ],
+    "region": "string",
+    "registered_ts": "2026-01-01T00:00:00Z",
+    "server": "string",
+    "shop_name": "string",
+    "shop_type": "string",
+    "short_description": "string",
+    "times_sold": 0,
+    "works_on": "string",
+    "zip": "string"
+  },
+  "description": "string",
+  "id": "string",
+  "kind": "string",
+  "links": {
+    "external": {
+      "href": "string"
+    },
+    "verity_api": {
+      "href": "string"
+    },
+    "verity_portal": {
+      "href": "string"
+    }
+  },
+  "marketplace_id": "string",
+  "name": "string",
+  "others": {
+    "key": "string"
+  },
+  "policy": {
+    "terms_and_service": "string"
+  },
+  "price": [
+    {
+      "currency": "string",
+      "value": 0.0
+    }
+  ],
+  "product": {
+    "created_ts": "2026-01-01T00:00:00Z"
+  },
+  "quantity": {
+    "available_from_vendor": 0,
+    "available_on_market": 0.0,
+    "maximum_order": 0,
+    "minimum_order": 0,
+    "sold_from_vendor": 0,
+    "stock": 0
+  },
+  "shipping": {
+    "destinations": [
+      "string"
+    ],
+    "options": [
+      "string"
+    ],
+    "origin": "string",
+    "time": "string",
+    "type": "string"
+  },
+  "title": "string",
+  "vendor_id": "string",
+  "vendor_name": "string"
+}

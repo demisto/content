@@ -1,0 +1,152 @@
+{
+  "actor_or_group": "string",
+  "body": "string",
+  "classification": {
+    "girs": [
+      {
+        "name": "string",
+        "path": "string"
+      }
+    ]
+  },
+  "confidence": {
+    "description": "string",
+    "level": "high"
+  },
+  "creation_ts": "string",
+  "entities": [
+    {
+      "type": "string",
+      "value": "string"
+    }
+  ],
+  "id": "string",
+  "information_ts": "string",
+  "is_sensitive_source": true,
+  "is_truncated": true,
+  "last_updated_ts": "string",
+  "links": {
+    "external": {
+      "href": "string"
+    },
+    "verity_api": {
+      "href": "string"
+    },
+    "verity_portal": {
+      "href": "string"
+    }
+  },
+  "related_reports": [
+    {
+      "assessment": {
+        "admiralty_code": "A1",
+        "confidence": {
+          "description": "string",
+          "level": "high"
+        }
+      },
+      "classification": {
+        "girs": [
+          {
+            "name": "string",
+            "path": "string"
+          }
+        ]
+      },
+      "creation_ts": "string",
+      "id": "string",
+      "information_ts": "string",
+      "last_updated_ts": "string",
+      "links": {
+        "external": {
+          "href": "string"
+        },
+        "verity_api": {
+          "href": "string"
+        },
+        "verity_portal": {
+          "href": "string"
+        }
+      },
+      "released_ts": "string",
+      "sources": [
+        {
+          "index": 0,
+          "last_updated_ts": "string",
+          "links": {
+            "external": {
+              "href": "string"
+            },
+            "verity_api": {
+              "href": "string"
+            },
+            "verity_portal": {
+              "href": "string"
+            }
+          },
+          "source_type": "string",
+          "title": "string",
+          "type": "string"
+        }
+      ],
+      "sub_type": "fintel_blog",
+      "summary": "string",
+      "title": "string",
+      "type": "fintel",
+      "version_id": "string",
+      "version_number": 0
+    }
+  ],
+  "released_ts": "string",
+  "sources": [
+    {
+      "index": 0,
+      "last_updated_ts": "string",
+      "links": {
+        "external": {
+          "href": "string"
+        },
+        "verity_api": {
+          "href": "string"
+        },
+        "verity_portal": {
+          "href": "string"
+        }
+      },
+      "source_type": "string",
+      "title": "string",
+      "type": "string"
+    }
+  ],
+  "title": "string",
+  "type": "string",
+  "version_id": "string",
+  "version_number": 0,
+  "victims": [
+    {
+      "country": "string",
+      "industries": [
+        {
+          "industry": "string",
+          "sector": "string"
+        }
+      ],
+      "links": [
+        {
+          "external": {
+            "href": "string"
+          },
+          "verity_api": {
+            "href": "string"
+          },
+          "verity_portal": {
+            "href": "string"
+          }
+        }
+      ],
+      "name": "string",
+      "region": "string",
+      "revenue": "string"
+    }
+  ]
+}

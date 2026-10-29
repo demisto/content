@@ -17,13 +17,10 @@ from CommonServerUserPython import *  # noqa
 
 """ CONSTANTS """
 # disable-secrets-detection-start
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 FEED_URL = "https://api.intel471.com/v1"
 FEED_URL_VERITY471 = "https://api.intel471.cloud"
 TITAN_PORTAL_URL = "https://titan.intel471.com/"
-VERITY471_PORTAL_URL = "https://titan.intel471.com/"
 MAX_INCIDENTS_TO_FETCH = 100
-INTEL471_SEVERITIES = ["Low", "Medium", "High", "Critical"]
 INCIDENT_TYPE = "Intel 471 Watcher Alert"
 DEMISTO_VERSION = demisto.demistoVersion()
 CONTENT_PACK = f"Intel471 Feed/{get_pack_version()!s}"
@@ -486,16 +483,17 @@ def compose_titan_url(alert: dict) -> str:
 def compose_incident_watcher_details(alert: dict, watcher_groups: list) -> tuple[str, str]:
     watcher_group_description: str = ""
     watcher_group_uid = alert.get("watcherGroupUid", None)
-    watcher_group: dict = [wg for wg in watcher_groups if wg["uid"] == watcher_group_uid][0]
+    # next(..., {}) rather than [...][0]: an alert can reference a group or watcher that is not in
+    # the batch, and indexing an empty match raised IndexError before the guards below could run.
+    watcher_group: dict = next((wg for wg in watcher_groups if wg["uid"] == watcher_group_uid), {})
     if watcher_group:
         watcher_group_description = watcher_group.get("name", "")
 
     watcher_description: str = ""
     watcher_uid: str = alert.get("watcherUid", "")
-    watchers: list = []
     if watcher_group.get("watchers", None):
-        watchers = watcher_group.get("watchers", [])
-        watcher: dict = [w for w in watchers if w["uid"] == watcher_uid][0]
+        watchers: list = watcher_group.get("watchers", [])
+        watcher: dict = next((w for w in watchers if w["uid"] == watcher_uid), {})
         if watcher:
             watcher_description = watcher.get("description", "")
 
@@ -655,24 +653,6 @@ def _verity_malware_version(alert: dict) -> str:
     return str(deep_get(alert, "threat.data.malware.version", ""))
 
 
-def _verity_indicator_display_value(alert: dict) -> str:
-    """Primary human-readable value for indicators (see test_data/fixtures/malware_indicator.json)."""
-    if alert.get("pattern"):
-        return str(alert["pattern"])
-    data = alert.get("data") or {}
-    if not isinstance(data, dict):
-        return ""
-    return str(
-        data.get("domain")
-        or deep_get(data, "ipv4.ip_address", None)
-        or data.get("url")
-        or data.get("email")
-        or deep_get(data, "file.sha256", None)
-        or deep_get(data, "file.md5", None)
-        or ""
-    )
-
-
 def _verity_format_sources_block(sources: Any) -> str:
     if not sources or not isinstance(sources, list):
         return ""
@@ -730,6 +710,67 @@ def _verity_format_entities_block(entities: Any) -> str:
     return "\n".join(parts) if parts else ""
 
 
+def _verity_format_girs_block(girs: Any) -> str:
+    """Renders ``classification.girs`` as "<name> (<path>)" lines."""
+    if not girs or not isinstance(girs, list):
+        return ""
+    parts: list[str] = []
+    for gir in girs:
+        if not isinstance(gir, dict):
+            parts.append(str(gir))
+            continue
+        name = str(gir.get("name", ""))
+        path = str(gir.get("path", ""))
+        parts.append(f"{name} ({path})" if name and path else name or path)
+    return "\n".join(part for part in parts if part)
+
+
+def _verity_format_price(price: Any) -> str:
+    """Renders a marketplace price list (``[{"value": .., "currency": ..}]``) as "<value> <currency>"."""
+    if not price or not isinstance(price, list):
+        return ""
+    parts: list[str] = []
+    for p in price:
+        if isinstance(p, dict):
+            parts.append(f"{p.get('value', '')} {p.get('currency', '')}".strip())
+        else:
+            parts.append(str(p))
+    return ", ".join(part for part in parts if part)
+
+
+def _verity_append_field(details: str, label: str, value: Any) -> str:
+    """Appends "<label>: <value>" to ``details``, skipping values that are missing or blank."""
+    if value is None or _verity_is_blank(value):
+        return details
+    return details + "\n" + label + ": " + str(value)
+
+
+def _verity_format_attachments_block(attachments: Any) -> str:
+    """Renders the ``attachment_data`` map on a data leak site post as one line per attachment."""
+    if not attachments or not isinstance(attachments, dict):
+        return ""
+    parts: list[str] = []
+    for key, attachment in attachments.items():
+        if not isinstance(attachment, dict):
+            parts.append(f"[{key}] {attachment}")
+            continue
+        name = attachment.get("file_name", "") or "(no file name)"
+        seg = (
+            f"[{key}] {name}"
+            f"|type:{attachment.get('mime_type', '')}"
+            f"|size:{attachment.get('file_size', '')}"
+            f"|hash:{attachment.get('file_hash', '')}"
+        )
+        classification = attachment.get("classification")
+        if classification:
+            seg += f"|classification:{classification}"
+        url = attachment.get("file_url")
+        if url:
+            seg += f"|url:{url}"
+        parts.append(seg)
+    return "\n".join(parts)
+
+
 def _verity_report_body_plain(alert: dict) -> str:
     body = alert.get("body")
     if body is None:
@@ -755,16 +796,18 @@ class BaseAdapter:
     ``incident_details``. Add shared properties or helpers on this class for all adapter types.
     """
 
-    def __init__(self, alert: dict) -> None:
+    def __init__(self, alert: Any) -> None:
         self.alert = alert
 
     @property
     def alert_id(self):
+        if not isinstance(self.alert, dict):
+            return None
         _id = (
             self.alert.get("id")
-            or self.alert.get("message.id")
-            or self.alert.get("post.id")
-            or self.alert.get("private_message.id")
+            or deep_get(self.alert, "message.id", None)
+            or deep_get(self.alert, "post.id", None)
+            or deep_get(self.alert, "private_message.id", None)
         )
         return _id
 
@@ -990,6 +1033,13 @@ class MalwareEventAdapter(BaseAdapter):
         ver = _verity_malware_version(self.alert)
         if not _verity_is_blank(ver):
             details += "\n" + "Malware Family Version: " + ver
+        malware = deep_get(self.alert, "threat.data.malware", {}) or {}
+        details = _verity_append_field(details, "Malware Component", malware.get("component"))
+        details = _verity_append_field(details, "Malware Variant", malware.get("variant"))
+        details = _verity_append_field(details, "Threat Type", deep_get(self.alert, "threat.type", None))
+        details = _verity_append_field(
+            details, "Bulletproof Hosting Provider", deep_get(self.alert, "threat.data.bulletproof_hosting.provider", None)
+        )
         kc = self.alert.get("kill_chain_phases", [])
         if not _verity_is_blank(kc) and kc is not None:
             kc_str = json.dumps(kc, indent=2, sort_keys=False, default=str)
@@ -997,14 +1047,16 @@ class MalwareEventAdapter(BaseAdapter):
         et = str(self.alert.get("type", ""))
         if not _verity_is_blank(et):
             details += "\n" + "Event Type: " + et
+        details = _verity_append_field(details, "First seen", deep_get(self.alert, "activity.first_seen_ts", None))
+        details = _verity_append_field(details, "Last seen", deep_get(self.alert, "activity.last_seen_ts", None))
+        girs = _verity_format_girs_block((self.alert.get("classification") or {}).get("girs"))
+        if not _verity_is_blank(girs):
+            details += "\n\n" + "Classification:" + "\n" + girs
         event_details = self.alert.get("data")
         block = ""
         if event_details is None:
             pass
-        elif isinstance(event_details, list):
-            if not _verity_is_blank(event_details):
-                block = json.dumps(event_details, indent=2, sort_keys=False, default=str)
-        elif isinstance(event_details, dict):
+        elif isinstance(event_details, (dict | list)):
             if not _verity_is_blank(event_details):
                 block = json.dumps(event_details, indent=2, sort_keys=False, default=str)
         else:
@@ -1056,10 +1108,7 @@ class MalwareIndicatorAdapter(BaseAdapter):
         block = ""
         if idata is None:
             pass
-        elif isinstance(idata, list):
-            if not _verity_is_blank(idata):
-                block = json.dumps(idata, indent=2, sort_keys=False, default=str)
-        elif isinstance(idata, dict):
+        elif isinstance(idata, (dict | list)):
             if not _verity_is_blank(idata):
                 block = json.dumps(idata, indent=2, sort_keys=False, default=str)
         else:
@@ -1158,6 +1207,7 @@ class ForumsPrivateMessageAdapter(BaseAdapter):
         author = str(deep_get(self.alert, "author.user_name", ""))
         if not _verity_is_blank(author):
             details += "\n" + "Author: " + author
+        details = _verity_append_field(details, "Recipient", deep_get(self.alert, "recipient.user_name", None))
         raw = str(deep_get(self.alert, "private_message.message", ""))
         body = html.unescape(" ".join(remove_tags(raw).strip().split()))
         if not _verity_is_blank(body):
@@ -1365,26 +1415,223 @@ class SpotReportAdapter(BaseAdapter):
         return details
 
 
+class MarketplaceAdapter(BaseAdapter):
+    """test_data/verity471/get_marketplaces_marketplace_id.json — a marketplace website."""
+
+    def __init__(self, alert: dict) -> None:
+        super().__init__(alert)
+
+    @property
+    def incident_name(self) -> str:
+        return "MARKETPLACE:\n" + str(self.alert.get("name", ""))
+
+    @property
+    def incident_details(self) -> str:
+        details = "Source Object: MARKETPLACE"
+        details = _verity_append_field(details, "Name", self.alert.get("name"))
+        details = _verity_append_field(details, "Alias", self.alert.get("alias"))
+        details = _verity_append_field(details, "Tier", self.alert.get("tier"))
+        details = _verity_append_field(details, "Active", self.alert.get("is_active"))
+        details = _verity_append_field(details, "Link", self.alert.get("link"))
+        details = _verity_append_field(details, "First seen", deep_get(self.alert, "activity.first_seen_ts", None))
+        details = _verity_append_field(details, "Last seen", deep_get(self.alert, "activity.last_seen_ts", None))
+        description = str(self.alert.get("description", ""))
+        if not _verity_is_blank(description):
+            details += "\n\nDescription:\n" + description
+        return details
+
+
+class MarketplaceProductAdapter(BaseAdapter):
+    """test_data/verity471/get_products_product_id.json — a product listed on a marketplace."""
+
+    def __init__(self, alert: dict) -> None:
+        super().__init__(alert)
+
+    @property
+    def incident_name(self) -> str:
+        label = str(self.alert.get("title") or self.alert.get("name") or "")
+        return "MARKETPLACE PRODUCT:\n" + label
+
+    @property
+    def incident_details(self) -> str:
+        details = "Source Object: MARKETPLACE PRODUCT"
+        details = _verity_append_field(details, "Title", self.alert.get("title"))
+        details = _verity_append_field(details, "Name", self.alert.get("name"))
+        details = _verity_append_field(details, "Kind", self.alert.get("kind"))
+        details = _verity_append_field(details, "Vendor", self.alert.get("vendor_name"))
+        details = _verity_append_field(details, "Marketplace ID", self.alert.get("marketplace_id"))
+        details = _verity_append_field(details, "Price", _verity_format_price(self.alert.get("price")))
+        basic_info_fields = self.alert.get("basic_info") or {}
+        # Read numbers straight off the dict: deep_get() swaps any falsy value for its default.
+        details = _verity_append_field(details, "Times sold", basic_info_fields.get("times_sold"))
+        details = _verity_append_field(details, "Link", basic_info_fields.get("link"))
+        description = str(self.alert.get("description", ""))
+        if not _verity_is_blank(description):
+            details += "\n\nDescription:\n" + description
+        quantity = self.alert.get("quantity")
+        if not _verity_is_blank(quantity):
+            details += "\n\nQuantity:\n" + json.dumps(quantity, indent=2, sort_keys=False, default=str)
+        shipping = self.alert.get("shipping")
+        if not _verity_is_blank(shipping):
+            details += "\n\nShipping:\n" + json.dumps(shipping, indent=2, sort_keys=False, default=str)
+        basic_info = self.alert.get("basic_info")
+        if not _verity_is_blank(basic_info):
+            details += "\n\nProduct details:\n" + json.dumps(basic_info, indent=2, sort_keys=False, default=str)
+        return details
+
+
+class MarketplaceResourceAdapter(BaseAdapter):
+    """test_data/verity471/get_resources_resource_id.json — a compromised resource sold on a marketplace."""
+
+    def __init__(self, alert: dict) -> None:
+        super().__init__(alert)
+
+    @property
+    def incident_name(self) -> str:
+        label = str(self.alert.get("name") or self.alert.get("product_title") or "")
+        return "MARKETPLACE RESOURCE:\n" + label
+
+    @property
+    def incident_details(self) -> str:
+        details = "Source Object: MARKETPLACE RESOURCE"
+        details = _verity_append_field(details, "Name", self.alert.get("name"))
+        details = _verity_append_field(details, "Product title", self.alert.get("product_title"))
+        details = _verity_append_field(details, "Marketplace ID", self.alert.get("marketplace_id"))
+        details = _verity_append_field(details, "Link", self.alert.get("link"))
+        details = _verity_append_field(details, "Login available", self.alert.get("login_available"))
+        details = _verity_append_field(details, "Password available", self.alert.get("password_available"))
+        details = _verity_append_field(details, "Cookies available", self.alert.get("cookies_available"))
+        details = _verity_append_field(details, "Infostealer browser", deep_get(self.alert, "infostealer.browser", None))
+        details = _verity_append_field(details, "Infostealer grabbed", deep_get(self.alert, "infostealer.grabbed_ts", None))
+        details = _verity_append_field(details, "Stolen data source", deep_get(self.alert, "stolen_data.source", None))
+        datasets = deep_get(self.alert, "stolen_data.datasets", None)
+        if isinstance(datasets, list) and not _verity_is_blank(datasets):
+            details += "\n" + "Stolen datasets: " + ", ".join(str(d) for d in datasets)
+        return details
+
+
+class MarketplaceVendorAdapter(BaseAdapter):
+    """test_data/verity471/get_vendors_vendor_id.json — a seller operating on a marketplace."""
+
+    def __init__(self, alert: dict) -> None:
+        super().__init__(alert)
+
+    @property
+    def incident_name(self) -> str:
+        return "MARKETPLACE VENDOR:\n" + str(self.alert.get("name", ""))
+
+    @property
+    def incident_details(self) -> str:
+        details = "Source Object: MARKETPLACE VENDOR"
+        details = _verity_append_field(details, "Name", self.alert.get("name"))
+        details = _verity_append_field(details, "Marketplace", self.alert.get("marketplace_name"))
+        details = _verity_append_field(details, "Marketplace ID", self.alert.get("marketplace_id"))
+        details = _verity_append_field(details, "Link", self.alert.get("link"))
+        # Read numbers straight off the dict: deep_get() swaps any falsy value for its default.
+        rating = self.alert.get("rating") or {}
+        rating_value = rating.get("value")
+        rating_max = rating.get("max")
+        if rating_value is not None and rating_max is not None:
+            details += "\n" + "Rating: " + str(rating_value) + " / " + str(rating_max)
+        else:
+            details = _verity_append_field(details, "Rating", rating_value)
+        details = _verity_append_field(details, "Valid rate (10 days)", self.alert.get("valid_rate_10_days"))
+        details = _verity_append_field(details, "Valid rate (30 days)", self.alert.get("valid_rate_30_days"))
+        details = _verity_append_field(details, "Valid rate (overall)", self.alert.get("valid_rate_overall"))
+        details = _verity_append_field(details, "Average response time", self.alert.get("average_response_time"))
+        details = _verity_append_field(details, "Forum links", self.alert.get("additional_links_forum"))
+        details = _verity_append_field(details, "Review links", self.alert.get("additional_links_reviews"))
+        details = _verity_append_field(details, "First seen", deep_get(self.alert, "activity.first_seen_ts", None))
+        details = _verity_append_field(details, "Last seen", deep_get(self.alert, "activity.last_seen_ts", None))
+        return details
+
+
+class DataLeakSitePostAdapter(BaseAdapter):
+    """test_data/verity471/get_data_leak_sites_posts_id.json — a post on a data leak site."""
+
+    def __init__(self, alert: dict) -> None:
+        super().__init__(alert)
+
+    def _title(self) -> str:
+        raw = str(self.alert.get("title") or self.alert.get("message") or "")
+        return html.unescape(" ".join(remove_tags(raw).strip().split()))
+
+    @property
+    def incident_name(self) -> str:
+        return "DATA LEAK POST:\n" + self._title()[:100]
+
+    @property
+    def incident_details(self) -> str:
+        details = "Source Object: DATA LEAK POST"
+        details = _verity_append_field(details, "Title", self.alert.get("title"))
+        details = _verity_append_field(details, "Website", deep_get(self.alert, "website.title", None))
+        details = _verity_append_field(details, "Source URL", self.alert.get("source_url"))
+        details = _verity_append_field(details, "Published", self.alert.get("published_at"))
+        details = _verity_append_field(details, "Created", self.alert.get("created_at"))
+        details = _verity_append_field(details, "Inactive", self.alert.get("is_inactive"))
+        details = _verity_append_field(details, "Inactive since", self.alert.get("inactive_since"))
+        details = _verity_append_field(details, "First seen", deep_get(self.alert, "activity.first_seen_ts", None))
+        details = _verity_append_field(details, "Last seen", deep_get(self.alert, "activity.last_seen_ts", None))
+        attachments = _verity_format_attachments_block(self.alert.get("attachment_data"))
+        if not _verity_is_blank(attachments):
+            details += "\n\nAttachments:\n" + attachments
+        message = html.unescape(" ".join(remove_tags(str(self.alert.get("message", ""))).strip().split()))
+        if not _verity_is_blank(message):
+            details += "\n\n" + message
+        return details
+
+
+class DataLeakSiteFileListingAdapter(BaseAdapter):
+    """test_data/verity471/get_data_leak_sites_file_listings_id_details.json — a leaked file listing."""
+
+    def __init__(self, alert: dict) -> None:
+        super().__init__(alert)
+
+    @property
+    def incident_name(self) -> str:
+        label = str(deep_get(self.alert, "file.name", "") or deep_get(self.alert, "post.title", "") or "")
+        return "DATA LEAK FILE LISTING:\n" + label
+
+    @property
+    def incident_details(self) -> str:
+        details = "Source Object: DATA LEAK FILE LISTING"
+        details = _verity_append_field(details, "File name", deep_get(self.alert, "file.name", None))
+        details = _verity_append_field(details, "File ID", deep_get(self.alert, "file.id", None))
+        details = _verity_append_field(details, "Website", deep_get(self.alert, "website.title", None))
+        details = _verity_append_field(details, "Thread", deep_get(self.alert, "thread.name", None))
+        details = _verity_append_field(details, "Post", deep_get(self.alert, "post.title", None))
+        details = _verity_append_field(details, "Post link", deep_get(self.alert, "post.href", None))
+        # Read the chunk number straight off the dict: deep_get() swaps any falsy value for its default.
+        details = _verity_append_field(details, "Chunk number", self.alert.get("chunk_number"))
+        details = _verity_append_field(details, "Download link", deep_get(self.alert, "download.href", None))
+        details = _verity_append_field(details, "First seen", deep_get(self.alert, "activity.first_seen_ts", None))
+        details = _verity_append_field(details, "Last seen", deep_get(self.alert, "activity.last_seen_ts", None))
+        return details
+
+
 class UnknownAlertAdapter(BaseAdapter):
     def __init__(self, alert: dict) -> None:
         super().__init__(alert)
 
     @property
     def incident_name(self) -> str:
-        return "UNKNOWN ALERT TYPE:\n" + "UID: " + str(self.alert.get("id", self.alert.get("uid", "")))
+        uid = self.alert.get("id", self.alert.get("uid", "")) if isinstance(self.alert, dict) else ""
+        return "UNKNOWN ALERT TYPE:\n" + "UID: " + str(uid)
 
     @property
     def incident_details(self) -> str:
         details = "Source Object: UNKNOWN ALERT TYPE"
         a = self.alert
-        if isinstance(a, dict):
-            if not _verity_is_blank(a):
-                details += "\n\n" + json.dumps(a, indent=2, sort_keys=False, default=str)
-        elif isinstance(a, list):
+        if isinstance(a, (dict | list)):
             if not _verity_is_blank(a):
                 details += "\n\n" + json.dumps(a, indent=2, sort_keys=False, default=str)
         else:
             plain = html.unescape(" ".join(remove_tags(str(a)).strip().split()))
+            if _verity_is_blank(plain):
+                # Tag stripping can empty a payload that is not really HTML, such as the
+                # "<binary>" sentinel the file download endpoint returns. Keep it rather than
+                # dropping the only content this incident has.
+                plain = str(a).strip()
             if not _verity_is_blank(plain):
                 details += "\n\n" + plain
         return details
@@ -1408,6 +1655,12 @@ VERITY471_DOCUMENT_TYPES: dict[str, type] = {
     "information_reports": InformationReportAdapter,
     "malware_reports": MalwareReportAdapter,
     "spot_reports": SpotReportAdapter,
+    "marketplaces_website": MarketplaceAdapter,
+    "marketplaces_product": MarketplaceProductAdapter,
+    "marketplaces_resource": MarketplaceResourceAdapter,
+    "marketplaces_seller": MarketplaceVendorAdapter,
+    "data_leak_sites_post": DataLeakSitePostAdapter,
+    "data_leak_sites_file_listing": DataLeakSiteFileListingAdapter,
 }
 
 
@@ -1444,6 +1697,10 @@ def compose_verity471_url(alert_details, _id, document_type):
     def _malware_family_url():
         return f"https://verity.intel471.com/malware/families/{_id}/report"
 
+    def _portal_link_url():
+        # These documents carry their portal link, so use it instead of rebuilding a path.
+        return deep_get(alert_details, "links.verity_portal.href", "")
+
     def _vulnerability_url():
         cve_status = deep_get(alert_details, "status", "")
         if cve_status:
@@ -1468,6 +1725,12 @@ def compose_verity471_url(alert_details, _id, document_type):
         "information_reports": _report_url,
         "malware_reports": _report_url,
         "spot_reports": _report_url,
+        "marketplaces_website": _portal_link_url,
+        "marketplaces_product": _portal_link_url,
+        "marketplaces_resource": _portal_link_url,
+        "marketplaces_seller": _portal_link_url,
+        "data_leak_sites_post": None,  # the post document carries no portal link
+        "data_leak_sites_file_listing": _portal_link_url,
     }.get(document_type)
     if not get_url:
         return ""
@@ -1735,8 +1998,6 @@ def main() -> None:
         arg=demisto.params().get("first_fetch", "7 days"), arg_name="First fetch time", required=True
     )
     first_fetch_timestamp: int = int(first_fetch_time.timestamp()) if first_fetch_time else 0
-    # Using assert as a type guard (since first_fetch_time is always an int when required=True)
-    assert isinstance(first_fetch_timestamp, int)
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
