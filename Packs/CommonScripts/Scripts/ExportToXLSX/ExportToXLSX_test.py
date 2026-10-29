@@ -174,6 +174,7 @@ def test_write_data_values(worksheet_class_mock, data, expected_cells):
     Then:
         - No exception is raised.
         - Non-string list items are stringified, 0/False are written, and None/'' cells are left empty.
+        - Each header and each non-empty cell is written exactly once.
     """
     import xlsxwriter
     from ExportToXLSX import write_data
@@ -182,12 +183,14 @@ def test_write_data_values(worksheet_class_mock, data, expected_cells):
     format_arg = xlsxwriter.format.Format()
     write_data("", data, None, workbook, format_arg, format_arg)
 
+    write_calls = worksheet_class_mock.return_value.write.call_args_list
     written_cells = {
         (call.args[0], call.args[1]): call.args[2]
-        for call in worksheet_class_mock.return_value.write.call_args_list
+        for call in write_calls
         if call.args[0] > 0  # skip header row
     }
     assert written_cells == expected_cells
+    assert len(write_calls) == len(data) + len(expected_cells)
 
 
 ARGS_MAIN = [

@@ -60,7 +60,6 @@ def write_data(sheet: str, data_item: dict | list, data_headers: list | None, wo
                 item_value = item.get(header)
                 if item_value not in (None, "", []):
                     worksheet.write(row, col, format_cell_value(item_value), border)
-                    worksheet.write(row, col, format_cell_value(item_value), border)
                 col += 1
 
 
