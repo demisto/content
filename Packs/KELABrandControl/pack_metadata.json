@@ -1,0 +1,33 @@
+{
+    "name": "KELA BrandControl",
+    "description": "KELA Brand Control detects brand impersonation (phishing websites, look-alike domains, fake social media profiles and more). This pack fetches its incidents into Cortex XSOAR.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "KELA",
+    "url": "https://www.kelacyber.com",
+    "email": "support@ke-la.com",
+    "created": "2026-10-20T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence",
+        "Scam"
+    ],
+    "useCases": [
+        "Phishing"
+    ],
+    "keywords": [
+        "KELA",
+        "Brand Control",
+        "Brand Protection",
+        "Impersonation",
+        "Look-alike domain",
+        "Phishing website"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ]
+}
