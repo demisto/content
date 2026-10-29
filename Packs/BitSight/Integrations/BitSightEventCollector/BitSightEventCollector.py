@@ -229,12 +229,12 @@ def resolve_first_seen_window(start_date: str | None, end_date: str | None) -> t
     Raises:
         ValueError: If start_date is after end_date.
     """
-    end_dt = arg_to_datetime(end_date, arg_name="end_date") if end_date else datetime.now(UTC)
-    start_dt = arg_to_datetime(start_date, arg_name="start_date") if start_date else None
-    if not start_dt:
-        start_dt = end_dt - timedelta(days=GET_EVENTS_LOOKBACK_DAYS)  # type: ignore[operator]
+    parsed_end = arg_to_datetime(end_date, arg_name="end_date") if end_date else None
+    end_dt: datetime = parsed_end or datetime.now(UTC)
+    parsed_start = arg_to_datetime(start_date, arg_name="start_date") if start_date else None
+    start_dt: datetime = parsed_start or end_dt - timedelta(days=GET_EVENTS_LOOKBACK_DAYS)
     first_seen_gte = start_dt.strftime(BITSIGHT_DATE_FORMAT)
-    first_seen_lte = end_dt.strftime(BITSIGHT_DATE_FORMAT)  # type: ignore[union-attr]
+    first_seen_lte = end_dt.strftime(BITSIGHT_DATE_FORMAT)
     if first_seen_gte > first_seen_lte:
         raise ValueError(f"start_date ({first_seen_gte}) must not be after end_date ({first_seen_lte}).")
     return first_seen_gte, first_seen_lte
