@@ -3938,7 +3938,14 @@ def create_firewall_rule_command(client: Client, args: dict) -> CommandResults:
     if remote_host_type:
         if remote_host_type != "any" and not remote_host_values:
             raise DemistoException("remote_host_values is required when remote_host_type is not 'any'.")
-        remote_hosts = [assign_params(type=remote_host_type, values=remote_host_values or None)]
+        if remote_host_type == "range" and len(remote_host_values) != 2:
+            raise DemistoException(
+                "remote_host_values must contain exactly 2 values (start and end IP) when remote_host_type is 'range'."
+            )
+        if remote_host_type in ("fqdn", "cidr"):
+            remote_hosts = [{"type": remote_host_type, "values": [val]} for val in remote_host_values]
+        else:
+            remote_hosts = [assign_params(type=remote_host_type, values=remote_host_values or None)]
     elif remote_host_values:
         raise DemistoException("remote_host_type is required when remote_host_values is specified.")
 
@@ -3948,6 +3955,12 @@ def create_firewall_rule_command(client: Client, args: dict) -> CommandResults:
     if local_host_type:
         if local_host_type != "any" and not local_host_values:
             raise DemistoException("local_host_values is required when local_host_type is not 'any'.")
+        if local_host_type == "range" and len(local_host_values) != 2:
+            raise DemistoException(
+                "local_host_values must contain exactly 2 values (start and end IP) when local_host_type is 'range'."
+            )
+        if local_host_type in ("fqdn", "cidr") and len(local_host_values) != 1:
+            raise DemistoException(f"local_host_values must contain exactly 1 value when local_host_type is '{local_host_type}'.")
         local_host = assign_params(type=local_host_type, values=local_host_values or None)
     elif local_host_values:
         raise DemistoException("local_host_type is required when local_host_values is specified.")
@@ -3958,6 +3971,10 @@ def create_firewall_rule_command(client: Client, args: dict) -> CommandResults:
     if remote_port_type:
         if remote_port_type != "any" and not remote_port_values_raw:
             raise DemistoException("remote_port_values is required when remote_port_type is not 'any'.")
+        if remote_port_type == "range" and len(remote_port_values_raw) != 2:
+            raise DemistoException(
+                "remote_port_values must contain exactly 2 port numbers (start and end port) when remote_port_type is 'range'."
+            )
         remote_port_values = [arg_to_number(p, arg_name="remote_port_values") for p in remote_port_values_raw]
         remote_port = assign_params(type=remote_port_type, values=remote_port_values or None)
     elif remote_port_values_raw:
@@ -3969,6 +3986,10 @@ def create_firewall_rule_command(client: Client, args: dict) -> CommandResults:
     if local_port_type:
         if local_port_type != "any" and not local_port_values_raw:
             raise DemistoException("local_port_values is required when local_port_type is not 'any'.")
+        if local_port_type == "range" and len(local_port_values_raw) != 2:
+            raise DemistoException(
+                "local_port_values must contain exactly 2 port numbers (start and end port) when local_port_type is 'range'."
+            )
         local_port_values = [arg_to_number(p, arg_name="local_port_values") for p in local_port_values_raw]
         local_port = assign_params(type=local_port_type, values=local_port_values or None)
     elif local_port_values_raw:

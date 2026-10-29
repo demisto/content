@@ -3015,7 +3015,10 @@ def test_create_firewall_rule_full_schema_and_validations(mocker, requests_mock)
             "name": "Block Domain and Ports",
             "action": "Block",
             "status": "Enabled",
-            "remoteHosts": [{"type": "fqdn", "values": ["malicious.example.com", "bad.example.org"]}],
+            "remoteHosts": [
+                {"type": "fqdn", "values": ["malicious.example.com"]},
+                {"type": "fqdn", "values": ["bad.example.org"]},
+            ],
             "localHost": {"type": "cidr", "values": ["10.0.0.0/8"]},
             "remotePort": {"type": "ports", "values": [80, 443]},
             "localPort": {"type": "any"},
@@ -3036,6 +3039,18 @@ def test_create_firewall_rule_full_schema_and_validations(mocker, requests_mock)
         sentinelone_v2.create_firewall_rule_command(
             client,
             {"name": "Rule", "action": "Block", "status": "Enabled", "tenant": "true", "remote_host_type": "fqdn"},
+        )
+    with pytest.raises(sentinelone_v2.DemistoException, match="remote_host_values must contain exactly 2 values"):
+        sentinelone_v2.create_firewall_rule_command(
+            client,
+            {
+                "name": "Rule",
+                "action": "Block",
+                "status": "Enabled",
+                "tenant": "true",
+                "remote_host_type": "range",
+                "remote_host_values": "192.168.1.1,192.168.1.10,192.168.1.20",
+            },
         )
 
 
