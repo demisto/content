@@ -1,13 +1,16 @@
-Some changes have been made that might affect your existing content.
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-zendesk-v2).
+
+**Note:** Zendesk will permanently deactivate API tokens on April 30, 2027. To keep the integration working, configure OAuth 2.0 authentication. For more information, see [Announcing the removal of API tokens as an authentication method for API requests](https://support.zendesk.com/hc/en-us/articles/10851263566234-Announcing-the-removal-of-API-tokens-as-an-authentication-method-for-API-requests).
 
 ## Configure Zendesk v2 in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g., https://demisto.zendesk.com) | The URL of your Zendesk server. For example, https://demisto.zendesk.com. | True |
-| Username (or '&lt;username&gt;/token' when using API key). | example 'admin@org.com' when using the password, or 'admin@org.com/token' when using an API key. | True |
-| Password/API key |  | True |
+| Client ID | The OAuth 2.0 client identifier \(the 'Unique identifier' of the OAuth client in Zendesk\) and client secret. | False |
+| Client Secret |  | False |
+| Scope | The OAuth scope requested at token acquisition, as a space-separated list \(e.g., 'tickets:read users:read'\). Defaults to 'read write' when empty. | False |
+| Username (or '&lt;username&gt;/token' when using API key). | example 'admin@org.com' when using the password, or 'admin@org.com/token' when using an API key. | False |
+| Password/API key |  | False |
 | Fetch incidents |  | False |
 | Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror \*\*Incoming\*\* only \(from Zendesk to Cortex XSOAR\), \*\*Outgoing\*\* only \(from Cortex XSOAR to Zendesk\), or both \*\*Incoming And Outgoing\*\*. | False |
 | Close mirrored incidents | If true, XSOAR will mirror also the ticket closeing. | False |
@@ -1003,3 +1006,12 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 
 - To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Zendesk v2.
 - Required permissions: Admins
+
+## Troubleshooting
+
+### OAuth authentication
+
+- **The Test button succeeds, but commands fail with `403 Forbidden`.** The **Scope** value contains a scope Zendesk does not recognize (for example, a typo, or a comma-separated list instead of a space-separated string). Zendesk still creates an access token for an unrecognized scope, but every API request made with it returns `403 Forbidden`. Enter the scopes as a space-separated string, for example `read write` or `tickets:read users:read`. For the list of valid scopes, see [Scopes](https://developer.zendesk.com/api-reference/ticketing/oauth/grant_type_tokens/#scope).
+- **The Test button fails with `400 Bad Request` and an `invalid_scope` error.** The OAuth client has allowed scopes configured in Zendesk, and the requested **Scope** includes a scope outside that list. Either request only scopes from the client's allowed scopes, or edit the OAuth client in Zendesk Admin Center to allow the required scopes. For more information, see [Understanding client-level allowed scopes](https://developer.zendesk.com/documentation/authentication/oauth-migration/#understanding-client-level-allowed-scopes).
+- **Commands fail with `401 Unauthorized` and an `invalid_token` error.** The saved access token was revoked or invalidated in Zendesk, for example after the client secret was rotated or the OAuth client's allowed scopes changed. The integration removes the rejected token, so the next command, fetch, or mirroring run requests a new one. To request a new token immediately, run `!zendesk-clear-cache`.
+- **Actions appear in Zendesk as performed by an admin user.** Actions performed with a Client Credentials token are attributed to the Zendesk user who created the OAuth client. This affects audit logs, ticket and comment authorship, and permission checks. For more information, see [Client credentials grant](https://developer.zendesk.com/documentation/authentication/oauth-migration/#client-credentials-grant).
