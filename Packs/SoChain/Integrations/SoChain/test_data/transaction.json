@@ -1,0 +1,80 @@
+{
+  "status": "success",
+  "data": {
+    "hash": "597bafa25fcbb081467bdeb030a42bf441dbfcc054bdcfad31a829d7db5d931f",
+    "confirmations": 203705,
+    "size": 380,
+    "vsize": 190,
+    "weight": 758,
+    "version": 1,
+    "locktime": 0,
+    "block_hash": "0000000000000000000717afe429887e2967094d6e17c2b22b54cf0e33debb69",
+    "block_height": 769781,
+    "time": 1672525387,
+    "inputs_n": 1,
+    "outputs_n": 2,
+    "inputs_value": "0.66579765",
+    "outputs_value": "0.66489765",
+    "fee": "0.00090000",
+    "price": {
+      "value": "16540.41000000",
+      "currency": "USD"
+    },
+    "inputs": [
+      {
+        "index": 0,
+        "value": "0.66579765",
+        "address": "bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej",
+        "scriptSig": {
+          "hex": "",
+          "asm": ""
+        },
+        "witness": [
+          "",
+          "30440220018433af266f34446613cf4f476c97211e35b006c648510c6e4f4f52479503b702206490e52f7ae42fcc932ee1cc8c1b4d2db44bbc89267a535ed52d5438cb4ed9d201",
+          "30440220084e1f306aecec3c797b1097908b74e0e706cdd508e7a74833f02b1450336067022063523e4519446d1591367fc9695f5996020fdd3a075aa1a5cf671610a860c70701",
+          "52210375e00eb72e29da82b89367947f29ef34afb75e8654f6ea368e0acdfd92976b7c2103a1b26313f430c4b15bb1fdce663207659d8cac749a0e53d70eff01874496feff2103c96d495bfdd5ba4145e3e046fee45e84a8a48ad05bd8dbb395c011a32cf9f88053ae"
+        ],
+        "previous_output": {
+          "hash": "eb4fdf3627d92379557cfbc296c520271378978d4a9204a5ce13b51a6bb40b81",
+          "index": 1
+        },
+        "sequence": 4294967295
+      }
+    ],
+    "outputs": [
+      {
+        "index": 0,
+        "value": "0.15526090",
+        "address": "39KPyDkWXeEE9UXkSNPXkv5tbgqZfxHhqv",
+        "type": "scripthash",
+        "script": {
+          "hex": "a91453aa4220caf513cc2850ed4deb2662a729350a5987",
+          "asm": "OP_HASH160 53aa4220caf513cc2850ed4deb2662a729350a59 OP_EQUAL"
+        },
+        "spent": {
+          "hash": "2fbe643e9bf9370d08786f9146b9032f355558f5d50e6f367e76bfdc65b44bf6",
+          "index": 3
+        },
+        "is_change": null
+      },
+      {
+        "index": 1,
+        "value": "0.50963675",
+        "address": "bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej",
+        "type": "witness_v0_scripthash",
+        "script": {
+          "hex": "0020701a8d401c84fb13e6baf169d59684e17abd9fa216c8cc5b9fc63d622ff8c58d",
+          "asm": "0 701a8d401c84fb13e6baf169d59684e17abd9fa216c8cc5b9fc63d622ff8c58d"
+        },
+        "spent": {
+          "hash": "01344f7472a5ebb31c3b76e1eabbd2e827a5c1ee45017287dcc743d769939e88",
+          "index": 0
+        },
+        "is_change": true
+      }
+    ],
+    "kind": "payment",
+    "heuristic": false
+  }
+}
