@@ -1,0 +1,23 @@
+{
+  "data": {
+    "hasMore": false,
+    "rows": [
+      [
+        {
+          "postId": 300001872142462,
+          "messageId": 300001872142461,
+          "accountId": 300184105,
+          "authorId": 2000364,
+          "messageType": 2,
+          "channelType": "FACEBOOK",
+          "accountType": "FBPAGE",
+          "status": "SENT",
+          "createdDate": 1755793238886,
+          "publishedDate": 1759248010000,
+          "permalink": "https://example.invalid/post/300001872142462"
+        }
+      ]
+    ]
+  },
+  "errors": []
+}
