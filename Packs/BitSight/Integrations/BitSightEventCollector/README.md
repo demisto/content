@@ -6,7 +6,7 @@ When configured as a fetching integration, it will continuously fetch new findin
 
 | Parameter | Description | Required | Default Value |
 | --- | --- | --- | --- |
-| Server URL | REST API Endpoint of BitSight server. | True | <https://api.bitsighttech.com> |
+| Server URL | REST API Endpoint of BitSight server. | True | https://api.bitsighttech.com |
 | API Key | BitSight API token. | True | - |
 | Company's GUID | Optional. If provided, findings for this company and its subsidiaries will be collected. If omitted, the collector attempts to use `myCompany.guid`. | False | - |
 | Trust any certificate (not secure) |  | False | - |
@@ -22,7 +22,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### bitsight-get-events
 
 ***
-Gets findings as events from BitSight Event Collector. By default, the command fetches findings from the last 2 days (48 hours). When `start_date` and/or `end_date` are provided, it fetches findings from that date range instead.
+Gets findings as events from BitSight Event Collector. By default, the command fetches findings from the last 2 days (48 hours). When `start_date` and/or `end_date` are provided, it fetches findings from that date range instead. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
 
 #### Base Command
 
@@ -35,8 +35,8 @@ Gets findings as events from BitSight Event Collector. By default, the command f
 | limit | The number of events to return. | Optional | 5 |
 | guid | Override the Company GUID for this command only. | Optional | - |
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. | Required | false |
-| start_date | Returns findings first seen on or after this date. Accepts free text (e.g., "2 days ago", "1 week ago") or a date (e.g., 2026-08-31). Defaults to 2 days before end_date. When start_date or end_date is provided, this date range is used instead of the default 2-day lookback. | Optional | - |
-| end_date | Returns findings first seen on or before this date. Accepts free text (e.g., "now", "1 day ago") or a date (e.g., 2026-09-02). Defaults to now. Must not be earlier than start_date. | Optional | - |
+| start_date | The start date on or after which findings were first seen. Accepts free text (e.g., "2 days ago", "1 week ago") or a date (e.g., 2026-08-31). Defaults to 2 days before end_date. When start_date or end_date is provided, this date range is used instead of the default 2-day lookback. | Optional | - |
+| end_date | The end date on or before which findings were first seen. Accepts free text (e.g., "now", "1 day ago") or a date (e.g., 2026-09-02). Defaults to now. Must not be earlier than start_date. | Optional | - |
 
 #### Context Output
 

@@ -76,11 +76,11 @@ script:
             - "true"
             - "false"
           required: true
-        - description: 'Returns findings first seen on or after this date. Accepts free text (e.g. "2 days ago", "1 week ago") or a date (e.g. 2026-08-31). Defaults to 2 days before end_date. When start_date or end_date is provided, this date range is used instead of the default 2-day lookback.'
+        - description: 'The start date on or after which findings were first seen. Accepts free text (e.g. "2 days ago", "1 week ago") or a date (e.g. 2026-08-31). Defaults to 2 days before end_date. When start_date or end_date is provided, this date range is used instead of the default 2-day lookback.'
           name: start_date
-        - description: 'Returns findings first seen on or before this date. Accepts free text (e.g. "now", "1 day ago") or a date (e.g. 2026-09-02). Defaults to now. Must not be earlier than start_date.'
+        - description: 'The end date on or before which findings were first seen. Accepts free text (e.g. "now", "1 day ago") or a date (e.g. 2026-09-02). Defaults to now. Must not be earlier than start_date.'
           name: end_date
-      description: Gets BitSight findings events from the last 2 days (48 hours) by default, or from an explicit start_date/end_date window when provided.
+      description: Gets BitSight findings events from the last 2 days (48 hours) by default, or from an explicit start_date/end_date window when provided. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
       name: bitsight-get-events
   runonce: false
   script: "-"
