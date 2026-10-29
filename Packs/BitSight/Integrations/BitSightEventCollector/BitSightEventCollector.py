@@ -19,7 +19,7 @@ GET_EVENTS_LOOKBACK_DAYS = 2
 # Deterministic sort so newly-created findings always append at the tail of the
 # result set. Without this the API returns findings in an unspecified (severity-based)
 # order, which makes offset-based pagination skip new findings that sort before the
-# current offset cursor. See XSUP-77274.
+# current offset cursor.
 FINDINGS_SORT = "first_seen"
 
 # Bitsight headers per existing integration
@@ -43,35 +43,40 @@ class Client(BaseClient):
         self,
         guid: str,
         first_seen_gte: str,
-        last_seen_lte: str,
+        last_seen_lte: str | None,
         limit: int,
         offset: int,
+        first_seen_lte: str | None = None,
     ) -> dict[str, Any]:
         """Get company findings for given guid and time range, sorted by first_seen.
 
         Args:
             guid (str): guid of the company whose findings need to be retrieved
-            first_seen_gte (str): first seen date (YYYY-MM-DD) of the findings
-            last_seen_lte (str): last seen date (YYYY-MM-DD) of the findings
+            first_seen_gte (str): only findings first seen on or after this date (YYYY-MM-DD)
+            last_seen_lte (str | None): only findings last seen on or before this date (YYYY-MM-DD)
             limit (int): maximum number of findings to return
             offset (int): offset to begin returning findings from
+            first_seen_lte (str | None): only findings first seen on or before this date (YYYY-MM-DD)
 
         Returns:
             dict[str, Any]: findings response
         """
         params: dict[str, Any] = {
             "first_seen_gte": first_seen_gte,
-            "last_seen_lte": last_seen_lte,
             "unsampled": "true",
             "expand": "attributed_companies",
             "limit": limit,
             "offset": offset,
             # Ascending by first_seen so new findings always append at the tail; required for
-            # offset pagination to be correct (XSUP-77274).
+            # offset pagination to be correct.
             "sort": FINDINGS_SORT,
         }
+        if last_seen_lte:
+            params["last_seen_lte"] = last_seen_lte
+        if first_seen_lte:
+            params["first_seen_lte"] = first_seen_lte
         demisto.debug(
-            f"BitSight: requesting findings guid={guid} first_seen_gte={first_seen_gte} "
+            f"BitSight: requesting findings guid={guid} first_seen_gte={first_seen_gte} first_seen_lte={first_seen_lte} "
             f"last_seen_lte={last_seen_lte} sort={FINDINGS_SORT} limit={limit} offset={offset}"
         )
         return self._http_request(method="GET", url_suffix=f"v1/companies/{encode_string_results(guid)}/findings", params=params)
@@ -138,15 +143,19 @@ def fetch_events(
 ) -> tuple[list[dict[str, Any]], dict[str, Any], list[str]]:
     """Fetch Bitsight findings as events using offset pagination from a fixed starting date.
 
-    The findings are requested sorted by first_seen (ascending), so new findings always append at the
-    tail of the result set and the offset never skips or repeats a finding. No key-based de-duplication
-    is done: different findings can share rolledup_observation_id + first_seen (XSUP-78867).
+    The findings are requested sorted by first_seen (ascending), so new findings append at the tail of
+    the result set and the offset does not skip or repeat them. No key-based de-duplication is done,
+    because different findings can share the same rolledup_observation_id and first_seen.
+
+    State saved by versions that did not sort the findings (recognised by the missing `api_count` key)
+    has an offset that counts findings in a different order. For that state the offset is reset to 0
+    once, so every finding since `first_fetch` is fetched again in the sorted order (some may be sent twice).
 
     Args:
         client (Client): Initialized API client.
         guid (str): Company GUID to collect findings for.
         max_fetch (int): Maximum number of findings to request for this page.
-        last_run (dict[str, Any]): State from the previous run (expects keys `first_fetch`, `offset`).
+        last_run (dict[str, Any]): State from the previous run (keys `first_fetch`, `offset`, `api_count`).
         lookback_days (int | None): Days to look back for initial fetch. If None, uses current date.
 
     Returns:
@@ -158,6 +167,12 @@ def fetch_events(
     if "offset" in last_run:
         offset = last_run["offset"]
         first_fetch_date = last_run["first_fetch"]
+        if "api_count" not in last_run:
+            demisto.info(
+                f"BitSight: state from a version without sorted findings (offset={offset}). "
+                f"Resetting offset to 0 to fetch all findings since {first_fetch_date} in sorted order."
+            )
+            offset = 0
     else:
         # Initial fetch - start from current date or lookback
         offset = 0
@@ -190,15 +205,39 @@ def fetch_events(
         "first_fetch": first_fetch_date,
         "offset": new_offset,
         # Total findings in the window as reported by the API. After a fetch that drained the window,
-        # offset == api_count; a gap means findings were not fetched yet (or were removed by Bitsight).
+        # offset == api_count. Its presence also marks the state as using the sorted order.
         "api_count": api_count,
     }
+    if isinstance(api_count, int) and new_offset > api_count:
+        demisto.info(
+            f"BitSight: offset {new_offset} is larger than the total findings reported by the API ({api_count}). "
+            "Findings may have been removed from the window, so newer findings could be skipped."
+        )
 
     demisto.debug(
         f"BitSight: fetch_events first_fetch={first_fetch_date} offset={offset} returned={len(findings)} "
         f"new_offset={new_offset} api_count={api_count}"
     )
     return events, new_last_run, missing_date_findings
+
+
+def resolve_first_seen_window(start_date: str | None, end_date: str | None) -> tuple[str, str]:
+    """Turn the start_date/end_date command arguments into a first_seen window (YYYY-MM-DD, UTC).
+
+    end_date defaults to now; start_date defaults to GET_EVENTS_LOOKBACK_DAYS before end_date.
+
+    Raises:
+        ValueError: If start_date is after end_date.
+    """
+    end_dt = arg_to_datetime(end_date, arg_name="end_date") if end_date else datetime.now(UTC)
+    start_dt = arg_to_datetime(start_date, arg_name="start_date") if start_date else None
+    if not start_dt:
+        start_dt = end_dt - timedelta(days=GET_EVENTS_LOOKBACK_DAYS)  # type: ignore[operator]
+    first_seen_gte = start_dt.strftime(BITSIGHT_DATE_FORMAT)
+    first_seen_lte = end_dt.strftime(BITSIGHT_DATE_FORMAT)  # type: ignore[union-attr]
+    if first_seen_gte > first_seen_lte:
+        raise ValueError(f"start_date ({first_seen_gte}) must not be after end_date ({first_seen_lte}).")
+    return first_seen_gte, first_seen_lte
 
 
 def bitsight_get_events_command(
@@ -213,41 +252,36 @@ def bitsight_get_events_command(
 
     Executes a one-off retrieval of findings and optionally pushes them to XSIAM when
     `should_push_events=true`. By default it looks back 2 days (48 hours). When `start_date`
-    and/or `end_date` are provided, it queries that explicit window instead - this allows
-    retrieving findings created in the past (e.g. to validate that a historical finding is
-    now returned by the API after the deterministic-sort change). See XSUP-77274.
+    and/or `end_date` are provided, it returns the findings first seen in that window instead,
+    which allows retrieving findings from the past.
 
     Args:
         client (Client): Initialized API client.
         guid (str): Resolved company GUID to collect findings for.
         limit (int): Max events to fetch in this invocation.
         should_push (bool): When true, pushes events to XSIAM; otherwise returns them as output only.
-        start_date (str | None): Optional window start. Accepts free text ("2 days ago", "1 week",
-            "2026-08-31") or an ISO timestamp. Defaults to 2 days ago when a window is requested.
-        end_date (str | None): Optional window end. Accepts the same free-text/ISO formats.
-            Defaults to now.
+        start_date (str | None): Start of the first_seen window. Accepts free text ("2 days ago") or a
+            date ("2026-08-31"). Defaults to 2 days before end_date.
+        end_date (str | None): End of the first_seen window. Accepts the same formats. Defaults to now.
 
     Returns:
         CommandResults: CommandResults object with table output (when not pushing) or a summary message.
     """
     if start_date or end_date:
-        # Explicit window: query the given date range directly (bypasses the watermark/lookback
-        # logic used by scheduled fetches) so an arbitrary historical window can be inspected.
-        # arg_to_datetime parses human-friendly input such as "2 days ago" or "2026-08-31".
-        start_dt = arg_to_datetime(start_date, arg_name="start_date") if start_date else None
-        end_dt = arg_to_datetime(end_date, arg_name="end_date") if end_date else None
-
-        now = datetime.now()
-        first_seen_gte = (start_dt or (now - timedelta(days=GET_EVENTS_LOOKBACK_DAYS))).strftime(BITSIGHT_DATE_FORMAT)
-        last_seen_lte = (end_dt or now).strftime(BITSIGHT_DATE_FORMAT)
+        first_seen_gte, first_seen_lte = resolve_first_seen_window(start_date, end_date)
         demisto.debug(
             f"BitSight: bitsight-get-events explicit window guid={guid} "
-            f"first_seen_gte={first_seen_gte} last_seen_lte={last_seen_lte} limit={limit}"
+            f"first_seen_gte={first_seen_gte} first_seen_lte={first_seen_lte} limit={limit}"
         )
         res = client.get_company_findings(
-            guid, first_seen_gte=first_seen_gte, last_seen_lte=last_seen_lte, limit=int(limit), offset=0
+            guid,
+            first_seen_gte=first_seen_gte,
+            last_seen_lte=None,
+            limit=int(limit),
+            offset=0,
+            first_seen_lte=first_seen_lte,
         )
-        events, missing_date_findings = findings_to_events(res.get("results", []))
+        events, missing_date_findings = findings_to_events(res.get("results", []) or [])
     else:
         events, _, missing_date_findings = fetch_events(
             client, guid=guid, max_fetch=int(limit), last_run={}, lookback_days=GET_EVENTS_LOOKBACK_DAYS

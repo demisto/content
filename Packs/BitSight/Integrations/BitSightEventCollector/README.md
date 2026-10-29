@@ -35,8 +35,8 @@ Gets findings as events from BitSight Event Collector. By default, the command f
 | limit | The number of events to return. | Optional | 5 |
 | guid | Override the Company GUID for this command only. | Optional | - |
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. | Required | false |
-| start_date | Start of the window to retrieve findings from. Accepts free text (e.g., "2 days ago", "1 week ago") or a date (e.g., 2026-08-31). When provided, the command queries this explicit date range instead of the default 2-day lookback. | Optional | - |
-| end_date | End of the window to retrieve findings up to. Accepts free text (e.g., "now", "1 day ago") or a date (e.g., 2026-09-02). Defaults to now. | Optional | - |
+| start_date | Returns findings first seen on or after this date. Accepts free text (e.g., "2 days ago", "1 week ago") or a date (e.g., 2026-08-31). Defaults to 2 days before end_date. When start_date or end_date is provided, this date range is used instead of the default 2-day lookback. | Optional | - |
+| end_date | Returns findings first seen on or before this date. Accepts free text (e.g., "now", "1 day ago") or a date (e.g., 2026-09-02). Defaults to now. Must not be earlier than start_date. | Optional | - |
 
 #### Context Output
 
