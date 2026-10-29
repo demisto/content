@@ -112,11 +112,11 @@ inputs: []
 outputs: []
 adopted: true
 description: |-
-  Runs on XSIAM when an alert from XSOAR is ingested.
-  Extracts the Close Reason and Close Notes from the XSOAR incident data.
-  If the XSOAR incident was closed, closes the XSIAM case with the same reason and notes.
-fromversion: 6.10.0
+  Runs on Cortex XSIAM when an alert from Cortex XSOAR is ingested.
+  Extracts the Close Reason and Close Notes from the Cortex XSOAR incident data.
+  If the Cortex XSOAR incident was closed, closes the Cortex XSIAM case with the same reason and notes.
 marketplaces:
 - marketplacev2
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

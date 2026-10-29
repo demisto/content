@@ -12,8 +12,8 @@ CLOSE_REASON_MAP = {
 
 
 def extract_field(description: str, field_name: str) -> str:
-    pattern = rf"{re.escape(field_name)}:\s*(.+?)(?:\n|$)"
-    match = re.search(pattern, description)
+    pattern = rf"^{re.escape(field_name)}:\s*(.+?)(?:\n|$)"
+    match = re.search(pattern, description, re.MULTILINE)
     return match.group(1).strip() if match else ""
 
 

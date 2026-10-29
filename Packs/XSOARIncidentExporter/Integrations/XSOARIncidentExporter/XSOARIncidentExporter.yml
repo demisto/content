@@ -166,7 +166,42 @@ script:
     - contextPath: XSOARExporter.CloseSync.ClosedAlerts
       description: The details of closed alerts.
       type: Unknown
-  dockerimage: demisto/python3:3.12.15.14069087
+  - name: xsoar-exporter-sync-war-room
+    description: Syncs War Room entries from a Cortex XSOAR incident to the matching Cortex XSIAM issue.
+    arguments:
+    - name: incident_id
+      description: The Cortex XSOAR incident ID whose War Room entries to sync.
+      required: true
+    - name: xsiam_alert_id
+      description: The Cortex XSIAM alert external ID to sync entries to. If not provided, automatically looks up the matching alert by XSOAR incident ID.
+      required: false
+    - name: categories
+      description: A comma-separated list of War Room entry categories to sync. If not provided, all non-empty entries are synced.
+      required: false
+      isArray: true
+    outputs:
+    - contextPath: XSOARExporter.WarRoom.IncidentID
+      description: The XSOAR incident ID.
+      type: String
+    - contextPath: XSOARExporter.WarRoom.XSIAMAlertID
+      description: The XSIAM alert ID entries were synced to.
+      type: String
+    - contextPath: XSOARExporter.WarRoom.SyncedCount
+      description: The number of War Room entries synced.
+      type: Number
+    - contextPath: XSOARExporter.WarRoom.SkippedCount
+      description: The number of entries skipped because they were already synced.
+      type: Number
+    - contextPath: XSOARExporter.WarRoom.ErrorCount
+      description: The number of entries that failed to sync.
+      type: Number
+    - contextPath: XSOARExporter.WarRoom.TotalEntries
+      description: The total number of War Room entries in the XSOAR incident.
+      type: Number
+    - contextPath: XSOARExporter.WarRoom.FilteredEntries
+      description: The number of entries after filtering empty and category filters.
+      type: Number
+  dockerimage: demisto/python3:3.10.14.100715
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

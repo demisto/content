@@ -14,6 +14,8 @@ from XSOARIncidentExporter import (
     extract_alert_field,
     map_xsiam_resolution,
     sync_close_status_command,
+    format_war_room_entry,
+    sync_war_room_command,
 )
 
 
@@ -325,3 +327,178 @@ class TestSyncCloseStatusCommand:
         result = sync_close_status_command(mock_xsiam, {})
         assert result.outputs["ClosedCount"] == 1
         assert "Failed" in result.outputs["ClosedAlerts"][0]["result"]
+
+
+MOCK_WAR_ROOM_ENTRIES = [
+    {
+        "id": "1@100",
+        "type": 1,
+        "format": "markdown",
+        "category": "procedural",
+        "contents": "Incident created",
+        "created": "2026-01-01T00:00:00Z",
+        "user": "admin",
+        "note": False,
+    },
+    {
+        "id": "2@100",
+        "type": 4,
+        "format": "text",
+        "category": "artifact",
+        "contents": "Error: command not found",
+        "created": "2026-01-01T00:01:00Z",
+        "user": "",
+        "note": False,
+    },
+    {
+        "id": "3@100",
+        "type": 1,
+        "format": "markdown",
+        "category": "procedural",
+        "contents": "",
+        "created": "2026-01-01T00:02:00Z",
+        "user": "admin",
+        "note": False,
+    },
+]
+
+
+class TestFormatWarRoomEntry:
+    def test_includes_metadata(self):
+        result = format_war_room_entry(MOCK_WAR_ROOM_ENTRIES[0])
+        assert "[XSOAR War Room]" in result
+        assert "1@100" in result
+        assert "Standard" in result
+        assert "admin" in result
+
+    def test_includes_contents(self):
+        result = format_war_room_entry(MOCK_WAR_ROOM_ENTRIES[0])
+        assert "Incident created" in result
+
+    def test_error_type_labeled(self):
+        result = format_war_room_entry(MOCK_WAR_ROOM_ENTRIES[1])
+        assert "Error" in result
+
+
+class TestSyncWarRoomCommand:
+    def test_missing_incident_id(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsoar = mocker.MagicMock()
+        with pytest.raises(Exception, match="incident_id"):
+            sync_war_room_command(mock_xsiam, mock_xsoar, {})
+
+    def test_no_xsiam_alert_found(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = None
+        mock_xsoar = mocker.MagicMock()
+
+        with pytest.raises(Exception, match="No XSIAM alert found"):
+            sync_war_room_command(mock_xsiam, mock_xsoar, {"incident_id": "999"})
+
+    def test_no_entries(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = {"external_id": "abc123"}
+        mock_xsoar = mocker.MagicMock()
+        mock_xsoar.get_war_room_entries.return_value = []
+
+        result = sync_war_room_command(mock_xsiam, mock_xsoar, {"incident_id": "100"})
+        assert "No War Room entries" in result.readable_output
+        assert result.outputs["SyncedCount"] == 0
+
+    def test_syncs_non_empty_entries(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = {"external_id": "abc123"}
+        mock_xsiam.get_war_room_entries.return_value = []
+        mock_xsiam.insert_war_room_entry.return_value = {"id": "new@199"}
+        mock_xsoar = mocker.MagicMock()
+        mock_xsoar.get_war_room_entries.return_value = MOCK_WAR_ROOM_ENTRIES
+
+        result = sync_war_room_command(mock_xsiam, mock_xsoar, {"incident_id": "100"})
+        assert result.outputs["SyncedCount"] == 2
+        assert result.outputs["SkippedCount"] == 0
+        assert result.outputs["TotalEntries"] == 3
+        assert result.outputs["FilteredEntries"] == 2
+        assert mock_xsiam.insert_war_room_entry.call_count == 2
+
+    def test_uses_explicit_alert_id(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.get_war_room_entries.return_value = []
+        mock_xsiam.insert_war_room_entry.return_value = {"id": "new@199"}
+        mock_xsoar = mocker.MagicMock()
+        mock_xsoar.get_war_room_entries.return_value = [MOCK_WAR_ROOM_ENTRIES[0]]
+
+        result = sync_war_room_command(
+            mock_xsiam, mock_xsoar, {"incident_id": "100", "xsiam_alert_id": "manual-id"}
+        )
+        mock_xsiam.find_alert_by_xsoar_id.assert_not_called()
+        assert result.outputs["XSIAMAlertID"] == "manual-id"
+
+    def test_category_filter(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = {"external_id": "abc123"}
+        mock_xsiam.get_war_room_entries.return_value = []
+        mock_xsiam.insert_war_room_entry.return_value = {"id": "new@199"}
+        mock_xsoar = mocker.MagicMock()
+        mock_xsoar.get_war_room_entries.return_value = MOCK_WAR_ROOM_ENTRIES
+
+        result = sync_war_room_command(
+            mock_xsiam, mock_xsoar, {"incident_id": "100", "categories": "artifact"}
+        )
+        assert result.outputs["SyncedCount"] == 1
+        assert result.outputs["FilteredEntries"] == 1
+
+    def test_entry_sync_error_recorded(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = {"external_id": "abc123"}
+        mock_xsiam.get_war_room_entries.return_value = []
+        mock_xsiam.insert_war_room_entry.side_effect = Exception("API error")
+        mock_xsoar = mocker.MagicMock()
+        mock_xsoar.get_war_room_entries.return_value = [MOCK_WAR_ROOM_ENTRIES[0]]
+
+        result = sync_war_room_command(mock_xsiam, mock_xsoar, {"incident_id": "100"})
+        assert result.outputs["SyncedCount"] == 0
+        assert result.outputs["ErrorCount"] == 1
+
+    def test_dedup_skips_already_synced(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = {"external_id": "abc123"}
+        mock_xsiam.get_war_room_entries.return_value = [
+            {"contents": "**[XSOAR War Room]** 1@100 | Standard | procedural | by admin | 2026-01-01\n\nIncident created"},
+        ]
+        mock_xsiam.insert_war_room_entry.return_value = {"id": "new@199"}
+        mock_xsoar = mocker.MagicMock()
+        mock_xsoar.get_war_room_entries.return_value = MOCK_WAR_ROOM_ENTRIES
+
+        result = sync_war_room_command(mock_xsiam, mock_xsoar, {"incident_id": "100"})
+        assert result.outputs["SyncedCount"] == 1
+        assert result.outputs["SkippedCount"] == 1
+        assert mock_xsiam.insert_war_room_entry.call_count == 1
+
+    def test_dedup_all_already_synced(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = {"external_id": "abc123"}
+        mock_xsiam.get_war_room_entries.return_value = [
+            {"contents": "**[XSOAR War Room]** 1@100 | Standard | procedural | by admin | 2026-01-01\n\nIncident created"},
+            {"contents": "**[XSOAR War Room]** 2@100 | Error | artifact | by system | 2026-01-01\n\nError: command not found"},
+        ]
+        mock_xsoar = mocker.MagicMock()
+        mock_xsoar.get_war_room_entries.return_value = MOCK_WAR_ROOM_ENTRIES
+
+        result = sync_war_room_command(mock_xsiam, mock_xsoar, {"incident_id": "100"})
+        assert result.outputs["SyncedCount"] == 0
+        assert result.outputs["SkippedCount"] == 2
+        assert "already synced" in result.readable_output
+        mock_xsiam.insert_war_room_entry.assert_not_called()
+
+    def test_dedup_failure_continues_without_dedup(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = {"external_id": "abc123"}
+        mock_xsiam.get_war_room_entries.side_effect = Exception("Cannot read")
+        mock_xsiam.insert_war_room_entry.return_value = {"id": "new@199"}
+        mock_xsoar = mocker.MagicMock()
+        mock_xsoar.get_war_room_entries.return_value = MOCK_WAR_ROOM_ENTRIES
+        mocker.patch("XSOARIncidentExporter.demisto")
+
+        result = sync_war_room_command(mock_xsiam, mock_xsoar, {"incident_id": "100"})
+        assert result.outputs["SyncedCount"] == 2
+        assert result.outputs["SkippedCount"] == 0

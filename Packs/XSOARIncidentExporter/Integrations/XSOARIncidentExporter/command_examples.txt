@@ -3,3 +3,4 @@
 !xsoar-exporter-sync-new-incidents
 !xsoar-exporter-reset-sync
 !xsoar-exporter-sync-close-status
+!xsoar-exporter-sync-war-room incident_id="100"
