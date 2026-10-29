@@ -320,6 +320,9 @@ aggregated_details AS (
         ON fasvi.asset_id = favf.asset_id
         AND fasvi.vulnerability_id = favf.vulnerability_id
         AND fasvi.scan_id = favf.scan_id
+    -- Filter before aggregating so only findings from the last 100 days are converted and aggregated.
+    WHERE
+        fasvi.date >= CURRENT_DATE - INTERVAL '100 days'
     GROUP BY
         fasvi.asset_id,
         fasvi.vulnerability_id,
@@ -362,8 +365,6 @@ LEFT JOIN aggregated_categories AS ac
     ON ad.vulnerability_id = ac.vulnerability_id
 LEFT JOIN cve_references cef
     ON ad.vulnerability_id = cef.vulnerability_id
-WHERE
-    ad.scan_date >= CURRENT_DATE - INTERVAL '100 days'
 ORDER BY
     ad.asset_id, ad.vulnerability_id, ad.scan_date DESC
 """

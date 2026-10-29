@@ -3680,3 +3680,23 @@ async def test_stream_and_parse_report_error_includes_exception_type(mocker):
     message = str(excinfo.value)
     assert "CancelledError" in message, "error message must include the exception type name"
     assert "streaming or sending events" in message
+
+
+def test_vulnerability_query_filters_dates_before_aggregation():
+    """
+    Given:
+        - The SQL query used to collect vulnerabilities.
+    When:
+        - Inspecting where the 100-day date filter is applied.
+    Then:
+        - The filter is inside the aggregated_details CTE (before GROUP BY), so findings outside the window are not aggregated.
+        - The filter is not repeated in the outer query.
+    """
+    cte_start = BASE_QUERY_FOR_VULNERABILITIES.index("aggregated_details AS (")
+    outer_select = BASE_QUERY_FOR_VULNERABILITIES.index("\nSELECT", cte_start)
+    cte_body = BASE_QUERY_FOR_VULNERABILITIES[cte_start:outer_select]
+    date_filter = "fasvi.date >= CURRENT_DATE - INTERVAL '100 days'"
+
+    assert date_filter in cte_body
+    assert cte_body.index(date_filter) < cte_body.index("GROUP BY")
+    assert "INTERVAL" not in BASE_QUERY_FOR_VULNERABILITIES[outer_select:]
