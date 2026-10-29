@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
 
 # IMPORTS
+from xml.sax.saxutils import escape
+
 # Disable insecure warnings
 import urllib3
 from CommonServerPython import *  # noqa: F401
@@ -11,6 +13,8 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DEFAULT_API_VERSION = "v47.0"
 API_VERSION_PATTERN = re.compile(r"^v\d+\.\d+$")
+# The token is placed in wsu:Id="UsernameToken-{token}", an xsd:ID (XML NCName). Any other character makes the request invalid.
+INVALID_WSU_ID_CHARACTERS = re.compile(r"[^A-Za-z0-9._-]")
 HEADERS = [
     "Worker_ID",
     "User_ID",
@@ -308,6 +312,15 @@ def create_worker_context(workers, num_of_managers):
     return [_worker_context(_as_dict(_as_dict(worker).get("Worker_Data")), num_of_managers) for worker in _as_list(workers)]
 
 
+def sanitize_wsu_id_token(token) -> str:
+    """Replaces every character that is not allowed in the wsu:Id XML attribute (outside [A-Za-z0-9._-]) with '_'.
+
+    The token is only used as an identifier of the UsernameToken element and is not validated by Workday,
+    so changing it does not affect authentication.
+    """
+    return INVALID_WSU_ID_CHARACTERS.sub("_", str(token))
+
+
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
@@ -326,23 +339,17 @@ class Client(BaseClient):
         self.api_version = api_version
 
     def list_workers(self, page, count, employee_id=None) -> tuple:
+        # Values are embedded in an XML document, so XML special characters (& < >) must be escaped.
+        xml_safe_params = {
+            "token": sanitize_wsu_id_token(self.token),
+            "username": escape(str(self.username)),
+            "password": escape(str(self.password)),
+            "api_version": self.api_version,
+        }
         if employee_id:
-            body = GET_EMPLOYEE_BY_ID.format(
-                token=self.token,
-                username=self.username,
-                password=self.password,
-                api_version=self.api_version,
-                employee_id=employee_id,
-            )
+            body = GET_EMPLOYEE_BY_ID.format(employee_id=escape(str(employee_id)), **xml_safe_params)
         else:
-            body = GET_EMPLOYEES_REQ.format(
-                token=self.token,
-                username=self.username,
-                password=self.password,
-                api_version=self.api_version,
-                page=page,
-                count=count,
-            )
+            body = GET_EMPLOYEES_REQ.format(page=page, count=count, **xml_safe_params)
         raw_response = self._http_request(method="POST", url_suffix="", data=body, resp_type="text", timeout=120)
         return convert_to_json(raw_response)
 
