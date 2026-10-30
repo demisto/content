@@ -107,6 +107,7 @@ Update an IP set.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-ip-set-list
 
 ***
@@ -157,6 +158,7 @@ Delete a specific IP set.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-regex-set-create
 
 ***
@@ -240,6 +242,7 @@ Update a regex set.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-regex-set-list
 
 ***
@@ -290,6 +293,7 @@ Delete a specific regex set.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-rule-group-list
 
 ***
@@ -368,6 +372,7 @@ Delete a specific rule group.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-rule-group-create
 
 ***
@@ -428,6 +433,7 @@ Create an IP rule.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-country-rule-create
 
 ***
@@ -453,6 +459,7 @@ Create a country rule.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-string-match-rule-create
 
 ***
@@ -483,6 +490,7 @@ Create a string match rule.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-rule-delete
 
 ***
@@ -505,6 +513,7 @@ Delete a specific rule from a rule group.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-ip-statement-add
 
 ***
@@ -529,6 +538,7 @@ Adds an IP statement to an existing rule.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-country-statement-add
 
 ***
@@ -553,6 +563,7 @@ Adds a country statement to an existing rule.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-string-match-statement-add
 
 ***
@@ -582,6 +593,7 @@ Adds a string match statement to an existing rule.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-statement-json-add
 
 ***
@@ -606,6 +618,7 @@ Adds a generic statement to an existing rule.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-statement-json-template-get
 
 ***
@@ -625,6 +638,7 @@ Gets the statement template.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-waf-web-acl-list
 
 ***
@@ -655,8 +669,11 @@ Lists web ACLs.
 | AWS.Waf.WebACLNextToken | String | The token for the next page. |
 
 #### Command example
+
 ```!aws-waf-web-acl-list scope=Regional limit=2```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -678,6 +695,7 @@ Lists web ACLs.
 #### Human Readable Output
 
 >### Web ACLs
+>
 >|Id|Name|Description|LockToken|ARN|
 >|---|---|---|---|---|
 >| a1b2c3d4-5678-90ab-cdef-EXAMPLE11111 | prod-web-acl | Production Web ACL | e1b2c3d4-a1b2-c3d4-e5f6-EXAMPLE22222 | arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4-5678-90ab-cdef-EXAMPLE11111 |
@@ -714,8 +732,11 @@ Get a specific web ACL.
 | AWS.Waf.WebACL.VisibilityConfig | Unknown | The web ACL visibility config. |
 
 #### Command example
+
 ```!aws-waf-web-acl-get name=prod-web-acl id=a1b2c3d4-5678-90ab-cdef-EXAMPLE11111 scope=Regional```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -742,6 +763,7 @@ Get a specific web ACL.
 #### Human Readable Output
 
 >### Web ACL
+>
 >|Id|Name|Description|Capacity|DefaultAction|
 >|---|---|---|---|---|
 >| a1b2c3d4-5678-90ab-cdef-EXAMPLE11111 | prod-web-acl | Production Web ACL | 100 | Allow: {} |
@@ -782,8 +804,11 @@ Create a new web ACL.
 | AWS.Waf.WebACL.ARN | String | The web ACL Amazon Resource Name. |
 
 #### Command example
+
 ```!aws-waf-web-acl-create name=test-web-acl default_action=Allow scope=Regional```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -803,6 +828,7 @@ Create a new web ACL.
 #### Human Readable Output
 
 >### Web ACL Created
+>
 >|Id|Name|Description|LockToken|ARN|
 >|---|---|---|---|---|
 >| b2c3d4e5-6789-01ab-cdef-EXAMPLE33333 | test-web-acl |  | f1a2b3c4-d5e6-f7a8-b9c0-EXAMPLE44444 | arn:aws:wafv2:us-east-1:123456789012:regional/webacl/test-web-acl/b2c3d4e5-6789-01ab-cdef-EXAMPLE33333 |
@@ -833,6 +859,7 @@ Update a web ACL.
 There is no context output for this command.
 
 #### Command example
+
 ```!aws-waf-web-acl-update name=test-web-acl id=b2c3d4e5-6789-01ab-cdef-EXAMPLE33333 scope=Regional default_action=Block```
 
 #### Human Readable Output
@@ -862,6 +889,7 @@ Delete a specific web ACL.
 There is no context output for this command.
 
 #### Command example
+
 ```!aws-waf-web-acl-delete name=test-web-acl id=b2c3d4e5-6789-01ab-cdef-EXAMPLE33333 scope=Regional```
 
 #### Human Readable Output
@@ -890,6 +918,7 @@ Associate a web ACL with a resource.
 There is no context output for this command.
 
 #### Command example
+
 ```!aws-waf-web-acl-associate web_acl_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4 resource_arn=arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890```
 
 #### Human Readable Output
@@ -917,6 +946,7 @@ Disassociate a resource from its web ACL.
 There is no context output for this command.
 
 #### Command example
+
 ```!aws-waf-web-acl-disassociate resource_arn=arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890```
 
 #### Human Readable Output
@@ -947,8 +977,11 @@ Lists resources associated with a web ACL.
 | AWS.Waf.WebACL.ResourceArns | Unknown | The ARNs of resources associated with the web ACL. |
 
 #### Command example
+
 ```!aws-waf-web-acl-resource-list web_acl_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4 resource_type=APPLICATION_LOAD_BALANCER```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -966,6 +999,7 @@ Lists resources associated with a web ACL.
 #### Human Readable Output
 
 >### Resources for Web ACL
+>
 >|ARN|
 >|---|
 >| arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890 |
@@ -998,8 +1032,11 @@ Get the web ACL associated with a resource.
 | AWS.Waf.WebACL.ARN | String | The web ACL Amazon Resource Name. |
 
 #### Command example
+
 ```!aws-waf-web-acl-for-resource-get resource_arn=arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -1021,6 +1058,7 @@ Get the web ACL associated with a resource.
 #### Human Readable Output
 
 >### Web ACL for Resource
+>
 >|Id|Name|Description|Capacity|
 >|---|---|---|---|
 >| a1b2c3d4-5678-90ab-cdef-EXAMPLE11111 | prod-web-acl | Production Web ACL | 100 |
@@ -1050,8 +1088,11 @@ Put a logging configuration for a web ACL.
 | AWS.Waf.LoggingConfiguration.LogDestinationConfigs | Unknown | The logging destination configuration. |
 
 #### Command example
+
 ```!aws-waf-logging-configuration-put resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4 log_destination=arn:aws:firehose:us-east-1:123456789012:deliverystream/aws-waf-logs-stream```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -1070,6 +1111,7 @@ Put a logging configuration for a web ACL.
 #### Human Readable Output
 
 >### Logging Configuration
+>
 >|ResourceArn|LogDestinationConfigs|
 >|---|---|
 >| arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4 | arn:aws:firehose:us-east-1:123456789012:deliverystream/aws-waf-logs-stream |
@@ -1098,8 +1140,11 @@ Get the logging configuration for a web ACL.
 | AWS.Waf.LoggingConfiguration.LogDestinationConfigs | Unknown | The logging destination configuration. |
 
 #### Command example
+
 ```!aws-waf-logging-configuration-get resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -1118,6 +1163,7 @@ Get the logging configuration for a web ACL.
 #### Human Readable Output
 
 >### Logging Configuration
+>
 >|ResourceArn|LogDestinationConfigs|
 >|---|---|
 >| arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4 | arn:aws:firehose:us-east-1:123456789012:deliverystream/aws-waf-logs-stream |
@@ -1143,6 +1189,7 @@ Delete the logging configuration for a web ACL.
 There is no context output for this command.
 
 #### Command example
+
 ```!aws-waf-logging-configuration-delete resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4```
 
 #### Human Readable Output
@@ -1176,8 +1223,11 @@ Lists logging configurations.
 | AWS.Waf.LoggingConfigurationNextToken | String | The token for the next page. |
 
 #### Command example
+
 ```!aws-waf-logging-configuration-list scope=Regional limit=2```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -1198,6 +1248,7 @@ Lists logging configurations.
 #### Human Readable Output
 
 >### Logging Configurations
+>
 >|ResourceArn|LogDestinationConfigs|
 >|---|---|
 >| arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4 | arn:aws:firehose:us-east-1:123456789012:deliverystream/aws-waf-logs-stream |
@@ -1225,6 +1276,7 @@ Tag a resource.
 There is no context output for this command.
 
 #### Command example
+
 ```!aws-waf-tag-resource resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4 tag_key=Environment,Team tag_value=Production,Security```
 
 #### Human Readable Output
@@ -1253,6 +1305,7 @@ Remove tags from a resource.
 There is no context output for this command.
 
 #### Command example
+
 ```!aws-waf-untag-resource resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4 tag_keys=Environment,Team```
 
 #### Human Readable Output
@@ -1287,8 +1340,11 @@ List tags for a resource.
 | AWS.Waf.TagNextToken | String | The token for the next page. |
 
 #### Command example
+
 ```!aws-waf-tag-list resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -1308,6 +1364,7 @@ List tags for a resource.
 #### Human Readable Output
 
 >### Tags
+>
 >|Key|Value|
 >|---|---|
 >| Environment | Production |
@@ -1348,8 +1405,11 @@ Get sampled web requests for a web ACL.
 | AWS.Waf.SampledRequestsPopulationSize | Number | The total population size. |
 
 #### Command example
+
 ```!aws-waf-sampled-requests-get web_acl_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4 rule_metric_name=prod-web-acl scope=Regional max_items=5 start_time="2024-01-01T00:00:00Z" end_time="2024-01-01T01:00:00Z"```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -1394,6 +1454,7 @@ Get sampled web requests for a web ACL.
 #### Human Readable Output
 
 >### Sampled Requests (Population Size: 1250)
+>
 >|Action|ClientIP|Country|Method|URI|Timestamp|
 >|---|---|---|---|---|---|
 >| ALLOW | 203.0.113.50 | US | GET | /index.html | 1704067200 |
@@ -1427,8 +1488,11 @@ Lists available managed rule groups.
 | AWS.Waf.ManagedRuleGroupNextToken | String | The token for the next page. |
 
 #### Command example
+
 ```!aws-waf-managed-rule-group-list scope=Regional limit=3```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -1458,6 +1522,7 @@ Lists available managed rule groups.
 #### Human Readable Output
 
 >### Available Managed Rule Groups
+>
 >|VendorName|Name|Description|
 >|---|---|---|
 >| AWS | AWSManagedRulesCommonRuleSet | Contains rules that are generally applicable to web applications. |
@@ -1496,8 +1561,11 @@ Describe a managed rule group.
 | AWS.Waf.ManagedRuleGroup.SnsTopicArn | String | The SNS topic ARN for notifications. |
 
 #### Command example
+
 ```!aws-waf-managed-rule-group-describe vendor_name=AWS name=AWSManagedRulesCommonRuleSet scope=Regional```
+
 #### Context Example
+
 ```json
 {
     "AWS": {
@@ -1527,6 +1595,7 @@ Describe a managed rule group.
 #### Human Readable Output
 
 >### Managed Rule Group
+>
 >|VendorName|Name|VersionName|Capacity|LabelNamespace|
 >|---|---|---|---|---|
 >| AWS | AWSManagedRulesCommonRuleSet | Version_2.0 | 700 | awswaf:managed:aws:core-rule-set: |
