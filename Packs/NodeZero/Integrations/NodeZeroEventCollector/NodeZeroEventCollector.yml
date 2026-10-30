@@ -1,0 +1,174 @@
+category: Vulnerability Management
+commonfields:
+  id: NodeZeroEventCollector
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  type: 0
+  defaultvalue: https://api.horizon3ai.com
+  required: true
+  additionalinfo: The NodeZero API server URL.
+  section: Connect
+- displaypassword: API Key
+  name: credentials
+  type: 9
+  hiddenusername: true
+  required: true
+  additionalinfo: A NodeZero API key with read access to pentests and weaknesses.
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  defaultvalue: 'false'
+  required: false
+  advanced: true
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  defaultvalue: 'false'
+  required: false
+  advanced: true
+  section: Connect
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  defaultvalue: 'false'
+  required: false
+  section: Collect
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  defaultvalue: '30'
+  required: false
+  additionalinfo: How often, in minutes, to check NodeZero for pentests that have finished.
+  section: Collect
+- display: First fetch time
+  name: first_fetch
+  type: 0
+  defaultvalue: 7 days
+  required: false
+  additionalinfo: On the first fetch only, how far back to collect pentests that have finished (for example, 7 days or 12 hours).
+  section: Collect
+- display: Maximum number of events per fetch
+  name: max_fetch
+  type: 0
+  defaultvalue: '10000'
+  required: false
+  additionalinfo: When a fetch reaches this number of events, it doesn't start another pentest, and the next fetch continues with the remaining pentests. A pentest is never split because of this limit.
+  advanced: true
+  section: Collect
+description: Collects weakness events from completed NodeZero autonomous pentests into Cortex XSIAM.
+display: NodeZero Event Collector
+name: NodeZeroEventCollector
+provider: Horizon3.ai
+sectionorder:
+- Connect
+- Collect
+supportlevelheader: xsoar
+script:
+  commands:
+  - name: nodezero-fetch-events
+    description: Gets weakness events from done NodeZero pentests, for one pentest or for the pentests that finished since a time. With should_push_events set to true, it also sends to Cortex XSIAM the pentests that the scheduled fetch hasn't sent yet, so you don't have to wait for the next fetch. Pentests that were already sent are shown but never sent again, and the command doesn't send while a scheduled fetch is sending.
+    arguments:
+    - name: should_push_events
+      description: If true, the command also sends to Cortex XSIAM the events of pentests that weren't sent yet. Each pentest is sent in full. If false, it only displays events.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: pentest_id
+      description: The ID (op_id) of a done pentest to get events for. When set, the since argument is ignored.
+    - name: limit
+      description: The maximum number of events to display. When should_push_events is true, the command doesn't start sending another pentest after it sends this many events, but it always sends a pentest in full, and with pentest_id it sends the whole pentest.
+      defaultValue: '10'
+    - name: since
+      description: Get events from pentests that finished at or after this time, in ISO 8601 or relative format (for example, 3 days). Ignored when pentest_id is set.
+      defaultValue: 7 days
+    outputs:
+    - contextPath: NodeZero.Event.event_id
+      description: 'The unique ID of the event: the pentest op_id and the weakness UUID, separated by a colon.'
+      type: String
+    - contextPath: NodeZero.Event._time
+      description: The time NodeZero discovered the weakness during the pentest.
+      type: Date
+    - contextPath: NodeZero.Event.op_id
+      description: The ID of the pentest.
+      type: String
+    - contextPath: NodeZero.Event.uuid
+      description: The ID of the weakness in the pentest.
+      type: String
+    - contextPath: NodeZero.Event.pentest_name
+      description: The name of the pentest.
+      type: String
+    - contextPath: NodeZero.Event.pentest_type
+      description: The type of the pentest.
+      type: String
+    - contextPath: NodeZero.Event.pentest_client_name
+      description: The client name of the pentest.
+      type: String
+    - contextPath: NodeZero.Event.pentest_etl_completed_at
+      description: The time the pentest results became available.
+      type: Date
+    - contextPath: NodeZero.Event.vuln_id
+      description: The ID of the weakness type, for example a CVE ID or a NodeZero ID such as H3-2021-0020.
+      type: String
+    - contextPath: NodeZero.Event.vuln_name
+      description: The name of the weakness type.
+      type: String
+    - contextPath: NodeZero.Event.vuln_short_name
+      description: The short name of the weakness type.
+      type: String
+    - contextPath: NodeZero.Event.vuln_category
+      description: The category of the weakness type.
+      type: String
+    - contextPath: NodeZero.Event.vuln_cisa_kev
+      description: Whether the weakness is in the CISA Known Exploited Vulnerabilities catalog.
+      type: Boolean
+    - contextPath: NodeZero.Event.severity
+      description: 'The severity of the weakness: CRITICAL, HIGH, MEDIUM, LOW or INFO.'
+      type: String
+    - contextPath: NodeZero.Event.score
+      description: The score of the weakness.
+      type: Number
+    - contextPath: NodeZero.Event.context_score
+      description: The context score of the weakness.
+      type: Number
+    - contextPath: NodeZero.Event.has_proof
+      description: Whether NodeZero proved the weakness.
+      type: Boolean
+    - contextPath: NodeZero.Event.mitre_tactic_ids
+      description: The MITRE ATT&CK tactic IDs of the weakness.
+      type: Unknown
+    - contextPath: NodeZero.Event.mitre_technique_ids
+      description: The MITRE ATT&CK technique and sub-technique IDs of the weakness.
+      type: Unknown
+    - contextPath: NodeZero.Event.target_hostname
+      description: The host name of the affected host.
+      type: String
+    - contextPath: NodeZero.Event.target_ipv4_addresses
+      description: The IPv4 addresses of the affected host.
+      type: Unknown
+    - contextPath: NodeZero.Event.target_os
+      description: The operating system of the affected host.
+      type: String
+    - contextPath: NodeZero.Event.portal_url
+      description: The link to the weakness in the NodeZero Portal.
+      type: String
+  dockerimage: demisto/python3:3.12.14.13495286
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 8.11.0
+marketplaces:
+- marketplacev2
+- platform
+supportedModules:
+- xsiam
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,118 @@
+{
+  "data": {
+    "weaknesses_page": {
+      "weaknesses": [
+        {
+          "uuid": "b1000000-0000-4000-8000-000000000001",
+          "op_id": "op-b",
+          "created_at": "2025-03-14T10:05:00",
+          "vuln_id": "H3-2023-0042",
+          "vuln_name": "Example web application reflects unsanitized input",
+          "vuln_short_name": "Reflected input",
+          "vuln_category": "WEB",
+          "vuln_cisa_kev": false,
+          "vuln_known_ransomware_campaign_use": null,
+          "severity": "LOW",
+          "score": 3,
+          "base_severity": "LOW",
+          "base_score": 3,
+          "context_severity": null,
+          "context_score": null,
+          "context_score_description": null,
+          "has_proof": false,
+          "proofs": [],
+          "proof_failure_code": "not_configured",
+          "proof_failure_reason": null,
+          "ip": null,
+          "affected_asset_uuid": "b5000000-0000-4000-8000-000000000001",
+          "affected_asset_display_name": "https://app.example.com/login",
+          "affected_asset_short_name": "app.example.com",
+          "attack_paths_count": 0,
+          "affected_credentials_count": 0,
+          "impacts": [],
+          "downstream_impact_types": null,
+          "mitre_mappings": [
+            {
+              "mitre_tactic_id": "TA0001",
+              "mitre_technique_id": "T1189",
+              "mitre_subtechnique_id": null
+            }
+          ],
+          "time_to_finding_s": 300,
+          "time_to_finding_hms": "00:05:00",
+          "weakness_ref": null,
+          "portal_url": "https://portal.horizon3ai.com/pentests/op-b/weaknesses/b1000000-0000-4000-8000-000000000001",
+          "affected_host": null,
+          "vuln": {
+            "description": "User input is returned in the page without encoding.",
+            "mitigations": [
+              {
+                "description": "Encode output."
+              }
+            ],
+            "references": [
+              {
+                "name": "Example reference",
+                "url": "https://www.example.com/reflected-input"
+              }
+            ]
+          }
+        },
+        {
+          "uuid": "b2000000-0000-4000-8000-000000000002",
+          "op_id": "op-b",
+          "created_at": "2025-03-14T10:15:59.999999",
+          "vuln_id": "CVE-2024-0001",
+          "vuln_name": "Example web server outdated version",
+          "vuln_short_name": "Outdated web server",
+          "vuln_category": "VULNERABILITY",
+          "vuln_cisa_kev": null,
+          "vuln_known_ransomware_campaign_use": null,
+          "severity": "HIGH",
+          "score": 8.1,
+          "base_severity": "HIGH",
+          "base_score": 8.1,
+          "context_severity": null,
+          "context_score": null,
+          "context_score_description": null,
+          "has_proof": false,
+          "proofs": [],
+          "proof_failure_code": "no_exploit",
+          "proof_failure_reason": null,
+          "ip": "192.0.2.8",
+          "affected_asset_uuid": "b5000000-0000-4000-8000-000000000002",
+          "affected_asset_display_name": "web01 on 192.0.2.8 Port 443",
+          "affected_asset_short_name": "192.0.2.8 : 443",
+          "attack_paths_count": 0,
+          "affected_credentials_count": 0,
+          "impacts": [],
+          "downstream_impact_types": null,
+          "mitre_mappings": [],
+          "time_to_finding_s": null,
+          "time_to_finding_hms": null,
+          "weakness_ref": null,
+          "portal_url": "https://portal.horizon3ai.com/pentests/op-b/weaknesses/b2000000-0000-4000-8000-000000000002",
+          "affected_host": {
+            "uuid": "b4000000-0000-4000-8000-000000000002",
+            "host_name": "web01",
+            "host_names": [
+              "web01",
+              "web01.corp.example.com"
+            ],
+            "ip": "192.0.2.8",
+            "mac": null,
+            "os_names": [
+              "Linux"
+            ],
+            "is_in_scope": true
+          },
+          "vuln": {
+            "description": "The web server version is outdated.",
+            "mitigations": [],
+            "references": []
+          }
+        }
+      ]
+    }
+  }
+}

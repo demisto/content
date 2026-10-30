@@ -1,0 +1,80 @@
+{
+    "horizon3_nodezero_raw": {
+        "_vendor": {
+            "type": "string",
+            "is_array": false
+        },
+        "_product": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "uuid": {
+            "type": "string",
+            "is_array": false
+        },
+        "vuln_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "vuln_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "vuln_short_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "vuln_description": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "portal_url": {
+            "type": "string",
+            "is_array": false
+        },
+        "mitre_tactic_ids": {
+            "type": "string",
+            "is_array": false
+        },
+        "mitre_technique_ids": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_hostname": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_fqdn": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_ipv4_addresses": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_ipv6_addresses": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_mac_addresses": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_os": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
