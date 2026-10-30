@@ -11,7 +11,6 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 3. Command: get-alert : Command to fetch alert details from Doppel.
 4. Command: get-alerts : Command to fetch list of alerts from Doppel.
 5. Command: update-alert : Command to update alert details from Doppel.
-6. Command: create-abuse-alert : Command to create abuse alert details from Doppel.
 
 ## Incident types and fields
 
