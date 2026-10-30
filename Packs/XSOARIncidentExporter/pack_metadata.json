@@ -24,6 +24,7 @@
     "created": "2026-09-15T00:00:00Z",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ]
 }

@@ -1,1 +1,5 @@
+[file:XSOARIncidentExporter.yml]
+ignore=BA129
 
+[file:Close_XSIAM_Case_From_XSOAR.yml]
+ignore=RM116
