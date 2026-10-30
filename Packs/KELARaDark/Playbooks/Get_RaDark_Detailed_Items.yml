@@ -1,4 +1,5 @@
-description: Enriches RaDark incident with detailed items.
+deprecated: true
+description: 'Deprecated. No available replacement. Enriches RaDark incident with detailed items.'
 id: Get RaDark Detailed Items
 inputs: []
 name: Get RaDark Detailed Items

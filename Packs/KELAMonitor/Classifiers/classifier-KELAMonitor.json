@@ -1,0 +1,26 @@
+{
+    "id": "KELA Monitor - Classifier",
+    "name": "KELA Monitor - Classifier",
+    "type": "classification",
+    "description": "Classifies KELA Monitor incidents by their KELA incident type.",
+    "defaultIncidentType": "KELA Monitor Incident",
+    "keyTypeMap": {
+        "hacking_discussions": "KELA Monitor Hacking Discussion",
+        "instant_messaging": "KELA Monitor Instant Messaging",
+        "leaked_credentials": "KELA Monitor Leaked Credentials",
+        "network_vulnerabilities": "KELA Monitor Network Vulnerability",
+        "credit_cards": "KELA Monitor Credit Cards",
+        "botnets": "KELA Monitor Compromised Accounts",
+        "compromised_accounts": "KELA Monitor Compromised Accounts"
+    },
+    "transformer": {
+        "simple": "type"
+    },
+    "feed": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

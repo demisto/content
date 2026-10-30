@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "KELA Monitor Hacking Discussion",
+        "KELA Monitor Instant Messaging"
+    ],
+    "caseInsensitive": true,
+    "cliName": "kelamonitorsourceurl",
+    "closeForm": false,
+    "content": true,
+    "description": "URL of the original post or message (may be an .onion address).",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_kelamonitorsourceurl",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "KELA Monitor Source URL",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "url",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

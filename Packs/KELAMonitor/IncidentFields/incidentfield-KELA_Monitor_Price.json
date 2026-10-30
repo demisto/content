@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "KELA Monitor Compromised Accounts"
+    ],
+    "caseInsensitive": true,
+    "cliName": "kelamonitorprice",
+    "closeForm": false,
+    "content": true,
+    "description": "Price of the bot on the market.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_kelamonitorprice",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "KELA Monitor Price",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "number",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

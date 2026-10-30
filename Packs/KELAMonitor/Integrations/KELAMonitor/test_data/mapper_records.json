@@ -1,0 +1,40 @@
+{
+  "_comment": "Invented records with the field names of the KELA Monitor incident object (API docs and data model). No real data.",
+  "records": [
+    {
+      "record": {"id": "d0000000000000000000000000000001", "feed_property_id": "f0000000000000000000000000000001", "type": "hacking_discussions", "sub_type": 1, "sub_type_description": "Hacking Discussions", "severity": 3, "incident_date": 1767225700, "publish_date": 1767225600, "title": "Example forum thread", "text": "...list for <span>www.example.com</span>...", "author": "example-actor", "source": "ExampleForum", "source_url": "https://forum.example.org/thread/1", "thread_key": "cccc", "assets": [{"id": 1, "name": "Example Corp", "type": "company"}, {"id": 2, "name": "Example Corp", "type": "company"}], "tags": ["www.example.com"], "categories": ["vulnerability"], "user_actions": {"read": false, "star": true, "hide": false, "handled": false, "delete": false}},
+      "expected_type": "KELA Monitor Hacking Discussion",
+      "expected_fields": {"KELA Monitor ID": "9164", "KELA Monitor Incident ID": "d0000000000000000000000000000001", "KELA Monitor Aggregation ID": "f0000000000000000000000000000001", "KELA Monitor Incident Type": "hacking_discussions", "KELA Monitor Sub Type": 1, "KELA Monitor Sub Type Description": "Hacking Discussions", "KELA Monitor Tags": ["www.example.com"], "KELA Monitor Categories": ["vulnerability"], "KELA Monitor Assets": ["Example Corp"], "KELA Monitor Source": "ExampleForum", "KELA Monitor Source URL": "https://forum.example.org/thread/1", "KELA Monitor Author": "example-actor", "KELA Monitor Posted Date": "2026-01-01T00:00:00Z", "KELA Monitor Handled": false, "KELA Monitor Starred": true, "KELA Monitor Title": "Example forum thread", "KELA Monitor Thread Key": "cccc"}
+    },
+    {
+      "record": {"id": "d0000000000000000000000000000002", "feed_property_id": "f0000000000000000000000000000002", "type": "instant_messaging", "sub_type": 21, "sub_type_description": "Instant Messaging - Telegram", "severity": 2, "incident_date": 1767225800, "posted_date": 1767225900, "author": "example-user", "source_name": "ExampleChannel", "chat_name": "lounge", "chat_type": "channel", "message_id": "1200000000000000001", "snippet": "...see <span>www.example.com</span>...", "full_text": "see https://www.example.com/news", "assets": [], "tags": ["www.example.com"], "categories": ["general threat"], "actions": {"read": false, "star": false, "hide": false, "handled": "Analyst Name", "delete": false}, "user_actions": {"read": false, "star": false, "hide": false, "handled": "Analyst Name", "delete": false}},
+      "expected_type": "KELA Monitor Instant Messaging",
+      "expected_fields": {"KELA Monitor ID": "9164", "KELA Monitor Incident Type": "instant_messaging", "KELA Monitor Source": "ExampleChannel", "KELA Monitor Author": "example-user", "KELA Monitor Chat Name": "lounge", "KELA Monitor Chat Type": "channel", "KELA Monitor Message ID": "1200000000000000001", "KELA Monitor Posted Date": "2026-01-01T00:05:00Z", "KELA Monitor Handled": "Analyst Name", "KELA Monitor Assets": []}
+    },
+    {
+      "record": {"id": "d0000000000000000000000000000003", "feed_property_id": "f0000000000000000000000000000003", "type": "leaked_credentials", "sub_type": 3, "sub_type_description": "Leaked Credentials From Dumps", "severity": 3, "incident_date": 1767225900, "posted_date": 1767225600, "email": "user@example.com", "domain": "example.com", "password": "Example-Secret-1", "password_type": "plaintext", "dump_name": "example dump", "service": "mail.example.com", "source": "Example source", "assets": [], "tags": ["example.com"], "categories": ["credentials"], "user_actions": {"read": false, "star": false, "hide": false, "handled": false, "delete": false}},
+      "expected_type": "KELA Monitor Leaked Credentials",
+      "expected_fields": {"KELA Monitor Email": "user@example.com", "KELA Monitor Domain": "example.com", "KELA Monitor Password Masked": "********", "KELA Monitor Password Type": "plaintext", "KELA Monitor Dump Name": "example dump", "KELA Monitor Service": "mail.example.com", "KELA Monitor Source": "Example source", "KELA Monitor Posted Date": "2026-01-01T00:00:00Z"}
+    },
+    {
+      "record": {"id": "d0000000000000000000000000000004", "feed_property_id": "f0000000000000000000000000000004", "type": "network_vulnerabilities", "sub_type": 4, "sub_type_description": "Database", "severity": 4, "incident_date": 1767226000, "ip": "192.0.2.10", "port": 5432, "hostname": ["db.example.com", "db2.example.com"], "service": "postgresql", "isp": "Example ISP", "technology": "PostgreSQL 9", "cve_details": "CVE-2000-0001", "description": "Publicly accessible database", "assets": [], "tags": ["example.com"], "categories": [], "user_actions": {"read": false, "star": false, "hide": false, "handled": false, "delete": false}},
+      "expected_type": "KELA Monitor Network Vulnerability",
+      "expected_fields": {"KELA Monitor IP": "192.0.2.10", "KELA Monitor Port": 5432, "KELA Monitor Hostname": "db.example.com,db2.example.com", "KELA Monitor Service": "postgresql", "KELA Monitor ISP": "Example ISP", "KELA Monitor Technology": "PostgreSQL 9", "KELA Monitor CVEs": "CVE-2000-0001"}
+    },
+    {
+      "record": {"id": "d0000000000000000000000000000005", "feed_property_id": "f0000000000000000000000000000005", "type": "credit_cards", "sub_type": 13, "sub_type_description": "Credit Cards", "severity": 4, "incident_date": 1767226100, "posted_date": 1767225000, "number": "4111111111111111", "bin": "411111", "source": "Example forum title", "assets": [], "tags": ["411111"], "categories": [], "user_actions": {"read": false, "star": false, "hide": false, "handled": false, "delete": false}},
+      "expected_type": "KELA Monitor Credit Cards",
+      "expected_fields": {"KELA Monitor Card BIN": "411111", "KELA Monitor Card Number Masked": "411111******1111", "KELA Monitor Source": "Example forum title"}
+    },
+    {
+      "record": {"id": "d0000000000000000000000000000006", "feed_property_id": "f0000000000000000000000000000006", "type": "botnets", "sub_type": 18, "sub_type_description": "Compromised Accounts", "severity": 4, "incident_date": 1767226200, "posted_date": 1767225000, "bot_id": "bot-0001", "resource": "https://login.example.com", "infection_type": "ExampleStealer", "country": "Exampleland", "isp": "Example ISP", "price": 10, "purchased": false, "username": "user@example.com", "available_data": {"login": "user@example.com", "password": "Example-Secret-2", "cookie": "session=example"}, "assets": [], "tags": ["example.com"], "categories": ["botnet"], "user_actions": {"read": false, "star": false, "hide": false, "handled": false, "delete": false}},
+      "expected_type": "KELA Monitor Compromised Accounts",
+      "expected_fields": {"KELA Monitor Bot ID": "bot-0001", "KELA Monitor Resource": "https://login.example.com", "KELA Monitor Infection Type": "ExampleStealer", "KELA Monitor Country": "Exampleland", "KELA Monitor ISP": "Example ISP", "KELA Monitor Price": 10, "KELA Monitor Purchased": false, "KELA Monitor Available Data": "{\"login\": \"user@example.com\", \"password\": \"********\", \"cookie\": \"********\"}"}
+    },
+    {
+      "record": {"id": "d0000000000000000000000000000007", "feed_property_id": "f0000000000000000000000000000007", "type": "reports", "sub_type": 12, "sub_type_description": "Intelligence Report", "severity": 2, "incident_date": 1767226300, "title": "Example report", "text": "Report description", "source": "KELA", "assets": [], "tags": [], "categories": [], "user_actions": {"read": false, "star": false, "hide": false, "handled": false, "delete": false}},
+      "expected_type": "KELA Monitor Incident",
+      "expected_fields": {"KELA Monitor Title": "Example report", "KELA Monitor Source": "KELA", "KELA Monitor Incident Type": "reports"}
+    }
+  ]
+}
