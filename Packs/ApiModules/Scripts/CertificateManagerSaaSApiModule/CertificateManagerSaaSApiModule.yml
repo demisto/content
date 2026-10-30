@@ -1,0 +1,19 @@
+commonfields:
+  id: CertificateManagerSaaSApiModule
+  version: -1
+name: CertificateManagerSaaSApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: Provides shared CyberArk Certificate Manager SaaS code (parsing, GraphQL queries, paging, commands, and the expiry fetch) that the Certificate Manager SaaS and Next-Gen Trust Security integrations reuse.
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/crypto:1.0.0.13737394
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

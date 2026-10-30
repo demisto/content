@@ -1,0 +1,6 @@
+{
+  "applications": [
+    { "id": "8b1c5e22-1111-11ef-9a11-0242ac120002", "name": "Storefront", "description": "Public web estate" },
+    { "id": "9c2d6f33-2222-11ef-9a11-0242ac120002", "name": "Internal APIs" }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "data": {
+    "revokeCertificate": {
+      "id": "1f0a9d70-0000-11ef-9a11-0242ac120002",
+      "name": "shop.example.com",
+      "fingerprint": "A1B2C3D4E5F60718293A4B5C6D7E8F9012345678",
+      "serialNumber": "0F1E2D3C4B5A69788796A5B4C3D2E1F0",
+      "status": "ACTIVE",
+      "subject": { "dn": "CN=shop.example.com, O=Example Ltd, C=GB", "commonName": ["shop.example.com"] },
+      "issuer": { "dn": "CN=Example Issuing CA, O=Example Ltd, C=GB", "commonName": ["Example Issuing CA"] },
+      "validity": { "from": "2026-01-01T00:00:00Z", "to": "2026-10-05T00:00:00Z", "period": 23932800 },
+      "machineInstallations": { "totalCount": 0, "nodes": [] },
+      "tlsServerEndpoints": { "totalCount": 0, "nodes": [] },
+      "revocation": {
+        "status": "SUBMITTED",
+        "reason": "KEY_COMPROMISE",
+        "comment": "Revoked by Cortex (case 4210)."
+      }
+    }
+  }
+}

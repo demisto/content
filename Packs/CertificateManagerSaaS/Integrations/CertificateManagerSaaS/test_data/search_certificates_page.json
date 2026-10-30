@@ -1,0 +1,72 @@
+{
+  "data": {
+    "searchCertificates": {
+      "totalCount": 2,
+      "pageInfo": { "hasNextPage": false, "endCursor": "Y3Vyc29yOjI=" },
+      "nodes": [
+        {
+          "id": "1f0a9d70-0000-11ef-9a11-0242ac120002",
+          "name": "shop.example.com",
+          "fingerprint": "A1B2C3D4E5F60718293A4B5C6D7E8F9012345678",
+          "serialNumber": "0F1E2D3C4B5A69788796A5B4C3D2E1F0",
+          "status": "ACTIVE",
+          "isSelfSigned": false,
+          "isCA": false,
+          "isPublic": null,
+          "origins": ["MACHINE_DISCOVERY"],
+          "keyUsages": ["digitalSignature", "keyEncipherment"],
+          "signatureAlgorithm": "sha256WithRSAEncryption",
+          "signatureHashAlgorithm": "SHA256",
+          "lastModifiedTime": "2026-09-01T10:15:00Z",
+          "subject": { "dn": "CN=shop.example.com, O=Example Ltd, C=GB", "commonName": ["shop.example.com"], "o": ["Example Ltd"], "ou": [], "c": ["GB"], "l": [], "st": [] },
+          "issuer": { "dn": "CN=Example Issuing CA, O=Example Ltd, C=GB", "commonName": ["Example Issuing CA"], "o": ["Example Ltd"], "ou": [], "c": ["GB"], "l": [], "st": [] },
+          "validity": { "from": "2026-01-01T00:00:00Z", "to": "2026-10-05T00:00:00Z", "period": 23932800 },
+          "subjectAlternativeNames": [
+            { "__typename": "DNSName", "dnsName": "shop.example.com" },
+            { "__typename": "DNSName", "dnsName": "www.shop.example.com" },
+            { "__typename": "IPAddress", "ip": "203.0.113.10" }
+          ],
+          "publicKeyInformation": { "__typename": "RSAKeyInfo", "strength": 2048 },
+          "applications": [{ "id": "8b1c5e22-1111-11ef-9a11-0242ac120002", "name": "Storefront" }],
+          "machineInstallations": {
+            "totalCount": 1,
+            "nodes": [
+              {
+                "id": "inst-0001",
+                "status": "INSTALLED",
+                "machine": { "id": "mach-0001", "name": "F5 v17", "plugin": { "id": "plug-f5", "name": "F5 BIG-IP LTM (VSatellite)" } }
+              }
+            ]
+          },
+          "tlsServerEndpoints": {
+            "totalCount": 1,
+            "nodes": [{ "id": "ep-0001", "serverName": "shop.example.com", "ipAddress": "203.0.113.10", "port": 443, "deploymentStatus": "DEPLOYED" }]
+          }
+        },
+        {
+          "id": "2f0a9d70-0000-11ef-9a11-0242ac120002",
+          "name": "internal-api.example.com",
+          "fingerprint": "BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE",
+          "serialNumber": "1122334455667788",
+          "status": "ACTIVE",
+          "isSelfSigned": true,
+          "isCA": false,
+          "isPublic": false,
+          "origins": ["USER_UPLOADED"],
+          "keyUsages": ["digitalSignature"],
+          "signatureAlgorithm": "ecdsa-with-SHA384",
+          "signatureHashAlgorithm": "SHA384",
+          "lastModifiedTime": "2026-08-20T08:00:00Z",
+          "subject": { "dn": "CN=internal-api.example.com", "commonName": ["internal-api.example.com"] },
+          "issuer": { "dn": "CN=internal-api.example.com", "commonName": ["internal-api.example.com"] },
+          "validity": { "from": "2026-02-01T00:00:00Z", "to": "2027-02-01T00:00:00Z", "period": 31536000 },
+          "subjectAlternativeNames": [],
+          "publicKeyInformation": { "__typename": "ECKeyInfo", "curve": "P-384" },
+          "applications": [],
+          "machineInstallations": { "totalCount": 0, "nodes": [] },
+          "tlsServerEndpoints": { "totalCount": 0, "nodes": null }
+        }
+      ]
+    }
+  }
+}
