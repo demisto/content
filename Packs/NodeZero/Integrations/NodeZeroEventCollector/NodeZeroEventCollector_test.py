@@ -6,9 +6,12 @@ import hashlib
 import itertools
 import json
 import re
+import threading
 import time
+import uuid
 from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -214,11 +217,11 @@ class FakeNodeZero:
         if queued is not None:
             return queued
         variables = body["variables"]
-        if operation == "PentestWeaknesses":
+        if operation == "CortexXsiamPentestWeaknesses":
             return self.weakness_page(body["query"], variables, context)
-        if operation == "FinishedPentests":
+        if operation in ("CortexXsiamFinishedPentests", "CortexXsiamPentest"):  # the sweep and the single-pentest lookup
             return self.reply(context, self.sweep_page(variables["page_input"]))
-        if operation == "Connectivity":
+        if operation == "CortexXsiamConnectivity":
             return self.reply(context, pentests_body([{"op_id": row["op_id"]} for row in self.pentests[:1]]))
         raise AssertionError(f"Unexpected GraphQL operation {operation}")
 
@@ -975,7 +978,7 @@ def test_token_expiry_from_jwt_exp_with_fallback() -> None:
 def test_reauth_once_on_401(harness: Harness) -> None:
     fake = standard_api(harness)
     harness.context.update({**cached_token("revoked-token", NOW_EPOCH + 3600), "unrelated": "kept"})
-    fake.queue("Connectivity", 401)
+    fake.queue("CortexXsiamConnectivity", 401)
     make_client().check_connectivity()
     assert harness.auth_calls() == 1
     assert fake.authorization_headers == ["Bearer revoked-token", f"Bearer {fake.issued_tokens[0]}"]
@@ -987,7 +990,7 @@ def test_reauth_once_on_401(harness: Harness) -> None:
 def test_reauth_on_401_during_a_fetch_replaces_the_cached_token(harness: Harness) -> None:
     fake = standard_api(harness)
     harness.context.update({**cached_token("revoked-token", NOW_EPOCH + 3600), "unrelated": "kept"})
-    fake.queue("FinishedPentests", 401)
+    fake.queue("CortexXsiamFinishedPentests", 401)
     run_fetch()
     assert harness.auth_calls() == 1
     assert fake.authorization_headers[:2] == ["Bearer revoked-token", f"Bearer {fake.issued_tokens[0]}"]
@@ -999,8 +1002,8 @@ def test_reauth_on_401_during_a_fetch_replaces_the_cached_token(harness: Harness
 @freeze_time(NOW)
 def test_reauth_only_once(harness: Harness) -> None:
     fake = standard_api(harness)
-    fake.queue("Connectivity", 401)
-    fake.queue("Connectivity", 401)
+    fake.queue("CortexXsiamConnectivity", 401)
+    fake.queue("CortexXsiamConnectivity", 401)
     with pytest.raises(DemistoException, match="HTTP 401"):
         make_client().check_connectivity()
     assert harness.auth_calls() == 2  # the first token, then the single re-authentication
@@ -1024,18 +1027,18 @@ def test_integration_context_merged_not_replaced(harness: Harness) -> None:
 def test_graphql_errors_raise(harness: Harness) -> None:
     fake = standard_api(harness)
     client = make_client()
-    fake.queue("Connectivity", 200, load_json("graphql_errors.json"))
+    fake.queue("CortexXsiamConnectivity", 200, load_json("graphql_errors.json"))
     with pytest.raises(DemistoException) as error:
         client.check_connectivity()
     assert 'Cannot query field "nope" on type "Pentest".' in str(error.value)
     assert "got an invalid value" in str(error.value)
-    fake.queue("Connectivity", 200, {"data": None})
+    fake.queue("CortexXsiamConnectivity", 200, {"data": None})
     with pytest.raises(DemistoException, match="without data"):
         client.check_connectivity()
-    fake.queue("Connectivity", 200, raw="<html>gateway</html>")
+    fake.queue("CortexXsiamConnectivity", 200, raw="<html>gateway</html>")
     with pytest.raises(DemistoException, match="not a JSON object"):
         client.check_connectivity()
-    fake.queue("FinishedPentests", 200, {"data": {"pentests_page": None}})
+    fake.queue("CortexXsiamFinishedPentests", 200, {"data": {"pentests_page": None}})
     with pytest.raises(DemistoException, match="without a pentests list"):
         client.get_finished_pentests(FIRST_FETCH_FLOOR, 1)
 
@@ -1068,7 +1071,7 @@ def test_http_error_message() -> None:
 @freeze_time(NOW)
 def test_graphql_errors_with_http_error_status(harness: Harness) -> None:
     fake = standard_api(harness)
-    fake.queue("Connectivity", 400, load_json("graphql_errors.json"))
+    fake.queue("CortexXsiamConnectivity", 400, load_json("graphql_errors.json"))
     with pytest.raises(DemistoException, match="HTTP 400") as error:
         make_client().check_connectivity()
     assert 'Cannot query field "nope" on type "Pentest".' in str(error.value)
@@ -1233,13 +1236,14 @@ def test_weaknesses_page_always_scoped_to_op_id(harness: Harness) -> None:
         assert body["variables"]["op_id"] in {"op-a", "op-b"}
         assert body["variables"]["page_input"]["order_by"] == "uuid"
         assert body["variables"]["page_input"]["sort_order"] == "ASC"
-    assert all("weaknesses_page" not in body["query"] for body in fake.requests_for("FinishedPentests"))
+    assert all("weaknesses_page" not in body["query"] for body in fake.requests_for("CortexXsiamFinishedPentests"))
 
 
 @freeze_time(NOW)
 def test_api_key_and_token_never_logged(harness: Harness, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(demisto, "is_debug", True)
-    assert NodeZeroEventCollector.is_debug_mode() is True
+    """Covers every demisto.debug, info and error line, the messages given to return_error, the saved last runs and the
+    sent events. It does not cover CommonServerPython's debug-mode wire log, which starts only when CommonServerPython is
+    imported with debug mode on, or the traceback the real return_error adds in debug mode, because the test replaces it."""
     fake = standard_api(harness)
     errors: list[str] = []
     masked: list[str] = []
@@ -1257,8 +1261,8 @@ def test_api_key_and_token_never_logged(harness: Harness, monkeypatch: pytest.Mo
     for command in ("test-module", "fetch-events", "nodezero-fetch-events"):
         monkeypatch.setattr(demisto, "command", lambda command=command: command)
         NodeZeroEventCollector.main()
-    fake.queue("FinishedPentests", 401)
-    fake.queue("FinishedPentests", 401)
+    fake.queue("CortexXsiamFinishedPentests", 401)
+    fake.queue("CortexXsiamFinishedPentests", 401)
     monkeypatch.setattr(demisto, "command", lambda: "nodezero-fetch-events")
     NodeZeroEventCollector.main()  # fails after the single re-authentication
     harness.context.clear()
@@ -1294,7 +1298,7 @@ def test_unknown_last_run_version_restarts_safely(harness: Harness, raw: Any) ->
     fake = standard_api(harness)
     harness.last_run = raw
     run_fetch()
-    since = fake.requests_for("FinishedPentests")[0]["variables"]["page_input"]["filter_by_inputs"][1]
+    since = fake.requests_for("CortexXsiamFinishedPentests")[0]["variables"]["page_input"]["filter_by_inputs"][1]
     assert since == {"field_name": "etl_completed_at", "greater_than_or_equal": FIRST_FETCH_FLOOR}
     assert "No fetch checkpoint with a known version was found. Starting a first fetch." in harness.messages("info")
     assert harness.last_run["version"] == 1
@@ -1426,7 +1430,7 @@ def test_sweep_start_uses_lookback_never_below_floor() -> None:
 def test_sweep_filters_state_and_etl_completed_at(harness: Harness) -> None:
     fake = standard_api(harness)
     run_fetch()
-    sweeps = fake.requests_for("FinishedPentests")
+    sweeps = fake.requests_for("CortexXsiamFinishedPentests")
     assert sweeps[0]["variables"] == {
         "page_input": {
             "page_num": 1,
@@ -1447,11 +1451,13 @@ def test_no_severity_filter_in_any_query(harness: Harness) -> None:
     fake = standard_api(harness)
     run_fetch()
     event_list({"should_push_events": "false", "limit": "100"})
+    view({"pentest_id": "op-a"})
     NodeZeroEventCollector.test_module(make_client(), FETCH_PARAMS)
     assert {operation_name(body["query"]) for body in fake.graphql_requests} == {
-        "FinishedPentests",
-        "PentestWeaknesses",
-        "Connectivity",
+        "CortexXsiamFinishedPentests",
+        "CortexXsiamPentest",
+        "CortexXsiamPentestWeaknesses",
+        "CortexXsiamConnectivity",
     }
     for body in fake.graphql_requests:
         assert "severity" not in json.dumps(body["variables"]).lower()
@@ -1545,7 +1551,7 @@ def test_sweeps_ask_for_done_pentests_only(harness: Harness) -> None:
     ).register(harness.requests_mock)
     run_fetch()
     result = event_list({"should_push_events": "false", "limit": "100"})
-    sweeps = fake.requests_for("FinishedPentests")
+    sweeps = fake.requests_for("CortexXsiamFinishedPentests")
     assert len(sweeps) == 4  # two pages for the fetch and two for nodezero-fetch-events
     for body in sweeps:
         assert body["variables"]["page_input"]["filter_by_inputs"][0] == {"field_name": "state", "values": ["done"]}
@@ -1572,7 +1578,7 @@ def test_full_sweep_page_of_skipped_pentests_keeps_the_sweep_going(harness: Harn
         events = event_list({"should_push_events": "false", "limit": "100"}).raw_response
     assert uuids(events) == uuids(ALL_ROWS)
     assert {op_id for op_id, _ in fake.weakness_page_calls} == {"op-a", "op-b"}
-    assert len(fake.requests_for("FinishedPentests")) == 3  # a full page of skipped rows still counts as a full page
+    assert len(fake.requests_for("CortexXsiamFinishedPentests")) == 3  # a full page of skipped rows still counts as a full page
 
 
 @freeze_time(NOW)
@@ -1616,7 +1622,8 @@ def test_lookback_catches_late_visible_pentest(harness: Harness) -> None:
     pentests.append(pentest_row("op-too-late", 1, etl_completed_at="2025-03-13T09:59:59"))  # older than the look-back
     harness.sends.clear()
     run_fetch()
-    since = fake.requests_for("FinishedPentests")[-1]["variables"]["page_input"]["filter_by_inputs"][1]["greater_than_or_equal"]
+    last_sweep = fake.requests_for("CortexXsiamFinishedPentests")[-1]
+    since = last_sweep["variables"]["page_input"]["filter_by_inputs"][1]["greater_than_or_equal"]
     assert since == "2025-03-13T10:00:00"
     assert uuids(harness.sent_events()) == uuids(late_rows)  # op-a is not sent again
     assert set(harness.last_run["sent_ops"]) == {"op-a", "op-late"}
@@ -1631,7 +1638,7 @@ def test_floor_bounds_first_run_window(harness: Harness) -> None:
     fake = FakeNodeZero(pentests=[old, new], weaknesses=weaknesses).register(harness.requests_mock)
     run_fetch()
     run_fetch()
-    for body in fake.requests_for("FinishedPentests"):
+    for body in fake.requests_for("CortexXsiamFinishedPentests"):
         assert body["variables"]["page_input"]["filter_by_inputs"][1]["greater_than_or_equal"] == FIRST_FETCH_FLOOR
     assert harness.last_run["floor"] == FIRST_FETCH_FLOOR
     assert set(harness.last_run["sent_ops"]) == {"op-new"}
@@ -1918,7 +1925,7 @@ def test_resume_that_runs_out_of_time_skips_the_sweep(harness: Harness) -> None:
     fake.charge_weakness_pages(clock, 200)
     run_fetch(clock=clock)
     assert fake.weakness_page_calls == [("op-x", 2)]
-    assert fake.requests_for("FinishedPentests") == []  # no new pentest is looked for once time is up
+    assert fake.requests_for("CortexXsiamFinishedPentests") == []  # no new pentest is looked for once time is up
     assert harness.last_run["in_progress"]["next_page"] == 3
     assert harness.last_run["in_progress"]["sent"] == 4
     assert harness.last_run["nextTrigger"] == "0"
@@ -1938,7 +1945,7 @@ def test_resume_that_finishes_near_the_deadline_skips_the_sweep(harness: Harness
     fake.charge_weakness_pages(clock, 160)  # op-a's last page leaves 20 s, under the 30 s needed to start a pentest
     run_fetch(clock=clock)
     assert fake.weakness_page_calls == [("op-a", 2)]
-    assert fake.requests_for("FinishedPentests") == []  # no sweep request that would have no retries left
+    assert fake.requests_for("CortexXsiamFinishedPentests") == []  # no sweep request that would have no retries left
     assert list(harness.last_run["sent_ops"]) == ["op-a"]
     assert harness.last_run["nextTrigger"] == "0"  # the next run sweeps with a full budget
 
@@ -1990,7 +1997,7 @@ def test_slow_sweep_stops_early_and_sends_what_it_found(harness: Harness) -> Non
     fake = SlowSweepNodeZero(pentests=rows, weaknesses=weaknesses, clock=clock, sweep_seconds=50)
     fake.register(harness.requests_mock)
     run_fetch(clock=clock)  # three full sweep pages leave 30 s, under the 60 s needed to read another page
-    assert len(fake.requests_for("FinishedPentests")) == 3
+    assert len(fake.requests_for("CortexXsiamFinishedPentests")) == 3
     assert sorted(harness.last_run["sent_ops"]) == [row["op_id"] for row in rows]
     assert harness.last_run["nextTrigger"] == "0"  # the sweep stopped early and the run made progress
 
@@ -2154,7 +2161,7 @@ def test_sweep_cap_leaves_work_for_the_next_run(harness: Harness, monkeypatch: p
     monkeypatch.setattr(NodeZeroEventCollector, "MAX_SWEEP_PAGES", 1)
     fake = standard_api(harness)
     run_fetch()
-    assert len(fake.requests_for("FinishedPentests")) == 1  # the sweep stopped at its cap with a full page
+    assert len(fake.requests_for("CortexXsiamFinishedPentests")) == 1  # the sweep stopped at its cap with a full page
     assert set(harness.last_run["sent_ops"]) == {"op-a", "op-b"}
     assert harness.last_run["nextTrigger"] == "0"
     run_fetch()  # the capped sweep now finds only sent pentests, so the run doesn't ask to run again at once
@@ -2253,7 +2260,7 @@ def test_event_list_default_limit_and_since(harness: Harness) -> None:
     fake = FakeNodeZero(pentests=[pentest_row("op-big", 12)], weaknesses={"op-big": rows}).register(harness.requests_mock)
     result = event_list({"should_push_events": "false"})
     assert len(result.raw_response) == 10
-    since = fake.requests_for("FinishedPentests")[0]["variables"]["page_input"]["filter_by_inputs"][1]
+    since = fake.requests_for("CortexXsiamFinishedPentests")[0]["variables"]["page_input"]["filter_by_inputs"][1]
     assert since == {"field_name": "etl_completed_at", "greater_than_or_equal": "2025-03-08T12:00:00"}  # 7 days
 
 
@@ -2272,7 +2279,7 @@ def test_event_list_since_filters_by_etl_completed_at(
 ) -> None:
     fake = standard_api(harness)
     result = event_list({"should_push_events": "false", "limit": "100", "since": since})
-    filters = fake.requests_for("FinishedPentests")[0]["variables"]["page_input"]["filter_by_inputs"]
+    filters = fake.requests_for("CortexXsiamFinishedPentests")[0]["variables"]["page_input"]["filter_by_inputs"]
     assert filters == [
         {"field_name": "state", "values": ["done"]},
         {"field_name": "etl_completed_at", "greater_than_or_equal": expected_since},
@@ -2321,7 +2328,8 @@ def test_event_list_reports_a_sweep_cut_short_by_the_deadline(harness: Harness) 
     fake = SlowSweepNodeZero(pentests=rows, weaknesses=weaknesses, clock=clock, sweep_seconds=50)
     fake.register(harness.requests_mock)
     result = event_list({"should_push_events": "false", "limit": "100"}, clock=clock)
-    assert len(fake.requests_for("FinishedPentests")) == 3  # three sweep pages leave 30 s, under the 60 s for another page
+    # three sweep pages leave 30 s, under the 60 s for another page
+    assert len(fake.requests_for("CortexXsiamFinishedPentests")) == 3
     assert len(result.raw_response) == 6  # op-7 and op-8 were never swept
     assert "The command stopped early because it reached its time limit." in result.readable_output
 
@@ -2874,7 +2882,9 @@ def test_pentest_id_reads_that_pentest_only(harness: Harness, pentest_id: str) -
     fake = standard_api(harness)
     result = view({"pentest_id": pentest_id, "since": "not a time"})  # since is ignored
     assert uuids(result.raw_response) == uuids([A1, A2, A3])
-    (lookup,) = fake.requests_for("FinishedPentests")
+    (lookup,) = fake.requests_for("CortexXsiamPentest")
+    assert fake.requests_for("CortexXsiamFinishedPentests") == []  # the lookup has its own operation name, not the sweep's
+    assert lookup["query"] == NodeZeroEventCollector.PENTEST_QUERY
     assert lookup["variables"] == {
         "page_input": {"page_num": 1, "page_size": 1, "filter_by_inputs": [{"field_name": "op_id", "values": ["op-a"]}]}
     }
@@ -2887,7 +2897,7 @@ def test_blank_pentest_id_means_since(harness: Harness) -> None:
     fake = standard_api(harness)
     result = view({"pentest_id": "   ", "since": "2 days"})
     assert uuids(result.raw_response) == uuids(ALL_ROWS)
-    since = fake.requests_for("FinishedPentests")[0]["variables"]["page_input"]["filter_by_inputs"][1]
+    since = fake.requests_for("CortexXsiamFinishedPentests")[0]["variables"]["page_input"]["filter_by_inputs"][1]
     assert since == {"field_name": "etl_completed_at", "greater_than_or_equal": "2025-03-13T12:00:00"}
 
 
@@ -2944,7 +2954,7 @@ def test_runs_without_the_lease_never_write_the_context(harness: Harness) -> Non
     before = copy.deepcopy(harness.context)
     view()  # no cached token, so it authenticates
     view({"pentest_id": "op-a"})
-    fake.queue("FinishedPentests", 401)
+    fake.queue("CortexXsiamFinishedPentests", 401)
     view()  # re-authenticates after a 401
     assert NodeZeroEventCollector.test_module(make_client(), FETCH_PARAMS) == "ok"
     harness.context[LEASE_KEY] = lease_payload("fetch", "fetch-run", NOW_EPOCH + 600)
@@ -3253,7 +3263,7 @@ class DirectNodeZero(FakeNodeZero):
     def install(self, monkeypatch: pytest.MonkeyPatch) -> "DirectNodeZero":
         def graphql(client: Any, query: str, variables: dict[str, Any]) -> dict[str, Any]:
             context = SimpleNamespace(status_code=200, headers={})
-            if operation_name(query) == "PentestWeaknesses":
+            if operation_name(query) == "CortexXsiamPentestWeaknesses":
                 return json.loads(self.weakness_page(query, variables, context))["data"]
             return self.sweep_page(variables["page_input"])["data"]
 
@@ -3527,10 +3537,10 @@ def test_lease_lost_while_caching_a_token_is_not_reported_as_a_page_failure(harn
     fake = standard_api(harness)
     harness.context[STATE_KEY] = state_payload()
     intruder = lease_payload("command", "intruder", NOW_EPOCH + 600)
-    fake.on_request["PentestWeaknesses"] = [
+    fake.on_request["CortexXsiamPentestWeaknesses"] = [
         lambda: harness.store.other_writer(lambda context: context.update({LEASE_KEY: intruder}))
     ]
-    fake.queue("PentestWeaknesses", 401)  # the re-authentication's token write then finds the other run's lease
+    fake.queue("CortexXsiamPentestWeaknesses", 401)  # the re-authentication's token write then finds the other run's lease
     with pytest.raises(NodeZeroEventCollector.LeaseLost) as error:
         run_fetch()
     assert str(error.value) == "The collection lease expired and another run took it, so this run stopped sending."
@@ -3575,6 +3585,865 @@ def test_checkpoint_mirror_never_records_a_pentest_whose_final_commit_failed(har
     assert "op-a" not in harness.last_run["sent_ops"], "the checkpoint mirror records op-a as sent"
 
 
+# ----- request identity: User-Agent, X-Request-ID, operation names and the run ID -----
+
+UNIT_TEST_USER_AGENT = "NodeZero-Cortex/unknown (NodeZeroEventCollector; Cortex 5.5.0)"  # demistomock's platform version
+RUN_ID_PATTERN = r"[0-9a-f]{32}"
+KNOWN_USER_AGENT = "NodeZero-Cortex/2.0.0 (NodeZeroEventCollector; Cortex 8.9.0)"
+UNKNOWN_USER_AGENT = "NodeZero-Cortex/unknown (NodeZeroEventCollector; Cortex unknown)"
+
+
+def sent_headers(harness: Harness) -> list[tuple[str, dict[str, str]]]:
+    """The path and headers of every HTTP request the collector made, in order."""
+    return [(request.path, dict(request.headers)) for request in harness.requests_mock.request_history]
+
+
+def assert_identity_headers(harness: Harness, run_id: str) -> list[str]:
+    """Every request carries the User-Agent and <run id>-<n>, n counting from 1. Returns the request paths."""
+    requests_made = sent_headers(harness)
+    assert requests_made, "the run made no request"
+    for number, (_, headers) in enumerate(requests_made, start=1):
+        assert headers["User-Agent"] == UNIT_TEST_USER_AGENT
+        assert headers["X-Request-ID"] == f"{run_id}-{number}"
+    return [path for path, _ in requests_made]
+
+
+def test_operation_names() -> None:
+    assert operation_name(NodeZeroEventCollector.FINISHED_PENTESTS_QUERY) == "CortexXsiamFinishedPentests"
+    assert operation_name(NodeZeroEventCollector.PENTEST_QUERY) == "CortexXsiamPentest"
+    assert operation_name(NodeZeroEventCollector.PENTEST_WEAKNESSES_QUERY) == "CortexXsiamPentestWeaknesses"
+    assert operation_name(NodeZeroEventCollector.CONNECTIVITY_QUERY) == "CortexXsiamConnectivity"
+    # The single-pentest lookup selects exactly what the sweep selects; only the operation name differs.
+    lookup_body = NodeZeroEventCollector.PENTEST_QUERY.replace("CortexXsiamPentest(", "CortexXsiamFinishedPentests(")
+    assert lookup_body == NodeZeroEventCollector.FINISHED_PENTESTS_QUERY
+
+
+def test_user_agent_in_unit_tests_falls_back_for_the_pack_version() -> None:
+    assert NodeZeroEventCollector.get_pack_version() == ""  # not unified, so there is no CONSTANT_PACK_VERSION
+    assert NodeZeroEventCollector.build_user_agent() == UNIT_TEST_USER_AGENT
+
+
+def raise_error() -> Any:
+    raise RuntimeError("not available")
+
+
+@pytest.mark.parametrize(
+    ("pack_version", "platform_version", "expected"),
+    [
+        (lambda: "2.0.0", lambda: {"version": "8.9.0", "buildNumber": "1"}, KNOWN_USER_AGENT),
+        (lambda: " 2.0.0 ", lambda: {"version": "8.9.0"}, KNOWN_USER_AGENT),
+        (raise_error, raise_error, UNKNOWN_USER_AGENT),
+        (lambda: None, lambda: None, UNKNOWN_USER_AGENT),
+        (lambda: "", dict, UNKNOWN_USER_AGENT),
+        (lambda: "   ", lambda: {"version": ""}, UNKNOWN_USER_AGENT),
+        (lambda: 2, lambda: {"version": 8.9}, UNKNOWN_USER_AGENT),
+        (lambda: "2.0.0\r\nX-Injected: 1", lambda: "8.9.0", UNKNOWN_USER_AGENT),
+        (lambda: "2.0.0 (beta)", lambda: {"version": "8.9.0;x"}, UNKNOWN_USER_AGENT),
+        (
+            lambda: "1" * 65,  # longer than any real version
+            lambda: {"version": "8.10.0-rc1"},
+            "NodeZero-Cortex/unknown (NodeZeroEventCollector; Cortex 8.10.0-rc1)",
+        ),
+    ],
+)
+def test_user_agent_fallbacks(
+    monkeypatch: pytest.MonkeyPatch, pack_version: Callable[[], Any], platform_version: Callable[[], Any], expected: str
+) -> None:
+    monkeypatch.setattr(NodeZeroEventCollector, "get_pack_version", pack_version)
+    monkeypatch.setattr(demisto, "demistoVersion", platform_version)
+    assert NodeZeroEventCollector.build_user_agent() == expected
+
+
+def test_client_builds_its_user_agent_once(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(NodeZeroEventCollector, "get_pack_version", raise_error)
+    monkeypatch.setattr(demisto, "demistoVersion", raise_error)
+    client = make_client()  # a failing version lookup never stops the client from being built
+    assert client.identity_headers()["User-Agent"] == UNKNOWN_USER_AGENT
+
+
+def test_each_client_has_its_own_run_id() -> None:
+    first, second = make_client(), make_client()
+    assert re.fullmatch(RUN_ID_PATTERN, first.run_id)
+    assert first.run_id != second.run_id
+    assert [first.identity_headers()["X-Request-ID"] for _ in range(3)] == [f"{first.run_id}-{n}" for n in (1, 2, 3)]
+    assert second.identity_headers()["X-Request-ID"] == f"{second.run_id}-1"
+
+
+@freeze_time(NOW)
+def test_every_fetch_request_carries_the_identity_headers(harness: Harness) -> None:
+    standard_api(harness)
+    client = make_client()
+    NodeZeroEventCollector.fetch_events_command(client, FETCH_PARAMS)
+    paths = assert_identity_headers(harness, client.run_id)
+    assert paths == ["/v1/auth"] + ["/v1/graphql"] * 6  # the key exchange, two sweep pages and four weakness pages
+    for path, headers in sent_headers(harness):
+        assert headers["Content-Type"] == "application/json"  # the per-call headers didn't replace it
+        if path == "/v1/graphql":
+            assert headers["Authorization"].startswith("Bearer ")
+        else:
+            assert "Authorization" not in headers
+        for value in (headers["User-Agent"], headers["X-Request-ID"]):
+            assert API_KEY not in value
+            assert "nodezero.example.com" not in value
+
+
+@freeze_time(NOW)
+def test_reauthentication_after_401_counts_every_request(harness: Harness) -> None:
+    fake = standard_api(harness)
+    harness.context.update(cached_token("revoked-token", NOW_EPOCH + 3600))
+    fake.queue("CortexXsiamConnectivity", 401)
+    client = make_client()
+    client.check_connectivity()
+    # The rejected request, the new key exchange and the repeated request each get their own number.
+    assert assert_identity_headers(harness, client.run_id) == ["/v1/graphql", "/v1/auth", "/v1/graphql"]
+    assert fake.authorization_headers == ["Bearer revoked-token", f"Bearer {fake.issued_tokens[0]}"]
+
+
+@freeze_time(NOW)
+def test_http_error_names_the_request_id_of_the_failed_request(harness: Harness) -> None:
+    fake = standard_api(harness)
+    fake.queue("CortexXsiamConnectivity", 500, {"message": "boom"})
+    client = make_client()
+    with pytest.raises(DemistoException) as error:
+        client.check_connectivity()
+    assert str(error.value).startswith("NodeZero API request failed with HTTP 500")
+    assert str(error.value).endswith(f". Request ID: {client.run_id}-2.")  # auth was request 1
+
+
+@freeze_time(NOW)
+def test_failed_reauthentication_names_the_last_request(harness: Harness) -> None:
+    fake = standard_api(harness)
+    fake.queue("CortexXsiamConnectivity", 401)
+    fake.queue("CortexXsiamConnectivity", 401)
+    client = make_client()
+    with pytest.raises(DemistoException) as error:
+        client.check_connectivity()
+    assert str(error.value).endswith(
+        f"Verify that the API key is valid and has read access to pentests and weaknesses. Request ID: {client.run_id}-4."
+    )
+
+
+@freeze_time(NOW)
+def test_weakness_page_error_keeps_the_request_id(harness: Harness) -> None:
+    fake = standard_api(harness)
+    fake.fail_page("op-a", 2, status=400)
+    client = make_client()
+    with pytest.raises(DemistoException) as error:
+        NodeZeroEventCollector.fetch_events_command(client, FETCH_PARAMS)
+    # auth, two sweep pages, op-a page 1, then the failed op-a page 2
+    assert "page 2 of the weaknesses of pentest op-a" in str(error.value)
+    assert str(error.value).endswith(f". Request ID: {client.run_id}-5.")
+    assert harness.summary().startswith(f"NodeZero fetch failed (run ID {client.run_id}): ")
+
+
+def test_http_error_message_with_and_without_a_recorded_request() -> None:
+    response = make_response(503, "Service Unavailable", {"message": "busy"})
+    response.request = requests.Request("POST", BASE_URL, headers={"X-Request-ID": "0123abcd-7"}).prepare()
+    with pytest.raises(DemistoException) as error:
+        NodeZeroEventCollector.raise_http_error(response)
+    assert str(error.value) == "NodeZero API request failed with HTTP 503 (Service Unavailable). Request ID: 0123abcd-7."
+    response.request = requests.Request("POST", BASE_URL, headers={"Authorization": "Bearer secret"}).prepare()
+    with pytest.raises(DemistoException) as error:
+        NodeZeroEventCollector.raise_http_error(response)
+    assert str(error.value) == "NodeZero API request failed with HTTP 503 (Service Unavailable)."
+    assert NodeZeroEventCollector.request_id_of(make_response(500, "", {})) is None  # no request recorded
+    no_headers = SimpleNamespace(request=SimpleNamespace(headers=None))
+    assert NodeZeroEventCollector.request_id_of(no_headers) is None  # type: ignore[arg-type]
+
+
+@freeze_time(NOW)
+def test_fetch_summary_names_the_run_id(harness: Harness) -> None:
+    standard_api(harness)
+    client = make_client()
+    NodeZeroEventCollector.fetch_events_command(client, FETCH_PARAMS)
+    assert harness.summary().startswith(f"NodeZero fetch finished (run ID {client.run_id}): 2 pentests fully sent, ")
+
+
+@freeze_time(NOW)
+def test_skipped_fetch_summary_names_the_run_id(harness: Harness) -> None:
+    standard_api(harness)
+    harness.context.update({LEASE_KEY: lease_payload("command", "push-run", NOW_EPOCH + 1), STATE_KEY: state_payload()})
+    client = make_client()
+    NodeZeroEventCollector.fetch_events_command(client, FETCH_PARAMS)
+    assert harness.summary().startswith(f"NodeZero fetch skipped (run ID {client.run_id}): ")
+    assert harness.requests_mock.request_history == []  # a skipped run sends no request
+
+
+@freeze_time(NOW)
+def test_manual_push_summary_names_the_run_id_of_its_requests(harness: Harness) -> None:
+    standard_api(harness)
+    run_fetch()
+    harness.requests_mock.reset_mock()
+    push()
+    summaries = [message for message in harness.messages("info") if message.startswith("NodeZero manual push ")]
+    assert len(summaries) == 1, summaries
+    match = re.match(rf"NodeZero manual push finished \(run ID ({RUN_ID_PATTERN})\): ", summaries[0])
+    assert match, summaries[0]
+    assert assert_identity_headers(harness, match.group(1))  # the summary's run ID prefixes every request of the push
+
+
+INSTANCE_NAME = "nodezero-collector-instance-under-test"
+LICENSE_ID = "license-id-under-test-0001"
+TENANT_HOST = "nodezero.example.com"
+# Every header a request sends, besides Authorization on GraphQL calls. A new header, such as X-Content-LicenseID from
+# get_x_content_info_headers(), fails the tests that use it.
+REQUEST_HEADER_NAMES = {"Accept", "Accept-Encoding", "Connection", "Content-Length", "Content-Type", "User-Agent", "X-Request-ID"}
+# sha256 of each query text with its operation name replaced by "Operation", computed from the queries of commit
+# 370e113f7c, before the rename: the operation names are the only change to the query texts.
+QUERY_DIGESTS = {
+    "FINISHED_PENTESTS_QUERY": "6fbd8cd7a02204b8db75bc4314f3dc7ef1e9d1e4cecd3180b3654f1ced1cf13a",
+    "PENTEST_QUERY": "6fbd8cd7a02204b8db75bc4314f3dc7ef1e9d1e4cecd3180b3654f1ced1cf13a",  # the sweep's text
+    "PENTEST_WEAKNESSES_QUERY": "e5fbfb4190f91091a9f7ada12b8f53d378dcddee0b12deb8d1e7f65c34f65b52",
+    "CONNECTIVITY_QUERY": "1eddffb3ed8201849a9d189fb57e581eec0c4cc984be0f5e8814c68b4802d568",
+}
+
+
+def test_identity_constants() -> None:
+    assert NodeZeroEventCollector.INTEGRATION_NAME == "NodeZeroEventCollector"
+    assert NodeZeroEventCollector.USER_AGENT_PRODUCT == "NodeZero-Cortex"
+    assert NodeZeroEventCollector.UNKNOWN_VERSION == "unknown"
+    assert NodeZeroEventCollector.REQUEST_ID_HEADER == "X-Request-ID"
+    assert NodeZeroEventCollector.VERSION_PATTERN.pattern == r"[0-9A-Za-z][0-9A-Za-z.+_-]{0,63}"
+
+
+@pytest.mark.parametrize("name", sorted(QUERY_DIGESTS))
+def test_query_texts_differ_from_before_only_in_their_operation_names(name: str) -> None:
+    query = getattr(NodeZeroEventCollector, name)
+    normalized = re.sub(r"query \w+\(", "query Operation(", query, count=1)
+    assert hashlib.sha256(normalized.encode()).hexdigest() == QUERY_DIGESTS[name], f"the selection of {name} changed"
+
+
+class BrokenVersionInfo(dict):
+    """A platform answer whose lookup fails."""
+
+    def get(self, *args: Any) -> Any:
+        raise KeyError("version")
+
+
+@pytest.mark.parametrize(
+    ("pack_version", "platform_version", "expected_pack", "expected_platform"),
+    [
+        ("1" * 64, {"version": "8.9.0"}, "1" * 64, "8.9.0"),  # the longest version kept: 64 characters
+        ("2.0.0+build_7", {"version": "8.9.0-rc.1"}, "2.0.0+build_7", "8.9.0-rc.1"),  # every punctuation mark allowed
+        (".2.0.0", {"version": "-8.9.0"}, "unknown", "unknown"),  # a version starts with a letter or a digit
+        (b"2.0.0", ["8.9.0"], "unknown", "unknown"),  # bytes, and a platform answer that isn't a dict
+        ("2.0.0\n", {"version": "\t8.9.0 "}, "2.0.0", "8.9.0"),  # surrounding whitespace is trimmed, never sent
+        ("2.0.0", BrokenVersionInfo(), "2.0.0", "unknown"),
+    ],
+    ids=["64-characters-kept", "allowed-punctuation", "leading-punctuation", "bytes-and-a-list", "trimmed", "lookup-raises"],
+)
+def test_user_agent_version_boundaries(
+    monkeypatch: pytest.MonkeyPatch, pack_version: Any, platform_version: Any, expected_pack: str, expected_platform: str
+) -> None:
+    monkeypatch.setattr(NodeZeroEventCollector, "get_pack_version", lambda: pack_version)
+    monkeypatch.setattr(demisto, "demistoVersion", lambda: platform_version)
+    expected = f"NodeZero-Cortex/{expected_pack} (NodeZeroEventCollector; Cortex {expected_platform})"
+    assert NodeZeroEventCollector.build_user_agent() == expected
+
+
+@pytest.mark.parametrize(
+    "headers",
+    [{"X-Request-ID": b"0123abcd-7"}, {"X-Request-ID": ""}, {"X-Request-ID": None}, {}, ["X-Request-ID"], "X-Request-ID: 1"],
+    ids=["bytes", "empty", "none", "missing", "list", "text"],
+)
+def test_request_id_of_ignores_values_that_are_not_text(headers: Any) -> None:
+    response = SimpleNamespace(request=SimpleNamespace(headers=headers))
+    assert NodeZeroEventCollector.request_id_of(response) is None  # type: ignore[arg-type]
+
+
+def run_main(harness: Harness, monkeypatch: pytest.MonkeyPatch, command: str, args: dict[str, Any] | None = None) -> Any:
+    """Run one command through main(). Returns the requests and the log lines of that run."""
+    first_request, first_log = len(harness.requests_mock.request_history), len(harness.logs)
+    monkeypatch.setattr(demisto, "command", lambda: command)
+    monkeypatch.setattr(demisto, "args", lambda: args or {})
+    NodeZeroEventCollector.main()
+    return harness.requests_mock.request_history[first_request:], [message for _, message in harness.logs[first_log:]]
+
+
+@freeze_time(NOW)
+def test_every_command_run_sends_the_identity_headers_under_its_own_run_id(
+    harness: Harness, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fake = standard_api(harness)
+    errors: list[str] = []
+    monkeypatch.setattr(NodeZeroEventCollector, "return_error", lambda message, *args, **kwargs: errors.append(str(message)))
+    monkeypatch.setattr(NodeZeroEventCollector, "return_results", lambda *args, **kwargs: None)
+    monkeypatch.setattr(demisto, "params", lambda: FETCH_PARAMS)
+    runs = [
+        run_main(harness, monkeypatch, "test-module"),
+        run_main(harness, monkeypatch, "fetch-events"),
+        run_main(harness, monkeypatch, "nodezero-fetch-events", {"should_push_events": "false", "pentest_id": "op-a"}),
+        run_main(harness, monkeypatch, "nodezero-fetch-events", {"should_push_events": "true", "since": "3 days"}),
+    ]
+    fake.queue("CortexXsiamConnectivity", 401)
+    runs.append(run_main(harness, monkeypatch, "test-module"))  # the 401 re-authentication retry
+    assert errors == []
+    assert [request.path for request in runs[-1][0]] == ["/v1/auth", "/v1/graphql", "/v1/auth", "/v1/graphql"]
+    run_ids: list[str] = []
+    for requests_made, _ in runs:
+        assert requests_made, "the run made no request"
+        run_id = requests_made[0].headers["X-Request-ID"].rsplit("-", 1)[0]
+        assert re.fullmatch(RUN_ID_PATTERN, run_id)
+        assert [request.headers["X-Request-ID"] for request in requests_made] == [
+            f"{run_id}-{number}" for number in range(1, len(requests_made) + 1)
+        ]
+        for request in requests_made:
+            assert request.headers["User-Agent"] == UNIT_TEST_USER_AGENT
+            extra = {"Authorization"} if request.path == "/v1/graphql" else set()
+            assert set(request.headers) == REQUEST_HEADER_NAMES | extra
+        run_ids.append(run_id)
+    assert len(set(run_ids)) == len(run_ids)  # every run has its own run ID
+    graphql_bodies = [request.json() for requests_made, _ in runs for request in requests_made if request.path == "/v1/graphql"]
+    assert {operation_name(body["query"]) for body in graphql_bodies} == {
+        "CortexXsiamFinishedPentests",
+        "CortexXsiamPentest",
+        "CortexXsiamPentestWeaknesses",
+        "CortexXsiamConnectivity",
+    }
+    assert all(set(body) == {"query", "variables"} for body in graphql_bodies)  # no operationName field was added
+    # The fetch and the push each log one summary line, which names the run ID their requests carry.
+    for index, prefix in ((1, "NodeZero fetch finished"), (3, "NodeZero manual push finished")):
+        summaries = [line for line in runs[index][1] if line.startswith(("NodeZero fetch ", "NodeZero manual push "))]
+        assert summaries == [line for line in summaries if line.startswith(f"{prefix} (run ID {run_ids[index]}): ")]
+        assert len(summaries) == 1
+
+
+@freeze_time(NOW)
+def test_no_secret_or_tenant_detail_in_headers_logs_or_errors(harness: Harness, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Covers the request headers as requests_mock records them, every demisto.debug, info and error line, and the
+    messages given to return_error. It does not cover CommonServerPython's debug-mode wire log: that log starts only when
+    CommonServerPython is imported with debug mode on, and requests_mock bypasses http.client, which writes it."""
+    monkeypatch.setattr(demisto, "integrationInstance", lambda: INSTANCE_NAME)
+    monkeypatch.setattr(demisto, "getLicenseID", lambda: LICENSE_ID)
+    calling_context = {"context": {"IntegrationInstance": INSTANCE_NAME, "IntegrationBrand": "NodeZero Event Collector"}}
+    monkeypatch.setattr(demisto, "callingContext", calling_context)
+    fake = standard_api(harness)
+    errors: list[str] = []
+    monkeypatch.setattr(NodeZeroEventCollector, "return_error", lambda message, *args, **kwargs: errors.append(str(message)))
+    monkeypatch.setattr(NodeZeroEventCollector, "return_results", lambda *args, **kwargs: None)
+    monkeypatch.setattr(demisto, "params", lambda: FETCH_PARAMS)
+    run_main(harness, monkeypatch, "test-module")
+    run_main(harness, monkeypatch, "fetch-events")
+    run_main(harness, monkeypatch, "nodezero-fetch-events", {"should_push_events": "true", "since": "3 days"})
+    fake.queue("CortexXsiamFinishedPentests", 401)
+    run_main(harness, monkeypatch, "nodezero-fetch-events", {"should_push_events": "false"})  # re-authenticates once
+    fake.queue("CortexXsiamFinishedPentests", 500, {"message": "boom"})
+    failed_requests, _ = run_main(harness, monkeypatch, "fetch-events")
+    assert len(errors) == 1
+    assert errors[0].endswith(f"Request ID: {failed_requests[-1].headers['X-Request-ID']}.")
+    tokens = set(fake.issued_tokens)
+    assert len(tokens) == 3  # test-module's, the fetch's (cached, so the push and the view reuse it), the re-authentication's
+    forbidden = [API_KEY, *tokens, TENANT_HOST, BASE_URL, INSTANCE_NAME, LICENSE_ID]
+    for request in harness.requests_mock.request_history:
+        for name, value in request.headers.items():
+            if name == "Authorization":
+                assert value.removeprefix("Bearer ") in tokens  # the only header that carries a token
+                continue
+            for secret in forbidden:
+                assert secret not in value, f"{name} carries a secret or a tenant detail"
+    for text in [message for _, message in harness.logs] + errors:
+        for secret in forbidden:
+            assert secret not in text, text
+
+
+class LocalNodeZero(BaseHTTPRequestHandler):
+    """A local NodeZero over real HTTP. The first request is throttled with HTTP 503 and every later one succeeds."""
+
+    def do_POST(self) -> None:
+        self.rfile.read(int(self.headers.get("Content-Length", 0)))
+        seen: list[tuple[str, str, str]] = self.server.seen  # type: ignore[attr-defined]
+        seen.append((self.path, self.headers.get("X-Request-ID", ""), self.headers.get("User-Agent", "")))
+        if len(seen) == 1:
+            status, body = 503, {"message": "throttled"}  # no Retry-After, so urllib3 retries at once
+        elif self.path == "/v1/auth":
+            status, body = 200, {"token": make_jwt(int(time.time()) + 3600)}
+        else:
+            status, body = 200, pentests_body([])
+        payload = json.dumps(body).encode()
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(payload)))
+        self.end_headers()
+        self.wfile.write(payload)
+
+    def log_message(self, *args: Any) -> None:
+        """Silent: the test output must stay empty."""
+
+
+def test_retried_attempts_share_the_request_id_of_their_request(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Accepted limitation (Client.identity_headers): urllib3 resends one prepared request, so the attempts of one request
+    carry the same X-Request-ID. The next request gets the next number. requests_mock can't show this: it skips urllib3."""
+    for level in ("debug", "info"):
+        monkeypatch.setattr(demisto, level, lambda *args: None)
+    server = ThreadingHTTPServer(("127.0.0.1", 0), LocalNodeZero)
+    server.seen = []  # type: ignore[attr-defined]
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        client = make_client(base_url=f"http://127.0.0.1:{server.server_address[1]}")
+        real_mount = client._session.mount
+
+        def mount_for_http_too(prefix: str, adapter: Any) -> None:
+            real_mount(prefix, adapter)
+            if prefix == "https://":  # CommonServerPython mounts its retrying adapter for https only; this server is http
+                real_mount("http://", adapter)
+
+        monkeypatch.setattr(client._session, "mount", mount_for_http_too)
+        client.authenticate()  # 180 s left on the fake clock, so this request may retry
+        client.check_connectivity()
+    finally:
+        server.shutdown()
+        server.server_close()
+    assert [(path, request_id) for path, request_id, _ in server.seen] == [  # type: ignore[attr-defined]
+        ("/v1/auth", f"{client.run_id}-1"),  # throttled
+        ("/v1/auth", f"{client.run_id}-1"),  # the urllib3 retry of the same request
+        ("/v1/graphql", f"{client.run_id}-2"),
+    ]
+    assert {user_agent for _, _, user_agent in server.seen} == {UNIT_TEST_USER_AGENT}  # type: ignore[attr-defined]
+
+
+@freeze_time(NOW)
+def test_fetch_that_fails_before_any_request_logs_its_run_id(harness: Harness) -> None:
+    standard_api(harness)
+    client = make_client()
+    with pytest.raises(ValueError, match="Invalid number"):
+        NodeZeroEventCollector.fetch_events_command(client, {**FETCH_PARAMS, "max_fetch": "not a number"})
+    assert harness.summary().startswith(f"NodeZero fetch failed (run ID {client.run_id}): ")
+    assert harness.requests_mock.request_history == []
+
+
+# ----- the request ID in every error a NodeZero response causes -----
+
+GRAPHQL_ERRORS_TEXT = 'Cannot query field "nope" on type "Pentest".; Variable "$page_input" got an invalid value.'
+NOT_AN_OBJECT = "NodeZero returned a GraphQL response that is not a JSON object."
+WITHOUT_DATA = "NodeZero returned a GraphQL response without data."
+WITHOUT_TOKEN = "The NodeZero authentication response did not include a token."
+
+
+def response_with_request_id(request_id: str, status: int = 200, body: Any = None) -> requests.Response:
+    """A response whose request carried this X-Request-ID."""
+    response = make_response(status, "OK", body if body is not None else {})
+    response.request = requests.Request("POST", BASE_URL, headers={"X-Request-ID": request_id}).prepare()
+    return response
+
+
+@pytest.mark.parametrize(
+    ("message", "expected"),
+    [
+        ("Request failed", "Request failed. Request ID: 0123abcd-7."),  # a full stop is added before the ID
+        ("Request failed.", "Request failed. Request ID: 0123abcd-7."),  # and never doubled
+        ('Field "x" is invalid.; no data', 'Field "x" is invalid.; no data. Request ID: 0123abcd-7.'),
+    ],
+    ids=["without-full-stop", "with-full-stop", "full-stop-inside-only"],
+)
+def test_with_request_id(message: str, expected: str) -> None:
+    assert NodeZeroEventCollector.with_request_id(message, response_with_request_id("0123abcd-7")) == expected
+    # No ID, and no added full stop, when the response records no request or there is no response.
+    assert NodeZeroEventCollector.with_request_id(message, make_response(500, "", {})) == message
+    assert NodeZeroEventCollector.with_request_id(message, None) == message
+
+
+@freeze_time(NOW)
+@pytest.mark.parametrize(
+    ("body", "raw", "message"),
+    [
+        (load_json("graphql_errors.json"), None, f"NodeZero GraphQL request failed: {GRAPHQL_ERRORS_TEXT}"),
+        (
+            {"errors": [{"message": "Field is not available"}], "data": {}},
+            None,
+            "NodeZero GraphQL request failed: Field is not available.",
+        ),
+        (None, "<html>gateway</html>", NOT_AN_OBJECT),
+        ([{"data": {}}], None, NOT_AN_OBJECT),
+        ({"data": None}, None, WITHOUT_DATA),
+        ({"errors": []}, None, WITHOUT_DATA),
+    ],
+    ids=["errors-array", "errors-array-without-full-stop", "html", "json-list", "null-data", "empty-errors-no-data"],
+)
+def test_graphql_failure_with_http_200_names_the_request_id(harness: Harness, body: Any, raw: str | None, message: str) -> None:
+    fake = standard_api(harness)
+    fake.queue("CortexXsiamConnectivity", 200, body, raw=raw)
+    client = make_client()
+    with pytest.raises(DemistoException) as error:
+        client.check_connectivity()
+    assert str(error.value) == f"{message} Request ID: {client.run_id}-2."  # auth was request 1
+    assert harness.requests_mock.request_history[-1].headers["X-Request-ID"] == f"{client.run_id}-2"
+
+
+@freeze_time(NOW)
+def test_graphql_errors_after_reauthentication_name_the_repeated_request(harness: Harness) -> None:
+    fake = standard_api(harness)
+    fake.queue("CortexXsiamConnectivity", 401)
+    fake.queue("CortexXsiamConnectivity", 200, {"errors": [{"message": "Pentest access denied"}]})
+    client = make_client()
+    with pytest.raises(DemistoException) as error:
+        client.check_connectivity()
+    # auth 1, the rejected request 2, the new key exchange 3, the repeated request 4, whose response had the errors
+    assert str(error.value) == f"NodeZero GraphQL request failed: Pentest access denied. Request ID: {client.run_id}-4."
+
+
+@freeze_time(NOW)
+def test_weakness_page_graphql_errors_name_the_request_id(harness: Harness) -> None:
+    fake = standard_api(harness)
+    client = make_client()
+    fake.queue("CortexXsiamPentestWeaknesses", 200, load_json("graphql_errors.json"))
+    with pytest.raises(DemistoException) as error:
+        client.get_weaknesses_page("op-a", 1)
+    assert str(error.value) == (
+        "Failed to read page 1 of the weaknesses of pentest op-a. "
+        f"NodeZero GraphQL request failed: {GRAPHQL_ERRORS_TEXT} Request ID: {client.run_id}-2."
+    )
+
+
+@freeze_time(NOW)
+@pytest.mark.parametrize(
+    "body", [{"jwt": "missing"}, {"token": ""}, {"token": 7}, ["token"]], ids=["absent", "empty", "number", "list"]
+)
+def test_auth_response_without_a_token_names_the_request_id(harness: Harness, body: Any) -> None:
+    fake = standard_api(harness)
+    fake.queue("auth", 200, body)
+    client = make_client()
+    with pytest.raises(DemistoException) as error:
+        client.authenticate()
+    assert str(error.value) == f"{WITHOUT_TOKEN} Request ID: {client.run_id}-1."
+
+
+@pytest.mark.parametrize(
+    ("parse", "body", "message"),
+    [
+        (
+            NodeZeroEventCollector.parse_graphql_data,
+            {"errors": [{"message": "no full stop"}]},
+            "NodeZero GraphQL request failed: no full stop",
+        ),
+        (NodeZeroEventCollector.parse_graphql_data, ["not", "an", "object"], NOT_AN_OBJECT),
+        (NodeZeroEventCollector.parse_graphql_data, {"data": None}, WITHOUT_DATA),
+        (NodeZeroEventCollector.parse_token, {}, WITHOUT_TOKEN),
+    ],
+    ids=["errors", "not-an-object", "without-data", "without-token"],
+)
+def test_parse_errors_without_a_recorded_request_have_no_request_id(
+    parse: Callable[[requests.Response], Any], body: Any, message: str
+) -> None:
+    with pytest.raises(DemistoException) as error:
+        parse(make_response(200, "OK", body))  # response.request is None
+    assert str(error.value) == message
+
+
+@pytest.mark.parametrize(
+    "parse", [NodeZeroEventCollector.parse_graphql_data, NodeZeroEventCollector.raise_http_error], ids=["graphql", "http"]
+)
+def test_error_names_the_request_id_it_sent_not_a_server_echo(parse: Callable[[requests.Response], Any]) -> None:
+    response = response_with_request_id("0123abcd-7", status=500, body={"errors": [{"message": "boom"}]})
+    response.headers["X-Request-ID"] = "set-by-a-proxy"
+    with pytest.raises(DemistoException, match=r" Request ID: 0123abcd-7\.$") as error:
+        parse(response)
+    assert "set-by-a-proxy" not in str(error.value)
+
+
+def last_request_id(harness: Harness) -> str:
+    return harness.requests_mock.request_history[-1].headers["X-Request-ID"]
+
+
+MALFORMED_PAGES = {
+    "sweep page null": ("fetch", "CortexXsiamFinishedPentests", {"data": {"pentests_page": None}}),
+    "sweep list missing": ("fetch", "CortexXsiamFinishedPentests", {"data": {"pentests_page": {}}}),
+    "weaknesses list null": ("fetch", "CortexXsiamPentestWeaknesses", {"data": {"weaknesses_page": {"weaknesses": None}}}),
+    "lookup page null": ("lookup", "CortexXsiamPentest", {"data": {"pentests_page": None}}),
+}
+
+
+@freeze_time(NOW)
+@pytest.mark.parametrize("name", MALFORMED_PAGES)
+def test_a_malformed_page_names_the_request_id(harness: Harness, name: str) -> None:
+    command, operation, body = MALFORMED_PAGES[name]
+    fake = standard_api(harness)
+    fake.queue(operation, 200, body)
+    client = make_client()
+    with pytest.raises(DemistoException) as error:
+        if command == "fetch":
+            NodeZeroEventCollector.fetch_events_command(client, FETCH_PARAMS)
+        else:
+            NodeZeroEventCollector.nodezero_fetch_events_command(client, {"pentest_id": "op-a"}, FETCH_PARAMS)
+    assert " result without a " in str(error.value)
+    assert str(error.value).endswith(f" Request ID: {last_request_id(harness)}.")
+
+
+@freeze_time(NOW)
+@pytest.mark.parametrize("status", [200, 500])
+@pytest.mark.parametrize("text", ["Pentest query failed. ", "Pentest query failed.\n", "Pentest query failed."])
+def test_error_text_never_doubles_the_full_stop(harness: Harness, status: int, text: str) -> None:
+    fake = standard_api(harness)
+    fake.queue("CortexXsiamFinishedPentests", status, {"errors": [{"message": text}]})
+    with pytest.raises(DemistoException) as error:
+        NodeZeroEventCollector.fetch_events_command(make_client(), FETCH_PARAMS)
+    message = str(error.value)
+    assert message.endswith(f"Pentest query failed. Request ID: {last_request_id(harness)}.")
+    assert not re.search(r"\.\s+\.", message), message
+
+
+@freeze_time(NOW)
+def test_a_weakness_page_error_after_reauthentication_names_one_request_id(harness: Harness) -> None:
+    fake = standard_api(harness)
+    fake.queue("CortexXsiamPentestWeaknesses", 401, {"errors": [{"message": "Unauthorized"}]})
+    fake.queue("CortexXsiamPentestWeaknesses", 500, {"errors": [{"message": "boom"}]})
+    with pytest.raises(DemistoException) as error:
+        NodeZeroEventCollector.fetch_events_command(make_client(), FETCH_PARAMS)
+    message = str(error.value)
+    assert message.startswith("Failed to read page 1 of the weaknesses of pentest op-a.")
+    assert message.endswith(f" Request ID: {last_request_id(harness)}.")  # the request sent after the new token
+    assert message.count("Request ID:") == 1
+
+
+# ----- the manual push summary and the client's identity log line -----
+
+
+@freeze_time(NOW)
+@pytest.mark.parametrize(
+    ("failure", "outcome", "counts"),
+    [
+        ("http", "failed", "1 pentests fully sent, 3 events sent, "),  # op-a sent, then page 1 of op-b fails
+        ("send", "failed", "0 pentests fully sent, 0 events sent, "),  # the first send to Cortex raises
+        (None, "finished", "2 pentests fully sent, 5 events sent, "),
+    ],
+)
+def test_manual_push_summary_outcome_and_lease_release(harness: Harness, failure: str | None, outcome: str, counts: str) -> None:
+    fake = standard_api(harness)
+    harness.context[STATE_KEY] = state_payload()
+    if failure == "http":
+        fake.fail_page("op-b", 1, status=500)
+
+    def failing_send(events: list[dict[str, Any]]) -> None:
+        raise RuntimeError("send failed")
+
+    if failure == "send":
+        harness.on_send.append(failing_send)
+    client = make_client()
+    args = {"should_push_events": "true", "limit": "100"}
+    if failure is None:
+        NodeZeroEventCollector.nodezero_fetch_events_command(client, args, FETCH_PARAMS)
+    else:
+        with pytest.raises((DemistoException, RuntimeError)):
+            NodeZeroEventCollector.nodezero_fetch_events_command(client, args, FETCH_PARAMS)
+    summaries = [message for message in harness.messages("info") if message.startswith("NodeZero manual push ")]
+    assert len(summaries) == 1, summaries
+    assert summaries[0].startswith(f"NodeZero manual push {outcome} (run ID {client.run_id}): {counts}")
+    assert harness.store.lease() is None  # released whatever the outcome
+    assert client.token_sink is None
+
+
+def push_summaries(harness: Harness) -> list[str]:
+    return [message for message in harness.messages("info") if message.startswith("NodeZero manual push ")]
+
+
+PUSH_ARGS = {"should_push_events": "true", "limit": "100"}
+
+
+@freeze_time(NOW)
+def test_a_push_that_took_the_lease_then_lost_the_state_logs_failed(harness: Harness) -> None:
+    standard_api(harness)
+    NodeZeroEventCollector.fetch_events_command(make_client(), FETCH_PARAMS)  # stores the state a push needs while fetching is on
+    harness.logs.clear()
+    writes_before = len(harness.store.writes)
+    # another writer removes the state while the push waits to confirm its lease
+    harness.on_pause.append(lambda: harness.store.other_writer(lambda context: context.pop(STATE_KEY, None)))
+    client = make_client()
+    with pytest.raises(DemistoException, match="Events can't be sent yet"):
+        NodeZeroEventCollector.nodezero_fetch_events_command(client, PUSH_ARGS, FETCH_PARAMS)
+    assert "command" in [write[LEASE_KEY]["owner"] for write in harness.store.writes[writes_before:] if LEASE_KEY in write]
+    assert harness.store.lease() is None
+    summaries = push_summaries(harness)
+    assert len(summaries) == 1, summaries
+    assert summaries[0].startswith(f"NodeZero manual push failed (run ID {client.run_id})")
+
+
+@freeze_time(NOW)
+def test_a_push_that_took_the_lease_then_failed_to_read_the_context_logs_failed(harness: Harness) -> None:
+    standard_api(harness)
+    NodeZeroEventCollector.fetch_events_command(make_client(), FETCH_PARAMS)
+    harness.logs.clear()
+    # start_push reads: the state check, the lease take, the lease read-back after the pause, then the state under the lease
+    harness.store.read_failures[harness.store.reads + 4] = RuntimeError("platform error")
+    with pytest.raises(RuntimeError, match="platform error"):
+        NodeZeroEventCollector.nodezero_fetch_events_command(make_client(), PUSH_ARGS, FETCH_PARAMS)
+    assert harness.store.lease() is None
+    summaries = push_summaries(harness)
+    assert len(summaries) == 1, summaries
+    assert summaries[0].startswith("NodeZero manual push failed")
+
+
+@freeze_time(NOW)
+def test_a_push_that_loses_its_lease_or_is_interrupted_logs_failed(harness: Harness) -> None:
+    standard_api(harness)
+    other = {"owner": "fetch", "token": "other-run", "expires_at": harness.wall() + 600}
+    harness.on_send.append(lambda events: harness.store.other_writer(lambda context: context.__setitem__(LEASE_KEY, dict(other))))
+    client = make_client()
+    with pytest.raises(NodeZeroEventCollector.LeaseLost):
+        NodeZeroEventCollector.nodezero_fetch_events_command(client, PUSH_ARGS, NO_FETCH_PARAMS)
+    summaries = push_summaries(harness)
+    assert len(summaries) == 1, summaries
+    assert summaries[0].startswith("NodeZero manual push failed")
+    assert harness.store.lease() == other  # the other run's lease is left alone
+    assert client.token_sink is None
+
+    harness.logs.clear()
+    harness.on_send.clear()
+    harness.store.other_writer(lambda context: context.pop(LEASE_KEY, None))
+
+    def interrupt(events: list[dict[str, Any]]) -> None:
+        raise KeyboardInterrupt
+
+    harness.on_send.append(interrupt)
+    client = make_client()
+    with pytest.raises(KeyboardInterrupt):
+        NodeZeroEventCollector.nodezero_fetch_events_command(client, PUSH_ARGS, NO_FETCH_PARAMS)
+    summaries = push_summaries(harness)
+    assert len(summaries) == 1, summaries
+    assert summaries[0].startswith("NodeZero manual push failed")
+    assert harness.store.lease() is None
+    assert client.token_sink is None
+
+
+@freeze_time(NOW)
+def test_a_push_that_fails_while_resuming_a_pentest_logs_failed(harness: Harness) -> None:
+    fake = standard_api(harness)
+    pentest = NodeZeroEventCollector.to_pentest(OP_A)
+    harness.context[STATE_KEY] = state_payload(in_progress={"pentest": pentest, "next_page": 2, "sent": 2})
+    fake.fail_page("op-a", 2, 500, '{"errors": [{"message": "boom"}]}')
+    client = make_client()
+    with pytest.raises(DemistoException):
+        NodeZeroEventCollector.nodezero_fetch_events_command(client, PUSH_ARGS, FETCH_PARAMS)
+    summaries = push_summaries(harness)
+    assert len(summaries) == 1, summaries
+    assert summaries[0].startswith("NodeZero manual push failed")
+    assert harness.store.lease() is None
+    assert client.token_sink is None
+
+
+@freeze_time(NOW)
+def test_a_push_stopped_by_its_time_budget_logs_finished(harness: Harness) -> None:
+    fake = standard_api(harness)
+    clock = FakeClock()
+    fake.charge_weakness_pages(clock, 200.0)
+    client = make_client(clock)
+    NodeZeroEventCollector.nodezero_fetch_events_command(client, PUSH_ARGS, NO_FETCH_PARAMS)
+    summaries = push_summaries(harness)
+    assert len(summaries) == 1, summaries
+    assert summaries[0].startswith("NodeZero manual push finished")
+
+
+@freeze_time(NOW)
+def test_client_logs_its_run_id_and_user_agent_once(harness: Harness) -> None:
+    standard_api(harness)
+    client = make_client()
+    expected = f"NodeZero run ID {client.run_id}, User-Agent {UNIT_TEST_USER_AGENT}."
+    assert harness.messages("debug") == [expected]  # the client logs nothing else when it is built
+    NodeZeroEventCollector.fetch_events_command(client, FETCH_PARAMS)
+    assert len(harness.requests_mock.request_history) == 7
+    assert [message for message in harness.messages("debug") if client.run_id in message] == [expected]  # not per request
+
+
+# ----- the versions in the User-Agent -----
+
+
+def test_read_pack_version_prefers_the_constant_demisto_sdk_writes(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[str] = []
+
+    def pack_version() -> str:
+        calls.append("get_pack_version")
+        return "9.9.9"
+
+    monkeypatch.setattr(NodeZeroEventCollector, "CONSTANT_PACK_VERSION", "2.0.0", raising=False)
+    monkeypatch.setattr(NodeZeroEventCollector, "get_pack_version", pack_version)
+    monkeypatch.setattr(demisto, "demistoVersion", lambda: {"version": "8.9.0"})
+    assert NodeZeroEventCollector.read_pack_version() == "2.0.0"
+    assert make_client().identity_headers()["User-Agent"] == KNOWN_USER_AGENT
+    assert calls == []  # never called: on Base packs before 1.41.4 it makes internal API calls
+
+
+@pytest.mark.parametrize(("set_constant", "constant"), [(False, None), (True, ""), (True, None)], ids=["absent", "empty", "none"])
+def test_read_pack_version_falls_back_to_get_pack_version(
+    monkeypatch: pytest.MonkeyPatch, set_constant: bool, constant: Any
+) -> None:
+    if set_constant:
+        monkeypatch.setattr(NodeZeroEventCollector, "CONSTANT_PACK_VERSION", constant, raising=False)
+    else:
+        assert not hasattr(NodeZeroEventCollector, "CONSTANT_PACK_VERSION")  # as in these tests: not unified
+    monkeypatch.setattr(NodeZeroEventCollector, "get_pack_version", lambda: "2.0.0")
+    monkeypatch.setattr(demisto, "demistoVersion", lambda: {"version": "8.9.0"})
+    assert NodeZeroEventCollector.read_pack_version() == "2.0.0"
+    assert NodeZeroEventCollector.build_user_agent() == KNOWN_USER_AGENT
+
+
+@pytest.mark.parametrize(
+    "error",
+    [Exception("platform call failed"), TypeError("bad"), ValueError("bad"), OSError("broken pipe"), LookupError("x")],
+    ids=["Exception", "TypeError", "ValueError", "OSError", "LookupError"],
+)
+def test_user_agent_survives_any_reader_exception(monkeypatch: pytest.MonkeyPatch, error: Exception) -> None:
+    def fail() -> Any:
+        raise error
+
+    monkeypatch.setattr(NodeZeroEventCollector, "get_pack_version", fail)
+    monkeypatch.setattr(demisto, "demistoVersion", fail)
+    assert NodeZeroEventCollector.build_user_agent() == UNKNOWN_USER_AGENT
+
+
+@pytest.mark.parametrize("error", [KeyboardInterrupt, SystemExit], ids=["KeyboardInterrupt", "SystemExit"])
+def test_version_text_lets_interrupts_through(error: type[BaseException]) -> None:
+    def interrupted() -> Any:
+        raise error
+
+    with pytest.raises(error):
+        NodeZeroEventCollector.version_text(interrupted)  # on purpose: only Exception means "unknown"
+
+
+class FailingStrip(str):
+    """A str subclass whose strip fails."""
+
+    def strip(self, *args: Any) -> str:
+        raise RuntimeError("strip failed")
+
+
+class OddStrip(str):
+    """A str subclass whose strip returns something that isn't text."""
+
+    def strip(self, *args: Any) -> Any:
+        return object()
+
+
+@pytest.mark.parametrize("text_type", [FailingStrip, OddStrip])
+def test_user_agent_ignores_the_strip_of_a_str_subclass(monkeypatch: pytest.MonkeyPatch, text_type: type[str]) -> None:
+    monkeypatch.setattr(NodeZeroEventCollector, "get_pack_version", lambda: text_type(" 2.0.0 "))
+    monkeypatch.setattr(demisto, "demistoVersion", lambda: {"version": text_type("8.9.0")})
+    assert NodeZeroEventCollector.build_user_agent() == KNOWN_USER_AGENT  # str.strip trims it as plain text
+
+
+def test_run_id_is_a_random_uuid4() -> None:
+    client = make_client()
+    assert uuid.UUID(client.run_id).version == 4  # never uuid1, which carries the host's MAC address and the time
+    assert uuid.UUID(client.run_id).hex == client.run_id
+
+
+def test_client_reads_the_versions_once(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[str] = []
+
+    def pack_version() -> str:
+        calls.append("pack")
+        return "2.0.0"
+
+    def platform_version() -> dict[str, str]:
+        calls.append("platform")
+        return {"version": "8.9.0"}
+
+    monkeypatch.setattr(NodeZeroEventCollector, "get_pack_version", pack_version)
+    monkeypatch.setattr(demisto, "demistoVersion", platform_version)
+    client = make_client()
+    headers = [client.identity_headers() for _ in range(3)]
+    assert calls == ["pack", "platform"]  # one platform call per client, not one per request
+    assert {item["User-Agent"] for item in headers} == {KNOWN_USER_AGENT}
+
+
 # ----- test-module, client construction, and main -----
 
 
@@ -3584,7 +4453,7 @@ def test_module_ok(harness: Harness) -> None:
     harness.context.update(cached_token("cached-token", NOW_EPOCH + 3600))
     assert NodeZeroEventCollector.test_module(make_client(), FETCH_PARAMS) == "ok"
     assert harness.auth_calls() == 1  # always a new token, so a cached token can't hide a bad API key
-    assert fake.requests_for("Connectivity") == [
+    assert fake.requests_for("CortexXsiamConnectivity") == [
         {"query": NodeZeroEventCollector.CONNECTIVITY_QUERY, "variables": {"page_input": {"page_num": 1, "page_size": 1}}}
     ]
     assert fake.authorization_headers == [f"Bearer {fake.issued_tokens[0]}"]
@@ -3592,20 +4461,53 @@ def test_module_ok(harness: Harness) -> None:
 
 @freeze_time(NOW)
 @pytest.mark.parametrize(
-    "failures",
-    [[("auth", 401)], [("auth", 403)], [("Connectivity", 403)], [("Connectivity", 401), ("Connectivity", 401)]],
+    ("failures", "failed_request"),
+    [
+        ([("auth", 401)], 1),
+        ([("auth", 403)], 1),
+        ([("CortexXsiamConnectivity", 403)], 2),  # a 403 is not retried: auth was request 1
+        ([("CortexXsiamConnectivity", 401), ("CortexXsiamConnectivity", 401)], 4),  # the repeat after re-authenticating
+    ],
 )
-def test_module_auth_error_message(harness: Harness, failures: list[tuple[str, int]]) -> None:
+def test_module_auth_error_message(harness: Harness, failures: list[tuple[str, int]], failed_request: int) -> None:
     fake = standard_api(harness)
     for operation, status in failures:
         fake.queue(operation, status, {"message": "denied"})
-    assert NodeZeroEventCollector.test_module(make_client(), FETCH_PARAMS) == NodeZeroEventCollector.AUTH_FAILED_MESSAGE
+    client = make_client()
+    message = NodeZeroEventCollector.test_module(client, FETCH_PARAMS)
+    # AUTH_FAILED_MESSAGE, then the X-Request-ID of the request that failed, which is the run's last request.
+    assert message == f"{NodeZeroEventCollector.AUTH_FAILED_MESSAGE} Request ID: {client.run_id}-{failed_request}."
+    assert harness.requests_mock.request_history[-1].headers["X-Request-ID"] == f"{client.run_id}-{failed_request}"
+    assert len(harness.requests_mock.request_history) == failed_request
+
+
+@pytest.mark.parametrize("status", [401, 403])
+def test_module_auth_error_without_a_recorded_request_has_no_request_id(monkeypatch: pytest.MonkeyPatch, status: int) -> None:
+    client = make_client()
+    response = make_response(status, "Unauthorized", {"message": "denied"})  # response.request is None
+
+    def fail() -> str:
+        raise DemistoException("denied", res=response)
+
+    monkeypatch.setattr(client, "authenticate", fail)
+    assert NodeZeroEventCollector.test_module(client, NO_FETCH_PARAMS) == NodeZeroEventCollector.AUTH_FAILED_MESSAGE
+
+
+def test_module_reraises_an_error_without_a_response(monkeypatch: pytest.MonkeyPatch) -> None:
+    client = make_client()
+
+    def fail() -> str:
+        raise DemistoException("no response at all")  # res is None, so there is no HTTP status to call it an auth failure
+
+    monkeypatch.setattr(client, "authenticate", fail)
+    with pytest.raises(DemistoException, match="^no response at all$"):
+        NodeZeroEventCollector.test_module(client, NO_FETCH_PARAMS)
 
 
 @freeze_time(NOW)
 def test_module_other_errors_raise(harness: Harness) -> None:
     fake = standard_api(harness)
-    fake.queue("Connectivity", 500, {"message": "boom"})
+    fake.queue("CortexXsiamConnectivity", 500, {"message": "boom"})
     with pytest.raises(DemistoException, match="HTTP 500"):
         NodeZeroEventCollector.test_module(make_client(), FETCH_PARAMS)
 

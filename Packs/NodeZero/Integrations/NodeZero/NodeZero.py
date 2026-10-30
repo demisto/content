@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta, UTC
+import re
 import time
+import uuid
 from typing import Any, Literal, TypedDict
 
 import demistomock as demisto
@@ -25,10 +27,17 @@ DEFAULT_FIRST_FETCH = "7 days"
 AUTH_ENDPOINT = "v1/auth"
 GRAPHQL_ENDPOINT = "v1/graphql"
 
-HELLO_WORLD_QUERY = "query HelloWorld { hello }"
+# Client identity sent on every request so NodeZero can attribute Cortex pull traffic.
+USER_AGENT_PRODUCT = "NodeZero-Cortex"
+INTEGRATION_NAME = "NodeZero"
+UNKNOWN_VERSION = "unknown"
+# A version goes into a header, so only plain version strings are accepted.
+HEADER_SAFE_VERSION = re.compile(r"[A-Za-z0-9][A-Za-z0-9._+-]{0,63}")
+
+HELLO_WORLD_QUERY = "query CortexXsoarConnectivity { hello }"
 
 WEAKNESSES_PAGE_QUERY = """
-query WeaknessesPage($page_input: PageInput!) {
+query CortexXsoarWeaknessesPage($page_input: PageInput!) {
   weaknesses_page(page_input: $page_input) {
     weaknesses {
         uuid
@@ -152,6 +161,12 @@ class LastRun(BaseModel):
 @dataclass(frozen=True)
 class UnauthenticatedError(Exception):
     message: str = "Authentication failed: invalid or expired API key"
+    request_id: str | None = None
+
+    def __str__(self) -> str:
+        if not self.request_id:
+            return self.message
+        return f"{self.message} (X-Request-ID: {self.request_id})"
 
 
 @dataclass(frozen=True)
@@ -169,6 +184,50 @@ class ParametersValidationError(Exception):
     validation_error: ValidationError
 
 
+def _header_safe_version(raw_version: Any) -> str:
+    """Return the version when it is a plain version string, otherwise "unknown"."""
+    if not isinstance(raw_version, str):
+        return UNKNOWN_VERSION
+    match = HEADER_SAFE_VERSION.fullmatch(raw_version.strip())
+    # group(0) is always a plain str, so a str subclass returned by a lookup cannot run code when formatted.
+    return match.group(0) if match else UNKNOWN_VERSION
+
+
+def _pack_version() -> str:
+    """The pack version, or "unknown" when it is not available (for example in unit tests).
+
+    The content build writes CONSTANT_PACK_VERSION into this script. Reading it first skips get_pack_version(),
+    which on Base packs older than 1.41.4 makes internal API calls on every run.
+    """
+    try:
+        return _header_safe_version(globals().get("CONSTANT_PACK_VERSION") or get_pack_version())
+    except Exception:
+        return UNKNOWN_VERSION
+
+
+def _platform_version() -> str:
+    """The Cortex platform version, or "unknown" when it is not available."""
+    try:
+        return _header_safe_version(demisto.demistoVersion().get("version"))
+    except Exception:
+        return UNKNOWN_VERSION
+
+
+def build_user_agent() -> str:
+    """Build the User-Agent, e.g. "NodeZero-Cortex/2.0.0 (NodeZero; Cortex 8.7.0)".
+
+    Never raises an Exception: a failed or unusable version lookup gives "unknown". SystemExit and
+    KeyboardInterrupt raised by a lookup are not caught.
+    """
+    return f"{USER_AGENT_PRODUCT}/{_pack_version()} ({INTEGRATION_NAME}; Cortex {_platform_version()})"
+
+
+def http_error_message(response: requests.Response, endpoint: str, request_id: str) -> str:
+    """A user-facing message for a failed request. It names the endpoint path, not the tenant URL."""
+    status = f"{response.status_code} {response.reason or ''}".strip()
+    return f"NodeZero {endpoint} request failed: HTTP {status} (X-Request-ID: {request_id})"
+
+
 class Client(BaseClient):
     def __init__(
         self,
@@ -183,7 +242,19 @@ class Client(BaseClient):
         self._api_key: str = api_key
         self._jwt: str | None = None
         self._expiry: int = 0
+        self._run_id: str = uuid.uuid4().hex
+        self._request_count: int = 0
+        self._user_agent: str = build_user_agent()
+        demisto.debug(f"NodeZero run ID {self._run_id} (User-Agent: {self._user_agent})")
         self.load_integration_context()
+
+    @property
+    def run_id(self) -> str:
+        """The ID of this command run. Request n of the run sends X-Request-ID "<run id>-<n>".
+
+        requests follows a redirect the server answers with, and the redirected request re-sends the same ID.
+        """
+        return self._run_id
 
     def load_integration_context(self) -> None:
         context = get_integration_context()
@@ -195,12 +266,8 @@ class Client(BaseClient):
         return self._jwt is not None and self._expiry > int(time.time())
 
     def authenticate(self) -> None:
-        url = f"{self._base_url}/{AUTH_ENDPOINT}"
-        json = {"key": self._api_key}
         now = int(time.time())
-
-        response = self._session.post(url, json=json)
-        self._raise_for_status(response)
+        response = self._post(AUTH_ENDPOINT, {"key": self._api_key})
 
         content = Token.model_validate_json(response.content)
         self._jwt = content.token
@@ -208,17 +275,26 @@ class Client(BaseClient):
         _ = set_integration_context({"jwt": self._jwt, "expiry": self._expiry})
 
     def _graphql_request(self, query: str, variables: dict[str, Any]) -> requests.Response:
-        url = f"{self._base_url}/{GRAPHQL_ENDPOINT}"
         headers = {"Authorization": f"Bearer {self._jwt}"}
-        json = {"query": query, "variables": variables}
-        resp = self._session.post(url, json=json, headers=headers)
-        self._raise_for_status(resp)
-        return resp
+        return self._post(GRAPHQL_ENDPOINT, {"query": query, "variables": variables}, headers)
 
-    def _raise_for_status(self, response: requests.Response) -> None:
+    def _next_request_id(self) -> str:
+        self._request_count += 1
+        return f"{self._run_id}-{self._request_count}"
+
+    def _post(self, endpoint: str, body: dict[str, Any], headers: dict[str, str] | None = None) -> requests.Response:
+        """POST to a NodeZero endpoint with the User-Agent and a new X-Request-ID."""
+        request_id = self._next_request_id()
+        request_headers = {**(headers or {}), "User-Agent": self._user_agent, "X-Request-ID": request_id}
+        response = self._session.post(f"{self._base_url}/{endpoint}", json=body, headers=request_headers)
+        self._raise_for_status(response, endpoint, request_id)
+        return response
+
+    def _raise_for_status(self, response: requests.Response, endpoint: str, request_id: str) -> None:
         if response.status_code == 401:
-            raise UnauthenticatedError
-        response.raise_for_status()
+            raise UnauthenticatedError(request_id=request_id)
+        if not response.ok:
+            raise requests.HTTPError(http_error_message(response, endpoint, request_id), response=response)
 
     def hello_world(self) -> None:
         """Send hello_world request to check availability.

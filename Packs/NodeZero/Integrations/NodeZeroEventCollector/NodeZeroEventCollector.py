@@ -9,7 +9,7 @@ import math
 import re
 import time
 import uuid
-from collections.abc import Callable, Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator, Mapping
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from typing import Any, TypedDict
@@ -68,6 +68,13 @@ BACKOFF_FACTOR = 2
 BACKOFF_JITTER = 1.0
 MAX_ERROR_DETAIL_LENGTH = 500
 
+# Every request identifies the collector. The headers carry no key, token, tenant URL, instance name or license ID.
+INTEGRATION_NAME = "NodeZeroEventCollector"
+USER_AGENT_PRODUCT = "NodeZero-Cortex"
+UNKNOWN_VERSION = "unknown"
+VERSION_PATTERN = re.compile(r"[0-9A-Za-z][0-9A-Za-z.+_-]{0,63}")  # a version that is safe in a header, used with fullmatch
+REQUEST_ID_HEADER = "X-Request-ID"
+
 LAST_RUN_VERSION = 1
 NEXT_TRIGGER_NOW = "0"
 DEFAULT_FIRST_FETCH = "7 days"
@@ -102,8 +109,27 @@ AUTH_FAILED_MESSAGE = "Authorization failed. Verify that the API key is valid an
 EVENT_TABLE_HEADERS = ["_time", "op_id", "vuln_id", "vuln_short_name", "severity", "target_hostname", "target_ipv4_addresses"]
 
 # GraphQL values are always passed as variables, never formatted into the query text.
+# Each use has its own operation name, with the CortexXsiam prefix, so NodeZero can tell the collector's requests apart.
 FINISHED_PENTESTS_QUERY = """
-query FinishedPentests($page_input: PageInput!) {
+query CortexXsiamFinishedPentests($page_input: PageInput!) {
+  pentests_page(page_input: $page_input) {
+    pentests {
+      op_id
+      name
+      op_type
+      state
+      client_name
+      completed_at
+      etl_completed_at
+      weaknesses_count
+    }
+  }
+}
+"""
+
+# The single-pentest lookup: the sweep query's body under its own operation name.
+PENTEST_QUERY = """
+query CortexXsiamPentest($page_input: PageInput!) {
   pentests_page(page_input: $page_input) {
     pentests {
       op_id
@@ -121,7 +147,7 @@ query FinishedPentests($page_input: PageInput!) {
 
 # weaknesses_page is always scoped to a single pentest through input.op_id.
 PENTEST_WEAKNESSES_QUERY = """
-query PentestWeaknesses($op_id: String!, $page_input: PageInput!) {
+query CortexXsiamPentestWeaknesses($op_id: String!, $page_input: PageInput!) {
   weaknesses_page(input: {op_id: $op_id}, page_input: $page_input) {
     weaknesses {
       uuid
@@ -165,7 +191,7 @@ query PentestWeaknesses($op_id: String!, $page_input: PageInput!) {
 """
 
 CONNECTIVITY_QUERY = """
-query Connectivity($page_input: PageInput!) {
+query CortexXsiamConnectivity($page_input: PageInput!) {
   pentests_page(page_input: $page_input) {
     pentests {
       op_id
@@ -473,12 +499,59 @@ def response_json(response: requests.Response) -> Any:
 
 
 def graphql_error_text(errors: Any) -> str:
-    messages = [str(error.get("message")) for error in dict_items(errors) if error.get("message")]
-    return "; ".join(messages)[:MAX_ERROR_DETAIL_LENGTH] or "no error message was returned"
+    """The servers' error messages, trimmed, so a message's own full stop isn't followed by another."""
+    messages = [str(error.get("message")).strip() for error in dict_items(errors) if error.get("message")]
+    text = "; ".join(message for message in messages if message)[:MAX_ERROR_DETAIL_LENGTH].rstrip()
+    return text or "no error message was returned"
+
+
+def version_text(read: Callable[[], Any]) -> str:
+    """The version that read() returns, or UNKNOWN_VERSION when it raises, is empty, or isn't safe in a header."""
+    try:
+        value = read()
+        text = str.strip(value) if isinstance(value, str) else ""  # str.strip gives a plain str, even for a subclass
+    except Exception:
+        return UNKNOWN_VERSION
+    return text if VERSION_PATTERN.fullmatch(text) else UNKNOWN_VERSION
+
+
+def read_pack_version() -> Any:
+    """CONSTANT_PACK_VERSION, which demisto-sdk writes into this script when it unifies it. get_pack_version() reads the
+    same global, but on Base packs older than 1.41.4 it makes internal API calls instead, so it is only the fallback."""
+    return globals().get("CONSTANT_PACK_VERSION") or get_pack_version()
+
+
+def read_platform_version() -> Any:
+    return demisto.demistoVersion().get("version")
+
+
+def build_user_agent() -> str:
+    """NodeZero-Cortex/<pack version> (NodeZeroEventCollector; Cortex <platform version>). Raises no Exception: a
+    version that can't be read is "unknown"."""
+    pack_version = version_text(read_pack_version)  # '' until demisto-sdk unifies the integration, as in unit tests
+    platform_version = version_text(read_platform_version)
+    return f"{USER_AGENT_PRODUCT}/{pack_version} ({INTEGRATION_NAME}; Cortex {platform_version})"
+
+
+def request_id_of(response: requests.Response | None) -> str | None:
+    """The X-Request-ID that the failed request carried, or None when the response doesn't record its request."""
+    headers = getattr(getattr(response, "request", None), "headers", None)
+    request_id = headers.get(REQUEST_ID_HEADER) if isinstance(headers, Mapping) else None
+    return request_id if isinstance(request_id, str) and request_id else None
+
+
+def with_request_id(message: str, response: requests.Response | None) -> str:
+    """The message, ending with the X-Request-ID of the request that got this response, when the response records it."""
+    request_id = request_id_of(response)
+    if request_id is None:
+        return message
+    message = message if message.endswith(".") else f"{message}."
+    return f"{message} Request ID: {request_id}."
 
 
 def raise_http_error(response: requests.Response) -> None:
-    """Error handler for every NodeZero request. The message never includes headers or request bodies."""
+    """Error handler for every NodeZero request. The message includes no header other than the request ID, and no body
+    the collector sent."""
     body = response_json(response)
     message = f"NodeZero API request failed with HTTP {response.status_code}"
     if response.reason:
@@ -488,7 +561,7 @@ def raise_http_error(response: requests.Response) -> None:
     message = message if message.endswith(".") else f"{message}."  # server messages often end with a full stop
     if response.status_code in (401, 403):
         message += " Verify that the API key is valid and has read access to pentests and weaknesses."
-    raise DemistoException(message, res=response)
+    raise DemistoException(with_request_id(message, response), res=response)
 
 
 def http_status(error: Exception) -> int | None:
@@ -500,21 +573,25 @@ def parse_graphql_data(response: requests.Response) -> dict[str, Any]:
     """The data of a GraphQL response. An errors array, which can come with HTTP 200, raises."""
     body = response_json(response)
     if not isinstance(body, dict):
-        raise DemistoException("NodeZero returned a GraphQL response that is not a JSON object.")
+        raise DemistoException(with_request_id("NodeZero returned a GraphQL response that is not a JSON object.", response))
     if body.get("errors"):
-        raise DemistoException(f"NodeZero GraphQL request failed: {graphql_error_text(body['errors'])}")
+        message = f"NodeZero GraphQL request failed: {graphql_error_text(body['errors'])}"
+        raise DemistoException(with_request_id(message, response))
     data = body.get("data")
     if not isinstance(data, dict):
-        raise DemistoException("NodeZero returned a GraphQL response without data.")
+        raise DemistoException(with_request_id("NodeZero returned a GraphQL response without data.", response))
     return data
 
 
-def page_rows(data: dict[str, Any], page_field: str, rows_field: str) -> list[dict[str, Any]]:
+def page_rows(
+    data: dict[str, Any], page_field: str, rows_field: str, response: requests.Response | None = None
+) -> list[dict[str, Any]]:
     """The rows of a *_page result. A missing list raises, because treating it as empty could skip data."""
     page = data.get(page_field)
     rows = page.get(rows_field) if isinstance(page, dict) else None
     if not isinstance(rows, list):
-        raise DemistoException(f"NodeZero returned a {page_field} result without a {rows_field} list.")
+        message = f"NodeZero returned a {page_field} result without a {rows_field} list."
+        raise DemistoException(with_request_id(message, response))
     return [row for row in rows if isinstance(row, dict)]
 
 
@@ -522,7 +599,7 @@ def parse_token(response: requests.Response) -> str:
     body = response_json(response)
     token = body.get("token") if isinstance(body, dict) else None
     if not isinstance(token, str) or not token:
-        raise DemistoException("The NodeZero authentication response did not include a token.")
+        raise DemistoException(with_request_id("The NodeZero authentication response did not include a token.", response))
     return token
 
 
@@ -583,7 +660,7 @@ def build_sweep_variables(since: str, page_num: int) -> dict[str, Any]:
 
 
 def build_pentest_variables(op_id: str) -> dict[str, Any]:
-    """Variables for reading one pentest by op_id with the sweep query. The match is exact, so the ID must be trimmed."""
+    """Variables for reading one pentest by op_id with PENTEST_QUERY. The match is exact, so the ID must be trimmed."""
     return {"page_input": {"page_num": 1, "page_size": 1, "filter_by_inputs": [{"field_name": "op_id", "values": [op_id]}]}}
 
 
@@ -611,6 +688,21 @@ class Client(BaseClient):
         # lease never writes the integration context, so it can't overwrite the shared state with a stale copy.
         self.token_sink: Callable[[dict[str, Any]], None] | None = None
         add_sensitive_log_strs(api_key)
+        # One client serves one command run, so the run ID is per run. Fetches and pushes also log it in their summary.
+        self.run_id = uuid.uuid4().hex
+        self.request_count = 0
+        self.last_response: requests.Response | None = None  # the last GraphQL response, so page errors name its request
+        self._user_agent = build_user_agent()
+        demisto.debug(f"NodeZero run ID {self.run_id}, User-Agent {self._user_agent}.")
+
+    def identity_headers(self) -> dict[str, str]:
+        """The User-Agent and the next X-Request-ID of this run: <run id>-<n>, n counting the run's requests from 1.
+
+        Retries that urllib3 makes inside one request, and a redirect that requests follows, resend the same headers,
+        so they share its request ID.
+        """
+        self.request_count += 1
+        return {"User-Agent": self._user_agent, REQUEST_ID_HEADER: f"{self.run_id}-{self.request_count}"}
 
     def _post(self, url_suffix: str, json_data: dict[str, Any], headers: dict[str, str] | None = None) -> requests.Response:
         timeout, retries = request_limits(self.deadline.seconds_left())
@@ -620,7 +712,8 @@ class Client(BaseClient):
             method="POST",
             url_suffix=url_suffix,
             json_data=json_data,
-            headers=headers,
+            # _http_request sends per-call headers instead of the client's own, so the identity goes into every call.
+            headers={**(headers or {}), **self.identity_headers()},
             timeout=timeout,
             retries=retries,
             status_list_to_retry=RETRY_STATUSES,
@@ -666,23 +759,25 @@ class Client(BaseClient):
                 raise
             demisto.debug("NodeZero rejected the cached token. Authenticating again once.")
             response = self._post_graphql(query, variables, self.authenticate())
+        self.last_response = response
         return parse_graphql_data(response)
 
     def get_finished_pentests(self, since: str, page_num: int) -> list[dict[str, Any]]:
         """One sweep page of raw pentest rows."""
         data = self.graphql(FINISHED_PENTESTS_QUERY, build_sweep_variables(since, page_num))
-        return page_rows(data, "pentests_page", "pentests")
+        return page_rows(data, "pentests_page", "pentests", self.last_response)
 
     def get_pentest(self, op_id: str) -> list[dict[str, Any]]:
         """The raw row of one pentest, or no rows. The server returns no rows for an unknown or malformed op_id."""
-        data = self.graphql(FINISHED_PENTESTS_QUERY, build_pentest_variables(op_id))
-        return page_rows(data, "pentests_page", "pentests")
+        data = self.graphql(PENTEST_QUERY, build_pentest_variables(op_id))
+        return page_rows(data, "pentests_page", "pentests", self.last_response)
 
     def get_weaknesses_page(self, op_id: str, page_num: int) -> list[dict[str, Any]]:
         """One page of raw weakness rows of one pentest. Any failure names the pentest."""
         variables = build_weaknesses_variables(op_id, page_num)
         try:
-            return page_rows(self.graphql(PENTEST_WEAKNESSES_QUERY, variables), "weaknesses_page", "weaknesses")
+            data = self.graphql(PENTEST_WEAKNESSES_QUERY, variables)
+            return page_rows(data, "weaknesses_page", "weaknesses", self.last_response)
         except LeaseLost:
             raise  # raised by the token cache write, not by the request
         except DemistoException as error:
@@ -1297,6 +1392,7 @@ class RunState:
     """What one run did, for its checkpoint, its health report and its summary log line."""
 
     deadline: Deadline
+    run_id: str  # the client's run ID, logged in the summary line
     events_sent: int = 0
     finished: list[str] = field(default_factory=list)
     per_pentest: dict[str, int] = field(default_factory=dict)
@@ -1500,9 +1596,11 @@ def report_health(run: RunState) -> None:
 
 
 def log_run_summary(run: RunState, outcome: str, kind: str = "fetch") -> None:
+    """The run's summary line. Its run ID is the prefix of the X-Request-ID of every request the run made."""
     demisto.info(
-        f"NodeZero {kind} {outcome}: {len(run.finished)} pentests fully sent, {run.events_sent} events sent, "
-        f"events per pentest {run.per_pentest}, count mismatches (sent, expected) {run.mismatches}, "
+        f"NodeZero {kind} {outcome} (run ID {run.run_id}): {len(run.finished)} pentests fully sent, "
+        f"{run.events_sent} events sent, events per pentest {run.per_pentest}, "
+        f"count mismatches (sent, expected) {run.mismatches}, "
         f"more work pending {run.more_pending}, {run.deadline.elapsed():.1f} seconds."
     )
 
@@ -1545,7 +1643,7 @@ def fetch_events_command(client: Client, params: dict[str, Any]) -> None:
     When a manual push holds the lease, the run sends nothing and the next scheduled run tries again.
     """
     raw_last_run = demisto.getLastRun()
-    run = RunState(deadline=client.deadline)
+    run = RunState(deadline=client.deadline, run_id=client.run_id)
     holder: Holder | None = None
     try:
         first_fetch, max_events = parse_fetch_settings(params)
@@ -1674,7 +1772,7 @@ def load_push_state(fetch_enabled: bool) -> LastRun:
     return empty_state()
 
 
-def start_push(params: dict[str, Any]) -> Holder:
+def start_push(params: dict[str, Any], run: RunState) -> Holder:
     """Take the lease for a manual push and read the state under it."""
     fetch_enabled = argToBoolean(params.get("isFetchEvents", False))
     load_push_state(fetch_enabled)  # fail before taking the lease when the push can't run
@@ -1689,6 +1787,7 @@ def start_push(params: dict[str, Any]) -> Holder:
         state = load_push_state(fetch_enabled)  # read again under the lease
     except Exception:
         release_lease(lease)
+        log_run_summary(run, "failed", kind="manual push")
         raise
     return Holder(lease=lease, state=state, mirror_to_last_run=False)
 
@@ -1755,11 +1854,12 @@ def push_events(
     client: Client, params: dict[str, Any], pentest_id: str | None, since: str | None, limit: int
 ) -> tuple[list[dict[str, Any]], list[str]]:
     """A pushing run: hold the lease, finish a half-sent pentest, then send what wasn't sent yet in the scope."""
-    holder = start_push(params)
-    run = RunState(deadline=client.deadline)
+    run = RunState(deadline=client.deadline, run_id=client.run_id)
+    holder = start_push(params, run)
     report = PushReport()
     events: list[dict[str, Any]] = []
     capped = False
+    outcome = "failed"
     try:
         client.token_sink = holder.write
         cursor = holder.state["in_progress"]
@@ -1772,10 +1872,11 @@ def push_events(
         if report.stopped_in is None:
             pentests, capped = select_pentests(client, pentest_id, since)
             push_scope(client, holder, run, pentests, report, events, limit)
+        outcome = "finished"
     finally:
         client.token_sink = None
         release_lease(holder.lease)
-        log_run_summary(run, "finished", kind="manual push")
+        log_run_summary(run, outcome, kind="manual push")
     lines = push_lines(run, report)
     if report.stopped_in is not None and report.stopped_in == report.resumed:
         scope = f"pentest {pentest_id}" if pentest_id else f"the pentests that finished since {since}"
@@ -1823,7 +1924,7 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
         client.check_connectivity()
     except DemistoException as error:
         if http_status(error) in (401, 403):
-            return AUTH_FAILED_MESSAGE
+            return with_request_id(AUTH_FAILED_MESSAGE, getattr(error, "res", None))
         raise
     return "ok"
 

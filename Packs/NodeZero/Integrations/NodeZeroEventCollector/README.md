@@ -28,6 +28,10 @@ To query the modeled fields, use `datamodel dataset = horizon3_nodezero_raw`.
 - Each event has an `event_id` field that combines the pentest ID and the weakness ID. If a run is interrupted, the next run can send some of the same events again. To remove the duplicates from query results, add `| dedup event_id` to the query.
 - The record is kept per integration instance. **Reset the "last run" timestamp** doesn't make the integration send pentests again. To collect pentests again, configure a new instance.
 
+### Requests to NodeZero
+
+Every request the integration sends to NodeZero has a `User-Agent` header in the form `NodeZero-Cortex/<pack version> (NodeZeroEventCollector; Cortex <platform version>)` and an `X-Request-ID` header in the form `<run ID>-<n>`, where the run ID is new for each run and `n` counts the run's requests from 1. A request that is retried after a connection error, a read timeout, or an HTTP 429, 500, 502, 503 or 504 response keeps its request ID. A request that is sent again with a new token after an HTTP 401 gets a new request ID. Scheduled fetches, and runs of **nodezero-fetch-events** that send events, log their run ID in their summary line. When NodeZero answers a request with an error, the error message includes that request's ID.
+
 ## Configure NodeZero Event Collector in Cortex
 
 1. In the [Horizon3.ai Portal](https://portal.horizon3ai.com/), navigate to **Settings** > **My Settings** > **API Keys**, click **Generate API Key**, and copy the key value. The key must have **read** access to pentests and weaknesses.
