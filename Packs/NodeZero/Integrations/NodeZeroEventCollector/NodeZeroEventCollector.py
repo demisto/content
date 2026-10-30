@@ -58,6 +58,7 @@ DEFAULT_TOKEN_LIFETIME_SECONDS = 3600 - 60  # used when a token has no readable 
 TOKEN_CONTEXT_KEY = "auth_token"
 TOKEN_EXPIRY_CONTEXT_KEY = "auth_token_expires_at"
 TOKEN_OWNER_CONTEXT_KEY = "auth_token_owner"  # the URL and API key the token belongs to
+TOKEN_OWNER_HASH_ITERATIONS = 100_000  # PBKDF2, so the stored owner can't be used to guess the API key
 
 REQUEST_TIMEOUT_SECONDS = 60
 MIN_REQUEST_TIMEOUT_SECONDS = 5
@@ -624,6 +625,11 @@ def read_token_expiry(token: str, now: int) -> int:
     return now + DEFAULT_TOKEN_LIFETIME_SECONDS
 
 
+def token_owner(base_url: str, api_key: str) -> str:
+    """A short hash of the server URL and the API key, stored with the cached token in place of the key itself."""
+    return hashlib.pbkdf2_hmac("sha256", api_key.encode(), base_url.encode(), TOKEN_OWNER_HASH_ITERATIONS).hex()[:16]
+
+
 def load_cached_token(now: float, owner: str) -> str | None:
     """The token cached in the integration context, unless it expires within the refresh margin."""
     context = get_integration_context() or {}
@@ -680,7 +686,7 @@ class Client(BaseClient):
     def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool, deadline: Deadline) -> None:
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._api_key = api_key
-        self._owner = hashlib.sha256(f"{base_url}\n{api_key}".encode()).hexdigest()[:16]
+        self._owner = token_owner(base_url, api_key)
         self.deadline = deadline
         self._token: str | None = None
         self._token_expires_at = 0

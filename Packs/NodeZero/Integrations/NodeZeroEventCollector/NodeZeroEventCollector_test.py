@@ -508,7 +508,7 @@ def make_client(
 
 def token_owner(base_url: str = BASE_URL, api_key: str = API_KEY) -> str:
     """The owner the token cache records: a short hash of the server URL and the API key, never the key itself."""
-    return hashlib.sha256(f"{base_url}\n{api_key}".encode()).hexdigest()[:16]
+    return hashlib.pbkdf2_hmac("sha256", api_key.encode(), base_url.encode(), 100_000).hex()[:16]
 
 
 def cached_token(token: str, expires_at: int) -> dict[str, Any]:
@@ -2344,7 +2344,8 @@ def test_event_list_readable_output(harness: Harness) -> None:
     header = next(line for line in result.readable_output.splitlines() if line.startswith("|"))
     for column in NodeZeroEventCollector.EVENT_TABLE_HEADERS:
         assert column in header
-    assert "dc01.corp.example.com" in result.readable_output
+    cells = [cell.strip() for line in result.readable_output.splitlines() for cell in line.split("|")]
+    assert cells.count("dc01.corp.example.com") == 1
 
 
 # ----- shared state and lease: a fetch and a manual push never send the same page -----
