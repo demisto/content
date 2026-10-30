@@ -9,3 +9,27 @@
 !aws-waf-rule-group-create capacity=1500 name=name
 !aws-waf-rule-group-get id=e2aac47d-0541-4e30-aa2f-aa21b0fb76b1 name=Hey_Test
 !aws-waf-rule-group-list
+
+!aws-waf-web-acl-list scope=Regional
+!aws-waf-web-acl-get name=my-web-acl id=12345678-1234-1234-1234-123456789012 scope=Regional
+!aws-waf-web-acl-create name=my-web-acl default_action=Allow scope=Regional
+!aws-waf-web-acl-update name=my-web-acl id=12345678-1234-1234-1234-123456789012 scope=Regional default_action=Block
+!aws-waf-web-acl-delete name=my-web-acl id=12345678-1234-1234-1234-123456789012 scope=Regional
+!aws-waf-web-acl-associate web_acl_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678 resource_arn=arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890
+!aws-waf-web-acl-disassociate resource_arn=arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890
+!aws-waf-web-acl-resource-list web_acl_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678 resource_type=APPLICATION_LOAD_BALANCER
+!aws-waf-web-acl-for-resource-get resource_arn=arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890
+
+!aws-waf-logging-configuration-put resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678 log_destination_configs="arn:aws:firehose:us-east-1:123456789012:deliverystream/aws-waf-logs-stream"
+!aws-waf-logging-configuration-get resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678
+!aws-waf-logging-configuration-delete resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678
+!aws-waf-logging-configuration-list scope=Regional
+
+!aws-waf-tag-resource resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678 tags="Environment:Production,Team:Security"
+!aws-waf-untag-resource resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678 tag_keys="Environment,Team"
+!aws-waf-tag-list resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678
+
+!aws-waf-sampled-requests-get web_acl_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678 rule_metric_name=my-rule scope=Regional max_items=100 start_time="2024-01-01T00:00:00Z" end_time="2024-01-02T00:00:00Z"
+
+!aws-waf-managed-rule-group-list scope=Regional
+!aws-waf-managed-rule-group-describe vendor_name=AWS name=AWSManagedRulesCommonRuleSet scope=Regional

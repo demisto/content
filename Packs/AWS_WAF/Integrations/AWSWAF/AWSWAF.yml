@@ -1742,6 +1742,1157 @@ script:
       - "HTTP Method"
     description: Gets the statement template.
     name: aws-waf-statement-json-template-get
+  - arguments:
+    - name: scope
+      description: The web ACL scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: next_token
+      description: The token for the next page.
+    - name: limit
+      defaultValue: '50'
+      description: The maximum number of results to return.
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Lists web ACLs.
+    name: aws-waf-web-acl-list
+    outputs:
+    - contextPath: AWS.Waf.WebACL.Id
+      description: The web ACL ID.
+      type: String
+    - contextPath: AWS.Waf.WebACL.Name
+      description: The web ACL name.
+      type: String
+    - contextPath: AWS.Waf.WebACL.Description
+      description: The web ACL description.
+      type: String
+    - contextPath: AWS.Waf.WebACL.LockToken
+      description: The web ACL lock token.
+      type: String
+    - contextPath: AWS.Waf.WebACL.ARN
+      description: The web ACL Amazon Resource Name.
+      type: String
+    - contextPath: AWS.Waf.WebACLNextToken
+      description: The token for the next page.
+      type: String
+  - arguments:
+    - name: name
+      description: The web ACL name.
+      required: true
+    - name: scope
+      description: The web ACL scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: id
+      description: The web ACL ID.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Get a specific web ACL.
+    name: aws-waf-web-acl-get
+    outputs:
+    - contextPath: AWS.Waf.WebACL.Id
+      description: The web ACL ID.
+      type: String
+    - contextPath: AWS.Waf.WebACL.Name
+      description: The web ACL name.
+      type: String
+    - contextPath: AWS.Waf.WebACL.Description
+      description: The web ACL description.
+      type: String
+    - contextPath: AWS.Waf.WebACL.DefaultAction
+      description: The web ACL default action.
+      type: Unknown
+    - contextPath: AWS.Waf.WebACL.Rules
+      description: The web ACL rules.
+      type: Unknown
+    - contextPath: AWS.Waf.WebACL.Capacity
+      description: The web ACL capacity.
+      type: Number
+    - contextPath: AWS.Waf.WebACL.ARN
+      description: The web ACL Amazon Resource Name.
+      type: String
+    - contextPath: AWS.Waf.WebACL.VisibilityConfig
+      description: The web ACL visibility config.
+      type: Unknown
+  - arguments:
+    - name: name
+      description: The web ACL name.
+      required: true
+    - name: scope
+      description: The web ACL scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: default_action
+      description: The default action for the web ACL.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "Allow"
+      - "Block"
+    - name: description
+      description: The web ACL description.
+    - name: cloud_watch_metrics_enabled
+      description: Whether the associated resource sends metrics to Amazon CloudWatch.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: metric_name
+      description: The name of the Amazon CloudWatch metric dimension. Defaults to the web ACL name.
+    - name: sampled_requests_enabled
+      description: Whether to store a sampling of the web requests that match the rules.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: rules_json
+      description: A JSON string representing the rules array for the web ACL.
+    - name: tag_key
+      description: A comma-separated list of the keys of the tags to associate with the web ACL.
+      isArray: true
+    - name: tag_value
+      description: A comma-separated list of the values of the tags to associate with the web ACL.
+      isArray: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Create a new web ACL.
+    name: aws-waf-web-acl-create
+    outputs:
+    - contextPath: AWS.Waf.WebACL.Id
+      description: The web ACL ID.
+      type: String
+    - contextPath: AWS.Waf.WebACL.Name
+      description: The web ACL name.
+      type: String
+    - contextPath: AWS.Waf.WebACL.Description
+      description: The web ACL description.
+      type: String
+    - contextPath: AWS.Waf.WebACL.LockToken
+      description: The web ACL lock token.
+      type: String
+    - contextPath: AWS.Waf.WebACL.ARN
+      description: The web ACL Amazon Resource Name.
+      type: String
+  - arguments:
+    - name: name
+      description: The web ACL name.
+      required: true
+    - name: scope
+      description: The web ACL scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: id
+      description: The web ACL ID.
+      required: true
+    - name: default_action
+      description: The default action for the web ACL.
+      auto: PREDEFINED
+      predefined:
+      - "Allow"
+      - "Block"
+    - name: rules_json
+      description: A JSON string representing the rules array for the web ACL. Replaces existing rules.
+    - name: description
+      description: The web ACL description.
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Update a web ACL.
+    name: aws-waf-web-acl-update
+  - arguments:
+    - name: name
+      description: The web ACL name.
+      required: true
+    - name: scope
+      description: The web ACL scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: id
+      description: The web ACL ID.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Delete a specific web ACL.
+    name: aws-waf-web-acl-delete
+  - arguments:
+    - name: web_acl_arn
+      description: The ARN of the web ACL to associate with the resource.
+      required: true
+    - name: resource_arn
+      description: The ARN of the resource to associate with the web ACL.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Associate a web ACL with a resource.
+    name: aws-waf-web-acl-associate
+  - arguments:
+    - name: resource_arn
+      description: The ARN of the resource to disassociate from the web ACL.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Disassociate a resource from its web ACL.
+    name: aws-waf-web-acl-disassociate
+  - arguments:
+    - name: web_acl_arn
+      description: The ARN of the web ACL.
+      required: true
+    - name: resource_type
+      description: The resource type to filter by.
+      defaultValue: "APPLICATION_LOAD_BALANCER"
+      auto: PREDEFINED
+      predefined:
+      - "APPLICATION_LOAD_BALANCER"
+      - "API_GATEWAY"
+      - "APPSYNC"
+      - "COGNITO_USER_POOL"
+      - "APP_RUNNER_SERVICE"
+      - "VERIFIED_ACCESS_INSTANCE"
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Lists resources associated with a web ACL.
+    name: aws-waf-web-acl-resource-list
+    outputs:
+    - contextPath: AWS.Waf.WebACL.ResourceArns
+      description: The ARNs of resources associated with the web ACL.
+      type: Unknown
+  - arguments:
+    - name: resource_arn
+      description: The ARN of the resource whose web ACL you want to retrieve.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Get the web ACL associated with a resource.
+    name: aws-waf-web-acl-for-resource-get
+    outputs:
+    - contextPath: AWS.Waf.WebACL.Id
+      description: The web ACL ID.
+      type: String
+    - contextPath: AWS.Waf.WebACL.Name
+      description: The web ACL name.
+      type: String
+    - contextPath: AWS.Waf.WebACL.Description
+      description: The web ACL description.
+      type: String
+    - contextPath: AWS.Waf.WebACL.DefaultAction
+      description: The web ACL default action.
+      type: Unknown
+    - contextPath: AWS.Waf.WebACL.Rules
+      description: The web ACL rules.
+      type: Unknown
+    - contextPath: AWS.Waf.WebACL.ARN
+      description: The web ACL Amazon Resource Name.
+      type: String
+  - arguments:
+    - name: resource_arn
+      description: The ARN of the web ACL to configure logging for.
+      required: true
+    - name: log_destination
+      description: A comma-separated list of log destination ARNs (e.g., Kinesis Firehose delivery stream ARNs).
+      isArray: true
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Put a logging configuration for a web ACL.
+    name: aws-waf-logging-configuration-put
+    outputs:
+    - contextPath: AWS.Waf.LoggingConfiguration.ResourceArn
+      description: The ARN of the web ACL.
+      type: String
+    - contextPath: AWS.Waf.LoggingConfiguration.LogDestinationConfigs
+      description: The logging destination configuration.
+      type: Unknown
+  - arguments:
+    - name: resource_arn
+      description: The ARN of the web ACL.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Get the logging configuration for a web ACL.
+    name: aws-waf-logging-configuration-get
+    outputs:
+    - contextPath: AWS.Waf.LoggingConfiguration.ResourceArn
+      description: The ARN of the web ACL.
+      type: String
+    - contextPath: AWS.Waf.LoggingConfiguration.LogDestinationConfigs
+      description: The logging destination configuration.
+      type: Unknown
+  - arguments:
+    - name: resource_arn
+      description: The ARN of the web ACL.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Delete the logging configuration for a web ACL.
+    name: aws-waf-logging-configuration-delete
+  - arguments:
+    - name: scope
+      description: The logging configuration scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: next_token
+      description: The token for the next page.
+    - name: limit
+      defaultValue: '50'
+      description: The maximum number of results to return.
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Lists logging configurations.
+    name: aws-waf-logging-configuration-list
+    outputs:
+    - contextPath: AWS.Waf.LoggingConfiguration.ResourceArn
+      description: The ARN of the web ACL.
+      type: String
+    - contextPath: AWS.Waf.LoggingConfiguration.LogDestinationConfigs
+      description: The logging destination configuration.
+      type: Unknown
+    - contextPath: AWS.Waf.LoggingConfigurationNextToken
+      description: The token for the next page.
+      type: String
+  - arguments:
+    - name: resource_arn
+      description: The ARN of the resource to tag.
+      required: true
+    - name: tag_key
+      description: A comma-separated list of the keys of the tags to add.
+      isArray: true
+      required: true
+    - name: tag_value
+      description: A comma-separated list of the values of the tags to add.
+      isArray: true
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Tag a resource.
+    name: aws-waf-tag-resource
+  - arguments:
+    - name: resource_arn
+      description: The ARN of the resource to remove tags from.
+      required: true
+    - name: tag_keys
+      description: A comma-separated list of the tag keys to remove.
+      isArray: true
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Remove tags from a resource.
+    name: aws-waf-untag-resource
+  - arguments:
+    - name: resource_arn
+      description: The ARN of the resource.
+      required: true
+    - name: next_token
+      description: The token for the next page.
+    - name: limit
+      defaultValue: '50'
+      description: The maximum number of results to return.
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: List tags for a resource.
+    name: aws-waf-tag-list
+    outputs:
+    - contextPath: AWS.Waf.TagInfoForResource.ResourceARN
+      description: The ARN of the resource.
+      type: String
+    - contextPath: AWS.Waf.TagInfoForResource.TagList.Key
+      description: The tag key.
+      type: String
+    - contextPath: AWS.Waf.TagInfoForResource.TagList.Value
+      description: The tag value.
+      type: String
+    - contextPath: AWS.Waf.TagNextToken
+      description: The token for the next page.
+      type: String
+  - arguments:
+    - name: web_acl_arn
+      description: The ARN of the web ACL.
+      required: true
+    - name: rule_metric_name
+      description: The metric name assigned to the Rule or RuleGroup.
+      required: true
+    - name: scope
+      description: The scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: start_time
+      description: 'The start of the time range (ISO 8601 format, e.g., 2024-01-01T00:00:00Z). Can be a relative time like "3 hours ago".'
+      required: true
+    - name: end_time
+      description: 'The end of the time range (ISO 8601 format, e.g., 2024-01-01T01:00:00Z). Can be a relative time like "now".'
+      required: true
+    - name: max_items
+      description: The number of requests to return (1-500).
+      defaultValue: '100'
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Get sampled web requests for a web ACL.
+    name: aws-waf-sampled-requests-get
+    outputs:
+    - contextPath: AWS.Waf.SampledRequest.Action
+      description: The action for the request.
+      type: String
+    - contextPath: AWS.Waf.SampledRequest.Request.ClientIP
+      description: The client IP address.
+      type: String
+    - contextPath: AWS.Waf.SampledRequest.Request.Country
+      description: The client country.
+      type: String
+    - contextPath: AWS.Waf.SampledRequest.Request.Method
+      description: The HTTP method.
+      type: String
+    - contextPath: AWS.Waf.SampledRequest.Request.URI
+      description: The request URI.
+      type: String
+    - contextPath: AWS.Waf.SampledRequest.Timestamp
+      description: The request timestamp.
+      type: Date
+    - contextPath: AWS.Waf.SampledRequest.Weight
+      description: The request weight.
+      type: Number
+    - contextPath: AWS.Waf.SampledRequestsPopulationSize
+      description: The total population size.
+      type: Number
+  - arguments:
+    - name: scope
+      description: The scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: next_token
+      description: The token for the next page.
+    - name: limit
+      defaultValue: '50'
+      description: The maximum number of results to return.
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Lists available managed rule groups.
+    name: aws-waf-managed-rule-group-list
+    outputs:
+    - contextPath: AWS.Waf.ManagedRuleGroup.VendorName
+      description: The vendor name.
+      type: String
+    - contextPath: AWS.Waf.ManagedRuleGroup.Name
+      description: The managed rule group name.
+      type: String
+    - contextPath: AWS.Waf.ManagedRuleGroup.Description
+      description: The managed rule group description.
+      type: String
+    - contextPath: AWS.Waf.ManagedRuleGroupNextToken
+      description: The token for the next page.
+      type: String
+  - arguments:
+    - name: vendor_name
+      description: The vendor name (e.g., AWS).
+      required: true
+    - name: name
+      description: The managed rule group name.
+      required: true
+    - name: scope
+      description: The scope.
+      defaultValue: "Regional"
+      auto: PREDEFINED
+      predefined:
+      - "Global"
+      - "Regional"
+    - name: version_name
+      description: The version name. If not provided, the default version is used.
+    - name: region
+      description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
+    description: Describe a managed rule group.
+    name: aws-waf-managed-rule-group-describe
+    outputs:
+    - contextPath: AWS.Waf.ManagedRuleGroup.Capacity
+      description: The capacity required by the rule group.
+      type: Number
+    - contextPath: AWS.Waf.ManagedRuleGroup.Rules
+      description: The rules in the managed rule group.
+      type: Unknown
+    - contextPath: AWS.Waf.ManagedRuleGroup.LabelNamespace
+      description: The label namespace.
+      type: String
+    - contextPath: AWS.Waf.ManagedRuleGroup.AvailableLabels
+      description: The labels available for rules in the rule group.
+      type: Unknown
+    - contextPath: AWS.Waf.ManagedRuleGroup.ConsumedLabels
+      description: The labels consumed by rules in the rule group.
+      type: Unknown
+    - contextPath: AWS.Waf.ManagedRuleGroup.VersionName
+      description: The version name.
+      type: String
+    - contextPath: AWS.Waf.ManagedRuleGroup.SnsTopicArn
+      description: The SNS topic ARN for notifications.
+      type: String
   runonce: false
   script: '-'
   type: python

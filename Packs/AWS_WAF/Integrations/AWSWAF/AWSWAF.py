@@ -485,7 +485,7 @@ def create_ip_set_command(client: "WAFV2Client", args: dict) -> CommandResults:
     response = client.create_ip_set(**kwargs)
     outputs = response.get("Summary", {})
 
-    readable_output = f'AWS Waf ip set with id {outputs.get("Id", "")} was created successfully'
+    readable_output = f"AWS Waf ip set with id {outputs.get('Id', '')} was created successfully"
 
     return CommandResults(
         readable_output=readable_output,
@@ -536,7 +536,7 @@ def update_ip_set_command(client: "WAFV2Client", args: dict) -> CommandResults:
 
     response = client.update_ip_set(**kwargs)
 
-    readable_output = f'AWS Waf ip set with id {args.get("id", "")} was updated successfully.'
+    readable_output = f"AWS Waf ip set with id {args.get('id', '')} was updated successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -574,7 +574,7 @@ def delete_ip_set_command(client: "WAFV2Client", args: dict) -> CommandResults:
 
     response = client.delete_ip_set(**kwargs)
 
-    readable_output = f'AWS Waf ip set with id {args.get("id", "")} was deleted successfully'
+    readable_output = f"AWS Waf ip set with id {args.get('id', '')} was deleted successfully"
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -598,7 +598,7 @@ def create_regex_set_command(client: "WAFV2Client", args: dict) -> CommandResult
     response = client.create_regex_pattern_set(**kwargs)
     outputs = response.get("Summary", {})
 
-    readable_output = f'AWS Waf regex set with id {outputs.get("Id", "")} was created successfully'
+    readable_output = f"AWS Waf regex set with id {outputs.get('Id', '')} was created successfully"
 
     return CommandResults(
         readable_output=readable_output,
@@ -649,7 +649,7 @@ def update_regex_set_command(client: "WAFV2Client", args: dict) -> CommandResult
 
     response = client.update_regex_pattern_set(**kwargs)
 
-    readable_output = f'AWS Waf ip set with id {args.get("Id", "")} was updated successfully.'
+    readable_output = f"AWS Waf ip set with id {args.get('Id', '')} was updated successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -687,7 +687,7 @@ def delete_regex_set_command(client: "WAFV2Client", args: dict) -> CommandResult
 
     response = client.delete_regex_pattern_set(**kwargs)
 
-    readable_output = f'AWS Waf regex set with id {args.get("id", "")} was deleted successfully'
+    readable_output = f"AWS Waf regex set with id {args.get('id', '')} was deleted successfully"
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -743,7 +743,7 @@ def delete_rule_group_command(client: "WAFV2Client", args: dict) -> CommandResul
 
     response = client.delete_rule_group(**kwargs)
 
-    readable_output = f'AWS Waf rule group with id {args.get("id", "")} was deleted successfully'
+    readable_output = f"AWS Waf rule group with id {args.get('id', '')} was deleted successfully"
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -776,7 +776,7 @@ def create_rule_group_command(client: "WAFV2Client", args: dict) -> CommandResul
     response = client.create_rule_group(**kwargs)
     outputs = response.get("Summary", {})
 
-    readable_output = f'AWS Waf rule group with id {outputs.get("Id", "")} was created successfully'
+    readable_output = f"AWS Waf rule group with id {outputs.get('Id', '')} was created successfully"
 
     return CommandResults(
         readable_output=readable_output,
@@ -804,7 +804,7 @@ def create_ip_rule_command(client: "WAFV2Client", args: dict) -> CommandResults:
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf ip rule with name {args.get("rule_name", "")} was created successfully.'
+    readable_output = f"AWS Waf ip rule with name {args.get('rule_name', '')} was created successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -826,7 +826,7 @@ def create_country_rule_command(client: "WAFV2Client", args: dict) -> CommandRes
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf country rule with name {args.get("rule_name", "")} was created successfully.'
+    readable_output = f"AWS Waf country rule with name {args.get('rule_name', '')} was created successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -848,7 +848,7 @@ def create_string_match_rule_command(client: "WAFV2Client", args: dict) -> Comma
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf string match rule with name {args.get("rule_name", "")} was created successfully.'
+    readable_output = f"AWS Waf string match rule with name {args.get('rule_name', '')} was created successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -869,7 +869,7 @@ def delete_rule_command(client: "WAFV2Client", args: dict) -> CommandResults:
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf rule with id {args.get("Id", "")} was deleted successfully.'
+    readable_output = f"AWS Waf rule with id {args.get('Id', '')} was deleted successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -890,7 +890,7 @@ def add_ip_statement_command(client: "WAFV2Client", args: dict) -> CommandResult
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf ip statement was added to rule with name {args.get("rule_name", "")} successfully.'
+    readable_output = f"AWS Waf ip statement was added to rule with name {args.get('rule_name', '')} successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -912,7 +912,7 @@ def add_country_statement_command(client: "WAFV2Client", args: dict) -> CommandR
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf country statement was added to rule with name {args.get("rule_name", "")} successfully.'
+    readable_output = f"AWS Waf country statement was added to rule with name {args.get('rule_name', '')} successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -934,7 +934,7 @@ def add_string_match_statement_command(client: "WAFV2Client", args: dict) -> Com
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf string match statement was added to rule with name {args.get("rule_name", "")} successfully.'
+    readable_output = f"AWS Waf string match statement was added to rule with name {args.get('rule_name', '')} successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -956,7 +956,7 @@ def add_json_statement_command(client: "WAFV2Client", args: dict) -> CommandResu
         rule_group_visibility_config=rule_group_visibility_config,
     )
 
-    readable_output = f'AWS Waf json statement was added to rule with name {args.get("rule_name", "")} successfully.'
+    readable_output = f"AWS Waf json statement was added to rule with name {args.get('rule_name', '')} successfully."
 
     return CommandResults(readable_output=readable_output, raw_response=response)
 
@@ -998,6 +998,450 @@ def template_json_command(args: dict) -> CommandResults:  # pragma: no cover
         readable_output = json.dumps(statement)
 
     return CommandResults(readable_output=readable_output)
+
+
+def list_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to get a list of all web ACLs"""
+    kwargs: dict[str, Any] = {
+        "Scope": SCOPE_MAP[args.get("scope") or DEFAULT_SCOPE],
+        "Limit": arg_to_number(args.get("limit")) or 50,
+    }
+
+    if next_marker := args.get("next_token"):
+        kwargs |= {"NextMarker": next_marker}
+
+    response = client.list_web_acls(**kwargs)
+    web_acls = response.get("WebACLs", [])
+    readable_output = tableToMarkdown(
+        "List Web ACLs", web_acls, headers=["Name", "Id", "ARN", "Description"], is_auto_json_transform=True
+    )
+    outputs = {
+        f"{OUTPUT_PREFIX}.WebACL(val.Id === obj.Id)": web_acls,
+        f"{OUTPUT_PREFIX}(true)": {"WebACLNextToken": response.get("NextMarker", "")},
+    }
+
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=response, outputs_key_field="Id")
+
+
+def get_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to get a specific web ACL"""
+    kwargs = {"Name": args.get("name", ""), "Scope": SCOPE_MAP[args.get("scope") or DEFAULT_SCOPE], "Id": args.get("id", "")}
+
+    response = client.get_web_acl(**kwargs)
+    response = convert_dict_values_bytes_to_str(response)
+    outputs = response.get("WebACL", {})
+    readable_output = tableToMarkdown("Web ACL", outputs, headers=["Id", "Name", "Description", "Capacity"])
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+        outputs_prefix=f"{OUTPUT_PREFIX}.WebACL",
+        outputs_key_field="Id",
+    )
+
+
+def create_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to create a web ACL"""
+    tag_keys = argToList(args.get("tag_key")) or []
+    tag_values = argToList(args.get("tag_value")) or []
+    name = args.get("name", "")
+    default_action = args.get("default_action", "Allow")
+    cloud_watch_metrics_enabled = argToBoolean(args.get("cloud_watch_metrics_enabled", "")) or True
+    metric_name = args.get("metric_name", "") or name
+    sampled_requests_enabled = argToBoolean(args.get("sampled_requests_enabled", "")) or True
+
+    kwargs: dict[str, Any] = {
+        "Name": name,
+        "Scope": SCOPE_MAP[args.get("scope") or DEFAULT_SCOPE],
+        "DefaultAction": {default_action: {}},
+        "VisibilityConfig": build_visibility_config_object(
+            cloud_watch_metrics_enabled=cloud_watch_metrics_enabled,
+            metric_name=metric_name,
+            sampled_requests_enabled=sampled_requests_enabled,
+        ),
+    }
+
+    if rules_json := args.get("rules_json"):
+        kwargs |= {"Rules": json.loads(rules_json)}
+    if description := args.get("description"):
+        kwargs |= {"Description": description}
+    if tags := get_tags_dict_from_args(tag_keys, tag_values):
+        kwargs |= {"Tags": tags}
+
+    response = client.create_web_acl(**kwargs)
+    outputs = response.get("Summary", {})
+
+    readable_output = f"AWS Waf web ACL with id {outputs.get('Id', '')} was created successfully"
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+        outputs_prefix=f"{OUTPUT_PREFIX}.WebACL",
+        outputs_key_field="Id",
+    )
+
+
+def update_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to update a specific web ACL"""
+    kwargs = {"Name": args.get("name", ""), "Scope": SCOPE_MAP[args.get("scope") or DEFAULT_SCOPE], "Id": args.get("id", "")}
+
+    get_response = client.get_web_acl(**kwargs)
+    get_response = convert_dict_values_bytes_to_str(get_response)
+
+    lock_token = get_response.get("LockToken", "")
+    web_acl = get_response.get("WebACL", {})
+    current_default_action = web_acl.get("DefaultAction", {"Allow": {}})
+    current_rules = web_acl.get("Rules", [])
+    current_visibility_config = web_acl.get("VisibilityConfig", {})
+
+    if default_action := args.get("default_action"):
+        current_default_action = {default_action: {}}
+    if rules_json := args.get("rules_json"):
+        current_rules = json.loads(rules_json)
+
+    kwargs |= {
+        "LockToken": lock_token,
+        "DefaultAction": current_default_action,
+        "Rules": current_rules,
+        "VisibilityConfig": current_visibility_config,
+    }
+
+    if description := args.get("description"):
+        kwargs |= {"Description": description}
+
+    response = client.update_web_acl(**kwargs)
+
+    readable_output = f"AWS Waf web ACL with id {args.get('id', '')} was updated successfully."
+
+    return CommandResults(readable_output=readable_output, raw_response=response)
+
+
+def delete_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to delete a specific web ACL"""
+    kwargs = {"Name": args.get("name", ""), "Scope": SCOPE_MAP[args.get("scope") or DEFAULT_SCOPE], "Id": args.get("id", "")}
+
+    get_response = client.get_web_acl(**kwargs)
+
+    kwargs |= {"LockToken": get_response.get("LockToken", "")}
+
+    response = client.delete_web_acl(**kwargs)
+
+    readable_output = f"AWS Waf web ACL with id {args.get('id', '')} was deleted successfully"
+
+    return CommandResults(readable_output=readable_output, raw_response=response)
+
+
+def associate_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to associate a web ACL with a resource"""
+    kwargs = {
+        "WebACLArn": args.get("web_acl_arn", ""),
+        "ResourceArn": args.get("resource_arn", ""),
+    }
+
+    response = client.associate_web_acl(**kwargs)
+
+    readable_output = f"AWS Waf web ACL was associated with resource {args.get('resource_arn', '')} successfully."
+
+    return CommandResults(readable_output=readable_output, raw_response=response)
+
+
+def disassociate_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to disassociate a web ACL from a resource"""
+    kwargs = {"ResourceArn": args.get("resource_arn", "")}
+
+    response = client.disassociate_web_acl(**kwargs)
+
+    readable_output = f"AWS Waf web ACL was disassociated from resource {args.get('resource_arn', '')} successfully."
+
+    return CommandResults(readable_output=readable_output, raw_response=response)
+
+
+def list_resources_for_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to list resources associated with a web ACL"""
+    kwargs: dict[str, Any] = {"WebACLArn": args.get("web_acl_arn", "")}
+
+    if resource_type := args.get("resource_type"):
+        kwargs |= {"ResourceType": resource_type}
+
+    response = client.list_resources_for_web_acl(**kwargs)
+    resource_arns = response.get("ResourceArns", [])
+    outputs = [{"ARN": arn} for arn in resource_arns]
+    readable_output = tableToMarkdown("Resources for Web ACL", outputs, headers=["ARN"])
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=resource_arns,
+        raw_response=response,
+        outputs_prefix=f"{OUTPUT_PREFIX}.WebACL.ResourceArns",
+    )
+
+
+def get_web_acl_for_resource_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to get the web ACL associated with a resource"""
+    kwargs = {"ResourceArn": args.get("resource_arn", "")}
+
+    response = client.get_web_acl_for_resource(**kwargs)
+    response = convert_dict_values_bytes_to_str(response)
+    outputs = response.get("WebACL", {})
+
+    if outputs:
+        readable_output = tableToMarkdown("Web ACL for Resource", outputs, headers=["Id", "Name", "Description", "Capacity"])
+    else:
+        readable_output = "No web ACL is associated with the specified resource."
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs or None,
+        raw_response=response,
+        outputs_prefix=f"{OUTPUT_PREFIX}.WebACL",
+        outputs_key_field="Id",
+    )
+
+
+def put_logging_configuration_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to put a logging configuration for a web ACL"""
+    log_destinations = argToList(args.get("log_destination")) or []
+    kwargs = {
+        "LoggingConfiguration": {
+            "ResourceArn": args.get("resource_arn", ""),
+            "LogDestinationConfigs": log_destinations,
+        }
+    }
+
+    response = client.put_logging_configuration(**kwargs)
+    outputs = response.get("LoggingConfiguration", {})
+    readable_output = tableToMarkdown("Logging Configuration", outputs, headers=["ResourceArn", "LogDestinationConfigs"])
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+        outputs_prefix=f"{OUTPUT_PREFIX}.LoggingConfiguration",
+        outputs_key_field="ResourceArn",
+    )
+
+
+def get_logging_configuration_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to get the logging configuration for a web ACL"""
+    kwargs = {"ResourceArn": args.get("resource_arn", "")}
+
+    response = client.get_logging_configuration(**kwargs)
+    outputs = response.get("LoggingConfiguration", {})
+    readable_output = tableToMarkdown("Logging Configuration", outputs, headers=["ResourceArn", "LogDestinationConfigs"])
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+        outputs_prefix=f"{OUTPUT_PREFIX}.LoggingConfiguration",
+        outputs_key_field="ResourceArn",
+    )
+
+
+def delete_logging_configuration_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to delete the logging configuration for a web ACL"""
+    resource_arn = args.get("resource_arn", "")
+    kwargs = {"ResourceArn": resource_arn}
+
+    response = client.delete_logging_configuration(**kwargs)
+
+    readable_output = f"AWS Waf logging configuration for {resource_arn} was deleted successfully."
+
+    return CommandResults(readable_output=readable_output, raw_response=response)
+
+
+def list_logging_configurations_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to list logging configurations"""
+    kwargs: dict[str, Any] = {
+        "Scope": SCOPE_MAP[args.get("scope") or DEFAULT_SCOPE],
+        "Limit": arg_to_number(args.get("limit")) or 50,
+    }
+
+    if next_marker := args.get("next_token"):
+        kwargs |= {"NextMarker": next_marker}
+
+    response = client.list_logging_configurations(**kwargs)
+    configs = response.get("LoggingConfigurations", [])
+    readable_output = tableToMarkdown(
+        "Logging Configurations", configs, headers=["ResourceArn", "LogDestinationConfigs"], is_auto_json_transform=True
+    )
+    outputs = {
+        f"{OUTPUT_PREFIX}.LoggingConfiguration(val.ResourceArn === obj.ResourceArn)": configs,
+        f"{OUTPUT_PREFIX}(true)": {"LoggingConfigurationNextToken": response.get("NextMarker", "")},
+    }
+
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=response)
+
+
+def tag_resource_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to tag a resource"""
+    tag_keys = argToList(args.get("tag_key")) or []
+    tag_values = argToList(args.get("tag_value")) or []
+    tags = get_tags_dict_from_args(tag_keys, tag_values)
+
+    kwargs = {
+        "ResourceARN": args.get("resource_arn", ""),
+        "Tags": tags,
+    }
+
+    response = client.tag_resource(**kwargs)
+
+    readable_output = f"AWS Waf resource {args.get('resource_arn', '')} was tagged successfully."
+
+    return CommandResults(readable_output=readable_output, raw_response=response)
+
+
+def untag_resource_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to untag a resource"""
+    tag_keys = argToList(args.get("tag_keys")) or []
+
+    kwargs = {
+        "ResourceARN": args.get("resource_arn", ""),
+        "TagKeys": tag_keys,
+    }
+
+    response = client.untag_resource(**kwargs)
+
+    readable_output = f"AWS Waf resource {args.get('resource_arn', '')} was untagged successfully."
+
+    return CommandResults(readable_output=readable_output, raw_response=response)
+
+
+def list_tags_for_resource_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to list tags for a resource"""
+    kwargs: dict[str, Any] = {
+        "ResourceARN": args.get("resource_arn", ""),
+        "Limit": arg_to_number(args.get("limit")) or 50,
+    }
+
+    if next_marker := args.get("next_token"):
+        kwargs |= {"NextMarker": next_marker}
+
+    response = client.list_tags_for_resource(**kwargs)
+    tag_info = response.get("TagInfoForResource", {})
+    tag_list = tag_info.get("TagList", [])
+    readable_output = tableToMarkdown("Tags", tag_list, headers=["Key", "Value"])
+    outputs = {
+        f"{OUTPUT_PREFIX}.TagInfoForResource(val.ResourceARN === obj.ResourceARN)": tag_info,
+        f"{OUTPUT_PREFIX}(true)": {"TagNextToken": response.get("NextMarker", "")},
+    }
+
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=response)
+
+
+def get_sampled_requests_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to get sampled requests for a web ACL"""
+    start_time = arg_to_datetime(args.get("start_time"))
+    end_time = arg_to_datetime(args.get("end_time"))
+
+    if not start_time or not end_time:
+        raise DemistoException("start_time and end_time are required.")
+
+    kwargs: dict[str, Any] = {
+        "WebAclArn": args.get("web_acl_arn", ""),
+        "RuleMetricName": args.get("rule_metric_name", ""),
+        "Scope": SCOPE_MAP[args.get("scope") or DEFAULT_SCOPE],
+        "TimeWindow": {
+            "StartTime": start_time,
+            "EndTime": end_time,
+        },
+        "MaxItems": arg_to_number(args.get("max_items")) or 100,
+    }
+
+    response = client.get_sampled_requests(**kwargs)
+    sampled_requests = response.get("SampledRequests", [])
+
+    table_data = []
+    for req in sampled_requests:
+        request_info = req.get("Request", {})
+        table_data.append(
+            {
+                "Action": req.get("Action"),
+                "ClientIP": request_info.get("ClientIP"),
+                "Country": request_info.get("Country"),
+                "Method": request_info.get("Method"),
+                "URI": request_info.get("URI"),
+                "Timestamp": req.get("Timestamp"),
+            }
+        )
+
+    readable_output = tableToMarkdown(
+        f"Sampled Requests (Population Size: {response.get('PopulationSize', 0)})",
+        table_data,
+        headers=["Action", "ClientIP", "Country", "Method", "URI", "Timestamp"],
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=sampled_requests,
+        raw_response=response,
+        outputs_prefix=f"{OUTPUT_PREFIX}.SampledRequest",
+    )
+
+
+def list_available_managed_rule_groups_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to list available managed rule groups"""
+    kwargs: dict[str, Any] = {
+        "Scope": SCOPE_MAP[args.get("scope") or DEFAULT_SCOPE],
+        "Limit": arg_to_number(args.get("limit")) or 50,
+    }
+
+    if next_marker := args.get("next_token"):
+        kwargs |= {"NextMarker": next_marker}
+
+    response = client.list_available_managed_rule_groups(**kwargs)
+    managed_rule_groups = response.get("ManagedRuleGroups", [])
+    readable_output = tableToMarkdown(
+        "Available Managed Rule Groups",
+        managed_rule_groups,
+        headers=["VendorName", "Name", "VersionEnabled", "Description"],
+        is_auto_json_transform=True,
+    )
+    outputs = {
+        f"{OUTPUT_PREFIX}.ManagedRuleGroup(val.Name === obj.Name && val.VendorName === obj.VendorName)": managed_rule_groups,
+        f"{OUTPUT_PREFIX}(true)": {"ManagedRuleGroupNextToken": response.get("NextMarker", "")},
+    }
+
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=response)
+
+
+def describe_managed_rule_group_command(client: "WAFV2Client", args: dict) -> CommandResults:
+    """Command to describe a managed rule group"""
+    kwargs: dict[str, Any] = {
+        "VendorName": args.get("vendor_name", ""),
+        "Name": args.get("name", ""),
+        "Scope": SCOPE_MAP[args.get("scope") or DEFAULT_SCOPE],
+    }
+
+    if version_name := args.get("version_name"):
+        kwargs |= {"VersionName": version_name}
+
+    response = client.describe_managed_rule_group(**kwargs)
+    outputs = {
+        "VendorName": args.get("vendor_name", ""),
+        "Name": args.get("name", ""),
+        "VersionName": response.get("VersionName"),
+        "SnsTopicArn": response.get("SnsTopicArn"),
+        "Capacity": response.get("Capacity"),
+        "Rules": response.get("Rules", []),
+        "LabelNamespace": response.get("LabelNamespace"),
+        "AvailableLabels": response.get("AvailableLabels", []),
+        "ConsumedLabels": response.get("ConsumedLabels", []),
+    }
+    readable_output = tableToMarkdown(
+        "Managed Rule Group",
+        outputs,
+        headers=["VendorName", "Name", "VersionName", "Capacity", "LabelNamespace"],
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+        outputs_prefix=f"{OUTPUT_PREFIX}.ManagedRuleGroup",
+    )
 
 
 """ MAIN FUNCTION """
@@ -1090,6 +1534,50 @@ def main() -> None:  # pragma: no cover
 
         elif command == "aws-waf-statement-json-template-get":
             result = template_json_command(args)
+
+        elif command == "aws-waf-web-acl-list":
+            result = list_web_acl_command(client, args)
+        elif command == "aws-waf-web-acl-get":
+            result = get_web_acl_command(client, args)
+        elif command == "aws-waf-web-acl-create":
+            result = create_web_acl_command(client, args)
+        elif command == "aws-waf-web-acl-update":
+            result = update_web_acl_command(client, args)
+        elif command == "aws-waf-web-acl-delete":
+            result = delete_web_acl_command(client, args)
+
+        elif command == "aws-waf-web-acl-associate":
+            result = associate_web_acl_command(client, args)
+        elif command == "aws-waf-web-acl-disassociate":
+            result = disassociate_web_acl_command(client, args)
+        elif command == "aws-waf-web-acl-resource-list":
+            result = list_resources_for_web_acl_command(client, args)
+        elif command == "aws-waf-web-acl-for-resource-get":
+            result = get_web_acl_for_resource_command(client, args)
+
+        elif command == "aws-waf-logging-configuration-put":
+            result = put_logging_configuration_command(client, args)
+        elif command == "aws-waf-logging-configuration-get":
+            result = get_logging_configuration_command(client, args)
+        elif command == "aws-waf-logging-configuration-delete":
+            result = delete_logging_configuration_command(client, args)
+        elif command == "aws-waf-logging-configuration-list":
+            result = list_logging_configurations_command(client, args)
+
+        elif command == "aws-waf-tag-resource":
+            result = tag_resource_command(client, args)
+        elif command == "aws-waf-untag-resource":
+            result = untag_resource_command(client, args)
+        elif command == "aws-waf-tag-list":
+            result = list_tags_for_resource_command(client, args)
+
+        elif command == "aws-waf-sampled-requests-get":
+            result = get_sampled_requests_command(client, args)
+
+        elif command == "aws-waf-managed-rule-group-list":
+            result = list_available_managed_rule_groups_command(client, args)
+        elif command == "aws-waf-managed-rule-group-describe":
+            result = describe_managed_rule_group_command(client, args)
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented in AWS WAF integration.")
