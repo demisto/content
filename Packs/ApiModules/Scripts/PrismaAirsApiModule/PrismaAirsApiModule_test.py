@@ -201,6 +201,78 @@ class TestHttpRequestRouting:
         assert "Content-Type" not in kwargs["headers"]
 
 
+class TestTsgIdHeader:
+    """x-tsg-id is sent only for the AI Gateway / SCM IAM planes, with per-request override."""
+
+    @pytest.mark.parametrize("plane_flag", ["use_aigw_cp", "use_aigw_admin", "use_aigw_iam"])
+    @patch.object(Client, "get_access_token", return_value="tok")
+    @patch.object(Client, "_http_request")
+    def test_request_tsg_id_overrides_client_tsg_id(
+        self, mock_http: Mock, _tok: Mock, mock_client: Client, plane_flag: str
+    ) -> None:
+        """A tsg_id passed to the request wins over self.tsg_id."""
+        flags: dict[str, Any] = {plane_flag: True}
+        mock_client.http_request("GET", "/v1/thing", tsg_id="override-tsg", **flags)
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["headers"]["x-tsg-id"] == "override-tsg"
+
+    @pytest.mark.parametrize("plane_flag", ["use_aigw_cp", "use_aigw_admin", "use_aigw_iam"])
+    @patch.object(Client, "get_access_token", return_value="tok")
+    @patch.object(Client, "_http_request")
+    def test_falls_back_to_client_tsg_id(self, mock_http: Mock, _tok: Mock, mock_client: Client, plane_flag: str) -> None:
+        """self.tsg_id is used when the request doesn't pass one."""
+        flags: dict[str, Any] = {plane_flag: True}
+        mock_client.http_request("GET", "/v1/thing", **flags)
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["headers"]["x-tsg-id"] == mock_client.tsg_id
+
+    @pytest.mark.parametrize("plane_flag", ["use_aigw_cp", "use_aigw_admin", "use_aigw_iam"])
+    @patch.object(Client, "get_access_token", return_value="tok")
+    @patch.object(Client, "_http_request")
+    def test_empty_string_when_neither_set(self, mock_http: Mock, _tok: Mock, plane_flag: str) -> None:
+        """The header is an empty string (not omitted) when neither tsg_id nor self.tsg_id is set."""
+        client = Client(base_url=BASE_URL, client_id="cid", client_secret="secret", tsg_id=None)
+        flags: dict[str, Any] = {plane_flag: True}
+        client.http_request("GET", "/v1/thing", **flags)
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["headers"]["x-tsg-id"] == ""
+
+    @pytest.mark.parametrize(
+        "plane_flag",
+        [
+            "use_mgmt_base",
+            "use_model_sec_data",
+            "use_model_sec_mgmt",
+            "use_redteam_data",
+            "use_redteam_mgmt",
+            "use_dlp_base",
+        ],
+    )
+    @patch.object(Client, "get_access_token", return_value="tok")
+    @patch.object(Client, "_http_request")
+    def test_header_absent_for_non_aigw_iam_planes(
+        self, mock_http: Mock, _tok: Mock, mock_client: Client, plane_flag: str
+    ) -> None:
+        """x-tsg-id is only sent for use_aigw_cp / use_aigw_admin / use_aigw_iam requests."""
+        flags: dict[str, Any] = {plane_flag: True}
+        mock_client.http_request("GET", "/v1/thing", tsg_id="should-not-appear", **flags)
+
+        _, kwargs = mock_http.call_args
+        assert "x-tsg-id" not in kwargs["headers"]
+
+    @patch.object(Client, "get_access_token", return_value="tok")
+    @patch.object(Client, "_http_request")
+    def test_header_absent_with_no_plane_flag(self, mock_http: Mock, _tok: Mock, mock_client: Client) -> None:
+        """x-tsg-id is not sent when no plane flag is set at all."""
+        mock_client.http_request("GET", "/v1/thing", tsg_id="should-not-appear")
+
+        _, kwargs = mock_http.call_args
+        assert "x-tsg-id" not in kwargs["headers"]
+
+
 class TestScannerRequest:
     """API-key-authenticated runtime scanner transport."""
 
