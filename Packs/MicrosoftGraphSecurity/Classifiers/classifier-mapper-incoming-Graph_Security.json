@@ -1,0 +1,364 @@
+{
+    "description": "Maps Microsoft Graph Security alerts and incidents, including the mirroring fields.",
+    "feed": false,
+    "id": "Graph Security Mapper - Incoming",
+    "mapping": {
+        "Graph Security Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Alert URL": {
+                    "simple": "alertWebUrl"
+                },
+                "Close Time": {
+                    "simple": "resolvedDateTime"
+                },
+                "End Time": {
+                    "simple": "lastActivityDateTime"
+                },
+                "Microsoft Graph Security Id": {
+                    "simple": "incidentId"
+                },
+                "Last Update Time": {
+                    "simple": "lastUpdateDateTime"
+                },
+                "Microsoft Graph Security Alert Evidence": {
+                    "simple": "evidence"
+                },
+                "Microsoft Graph Security Detector Id": {
+                    "simple": "detectorId"
+                },
+                "Microsoft Graph Security Alert Determination": {
+                    "simple": "determination"
+                },
+                "Microsoft Graph Security Recommended Action": {
+                    "simple": "recommendedActions"
+                },
+                "Microsoft Graph Security Service Source": {
+                    "simple": "serviceSource"
+                },
+                "Start Time": {
+                    "simple": "firstActivityDateTime"
+                },
+                "Title": {
+                    "simple": "title"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
+                "Microsoft Graph Security Alert Status": {
+                    "simple": "status"
+                },
+                "Microsoft Graph Security Classification": {
+                    "complex": {
+                        "filters": [],
+                        "root": "classification",
+                        "transformers": [
+                            {
+                                "operator": "concat",
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "|"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "operator": "concat",
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "determination"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "operator": "MapValuesTransformer",
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "unknown|unknown,truePositive|multiStagedAttack,truePositive|malware,truePositive|maliciousUserActivity,truePositive|unwantedSoftware,truePositive|phishing,truePositive|compromisedAccount,truePositive|other,informationalExpectedActivity|securityTesting,informationalExpectedActivity|confirmedActivity,informationalExpectedActivity|lineOfBusinessApplication,informationalExpectedActivity|other,falsePositive|notMalicious,falsePositive|notEnoughDataToValidate,falsePositive|other,truePositive|compromisedUser,informationalExpectedActivity|confirmedUserActivity,falsePositive|clean,falsePositive|insufficientData"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Unclassified,True positive - Multi staged attack,True positive - Malware,True positive - Malicious user activity,True positive - Unwanted software,True positive - Phishing,True positive - Compromised account,True positive - Other,Informational - Security testing,Informational - Confirmed activity,Informational - Line of business application,Informational - Other,False positive - Not malicious,False positive - Not enough data to validate,False positive - Other,True positive - Compromised account,Informational - Confirmed activity,False positive - Not malicious,False positive - Not enough data to validate"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                "Additional Data": {
+                    "simple": "customDetailsList"
+                },
+                "Assigned User": {
+                    "simple": "assignedTo"
+                },
+                "Classification": {
+                    "simple": "classification"
+                },
+                "Description": {
+                    "simple": "description"
+                },
+                "Incident Link": {
+                    "simple": "incidentWebUrl"
+                },
+                "Source Create time": {
+                    "simple": "createdDateTime"
+                },
+                "Tenant Name": {
+                    "simple": "tenantId"
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "unknown,informational,low,medium,high,unknownFutureValue"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Unknown,Informational,Low,Medium,High,Unknown"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Alert Source": {
+                    "simple": "detectionSource"
+                },
+                "Source Category": {
+                    "simple": "category"
+                },
+                "Source Id": {
+                    "simple": "providerAlertId"
+                },
+                "Threat Family Name": {
+                    "simple": "threatFamilyName"
+                },
+                "Threat Name": {
+                    "simple": "threatDisplayName"
+                },
+                "MITRE Technique ID": {
+                    "simple": "mitreTechniques"
+                }
+            }
+        },
+        "Graph Security Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
+                "Microsoft Graph Security Incident ID": {
+                    "simple": "id"
+                },
+                "Microsoft Graph Security Incident Status": {
+                    "simple": "status"
+                },
+                "Microsoft Graph Security Classification": {
+                    "complex": {
+                        "filters": [],
+                        "root": "classification",
+                        "transformers": [
+                            {
+                                "operator": "concat",
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "|"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "operator": "concat",
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "determination"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "operator": "MapValuesTransformer",
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "unknown|unknown,truePositive|multiStagedAttack,truePositive|malware,truePositive|maliciousUserActivity,truePositive|unwantedSoftware,truePositive|phishing,truePositive|compromisedAccount,truePositive|other,informationalExpectedActivity|securityTesting,informationalExpectedActivity|confirmedActivity,informationalExpectedActivity|lineOfBusinessApplication,informationalExpectedActivity|other,falsePositive|notMalicious,falsePositive|notEnoughDataToValidate,falsePositive|other"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Unclassified,True positive - Multi staged attack,True positive - Malware,True positive - Malicious user activity,True positive - Unwanted software,True positive - Phishing,True positive - Compromised account,True positive - Other,Informational - Security testing,Informational - Confirmed activity,Informational - Line of business application,Informational - Other,False positive - Not malicious,False positive - Not enough data to validate,False positive - Other"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                "Description": {
+                    "simple": "description"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "displayName",
+                        "transformers": [
+                            {
+                                "operator": "concat",
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": " - "
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "operator": "concat",
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "id"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                "Microsoft Graph Security Incident Tags": {
+                    "simple": "customTags"
+                },
+                "closeNotes": {
+                    "simple": "resolvingComment"
+                },
+                "Related Alerts": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": []
+                    }
+                },
+                "Assigned User": {
+                    "simple": "assignedTo"
+                },
+                "Incident Link": {
+                    "simple": "incidentWebUrl"
+                },
+                "Source Create time": {
+                    "simple": "createdDateTime"
+                },
+                "Tenant Name": {
+                    "simple": "tenantId"
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "unknown,informational,low,medium,high,unknownFutureValue"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Unknown,Informational,Low,Medium,High,Unknown"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "Graph Security Mapper - Incoming",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

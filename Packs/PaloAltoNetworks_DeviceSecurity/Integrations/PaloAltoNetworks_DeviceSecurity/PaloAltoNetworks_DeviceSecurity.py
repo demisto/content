@@ -2,6 +2,7 @@ import json
 import time
 import base64
 from datetime import UTC, datetime
+from dataclasses import dataclass
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -117,9 +118,12 @@ class Client(ContentClient):
         return data["items"]
 
     def list_vulns(self, stime: str = "-1", offset: int = 0, pagelength: int = 100) -> list[dict]:
-        """
-        returns vulnerability instances
-        """
+        """Return vulnerability instances without changing the command's output."""
+        return self.list_vulns_page(stime, offset, pagelength)["items"]
+
+    def list_vulns_page(self, stime: str = "-1", offset: int = 0, pagelength: int = 100) -> dict:
+        """Retain total: the service can return short or empty intermediate pages."""
+        demisto.debug(f"[Fetch vulnerabilities] Requesting page: stime={stime}, offset={offset}, pagelength={pagelength}")
         data = self._http_request(
             method="GET",
             url_suffix="/vulnerability/list",
@@ -133,7 +137,19 @@ class Client(ContentClient):
             },
             timeout=self.api_timeout,
         )
-        return data["items"]
+        total = data.get("total") if isinstance(data, dict) else None
+        items = data.get("items") if isinstance(data, dict) else None
+        if (
+            type(total) is not int
+            or total < 0
+            or not isinstance(items, list)
+            or len(items) > pagelength
+            or not all(isinstance(item, dict) for item in items)
+        ):
+            demisto.debug("[Fetch vulnerabilities] Rejecting invalid API page; scan progress will not be advanced.")
+            raise DemistoException("Invalid vulnerability page: expected items and a non-negative integer total.")
+        demisto.debug(f"[Fetch vulnerabilities] Received page: offset={offset}, items={len(items)}, total={total}")
+        return data
 
     def list_devices(self, offset: int, pagelength: int) -> list[dict]:
         """
@@ -184,7 +200,7 @@ def get_scm_access_token(
         access_token = integration_context.get("scm_access_token")
         expires_on = integration_context.get("scm_expires_on")
 
-        if access_token and expires_on:
+        if access_token and expires_on and integration_context.get("scm_token_base_url") == token_base_url:
             try:
                 expires_on_dt = datetime.fromisoformat(expires_on.replace("Z", "+00:00"))
                 if expires_on_dt.tzinfo is None:
@@ -219,6 +235,7 @@ def get_scm_access_token(
         set_integration_context(
             {
                 "scm_access_token": access_token,
+                "scm_token_base_url": token_base_url,
                 "scm_expires_on": (datetime.now(tz=UTC) + timedelta(seconds=int(expires_in))).isoformat(),
             }
         )
@@ -543,15 +560,26 @@ def device_security_resolve_vuln(client: Client, args: dict) -> CommandResults:
     return CommandResults(readable_output=f"Vulnerability {vuln_id} was resolved successfully")
 
 
+def parse_vulnerability_date(value: Any) -> datetime | None:
+    """Compare instants, rather than differently formatted timestamp strings."""
+    if not isinstance(value, str):
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return parsed.replace(tzinfo=UTC) if parsed.tzinfo is None else parsed.astimezone(UTC)
+    except ValueError:
+        return None
+
+
 def normalize_detected_date(detected_date: str | list | None) -> str | None:
-    if isinstance(detected_date, str) or detected_date is None:
-        return detected_date
-
-    if detected_date:
-        first_detected_date = detected_date[0]
-        return first_detected_date if isinstance(first_detected_date, str) else None
-
-    return None
+    """Original detection is the earliest valid date, independent of array order."""
+    values = detected_date if isinstance(detected_date, list) else [detected_date]
+    parsed = [date for value in values if (date := parse_vulnerability_date(value)) is not None]
+    if not parsed:
+        return None
+    earliest = min(parsed)
+    precision = "microseconds" if earliest.microsecond % 1000 else "milliseconds"
+    return earliest.isoformat(timespec=precision).replace("+00:00", "Z")
 
 
 def format_fetch_start_time(fetch_time: str) -> str:
@@ -629,68 +657,247 @@ def fetch_alert_incidents(
     return incidents, new_last_fetch, trim_seen_ids(new_seen_ids)
 
 
-def fetch_vulnerability_incidents(
-    client: Client, last_vulns_fetch: str | None, last_vulns_seen_ids: list[str] | None, max_fetch: int
-) -> tuple[list[dict], str | None, list[str]]:
-    stime = last_vulns_fetch or format_fetch_start_time(client.first_fetch)
-    seen_ids = set(last_vulns_seen_ids or [])
+@dataclass
+class VulnerabilityFetchState:
+    """Deduplication covers the entire fixed-start scan, including unordered pages."""
 
-    incidents: list[dict] = []
-    new_last_fetch = last_vulns_fetch
-    new_seen_ids: list[str] = list(seen_ids)  # preserve previously seen IDs
+    stime: str
+    offset: int
+    committed_fetch: str | None
+    committed_boundary_ids: dict[str, None]
+    latest_fetch: str | None
+    seen_ids: dict[str, None]
+    boundary_ids: dict[str, None]
+    floor: datetime | None
+    latest_date: datetime | None
+
+    def checkpoint(self) -> dict:
+        """Serialize the active scan state for resuming the next fetch cycle.
+
+        Returns:
+            A versioned checkpoint containing the fixed query start time, next
+            page offset, seen IDs, candidate cursor, and candidate boundary IDs.
+        """
+        demisto.debug(
+            f"[Fetch vulnerabilities] Saving checkpoint: version=2, stime={self.stime}, offset={self.offset}, "
+            f"seen={len(self.seen_ids)}, candidate_cursor={self.latest_fetch}, boundary_ids={len(self.boundary_ids)}"
+        )
+        return {
+            "version": 2,
+            "stime": self.stime,
+            "offset": self.offset,
+            "seen_ids": list(self.seen_ids),
+            "latest_fetch": self.latest_fetch,
+            "boundary_ids": list(self.boundary_ids),
+        }
+
+    def accept(self, vulnerability: dict) -> str | None:
+        """Accept an unseen vulnerability at or after the scan start time.
+
+        Args:
+            vulnerability (dict): Vulnerability record returned by the API.
+
+        Returns:
+            The normalized detected-date string for an accepted record, or None
+            for an invalid, older, or previously seen record. Accepted records
+            update the seen IDs, candidate cursor, and candidate boundary IDs.
+        """
+        occurred = normalize_detected_date(vulnerability.get("detected_date"))
+        detected = parse_vulnerability_date(occurred)
+        identifier = vulnerability.get("zb_ticketid")
+        if not detected or not isinstance(identifier, str) or not identifier:
+            demisto.debug("[Fetch vulnerabilities] Skipping record with an invalid detected date or missing vulnerability ID.")
+            return None
+        if (self.floor is not None and detected < self.floor) or identifier in self.seen_ids:
+            reason = "duplicate ID" if identifier in self.seen_ids else "detected before scan start"
+            demisto.debug(f"[Fetch vulnerabilities] Skipping record: reason={reason}, occurred={occurred}")
+            return None
+        self.seen_ids[identifier] = None
+        if self.latest_date is None or detected > self.latest_date:
+            self.latest_fetch, self.latest_date = occurred, detected
+            self.boundary_ids = {identifier: None}
+        elif detected == self.latest_date:
+            self.boundary_ids[identifier] = None
+        demisto.debug(
+            f"[Fetch vulnerabilities] Accepted record: occurred={occurred}, "
+            f"candidate_cursor={self.latest_fetch}, boundary_ids={len(self.boundary_ids)}"
+        )
+        return occurred
+
+
+def validate_vulnerability_checkpoint(checkpoint: Any) -> dict | None:
+    """Log and skip malformed checkpoints so fetching can use the committed cursor."""
+    if checkpoint is None:
+        return None
+    if not isinstance(checkpoint, dict):
+        demisto.debug(f"[Fetch vulnerabilities] Skipping checkpoint: type={type(checkpoint).__name__}, value={checkpoint!r}")
+        return None
+    version = checkpoint.get("version")
+    stime = checkpoint.get("stime")
+    offset = checkpoint.get("offset")
+    seen_ids = checkpoint.get("seen_ids")
+    latest_fetch = checkpoint.get("latest_fetch")
+    boundary_ids = checkpoint.get("boundary_ids")
+    valid = (
+        version in (1, 2)
+        and isinstance(stime, str)
+        and (stime == "-1" or parse_vulnerability_date(stime) is not None)
+        and type(offset) is int
+        and offset >= 0
+        and isinstance(seen_ids, list)
+        and all(isinstance(identifier, str) for identifier in seen_ids)
+    )
+    if version == 2:
+        valid = valid and (
+            (latest_fetch is None or (isinstance(latest_fetch, str) and parse_vulnerability_date(latest_fetch) is not None))
+            and isinstance(boundary_ids, list)
+            and all(isinstance(identifier, str) for identifier in boundary_ids)
+        )
+    if not valid:
+        demisto.debug(
+            f"[Fetch vulnerabilities] Skipping invalid checkpoint: version={version!r}, stime={stime!r}, "
+            f"offset={offset!r}, seen_ids={seen_ids!r}, latest_fetch={latest_fetch!r}, boundary_ids={boundary_ids!r}. "
+            "Continuing from the last committed cursor."
+        )
+        return None
+    return checkpoint
+
+
+def initialize_vulnerability_fetch(
+    client: Client, last_fetch: str | None, boundary_ids: list[str] | None, checkpoint: dict | None
+) -> VulnerabilityFetchState:
+    """Initialize a vulnerability scan or resume a validated checkpoint.
+
+    Args:
+        client (Client): Client providing the configured first-fetch time.
+        last_fetch (str | None): Last committed vulnerability fetch timestamp.
+        boundary_ids (list[str] | None): IDs already emitted at that timestamp.
+        checkpoint (dict | None): Persisted scan state, if a scan is in progress.
+
+    Returns:
+        The scan state with pagination, deduplication, and committed and
+        candidate cursors restored. Version 1 checkpoints are migrated.
+        Invalid checkpoints are logged and skipped, using the committed cursor.
+
+    Raises:
+        DemistoException: If the committed fetch timestamp is invalid.
+    """
+    stime = last_fetch or format_fetch_start_time(client.first_fetch)
     offset = 0
+    identifiers = list(boundary_ids or [])
+    latest_fetch = last_fetch
+    latest_boundary_ids = list(boundary_ids or [])
+    committed_fetch = last_fetch
+    committed_boundary_ids = list(boundary_ids or [])
+    checkpoint = validate_vulnerability_checkpoint(checkpoint)
+    if checkpoint is not None:
+        stime, offset, identifiers = checkpoint["stime"], checkpoint["offset"], checkpoint["seen_ids"]
+        if checkpoint["version"] == 2:
+            latest_fetch = checkpoint.get("latest_fetch")
+            latest_boundary_ids = checkpoint["boundary_ids"]
+        else:
+            # Version 1 exposed the candidate cursor before completing the scan.
+            committed_fetch = None if stime == "-1" else stime
+            committed_boundary_ids = list(boundary_ids or []) if last_fetch == committed_fetch else []
+            demisto.debug("[Fetch vulnerabilities] Migrating version 1 checkpoint; retaining its fixed query start time.")
+    floor = parse_vulnerability_date(stime)
+    latest = parse_vulnerability_date(latest_fetch)
+    if (stime != "-1" and floor is None) or (latest_fetch is not None and latest is None):
+        demisto.debug("[Fetch vulnerabilities] Rejecting scan state with an invalid timestamp.")
+        raise DemistoException("Invalid vulnerability fetch timestamp.")
+    demisto.debug(
+        f"[Fetch vulnerabilities] {'Resuming' if checkpoint is not None else 'Starting'} scan: "
+        f"stime={stime}, offset={offset}, committed_cursor={committed_fetch}, "
+        f"candidate_cursor={latest_fetch}, seen={len(identifiers)}, boundary_ids={len(latest_boundary_ids)}"
+    )
+    return VulnerabilityFetchState(
+        stime,
+        offset,
+        committed_fetch,
+        dict.fromkeys(committed_boundary_ids),
+        latest_fetch,
+        dict.fromkeys(identifiers),
+        dict.fromkeys(latest_boundary_ids),
+        floor,
+        latest,
+    )
 
-    while len(incidents) < max_fetch:
-        vulns = client.list_vulns(stime, offset=offset, pagelength=max_fetch)
 
-        if not vulns:
-            break
+def vulnerability_to_incident(vulnerability: dict, occurred: str) -> dict:
+    """Convert a vulnerability record into a Cortex incident.
 
-        for vuln in vulns:
-            detected_date = normalize_detected_date(vuln.get("detected_date"))
-            vuln_id = vuln.get("zb_ticketid", "")
+    Args:
+        vulnerability (dict): Vulnerability record returned by the API.
+        occurred (str): Normalized detection timestamp for the incident.
 
-            if not detected_date or not vuln_id:
-                continue
+    Returns:
+        An incident containing serialized raw data, device and vulnerability
+        details, and the SCM vulnerability URL in its raw data and custom fields.
+    """
+    incident_url = get_scm_vuln_url(vulnerability)
+    demisto.debug(f"[Fetch vulnerabilities] Creating incident: occurred={occurred}")
+    raw = {**vulnerability, "rawType": "Device Security Vulnerability", "devicesecurityincidenturl": incident_url}
+    return {
+        "name": vulnerability.get("name", ""),
+        "rawType": "Device Security Vulnerability",
+        "occurred": occurred,
+        "rawJSON": json.dumps(raw),
+        "details": (
+            f'Device {vulnerability.get("name", "")} at IP {vulnerability.get("ip", "")}: '
+            f'{vulnerability.get("vulnerability_name", "")}'
+        ),
+        "CustomFields": {"devicesecurityincidenturl": incident_url},
+    }
 
-            if detected_date == last_vulns_fetch and vuln_id in seen_ids:
-                continue
 
-            if len(incidents) >= max_fetch:
-                break
+def fetch_vulnerability_incidents(
+    client: Client,
+    last_vulns_fetch: str | None,
+    last_vulns_seen_ids: list[str] | None,
+    max_fetch: int,
+    scan_state: dict | None = None,
+) -> tuple[list[dict], str | None, list[str], dict | None]:
+    """Fetch one vulnerability page and preserve progress across fetch cycles.
 
-            device_security_incident_url = get_scm_vuln_url(vuln)
-            vuln_raw_json = {
-                **vuln,
-                "rawType": "Device Security Vulnerability",
-                "devicesecurityincidenturl": device_security_incident_url,
-            }
+    Args:
+        client (Client): Device Security client used to retrieve vulnerabilities.
+        last_vulns_fetch (str | None): Last committed vulnerability timestamp.
+        last_vulns_seen_ids (list[str] | None): IDs emitted at that timestamp.
+        max_fetch (int): Number of source rows requested per page.
+        scan_state (dict | None): Checkpoint used to resume an unfinished scan.
 
-            incidents.append(
-                {
-                    "name": vuln.get("name", ""),
-                    "rawType": "Device Security Vulnerability",
-                    "occurred": detected_date,
-                    "rawJSON": json.dumps(vuln_raw_json),
-                    "details": (
-                        f'Device {vuln.get("name", "")} at IP {vuln.get("ip", "")}: ' f'{vuln.get("vulnerability_name", "")}'
-                    ),
-                    "CustomFields": {"devicesecurityincidenturl": device_security_incident_url},
-                }
-            )
+    Returns:
+        A tuple of new incidents, the committed timestamp, IDs at that timestamp,
+        and the next checkpoint. The candidate cursor is committed and the
+        checkpoint becomes None only when the scan reaches the reported total.
 
-            if new_last_fetch is None or detected_date > new_last_fetch:
-                new_last_fetch = detected_date
-                new_seen_ids = [vuln_id]
-            elif detected_date == new_last_fetch and vuln_id not in new_seen_ids:
-                new_seen_ids.append(vuln_id)
-
-        if len(vulns) < max_fetch or len(incidents) >= max_fetch:
-            break
-
-        offset += max_fetch
-
-    return incidents, new_last_fetch, trim_seen_ids(new_seen_ids)
+    Raises:
+        DemistoException: If the committed fetch timestamp or API page is invalid.
+    """
+    state = initialize_vulnerability_fetch(client, last_vulns_fetch, last_vulns_seen_ids, scan_state)
+    incidents: list[dict] = []
+    page = client.list_vulns_page(state.stime, offset=state.offset, pagelength=max_fetch)
+    for vulnerability in page["items"]:
+        if occurred := state.accept(vulnerability):
+            incidents.append(vulnerability_to_incident(vulnerability, occurred))
+    # Offset counts requested source rows, not the shorter post-filtered response.
+    state.offset += max_fetch
+    complete = state.offset >= page["total"]
+    demisto.debug(
+        f"[Fetch vulnerabilities] offset={state.offset}, total={page['total']}, "
+        f"emitted={len(incidents)}, seen={len(state.seen_ids)}"
+    )
+    if complete:
+        demisto.debug(
+            f"[Fetch vulnerabilities] Scan complete; committing cursor={state.latest_fetch}, "
+            f"boundary_ids={len(state.boundary_ids)} and clearing checkpoint."
+        )
+        return incidents, state.latest_fetch, list(state.boundary_ids), None
+    demisto.debug(
+        f"[Fetch vulnerabilities] Scan incomplete; retaining committed_cursor={state.committed_fetch}, "
+        f"next_offset={state.offset}."
+    )
+    return incidents, state.committed_fetch, list(state.committed_boundary_ids), state.checkpoint()
 
 
 def fetch_incidents(
@@ -708,12 +915,13 @@ def fetch_incidents(
         incidents: Incidents that will be created in Demisto
     """
     demisto.debug("[Fetch] PaloAltoNetworks_DeviceSecurity - Start fetching")
-    demisto.debug(f"[Fetch] PaloAltoNetworks_DeviceSecurity - Last run: {json.dumps(last_run)}")
+    demisto.debug(f"[Fetch] Last vulnerability cursor: {last_run.get('last_vulns_fetch')}")
     # Get the last fetch time, if exists
     last_alerts_fetch = last_run.get("last_alerts_fetch")
     last_alerts_seen_ids = last_run.get("last_alerts_seen_ids", [])
     last_vulns_fetch = last_run.get("last_vulns_fetch")
     last_vulns_seen_ids = last_run.get("last_vulns_seen_ids", [])
+    scan_state = last_run.get("vulnerability_scan")
     max_fetch = client.max_fetch
 
     incidents = []
@@ -725,8 +933,8 @@ def fetch_incidents(
         incidents.extend(alert_incidents)
 
     if fetch_vulns:
-        vuln_incidents, last_vulns_fetch, last_vulns_seen_ids = fetch_vulnerability_incidents(
-            client, last_vulns_fetch, last_vulns_seen_ids, max_fetch
+        vuln_incidents, last_vulns_fetch, last_vulns_seen_ids, scan_state = fetch_vulnerability_incidents(
+            client, last_vulns_fetch, last_vulns_seen_ids, max_fetch, scan_state
         )
         incidents.extend(vuln_incidents)
 
@@ -736,11 +944,13 @@ def fetch_incidents(
         "last_vulns_fetch": last_vulns_fetch,
         "last_vulns_seen_ids": last_vulns_seen_ids,
     }
+    if scan_state is not None:
+        next_run["vulnerability_scan"] = scan_state
     demisto.debug(
         f"[Fetch] PaloAltoNetworks_DeviceSecurity - Number of incidents (alerts and vulnerability) "
         f"after filtering : {len(incidents)}"
     )
-    demisto.debug(f"[Fetch] PaloAltoNetworks_DeviceSecurity - Next run after incidents fetching: {json.dumps(next_run)}")
+    demisto.debug(f"[Fetch] Next vulnerability cursor: {last_vulns_fetch}; boundary IDs: {len(last_vulns_seen_ids or [])}")
 
     if is_test:
         return None, None
@@ -749,14 +959,29 @@ def fetch_incidents(
 
 
 def parse_positive_int(value: Any, field_name: str) -> int:
+    """Convert a configuration value to an integer greater than zero.
+
+    Args:
+        value (Any): Configuration value to convert to an integer.
+        field_name (str): Display name included in validation errors.
+
+    Returns:
+        The converted positive integer.
+
+    Raises:
+        ValueError: If conversion fails or the result is zero or negative.
+    """
     try:
         parsed_value = int(value)
     except (ValueError, TypeError) as e:
+        demisto.debug(f"[Configuration] {field_name}: integer conversion failed.")
         raise ValueError(f"{field_name} needs to be an integer") from e
 
     if parsed_value <= 0:
+        demisto.debug(f"[Configuration] {field_name}: rejected non-positive value={parsed_value}.")
         raise ValueError(f"{field_name} needs to be a positive integer")
 
+    demisto.debug(f"[Configuration] {field_name}: validated value={parsed_value}.")
     return parsed_value
 
 
@@ -774,6 +999,9 @@ def main():
         tsg_id = params.get("tsg_id")
         client_id = params.get("client_id")
         client_secret = params.get("client_secret")
+        if not client_secret:
+            return_error("Client Secret is required. Enter the secret in the integration's Client Secret password field.")
+            return
         verify_certificate = not argToBoolean(params.get("insecure", False))
         proxy = argToBoolean(params.get("proxy", False))
         fetch_alerts = argToBoolean(params.get("fetch_alerts", True))
@@ -797,6 +1025,7 @@ def main():
 
         token_base_url = "https://auth.apps.paloaltonetworks.com"
         base_url = "https://api.strata.paloaltonetworks.com/iot/pub/v1"
+        demisto.debug(f"[Configuration] authentication_url={token_base_url}, api_url={base_url}")
 
         access_token = get_scm_access_token(
             token_base_url,

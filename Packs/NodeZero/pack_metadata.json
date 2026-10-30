@@ -3,7 +3,7 @@
     "description": "Horizon3.ai NodeZero autonomous pentest platform. Fetches high and critical weaknesses as incidents, and collects every weakness from completed pentests as Cortex XSIAM events.",
     "support": "partner",
     "currentVersion": "2.0.0",
-    "author": "Horizon3.ai",
+    "author": "Horizon3",
     "url": "https://horizon3.ai",
     "email": "support@horizon3.ai",
     "categories": [

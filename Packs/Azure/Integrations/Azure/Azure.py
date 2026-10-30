@@ -41,6 +41,9 @@ API_VERSION = "2022-09-01"
 STORAGE_API_VERSION = "2023-11-03"
 NEW_API_VERSION_PARAMS = {"api-version": "2024-05-01"}
 BLOB_CONTAINERS_MAX_PAGE_SIZE = 5000
+RESOURCE_GRAPH_API_VERSION = "2024-04-01"
+RESOURCE_GRAPH_MAX_PAGE_SIZE = 1000
+
 GRANT_BY_CONNECTION = {
     "Device Code": DEVICE_CODE,
     "Authorization Code": AUTHORIZATION_CODE,
@@ -58,6 +61,8 @@ STORAGE_RESOURCE = "https://storage.azure.com/"
 DEFAULT_AZURE_AD_ENDPOINT = "https://login.microsoftonline.com"
 
 PERMISSIONS_TO_COMMANDS = {
+    "Microsoft.ResourceGraph/operations/read": ["azure-rg-list-operations"],
+    "Microsoft.ResourceGraph/resources/read": ["azure-rg-query"],
     "Microsoft.Network/networkSecurityGroups/read": ["azure-nsg-security-groups-list", "azure-vn-security-groups-list"],
     "Microsoft.Network/networkSecurityGroups/securityRules/read": [
         "azure-nsg-security-rule-update",
@@ -250,6 +255,16 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-appservice-webapp-update",
         "azure-appservice-webapp-update-quick-action",
     ],
+    "Microsoft.DBforPostgreSQL/flexibleServers/configurations/write": [
+        "azure-postgres-flexible-server-configuration-update",
+        "azure-postgres-flexible-server-set-disconnection-logging-quick-action",
+        "azure-postgres-flexible-server-set-checkpoint-logging-quick-action",
+        "azure-postgres-flexible-server-set-connection-throttling-quick-action",
+        "azure-postgres-flexible-server-set-session-connection-logging-quick-action",
+        "azure-postgres-flexible-server-set-log-retention-period-quick-action",
+        "azure-postgres-flexible-server-set-statement-logging-quick-action",
+        "azure-postgres-flexible-server-set-secure-transport-quick-action",
+    ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": [
         "azure-mysql-flexible-server-param-set",
         "azure-mysql-set-secure-transport-quick-action",
@@ -360,7 +375,21 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-vn-firewall-policy-rule-collection-groups-list",
         "azure-firewall-rules-list",
         "azure-firewall-rule-get",
+        "azure-vn-firewall-policy-rule-collection-groups-create",
+        "azure-vn-firewall-policy-rule-collection-groups-update",
+        "azure-vn-firewall-policy-network-rule-create",
+        "azure-vn-firewall-policy-network-rule-update",
+        "azure-vn-firewall-policy-network-rule-delete",
+        "azure-vn-firewall-policy-rule-collection-groups-delete",
     ],
+    "Microsoft.Network/firewallPolicies/ruleCollectionGroups/write": [
+        "azure-vn-firewall-policy-rule-collection-groups-create",
+        "azure-vn-firewall-policy-rule-collection-groups-update",
+        "azure-vn-firewall-policy-network-rule-create",
+        "azure-vn-firewall-policy-network-rule-update",
+        "azure-vn-firewall-policy-network-rule-delete",
+    ],
+    "Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete": ["azure-vn-firewall-policy-rule-collection-groups-delete"],
     "Microsoft.Network/locations/serviceTagDetails/read": ["azure-firewall-service-tags-information-list"],
     "Microsoft.Consumption/usageDetails/read": ["azure-billing-usage-list"],
     "Microsoft.Consumption/budgets/read": ["azure-billing-budgets-list"],
@@ -403,8 +432,23 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-firewall-get",
         "azure-firewall-rules-list",
         "azure-firewall-rule-get",
+        "azure-firewall-rule-collection-groups-create",
+        "azure-firewall-rule-collection-groups-update",
+        "azure-firewall-rule-collection-groups-delete",
+        "azure-firewall-network-rule-create",
+        "azure-firewall-network-rule-update",
+        "azure-firewall-network-rule-delete",
     ],
-    "Microsoft.Network/azureFirewalls/write": ["azure-firewall-policy-attach", "azure-firewall-policy-detach"],
+    "Microsoft.Network/azureFirewalls/write": [
+        "azure-firewall-policy-attach",
+        "azure-firewall-policy-detach",
+        "azure-firewall-rule-collection-groups-create",
+        "azure-firewall-rule-collection-groups-update",
+        "azure-firewall-rule-collection-groups-delete",
+        "azure-firewall-network-rule-create",
+        "azure-firewall-network-rule-update",
+        "azure-firewall-network-rule-delete",
+    ],
     "Microsoft.Storage/storageAccounts/tableServices/tables/write": ["azure-storage-table-create"],
     "Microsoft.Storage/storageAccounts/tableServices/tables/delete": ["azure-storage-table-delete"],
     "Microsoft.Storage/storageAccounts/tableServices/tables/read": ["azure-storage-tables-list"],
@@ -423,6 +467,31 @@ PERMISSIONS_TO_COMMANDS = {
     ],
     "Microsoft.Network/ipGroups/write": ["azure-vn-ip-group-create", "azure-vn-ip-group-update"],
     "Microsoft.Network/ipGroups/delete": ["azure-vn-ip-group-delete"],
+    "Microsoft.Network/virtualNetworks/read": ["azure-vn-virtual-networks-list"],
+    "Microsoft.Resources/subscriptions/read": ["azure-rm-subscriptions-list"],
+    "Microsoft.OperationalInsights/workspaces/savedSearches/read": [
+        "azure-log-analytics-saved-searches-list",
+        "azure-log-analytics-saved-search-get",
+    ],
+    "Microsoft.OperationalInsights/workspaces/savedSearches/write": [
+        "azure-log-analytics-saved-search-create-update",
+    ],
+    "Microsoft.OperationalInsights/workspaces/savedSearches/delete": [
+        "azure-log-analytics-saved-search-delete",
+    ],
+    "Microsoft.OperationalInsights/workspaces/read": [
+        "azure-log-analytics-workspaces-list",
+    ],
+    "Microsoft.OperationalInsights/workspaces/tables/read": [
+        "azure-log-analytics-table-get",
+    ],
+    "Microsoft.OperationalInsights/workspaces/tables/write": [
+        "azure-log-analytics-table-run",
+    ],
+    "Microsoft.OperationalInsights/workspaces/tables/delete": [
+        "azure-log-analytics-table-delete",
+    ],
+    "Microsoft.OperationalInsights/workspaces/searchJobs/write": ["azure-log-analytics-table-run"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -454,6 +523,7 @@ API_FUNCTION_TO_PERMISSIONS = {
         "Microsoft.DBforPostgreSQL/servers/configurations/write",
     ],
     "postgres_server_update": ["Microsoft.DBforPostgreSQL/servers/read", "Microsoft.DBforPostgreSQL/servers/write"],
+    "postgres_flexible_server_configuration_update": ["Microsoft.DBforPostgreSQL/flexibleServers/configurations/write"],
     "sql_db_threat_policy_update": [
         "Microsoft.Sql/servers/databases/securityAlertPolicies/read",
         "Microsoft.Sql/servers/databases/securityAlertPolicies/write",
@@ -560,6 +630,31 @@ API_FUNCTION_TO_PERMISSIONS = {
     "firewall_policy_rule_collection_list_request": ["Microsoft.Network/firewallPolicies/ruleCollectionGroups/read"],
     "firewall_policy_rule_collection_get_request": ["Microsoft.Network/firewallPolicies/ruleCollectionGroups/read"],
     "firewall_service_tag_list_request": ["Microsoft.Network/locations/serviceTagDetails/read"],
+    "resource_graph_list_operations": ["Microsoft.ResourceGraph/operations/read"],
+    "resource_graph_query_resources": ["Microsoft.ResourceGraph/resources/read"],
+    "list_virtual_networks_request": ["Microsoft.Network/virtualNetworks/read"],
+    "list_subscriptions_request": ["Microsoft.Resources/subscriptions/read"],
+    "firewall_policy_rule_collection_group_get": ["Microsoft.Network/firewallPolicies/ruleCollectionGroups/read"],
+    "firewall_policy_rule_collection_group_create_or_update": [
+        "Microsoft.Network/firewallPolicies/ruleCollectionGroups/read",
+        "Microsoft.Network/firewallPolicies/ruleCollectionGroups/write",
+    ],
+    "firewall_policy_rule_collection_group_delete": ["Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete"],
+    "log_analytics_saved_searches_list": ["Microsoft.OperationalInsights/workspaces/savedSearches/read"],
+    "log_analytics_saved_search_get": ["Microsoft.OperationalInsights/workspaces/savedSearches/read"],
+    "log_analytics_saved_search_create_update": [
+        "Microsoft.OperationalInsights/workspaces/savedSearches/read",
+        "Microsoft.OperationalInsights/workspaces/savedSearches/write",
+    ],
+    "log_analytics_saved_search_delete": ["Microsoft.OperationalInsights/workspaces/savedSearches/delete"],
+    "log_analytics_workspaces_list": ["Microsoft.OperationalInsights/workspaces/read"],
+    "log_analytics_table_get": ["Microsoft.OperationalInsights/workspaces/tables/read"],
+    "log_analytics_table_run": [
+        "Microsoft.OperationalInsights/workspaces/tables/read",
+        "Microsoft.OperationalInsights/workspaces/tables/write",
+        "Microsoft.OperationalInsights/workspaces/searchJobs/write",
+    ],
+    "log_analytics_table_delete": ["Microsoft.OperationalInsights/workspaces/tables/delete"],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -569,6 +664,7 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Network/networkSecurityGroups/securityRules/delete",
     "Microsoft.Network/networkInterfaces/read",
     "Microsoft.Network/publicIPAddresses/read",
+    "Microsoft.Network/virtualNetworks/read",
     "Microsoft.Storage/storageAccounts/read",
     "Microsoft.Storage/storageAccounts/write",
     "Microsoft.Storage/storageAccounts/blobServices/read",
@@ -588,6 +684,7 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.DBforPostgreSQL/servers/write",
     "Microsoft.DBforPostgreSQL/servers/configurations/read",
     "Microsoft.DBforPostgreSQL/servers/configurations/write",
+    "Microsoft.DBforPostgreSQL/flexibleServers/configurations/write",
     "Microsoft.Web/sites/config/read",
     "Microsoft.Web/sites/config/write",
     "Microsoft.Web/sites/read",
@@ -647,6 +744,20 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Network/ipGroups/read",
     "Microsoft.Network/ipGroups/write",
     "Microsoft.Network/ipGroups/delete",
+    "Microsoft.ResourceGraph/operations/read",
+    "Microsoft.ResourceGraph/resources/read",
+    "Microsoft.Network/firewallPolicies/ruleCollectionGroups/read",
+    "Microsoft.Network/firewallPolicies/ruleCollectionGroups/write",
+    "Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete",
+    "Microsoft.OperationalInsights/workspaces/read",
+    "Microsoft.OperationalInsights/workspaces/query/read",
+    "Microsoft.OperationalInsights/workspaces/savedSearches/read",
+    "Microsoft.OperationalInsights/workspaces/savedSearches/write",
+    "Microsoft.OperationalInsights/workspaces/savedSearches/delete",
+    "Microsoft.OperationalInsights/workspaces/tables/read",
+    "Microsoft.OperationalInsights/workspaces/tables/write",
+    "Microsoft.OperationalInsights/workspaces/tables/delete",
+    "Microsoft.OperationalInsights/workspaces/searchJobs/write",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -654,6 +765,7 @@ PREFIX_URL_AZURE = "https://management.azure.com/subscriptions/"
 PREFIX_URL_MS_GRAPH = "https://graph.microsoft.com/v1.0"
 POLICY_ASSIGNMENT_API_VERSION = "2024-05-01"
 POSTGRES_API_VERSION = "2017-12-01"
+POSTGRES_FLEXIBLE_API_VERSION = "2025-08-01"
 WEBAPP_API_VERSION = "2024-04-01"
 FLEXIBLE_API_VERSION = "2023-12-30"
 MONITOR_API_VERSION = "2016-03-01"
@@ -665,7 +777,10 @@ COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
 NETWORK_INTERFACE_API_VERSION = "2026-01-01"
-NSG_API_VERSION = "2025-01-01"
+NSG_API_VERSION = "2026-01-01"
+PUBLIC_IP_API_VERSION = "2026-01-01"
+BLOB_SERVICE_API_VERSION = "2026-09-01"
+RESOURCE_GROUPS_API_VERSION = "2021-04-01"
 # Application Gateway and Front Door WAF policies are served by two separate resource providers,
 # each with its own independently released API version, so these two versions intentionally differ.
 WAF_POLICY_API_VERSION = "2025-09-01"
@@ -684,15 +799,21 @@ AKS_API_VERSION = "2026-06-01"
 
 IP_GROUPS_API_VERSION = "2025-09-01"
 
-# Polling settings for the IP group create and update commands.
-DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval between polling attempts for the IP group polling commands.
-DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for the IP group polling commands.
+LOG_ANALYTICS_API_VERSION = "2026-03-01"
+LOG_ANALYTICS_TABLE_NAME_SUFFIX = "_SRCH"
+LOG_ANALYTICS_SAVED_SEARCH_HEADERS = [
+    "id",
+    "name",
+    "type",
+    "etag",
+]
+
+# Polling settings for the IP group and Azure Firewall polling commands.
+DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval between polling attempts of the polling commands.
+DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout of the polling commands.
 PROVISIONING_STATE_SUCCEEDED = "Succeeded"  # The terminal success state of an Azure resource provisioning operation.
 PROVISIONING_STATE_FAILED = "Failed"  # The terminal failure state of an Azure resource provisioning operation.
 IP_GROUP_TABLE_HEADERS = ["name", "id", "location", "type"]
-# Commands decorated with @polling_function. The decorator requires the command arguments to be passed as the
-# first positional argument, so main() dispatches these commands differently from the regular ones.
-POLLING_COMMANDS = {"azure-vn-ip-group-create", "azure-vn-ip-group-update"}
 
 # Image options to be used in the create_vm_command
 IMAGES = {
@@ -725,6 +846,43 @@ IMAGES = {
         "sku": "rs5-pro",
         "version": "latest",
     },
+}
+SUBSCRIPTIONS_API_VERSION = "2022-12-01"
+VIRTUAL_NETWORKS_API_VERSION = "2026-01-01"
+
+# Maps the destination type of an Azure Firewall network rule to the Azure field holding the destinations.
+FIREWALL_NETWORK_RULE_DESTINATION_FIELDS = {
+    "ip_address": "destinationAddresses",
+    "ip_group": "destinationIpGroups",
+    "service_tag": "destinationAddresses",
+    "fqdn": "destinationFqdns",
+}
+
+FIREWALL_OUTPUTS_PREFIX = "Azure.Firewall.Firewalls"
+FIREWALL_POLICY_RULE_COLLECTION_GROUP_OUTPUTS_PREFIX = "Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups"
+
+# Azure Firewall resources and firewall policy rule collection groups are provisioned asynchronously. The commands
+# poll the provisioning state of the resource until it reaches one of these terminal states.
+FIREWALL_FAILED_PROVISIONING_STATE = "Failed"
+FIREWALL_TERMINAL_PROVISIONING_STATES = {"Succeeded", FIREWALL_FAILED_PROVISIONING_STATE}
+# Commands decorated with @polling_function. The decorator requires the command arguments to be passed as the
+# first positional argument, so main() dispatches these commands differently from the regular ones.
+POLLING_COMMANDS = {
+    "azure-vn-ip-group-create",
+    "azure-vn-ip-group-update",
+    "azure-firewall-rule-collection-groups-create",
+    "azure-firewall-rule-collection-groups-update",
+    "azure-firewall-rule-collection-groups-delete",
+    "azure-firewall-network-rule-create",
+    "azure-firewall-network-rule-update",
+    "azure-firewall-network-rule-delete",
+    "azure-vn-firewall-policy-rule-collection-groups-create",
+    "azure-vn-firewall-policy-rule-collection-groups-update",
+    "azure-vn-firewall-policy-rule-collection-groups-delete",
+    "azure-vn-firewall-policy-network-rule-create",
+    "azure-vn-firewall-policy-network-rule-update",
+    "azure-vn-firewall-policy-network-rule-delete",
+    "azure-log-analytics-table-run",
 }
 
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
@@ -1070,8 +1228,9 @@ class AzureClient:
                 "PUT",
                 full_url=(
                     f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-                    f"/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}?"
+                    f"/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}"
                 ),
+                params={"api-version": NSG_API_VERSION},
                 json_data={"properties": properties},
             )
         except Exception as e:
@@ -1106,6 +1265,7 @@ class AzureClient:
             return self.http_request(
                 "GET",
                 full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}",
+                params={"api-version": NSG_API_VERSION},
             )
         except Exception as e:
             self.handle_azure_error(
@@ -1136,7 +1296,8 @@ class AzureClient:
             demisto.debug("Retrieving security rules list.")
             return self.http_request(
                 "GET",
-                full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups/{network_security_group_name}/securityRules?{NSG_API_VERSION}",
+                full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups/{network_security_group_name}/securityRules",
+                params={"api-version": NSG_API_VERSION},
             )
         except Exception as e:
             self.handle_azure_error(
@@ -1247,6 +1408,178 @@ class AzureClient:
                 resource_name=container_name or "blob-containers",
                 resource_type="Blob Container",
                 api_function_name="storage_blob_container_list_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def firewall_get(self, subscription_id: str, resource_group_name: str, firewall_name: str):
+        """
+        Retrieve an Azure Firewall resource.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the firewall.
+            firewall_name: The name of the Azure Firewall.
+
+        Return:
+            A dictionary containing the Azure Firewall resource.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/azure-firewalls/get?view=rest-virtualnetwork-2025-09-01&tabs=HTTP
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/azureFirewalls/{firewall_name}"
+        )
+        try:
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": FIREWALL_API_VERSION})
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=firewall_name,
+                resource_type="Firewall",
+                api_function_name="firewall_get",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def firewall_update(self, subscription_id: str, resource_group_name: str, firewall_name: str, firewall_data: dict):
+        """
+        Create or update an Azure Firewall resource.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the firewall.
+            firewall_name: The name of the Azure Firewall.
+            firewall_data: The full firewall resource to send in the request body.
+
+        Return:
+            A dictionary containing the updated Azure Firewall resource.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/azure-firewalls/create-or-update?view=rest-virtualnetwork-2025-09-01&tabs=HTTP
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/azureFirewalls/{firewall_name}"
+        )
+        try:
+            return self.http_request(
+                method="PUT", full_url=full_url, json_data=firewall_data, params={"api-version": FIREWALL_API_VERSION}
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=firewall_name,
+                resource_type="Firewall",
+                api_function_name="firewall_update",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def firewall_policy_rule_collection_group_get(
+        self, subscription_id: str, resource_group_name: str, policy_name: str, collection_name: str
+    ):
+        """
+        Retrieve a rule collection group of a firewall policy.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the firewall policy.
+            policy_name: The name of the firewall policy.
+            collection_name: The name of the rule collection group.
+
+        Return:
+            A dictionary containing the rule collection group.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policy-rule-collection-groups/get?view=rest-virtualnetwork-2025-09-01&tabs=HTTP
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/firewallPolicies/{policy_name}/ruleCollectionGroups/{collection_name}"
+        )
+        try:
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": FIREWALL_API_VERSION})
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{policy_name}/{collection_name}",
+                resource_type="Firewall Policy Rule Collection Group",
+                api_function_name="firewall_policy_rule_collection_group_get",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def firewall_policy_rule_collection_group_create_or_update(
+        self, subscription_id: str, resource_group_name: str, policy_name: str, collection_name: str, collection_data: dict
+    ):
+        """
+        Create or update a rule collection group of a firewall policy.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the firewall policy.
+            policy_name: The name of the firewall policy.
+            collection_name: The name of the rule collection group.
+            collection_data: The rule collection group to send in the request body.
+
+        Return:
+            A dictionary containing the created or updated rule collection group.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policy-rule-collection-groups/create-or-update?view=rest-virtualnetwork-2025-09-01&tabs=HTTP
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/firewallPolicies/{policy_name}/ruleCollectionGroups/{collection_name}"
+        )
+        try:
+            return self.http_request(
+                method="PUT", full_url=full_url, json_data=collection_data, params={"api-version": FIREWALL_API_VERSION}
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{policy_name}/{collection_name}",
+                resource_type="Firewall Policy Rule Collection Group",
+                api_function_name="firewall_policy_rule_collection_group_create_or_update",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def firewall_policy_rule_collection_group_delete(
+        self, subscription_id: str, resource_group_name: str, policy_name: str, collection_name: str
+    ):
+        """
+        Delete a rule collection group from a firewall policy.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the firewall policy.
+            policy_name: The name of the firewall policy.
+            collection_name: The name of the rule collection group to delete.
+
+        Return:
+            The HTTP response object from the delete operation.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policy-rule-collection-groups/delete?view=rest-virtualnetwork-2025-09-01&tabs=HTTP
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/firewallPolicies/{policy_name}/ruleCollectionGroups/{collection_name}"
+        )
+        try:
+            return self.http_request(
+                method="DELETE", full_url=full_url, params={"api-version": FIREWALL_API_VERSION}, resp_type="response"
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{policy_name}/{collection_name}",
+                resource_type="Firewall Policy Rule Collection Group",
+                api_function_name="firewall_policy_rule_collection_group_delete",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -1394,14 +1727,14 @@ class AzureClient:
         Returns:
             The json response from the API call.
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/storagerp/blob-services/get-service-properties?view=rest-storagerp-2024-01-01&utm_source=chatgpt.com&tabs=HTTP
+            https://learn.microsoft.com/en-us/rest/api/storagerp/blob-services/get-service-properties?view=rest-storagerp-2026-09-01&tabs=HTTP
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default"
         )
         try:
-            return self.http_request(method="GET", full_url=full_url)
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": BLOB_SERVICE_API_VERSION})
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -1458,6 +1791,7 @@ class AzureClient:
             return self.http_request(
                 method=method,
                 full_url=full_url,
+                params={"api-version": BLOB_SERVICE_API_VERSION},
                 json_data={"properties": properties},
             )
         except Exception as e:
@@ -2286,6 +2620,53 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
+    def postgres_flexible_server_configuration_update(
+        self,
+        server_name: str,
+        configuration_name: str,
+        subscription_id: str,
+        resource_group_name: str,
+        source: str,
+        value: str,
+    ):
+        """
+        Updates a configuration of a PostgreSQL Flexible Server.
+
+        Args:
+            server_name (str): Name of the PostgreSQL Flexible Server.
+            configuration_name (str): Name of the configuration parameter to update.
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Name of the resource group containing the server.
+            source (str): The source of the configuration value (e.g. "user-override").
+            value (str): The new value to set for the configuration parameter.
+
+        Returns:
+            dict: The response from the Azure REST API after applying the update.
+
+        Raises:
+            ValueError: If the PostgreSQL Flexible Server or configuration parameter is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.DBforPostgreSQL/flexibleServers/{server_name}/configurations/{configuration_name}"
+        )
+        params = {"api-version": POSTGRES_FLEXIBLE_API_VERSION}
+        data = {"properties": {"source": source, "value": value}}
+        data = remove_empty_elements(data)
+        demisto.debug(f'Updating configuration "{configuration_name}" of PostgreSQL Flexible Server "{server_name}".')
+        try:
+            return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{server_name}/{configuration_name}",
+                resource_type="PostgreSQL Flexible Server Configuration",
+                api_function_name="postgres_flexible_server_configuration_update",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
     def get_monitor_log_profile(self, subscription_id: str, log_profile_name: str):
         """
         Gets a monitor log profile.
@@ -2951,7 +3332,7 @@ class AzureClient:
             A dictionary containing the network security group information.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups/create-or-update?view=rest-virtualnetwork-2024-05-01
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups/create-or-update?view=rest-virtualnetwork-2026-01-01
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -2960,7 +3341,7 @@ class AzureClient:
         json_data = {
             "location": location,
         }
-        params = {"api-version": "2025-05-01"}
+        params = {"api-version": NSG_API_VERSION}
         try:
             return self.http_request(method="PUT", full_url=full_url, json_data=remove_empty_elements(json_data), params=params)
         except Exception as e:
@@ -2985,14 +3366,14 @@ class AzureClient:
             A dictionary containing the list of network security groups.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups/list?view=rest-virtualnetwork-2024-05-01
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups/list?view=rest-virtualnetwork-2026-01-01
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Network/networkSecurityGroups"
         )
         try:
-            return self.http_request(method="GET", full_url=full_url)
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": NSG_API_VERSION})
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -3017,7 +3398,7 @@ class AzureClient:
             The HTTP response object from the delete operation.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/security-rules/delete?view=rest-virtualnetwork-2024-05-01
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/security-rules/delete?view=rest-virtualnetwork-2026-01-01
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -3025,7 +3406,9 @@ class AzureClient:
             f"/securityRules/{security_rule_name}"
         )
         try:
-            response = self.http_request(method="DELETE", full_url=full_url, resp_type="response")
+            response = self.http_request(
+                method="DELETE", full_url=full_url, params={"api-version": NSG_API_VERSION}, resp_type="response"
+            )
             if response.status_code in (200, 202, 204):  # type: ignore[union-attr]
                 return response
             else:
@@ -3225,11 +3608,15 @@ class AzureClient:
             A dictionary containing the list of resource groups.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/list?view=rest-resources-2021-04-01
+            https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/list?view=rest-resources-2022-09-01
         """
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourcegroups"
         try:
-            return self.http_request(method="GET", full_url=full_url, params={"$filter": filter_by_tag, "$top": limit})
+            return self.http_request(
+                method="GET",
+                full_url=full_url,
+                params={"api-version": RESOURCE_GROUPS_API_VERSION, "$filter": filter_by_tag, "$top": limit},
+            )
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -3282,14 +3669,14 @@ class AzureClient:
             A dictionary containing the list of public IP addresses.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list?view=rest-virtualnetwork-2024-05-01
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list?view=rest-virtualnetwork-2026-01-01
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
             f"providers/Microsoft.Network/publicIPAddresses"
         )
         try:
-            return self.http_request(method="GET", full_url=full_url)
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": PUBLIC_IP_API_VERSION})
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -3298,6 +3685,80 @@ class AzureClient:
                 api_function_name="list_public_ip_addresses_request",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
+            )
+
+    def list_virtual_networks_request(self, subscription_id: str, resource_group_name: str, next_token: str = ""):
+        """
+        List all virtual networks in a specific resource group.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the virtual networks.
+            next_token: The URI to fetch the next page of results.
+
+        Return:
+            A dictionary containing the list of virtual networks.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/virtual-networks/list
+        """
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of virtual networks.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            parameters: dict[str, Any] = {}
+        else:
+            full_url = (
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
+                f"providers/Microsoft.Network/virtualNetworks"
+            )
+            parameters = {"api-version": VIRTUAL_NETWORKS_API_VERSION}
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=parameters)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name,
+                resource_type="Virtual Network",
+                api_function_name="list_virtual_networks_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def list_subscriptions_request(self, next_token: str = ""):
+        """
+        List all subscriptions the authenticated identity has access to in the tenant.
+
+        Note:
+            This is a tenant-level call, therefore it cannot reuse PREFIX_URL_AZURE, which always
+            includes a subscription ID path segment. The base URL is derived from PREFIX_URL_AZURE so
+            the command keeps working after switch_to_gov_account() rebinds the global.
+
+        Args:
+            next_token: The URI to fetch the next page of results.
+
+        Return:
+            A dictionary containing the list of subscriptions.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/resources/subscriptions/list?view=rest-resources-2022-12-01
+        """
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of subscriptions.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            parameters: dict[str, Any] = {}
+        else:
+            full_url = f"{PREFIX_URL_AZURE.rstrip('/')}"
+            parameters = {"api-version": SUBSCRIPTIONS_API_VERSION}
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=parameters)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name="subscriptions",
+                resource_type="Subscription",
+                api_function_name="list_subscriptions_request",
+                subscription_id=None,
+                resource_group_name=None,
             )
 
     def start_vm_request(self, subscription_id: str, resource_group_name: str, vm_name: str):
@@ -3435,7 +3896,7 @@ class AzureClient:
             }
         else:
             demisto.debug(f"using {next_token=} for retrieving the next page of results.")
-            full_url = next_token
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
             parameters = {}
         try:
             demisto.debug(f"[Azure] {parameters=}")
@@ -3751,11 +4212,11 @@ class AzureClient:
             List of PublicIPAddressListResult objects.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list-all?tabs=HTTP
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list-all?view=rest-virtualnetwork-2026-01-01
         """
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.Network/publicIPAddresses"
         try:
-            return self.http_request(method="GET", full_url=full_url)
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": PUBLIC_IP_API_VERSION})
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -3765,6 +4226,275 @@ class AzureClient:
                 subscription_id=subscription_id,
                 resource_group_name=None,
             )
+
+    def log_analytics_workspace_full_url(self, subscription_id: str, resource_group_name: str, workspace_name: str) -> str:
+        """Build the ARM base URL for a Log Analytics workspace."""
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.OperationalInsights/workspaces"
+        )
+        if workspace_name:
+            full_url += f"/{workspace_name}"
+        return full_url
+
+    def log_analytics_saved_searches_list(self, subscription_id: str, resource_group_name: str, workspace_name: str):
+        """
+        List all saved searches of a Log Analytics workspace.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Resource group name.
+            workspace_name (str): Log Analytics workspace name.
+
+        Returns:
+            dict: The API response containing the saved searches.
+
+        Raises:
+            ValueError: If the workspace is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        base_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, workspace_name)
+        params = {"api-version": LOG_ANALYTICS_API_VERSION}
+        try:
+            return self.http_request("GET", full_url=f"{base_url}/savedSearches", params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=workspace_name,
+                resource_type="Log Analytics Saved Search",
+                api_function_name="log_analytics_saved_searches_list",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+            return {}
+
+    def log_analytics_saved_search_get(
+        self, subscription_id: str, resource_group_name: str, workspace_name: str, saved_search_id: str
+    ):
+        """
+        Get a specified saved search from a Log Analytics workspace.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Resource group name.
+            workspace_name (str): Log Analytics workspace name.
+            saved_search_id (str): The ID of the saved search.
+
+        Returns:
+            dict: The API response containing the saved search.
+
+        Raises:
+            ValueError: If the saved search is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        base_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, workspace_name)
+        params = {"api-version": LOG_ANALYTICS_API_VERSION}
+        try:
+            return self.http_request("GET", full_url=f"{base_url}/savedSearches/{saved_search_id}", params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=saved_search_id,
+                resource_type="Log Analytics Saved Search",
+                api_function_name="log_analytics_saved_search_get",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+            return {}
+
+    def log_analytics_saved_search_create_update(
+        self, subscription_id: str, resource_group_name: str, workspace_name: str, saved_search_id: str, data: dict
+    ):
+        """
+        Create or update a saved search in a Log Analytics workspace.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Resource group name.
+            workspace_name (str): Log Analytics workspace name.
+            saved_search_id (str): The ID of the saved search.
+            data (dict): The saved search request body.
+
+        Returns:
+            dict: The API response containing the created/updated saved search.
+
+        Raises:
+            ValueError: If the workspace is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        base_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, workspace_name)
+        params = {"api-version": LOG_ANALYTICS_API_VERSION}
+        try:
+            return self.http_request("PUT", full_url=f"{base_url}/savedSearches/{saved_search_id}", json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=saved_search_id,
+                resource_type="Log Analytics Saved Search",
+                api_function_name="log_analytics_saved_search_create_update",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+            return {}
+
+    def log_analytics_saved_search_delete(
+        self, subscription_id: str, resource_group_name: str, workspace_name: str, saved_search_id: str
+    ) -> None:
+        """
+        Delete a specified saved search from a Log Analytics workspace.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Resource group name.
+            workspace_name (str): Log Analytics workspace name.
+            saved_search_id (str): The ID of the saved search.
+
+        Raises:
+            ValueError: If the saved search is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        base_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, workspace_name)
+        params = {"api-version": LOG_ANALYTICS_API_VERSION}
+        try:
+            self.http_request(
+                "DELETE", full_url=f"{base_url}/savedSearches/{saved_search_id}", params=params, resp_type="response"
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=saved_search_id,
+                resource_type="Log Analytics Saved Search",
+                api_function_name="log_analytics_saved_search_delete",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def log_analytics_workspaces_list(self, subscription_id: str, resource_group_name: str):
+        """
+        List Log Analytics workspaces in a resource group.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Resource group name.
+
+        Returns:
+            dict: The API response containing the workspaces.
+
+        Raises:
+            ValueError: If the resource group is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        full_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, "")
+        params = {"api-version": LOG_ANALYTICS_API_VERSION}
+        try:
+            return self.http_request("GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name,
+                resource_type="Log Analytics Workspace",
+                api_function_name="log_analytics_workspaces_list",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+            return {}
+
+    def log_analytics_table_get(self, subscription_id: str, resource_group_name: str, workspace_name: str, table_name: str):
+        """
+        Get a Log Analytics workspace table (search job).
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Resource group name.
+            workspace_name (str): Log Analytics workspace name.
+            table_name (str): The name of the table.
+
+        Returns:
+            dict: The API response containing the table.
+
+        Raises:
+            ValueError: If the table is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        base_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, workspace_name)
+        params = {"api-version": LOG_ANALYTICS_API_VERSION}
+        try:
+            return self.http_request("GET", full_url=f"{base_url}/tables/{table_name}", params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=table_name,
+                resource_type="Log Analytics Search Job",
+                api_function_name="log_analytics_table_get",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+            return {}
+
+    def log_analytics_table_run(
+        self, subscription_id: str, resource_group_name: str, workspace_name: str, table_name: str, data: dict
+    ):
+        """
+        Create a Log Analytics search job table. The API returns only a 202 status code.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Resource group name.
+            workspace_name (str): Log Analytics workspace name.
+            table_name (str): The name of the table to create (must end with the _SRCH suffix).
+            data (dict): The search job request body.
+
+        Raises:
+            ValueError: If the workspace is not found.
+            DemistoException: If the search job already exists or on permission/other API errors.
+        """
+        base_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, workspace_name)
+        params = {"api-version": LOG_ANALYTICS_API_VERSION}
+        try:
+            return self.http_request(
+                "PUT", full_url=f"{base_url}/tables/{table_name}", json_data=data, params=params, resp_type="response"
+            )
+        except Exception as e:
+            if "properties.searchResult is immutable" in str(e):
+                raise DemistoException(f"Search job {table_name} already exists - please choose another name.") from e
+            self.handle_azure_error(
+                e=e,
+                resource_name=table_name,
+                resource_type="Log Analytics Search Job",
+                api_function_name="log_analytics_table_run",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+            return {}
+
+    def log_analytics_table_delete(self, subscription_id: str, resource_group_name: str, workspace_name: str, table_name: str):
+        """
+        Delete a Log Analytics workspace table (search job).
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Resource group name.
+            workspace_name (str): Log Analytics workspace name.
+            table_name (str): The name of the table to delete.
+
+        Raises:
+            ValueError: If the table is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        base_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, workspace_name)
+        params = {"api-version": LOG_ANALYTICS_API_VERSION}
+        try:
+            return self.http_request("DELETE", full_url=f"{base_url}/tables/{table_name}", params=params, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=table_name,
+                resource_type="Log Analytics Search Job",
+                api_function_name="log_analytics_table_delete",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+            return {}
 
     def billing_usage_list(
         self,
@@ -3803,6 +4533,7 @@ class AzureClient:
 
         try:
             if next_page_token:
+                validate_next_link(next_page_token, urlparse(PREFIX_URL_AZURE).hostname or "")
                 new_url = remove_query_param_from_url(next_page_token, "api-version")
                 demisto.debug(f"Azure billing usage request (pagination): {new_url}")
                 return self.http_request("GET", full_url=new_url, params={"api-version": api_version})
@@ -4345,77 +5076,6 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def firewall_get(self, subscription_id: str, resource_group_name: str, firewall_name: str):
-        """
-        Get an Azure firewall.
-
-        Args:
-            subscription_id (str): The ID of the Azure subscription.
-            resource_group_name (str): The name of the resource group that contains the firewall.
-            firewall_name (str): The name of the firewall.
-
-        Returns:
-            dict: The Azure firewall object.
-
-        Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/azure-firewalls/get
-        """
-        full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.Network/azureFirewalls/{firewall_name}"
-        )
-        try:
-            return self.http_request(method="GET", full_url=full_url, params={"api-version": FIREWALL_API_VERSION})
-        except Exception as e:
-            self.handle_azure_error(
-                e=e,
-                resource_name=firewall_name,
-                resource_type="Firewall",
-                api_function_name="firewall_get",
-                subscription_id=subscription_id,
-                resource_group_name=resource_group_name,
-            )
-
-    def firewall_update(self, subscription_id: str, resource_group_name: str, firewall_name: str, firewall_data: dict):
-        """
-        Create or update an Azure firewall.
-
-        This method uses PUT to update the firewall. The caller should first retrieve the current firewall
-        using firewall_get, modify the desired properties, and then pass the full object to this method.
-
-        Args:
-            subscription_id (str): The ID of the Azure subscription.
-            resource_group_name (str): The name of the resource group that contains the firewall.
-            firewall_name (str): The name of the firewall.
-            firewall_data (dict): The full firewall object with the updated properties.
-
-        Returns:
-            dict: The updated Azure firewall object.
-
-        Docs:
-            https://learn.microsoft.com/en-us/rest/api/firewall/azure-firewalls/create-or-update?view=rest-firewall-2025-09-01&tabs=HTTP
-        """
-        full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.Network/azureFirewalls/{firewall_name}"
-        )
-        try:
-            return self.http_request(
-                method="PUT",
-                full_url=full_url,
-                params={"api-version": FIREWALL_API_VERSION},
-                json_data=firewall_data,
-            )
-        except Exception as e:
-            self.handle_azure_error(
-                e=e,
-                resource_name=firewall_name,
-                resource_type="Firewall",
-                api_function_name="firewall_update",
-                subscription_id=subscription_id,
-                resource_group_name=resource_group_name,
-            )
-
     def firewall_list_request(self, subscription_id: str, resource_group_name: str, resource: str, next_token: str):
         """
         Lists the Azure firewalls in a resource group or in the whole subscription.
@@ -4593,6 +5253,66 @@ class AzureClient:
                 resource_type="Service Tags",
                 api_function_name="firewall_service_tag_list_request",
                 subscription_id=subscription_id,
+            )
+
+    def resource_graph_list_operations(self):
+        """
+        Send the list Azure Resource Graph operations request to the API.
+
+        Returns:
+            dict: The JSON response from the API call, containing the available operations.
+
+        Raises:
+            DemistoException: If there are permission or other API errors.
+        """
+        management_host = urlparse(PREFIX_URL_AZURE).hostname
+        full_url = f"https://{management_host}/providers/Microsoft.ResourceGraph/operations"
+        params = {"api-version": RESOURCE_GRAPH_API_VERSION}
+        demisto.debug("Listing Azure Resource Graph operations.")
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name="operations",
+                resource_type="Resource Graph Operations",
+                api_function_name="resource_graph_list_operations",
+            )
+
+    def resource_graph_query_resources(
+        self, query: str, paging_options: dict[str, Any], subscriptions: list, management_groups: list
+    ):
+        """
+        Send the Azure Resource Graph query request to the API.
+
+        Args:
+            query (str): The KQL query to execute.
+            paging_options (dict): The paging options (e.g. $skip, $top, $skipToken) for the query.
+            subscriptions (list): The subscriptions against which to execute the query.
+            management_groups (list): The management groups against which to execute the query.
+
+        Returns:
+            dict: The JSON response from the API call, containing the query results.
+
+        Raises:
+            DemistoException: If there are permission or other API errors.
+        """
+        request_data = remove_empty_elements(
+            {"query": query, "options": paging_options, "subscriptions": subscriptions, "managementGroups": management_groups}
+        )
+
+        management_host = urlparse(PREFIX_URL_AZURE).hostname
+        full_url = f"https://{management_host}/providers/Microsoft.ResourceGraph/resources"
+        params = {"api-version": RESOURCE_GRAPH_API_VERSION}
+        demisto.debug(f"Executing Azure Resource Graph query with options: {paging_options}.")
+        try:
+            return self.http_request(method="POST", full_url=full_url, params=params, json_data=request_data)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name="resources",
+                resource_type="Resource Graph Query",
+                api_function_name="resource_graph_query_resources",
             )
 
 
@@ -5009,6 +5729,509 @@ def build_firewall_readable_data(firewalls: list) -> list:
         )
 
     return readable_data
+
+
+def validate_firewall_network_rule_source_and_destination(
+    source_type: str,
+    source_ips: list,
+    source_ip_group_ids: list,
+    destination_type: str,
+    destinations: list,
+) -> None:
+    """
+    Validate that the source and destination arguments of a network rule are consistent with their selected types.
+    Without this validation a value that does not match the selected type is silently dropped, and a rule with no
+    source or no destination is sent to Azure.
+
+    Args:
+        source_type: The source type of the rule, either "ip_address" or "ip_group".
+        source_ips: The source IP addresses of the rule.
+        source_ip_group_ids: The source IP group IDs of the rule.
+        destination_type: The destination type of the rule.
+        destinations: The destinations of the rule.
+
+    Raises:
+        ValueError: If a type is unknown, if the argument matching a provided type is empty, or if an argument that
+            does not match the provided type was supplied.
+    """
+    source_arguments = {"ip_address": ("source_ips", source_ips), "ip_group": ("source_ip_group_ids", source_ip_group_ids)}
+
+    if source_type:
+        if source_type not in source_arguments:
+            raise ValueError(
+                f'The "source_type" argument must be one of {", ".join(source_arguments)}, but "{source_type}" was provided.'
+            )
+        matching_argument, matching_values = source_arguments[source_type]
+        if not matching_values:
+            raise ValueError(
+                f'The "{matching_argument}" argument must be provided when the "source_type" argument is "{source_type}".'
+            )
+        for other_type, (other_argument, other_values) in source_arguments.items():
+            if other_type != source_type and other_values:
+                raise ValueError(
+                    f'The "{other_argument}" argument cannot be provided when the "source_type" argument is "{source_type}".'
+                )
+    elif source_ips or source_ip_group_ids:
+        raise ValueError(
+            'The "source_type" argument must be provided when the "source_ips" or "source_ip_group_ids" argument is provided.'
+        )
+
+    if destination_type:
+        if destination_type not in FIREWALL_NETWORK_RULE_DESTINATION_FIELDS:
+            raise ValueError(
+                f'The "destination_type" argument must be one of {", ".join(FIREWALL_NETWORK_RULE_DESTINATION_FIELDS)}, '
+                f'but "{destination_type}" was provided.'
+            )
+        if not destinations:
+            raise ValueError(
+                f'The "destinations" argument must be provided when the "destination_type" argument is "{destination_type}".'
+            )
+    elif destinations:
+        raise ValueError('The "destination_type" argument must be provided when the "destinations" argument is provided.')
+
+
+def build_firewall_network_rule(args: dict[str, Any], is_firewall_rule: bool) -> dict[str, Any]:
+    """
+    Build an Azure Firewall network rule object from the command arguments.
+
+    Args:
+        args: Command arguments.
+        is_firewall_rule: Whether the rule belongs to a firewall. A policy rule uses a different schema.
+
+    Return:
+        A dictionary containing the network rule object.
+
+    Raises:
+        ValueError: If the source or the destination arguments are inconsistent with their selected types.
+    """
+    source_type = args.get("source_type", "")
+    source_ips = argToList(args.get("source_ips"))
+    source_ip_group_ids = argToList(args.get("source_ip_group_ids"))
+    destination_type = args.get("destination_type", "")
+    destinations = argToList(args.get("destinations"))
+    protocols = argToList(args.get("protocols"))
+
+    validate_firewall_network_rule_source_and_destination(
+        source_type=source_type,
+        source_ips=source_ips,
+        source_ip_group_ids=source_ip_group_ids,
+        destination_type=destination_type,
+        destinations=destinations,
+    )
+    rule: dict[str, Any] = {
+        "name": args.get("rule_name", ""),
+        "description": args.get("description"),
+        "destinationPorts": argToList(args.get("destination_ports")),
+        FIREWALL_NETWORK_RULE_DESTINATION_FIELDS.get(destination_type, "destinationAddresses"): destinations,
+        "sourceAddresses": source_ips if source_type == "ip_address" else None,
+        "sourceIpGroups": source_ip_group_ids if source_type == "ip_group" else None,
+        "protocols": protocols if is_firewall_rule else None,
+        "ipProtocols": None if is_firewall_rule else protocols,
+        "ruleType": None if is_firewall_rule else "NetworkRule",
+    }
+    return remove_empty_elements(rule)
+
+
+def build_firewall_network_rule_update_fields(args: dict[str, Any], is_firewall_rule: bool) -> dict[str, Any]:
+    """
+    Build the properties to replace on an existing Azure Firewall network rule.
+    Only the provided properties are replaced, so the unset ones are pruned rather than overwriting Azure with nulls.
+
+    Args:
+        args: Command arguments.
+        is_firewall_rule: Whether the rule belongs to a firewall. A policy rule uses a different schema.
+
+    Return:
+        A dictionary containing the rule properties to replace.
+
+    Raises:
+        ValueError: If the source or the destination arguments are inconsistent with their selected types.
+    """
+    source_type = args.get("source_type", "")
+    source_ips = argToList(args.get("source_ips"))
+    source_ip_group_ids = argToList(args.get("source_ip_group_ids"))
+    destination_type = args.get("destination_type", "")
+    destinations = argToList(args.get("destinations"))
+    protocols = argToList(args.get("protocols"))
+
+    validate_firewall_network_rule_source_and_destination(
+        source_type=source_type,
+        source_ips=source_ips,
+        source_ip_group_ids=source_ip_group_ids,
+        destination_type=destination_type,
+        destinations=destinations,
+    )
+    update_fields: dict[str, Any] = {
+        "description": args.get("description"),
+        "destinationPorts": argToList(args.get("destination_ports")),
+        FIREWALL_NETWORK_RULE_DESTINATION_FIELDS.get(destination_type, "destinationAddresses"): destinations,
+        "sourceAddresses": source_ips if source_type == "ip_address" else None,
+        "sourceIpGroups": source_ip_group_ids if source_type == "ip_group" else None,
+        "protocols": protocols if is_firewall_rule else None,
+        "ipProtocols": None if is_firewall_rule else protocols,
+    }
+    return remove_empty_elements(update_fields)
+
+
+def get_firewall_network_rule_collections(
+    client: AzureClient, subscription_id: str, resource_group_name: str, firewall_name: str
+) -> tuple[dict, list]:
+    """
+    Retrieve an Azure Firewall resource along with its network rule collections.
+
+    Args:
+        client: The AzureClient.
+        subscription_id: The Azure subscription ID.
+        resource_group_name: The resource group containing the firewall.
+        firewall_name: The name of the Azure Firewall.
+
+    Return:
+        A tuple of the firewall resource and the list of its network rule collections. The list is a
+        reference into the firewall resource, so mutating it updates the resource sent back to Azure.
+    """
+    firewall_data = client.firewall_get(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, firewall_name=firewall_name
+    )
+    return firewall_data, firewall_data.setdefault("properties", {}).setdefault("networkRuleCollections", [])
+
+
+def find_firewall_network_rule_collection(collections: list, collection_name: str) -> dict:
+    """
+    Find a network rule collection by name within a firewall's rule collections.
+
+    Args:
+        collections: The network rule collections of the firewall.
+        collection_name: The name of the rule collection to find.
+
+    Return:
+        The matching rule collection.
+
+    Raises:
+        ValueError: If the rule collection was not found.
+    """
+    for collection in collections:
+        if collection.get("name") == collection_name:
+            return collection
+    raise ValueError(f'Network rule collection "{collection_name}" was not found.')
+
+
+def get_policy_network_rule_collection(collection_group: dict, collection_name: str) -> dict:
+    """
+    Find a rule collection by name within a firewall policy rule collection group.
+    A rule collection group can legitimately hold several rule collections, so the requested one is matched by name
+    rather than assuming the group holds a single collection.
+
+    Args:
+        collection_group: The firewall policy rule collection group.
+        collection_name: The name of the rule collection to find.
+
+    Return:
+        The matching rule collection.
+
+    Raises:
+        ValueError: If the rule collection was not found in the rule collection group.
+    """
+    rule_collections = dict_safe_get(collection_group, ["properties", "ruleCollections"], [])
+    for rule_collection in rule_collections:
+        if rule_collection.get("name") == collection_name:
+            return rule_collection
+    raise ValueError(f'Network rule collection "{collection_name}" was not found in the policy.')
+
+
+def firewall_policy_network_rule_collection_exists(
+    client: AzureClient, subscription_id: str, resource_group_name: str, policy_name: str, collection_name: str
+) -> bool:
+    """
+    Check whether a rule collection group already exists in a firewall policy.
+
+    Args:
+        client: The AzureClient.
+        subscription_id: The Azure subscription ID.
+        resource_group_name: The resource group containing the firewall policy.
+        policy_name: The name of the firewall policy.
+        collection_name: The name of the rule collection group.
+
+    Return:
+        True if the rule collection group exists, False if Azure reported it as not found.
+
+    Raises:
+        ValueError: If the lookup failed for any reason other than the rule collection group not being found.
+    """
+    try:
+        client.firewall_policy_rule_collection_group_get(
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            policy_name=policy_name,
+            collection_name=collection_name,
+        )
+    except ValueError as e:
+        # handle_azure_error raises ValueError for a 404, which simply means the collection name is available.
+        # Any other ValueError is a real failure and must be surfaced rather than reported as "does not exist".
+        error_msg = str(e).lower()
+        if "404" not in error_msg and "not found" not in error_msg:
+            raise
+        demisto.debug(f"Network rule collection {collection_name} does not exist in policy {policy_name}.")
+        return False
+    return True
+
+
+def find_firewall_network_rule(rules: list, rule_name: str) -> dict:
+    """
+    Find a network rule by name within a rule collection's rules.
+
+    Args:
+        rules: The rules of the rule collection.
+        rule_name: The name of the rule to find.
+
+    Return:
+        The matching rule.
+
+    Raises:
+        ValueError: If the rule was not found.
+    """
+    for rule in rules:
+        if rule.get("name") == rule_name:
+            return rule
+    raise ValueError(f'Network rule "{rule_name}" was not found.')
+
+
+def remove_firewall_network_rules(rules: list, rule_names: list) -> tuple[list, list]:
+    """
+    Remove the requested network rules from a rule collection's rules.
+
+    Args:
+        rules: The rules of the rule collection.
+        rule_names: The names of the rules to remove.
+
+    Return:
+        A tuple of the remaining rules and the names of the rules that were not found.
+
+    Raises:
+        ValueError: If none of the requested rules were found.
+    """
+    existing_names = {rule.get("name") for rule in rules}
+    missing_names = [rule_name for rule_name in rule_names if rule_name not in existing_names]
+
+    if len(missing_names) == len(rule_names):
+        raise ValueError(f"None of the requested network rules were found: {', '.join(rule_names)}.")
+
+    return [rule for rule in rules if rule.get("name") not in rule_names], missing_names
+
+
+def build_firewall_network_rule_delete_header(collection_name: str, missing_rules: list) -> str:
+    """
+    Build the readable output header of the network rule delete commands.
+
+    Args:
+        collection_name: The name of the rule collection the network rules were deleted from.
+        missing_rules: The names of the requested network rules that were not found in the rule collection.
+
+    Return:
+        The header of the readable output, naming the network rules that were not found when there are any.
+    """
+    readable_header = f'Successfully deleted network rules from collection "{collection_name}".'
+    if missing_rules:
+        readable_header += f" The following network rules were not found: {', '.join(missing_rules)}."
+    return readable_header
+
+
+def firewall_command_results(response: dict, readable_header: str, outputs_prefix: str) -> CommandResults:
+    """
+    Build the command results for the Azure Firewall network rule commands.
+
+    Args:
+        response: The Azure Firewall resource or the firewall policy rule collection group returned by Azure.
+        readable_header: The header of the readable output.
+        outputs_prefix: The context output prefix of the returned resource.
+
+    Return:
+        CommandResults with the updated resource.
+    """
+    readable_output = tableToMarkdown(
+        readable_header,
+        response,
+        headers=["name", "id", "location", "type"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+    return CommandResults(
+        outputs_prefix=outputs_prefix,
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def validate_firewall_polling_args(args: dict[str, Any]) -> None:
+    """
+    Validate the polling arguments of the Azure Firewall commands.
+
+    Args:
+        args: The command arguments, optionally including "interval_in_seconds" and "polling_timeout".
+
+    Raises:
+        ValueError: If "interval_in_seconds" or "polling_timeout" is not a positive number.
+    """
+    # A supplied 0 is falsy, so the value is only defaulted when the argument was not supplied at all.
+    interval = arg_to_number(args.get("interval_in_seconds"))
+    timeout = arg_to_number(args.get("polling_timeout"))
+    interval = DEFAULT_INTERVAL_IN_SECONDS if interval is None else interval
+    timeout = DEFAULT_TIMEOUT_POLLING_COMMAND if timeout is None else timeout
+
+    if interval <= 0:
+        raise ValueError(f"The interval_in_seconds argument must be a positive number. Currently the value is {interval}.")
+    if timeout <= 0:
+        raise ValueError(f"The polling_timeout argument must be a positive number. Currently the value is {timeout}.")
+
+
+def firewall_poll_result(
+    response: dict,
+    readable_header: str,
+    outputs_prefix: str,
+    resource_name: str,
+    args: dict[str, Any],
+) -> PollResult:
+    """
+    Build the poll result of an Azure Firewall command from the provisioning state of the returned resource.
+    Azure provisions firewalls and firewall policy rule collection groups asynchronously, so the command keeps
+    polling until the resource reaches a terminal provisioning state.
+
+    Args:
+        response: The Azure Firewall resource or the firewall policy rule collection group returned by Azure.
+        readable_header: The header of the readable output of the completed operation.
+        outputs_prefix: The context output prefix of the returned resource.
+        resource_name: The name of the resource being provisioned, used in the polling message.
+        args: The command arguments, reused for the next polling run.
+
+    Return:
+        PollResult: The provisioned resource, or an indication to poll again.
+
+    Raises:
+        ValueError: If the resource reached the "Failed" provisioning state.
+    """
+    provisioning_state = dict_safe_get(response, ["properties", "provisioningState"], "")
+    demisto.debug(f"The provisioning state of {resource_name} is {provisioning_state}.")
+
+    if provisioning_state == FIREWALL_FAILED_PROVISIONING_STATE:
+        raise ValueError(f'The provisioning of "{resource_name}" failed.')
+
+    if provisioning_state not in FIREWALL_TERMINAL_PROVISIONING_STATES:
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run=args,
+            partial_result=CommandResults(
+                readable_output=f'Waiting for "{resource_name}" to be provisioned. Current state: {provisioning_state}.'
+            ),
+        )
+
+    return PollResult(
+        response=firewall_command_results(
+            response=response,
+            readable_header=readable_header,
+            outputs_prefix=outputs_prefix,
+        ),
+        continue_to_poll=False,
+    )
+
+
+def poll_firewall_provisioning(
+    client: AzureClient,
+    subscription_id: str,
+    resource_group_name: str,
+    firewall_name: str,
+    readable_header: str,
+    args: dict[str, Any],
+) -> PollResult:
+    """
+    Retrieve an Azure Firewall and keep polling while it is still being provisioned.
+
+    Args:
+        client: The AzureClient.
+        subscription_id: The Azure subscription ID.
+        resource_group_name: The resource group containing the firewall.
+        firewall_name: The name of the Azure Firewall.
+        readable_header: The header of the readable output of the completed operation.
+        args: The command arguments, reused for the next polling run.
+
+    Return:
+        PollResult: The provisioned firewall, or an indication to poll again.
+    """
+    response = client.firewall_get(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, firewall_name=firewall_name
+    )
+    return firewall_poll_result(
+        response=response,
+        readable_header=readable_header,
+        outputs_prefix=FIREWALL_OUTPUTS_PREFIX,
+        resource_name=firewall_name,
+        args=args,
+    )
+
+
+def poll_firewall_policy_collection_provisioning(
+    client: AzureClient,
+    subscription_id: str,
+    resource_group_name: str,
+    policy_name: str,
+    collection_name: str,
+    readable_header: str,
+    args: dict[str, Any],
+) -> PollResult:
+    """
+    Retrieve a firewall policy rule collection group and keep polling while it is still being provisioned.
+
+    Args:
+        client: The AzureClient.
+        subscription_id: The Azure subscription ID.
+        resource_group_name: The resource group containing the firewall policy.
+        policy_name: The name of the firewall policy.
+        collection_name: The name of the rule collection group.
+        readable_header: The header of the readable output of the completed operation.
+        args: The command arguments, reused for the next polling run.
+
+    Return:
+        PollResult: The provisioned rule collection group, or an indication to poll again.
+    """
+    response = client.firewall_policy_rule_collection_group_get(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        policy_name=policy_name,
+        collection_name=collection_name,
+    )
+    return firewall_poll_result(
+        response=response,
+        readable_header=readable_header,
+        outputs_prefix=FIREWALL_POLICY_RULE_COLLECTION_GROUP_OUTPUTS_PREFIX,
+        resource_name=collection_name,
+        args=args,
+    )
+
+
+def log_analytics_tags_arg_to_request_format(tags: str | None) -> list[dict[str, str]] | None:
+    """Convert a 'name=value;name=value' tags argument into the API request format.
+
+    Args:
+        tags (str | None): The tags argument as a string in the format 'name=value;name=value'.
+            Multiple tags are separated by semicolons, and each tag's name and value are separated
+            by an equals sign. Can be None or empty.
+
+    Returns:
+        list[dict[str, str]] | None: A list of dictionaries, each with 'name' and 'value' keys
+            representing a single tag, or None if the input is empty or None.
+
+    Raises:
+        DemistoException: If any tag is not in the expected 'name=value' format.
+    """
+    bad_arg_msg = "The `tags` argument is malformed. Value should be in the following format: `name=value;name=value`"
+    if not tags:
+        return None
+    parsed_tags = [tag.split("=") for tag in tags.split(";")]
+    for tag in parsed_tags:
+        if len(tag) != 2:
+            raise DemistoException(bad_arg_msg)
+    return [{"name": tag[0], "value": tag[1]} for tag in parsed_tags]
 
 
 """ COMMAND FUNCTIONS """
@@ -6584,6 +7807,32 @@ def mysql_flexible_server_param_set_command(client: AzureClient, params: dict, a
     return CommandResults(readable_output=f"Updated the configuration {configuration_name} of the server {server_name}.")
 
 
+def postgres_flexible_server_configuration_update_command(client: AzureClient, params: dict, args: dict):
+    """
+    Updates a configuration of a PostgreSQL Flexible Server.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including server name, configuration name, source, and value.
+
+    Returns:
+        CommandResults: A success message confirming the configuration was updated.
+    """
+    server_name = args.get("server_name", "")
+    configuration_name = args.get("configuration_name", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    source = args.get("source", "")
+    value = args.get("value", "")
+    client.postgres_flexible_server_configuration_update(
+        server_name, configuration_name, subscription_id, resource_group_name, source, value
+    )
+    return CommandResults(
+        readable_output=f"Updated the configuration {configuration_name} of the PostgreSQL Flexible Server {server_name}."
+    )
+
+
 def monitor_log_profile_update_command(client: AzureClient, params: dict, args: dict):
     """
         Updates a monitor log profile.
@@ -7706,6 +8955,902 @@ def ip_group_delete_command(client: AzureClient, params: dict[str, Any], args: d
     return CommandResults(readable_output=message)
 
 
+@polling_function(
+    name="azure-firewall-rule-collection-groups-create",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def firewall_rule_collection_groups_create_command(
+    args: dict[str, Any], client: AzureClient, params: dict[str, Any]
+) -> PollResult:
+    """
+    Create a network rule collection, holding a single network rule, in an Azure Firewall.
+    The firewall is provisioned asynchronously, so the command polls it until the provisioning completes.
+
+    Args:
+        args: Command arguments.
+        client: The AzureClient.
+        params: Configuration parameters.
+
+    Return:
+        PollResult: The provisioned firewall, or an indication to poll again.
+
+    Raises:
+        ValueError: If the network rule collection already exists in the firewall.
+    """
+    validate_firewall_polling_args(args)
+
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    firewall_name = args["firewall_name"]
+    collection_name = args.get("collection_name", "")
+    readable_header = f'Successfully created network rule collection "{collection_name}" in firewall "{firewall_name}".'
+
+    if not argToBoolean(args.get("first_run", True)):
+        return poll_firewall_provisioning(
+            client=client,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            firewall_name=firewall_name,
+            readable_header=readable_header,
+            args=args,
+        )
+
+    collection_priority = arg_to_number(args.get("collection_priority"))
+    action = args.get("action", "")
+
+    rule = build_firewall_network_rule(args=args, is_firewall_rule=True)
+
+    firewall_data, collections = get_firewall_network_rule_collections(
+        client=client,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_name=firewall_name,
+    )
+    if any(collection.get("name") == collection_name for collection in collections):
+        raise ValueError(f'Network rule collection "{collection_name}" already exists in firewall "{firewall_name}".')
+
+    collections.append(
+        remove_empty_elements(
+            {
+                "name": collection_name,
+                "properties": {"priority": collection_priority, "action": {"type": action}, "rules": [rule]},
+            }
+        )
+    )
+    demisto.debug(f"Creating the network rule collection {collection_name} in the firewall {firewall_name}.")
+
+    response = client.firewall_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_name=firewall_name,
+        firewall_data=firewall_data,
+    )
+    args["first_run"] = False
+
+    return firewall_poll_result(
+        response=response,
+        readable_header=readable_header,
+        outputs_prefix=FIREWALL_OUTPUTS_PREFIX,
+        resource_name=firewall_name,
+        args=args,
+    )
+
+
+@polling_function(
+    name="azure-vn-firewall-policy-rule-collection-groups-create",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def firewall_policy_rule_collection_groups_create_command(
+    args: dict[str, Any], client: AzureClient, params: dict[str, Any]
+) -> PollResult:
+    """
+    Create a rule collection group, holding a single network rule, in a firewall policy.
+    The rule collection group is provisioned asynchronously, so the command polls it until the provisioning completes.
+
+    Args:
+        args: Command arguments.
+        client: The AzureClient.
+        params: Configuration parameters.
+
+    Return:
+        PollResult: The provisioned rule collection group, or an indication to poll again.
+
+    Raises:
+        ValueError: If the rule collection group already exists in the firewall policy.
+    """
+    validate_firewall_polling_args(args)
+
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    policy_name = args["policy_name"]
+    collection_name = args.get("collection_name", "")
+    readable_header = f'Successfully created network rule collection "{collection_name}" in policy "{policy_name}".'
+
+    if not argToBoolean(args.get("first_run", True)):
+        return poll_firewall_policy_collection_provisioning(
+            client=client,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            policy_name=policy_name,
+            collection_name=collection_name,
+            readable_header=readable_header,
+            args=args,
+        )
+
+    collection_priority = arg_to_number(args.get("collection_priority"))
+    action = args.get("action", "")
+
+    rule = build_firewall_network_rule(args=args, is_firewall_rule=False)
+
+    if firewall_policy_network_rule_collection_exists(
+        client=client,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        policy_name=policy_name,
+        collection_name=collection_name,
+    ):
+        raise ValueError(f'Network rule collection "{collection_name}" already exists in policy "{policy_name}".')
+
+    collection_data = remove_empty_elements(
+        {
+            "properties": {
+                "priority": collection_priority,
+                "ruleCollections": [
+                    {
+                        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                        "name": collection_name,
+                        "priority": collection_priority,
+                        "action": {"type": action},
+                        "rules": [rule],
+                    }
+                ],
+            }
+        }
+    )
+    demisto.debug(f"Creating the network rule collection {collection_name} in the policy {policy_name}.")
+
+    response = client.firewall_policy_rule_collection_group_create_or_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        policy_name=policy_name,
+        collection_name=collection_name,
+        collection_data=collection_data,
+    )
+    args["first_run"] = False
+
+    return firewall_poll_result(
+        response=response,
+        readable_header=readable_header,
+        outputs_prefix=FIREWALL_POLICY_RULE_COLLECTION_GROUP_OUTPUTS_PREFIX,
+        resource_name=collection_name,
+        args=args,
+    )
+
+
+@polling_function(
+    name="azure-firewall-rule-collection-groups-update",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def firewall_rule_collection_groups_update_command(
+    args: dict[str, Any], client: AzureClient, params: dict[str, Any]
+) -> PollResult:
+    """
+    Update the priority or the action of a network rule collection in an Azure Firewall.
+    The firewall is provisioned asynchronously, so the command polls it until the provisioning completes.
+
+    Args:
+        args: Command arguments.
+        client: The AzureClient.
+        params: Configuration parameters.
+
+    Return:
+        PollResult: The provisioned firewall, or an indication to poll again.
+
+    Raises:
+        ValueError: If the network rule collection was not found in the firewall.
+    """
+    validate_firewall_polling_args(args)
+
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    firewall_name = args["firewall_name"]
+    collection_name = args.get("collection_name", "")
+    readable_header = f'Successfully updated network rule collection "{collection_name}" in firewall "{firewall_name}".'
+
+    if not argToBoolean(args.get("first_run", True)):
+        return poll_firewall_provisioning(
+            client=client,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            firewall_name=firewall_name,
+            readable_header=readable_header,
+            args=args,
+        )
+
+    priority = arg_to_number(args.get("priority"))
+    action = args.get("action")
+
+    # Only the provided properties are replaced, so the unset ones are pruned rather than overwriting Azure with nulls.
+    update_fields = remove_empty_elements({"priority": priority, "action": {"type": action}})
+    demisto.debug(f"Updating the network rule collection {collection_name} in the firewall {firewall_name}: {update_fields}.")
+
+    firewall_data, collections = get_firewall_network_rule_collections(
+        client=client,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_name=firewall_name,
+    )
+    find_firewall_network_rule_collection(collections, collection_name).setdefault("properties", {}).update(update_fields)
+
+    response = client.firewall_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_name=firewall_name,
+        firewall_data=firewall_data,
+    )
+    args["first_run"] = False
+
+    return firewall_poll_result(
+        response=response,
+        readable_header=readable_header,
+        outputs_prefix=FIREWALL_OUTPUTS_PREFIX,
+        resource_name=firewall_name,
+        args=args,
+    )
+
+
+@polling_function(
+    name="azure-vn-firewall-policy-rule-collection-groups-update",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def firewall_policy_rule_collection_groups_update_command(
+    args: dict[str, Any], client: AzureClient, params: dict[str, Any]
+) -> PollResult:
+    """
+    Update the priority or the action of a network rule collection in a firewall policy rule collection group.
+    The rule collection group is provisioned asynchronously, so the command polls it until the provisioning completes.
+
+    Args:
+        args: Command arguments.
+        client: The AzureClient.
+        params: Configuration parameters.
+
+    Return:
+        PollResult: The provisioned rule collection group, or an indication to poll again.
+
+    Raises:
+        ValueError: If the network rule collection was not found in the rule collection group.
+    """
+    validate_firewall_polling_args(args)
+
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    policy_name = args["policy_name"]
+    collection_name = args.get("collection_name", "")
+    readable_header = f'Successfully updated network rule collection "{collection_name}" in policy "{policy_name}".'
+
+    if not argToBoolean(args.get("first_run", True)):
+        return poll_firewall_policy_collection_provisioning(
+            client=client,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            policy_name=policy_name,
+            collection_name=collection_name,
+            readable_header=readable_header,
+            args=args,
+        )
+
+    priority = arg_to_number(args.get("priority"))
+    action = args.get("action")
+
+    # Only the provided properties are replaced, so the unset ones are pruned rather than overwriting Azure with nulls.
+    update_fields = remove_empty_elements({"priority": priority, "action": {"type": action}})
+    demisto.debug(f"Updating the network rule collection {collection_name} in the policy {policy_name}: {update_fields}.")
+
+    collection_group = client.firewall_policy_rule_collection_group_get(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        policy_name=policy_name,
+        collection_name=collection_name,
+    )
+    get_policy_network_rule_collection(collection_group, collection_name).update(update_fields)
+    # The priority is kept in step on the rule collection group itself, which is what Azure orders the groups by.
+    collection_group.setdefault("properties", {}).update(remove_empty_elements({"priority": priority}))
+
+    response = client.firewall_policy_rule_collection_group_create_or_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        policy_name=policy_name,
+        collection_name=collection_name,
+        collection_data=collection_group,
+    )
+    args["first_run"] = False
+
+    return firewall_poll_result(
+        response=response,
+        readable_header=readable_header,
+        outputs_prefix=FIREWALL_POLICY_RULE_COLLECTION_GROUP_OUTPUTS_PREFIX,
+        resource_name=collection_name,
+        args=args,
+    )
+
+
+@polling_function(
+    name="azure-firewall-rule-collection-groups-delete",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def firewall_rule_collection_groups_delete_command(
+    args: dict[str, Any], client: AzureClient, params: dict[str, Any]
+) -> PollResult:
+    """
+    Delete a network rule collection from an Azure Firewall.
+    The firewall is provisioned asynchronously, so the command polls it until the provisioning completes.
+
+    Args:
+        args: Command arguments.
+        client: The AzureClient.
+        params: Configuration parameters.
+
+    Return:
+        PollResult: The provisioned firewall, or an indication to poll again.
+
+    Raises:
+        ValueError: If the network rule collection was not found in the firewall.
+    """
+    validate_firewall_polling_args(args)
+
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    firewall_name = args["firewall_name"]
+    collection_name = args.get("collection_name", "")
+    readable_header = f'Successfully deleted network rule collection "{collection_name}" from firewall "{firewall_name}".'
+
+    if not argToBoolean(args.get("first_run", True)):
+        return poll_firewall_provisioning(
+            client=client,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            firewall_name=firewall_name,
+            readable_header=readable_header,
+            args=args,
+        )
+
+    firewall_data, collections = get_firewall_network_rule_collections(
+        client=client,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_name=firewall_name,
+    )
+    collections.remove(find_firewall_network_rule_collection(collections, collection_name))
+    demisto.debug(f"Deleting the network rule collection {collection_name} from the firewall {firewall_name}.")
+
+    response = client.firewall_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_name=firewall_name,
+        firewall_data=firewall_data,
+    )
+    args["first_run"] = False
+
+    return firewall_poll_result(
+        response=response,
+        readable_header=readable_header,
+        outputs_prefix=FIREWALL_OUTPUTS_PREFIX,
+        resource_name=firewall_name,
+        args=args,
+    )
+
+
+@polling_function(
+    name="azure-vn-firewall-policy-rule-collection-groups-delete",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def firewall_policy_rule_collection_groups_delete_command(
+    args: dict[str, Any], client: AzureClient, params: dict[str, Any]
+) -> PollResult:
+    """
+    Delete a rule collection group from a firewall policy.
+    The deletion is asynchronous, so the command polls the rule collection group until Azure reports it as deleted.
+
+    Args:
+        args: Command arguments.
+        client: The AzureClient.
+        params: Configuration parameters.
+
+    Return:
+        PollResult: A success message once the rule collection group is gone, or an indication to poll again.
+    """
+    validate_firewall_polling_args(args)
+
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    policy_name = args["policy_name"]
+    collection_name = args.get("collection_name", "")
+    readable_output = f'Successfully deleted network rule collection "{collection_name}" from policy "{policy_name}".'
+
+    if not argToBoolean(args.get("first_run", True)):
+        # The deletion completes once Azure no longer returns the rule collection group.
+        if firewall_policy_network_rule_collection_exists(
+            client=client,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            policy_name=policy_name,
+            collection_name=collection_name,
+        ):
+            return PollResult(
+                response=None,
+                continue_to_poll=True,
+                args_for_next_run=args,
+                partial_result=CommandResults(
+                    readable_output=f'Waiting for network rule collection "{collection_name}" to be deleted.'
+                ),
+            )
+        return PollResult(response=CommandResults(readable_output=readable_output), continue_to_poll=False)
+
+    demisto.debug(f"Deleting the network rule collection {collection_name} from the policy {policy_name}.")
+    client.firewall_policy_rule_collection_group_delete(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        policy_name=policy_name,
+        collection_name=collection_name,
+    )
+    args["first_run"] = False
+
+    return PollResult(
+        response=None,
+        continue_to_poll=True,
+        args_for_next_run=args,
+        partial_result=CommandResults(
+            readable_output=f'The deletion of network rule collection "{collection_name}" was requested.'
+        ),
+    )
+
+
+@polling_function(
+    name="azure-firewall-network-rule-create",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def firewall_network_rule_create_command(args: dict[str, Any], client: AzureClient, params: dict[str, Any]) -> PollResult:
+    """
+    Create a network rule in an existing network rule collection of an Azure Firewall.
+    The firewall is provisioned asynchronously, so the command polls it until the provisioning completes.
+
+    Args:
+        args: Command arguments.
+        client: The AzureClient.
+        params: Configuration parameters.
+
+    Return:
+        PollResult: The provisioned firewall, or an indication to poll again.
+
+    Raises:
+        ValueError: If the network rule collection was not found, or if the network rule already exists in it.
+    """
+    validate_firewall_polling_args(args)
+
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    firewall_name = args["firewall_name"]
+    collection_name = args.get("collection_name", "")
+    rule_name = args.get("rule_name", "")
+    readable_header = f'Successfully created network rule "{rule_name}" in collection "{collection_name}".'
+
+    if not argToBoolean(args.get("first_run", True)):
+        return poll_firewall_provisioning(
+            client=client,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            firewall_name=firewall_name,
+            readable_header=readable_header,
+            args=args,
+        )
+
+    rule = build_firewall_network_rule(args=args, is_firewall_rule=True)
+
+    firewall_data, collections = get_firewall_network_rule_collections(
+        client=client,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_name=firewall_name,
+    )
+    collection_properties = find_firewall_network_rule_collection(collections, collection_name).setdefault("properties", {})
+    rules = collection_properties.setdefault("rules", [])
+    if any(existing_rule.get("name") == rule_name for existing_rule in rules):
+        raise ValueError(f'Network rule "{rule_name}" already exists in collection "{collection_name}".')
+    rules.append(rule)
+    demisto.debug(f"Creating the network rule {rule_name} in the collection {collection_name} of firewall {firewall_name}.")
+
+    response = client.firewall_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_name=firewall_name,
+        firewall_data=firewall_data,
+    )
+    args["first_run"] = False
+
+    return firewall_poll_result(
+        response=response,
+        readable_header=readable_header,
+        outputs_prefix=FIREWALL_OUTPUTS_PREFIX,
+        resource_name=firewall_name,
+        args=args,
+    )
+
+
+@polling_function(
+    name="azure-vn-firewall-policy-network-rule-create",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def firewall_policy_network_rule_create_command(args: dict[str, Any], client: AzureClient, params: dict[str, Any]) -> PollResult:
+    """
+    Create a network rule in an existing rule collection of a firewall policy rule collection group.
+    The rule collection group is provisioned asynchronously, so the command polls it until the provisioning completes.
+
+    Args:
+        args: Command arguments.
+        client: The AzureClient.
+        params: Configuration parameters.
+
+    Return:
+        PollResult: The provisioned rule collection group, or an indication to poll again.
+
+    Raises:
+        ValueError: If the network rule collection was not found, or if the network rule already exists in it.
+    """
+    validate_firewall_polling_args(args)
+
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    policy_name = args["policy_name"]
+    collection_name = args.get("collection_name", "")
+    rule_name = args.get("rule_name", "")
+    readable_header = f'Successfully created network rule "{rule_name}" in collection "{collection_name}".'
+
+    if not argToBoolean(args.get("first_run", True)):
+        return poll_firewall_policy_collection_provisioning(
+            client=client,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            policy_name=policy_name,
+            collection_name=collection_name,
+            readable_header=readable_header,
+            args=args,
+        )
+
+    rule = build_firewall_network_rule(args=args, is_firewall_rule=False)
+
+    collection_group = client.firewall_policy_rule_collection_group_get(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        policy_name=policy_name,
+        collection_name=collection_name,
+    )
+    rules = get_policy_network_rule_collection(collection_group, collection_name).setdefault("rules", [])
+    if any(existing_rule.get("name") == rule_name for existing_rule in rules):
+        raise ValueError(f'Network rule "{rule_name}" already exists in collection "{collection_name}".')
+    rules.append(rule)
+    demisto.debug(f"Creating the network rule {rule_name} in the collection {collection_name} of policy {policy_name}.")
+
+    response = client.firewall_policy_rule_collection_group_create_or_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        policy_name=policy_name,
+        collection_name=collection_name,
+        collection_data=collection_group,
+    )
+    args["first_run"] = False
+
+    return firewall_poll_result(
+        response=response,
+        readable_header=readable_header,
+        outputs_prefix=FIREWALL_POLICY_RULE_COLLECTION_GROUP_OUTPUTS_PREFIX,
+        resource_name=collection_name,
+        args=args,
+    )
+
+
+@polling_function(
+    name="azure-firewall-network-rule-update",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def firewall_network_rule_update_command(args: dict[str, Any], client: AzureClient, params: dict[str, Any]) -> PollResult:
+    """
+    Update a network rule in a network rule collection of an Azure Firewall.
+    Only the provided properties are replaced, the rest of the rule configuration is kept as is.
+    The firewall is provisioned asynchronously, so the command polls it until the provisioning completes.
+
+    Args:
+        args: Command arguments.
+        client: The AzureClient.
+        params: Configuration parameters.
+
+    Return:
+        PollResult: The provisioned firewall, or an indication to poll again.
+
+    Raises:
+        ValueError: If the source or the destination arguments are inconsistent with their selected types.
+        ValueError: If the network rule collection or the network rule was not found.
+    """
+    validate_firewall_polling_args(args)
+
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    firewall_name = args["firewall_name"]
+    collection_name = args.get("collection_name", "")
+    rule_name = args.get("rule_name", "")
+    readable_header = f'Successfully updated network rule "{rule_name}" in collection "{collection_name}".'
+
+    if not argToBoolean(args.get("first_run", True)):
+        return poll_firewall_provisioning(
+            client=client,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            firewall_name=firewall_name,
+            readable_header=readable_header,
+            args=args,
+        )
+
+    update_fields = build_firewall_network_rule_update_fields(args=args, is_firewall_rule=True)
+    demisto.debug(f"Updating the network rule {rule_name} in the firewall {firewall_name}: {update_fields.keys()}.")
+
+    firewall_data, collections = get_firewall_network_rule_collections(
+        client=client,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_name=firewall_name,
+    )
+    rules = dict_safe_get(find_firewall_network_rule_collection(collections, collection_name), ["properties", "rules"], [])
+    find_firewall_network_rule(rules, rule_name).update(update_fields)
+
+    response = client.firewall_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_name=firewall_name,
+        firewall_data=firewall_data,
+    )
+    args["first_run"] = False
+
+    return firewall_poll_result(
+        response=response,
+        readable_header=readable_header,
+        outputs_prefix=FIREWALL_OUTPUTS_PREFIX,
+        resource_name=firewall_name,
+        args=args,
+    )
+
+
+@polling_function(
+    name="azure-vn-firewall-policy-network-rule-update",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def firewall_policy_network_rule_update_command(args: dict[str, Any], client: AzureClient, params: dict[str, Any]) -> PollResult:
+    """
+    Update a network rule in a rule collection of a firewall policy rule collection group.
+    Only the provided properties are replaced, the rest of the rule configuration is kept as is.
+    The rule collection group is provisioned asynchronously, so the command polls it until the provisioning completes.
+
+    Args:
+        args: Command arguments.
+        client: The AzureClient.
+        params: Configuration parameters.
+
+    Return:
+        PollResult: The provisioned rule collection group, or an indication to poll again.
+
+    Raises:
+        ValueError: If the source or the destination arguments are inconsistent with their selected types.
+        ValueError: If the network rule collection or the network rule was not found.
+    """
+    validate_firewall_polling_args(args)
+
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    policy_name = args["policy_name"]
+    collection_name = args.get("collection_name", "")
+    rule_name = args.get("rule_name", "")
+    readable_header = f'Successfully updated network rule "{rule_name}" in collection "{collection_name}".'
+
+    if not argToBoolean(args.get("first_run", True)):
+        return poll_firewall_policy_collection_provisioning(
+            client=client,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            policy_name=policy_name,
+            collection_name=collection_name,
+            readable_header=readable_header,
+            args=args,
+        )
+
+    update_fields = build_firewall_network_rule_update_fields(args=args, is_firewall_rule=False)
+    demisto.debug(f"Updating the network rule {rule_name} in the policy {policy_name}: {update_fields.keys()}.")
+
+    collection_group = client.firewall_policy_rule_collection_group_get(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        policy_name=policy_name,
+        collection_name=collection_name,
+    )
+    rules = get_policy_network_rule_collection(collection_group, collection_name).get("rules", [])
+    find_firewall_network_rule(rules, rule_name).update(update_fields)
+
+    response = client.firewall_policy_rule_collection_group_create_or_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        policy_name=policy_name,
+        collection_name=collection_name,
+        collection_data=collection_group,
+    )
+    args["first_run"] = False
+
+    return firewall_poll_result(
+        response=response,
+        readable_header=readable_header,
+        outputs_prefix=FIREWALL_POLICY_RULE_COLLECTION_GROUP_OUTPUTS_PREFIX,
+        resource_name=collection_name,
+        args=args,
+    )
+
+
+@polling_function(
+    name="azure-firewall-network-rule-delete",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def firewall_network_rule_delete_command(args: dict[str, Any], client: AzureClient, params: dict[str, Any]) -> PollResult:
+    """
+    Delete network rules from a network rule collection of an Azure Firewall.
+    The firewall is provisioned asynchronously, so the command polls it until the provisioning completes.
+
+    Args:
+        args: Command arguments.
+        client: The AzureClient.
+        params: Configuration parameters.
+
+    Return:
+        PollResult: The provisioned firewall, or an indication to poll again.
+
+    Raises:
+        ValueError: If the network rule collection was not found, or if none of the requested network rules were found.
+    """
+    validate_firewall_polling_args(args)
+
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    firewall_name = args["firewall_name"]
+    collection_name = args.get("collection_name", "")
+    rule_names = argToList(args.get("rule_names"))
+
+    if not argToBoolean(args.get("first_run", True)):
+        return poll_firewall_provisioning(
+            client=client,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            firewall_name=firewall_name,
+            # The rules that were not found are reported on the first run, before the polling starts.
+            readable_header=build_firewall_network_rule_delete_header(collection_name, []),
+            args=args,
+        )
+
+    firewall_data, collections = get_firewall_network_rule_collections(
+        client=client,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_name=firewall_name,
+    )
+    collection_properties = find_firewall_network_rule_collection(collections, collection_name).setdefault("properties", {})
+    remaining_rules, missing_rules = remove_firewall_network_rules(collection_properties.get("rules", []), rule_names)
+    collection_properties["rules"] = remaining_rules
+    demisto.debug(f"Deleting the network rules {rule_names} from the collection {collection_name} of {firewall_name}.")
+
+    response = client.firewall_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_name=firewall_name,
+        firewall_data=firewall_data,
+    )
+    args["first_run"] = False
+
+    return firewall_poll_result(
+        response=response,
+        readable_header=build_firewall_network_rule_delete_header(collection_name, missing_rules),
+        outputs_prefix=FIREWALL_OUTPUTS_PREFIX,
+        resource_name=firewall_name,
+        args=args,
+    )
+
+
+@polling_function(
+    name="azure-vn-firewall-policy-network-rule-delete",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def firewall_policy_network_rule_delete_command(args: dict[str, Any], client: AzureClient, params: dict[str, Any]) -> PollResult:
+    """
+    Delete network rules from a rule collection of a firewall policy rule collection group.
+    The rule collection group is provisioned asynchronously, so the command polls it until the provisioning completes.
+
+    Args:
+        args: Command arguments.
+        client: The AzureClient.
+        params: Configuration parameters.
+
+    Return:
+        PollResult: The provisioned rule collection group, or an indication to poll again.
+
+    Raises:
+        ValueError: If the network rule collection was not found, or if none of the requested network rules were found.
+    """
+    validate_firewall_polling_args(args)
+
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    policy_name = args["policy_name"]
+    collection_name = args.get("collection_name", "")
+    rule_names = argToList(args.get("rule_names"))
+
+    if not argToBoolean(args.get("first_run", True)):
+        return poll_firewall_policy_collection_provisioning(
+            client=client,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            policy_name=policy_name,
+            collection_name=collection_name,
+            # The rules that were not found are reported on the first run, before the polling starts.
+            readable_header=build_firewall_network_rule_delete_header(collection_name, []),
+            args=args,
+        )
+
+    collection_group = client.firewall_policy_rule_collection_group_get(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        policy_name=policy_name,
+        collection_name=collection_name,
+    )
+    rule_collection = get_policy_network_rule_collection(collection_group, collection_name)
+    remaining_rules, missing_rules = remove_firewall_network_rules(rule_collection.get("rules", []), rule_names)
+    rule_collection["rules"] = remaining_rules
+    demisto.debug(f"Deleting the network rules {rule_names} from the collection {collection_name} of {policy_name}.")
+
+    response = client.firewall_policy_rule_collection_group_create_or_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        policy_name=policy_name,
+        collection_name=collection_name,
+        collection_data=collection_group,
+    )
+    args["first_run"] = False
+
+    return firewall_poll_result(
+        response=response,
+        readable_header=build_firewall_network_rule_delete_header(collection_name, missing_rules),
+        outputs_prefix=FIREWALL_POLICY_RULE_COLLECTION_GROUP_OUTPUTS_PREFIX,
+        resource_name=collection_name,
+        args=args,
+    )
+
+
 def nsg_resource_group_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
     List all resource groups in the subscription.
@@ -7830,6 +9975,98 @@ def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, 
         outputs_prefix=outputs_prefix,
         outputs_key_field="id",
         outputs=data_from_response,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def virtual_networks_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    List all virtual networks in a resource group.
+    Args:
+        client (AzureClient): Azure Client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+    Returns:
+        Command results with raw response, outputs and readable outputs.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    next_token = args.get("next_token", "")
+    demisto.debug(f"[Azure] Listing virtual networks with {bool(next_token)=}")
+
+    response = client.list_virtual_networks_request(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, next_token=next_token
+    )
+    data_from_response = response.get("value") or []
+    next_token = response.get("nextLink") or ""
+    demisto.debug(f"[Azure] Retrieved {len(data_from_response)} virtual networks, {bool(next_token)=}")
+
+    if not data_from_response:
+        return CommandResults(readable_output=f"No virtual networks were found in resource group '{resource_group_name}'.")
+
+    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
+    for data in data_from_response:
+        data["etag"] = data.get("etag", "")[3:-1]
+
+    # The token is always written, as null on the last page, so a stale token is cleared from the context.
+    outputs = {
+        "Azure.VirtualNetworks.VirtualNetworks(val.id && val.id == obj.id)": data_from_response,
+        "Azure.VirtualNetworks(true)": {"VirtualNetworksNextToken": next_token or None},
+    }
+
+    readable_output = tableToMarkdown(
+        name="Virtual Networks List",
+        t=data_from_response,
+        headers=["name", "id", "etag", "type", "location"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def subscriptions_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    List all subscriptions the authenticated identity has access to in the tenant.
+    Args:
+        client (AzureClient): Azure Client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+    Returns:
+        Command results with raw response, outputs and readable outputs.
+    """
+    next_token = args.get("next_token", "")
+    demisto.debug(f"[Azure] Listing subscriptions with {bool(next_token)=}")
+
+    response = client.list_subscriptions_request(next_token=next_token)
+    data_from_response = response.get("value") or []
+    next_token = response.get("nextLink") or ""
+    demisto.debug(f"[Azure] Retrieved {len(data_from_response)} subscriptions, {bool(next_token)=}")
+
+    if not data_from_response:
+        return CommandResults(readable_output="No subscriptions were found.")
+
+    # The token is always written, as null on the last page, so a stale token is cleared from the context.
+    outputs = {
+        "Azure.ResourceManagement.Subscriptions(val.id && val.id == obj.id)": data_from_response,
+        "Azure.ResourceManagement(true)": {"SubscriptionsNextToken": next_token or None},
+    }
+
+    readable_output = tableToMarkdown(
+        name="Subscriptions List",
+        t=data_from_response,
+        headers=["subscriptionId", "tenantId", "displayName", "state"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs=outputs,
         raw_response=response,
         readable_output=readable_output,
     )
@@ -9145,6 +11382,122 @@ def firewall_service_tag_list_command(client: AzureClient, params: dict[str, Any
     )
 
 
+def resource_graph_list_operations_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Lists all available Azure Resource Graph operations and their descriptions.
+
+    Args:
+        client (AzureClient): Azure client instance for API communication.
+        params (dict): Configuration parameters from integration settings.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: Contains the list of Azure Resource Graph operations.
+    """
+    response = client.resource_graph_list_operations()
+    operations = [{"Name": operation.get("name"), "Display": operation.get("display")} for operation in response.get("value", [])]
+
+    if not operations:
+        return CommandResults(readable_output="No Azure Resource Graph operations were found.", raw_response=response)
+
+    readable_output = tableToMarkdown(
+        "List of Azure Resource Graph Operations",
+        operations,
+        headers=["Name", "Display"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.ResourceGraph.Operations",
+        outputs_key_field="Name",
+        outputs=operations,
+        raw_response=response,
+    )
+
+
+def resource_graph_query_resources_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Executes an Azure Resource Graph query (KQL) and returns the matching resources.
+
+    Args:
+        client (AzureClient): Azure client instance for API communication.
+        params (dict): Configuration parameters from integration settings.
+        args (dict): Command arguments including the required query and the optional limit,
+            page_size, page, management_groups, subscriptions, and next_token.
+
+    Returns:
+        CommandResults: Contains the resources returned by the query.
+    """
+    limit = arg_to_number(args.get("limit") or DEFAULT_LIMIT)
+    page_size = arg_to_number(args.get("page_size"))
+    page_number = arg_to_number(args.get("page"))
+    validate_limit(limit, max_limit=RESOURCE_GRAPH_MAX_PAGE_SIZE)
+    validate_limit(page_size, max_limit=RESOURCE_GRAPH_MAX_PAGE_SIZE)
+    management_groups = argToList(args.get("management_groups"))
+    subscriptions = argToList(args.get("subscriptions"))
+    next_token = args.get("next_token")
+    query = args.get("query", "")
+
+    if page_number is not None and page_number < 1:
+        raise DemistoException(f'The "page" argument must be a positive integer. Currently the value is {page_number}.')
+    if page_number and not page_size:
+        raise DemistoException('Please enter a value for "page_size" when using "page".')
+    if page_size and not page_number:
+        raise DemistoException('Please enter a value for "page" when using "page_size".')
+
+    if page_number and page_size:
+        paging_options: dict[str, Any] = {"$skip": (page_number - 1) * page_size, "$top": page_size}
+    else:
+        # The API supports $top, so the limit is sent to the API instead of being enforced client-side.
+        paging_options = remove_empty_elements({"$top": limit, "$skipToken": next_token})
+
+    response = client.resource_graph_query_resources(
+        query=query, paging_options=paging_options, management_groups=management_groups, subscriptions=subscriptions
+    )
+    list_of_query_results = response.get("data", [])
+    total_records = response.get("totalRecords", 0)
+    response_skip_token = response.get("$skipToken", "")
+
+    if not list_of_query_results:
+        readable_output = "No resources were found for the given query."
+        if response_skip_token:
+            readable_output += " More pages are available - re-run the command with the next_token argument to continue."
+        # The token is always written, as null when there are no more results, so a stale token is cleared from the context.
+        return CommandResults(
+            readable_output=readable_output,
+            outputs={"Azure.ResourceGraph(true)": {"QueryNextToken": response_skip_token or None}},
+            raw_response=response,
+        )
+
+    metadata = (
+        "Run the following command to retrieve the next batch of results:\n"
+        f'!azure-rg-query query="{query}" next_token={response_skip_token}'
+        if response_skip_token
+        else None
+    )
+    title = f"Results of query:\n```{query}```\n\n Total Number of Possible Records: {total_records} \n"
+    readable_output = tableToMarkdown(
+        title,
+        list_of_query_results,
+        headers=["id", "name", "type"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+        metadata=metadata,
+    )
+
+    outputs: dict[str, Any] = {
+        "Azure.ResourceGraph.Query(val.id && val.id == obj.id)": list_of_query_results,
+        "Azure.ResourceGraph(true)": {"QueryNextToken": response_skip_token or None},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
 def parse_forecast_table_to_dict(response: dict) -> list[dict]:
     """
     Parses a generic Azure table-like API response and organizes the data into a list of dictionaries.
@@ -9880,6 +12233,367 @@ def firewall_policy_detach_command(client: AzureClient, params: dict[str, Any], 
     )
 
 
+def log_analytics_saved_searches_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    List the saved searches of a Log Analytics workspace.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: The list of saved searches.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    workspace_name = get_from_args_or_params(params=params, args=args, key="workspace_name")
+
+    response = client.log_analytics_saved_searches_list(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, workspace_name=workspace_name
+    )
+    output = response.get("value", [])
+
+    readable_output = tableToMarkdown(
+        "Saved Searches", output, headers=LOG_ANALYTICS_SAVED_SEARCH_HEADERS, headerTransform=pascalToSpace, removeNull=True
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.LogAnalytics.SavedSearches",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def log_analytics_saved_search_get_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Get a specified saved search from a Log Analytics workspace.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including saved_search_id.
+
+    Returns:
+        CommandResults: The requested saved search.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    workspace_name = get_from_args_or_params(params=params, args=args, key="workspace_name")
+    saved_search_id = args.get("saved_search_id", "")
+
+    response = client.log_analytics_saved_search_get(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        workspace_name=workspace_name,
+        saved_search_id=saved_search_id,
+    )
+    readable_output = tableToMarkdown(
+        f"Saved search `{saved_search_id}` properties",
+        response,
+        headers=LOG_ANALYTICS_SAVED_SEARCH_HEADERS,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.LogAnalytics.SavedSearches",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def log_analytics_saved_search_create_update_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Create or update a saved search in a Log Analytics workspace.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including saved_search_id, category, display_name, and query.
+
+    Returns:
+        CommandResults: The created or updated saved search.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    workspace_name = get_from_args_or_params(params=params, args=args, key="workspace_name")
+    saved_search_id = args.get("saved_search_id", "")
+    display_name = args.get("display_name", "")
+    category = args.get("category", "")
+    query = args.get("query", "")
+    etag = args.get("etag")
+
+    if not etag and not (category and query and display_name):
+        raise DemistoException("You must specify category, display_name and query arguments for creating a new saved search.")
+
+    data: dict = {
+        "properties": remove_empty_elements(
+            {
+                "category": category,
+                "displayName": display_name,
+                "functionAlias": args.get("function_alias"),
+                "functionParameters": args.get("function_parameters"),
+                "query": query,
+                "tags": log_analytics_tags_arg_to_request_format(args.get("tags")),
+            }
+        )
+    }
+    if etag:
+        data["etag"] = etag
+
+    response = client.log_analytics_saved_search_create_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        workspace_name=workspace_name,
+        saved_search_id=saved_search_id,
+        data=data,
+    )
+    readable_output = tableToMarkdown(
+        f"Saved search `{saved_search_id}` properties",
+        response,
+        headers=LOG_ANALYTICS_SAVED_SEARCH_HEADERS,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.LogAnalytics.SavedSearches",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def log_analytics_saved_search_delete_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Delete a specified saved search from a Log Analytics workspace.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including saved_search_id.
+
+    Returns:
+        CommandResults: A success message.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    workspace_name = get_from_args_or_params(params=params, args=args, key="workspace_name")
+    saved_search_id = args.get("saved_search_id", "")
+
+    client.log_analytics_saved_search_delete(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        workspace_name=workspace_name,
+        saved_search_id=saved_search_id,
+    )
+    return CommandResults(readable_output=f"Successfully deleted the saved search {saved_search_id}.")
+
+
+def log_analytics_workspaces_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    List Log Analytics workspaces in a resource group.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including optional subscription_id and resource_group_name.
+
+    Returns:
+        CommandResults: The list of workspaces.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    response = client.log_analytics_workspaces_list(subscription_id=subscription_id, resource_group_name=resource_group_name)
+    value = response.get("value", [])
+
+    workspaces = [
+        {
+            "Name": workspace.get("name"),
+            "Location": workspace.get("location"),
+            "Tags": workspace.get("tags"),
+            "ProvisioningState": workspace.get("properties", {}).get("provisioningState"),
+        }
+        for workspace in value
+    ]
+    readable_output = tableToMarkdown("Workspaces List", workspaces, removeNull=True, headerTransform=pascalToSpace)
+
+    return CommandResults(
+        outputs_prefix="Azure.LogAnalytics.Workspaces",
+        outputs_key_field="id",
+        outputs=value,
+        raw_response=value,
+        readable_output=readable_output,
+    )
+
+
+def log_analytics_table_get_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Get a Log Analytics workspace table (search job).
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including table_name.
+
+    Returns:
+        CommandResults: The search job table.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    workspace_name = get_from_args_or_params(params=params, args=args, key="workspace_name")
+    table_name = args.get("table_name", "")
+
+    response = client.log_analytics_table_get(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        workspace_name=workspace_name,
+        table_name=table_name,
+    )
+    properties: dict = response.get("properties", {})
+    schema: dict = properties.get("schema", {})
+    # The response sometimes returns searchResults in schema and sometimes in properties.
+    # https://github.com/MicrosoftDocs/azure-docs/issues/116671
+    search_results: dict = schema.get("searchResults", {}) or properties.get("searchResults", {})
+
+    readable = {
+        "Name": schema.get("name"),
+        "Create Date": properties.get("createDate"),
+        "Plan": properties.get("plan"),
+        "Query": search_results.get("query"),
+        "Description": search_results.get("description"),
+        "startSearchTime": search_results.get("startSearchTime"),
+        "endSearchTime": search_results.get("endSearchTime"),
+        "provisioningState": properties.get("provisioningState"),
+    }
+    return CommandResults(
+        readable_output=tableToMarkdown("Search Job", readable, removeNull=True, headerTransform=pascalToSpace),
+        outputs=response,
+        outputs_prefix="Azure.LogAnalytics.Tables",
+        outputs_key_field="id",
+    )
+
+
+@polling_function(
+    name="azure-log-analytics-table-run",
+    interval=arg_to_number(demisto.args().get("interval", 60)),
+    timeout=arg_to_number(demisto.args().get("timeout", 600)),
+    requires_polling_arg=False,  # always polls
+)
+def log_analytics_table_run_command(args: dict, client: AzureClient, params: dict = {}) -> PollResult:
+    """
+    Run a Log Analytics search job and poll until the resulting table is provisioned.
+
+    Args:
+        args (dict): Command arguments including table_name, query, and polling state (first_run).
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+
+    Returns:
+        PollResult: The polling result.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    workspace_name = get_from_args_or_params(params=params, args=args, key="workspace_name")
+    table_name = args.get("table_name", "")
+    if not table_name.endswith(LOG_ANALYTICS_TABLE_NAME_SUFFIX):
+        raise DemistoException(f"The table_name should end with '{LOG_ANALYTICS_TABLE_NAME_SUFFIX}' suffix.")
+
+    if argToBoolean(args.get("first_run", True)):
+        start_search_time = arg_to_datetime(args.get("start_search_time", "1 day ago"))
+        end_search_time = arg_to_datetime(args.get("end_search_time", "now"))
+        data = {
+            "properties": {
+                "searchResults": remove_empty_elements(
+                    {
+                        "query": args.get("query"),
+                        "limit": arg_to_number(args.get("limit")),
+                        "startSearchTime": start_search_time.isoformat() if start_search_time else None,
+                        "endSearchTime": end_search_time.isoformat() if end_search_time else None,
+                    }
+                )
+            }
+        }
+        demisto.debug(f"First execution {subscription_id} {resource_group_name} {workspace_name} {table_name} {data}")
+        res = client.log_analytics_table_run(
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            workspace_name=workspace_name,
+            table_name=table_name,
+            data=data,
+        )
+        demisto.debug(f"First execution {res=}")
+        args["first_run"] = False
+        return PollResult(
+            response=None,
+            args_for_next_run=args,
+            continue_to_poll=True,
+            partial_result=CommandResults(
+                readable_output=(
+                    "The command was sent successfully. "
+                    "You can check the status by running !azure-log-analytics-table-get or wait."
+                )
+            ),
+        )
+
+    demisto.debug(f"Second execution {subscription_id} {resource_group_name} {workspace_name} {table_name}")
+    response = client.log_analytics_table_get(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        workspace_name=workspace_name,
+        table_name=table_name,
+    )
+    demisto.debug(f"Second execution {response=}")
+    status = response.get("properties", {}).get("provisioningState")
+    if status != "Succeeded":
+        return PollResult(continue_to_poll=True, args_for_next_run=args, response=None)
+
+    return PollResult(
+        continue_to_poll=False,
+        response=CommandResults(
+            outputs_prefix="Azure.LogAnalytics.Tables",
+            outputs_key_field="TableName",
+            outputs={"TableName": table_name, "Query": args.get("query")},
+            readable_output=(
+                f"The {table_name} table created successfully. "
+                f"The table can be inspected by running the following command !azure-log-analytics-table-get"
+            ),
+        ),
+    )
+
+
+def log_analytics_table_delete_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Delete a Log Analytics workspace table (search job).
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including table_name.
+
+    Returns:
+        CommandResults: A success message.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    workspace_name = get_from_args_or_params(params=params, args=args, key="workspace_name")
+    table_name = args.get("table_name", "")
+    if not table_name.endswith(LOG_ANALYTICS_TABLE_NAME_SUFFIX):
+        raise DemistoException(f"Deleting tables without '{LOG_ANALYTICS_TABLE_NAME_SUFFIX}' suffix is not allowed.")
+
+    client.log_analytics_table_delete(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        workspace_name=workspace_name,
+        table_name=table_name,
+    )
+    return CommandResults(readable_output=f"Search job {table_name} deleted successfully.")
+
+
 def test_module(client: AzureClient) -> str:
     """Tests API connectivity and authentication.
 
@@ -10196,6 +12910,8 @@ def main():  # pragma: no cover
     handle_proxy()
     try:
         commands_with_params_and_args = {
+            "azure-rg-list-operations": resource_graph_list_operations_command,
+            "azure-rg-query": resource_graph_query_resources_command,
             "azure-nsg-security-rule-update": update_security_rule_command,
             "azure-vn-security-rule-update": update_security_rule_command,
             "azure-billing-usage-list": azure_billing_usage_list_command,
@@ -10247,6 +12963,14 @@ def main():  # pragma: no cover
             "azure-webapp-auth-update": update_webapp_auth_command,
             "azure-appservice-webapp-auth-settings-update": update_webapp_auth_command,
             "azure-mysql-flexible-server-param-set": mysql_flexible_server_param_set_command,
+            "azure-postgres-flexible-server-configuration-update": postgres_flexible_server_configuration_update_command,
+            "azure-postgres-flexible-server-set-disconnection-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-checkpoint-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-connection-throttling-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-session-connection-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-log-retention-period-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-statement-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-secure-transport-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
             "azure-monitor-log-profile-update": monitor_log_profile_update_command,
             "azure-disk-update": disk_update_command,
             "azure-compute-disk-update": disk_update_command,
@@ -10289,6 +13013,8 @@ def main():  # pragma: no cover
             "azure-vn-network-interfaces-list": nsg_network_interfaces_list_command,
             "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
             "azure-vn-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
+            "azure-vn-virtual-networks-list": virtual_networks_list_command,
+            "azure-rm-subscriptions-list": subscriptions_list_command,
             "azure-vm-instance-start": start_vm_command,
             "azure-compute-vm-start": start_vm_command,
             "azure-vm-instance-power-off": poweroff_vm_command,
@@ -10368,6 +13094,26 @@ def main():  # pragma: no cover
             "azure-firewall-rules-list": firewall_rule_list_command,
             "azure-firewall-rule-get": firewall_rule_get_command,
             "azure-firewall-service-tags-information-list": firewall_service_tag_list_command,
+            "azure-firewall-rule-collection-groups-create": firewall_rule_collection_groups_create_command,
+            "azure-firewall-rule-collection-groups-update": firewall_rule_collection_groups_update_command,
+            "azure-firewall-rule-collection-groups-delete": firewall_rule_collection_groups_delete_command,
+            "azure-vn-firewall-policy-rule-collection-groups-create": firewall_policy_rule_collection_groups_create_command,
+            "azure-vn-firewall-policy-rule-collection-groups-update": firewall_policy_rule_collection_groups_update_command,
+            "azure-vn-firewall-policy-rule-collection-groups-delete": firewall_policy_rule_collection_groups_delete_command,
+            "azure-firewall-network-rule-create": firewall_network_rule_create_command,
+            "azure-firewall-network-rule-update": firewall_network_rule_update_command,
+            "azure-firewall-network-rule-delete": firewall_network_rule_delete_command,
+            "azure-vn-firewall-policy-network-rule-create": firewall_policy_network_rule_create_command,
+            "azure-vn-firewall-policy-network-rule-update": firewall_policy_network_rule_update_command,
+            "azure-vn-firewall-policy-network-rule-delete": firewall_policy_network_rule_delete_command,
+            "azure-log-analytics-saved-searches-list": log_analytics_saved_searches_list_command,
+            "azure-log-analytics-saved-search-get": log_analytics_saved_search_get_command,
+            "azure-log-analytics-saved-search-create-update": log_analytics_saved_search_create_update_command,
+            "azure-log-analytics-saved-search-delete": log_analytics_saved_search_delete_command,
+            "azure-log-analytics-workspaces-list": log_analytics_workspaces_list_command,
+            "azure-log-analytics-table-get": log_analytics_table_get_command,
+            "azure-log-analytics-table-delete": log_analytics_table_delete_command,
+            "azure-log-analytics-table-run": log_analytics_table_run_command,
         }
 
         azure_ad_endpoint = params.get("azure_ad_endpoint") or DEFAULT_AZURE_AD_ENDPOINT
