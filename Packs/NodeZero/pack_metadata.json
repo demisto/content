@@ -27,7 +27,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "NodeZeroEventCollector",
     "supportedModules": [
         "agentix",
         "xsiam"

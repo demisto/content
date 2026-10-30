@@ -1,8 +1,6 @@
 Collects weakness events from completed NodeZero autonomous pentests into Cortex XSIAM.
 Each weakness becomes one event, timestamped (`_time`) at the time NodeZero discovered it during the pentest.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 ## Collected data
 
 - The integration collects weaknesses only from completed (done) pentests whose results are fully available. A pentest that is still running is collected on the first fetch after it completes. A pentest that is stopped before it completes is not collected.
