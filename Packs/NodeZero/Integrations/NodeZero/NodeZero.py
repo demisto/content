@@ -214,7 +214,7 @@ def _platform_version() -> str:
 
 
 def build_user_agent() -> str:
-    """Build the User-Agent, e.g. "NodeZero-Cortex/2.0.0 (NodeZero; Cortex 8.7.0)".
+    """Build the User-Agent, e.g. "NodeZero-Cortex/1.1.0 (NodeZero; Cortex 8.7.0)".
 
     Never raises an Exception: a failed or unusable version lookup gives "unknown". SystemExit and
     KeyboardInterrupt raised by a lookup are not caught.
