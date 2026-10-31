@@ -16,6 +16,11 @@ PRODUCT = "Bitsight"
 BITSIGHT_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_MAX_FETCH = 1000
 GET_EVENTS_LOOKBACK_DAYS = 2
+# Deterministic sort so newly-created findings always append at the tail of the
+# result set. Without this the API returns findings in an unspecified (severity-based)
+# order, which makes offset-based pagination skip new findings that sort before the
+# current offset cursor.
+FINDINGS_SORT = "first_seen"
 
 # Bitsight headers per existing integration
 CALLING_PLATFORM_VERSION = "XSIAM"
@@ -38,30 +43,42 @@ class Client(BaseClient):
         self,
         guid: str,
         first_seen_gte: str,
-        last_seen_lte: str,
+        last_seen_lte: str | None,
         limit: int,
         offset: int,
+        first_seen_lte: str | None = None,
     ) -> dict[str, Any]:
-        """Get company findings for given guid and time range.
+        """Get company findings for given guid and time range, sorted by first_seen.
 
         Args:
             guid (str): guid of the company whose findings need to be retrieved
-            first_seen_gte (str): first seen date (YYYY-MM-DD) of the findings
-            last_seen_lte (str): last seen date (YYYY-MM-DD) of the findings
+            first_seen_gte (str): only findings first seen on or after this date (YYYY-MM-DD)
+            last_seen_lte (str | None): only findings last seen on or before this date (YYYY-MM-DD)
             limit (int): maximum number of findings to return
             offset (int): offset to begin returning findings from
+            first_seen_lte (str | None): only findings first seen on or before this date (YYYY-MM-DD)
 
         Returns:
             dict[str, Any]: findings response
         """
-        params = {
+        params: dict[str, Any] = {
             "first_seen_gte": first_seen_gte,
-            "last_seen_lte": last_seen_lte,
             "unsampled": "true",
             "expand": "attributed_companies",
             "limit": limit,
             "offset": offset,
+            # Ascending by first_seen so new findings always append at the tail; required for
+            # offset pagination to be correct.
+            "sort": FINDINGS_SORT,
         }
+        if last_seen_lte:
+            params["last_seen_lte"] = last_seen_lte
+        if first_seen_lte:
+            params["first_seen_lte"] = first_seen_lte
+        demisto.debug(
+            f"BitSight: requesting findings guid={guid} first_seen_gte={first_seen_gte} first_seen_lte={first_seen_lte} "
+            f"last_seen_lte={last_seen_lte} sort={FINDINGS_SORT} limit={limit} offset={offset}"
+        )
         return self._http_request(method="GET", url_suffix=f"v1/companies/{encode_string_results(guid)}/findings", params=params)
 
 
@@ -126,27 +143,36 @@ def fetch_events(
 ) -> tuple[list[dict[str, Any]], dict[str, Any], list[str]]:
     """Fetch Bitsight findings as events using offset pagination from a fixed starting date.
 
-    This function pages through Bitsight findings for the specified company starting from
-    a fixed date (first_fetch) and uses offset pagination to avoid duplicates.
-    Since the API only supports date-level precision, we start from current date for scheduled
-    fetches or use lookback_days for command calls.
+    The findings are requested sorted by first_seen (ascending), so new findings append at the tail of
+    the result set and the offset does not skip or repeat them. No key-based de-duplication is done,
+    because different findings can share the same rolledup_observation_id and first_seen.
+
+    State saved by versions that did not sort the findings (recognised by the missing `api_count` key)
+    has an offset that counts findings in a different order. For that state the offset is reset to 0
+    once, so every finding since `first_fetch` is fetched again in the sorted order (some may be sent twice).
 
     Args:
         client (Client): Initialized API client.
         guid (str): Company GUID to collect findings for.
         max_fetch (int): Maximum number of findings to request for this page.
-        last_run (dict[str, Any]): State from the previous run (expects keys `first_fetch`, `offset`).
+        last_run (dict[str, Any]): State from the previous run (keys `first_fetch`, `offset`, `api_count`).
         lookback_days (int | None): Days to look back for initial fetch. If None, uses current date.
 
     Returns:
         tuple[list[dict[str, Any]], dict[str, Any], list[str]]: A tuple containing:
             - list of events
-            - updated last_run dictionary with incremented offset
+            - updated last_run dictionary (first_fetch, offset, api_count)
             - list of finding IDs that lack date fields (for error handling by caller)
     """
     if "offset" in last_run:
         offset = last_run["offset"]
         first_fetch_date = last_run["first_fetch"]
+        if "api_count" not in last_run:
+            demisto.info(
+                f"BitSight: state from a version without sorted findings (offset={offset}). "
+                f"Resetting offset to 0 to fetch all findings since {first_fetch_date} in sorted order."
+            )
+            offset = 0
     else:
         # Initial fetch - start from current date or lookback
         offset = 0
@@ -164,41 +190,102 @@ def fetch_events(
     res = client.get_company_findings(
         guid, first_seen_gte=first_seen_gte, last_seen_lte=last_seen_lte, limit=max_fetch, offset=offset
     )
-    findings = res.get("results", [])
+    findings = res.get("results", []) or []
+    api_count = res.get("count")
 
     events, missing_date_findings = findings_to_events(findings)
+    if missing_date_findings:
+        demisto.debug(f"BitSight: findings missing first_seen date (no _time set): {missing_date_findings}")
 
-    # Update last_run with incremented offset (matches Performance Management pattern)
-    # Note: Although the API returns pagination links (next/previous) in rare cases of very large amounts of data,
-    # we ignore them since our offset-based approach will automatically fetch remaining data in subsequent calls
+    # Advance offset by the number of findings returned by the API.
     # See: https://help.bitsighttech.com/hc/en-us/articles/360050111794-Pagination
-    new_offset = offset + len(events)
+    new_offset = offset + len(findings)
+
     new_last_run: dict[str, Any] = {
         "first_fetch": first_fetch_date,
         "offset": new_offset,
+        # Total findings in the window as reported by the API. After a fetch that drained the window,
+        # offset == api_count. Its presence also marks the state as using the sorted order.
+        "api_count": api_count,
     }
+    if isinstance(api_count, int) and new_offset > api_count:
+        demisto.info(
+            f"BitSight: offset {new_offset} is larger than the total findings reported by the API ({api_count}). "
+            "Findings may have been removed from the window, so newer findings could be skipped."
+        )
 
+    demisto.debug(
+        f"BitSight: fetch_events first_fetch={first_fetch_date} offset={offset} returned={len(findings)} "
+        f"new_offset={new_offset} api_count={api_count}"
+    )
     return events, new_last_run, missing_date_findings
 
 
-def bitsight_get_events_command(client: Client, guid: str, limit: int, should_push: bool) -> CommandResults:
+def resolve_first_seen_window(start_date: str | None, end_date: str | None) -> tuple[str, str]:
+    """Turn the start_date/end_date command arguments into a first_seen window (YYYY-MM-DD, UTC).
+
+    end_date defaults to now; start_date defaults to GET_EVENTS_LOOKBACK_DAYS before end_date.
+
+    Raises:
+        ValueError: If start_date is after end_date.
+    """
+    parsed_end = arg_to_datetime(end_date, arg_name="end_date") if end_date else None
+    end_dt: datetime = parsed_end or datetime.now(UTC)
+    parsed_start = arg_to_datetime(start_date, arg_name="start_date") if start_date else None
+    start_dt: datetime = parsed_start or end_dt - timedelta(days=GET_EVENTS_LOOKBACK_DAYS)
+    first_seen_gte = start_dt.strftime(BITSIGHT_DATE_FORMAT)
+    first_seen_lte = end_dt.strftime(BITSIGHT_DATE_FORMAT)
+    if first_seen_gte > first_seen_lte:
+        raise ValueError(f"start_date ({first_seen_gte}) must not be after end_date ({first_seen_lte}).")
+    return first_seen_gte, first_seen_lte
+
+
+def bitsight_get_events_command(
+    client: Client,
+    guid: str,
+    limit: int,
+    should_push: bool,
+    start_date: str | None = None,
+    end_date: str | None = None,
+) -> CommandResults:
     """Command implementation for `bitsight-get-events`.
 
-    Executes a one-off retrieval of findings for the last 2 days (48 hours) and optionally
-    pushes them to XSIAM when `should_push_events=true`.
+    Executes a one-off retrieval of findings and optionally pushes them to XSIAM when
+    `should_push_events=true`. By default it looks back 2 days (48 hours). When `start_date`
+    and/or `end_date` are provided, it returns the findings first seen in that window instead,
+    which allows retrieving findings from the past.
 
     Args:
         client (Client): Initialized API client.
         guid (str): Resolved company GUID to collect findings for.
         limit (int): Max events to fetch in this invocation.
         should_push (bool): When true, pushes events to XSIAM; otherwise returns them as output only.
+        start_date (str | None): Start of the first_seen window. Accepts free text ("2 days ago") or a
+            date ("2026-08-31"). Defaults to 2 days before end_date.
+        end_date (str | None): End of the first_seen window. Accepts the same formats. Defaults to now.
 
     Returns:
         CommandResults: CommandResults object with table output (when not pushing) or a summary message.
     """
-    events, _, missing_date_findings = fetch_events(
-        client, guid=guid, max_fetch=int(limit), last_run={}, lookback_days=GET_EVENTS_LOOKBACK_DAYS
-    )
+    if start_date or end_date:
+        first_seen_gte, first_seen_lte = resolve_first_seen_window(start_date, end_date)
+        demisto.debug(
+            f"BitSight: bitsight-get-events explicit window guid={guid} "
+            f"first_seen_gte={first_seen_gte} first_seen_lte={first_seen_lte} limit={limit}"
+        )
+        res = client.get_company_findings(
+            guid,
+            first_seen_gte=first_seen_gte,
+            last_seen_lte=None,
+            limit=int(limit),
+            offset=0,
+            first_seen_lte=first_seen_lte,
+        )
+        events, missing_date_findings = findings_to_events(res.get("results", []) or [])
+    else:
+        events, _, missing_date_findings = fetch_events(
+            client, guid=guid, max_fetch=int(limit), last_run={}, lookback_days=GET_EVENTS_LOOKBACK_DAYS
+        )
 
     title = "Bitsight Findings Events (pushed)" if should_push else "Bitsight Findings Events"
     if should_push:
@@ -323,16 +410,29 @@ def main():
 
         elif command == "fetch-events":
             events, new_last_run, missing_date_findings = fetch_events(client, guid=guid, max_fetch=max_fetch, last_run=last_run)
-            demisto.setLastRun(new_last_run)
 
+            # Push first, then save state: if the push fails, the same page is fetched again next run.
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            demisto.debug(f"Fetched and pushed {len(events)} events")
+            demisto.setLastRun(new_last_run)
+            demisto.info(
+                f"BitSight: pushed {len(events)} events. New last run: first_fetch={new_last_run.get('first_fetch')} "
+                f"offset={new_last_run.get('offset')} api_count={new_last_run.get('api_count')}"
+            )
             if missing_date_findings:
                 raise ValueError(f"No first_seen date found for findings: {', '.join(missing_date_findings)}")
             return
 
         elif command == "bitsight-get-events":
-            return_results(bitsight_get_events_command(client, guid, limit, should_push))
+            return_results(
+                bitsight_get_events_command(
+                    client,
+                    guid,
+                    limit,
+                    should_push,
+                    start_date=args.get("start_date"),
+                    end_date=args.get("end_date"),
+                )
+            )
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented")

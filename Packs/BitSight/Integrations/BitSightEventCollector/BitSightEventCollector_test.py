@@ -9,6 +9,7 @@ from BitSightEventCollector import (
     resolve_guid,
     fetch_events,
     bitsight_get_events_command,
+    resolve_first_seen_window,
 )
 
 
@@ -255,7 +256,7 @@ class TestBitSightEventCollector:
             },
         )
 
-        last_run = {"first_fetch": "2024-01-15", "offset": 10}
+        last_run = {"first_fetch": "2024-01-15", "offset": 10, "api_count": 10}
 
         with freeze_time("2024-01-16 12:00:00"):
             events, new_last_run, missing_date_findings = fetch_events(
@@ -271,6 +272,7 @@ class TestBitSightEventCollector:
         mock_client.get_company_findings.assert_called_once_with(
             "test-guid", first_seen_gte="2024-01-15", last_seen_lte="2024-01-16", limit=100, offset=10
         )
+        assert "already_fetched_findings" not in new_last_run
 
     def test_fetch_events_no_results(self, mock_client, mocker):
         """
@@ -290,7 +292,7 @@ class TestBitSightEventCollector:
             },
         )
 
-        last_run = {"first_fetch": "2024-01-15", "offset": 50}
+        last_run = {"first_fetch": "2024-01-15", "offset": 50, "api_count": 50}
 
         with freeze_time("2024-01-16 12:00:00"):
             events, new_last_run, missing_date_findings = fetch_events(
@@ -400,6 +402,142 @@ class TestBitSightEventCollector:
         assert "pushed" in result.readable_output
         mock_send_events.assert_called_once()
 
+    def test_bitsight_get_events_command_explicit_window(self, mock_client, sample_findings, mocker):
+        """
+        Given: A get-events command with explicit start_date and end_date (historical window)
+
+        When: Executing the command
+
+        Then: Should query the API directly with that exact window (offset 0) and NOT use
+              the 2-day lookback / watermark path.
+        """
+        mock_get_findings = mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings})
+        mock_fetch_events = mocker.patch("BitSightEventCollector.fetch_events")
+
+        result = bitsight_get_events_command(
+            client=mock_client,
+            guid="test-guid",
+            limit=100,
+            should_push=False,
+            start_date="2026-08-31",
+            end_date="2026-09-02",
+        )
+
+        assert isinstance(result, CommandResults)
+        # Must not fall through to the scheduled-fetch/watermark logic.
+        mock_fetch_events.assert_not_called()
+        # Must query the API with the exact explicit window and offset 0.
+        _, kwargs = mock_get_findings.call_args
+        assert kwargs["first_seen_gte"] == "2026-08-31"
+        assert kwargs["first_seen_lte"] == "2026-09-02"
+        assert kwargs["last_seen_lte"] is None
+        assert kwargs["offset"] == 0
+
+    @freeze_time("2026-09-02 12:00:00")
+    def test_bitsight_get_events_command_start_date_only_defaults_end_to_today(self, mock_client, sample_findings, mocker):
+        """
+        Given: A get-events command with only start_date provided
+
+        When: Executing the command
+
+        Then: Should query from start_date up to today (end_date defaults to current date).
+        """
+        mock_get_findings = mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings})
+
+        bitsight_get_events_command(client=mock_client, guid="test-guid", limit=100, should_push=False, start_date="2026-08-31")
+
+        _, kwargs = mock_get_findings.call_args
+        assert kwargs["first_seen_gte"] == "2026-08-31"
+        assert kwargs["first_seen_lte"] == "2026-09-02"
+        assert kwargs["last_seen_lte"] is None
+
+    @freeze_time("2026-09-02 12:00:00")
+    def test_bitsight_get_events_command_end_date_only_defaults_start_to_lookback(self, mock_client, sample_findings, mocker):
+        """
+        Given: A get-events command with only end_date provided
+
+        When: Executing the command
+
+        Then: start defaults to 2 days before end_date, so the window is never inverted.
+        """
+        mock_get_findings = mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings})
+
+        bitsight_get_events_command(client=mock_client, guid="test-guid", limit=100, should_push=False, end_date="2026-08-01")
+
+        _, kwargs = mock_get_findings.call_args
+        assert kwargs["first_seen_gte"] == "2026-07-30"
+        assert kwargs["first_seen_lte"] == "2026-08-01"
+
+    def test_bitsight_get_events_command_start_after_end_raises(self, mock_client, mocker):
+        """
+        Given: A get-events command where start_date is after end_date
+
+        When: Executing the command
+
+        Then: A ValueError is raised and the API is not called.
+        """
+        mock_get_findings = mocker.patch.object(mock_client, "get_company_findings")
+
+        with pytest.raises(ValueError, match="must not be after end_date"):
+            bitsight_get_events_command(
+                client=mock_client, guid="test-guid", limit=100, should_push=False, start_date="2026-09-05", end_date="2026-09-01"
+            )
+        mock_get_findings.assert_not_called()
+
+    def test_resolve_first_seen_window_same_day(self):
+        """
+        Given: start_date equal to end_date
+
+        When: Resolving the window
+
+        Then: A single-day window is returned.
+        """
+        assert resolve_first_seen_window("2026-09-01", "2026-09-01") == ("2026-09-01", "2026-09-01")
+
+    def test_bitsight_get_events_command_explicit_window_null_results(self, mock_client, mocker):
+        """
+        Given: The API returns "results": null for an explicit window
+
+        When: Executing the command
+
+        Then: No error is raised and no events are returned.
+        """
+        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": None})
+
+        result = bitsight_get_events_command(
+            client=mock_client, guid="test-guid", limit=100, should_push=False, start_date="2026-08-31", end_date="2026-09-02"
+        )
+
+        assert isinstance(result, CommandResults)
+        assert "No entries" in result.readable_output
+
+    @freeze_time("2026-09-02 12:00:00")
+    def test_bitsight_get_events_command_free_text_dates(self, mock_client, sample_findings, mocker):
+        """
+        Given: A get-events command with free-text relative dates ("3 days ago" / "now")
+
+        When: Executing the command
+
+        Then: arg_to_datetime should parse them relative to the current time and the API
+              should be queried with the resolved YYYY-MM-DD window.
+        """
+        mock_get_findings = mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings})
+
+        bitsight_get_events_command(
+            client=mock_client,
+            guid="test-guid",
+            limit=100,
+            should_push=False,
+            start_date="3 days ago",
+            end_date="now",
+        )
+
+        _, kwargs = mock_get_findings.call_args
+        assert kwargs["first_seen_gte"] == "2026-08-30"
+        assert kwargs["first_seen_lte"] == "2026-09-02"
+        assert kwargs["last_seen_lte"] is None
+        assert kwargs["offset"] == 0
+
     def test_test_module_success(self, mock_client, mocker):
         """
         Given: Valid API credentials and optional GUID
@@ -478,6 +616,7 @@ class TestBitSightEventCollector:
             "last_seen_lte": "2024-01-16",
             "unsampled": "true",
             "expand": "attributed_companies",
+            "sort": "first_seen",
             "limit": 100,
             "offset": 0,
         }
@@ -485,3 +624,184 @@ class TestBitSightEventCollector:
         mock_client._http_request.assert_called_once_with(
             method="GET", url_suffix="v1/companies/test-guid/findings", params=expected_params
         )
+
+    def test_client_get_company_findings_first_seen_lte(self, mock_client):
+        """
+        Given: A first_seen_lte bound and no last_seen_lte
+
+        When: Calling get_company_findings
+
+        Then: first_seen_lte is sent and last_seen_lte is not.
+        """
+        mock_client.get_company_findings(
+            guid="test-guid", first_seen_gte="2024-01-15", last_seen_lte=None, limit=100, offset=0, first_seen_lte="2024-01-16"
+        )
+
+        _, kwargs = mock_client._http_request.call_args
+        assert kwargs["params"]["first_seen_lte"] == "2024-01-16"
+        assert "last_seen_lte" not in kwargs["params"]
+
+    def test_fetch_events_findings_sharing_a_key_are_all_sent(self, mock_client, mocker):
+        """
+        Given: Two different findings that share rolledup_observation_id and first_seen
+
+        When: fetch_events runs
+
+        Then: Both findings are returned (no key-based de-duplication) and the offset advances by 2.
+        """
+        findings = [
+            {"rolledup_observation_id": "SAME==", "first_seen": "2026-10-24", "assets": [{"asset": "a.example.com"}]},
+            {"rolledup_observation_id": "SAME==", "first_seen": "2026-10-24", "assets": [{"asset": "b.example.com"}]},
+        ]
+        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": findings, "count": 642})
+        last_run = {"first_fetch": "2026-09-25", "offset": 640, "api_count": 640}
+
+        with freeze_time("2026-10-26 12:00:00"):
+            events, new_last_run, _ = fetch_events(client=mock_client, guid="test-guid", max_fetch=1000, last_run=last_run)
+
+        assert len(events) == 2
+        assert new_last_run == {"first_fetch": "2026-09-25", "offset": 642, "api_count": 642}
+
+    def test_fetch_events_legacy_state_resets_offset_and_drops_keys(self, mock_client, mocker):
+        """
+        Given: A last_run saved by an older build, without api_count. It includes already_fetched_findings
+               from 1.3.10 and debug keys written by diagnostic builds that ran on a customer tenant.
+
+        When: fetch_events runs
+
+        Then: The offset is reset to 0 once (first_fetch is kept), and only first_fetch, offset and
+              api_count are saved.
+        """
+        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": [], "count": 640})
+        last_run = {
+            "_debug_sort_sim": {"baseline": False},
+            "first_fetch": "2026-09-25",
+            "offset": 640,
+            "already_fetched_findings": ["X==-#-2026-09-25"],
+            "applied_fetch_start": "30 days ago",
+        }
+
+        with freeze_time("2026-10-26 12:00:00"):
+            events, new_last_run, _ = fetch_events(client=mock_client, guid="test-guid", max_fetch=1000, last_run=last_run)
+
+        assert events == []
+        mock_client.get_company_findings.assert_called_once_with(
+            "test-guid", first_seen_gte="2026-09-25", last_seen_lte="2026-10-26", limit=1000, offset=0
+        )
+        assert new_last_run == {"first_fetch": "2026-09-25", "offset": 0, "api_count": 640}
+
+    def test_fetch_events_legacy_state_refetches_from_start(self, mock_client, sample_findings, mocker):
+        """
+        Given: A pre-sort last_run (offset, no api_count)
+
+        When: Two fetches run
+
+        Then: The first fetch starts at offset 0 and saves api_count; the second keeps its offset (no second reset).
+        """
+        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings, "count": 4})
+
+        with freeze_time("2026-10-26 12:00:00"):
+            _, first_run, _ = fetch_events(
+                client=mock_client, guid="g", max_fetch=1000, last_run={"first_fetch": "2026-09-25", "offset": 300}
+            )
+            mock_client.get_company_findings.return_value = {"results": [], "count": 4}
+            _, second_run, _ = fetch_events(client=mock_client, guid="g", max_fetch=1000, last_run=first_run)
+
+        assert first_run == {"first_fetch": "2026-09-25", "offset": 4, "api_count": 4}
+        assert mock_client.get_company_findings.call_args_list[0].kwargs["offset"] == 0
+        assert mock_client.get_company_findings.call_args_list[1].kwargs["offset"] == 4
+        assert second_run == {"first_fetch": "2026-09-25", "offset": 4, "api_count": 4}
+
+    def test_fetch_events_null_results_and_no_count(self, mock_client, mocker):
+        """
+        Given: The API returns "results": null and no "count"
+
+        When: fetch_events runs
+
+        Then: No error is raised, the offset is unchanged and api_count is None.
+        """
+        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": None})
+        last_run = {"first_fetch": "2026-09-25", "offset": 7, "api_count": 7}
+
+        with freeze_time("2026-10-26 12:00:00"):
+            events, new_last_run, _ = fetch_events(client=mock_client, guid="g", max_fetch=1000, last_run=last_run)
+
+        assert events == []
+        assert new_last_run == {"first_fetch": "2026-09-25", "offset": 7, "api_count": None}
+
+    def test_fetch_events_offset_above_api_count_logs_warning(self, mock_client, mocker):
+        """
+        Given: The API reports fewer findings than the saved offset (findings left the window)
+
+        When: fetch_events runs
+
+        Then: A warning is logged via demisto.info.
+        """
+        import BitSightEventCollector
+
+        info = mocker.patch.object(BitSightEventCollector.demisto, "info")
+        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": [], "count": 5})
+        last_run = {"first_fetch": "2026-09-25", "offset": 10, "api_count": 10}
+
+        with freeze_time("2026-10-26 12:00:00"):
+            fetch_events(client=mock_client, guid="g", max_fetch=1000, last_run=last_run)
+
+        assert any("larger than the total findings" in call.args[0] for call in info.call_args_list)
+
+    def test_fetch_events_sorted_pagination_picks_up_new_tail_finding(self, mock_client, mocker):
+        """
+        Given: A simulated API that returns findings sorted by first_seen, and a finding that appears
+               after the first fetch (it has the newest first_seen, so it lands at the tail)
+
+        When: Two fetches run
+
+        Then: The second fetch returns exactly the new finding - nothing is skipped or repeated.
+        """
+        dataset = [{"id": f"f{i}", "first_seen": f"2026-10-0{i}"} for i in range(1, 4)]
+
+        def fake_findings(guid, first_seen_gte, last_seen_lte, limit, offset):
+            ordered = sorted(dataset, key=lambda finding: finding["first_seen"])
+            return {"results": ordered[offset : offset + limit], "count": len(ordered)}
+
+        mocker.patch.object(mock_client, "get_company_findings", side_effect=fake_findings)
+
+        with freeze_time("2026-10-26 12:00:00"):
+            first_events, first_run, _ = fetch_events(client=mock_client, guid="g", max_fetch=1000, last_run={})
+            dataset.append({"id": "f-new", "first_seen": "2026-10-25"})
+            second_events, second_run, _ = fetch_events(client=mock_client, guid="g", max_fetch=1000, last_run=first_run)
+
+        assert [event["id"] for event in first_events] == ["f1", "f2", "f3"]
+        assert [event["id"] for event in second_events] == ["f-new"]
+        assert second_run["offset"] == 4
+
+    def test_main_fetch_events_pushes_before_saving_last_run(self, mocker):
+        """
+        Given: The fetch-events command
+
+        When: main runs
+
+        Then: The events are pushed to XSIAM before the new last_run is saved.
+        """
+        import BitSightEventCollector
+
+        calls: list[str] = []
+        demisto = BitSightEventCollector.demisto
+        mocker.patch.object(demisto, "params", return_value={"guid": "g", "credentials": {"identifier": "key"}})
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(demisto, "command", return_value="fetch-events")
+        mocker.patch.object(demisto, "getLastRun", return_value={"first_fetch": "2026-09-25", "offset": 0})
+        mocker.patch.object(demisto, "setLastRun", side_effect=lambda _: calls.append("setLastRun"))
+        mocker.patch.object(
+            BitSightEventCollector,
+            "send_events_to_xsiam",
+            side_effect=lambda *args, **kwargs: calls.append("send_events_to_xsiam"),
+        )
+        mocker.patch.object(
+            Client,
+            "get_company_findings",
+            return_value={"results": [{"rolledup_observation_id": "A", "first_seen": "2026-09-25"}], "count": 1},
+        )
+
+        BitSightEventCollector.main()
+
+        assert calls == ["send_events_to_xsiam", "setLastRun"]
