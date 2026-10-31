@@ -1,99 +1,103 @@
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
-import requests
 import urllib3
 from CommonServerPython import *  # noqa: F401
 
-# Disable warning for insecure requests when cert validation is disabled
+# Disable warnings for insecure requests when cert validation is disabled
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
-def IS_2XX(x: int) -> bool:
-    return int(x / 100) == 2  # Returns true if status code (int) is 2xx
+PUBLIC_API_HINT = (
+    "Make sure the public API is enabled in Cyber Triage (Options > Team Settings > Enable the "
+    "public API) and that the API key belongs to an account allowed to list and create incidents."
+)
 
 
 class CyberTriageClient(BaseClient):
-    SCAN_OPTIONS = ["pr", "nw", "nc", "st", "sc", "ru", "co", "lo", "ns", "wb", "fs"]
-
     def __init__(
         self,
         server: str,
         rest_port: str,
-        api_key: str,
+        api_auth_token: str,
         user: str,
         password: str,
         verify_server_cert: bool,
-        ok_codes: tuple[int, ...],
+        proxy: bool = False,
     ):
+        # Normalize the server URL: prepend https:// if no scheme is present
         base_url = (
             f"https://{server}:{rest_port}/api/"
             if not (server.startswith(("https://", "http://")))
             else f"{server}:{rest_port}/api/"
         )
-        req_headers = {"restApiKey": api_key}
+        # Use a Bearer token for API authentication
+        req_headers = {"Authorization": f"Bearer {api_auth_token}"}
+        # Store credentials used when launching live collections
         self._user = user
         self._password = password
-        super().__init__(base_url=base_url, verify=verify_server_cert, headers=req_headers, ok_codes=ok_codes)
+        super().__init__(base_url=base_url, verify=verify_server_cert, headers=req_headers, proxy=proxy)
 
-    def test_connection(self):
-        response = self._http_request("GET", url_suffix="correlation/checkcredentials", resp_type="response")
-        return response
+    def list_incidents(self, name: str | None = None) -> list[dict[str, Any]]:
+        # The name filter is a case-insensitive substring match
+        params = {"name": name} if name else None
+        return self._http_request("GET", url_suffix="incidents", params=params)
 
-    def triage_endpoint(
-        self, is_hash_upload_on: bool, is_file_upload_on: bool, endpoint: str, scan_options: str, incident_name: str
-    ):
-        # Validate scan options
-        invalid_options = []
-        if scan_options:
-            invalid_options = [opt for opt in scan_options.split(",") if opt not in self.SCAN_OPTIONS]
-        if invalid_options:
-            raise DemistoException("The following are not valid scan options: {}".format(",".join(invalid_options)))
+    def create_incident(self, name: str) -> dict[str, Any]:
+        return self._http_request("POST", url_suffix="incidents", json_data={"name": name})
 
-        # Make data dict for rest call
-        api_data = {
-            "incidentName": incident_name,
-            "hostName": endpoint,
-            "userId": self._user,
-            "password": self._password,
-            "scanOptions": scan_options,
-            "malwareScanRequested": is_hash_upload_on,
-            "sendContent": is_file_upload_on,
-            "sendIpAddress": False,
-        }
-        response = self._http_request("POST", url_suffix="livesessions", data=api_data, resp_type="response")
-        return response
+    def get_or_create_incident_id(self, name: str) -> int:
+        # Incident names are unique case-insensitively, so match the same way the server does
+        wanted = name.strip().lower()
+        for incident in self.list_incidents(name):
+            if incident.get("name", "").strip().lower() == wanted:
+                return incident["incidentId"]
+        return self.create_incident(name)["incidentId"]
+
+    def live_psexec(self, incident_id: int, request: dict[str, Any]) -> dict[str, Any]:
+        request = {"userId": self._user, "password": self._password, **request}
+        return self._http_request("POST", url_suffix=f"incidents/{incident_id}/hosts/live-psexec", json_data=request)
 
 
-def test_connection_command(client: CyberTriageClient) -> str:
-    response = client.test_connection()
-    response.raise_for_status()
+def test_module(client: CyberTriageClient) -> str:
+    # Listing incidents is a public API call, so it proves the token and the public API switch
+    try:
+        client.list_incidents()
+    except DemistoException as e:
+        if e.res is not None and e.res.status_code in (401, 403):
+            raise DemistoException(f"Authorization failed: {e}. {PUBLIC_API_HINT}")
+        raise
     return "ok"
 
 
+def optional_bool(value: Any) -> bool | None:
+    # Unset stays None so the server's configured default applies
+    return argToBoolean(value) if value else None
+
+
 def triage_endpoint_command(client: CyberTriageClient, args: dict[str, Any]) -> CommandResults:
-    def is_true(x: str) -> bool:
-        return x == "yes"
+    host_name = args.get("host_name", "")
+    incident_name = (args.get("incident_name") or "").strip() or "Default"
 
-    is_hash_upload_on = is_true(args.get("malware_hash_upload", ""))  # arg value = 'yes' or 'no'
-    is_file_upload_on = is_true(args.get("malware_file_upload", ""))  # arg value = 'yes' or 'no'
-    endpoint = args.get("endpoint", "")
-    scan_options = args.get("scan_options", "")
-    incident_name = args.get("incident_name", "")
-    response = client.triage_endpoint(is_hash_upload_on, is_file_upload_on, endpoint, scan_options, incident_name)
+    request = assign_params(
+        hostName=host_name,
+        scanOptions=args.get("scan_options"),
+        malwareScanRequested=optional_bool(args.get("malware_scan_requested")),
+        sendContent=optional_bool(args.get("send_content")),
+    )
 
-    response.raise_for_status()
+    incident_id = client.get_or_create_incident_id(incident_name)
+    host = client.live_psexec(incident_id, request)
 
-    if is_ip_valid(endpoint):
-        endpoint_context = {"IPAddress": endpoint}
+    # Build the Endpoint context entry using whichever identifier was provided
+    if is_ip_valid(host_name):
+        endpoint_context = {"IPAddress": host_name}
     else:
-        endpoint_context = {"Hostname": endpoint}
+        endpoint_context = {"Hostname": host_name}
 
-    data = response.json()
+    # hostId is the same ID the older API returned as SessionId
+    ec = {"CyberTriage": {"SessionId": str(host["hostId"])}, "Endpoint": endpoint_context}
 
-    ec = {"CyberTriage": data, "Endpoint": endpoint_context}
-
-    return CommandResults(readable_output=f"A collection has been scheduled for {endpoint}", outputs=ec, raw_response=data)
+    return CommandResults(readable_output=f"A collection has been scheduled for {host_name}", outputs=ec, raw_response=host)
 
 
 def main() -> None:  # pragma: no cover
@@ -102,25 +106,25 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
 
+    # Pull connection details from the integration instance configuration
     server = params.get("server", "")
     rest_port = params.get("rest_port", "")
-    api_key = params.get("api_key", {}).get("password", "")
+    # api_auth_token is stored as a credential; the token value is in the "password" field
+    api_auth_token = params.get("api_auth_token", {}).get("password", "")
     user = params.get("credentials", {}).get("identifier", "")
     password = params.get("credentials", {}).get("password", "")
-    verify_server_cert = False
-    handle_proxy(proxy_param_name="use_proxy")
+    # "insecure" being True means the user opted to skip cert verification
+    verify_server_cert = not argToBoolean(params.get("insecure", False))
+    proxy = argToBoolean(params.get("proxy", False))
 
     demisto.debug(f"Command being called is {command}")
     try:
-        acceptable_status_codes: tuple[int, ...] = tuple(int(code) for code in requests.status_codes.codes if IS_2XX(code))
-        client = CyberTriageClient(server, rest_port, api_key, user, password, verify_server_cert, acceptable_status_codes)
-        # This is the call made when running the ct-triage-endpoint command.
-        if command == "ct-triage-endpoint":
-            return_results(triage_endpoint_command(client, args))
+        client = CyberTriageClient(server, rest_port, api_auth_token, user, password, verify_server_cert, proxy)
 
-        # This is the call made when pressing the integration test button.
-        elif command == "test-module":
-            return_results(test_connection_command(client))
+        if command == "test-module":
+            return_results(test_module(client))
+        elif command == "ct-triage-endpoint":
+            return_results(triage_endpoint_command(client, args))
         else:
             raise NotImplementedError(f"command={command} not implemented in this integration")
     except Exception as e:
