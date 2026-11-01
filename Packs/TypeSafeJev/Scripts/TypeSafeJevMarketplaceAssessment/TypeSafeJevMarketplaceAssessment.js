@@ -574,8 +574,11 @@ function resolveIssue(issue,comment,instance,reason) {
     var after=null;try{after=findIssue(issue.external_id,instance);}catch(ignore){}
     return !!after && !issueOpen(after);
 }
+function escapeHtml(text) {
+    return String(text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 function summarizeNotes(text,limit) {
-    var lines=String(text||'').split(/\r?\n/).map(function(l){return l.replace(/\*\*/g,'').replace(/<[^>]+>/g,'').trim();})
+    var lines=String(text||'').split(/\r?\n/).map(function(l){return escapeHtml(l.replace(/\*\*/g,'')).trim();})
         .filter(function(l){return l && !/^#{1,6}\s*$/.test(l);});
     var out=[],len=0;
     for(var i=0;i<lines.length;i++){var l=lines[i].replace(/^#{1,6}\s*/,'== ').replace(/^[-*]\s*/,'  - ');if(len+l.length>limit){out.push('  ... (truncated, see release notes link)');break;}out.push(l);len+=l.length;}

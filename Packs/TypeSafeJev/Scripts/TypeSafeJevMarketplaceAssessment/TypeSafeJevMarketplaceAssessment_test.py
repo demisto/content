@@ -15,6 +15,7 @@ EXPORTED_FUNCTIONS = (
     "maintenanceOnly",
     "normalizeAnalysis",
     "parse",
+    "summarizeNotes",
     "validateChoice",
     "version",
 )
@@ -215,5 +216,18 @@ assert.strictEqual(api.maintenanceOnly({
   release_notes: 'Changed authentication behavior.',
   breaking_notes: ''
 }), false);
+"""
+    )
+
+
+def test_release_note_summary_escapes_html_injection() -> None:
+    """Untrusted release notes cannot create HTML elements in review cases."""
+    run_javascript(
+        r"""
+const summary = api.summarizeNotes('<scr<script>ipt>alert(1)</script>\n**safe**', 500);
+assert.strictEqual(summary.includes('<'), false);
+assert.strictEqual(summary.includes('>'), false);
+assert.strictEqual(summary.includes('&lt;script&gt;'), true);
+assert.strictEqual(summary.includes('safe'), true);
 """
     )
