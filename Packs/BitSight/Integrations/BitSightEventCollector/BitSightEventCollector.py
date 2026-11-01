@@ -22,6 +22,12 @@ GET_EVENTS_LOOKBACK_DAYS = 2
 # current offset cursor.
 FINDINGS_SORT = "first_seen"
 
+# TEMPORARY - OOM TEST BUILD ONLY, DO NOT MERGE.
+# On the first fetch, the last run is replaced once with this start date (offset 0) to force
+# a heavy catch-up. The marker key is saved with every new last run, so the override never repeats.
+OOM_TEST_FIRST_FETCH = "2026-08-03"
+OOM_TEST_MARKER = "oom_test_override_applied"
+
 # Bitsight headers per existing integration
 CALLING_PLATFORM_VERSION = "XSIAM"
 CONNECTOR_NAME_VERSION = f"Bitsight - {get_pack_version() or '1.0.0'}"
@@ -403,7 +409,13 @@ def main():
             return_results(test_module(client, params.get("guid")))
 
         elif command == "fetch-events":
+            if not last_run.get(OOM_TEST_MARKER):
+                demisto.info(
+                    f"BitSight OOM test: overriding last run {last_run} with first_fetch={OOM_TEST_FIRST_FETCH} offset=0 (once)."
+                )
+                last_run = {"first_fetch": OOM_TEST_FIRST_FETCH, "offset": 0}
             events, new_last_run, missing_date_findings = fetch_events(client, guid=guid, max_fetch=max_fetch, last_run=last_run)
+            new_last_run[OOM_TEST_MARKER] = True
 
             # Push first, then save state: if the push fails, the same page is fetched again next run.
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
