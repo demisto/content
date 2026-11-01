@@ -1,3 +1,5 @@
+import logging
+import threading
 import uuid
 from contextlib import ExitStack, contextmanager
 from http import HTTPStatus
@@ -115,7 +117,7 @@ def test_fetch_events(mocker, connection):
     assert events[1]["_time"] == "2023-08-14T11:24:12.147573+00:00"
     assert events[1]["event_type"] == "message"
 
-    debug_logs.assert_any_call("[message] Fetched events IDs: 1, 2.")
+    debug_logs.assert_any_call(f"[message] Fetched 2 events with last_event_time='{events[1]['_time']}'")
     # Now we want to freeze the time, so we will get the next interval
     with freeze_time(CURRENT_TIME):
         debug_logs = mocker.patch.object(demisto, "debug")
@@ -127,7 +129,7 @@ def test_fetch_events(mocker, connection):
     assert events[0]["_time"] == "2023-08-12T13:24:11.147573+00:00"
     assert events[0]["event_type"] == "message"
 
-    debug_logs.assert_any_call("[message] Fetched events IDs: 3.")
+    debug_logs.assert_any_call(f"[message] Fetched 1 events with last_event_time='{events[0]['_time']}'")
 
 
 @freeze_time("2023-08-16T13:24:12.147573+0100")
@@ -284,6 +286,81 @@ def test_heartbeat(mocker, connection):
         long_running_execution_command("host", "cid", "key", 60, ["audit"])
 
     assert connection.pongs > 0
+
+
+def test_heartbeat_thread_survives_logging_failure(mocker, connection):
+    """
+    Given:
+        - A heartbeat thread whose logging call fails (as when the platform's stdout lock cannot be acquired).
+
+    When:
+        - The heartbeat loop runs.
+
+    Then:
+        - No exception escapes the thread (an escaping thread exception is printed to stderr, which fails the run).
+        - The thread keeps sending keep-alives on the next iterations.
+    """
+    mocker.patch.object(EventConnection, "connect", return_value=connection)
+    event_connection = EventConnection("audit", url="wss://test", headers={}, idle_timeout=0, check_heartbeat=False)
+    mocker.patch.object(demisto, "debug", side_effect=RuntimeError("Failed acquiring lock"))
+    error_mock = mocker.patch.object(demisto, "error")
+    reconnect_mock = mocker.patch.object(event_connection, "reconnect")
+    thread_errors: list = []
+    mocker.patch.object(threading, "excepthook", side_effect=thread_errors.append)
+
+    def stop_after_three_pongs():
+        connection.pongs += 1
+        if connection.pongs >= 3:
+            event_connection.stop_event.set()
+
+    mocker.patch.object(connection, "pong", side_effect=stop_after_three_pongs)
+    heartbeat_thread = threading.Thread(target=event_connection.heartbeat)
+    heartbeat_thread.start()
+    heartbeat_thread.join(timeout=5)
+
+    assert not heartbeat_thread.is_alive()
+    assert connection.pongs == 3
+    assert thread_errors == []
+    # A logging failure after a successful pong must not be treated as a connection failure
+    error_mock.assert_not_called()
+    reconnect_mock.assert_not_called()
+
+
+def test_route_websockets_logs_to_debug(mocker, capfd, caplog):
+    """
+    Given:
+        - The websockets library logging an error with a traceback (e.g. "keepalive ping failed").
+
+    When:
+        - route_websockets_logs_to_debug was called (twice, to verify it is idempotent).
+
+    Then:
+        - The record is sent to demisto.debug and nothing is written to stderr.
+        - Only one handler is attached.
+    """
+    websockets_logger = logging.getLogger("websockets.sync.connection")
+    parent_logger = logging.getLogger(ProofpointEmailSecurityEventCollector.WEBSOCKETS_LOGGER_NAME)
+    original_handlers, original_propagate = list(parent_logger.handlers), parent_logger.propagate
+    parent_logger.handlers = []
+    parent_logger.propagate = True
+    debug_mock = mocker.patch.object(demisto, "debug")
+    try:
+        ProofpointEmailSecurityEventCollector.route_websockets_logs_to_debug()
+        ProofpointEmailSecurityEventCollector.route_websockets_logs_to_debug()
+        caplog.clear()
+        try:
+            raise TimeoutError("timed out while closing connection")
+        except TimeoutError:
+            websockets_logger.exception("keepalive ping failed")
+
+        assert [type(handler) for handler in parent_logger.handlers] == [ProofpointEmailSecurityEventCollector.DemistoHandler]
+        assert parent_logger.propagate is False
+        assert caplog.records == []  # nothing reached the root logger (and its stderr last-resort handler)
+        assert any("keepalive ping failed" in call.args[0] for call in debug_mock.call_args_list)
+        assert capfd.readouterr().err == ""
+    finally:
+        parent_logger.handlers = original_handlers
+        parent_logger.propagate = original_propagate
 
 
 def test_recovering_execution(mocker, connection):
