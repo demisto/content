@@ -1,0 +1,96 @@
+commonfields:
+  id: 1f01d6c7-9006-492a-8977-b670d418abdb
+  version: 32
+vcShouldKeepItemLegacyProdMachine: false
+name: CyfirmaAlertDigitalFootprintParser
+script: |-
+  import json
+
+
+  def grid_to_dict(rows):
+      out = {}
+      for row in rows or []:
+          if isinstance(row, dict) and row.get("fields"):
+              out[row["fields"]] = row.get("values")
+      return out
+
+
+  def main():
+      try:
+          raw_data = demisto.incident().get("CustomFields") or {}
+          if not raw_data:
+              return_error("CustomFields is empty on this incident")
+              return
+
+          result = grid_to_dict(raw_data.get("cyfirmaalertdetails"))
+
+          footprints = grid_to_dict(raw_data.get("cyfirmadigitalfootprints"))
+          if footprints:
+              result["DigitalFootprints"] = footprints
+
+          return_results(CommandResults(
+              outputs_prefix="Cyfirma.Alert",
+              outputs=result,
+              readable_output=f"Parsed alert\n```\n{json.dumps(result, indent=2, default=str)}\n```",
+          ))
+      except Exception as e:
+          return_error(f"Failed to parse Cyfirma alert: {e}")
+
+
+  if __name__ in ("__main__", "__builtin__", "builtins"):
+      main()
+type: python
+tags: []
+enabled: true
+outputs:
+- contextPath: Cyfirma.Alert.Alertid
+  description: Alert ID
+  type: string
+- contextPath: Cyfirma.Alert.Severity
+  description: Severity
+  type: string
+- contextPath: Cyfirma.Alert.Category
+  description: Category
+  type: string
+- contextPath: Cyfirma.Alert.Subcategory
+  description: Subcategory
+  type: string
+- contextPath: Cyfirma.Alert.Description
+  description: Description
+  type: string
+- contextPath: Cyfirma.Alert.Ip
+  description: IP address
+  type: string
+- contextPath: Cyfirma.Alert.Domain
+  description: Domain
+  type: string
+- contextPath: Cyfirma.Alert.Subdomain
+  description: Subdomain
+  type: string
+- contextPath: Cyfirma.Alert.Assettype
+  type: string
+- contextPath: Cyfirma.Alert.Assetvalue
+  description: AssetValue
+  type: string
+- contextPath: Cyfirma.Alert.Source
+  description: Source
+  type: string
+- contextPath: Cyfirma.Alert.Impact
+  description: Impact
+  type: string
+- contextPath: Cyfirma.Alert.Domainsquatting
+  description: Domain Squatting
+  type: string
+- contextPath: Cyfirma.Alert.Objectid
+  description: Object ID
+  type: string
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.12.14.13919218
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
+restrictioncenter: {}
+signature: ""

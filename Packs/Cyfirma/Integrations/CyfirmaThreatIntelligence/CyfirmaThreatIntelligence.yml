@@ -1,0 +1,139 @@
+name: Cyfirma Threat Intelligence
+display: CYFIRMA Threat Intelligence
+description: CYFIRMA API's provides External Threat Landscape Management insights.
+category: Data Enrichment & Threat Intelligence
+provider: CYFIRMA
+sectionorder:
+  - Connect
+  - Collect
+commonfields:
+  id: Cyfirma Threat Intelligence
+  version: -1
+configuration:
+- defaultvalue: https://api.cyfirma.com
+  display: API URL (e.g. https://api.cyfirma.com)
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  name: api_key
+  type: 9
+  required: true
+  hiddenusername: true
+  display: ''
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Fetch threat intelligence feeds
+  name: feed
+  required: false
+  type: 8
+- display: Fetch tailored indicator feeds
+  name: fetchTailoredIndicators
+  required: false
+  type: 8
+  defaultvalue: 'true'
+- display: Fetch tailored Vulnerability feeds
+  name: fetchTailoredVulnerability
+  required: false
+  type: 8
+  defaultvalue: 'true'
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  defaultvalue: feedInstanceReputationNotSet
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- name: feedReliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- additionalinfo: Tags for the feeds
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- defaultvalue: 15 days
+  display: How much time before the first fetch to retrieve feeds for tailored indicators and vulnerabilities. (e.g. 30 days)
+  name: first_fetch
+  options:
+  - 1 day
+  - 3 days
+  - 7 days
+  - 15 days
+  - 30 days
+  - 60 days
+  required: false
+  type: 15
+  hidden: false
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+script:
+  feed: true
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.13.8428455
+  commands:
+  - deprecated: false
+    name: cyfirma-ip-get
+    description: Get the list of IP indicators.
+    execution: false
+    outputs:
+  - deprecated: false
+    name: cyfirma-domain-get
+    description: Get the list of  domain indicators.
+    execution: false
+    outputs:
+  - deprecated: false
+    name: cyfirma-url-get
+    description: Get the list of URL indicators.
+    execution: false
+    outputs:
+  - deprecated: false
+    name: cyfirma-file-get
+    description: Get the list of File Hash indicators.
+    execution: false
+    outputs:
+  
+fromversion: 6.9.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)
