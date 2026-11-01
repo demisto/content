@@ -8,9 +8,6 @@ Following [this](https://learn.microsoft.com/en-us/defender-endpoint/configure-s
 
 In XSIAM `Office 365` Data Source, select `Microsoft Graph API` -> `Alerts`, and select `Use Microsoft Graph API V2`.
 
-***
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 ## Configure Microsoft Defender for Endpoint Alerts on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

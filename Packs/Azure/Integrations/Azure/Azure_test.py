@@ -20,6 +20,8 @@ from Azure import (
     set_webapp_config_command,
     update_webapp_auth_command,
     mysql_flexible_server_param_set_command,
+    postgres_flexible_server_configuration_update_command,
+    POSTGRES_FLEXIBLE_API_VERSION,
     monitor_log_profile_update_command,
     disk_update_command,
     webapp_update_command,
@@ -40,6 +42,10 @@ from Azure import (
     CommandResults,
     DemistoException,
     API_VERSION,
+    NSG_API_VERSION,
+    PUBLIC_IP_API_VERSION,
+    BLOB_SERVICE_API_VERSION,
+    RESOURCE_GROUPS_API_VERSION,
     SCOPE_BY_CONNECTION,
     PREFIX_URL_AZURE,
     storage_container_property_get_command,
@@ -2063,8 +2069,72 @@ def test_azure_client_get_rule(mocker, client):
         f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
         "securityRules/test-rule"
     )
-    client.http_request.assert_called_once_with("GET", full_url=expected_url)
+    client.http_request.assert_called_once_with("GET", full_url=expected_url, params={"api-version": NSG_API_VERSION})
     assert result == mock_response
+
+
+@pytest.mark.parametrize(
+    "method_name, kwargs, expected_api_version",
+    [
+        (
+            "create_or_update_rule",
+            {"security_group": "sg", "rule_name": "r", "properties": {}, "subscription_id": "s", "resource_group_name": "rg"},
+            NSG_API_VERSION,
+        ),
+        (
+            "get_rule",
+            {"security_group": "sg", "rule_name": "r", "subscription_id": "s", "resource_group_name": "rg"},
+            NSG_API_VERSION,
+        ),
+        (
+            "list_security_rules",
+            {"subscription_id": "s", "resource_group_name": "rg", "network_security_group_name": "sg"},
+            NSG_API_VERSION,
+        ),
+        ("list_network_security_groups", {"subscription_id": "s", "resource_group_name": "rg"}, NSG_API_VERSION),
+        (
+            "delete_rule",
+            {"security_group_name": "sg", "security_rule_name": "r", "subscription_id": "s", "resource_group_name": "rg"},
+            NSG_API_VERSION,
+        ),
+        ("list_public_ip_addresses_request", {"subscription_id": "s", "resource_group_name": "rg"}, PUBLIC_IP_API_VERSION),
+        ("get_all_public_ip_details_request", {"subscription_id": "s"}, PUBLIC_IP_API_VERSION),
+        (
+            "storage_blob_service_properties_get_request",
+            {"account_name": "acc", "resource_group_name": "rg", "subscription_id": "s"},
+            BLOB_SERVICE_API_VERSION,
+        ),
+        (
+            "storage_blob_containers_create_update_request",
+            {
+                "subscription_id": "s",
+                "resource_group_name": "rg",
+                "args": {"account_name": "acc", "container_name": "c"},
+                "method": "PUT",
+            },
+            BLOB_SERVICE_API_VERSION,
+        ),
+        (
+            "list_resource_groups_request",
+            {"subscription_id": "s", "filter_by_tag": "", "limit": "1"},
+            RESOURCE_GROUPS_API_VERSION,
+        ),
+    ],
+)
+def test_azure_client_requests_pin_explicit_api_version(mocker, client, method_name, kwargs, expected_api_version):
+    """
+    Given: An Azure client and an ARM request method that previously relied on the implicit default api-version.
+    When: The request method is called.
+    Then: The api-version is passed explicitly in params and is never embedded in, or left dangling on, the URL.
+    """
+    mock_response = mocker.Mock(status_code=200)
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    getattr(client, method_name)(**kwargs)
+
+    call_kwargs = client.http_request.call_args.kwargs
+    assert call_kwargs["params"]["api-version"] == expected_api_version
+    assert "?" not in call_kwargs["full_url"]
 
 
 def test_azure_client_create_policy_assignment(mocker, client):
@@ -2158,9 +2228,11 @@ def test_azure_client_create_rule_success(mocker, client):
     # Verify correct API call was made
     expected_url = (
         f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
-        "securityRules/test-rule?"
+        "securityRules/test-rule"
     )
-    client.http_request.assert_called_once_with("PUT", full_url=expected_url, json_data={"properties": properties})
+    client.http_request.assert_called_once_with(
+        "PUT", full_url=expected_url, params={"api-version": NSG_API_VERSION}, json_data={"properties": properties}
+    )
 
     # Verify response
     assert result == mock_response
@@ -2221,9 +2293,11 @@ def test_azure_client_create_rule_with_complex_properties(mocker, client):
     # Verify correct API call was made
     expected_url = (
         f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
-        "securityRules/complex-rule?"
+        "securityRules/complex-rule"
     )
-    client.http_request.assert_called_once_with("PUT", full_url=expected_url, json_data={"properties": properties})
+    client.http_request.assert_called_once_with(
+        "PUT", full_url=expected_url, params={"api-version": NSG_API_VERSION}, json_data={"properties": properties}
+    )
 
     # Verify response contains complex properties
     assert result == mock_response
@@ -2646,6 +2720,120 @@ def test_flexible_server_param_set_error_handling(mocker, client):
         resource_name=f"{server_name}/{configuration_name}",
         resource_type="MySQL Flexible Server Configuration",
         api_function_name="flexible_server_param_set",
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+    )
+
+
+def test_postgres_flexible_server_configuration_update_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to update a PostgreSQL Flexible Server configuration.
+    When: The postgres_flexible_server_configuration_update_command function is called with valid parameters.
+    Then: The function should return a success message and pass the correct arguments to the client method.
+    """
+    mocker.patch.object(client, "postgres_flexible_server_configuration_update", return_value=None)
+
+    args = {
+        "server_name": "test-postgres-flex",
+        "configuration_name": "log_checkpoints",
+        "source": "user-override",
+        "value": "on",
+    }
+
+    result = postgres_flexible_server_configuration_update_command(client, mock_params, args)
+
+    assert (
+        "Updated the configuration log_checkpoints of the PostgreSQL Flexible Server test-postgres-flex" in result.readable_output
+    )
+    client.postgres_flexible_server_configuration_update.assert_called_once_with(
+        "test-postgres-flex",
+        "log_checkpoints",
+        mock_params.get("subscription_id"),
+        mock_params.get("resource_group_name"),
+        "user-override",
+        "on",
+    )
+
+
+def test_azure_client_postgres_flexible_server_configuration_update_success(mocker, client):
+    """
+    Given: An Azure client and valid PostgreSQL Flexible Server configuration parameters.
+    When: The postgres_flexible_server_configuration_update method is called.
+    Then: The method should make the correct PUT API call and return the response.
+    """
+    mock_response = {
+        "name": "log_checkpoints",
+        "id": (
+            "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.DBforPostgreSQL/flexibleServers/test-postgres-flex/"
+            "configurations/log_checkpoints"
+        ),
+        "properties": {"value": "on", "source": "user-override", "description": "Enables logging of checkpoints"},
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    result = client.postgres_flexible_server_configuration_update(
+        server_name="test-postgres-flex",
+        configuration_name="log_checkpoints",
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        source="user-override",
+        value="on",
+    )
+
+    expected_url = (
+        f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.DBforPostgreSQL/flexibleServers/test-postgres-flex/"
+        "configurations/log_checkpoints"
+    )
+    client.http_request.assert_called_once_with(
+        method="PUT",
+        full_url=expected_url,
+        json_data={"properties": {"source": "user-override", "value": "on"}},
+        params={"api-version": POSTGRES_FLEXIBLE_API_VERSION},
+    )
+
+    assert result == mock_response
+    assert result["name"] == "log_checkpoints"
+    assert result["properties"]["value"] == "on"
+    assert result["properties"]["source"] == "user-override"
+
+
+def test_azure_client_postgres_flexible_server_configuration_update_error_handling(mocker, client):
+    """
+    Given: An Azure client and arguments for updating a PostgreSQL Flexible Server configuration.
+    When: The postgres_flexible_server_configuration_update method is called and an exception occurs.
+    Then: The method should call handle_azure_error with appropriate parameters.
+    """
+    server_name = "test-postgres-flex"
+    configuration_name = "log_checkpoints"
+    subscription_id = "12345678-1234-1234-1234-123456789012"
+    resource_group_name = "test-resource-group"
+    source = "user-override"
+    value = "on"
+
+    mock_exception = Exception("404 Not Found")
+
+    mocker.patch.object(client, "http_request", side_effect=mock_exception)
+    mocker.patch.object(
+        client,
+        "handle_azure_error",
+        side_effect=ValueError("PostgreSQL Flexible Server Configuration not found"),
+    )
+
+    with pytest.raises(ValueError, match="PostgreSQL Flexible Server Configuration not found"):
+        client.postgres_flexible_server_configuration_update(
+            server_name=server_name,
+            configuration_name=configuration_name,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            source=source,
+            value=value,
+        )
+
+    client.handle_azure_error.assert_called_once_with(
+        e=mock_exception,
+        resource_name=f"{server_name}/{configuration_name}",
+        resource_type="PostgreSQL Flexible Server Configuration",
+        api_function_name="postgres_flexible_server_configuration_update",
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
     )
@@ -5104,7 +5292,11 @@ def test_azure_billing_usage_list_command_with_pagination_token(mocker, client, 
     }
     mocker.patch.object(client, "http_request", return_value=mock_response)
 
-    args = {"subscription_id": "test-subscription-id", "next_page_token": "existing-skiptoken"}
+    args = {
+        "subscription_id": "test-subscription-id",
+        "next_page_token": "https://management.azure.com/subscriptions/test-subscription-id/providers/"
+        "Microsoft.Consumption/usageDetails?api-version=2024-08-01&$skiptoken=existing-skiptoken",
+    }
     params = mock_params
 
     result = azure_billing_usage_list_command(client, params, args)
@@ -5545,7 +5737,7 @@ def test_create_network_security_group(mocker, client):
     client.http_request.assert_called_once_with(
         method="PUT",
         full_url="https://management.azure.com/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-nsg",
-        params={"api-version": "2025-05-01"},
+        params={"api-version": NSG_API_VERSION},
         json_data={"location": "eastus"},
     )
 
@@ -7641,10 +7833,19 @@ def test_ip_group_list_client_uses_next_token(mocker, client):
     assert mock_http_request.call_args.kwargs["params"] == {}
 
 
-def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, client):
+INVALID_NEXT_TOKENS = [
+    "https://attacker.example.com/next-page",
+    "https://management.azure.com.attacker.example.com/next-page",
+    "https://management.azure.com@attacker.example.com/next-page",
+    "http://management.azure.com/next-page",
+]
+
+
+@pytest.mark.parametrize("next_token", INVALID_NEXT_TOKENS)
+def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, client, next_token):
     """
     Given:
-        - An AzureClient and a next token pointing at a host that is not the configured Azure management endpoint.
+        - An AzureClient and a next token that is not an HTTPS URL on the configured Azure management endpoint.
     When:
         - Calling the ip_group_list client method with that token.
     Then:
@@ -7653,11 +7854,89 @@ def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, cli
     mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
 
     with pytest.raises(DemistoException, match="Invalid next_token"):
-        client.ip_group_list(
-            subscription_id="sub-id", resource_group_name="test-rg", next_token="https://attacker.example.com/next-page"
-        )
+        client.ip_group_list(subscription_id="sub-id", resource_group_name="test-rg", next_token=next_token)
 
     mock_http_request.assert_not_called()
+
+
+@pytest.mark.parametrize("next_token", INVALID_NEXT_TOKENS)
+def test_list_vm_request_rejects_invalid_next_token(mocker, client, next_token):
+    """
+    Given:
+        - An AzureClient and a next token that is not an HTTPS URL on the configured Azure management endpoint.
+    When:
+        - Calling the list_vm_request client method with that token.
+    Then:
+        - A DemistoException is raised and no request is sent, so that the Azure access token is not leaked.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.list_vm_request(subscription_id="sub-id", resource_group_name="test-rg", next_token=next_token)
+
+    mock_http_request.assert_not_called()
+
+
+def test_billing_usage_list_with_valid_next_page_token(mocker, client):
+    """
+    Given:
+        - An AzureClient and a next page token returned by a previous call to the usage details API.
+    When:
+        - Calling the billing_usage_list client method with that token.
+    Then:
+        - The request is sent to the next page URL, with the api-version from the token replaced by the default one.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+    next_page_token = (
+        "https://management.azure.com/subscriptions/sub-id/providers/Microsoft.Consumption/usageDetails"
+        "?api-version=2019-01-01&$skiptoken=abc"
+    )
+
+    client.billing_usage_list(subscription_id="sub-id", next_page_token=next_page_token)
+
+    mock_http_request.assert_called_once()
+    assert mock_http_request.call_args.kwargs["full_url"].startswith(
+        "https://management.azure.com/subscriptions/sub-id/providers/Microsoft.Consumption/usageDetails"
+    )
+    assert "api-version" not in mock_http_request.call_args.kwargs["full_url"]
+    assert mock_http_request.call_args.kwargs["params"] == {"api-version": "2024-08-01"}
+
+
+@pytest.mark.parametrize("next_page_token", INVALID_NEXT_TOKENS)
+def test_billing_usage_list_rejects_invalid_next_page_token(mocker, client, next_page_token):
+    """
+    Given:
+        - An AzureClient and a next page token that is not an HTTPS URL on the configured Azure management endpoint.
+    When:
+        - Calling the billing_usage_list client method with that token.
+    Then:
+        - A DemistoException is raised and no request is sent, so that the Azure access token is not leaked.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.billing_usage_list(subscription_id="sub-id", next_page_token=next_page_token)
+
+    mock_http_request.assert_not_called()
+
+
+def test_validate_next_link_accepts_gov_host(mocker):
+    """
+    Given:
+        - A next link on the US Gov management host, and the integration configured for a Gov account.
+    When:
+        - Calling validate_next_link with the host taken from PREFIX_URL_AZURE.
+    Then:
+        - The link is returned unchanged, so valid Gov pagination keeps working.
+    """
+    from urllib.parse import urlparse
+
+    from Azure import validate_next_link
+
+    mocker.patch.object(Azure, "PREFIX_URL_AZURE", "https://management.usgovcloudapi.net/subscriptions/")
+    next_link = "https://management.usgovcloudapi.net/subscriptions/sub-id/next-page?$skipToken=abc"
+
+    assert validate_next_link(next_link, urlparse(Azure.PREFIX_URL_AZURE).hostname or "") == next_link
 
 
 def test_ip_group_list_client_by_subscription(mocker, client):
@@ -7674,6 +7953,1232 @@ def test_ip_group_list_client_by_subscription(mocker, client):
     client.ip_group_list(subscription_id="sub-id", resource_group_name="", next_token="")
 
     assert mock_http_request.call_args.kwargs["full_url"].endswith("sub-id/providers/Microsoft.Network/ipGroups")
+
+
+# ---------------------------------------------------------------------------
+# Azure Firewall network rule and network rule collection commands
+# ---------------------------------------------------------------------------
+
+FIREWALL_ARGS = {"subscription_id": "sub-id", "resource_group_name": "rg"}
+
+
+def firewall_with_collection(rules: list | None = None, provisioning_state: str = "Succeeded") -> dict:
+    """Return an Azure Firewall resource holding a single network rule collection."""
+    return {
+        "name": "xsoar-firewall",
+        "id": "/subscriptions/sub-id/resourceGroups/rg/providers/Microsoft.Network/azureFirewalls/xsoar-firewall",
+        "location": "eastus",
+        "properties": {
+            "provisioningState": provisioning_state,
+            "networkRuleCollections": [
+                {
+                    "name": "my-collection",
+                    "properties": {
+                        "priority": 100,
+                        "action": {"type": "Allow"},
+                        "rules": rules if rules is not None else [{"name": "my-rule", "description": "original"}],
+                    },
+                }
+            ],
+        },
+    }
+
+
+def policy_collection_group(rules: list | None = None, provisioning_state: str = "Succeeded") -> dict:
+    """Return a firewall policy rule collection group holding a single rule collection."""
+    return {
+        "name": "my-collection",
+        "id": (
+            "/subscriptions/sub-id/resourceGroups/rg/providers/Microsoft.Network"
+            "/firewallPolicies/my-policy/ruleCollectionGroups/my-collection"
+        ),
+        "properties": {
+            "provisioningState": provisioning_state,
+            "priority": 100,
+            "ruleCollections": [
+                {
+                    "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                    "name": "my-collection",
+                    "priority": 100,
+                    "action": {"type": "Allow"},
+                    "rules": rules if rules is not None else [{"name": "my-rule", "description": "original"}],
+                }
+            ],
+        },
+    }
+
+
+def policy_collection_group_with_multiple_collections() -> dict:
+    """Return a firewall policy rule collection group holding several rule collections."""
+    collection_group = policy_collection_group()
+    collection_group["properties"]["ruleCollections"] = [
+        {
+            "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+            "name": "other-collection",
+            "priority": 100,
+            "action": {"type": "Allow"},
+            "rules": [{"name": "other-rule", "description": "other"}],
+        },
+        {
+            "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+            "name": "my-collection",
+            "priority": 200,
+            "action": {"type": "Allow"},
+            "rules": [{"name": "my-rule", "description": "original"}],
+        },
+    ]
+    return collection_group
+
+
+def test_firewall_rule_collection_groups_create_command(mocker):
+    """
+    Given: An AzureClient whose firewall holds no matching network rule collection.
+    When: firewall_rule_collection_groups_create_command is called.
+    Then: The new collection, holding the new rule in the firewall schema, is appended and the firewall is updated.
+    """
+    from Azure import firewall_rule_collection_groups_create_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_get.return_value = {"name": "xsoar-firewall", "properties": {"networkRuleCollections": []}}
+    client.firewall_update.return_value = firewall_with_collection()
+
+    args = {
+        **FIREWALL_ARGS,
+        "firewall_name": "xsoar-firewall",
+        "collection_name": "my-collection",
+        "collection_priority": "105",
+        "action": "Allow",
+        "rule_name": "my-rule",
+        "description": "my rule",
+        "protocols": "TCP,UDP",
+        "source_type": "ip_address",
+        "source_ips": "10.0.0.1",
+        "destination_type": "ip_address",
+        "destinations": "10.0.0.2",
+        "destination_ports": "8080",
+    }
+
+    result = firewall_rule_collection_groups_create_command(args, client, {})
+
+    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
+    assert 'Successfully created network rule collection "my-collection"' in result.readable_output
+    sent_collection = client.firewall_update.call_args.kwargs["firewall_data"]["properties"]["networkRuleCollections"][0]
+    assert sent_collection["properties"]["priority"] == 105
+    assert sent_collection["properties"]["rules"][0] == {
+        "name": "my-rule",
+        "description": "my rule",
+        "destinationPorts": ["8080"],
+        "destinationAddresses": ["10.0.0.2"],
+        "sourceAddresses": ["10.0.0.1"],
+        "protocols": ["TCP", "UDP"],
+    }
+    client.firewall_policy_rule_collection_group_create_or_update.assert_not_called()
+
+
+def test_firewall_policy_rule_collection_groups_create_command(mocker):
+    """
+    Given: An AzureClient whose policy holds no rule collection group with the requested name.
+    When: firewall_policy_rule_collection_groups_create_command is called.
+    Then: A rule collection group holding the new rule in the policy schema is created.
+    """
+    from Azure import firewall_policy_rule_collection_groups_create_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_policy_rule_collection_group_get.side_effect = ValueError("not found")
+    client.firewall_policy_rule_collection_group_create_or_update.return_value = policy_collection_group()
+
+    args = {
+        **FIREWALL_ARGS,
+        "policy_name": "my-policy",
+        "collection_name": "my-collection",
+        "collection_priority": "105",
+        "action": "Deny",
+        "rule_name": "my-rule",
+        "description": "my rule",
+        "protocols": "TCP",
+        "source_type": "ip_group",
+        "source_ip_group_ids": "group-id",
+        "destination_type": "fqdn",
+        "destinations": "example.com",
+        "destination_ports": "443",
+    }
+
+    result = firewall_policy_rule_collection_groups_create_command(args, client, {})
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups"
+    sent_collection = client.firewall_policy_rule_collection_group_create_or_update.call_args.kwargs["collection_data"]
+    rule_collection = sent_collection["properties"]["ruleCollections"][0]
+    assert rule_collection["ruleCollectionType"] == "FirewallPolicyFilterRuleCollection"
+    assert rule_collection["action"] == {"type": "Deny"}
+    assert rule_collection["rules"][0] == {
+        "name": "my-rule",
+        "description": "my rule",
+        "destinationPorts": ["443"],
+        "destinationFqdns": ["example.com"],
+        "sourceIpGroups": ["group-id"],
+        "ipProtocols": ["TCP"],
+        "ruleType": "NetworkRule",
+    }
+    client.firewall_update.assert_not_called()
+
+
+def test_firewall_rule_collection_groups_create_command_already_exists(mocker):
+    """
+    Given: An AzureClient whose firewall already holds a collection with the requested name.
+    When: firewall_rule_collection_groups_create_command is called.
+    Then: A ValueError is raised and the firewall is not updated.
+    """
+    from Azure import firewall_rule_collection_groups_create_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_get.return_value = firewall_with_collection()
+
+    args = {
+        **FIREWALL_ARGS,
+        "firewall_name": "xsoar-firewall",
+        "collection_name": "my-collection",
+        "collection_priority": "105",
+        "action": "Allow",
+        "rule_name": "my-rule",
+        "protocols": "TCP",
+        "source_type": "ip_address",
+        "source_ips": "10.0.0.1",
+        "destination_type": "ip_address",
+        "destinations": "10.0.0.2",
+        "destination_ports": "8080",
+    }
+
+    with pytest.raises(ValueError, match='Network rule collection "my-collection" already exists'):
+        firewall_rule_collection_groups_create_command(args, client, {})
+    client.firewall_update.assert_not_called()
+
+
+def test_firewall_policy_rule_collection_groups_create_command_already_exists(mocker):
+    """
+    Given: An AzureClient whose policy already holds a rule collection group with the requested name.
+    When: firewall_policy_rule_collection_groups_create_command is called.
+    Then: A ValueError is raised and the rule collection group is not created.
+    """
+    from Azure import firewall_policy_rule_collection_groups_create_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group()
+
+    args = {
+        **FIREWALL_ARGS,
+        "policy_name": "my-policy",
+        "collection_name": "my-collection",
+        "collection_priority": "105",
+        "action": "Allow",
+        "rule_name": "my-rule",
+        "protocols": "TCP",
+        "source_type": "ip_address",
+        "source_ips": "10.0.0.1",
+        "destination_type": "ip_address",
+        "destinations": "10.0.0.2",
+        "destination_ports": "8080",
+    }
+
+    with pytest.raises(ValueError, match='Network rule collection "my-collection" already exists in policy "my-policy".'):
+        firewall_policy_rule_collection_groups_create_command(args, client, {})
+    client.firewall_policy_rule_collection_group_create_or_update.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "overrides, expected_error",
+    [
+        pytest.param(
+            {"source_type": "ip_group", "source_ips": ["10.0.0.1"], "source_ip_group_ids": []},
+            'The "source_ip_group_ids" argument must be provided when the "source_type" argument is "ip_group".',
+            id="ip_group_without_group_ids",
+        ),
+        pytest.param(
+            {"source_type": "ip_address", "source_ips": [], "source_ip_group_ids": ["group-id"]},
+            'The "source_ips" argument must be provided when the "source_type" argument is "ip_address".',
+            id="ip_address_without_ips",
+        ),
+        pytest.param(
+            {"source_type": "ip_address", "source_ips": ["10.0.0.1"], "source_ip_group_ids": ["group-id"]},
+            'The "source_ip_group_ids" argument cannot be provided when the "source_type" argument is "ip_address".',
+            id="both_source_arguments",
+        ),
+        pytest.param(
+            {"source_type": "", "source_ips": ["10.0.0.1"]},
+            'The "source_type" argument must be provided when the "source_ips" or "source_ip_group_ids" argument is provided.',
+            id="source_without_type",
+        ),
+        pytest.param(
+            {"source_type": "subnet"},
+            'The "source_type" argument must be one of ip_address, ip_group, but "subnet" was provided.',
+            id="unknown_source_type",
+        ),
+        pytest.param(
+            {"destination_type": "fqdn", "destinations": []},
+            'The "destinations" argument must be provided when the "destination_type" argument is "fqdn".',
+            id="destination_type_without_destinations",
+        ),
+        pytest.param(
+            {"destination_type": "", "destinations": ["10.0.0.2"]},
+            'The "destination_type" argument must be provided when the "destinations" argument is provided.',
+            id="destinations_without_type",
+        ),
+        pytest.param(
+            {"destination_type": "subnet", "destinations": ["10.0.0.2"]},
+            'The "destination_type" argument must be one of ip_address, ip_group, service_tag, fqdn, '
+            'but "subnet" was provided.',
+            id="unknown_destination_type",
+        ),
+    ],
+)
+def test_validate_firewall_network_rule_source_and_destination_invalid(overrides, expected_error):
+    """
+    Given: Source and destination arguments that are inconsistent with their selected types.
+    When: validate_firewall_network_rule_source_and_destination is called.
+    Then: A ValueError naming the offending argument is raised.
+    """
+    from Azure import validate_firewall_network_rule_source_and_destination
+
+    kwargs = {
+        "source_type": "ip_address",
+        "source_ips": ["10.0.0.1"],
+        "source_ip_group_ids": [],
+        "destination_type": "ip_address",
+        "destinations": ["10.0.0.2"],
+    } | overrides
+
+    with pytest.raises(ValueError) as excinfo:
+        validate_firewall_network_rule_source_and_destination(**kwargs)
+    assert str(excinfo.value) == expected_error
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        pytest.param(
+            {
+                "source_type": "ip_address",
+                "source_ips": ["10.0.0.1"],
+                "source_ip_group_ids": [],
+                "destination_type": "fqdn",
+                "destinations": ["example.com"],
+            },
+            id="ip_address_source_and_fqdn_destination",
+        ),
+        pytest.param(
+            {
+                "source_type": "ip_group",
+                "source_ips": [],
+                "source_ip_group_ids": ["group-id"],
+                "destination_type": "service_tag",
+                "destinations": ["ApiManagement"],
+            },
+            id="ip_group_source_and_service_tag_destination",
+        ),
+        pytest.param(
+            {
+                "source_type": "",
+                "source_ips": [],
+                "source_ip_group_ids": [],
+                "destination_type": "",
+                "destinations": [],
+            },
+            id="no_source_or_destination_supplied_on_update",
+        ),
+    ],
+)
+def test_validate_firewall_network_rule_source_and_destination_valid(kwargs):
+    """
+    Given: Source and destination arguments that are consistent with their selected types.
+    When: validate_firewall_network_rule_source_and_destination is called.
+    Then: No error is raised.
+    """
+    from Azure import validate_firewall_network_rule_source_and_destination
+
+    validate_firewall_network_rule_source_and_destination(**kwargs)
+
+
+def test_firewall_rule_collection_groups_create_command_mismatched_source(mocker):
+    """
+    Given: An AzureClient and a create request whose source_type does not match the supplied source argument.
+    When: firewall_rule_collection_groups_create_command is called.
+    Then: A ValueError is raised and the firewall is never read or updated.
+    """
+    from Azure import firewall_rule_collection_groups_create_command
+
+    client = mocker.Mock(spec=AzureClient)
+
+    args = {
+        **FIREWALL_ARGS,
+        "firewall_name": "xsoar-firewall",
+        "collection_name": "my-collection",
+        "collection_priority": "105",
+        "action": "Allow",
+        "rule_name": "my-rule",
+        "protocols": "TCP",
+        "source_type": "ip_group",
+        "source_ips": "10.0.0.1",
+        "destination_type": "ip_address",
+        "destinations": "10.0.0.2",
+        "destination_ports": "8080",
+    }
+
+    with pytest.raises(ValueError, match='The "source_ip_group_ids" argument must be provided'):
+        firewall_rule_collection_groups_create_command(args, client, {})
+    client.firewall_get.assert_not_called()
+    client.firewall_update.assert_not_called()
+
+
+def test_firewall_network_rule_update_command_mismatched_destination(mocker):
+    """
+    Given: An AzureClient and an update request that supplies destinations without a destination_type.
+    When: firewall_network_rule_update_command is called.
+    Then: A ValueError is raised and the firewall is never read or updated.
+    """
+    from Azure import firewall_network_rule_update_command
+
+    client = mocker.Mock(spec=AzureClient)
+
+    args = {
+        **FIREWALL_ARGS,
+        "firewall_name": "xsoar-firewall",
+        "collection_name": "my-collection",
+        "rule_name": "my-rule",
+        "destinations": "10.0.0.2",
+    }
+
+    with pytest.raises(ValueError, match='The "destination_type" argument must be provided'):
+        firewall_network_rule_update_command(args, client, {})
+    client.firewall_get.assert_not_called()
+    client.firewall_update.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "command_name, target_argument",
+    [
+        pytest.param("firewall_rule_collection_groups_create_command", "firewall_name", id="firewall_collection_create"),
+        pytest.param("firewall_rule_collection_groups_update_command", "firewall_name", id="firewall_collection_update"),
+        pytest.param("firewall_rule_collection_groups_delete_command", "firewall_name", id="firewall_collection_delete"),
+        pytest.param("firewall_network_rule_create_command", "firewall_name", id="firewall_rule_create"),
+        pytest.param("firewall_network_rule_update_command", "firewall_name", id="firewall_rule_update"),
+        pytest.param("firewall_network_rule_delete_command", "firewall_name", id="firewall_rule_delete"),
+        pytest.param("firewall_policy_rule_collection_groups_create_command", "policy_name", id="policy_collection_create"),
+        pytest.param("firewall_policy_rule_collection_groups_update_command", "policy_name", id="policy_collection_update"),
+        pytest.param("firewall_policy_rule_collection_groups_delete_command", "policy_name", id="policy_collection_delete"),
+        pytest.param("firewall_policy_network_rule_create_command", "policy_name", id="policy_rule_create"),
+        pytest.param("firewall_policy_network_rule_update_command", "policy_name", id="policy_rule_update"),
+        pytest.param("firewall_policy_network_rule_delete_command", "policy_name", id="policy_rule_delete"),
+    ],
+)
+def test_firewall_commands_require_their_target(mocker, command_name, target_argument):
+    """
+    Given: An AzureClient and a request that omits the required target argument of the command.
+    When: Any of the firewall or firewall policy network rule commands is called.
+    Then: A KeyError naming the missing target argument is raised and no Azure resource is read or written.
+    """
+    client = mocker.Mock(spec=AzureClient)
+    command = getattr(Azure, command_name)
+
+    with pytest.raises(KeyError, match=target_argument):
+        command(dict(FIREWALL_ARGS), client, {})
+
+    client.firewall_get.assert_not_called()
+    client.firewall_update.assert_not_called()
+    client.firewall_policy_rule_collection_group_get.assert_not_called()
+    client.firewall_policy_rule_collection_group_create_or_update.assert_not_called()
+    client.firewall_policy_rule_collection_group_delete.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "overrides, expected_error",
+    [
+        pytest.param(
+            {"interval_in_seconds": "0"},
+            "The interval_in_seconds argument must be a positive number. Currently the value is 0.",
+            id="zero_interval",
+        ),
+        pytest.param(
+            {"interval_in_seconds": "-1"},
+            "The interval_in_seconds argument must be a positive number. Currently the value is -1.",
+            id="negative_interval",
+        ),
+        pytest.param(
+            {"polling_timeout": "-5"},
+            "The polling_timeout argument must be a positive number. Currently the value is -5.",
+            id="negative_timeout",
+        ),
+    ],
+)
+def test_validate_firewall_polling_args_invalid(overrides, expected_error):
+    """
+    Given: A non-positive interval_in_seconds or polling_timeout argument.
+    When: validate_firewall_polling_args is called.
+    Then: A ValueError naming the offending argument is raised.
+    """
+    from Azure import validate_firewall_polling_args
+
+    with pytest.raises(ValueError) as excinfo:
+        validate_firewall_polling_args(overrides)
+    assert str(excinfo.value) == expected_error
+
+
+def test_validate_firewall_polling_args_defaults():
+    """
+    Given: No polling arguments, so the defaults are used.
+    When: validate_firewall_polling_args is called.
+    Then: No error is raised.
+    """
+    from Azure import validate_firewall_polling_args
+
+    validate_firewall_polling_args({})
+
+
+def test_firewall_rule_collection_groups_create_command_schedules_poll(mocker):
+    """
+    Given: An AzureClient whose firewall is returned in the Updating provisioning state.
+    When: firewall_rule_collection_groups_create_command is called.
+    Then: Another poll is scheduled and first_run is turned off for the next run.
+    """
+    from Azure import (
+        DEFAULT_INTERVAL_IN_SECONDS,
+        DEFAULT_TIMEOUT_POLLING_COMMAND,
+        AzureClient,
+        firewall_rule_collection_groups_create_command,
+    )
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_get.return_value = {"name": "xsoar-firewall", "properties": {"networkRuleCollections": []}}
+    client.firewall_update.return_value = firewall_with_collection(provisioning_state="Updating")
+
+    args = {
+        **FIREWALL_ARGS,
+        "firewall_name": "xsoar-firewall",
+        "collection_name": "my-collection",
+        "collection_priority": "105",
+        "action": "Allow",
+        "rule_name": "my-rule",
+        "protocols": "TCP",
+        "source_type": "ip_address",
+        "source_ips": "10.0.0.1",
+        "destination_type": "ip_address",
+        "destinations": "10.0.0.2",
+        "destination_ports": "8080",
+    }
+
+    result = firewall_rule_collection_groups_create_command(args, client, {})
+
+    assert result.scheduled_command is not None
+    assert result.scheduled_command._command == "azure-firewall-rule-collection-groups-create"
+    assert result.scheduled_command._next_run == str(DEFAULT_INTERVAL_IN_SECONDS)
+    assert result.scheduled_command._timeout == str(DEFAULT_TIMEOUT_POLLING_COMMAND)
+    assert 'Waiting for "xsoar-firewall" to be provisioned. Current state: Updating.' in result.readable_output
+    # The following runs poll the firewall instead of creating the rule collection again.
+    assert args["first_run"] is False
+
+
+def test_firewall_rule_collection_groups_create_command_polling_run(mocker):
+    """
+    Given: An AzureClient whose firewall finished provisioning, on a polling run.
+    When: firewall_rule_collection_groups_create_command is called with first_run turned off.
+    Then: The firewall is only read, and the provisioned firewall is returned without scheduling another poll.
+    """
+    from Azure import firewall_rule_collection_groups_create_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_get.return_value = firewall_with_collection()
+
+    args = {
+        **FIREWALL_ARGS,
+        "firewall_name": "xsoar-firewall",
+        "collection_name": "my-collection",
+        "first_run": False,
+    }
+
+    result = firewall_rule_collection_groups_create_command(args, client, {})
+
+    client.firewall_update.assert_not_called()
+    assert result.scheduled_command is None
+    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
+    assert 'Successfully created network rule collection "my-collection"' in result.readable_output
+
+
+def test_firewall_policy_network_rule_create_command_polling_run(mocker):
+    """
+    Given: An AzureClient whose rule collection group finished provisioning, on a polling run.
+    When: firewall_policy_network_rule_create_command is called with first_run turned off.
+    Then: The rule collection group is only read, and it is returned without scheduling another poll.
+    """
+    from Azure import firewall_policy_network_rule_create_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group()
+
+    args = {
+        **FIREWALL_ARGS,
+        "policy_name": "my-policy",
+        "collection_name": "my-collection",
+        "rule_name": "new-rule",
+        "first_run": False,
+    }
+
+    result = firewall_policy_network_rule_create_command(args, client, {})
+
+    client.firewall_policy_rule_collection_group_create_or_update.assert_not_called()
+    assert result.scheduled_command is None
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups"
+    assert 'Successfully created network rule "new-rule" in collection "my-collection".' in result.readable_output
+
+
+def test_firewall_rule_collection_groups_create_command_failed_provisioning(mocker):
+    """
+    Given: An AzureClient whose firewall is returned in the Failed provisioning state.
+    When: firewall_rule_collection_groups_create_command is called.
+    Then: A ValueError is raised instead of polling until the timeout.
+    """
+    from Azure import firewall_rule_collection_groups_create_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_get.return_value = firewall_with_collection(provisioning_state="Failed")
+
+    args = {
+        **FIREWALL_ARGS,
+        "firewall_name": "xsoar-firewall",
+        "collection_name": "my-collection",
+        "first_run": False,
+    }
+
+    with pytest.raises(ValueError, match='The provisioning of "xsoar-firewall" failed.'):
+        firewall_rule_collection_groups_create_command(args, client, {})
+
+
+def test_get_policy_network_rule_collection_matches_by_name():
+    """
+    Given: A rule collection group holding several rule collections, where the requested one is not the first.
+    When: get_policy_network_rule_collection is called with the requested collection name.
+    Then: The collection matching the name is returned rather than the first one in the group.
+    """
+    from Azure import get_policy_network_rule_collection
+
+    collection_group = policy_collection_group_with_multiple_collections()
+
+    rule_collection = get_policy_network_rule_collection(collection_group, "my-collection")
+
+    assert rule_collection["name"] == "my-collection"
+    assert rule_collection["priority"] == 200
+
+
+def test_get_policy_network_rule_collection_not_found():
+    """
+    Given: A rule collection group that does not hold a rule collection with the requested name.
+    When: get_policy_network_rule_collection is called.
+    Then: A ValueError is raised instead of silently returning an unrelated collection.
+    """
+    from Azure import get_policy_network_rule_collection
+
+    collection_group = policy_collection_group_with_multiple_collections()
+
+    with pytest.raises(ValueError, match='Network rule collection "not-exists" was not found in the policy.'):
+        get_policy_network_rule_collection(collection_group, "not-exists")
+
+
+def test_firewall_policy_network_rule_update_command_multiple_collections(mocker):
+    """
+    Given: An AzureClient whose policy rule collection group holds several rule collections.
+    When: firewall_policy_network_rule_update_command is called for a rule in the second collection.
+    Then: Only the matching collection is updated and the other collection is left untouched.
+    """
+    from Azure import firewall_policy_network_rule_update_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group_with_multiple_collections()
+    client.firewall_policy_rule_collection_group_create_or_update.return_value = policy_collection_group()
+
+    args = {
+        **FIREWALL_ARGS,
+        "policy_name": "my-policy",
+        "collection_name": "my-collection",
+        "rule_name": "my-rule",
+        "description": "updated",
+    }
+
+    firewall_policy_network_rule_update_command(args, client, {})
+
+    sent_group = client.firewall_policy_rule_collection_group_create_or_update.call_args.kwargs["collection_data"]
+    other_collection, updated_collection = sent_group["properties"]["ruleCollections"]
+    assert updated_collection["name"] == "my-collection"
+    assert updated_collection["rules"][0]["description"] == "updated"
+    assert other_collection["name"] == "other-collection"
+    assert other_collection["rules"][0]["description"] == "other"
+
+
+def test_firewall_policy_network_rule_collection_exists_propagates_non_404_error(mocker):
+    """
+    Given: An AzureClient whose rule collection group lookup fails with an error that is not a 404.
+    When: firewall_policy_network_rule_collection_exists is called.
+    Then: The error is propagated instead of being reported as a missing rule collection group.
+    """
+    from Azure import firewall_policy_network_rule_collection_exists
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_policy_rule_collection_group_get.side_effect = ValueError("500 Internal Server Error")
+
+    with pytest.raises(ValueError, match="500 Internal Server Error"):
+        firewall_policy_network_rule_collection_exists(
+            client=client,
+            subscription_id="sub-id",
+            resource_group_name="rg",
+            policy_name="my-policy",
+            collection_name="my-collection",
+        )
+
+
+def test_firewall_rule_collection_groups_update_command(mocker):
+    """
+    Given: An AzureClient whose firewall holds the requested network rule collection.
+    When: firewall_rule_collection_groups_update_command is called with a new priority and action.
+    Then: The collection properties are updated and the firewall is sent back to Azure.
+    """
+    from Azure import firewall_rule_collection_groups_update_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_get.return_value = firewall_with_collection()
+    client.firewall_update.return_value = firewall_with_collection()
+
+    args = {**FIREWALL_ARGS, "firewall_name": "xsoar-firewall", "collection_name": "my-collection", "priority": "200"}
+    args["action"] = "Deny"
+
+    result = firewall_rule_collection_groups_update_command(args, client, {})
+
+    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
+    sent_collection = client.firewall_update.call_args.kwargs["firewall_data"]["properties"]["networkRuleCollections"][0]
+    assert sent_collection["properties"]["priority"] == 200
+    assert sent_collection["properties"]["action"] == {"type": "Deny"}
+
+
+def test_firewall_policy_rule_collection_groups_update_command(mocker):
+    """
+    Given: An AzureClient whose policy holds the requested rule collection group.
+    When: firewall_policy_rule_collection_groups_update_command is called with a new priority.
+    Then: The priority is updated on both the rule collection and the rule collection group.
+    """
+    from Azure import firewall_policy_rule_collection_groups_update_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group()
+    client.firewall_policy_rule_collection_group_create_or_update.return_value = policy_collection_group()
+
+    args = {**FIREWALL_ARGS, "policy_name": "my-policy", "collection_name": "my-collection", "priority": "300"}
+
+    result = firewall_policy_rule_collection_groups_update_command(args, client, {})
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups"
+    sent_group = client.firewall_policy_rule_collection_group_create_or_update.call_args.kwargs["collection_data"]
+    assert sent_group["properties"]["priority"] == 300
+    assert sent_group["properties"]["ruleCollections"][0]["priority"] == 300
+
+
+def test_firewall_rule_collection_groups_update_command_collection_not_found(mocker):
+    """
+    Given: An AzureClient whose firewall does not hold the requested network rule collection.
+    When: firewall_rule_collection_groups_update_command is called.
+    Then: A ValueError is raised and the firewall is not updated.
+    """
+    from Azure import firewall_rule_collection_groups_update_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_get.return_value = {"name": "xsoar-firewall", "properties": {"networkRuleCollections": []}}
+
+    args = {**FIREWALL_ARGS, "firewall_name": "xsoar-firewall", "collection_name": "not-exists", "priority": "200"}
+
+    with pytest.raises(ValueError, match='Network rule collection "not-exists" was not found.'):
+        firewall_rule_collection_groups_update_command(args, client, {})
+    client.firewall_update.assert_not_called()
+
+
+def test_firewall_rule_collection_groups_delete_command(mocker):
+    """
+    Given: An AzureClient whose firewall holds the requested network rule collection.
+    When: firewall_rule_collection_groups_delete_command is called.
+    Then: The collection is removed from the firewall and the firewall is sent back to Azure.
+    """
+    from Azure import firewall_rule_collection_groups_delete_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_get.return_value = firewall_with_collection()
+    client.firewall_update.return_value = {
+        "name": "xsoar-firewall",
+        "properties": {"provisioningState": "Succeeded", "networkRuleCollections": []},
+    }
+
+    args = {**FIREWALL_ARGS, "firewall_name": "xsoar-firewall", "collection_name": "my-collection"}
+
+    result = firewall_rule_collection_groups_delete_command(args, client, {})
+
+    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
+    assert 'Successfully deleted network rule collection "my-collection"' in result.readable_output
+    assert client.firewall_update.call_args.kwargs["firewall_data"]["properties"]["networkRuleCollections"] == []
+
+
+def test_firewall_policy_rule_collection_groups_delete_command(mocker):
+    """
+    Given: An AzureClient and a policy that holds the requested rule collection group.
+    When: firewall_policy_rule_collection_groups_delete_command is called.
+    Then: The deletion is requested and another poll is scheduled to wait for the deletion to complete.
+    """
+    from Azure import firewall_policy_rule_collection_groups_delete_command
+
+    client = mocker.Mock(spec=AzureClient)
+    args = {**FIREWALL_ARGS, "policy_name": "my-policy", "collection_name": "my-collection"}
+
+    result = firewall_policy_rule_collection_groups_delete_command(args, client, {})
+
+    client.firewall_policy_rule_collection_group_delete.assert_called_once_with(
+        subscription_id="sub-id", resource_group_name="rg", policy_name="my-policy", collection_name="my-collection"
+    )
+    assert 'The deletion of network rule collection "my-collection" was requested.' in result.readable_output
+    assert result.scheduled_command is not None
+    assert args["first_run"] is False
+
+
+def test_firewall_policy_rule_collection_groups_delete_command_completes(mocker):
+    """
+    Given: An AzureClient whose policy no longer holds the rule collection group, on a polling run.
+    When: firewall_policy_rule_collection_groups_delete_command is called.
+    Then: A success message is returned and no further poll is scheduled.
+    """
+    from Azure import firewall_policy_rule_collection_groups_delete_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_policy_rule_collection_group_get.side_effect = ValueError("404 not found")
+    args = {**FIREWALL_ARGS, "policy_name": "my-policy", "collection_name": "my-collection", "first_run": False}
+
+    result = firewall_policy_rule_collection_groups_delete_command(args, client, {})
+
+    assert 'Successfully deleted network rule collection "my-collection" from policy "my-policy".' in result.readable_output
+    assert result.scheduled_command is None
+    client.firewall_policy_rule_collection_group_delete.assert_not_called()
+
+
+def test_firewall_policy_rule_collection_groups_delete_command_still_exists(mocker):
+    """
+    Given: An AzureClient whose policy still holds the rule collection group, on a polling run.
+    When: firewall_policy_rule_collection_groups_delete_command is called.
+    Then: Another poll is scheduled instead of reporting the deletion as complete.
+    """
+    from Azure import firewall_policy_rule_collection_groups_delete_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group()
+    args = {**FIREWALL_ARGS, "policy_name": "my-policy", "collection_name": "my-collection", "first_run": False}
+
+    result = firewall_policy_rule_collection_groups_delete_command(args, client, {})
+
+    assert 'Waiting for network rule collection "my-collection" to be deleted.' in result.readable_output
+    assert result.scheduled_command is not None
+
+
+def test_firewall_rule_collection_groups_delete_command_collection_not_found(mocker):
+    """
+    Given: An AzureClient whose firewall does not hold the requested network rule collection.
+    When: firewall_rule_collection_groups_delete_command is called.
+    Then: A ValueError is raised and the firewall is not updated.
+    """
+    from Azure import firewall_rule_collection_groups_delete_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_get.return_value = {"name": "xsoar-firewall", "properties": {"networkRuleCollections": []}}
+
+    args = {**FIREWALL_ARGS, "firewall_name": "xsoar-firewall", "collection_name": "not-exists"}
+
+    with pytest.raises(ValueError, match='Network rule collection "not-exists" was not found.'):
+        firewall_rule_collection_groups_delete_command(args, client, {})
+    client.firewall_update.assert_not_called()
+
+
+def test_firewall_network_rule_create_command_firewall(mocker):
+    """
+    Given: An AzureClient whose firewall holds the requested network rule collection.
+    When: firewall_network_rule_create_command is called with a firewall_name.
+    Then: The new rule is appended to the collection and the firewall is sent back to Azure.
+    """
+    from Azure import firewall_network_rule_create_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_get.return_value = firewall_with_collection()
+    client.firewall_update.return_value = firewall_with_collection()
+
+    args = {
+        **FIREWALL_ARGS,
+        "firewall_name": "xsoar-firewall",
+        "collection_name": "my-collection",
+        "rule_name": "new-rule",
+        "description": "new rule",
+        "protocols": "TCP",
+        "source_type": "ip_address",
+        "source_ips": "10.0.0.1",
+        "destination_type": "service_tag",
+        "destinations": "ApiManagement",
+        "destination_ports": "8080",
+    }
+
+    result = firewall_network_rule_create_command(args, client, {})
+
+    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
+    sent_collection = client.firewall_update.call_args.kwargs["firewall_data"]["properties"]["networkRuleCollections"][0]
+    sent_rules = sent_collection["properties"]["rules"]
+    assert [rule["name"] for rule in sent_rules] == ["my-rule", "new-rule"]
+    assert sent_rules[1]["destinationAddresses"] == ["ApiManagement"]
+
+
+def test_firewall_policy_network_rule_create_command(mocker):
+    """
+    Given: An AzureClient whose policy holds the requested rule collection group.
+    When: firewall_policy_network_rule_create_command is called.
+    Then: The new rule, in the policy schema, is appended to the rule collection.
+    """
+    from Azure import firewall_policy_network_rule_create_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group()
+    client.firewall_policy_rule_collection_group_create_or_update.return_value = policy_collection_group()
+
+    args = {
+        **FIREWALL_ARGS,
+        "policy_name": "my-policy",
+        "collection_name": "my-collection",
+        "rule_name": "new-rule",
+        "protocols": "UDP",
+        "source_type": "ip_address",
+        "source_ips": "10.0.0.1",
+        "destination_type": "ip_group",
+        "destinations": "group-id",
+        "destination_ports": "53",
+    }
+
+    result = firewall_policy_network_rule_create_command(args, client, {})
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups"
+    sent_group = client.firewall_policy_rule_collection_group_create_or_update.call_args.kwargs["collection_data"]
+    sent_rules = sent_group["properties"]["ruleCollections"][0]["rules"]
+    assert [rule["name"] for rule in sent_rules] == ["my-rule", "new-rule"]
+    assert sent_rules[1]["ruleType"] == "NetworkRule"
+    assert sent_rules[1]["destinationIpGroups"] == ["group-id"]
+
+
+def test_firewall_network_rule_create_command_rule_already_exists(mocker):
+    """
+    Given: An AzureClient whose collection already holds a rule with the requested name.
+    When: firewall_network_rule_create_command is called.
+    Then: A ValueError is raised and the firewall is not updated.
+    """
+    from Azure import firewall_network_rule_create_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_get.return_value = firewall_with_collection()
+
+    args = {
+        **FIREWALL_ARGS,
+        "firewall_name": "xsoar-firewall",
+        "collection_name": "my-collection",
+        "rule_name": "my-rule",
+        "protocols": "TCP",
+        "source_type": "ip_address",
+        "source_ips": "10.0.0.1",
+        "destination_type": "ip_address",
+        "destinations": "10.0.0.2",
+        "destination_ports": "8080",
+    }
+
+    with pytest.raises(ValueError, match='Network rule "my-rule" already exists'):
+        firewall_network_rule_create_command(args, client, {})
+    client.firewall_update.assert_not_called()
+
+
+def test_firewall_network_rule_update_command_firewall(mocker):
+    """
+    Given: An AzureClient whose firewall holds the requested network rule.
+    When: firewall_network_rule_update_command is called with new properties.
+    Then: Only the provided properties are replaced on the rule and the firewall is sent back to Azure.
+    """
+    from Azure import firewall_network_rule_update_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_get.return_value = firewall_with_collection(
+        rules=[{"name": "my-rule", "description": "original", "protocols": ["TCP"], "sourceAddresses": ["10.0.0.1"]}]
+    )
+    client.firewall_update.return_value = firewall_with_collection()
+
+    args = {
+        **FIREWALL_ARGS,
+        "firewall_name": "xsoar-firewall",
+        "collection_name": "my-collection",
+        "rule_name": "my-rule",
+        "description": "updated",
+        "protocols": "UDP",
+        "destination_ports": "443",
+    }
+
+    result = firewall_network_rule_update_command(args, client, {})
+
+    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
+    sent_collection = client.firewall_update.call_args.kwargs["firewall_data"]["properties"]["networkRuleCollections"][0]
+    sent_rule = sent_collection["properties"]["rules"][0]
+    assert sent_rule["description"] == "updated"
+    assert sent_rule["protocols"] == ["UDP"]
+    assert sent_rule["destinationPorts"] == ["443"]
+    # Untouched properties are preserved.
+    assert sent_rule["sourceAddresses"] == ["10.0.0.1"]
+
+
+def test_firewall_policy_network_rule_update_command(mocker):
+    """
+    Given: An AzureClient whose policy holds the requested network rule.
+    When: firewall_policy_network_rule_update_command is called with a new source and destination.
+    Then: The rule is updated using the policy schema fields.
+    """
+    from Azure import firewall_policy_network_rule_update_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group()
+    client.firewall_policy_rule_collection_group_create_or_update.return_value = policy_collection_group()
+
+    args = {
+        **FIREWALL_ARGS,
+        "policy_name": "my-policy",
+        "collection_name": "my-collection",
+        "rule_name": "my-rule",
+        "protocols": "UDP",
+        "source_type": "ip_group",
+        "source_ip_group_ids": "group-id",
+        "destination_type": "fqdn",
+        "destinations": "example.com",
+    }
+
+    result = firewall_policy_network_rule_update_command(args, client, {})
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups"
+    sent_group = client.firewall_policy_rule_collection_group_create_or_update.call_args.kwargs["collection_data"]
+    sent_rule = sent_group["properties"]["ruleCollections"][0]["rules"][0]
+    assert sent_rule["ipProtocols"] == ["UDP"]
+    assert sent_rule["sourceIpGroups"] == ["group-id"]
+    assert sent_rule["destinationFqdns"] == ["example.com"]
+
+
+def test_firewall_network_rule_update_command_rule_not_found(mocker):
+    """
+    Given: An AzureClient whose collection does not hold the requested network rule.
+    When: firewall_network_rule_update_command is called.
+    Then: A ValueError is raised and the firewall is not updated.
+    """
+    from Azure import firewall_network_rule_update_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_get.return_value = firewall_with_collection()
+
+    args = {
+        **FIREWALL_ARGS,
+        "firewall_name": "xsoar-firewall",
+        "collection_name": "my-collection",
+        "rule_name": "not-exists",
+        "description": "updated",
+    }
+
+    with pytest.raises(ValueError, match='Network rule "not-exists" was not found.'):
+        firewall_network_rule_update_command(args, client, {})
+    client.firewall_update.assert_not_called()
+
+
+def test_firewall_network_rule_delete_command_firewall(mocker):
+    """
+    Given: An AzureClient whose collection holds the requested network rules.
+    When: firewall_network_rule_delete_command is called with a firewall_name.
+    Then: The rules are removed from the collection and the firewall is sent back to Azure.
+    """
+    from Azure import firewall_network_rule_delete_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_get.return_value = firewall_with_collection(rules=[{"name": "my-rule"}, {"name": "other-rule"}])
+    client.firewall_update.return_value = firewall_with_collection()
+
+    args = {
+        **FIREWALL_ARGS,
+        "firewall_name": "xsoar-firewall",
+        "collection_name": "my-collection",
+        "rule_names": "my-rule",
+    }
+
+    result = firewall_network_rule_delete_command(args, client, {})
+
+    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
+    sent_collection = client.firewall_update.call_args.kwargs["firewall_data"]["properties"]["networkRuleCollections"][0]
+    assert [rule["name"] for rule in sent_collection["properties"]["rules"]] == ["other-rule"]
+
+
+def test_firewall_policy_network_rule_delete_command_partial(mocker):
+    """
+    Given: An AzureClient whose policy collection holds only some of the requested network rules.
+    When: firewall_policy_network_rule_delete_command is called.
+    Then: The existing rules are removed and the missing rule names are reported in the readable output.
+    """
+    from Azure import firewall_policy_network_rule_delete_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group(
+        rules=[{"name": "my-rule"}, {"name": "other-rule"}]
+    )
+    client.firewall_policy_rule_collection_group_create_or_update.return_value = policy_collection_group()
+
+    args = {
+        **FIREWALL_ARGS,
+        "policy_name": "my-policy",
+        "collection_name": "my-collection",
+        "rule_names": "my-rule,not-exists-rule",
+    }
+
+    result = firewall_policy_network_rule_delete_command(args, client, {})
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups"
+    assert "The following network rules were not found: not-exists-rule." in result.readable_output
+    sent_group = client.firewall_policy_rule_collection_group_create_or_update.call_args.kwargs["collection_data"]
+    assert [rule["name"] for rule in sent_group["properties"]["ruleCollections"][0]["rules"]] == ["other-rule"]
+
+
+def test_firewall_network_rule_delete_command_no_rules_found(mocker):
+    """
+    Given: An AzureClient whose collection holds none of the requested network rules.
+    When: firewall_network_rule_delete_command is called.
+    Then: A ValueError is raised and the firewall is not updated.
+    """
+    from Azure import firewall_network_rule_delete_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_get.return_value = firewall_with_collection(rules=[{"name": "other-rule"}])
+
+    args = {
+        **FIREWALL_ARGS,
+        "firewall_name": "xsoar-firewall",
+        "collection_name": "my-collection",
+        "rule_names": "not-exists-rule",
+    }
+
+    with pytest.raises(ValueError, match="None of the requested network rules were found: not-exists-rule."):
+        firewall_network_rule_delete_command(args, client, {})
+    client.firewall_update.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "method_name, method_kwargs, api_function_name, resource_type",
+    [
+        (
+            "firewall_get",
+            {"subscription_id": "sub-id", "resource_group_name": "rg", "firewall_name": "xsoar-firewall"},
+            "firewall_get",
+            "Firewall",
+        ),
+        (
+            "firewall_update",
+            {
+                "subscription_id": "sub-id",
+                "resource_group_name": "rg",
+                "firewall_name": "xsoar-firewall",
+                "firewall_data": {},
+            },
+            "firewall_update",
+            "Firewall",
+        ),
+        (
+            "firewall_policy_rule_collection_group_get",
+            {
+                "subscription_id": "sub-id",
+                "resource_group_name": "rg",
+                "policy_name": "my-policy",
+                "collection_name": "my-collection",
+            },
+            "firewall_policy_rule_collection_group_get",
+            "Firewall Policy Rule Collection Group",
+        ),
+        (
+            "firewall_policy_rule_collection_group_create_or_update",
+            {
+                "subscription_id": "sub-id",
+                "resource_group_name": "rg",
+                "policy_name": "my-policy",
+                "collection_name": "my-collection",
+                "collection_data": {},
+            },
+            "firewall_policy_rule_collection_group_create_or_update",
+            "Firewall Policy Rule Collection Group",
+        ),
+        (
+            "firewall_policy_rule_collection_group_delete",
+            {
+                "subscription_id": "sub-id",
+                "resource_group_name": "rg",
+                "policy_name": "my-policy",
+                "collection_name": "my-collection",
+            },
+            "firewall_policy_rule_collection_group_delete",
+            "Firewall Policy Rule Collection Group",
+        ),
+    ],
+)
+def test_firewall_client_methods_handle_errors(mocker, method_name, method_kwargs, api_function_name, resource_type):
+    """
+    Given: An AzureClient whose http_request raises.
+    When: One of the firewall client methods is called.
+    Then: handle_azure_error is called with the matching api_function_name and resource_type.
+    """
+    client = AzureClient(app_id="app-id", subscription_id="sub-id", resource_group_name="rg")
+    mocker.patch.object(client, "http_request", side_effect=Exception("403 Forbidden"))
+    mock_handle_error = mocker.patch.object(client, "handle_azure_error")
+
+    getattr(client, method_name)(**method_kwargs)
+
+    mock_handle_error.assert_called_once()
+    assert mock_handle_error.call_args.kwargs["api_function_name"] == api_function_name
+    assert mock_handle_error.call_args.kwargs["resource_type"] == resource_type
+
+
+def test_firewall_get_request(mocker):
+    """
+    Given: An AzureClient.
+    When: firewall_get is called.
+    Then: A GET request is sent to the Azure Firewall URL with the firewall api-version.
+    """
+    from Azure import FIREWALL_API_VERSION
+
+    client = AzureClient(app_id="app-id", subscription_id="sub-id", resource_group_name="rg")
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"name": "xsoar-firewall"})
+
+    client.firewall_get(subscription_id="sub-id", resource_group_name="rg", firewall_name="xsoar-firewall")
+
+    assert mock_http_request.call_args.kwargs["method"] == "GET"
+    assert mock_http_request.call_args.kwargs["full_url"].endswith(
+        "/resourceGroups/rg/providers/Microsoft.Network/azureFirewalls/xsoar-firewall"
+    )
+    assert mock_http_request.call_args.kwargs["params"] == {"api-version": FIREWALL_API_VERSION}
+
+
+def test_firewall_policy_network_rule_collection_exists_not_found(mocker):
+    """
+    Given: An AzureClient whose firewall_policy_rule_collection_group_get raises a ValueError for a 404.
+    When: firewall_policy_network_rule_collection_exists is called.
+    Then: It returns False rather than propagating the error.
+    """
+    from Azure import firewall_policy_network_rule_collection_exists
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_policy_rule_collection_group_get.side_effect = ValueError("not found")
+
+    assert (
+        firewall_policy_network_rule_collection_exists(
+            client=client,
+            subscription_id="sub-id",
+            resource_group_name="rg",
+            policy_name="my-policy",
+            collection_name="my-collection",
+        )
+        is False
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -9041,6 +10546,342 @@ def test_extract_fallback_prefix_returns_empty_for_unknown_handler():
 
     # When / Then: the unknown name yields nothing, and no error is raised
     assert extract_fallback_prefix("no_such_command", symbol_index) == set()
+
+
+""" LOG ANALYTICS TESTS (migrated from the standalone Azure Log Analytics pack) """
+
+LOG_ANALYTICS_ARGS = {
+    "subscription_id": "mock_subscription_id",
+    "resource_group_name": "mock_resource_group",
+    "workspace_name": "mock_workspace",
+}
+
+MOCKED_LA_SAVED_SEARCHES_OUTPUT = {
+    "value": [
+        {
+            "id": "mock_id/mock_saved_search",
+            "etag": "mock_etag",
+            "properties": {"displayName": "mock saved search", "query": "mock_query"},
+        },
+        {"id": "mock_id/another_saved_search", "properties": {"displayName": "another"}},
+    ]
+}
+
+MOCKED_LA_SAVED_SEARCH_OUTPUT = {
+    "id": "mock_id/mock_saved_search",
+    "etag": "mock_etag",
+    "type": "Microsoft.OperationalInsights/savedSearches",
+    "properties": {"category": "mock_category", "displayName": "mock display", "query": "mock_query", "version": 2},
+}
+
+
+def test_log_analytics_saved_searches_list_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_saved_searches_list returns saved searches.
+    When:
+        - log_analytics_saved_searches_list_command is called.
+    Then:
+        - It returns CommandResults with the Azure.LogAnalytics.SavedSearches prefix and the raw API outputs.
+    """
+    from Azure import log_analytics_saved_searches_list_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_saved_searches_list", return_value=MOCKED_LA_SAVED_SEARCHES_OUTPUT)
+
+    result = log_analytics_saved_searches_list_command(client, {}, dict(LOG_ANALYTICS_ARGS))
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.SavedSearches"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["id"] == "mock_id/mock_saved_search"
+    assert result.outputs[0]["properties"]["displayName"] == "mock saved search"
+
+
+def test_log_analytics_saved_search_get_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_saved_search_get returns a saved search.
+    When:
+        - log_analytics_saved_search_get_command is called with saved_search_id.
+    Then:
+        - It returns CommandResults with the raw saved search.
+    """
+    from Azure import log_analytics_saved_search_get_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_saved_search_get", return_value=MOCKED_LA_SAVED_SEARCH_OUTPUT)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"saved_search_id": "mock_saved_search"}
+    result = log_analytics_saved_search_get_command(client, {}, args)
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.SavedSearches"
+    assert result.outputs["id"] == "mock_id/mock_saved_search"
+    assert result.outputs["properties"]["category"] == "mock_category"
+
+
+def test_log_analytics_saved_search_create_update_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_saved_search_create_update returns a saved search.
+    When:
+        - log_analytics_saved_search_create_update_command is called with all required args.
+    Then:
+        - It returns CommandResults and passes the correct properties body to the client.
+    """
+    from Azure import log_analytics_saved_search_create_update_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_saved_search_create_update", return_value=MOCKED_LA_SAVED_SEARCH_OUTPUT)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {
+        "saved_search_id": "mock_saved_search",
+        "category": "mock_category",
+        "display_name": "mock display",
+        "query": "mock_query",
+    }
+    result = log_analytics_saved_search_create_update_command(client, {}, args)
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.SavedSearches"
+    body = client.log_analytics_saved_search_create_update.call_args[1]["data"]
+    assert body["properties"]["category"] == "mock_category"
+    assert body["properties"]["query"] == "mock_query"
+
+
+def test_log_analytics_saved_search_create_update_command_missing_args(mocker):
+    """
+    Given:
+        - An Azure client and args missing category/query/display_name and etag.
+    When:
+        - log_analytics_saved_search_create_update_command is called.
+    Then:
+        - It raises a DemistoException requiring the create fields.
+    """
+    from Azure import log_analytics_saved_search_create_update_command
+
+    client = mocker.MagicMock()
+    args = dict(LOG_ANALYTICS_ARGS) | {"saved_search_id": "mock_saved_search"}
+    with pytest.raises(DemistoException, match="You must specify category"):
+        log_analytics_saved_search_create_update_command(client, {}, args)
+
+
+def test_log_analytics_saved_search_delete_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_saved_search_delete succeeds.
+    When:
+        - log_analytics_saved_search_delete_command is called with saved_search_id.
+    Then:
+        - It returns a success readable output.
+    """
+    from Azure import log_analytics_saved_search_delete_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_saved_search_delete", return_value=None)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"saved_search_id": "mock_saved_search"}
+    result = log_analytics_saved_search_delete_command(client, {}, args)
+
+    assert "Successfully deleted the saved search mock_saved_search" in result.readable_output
+
+
+def test_log_analytics_workspaces_list_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_workspaces_list returns workspaces.
+    When:
+        - log_analytics_workspaces_list_command is called.
+    Then:
+        - It returns CommandResults with the Azure.LogAnalytics.Workspaces prefix.
+    """
+    from Azure import log_analytics_workspaces_list_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(
+        client,
+        "log_analytics_workspaces_list",
+        return_value={
+            "value": [{"name": "mock_workspace", "location": "eastus", "properties": {"provisioningState": "Succeeded"}}]
+        },
+    )
+
+    result = log_analytics_workspaces_list_command(client, {}, dict(LOG_ANALYTICS_ARGS))
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.Workspaces"
+    assert result.outputs[0]["name"] == "mock_workspace"
+
+
+def test_log_analytics_table_get_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_table_get returns a table with search results.
+    When:
+        - log_analytics_table_get_command is called with table_name.
+    Then:
+        - It returns CommandResults with the Azure.LogAnalytics.Tables prefix.
+    """
+    from Azure import log_analytics_table_get_command
+
+    client = mocker.MagicMock()
+    mock_response = {
+        "id": "mock_id",
+        "name": "mock_SRCH",
+        "properties": {
+            "createDate": "2024-01-01",
+            "plan": "Analytics",
+            "provisioningState": "Succeeded",
+            "schema": {
+                "name": "mock_SRCH",
+                "searchResults": {
+                    "query": "AuditLogs",
+                    "description": "mock",
+                    "startSearchTime": "2024-01-01",
+                    "endSearchTime": "2024-01-02",
+                },
+            },
+        },
+    }
+    mocker.patch.object(client, "log_analytics_table_get", return_value=mock_response)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_SRCH"}
+    result = log_analytics_table_get_command(client, {}, args)
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.Tables"
+    assert result.outputs["name"] == "mock_SRCH"
+
+
+def test_log_analytics_table_run_command_first_run(mocker):
+    """
+    Given:
+        - An Azure client and a valid _SRCH table name on the first polling run.
+    When:
+        - log_analytics_table_run_command is called with first_run=True.
+    Then:
+        - It sends the create request and returns a PollResult that continues polling.
+    """
+    from Azure import log_analytics_table_run_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_table_run", return_value=None)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_SRCH", "query": "AuditLogs", "first_run": "true"}
+    result = log_analytics_table_run_command(args, client, {})
+
+    assert result.scheduled_command._args["first_run"] is False
+    client.log_analytics_table_run.assert_called_once()
+
+
+def test_log_analytics_table_run_command_polling_succeeded(mocker):
+    """
+    Given:
+        - An Azure client returning a Succeeded provisioning state on a subsequent polling run.
+    When:
+        - log_analytics_table_run_command is called with first_run=False.
+    Then:
+        - It stops polling and returns CommandResults with the Azure.LogAnalytics.Tables prefix.
+    """
+    from Azure import log_analytics_table_run_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_table_get", return_value={"properties": {"provisioningState": "Succeeded"}})
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_SRCH", "query": "AuditLogs", "first_run": "false"}
+    result = log_analytics_table_run_command(args, client, {})
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.Tables"
+    assert result.outputs["TableName"] == "mock_SRCH"
+
+
+def test_log_analytics_table_run_command_invalid_table_name(mocker):
+    """
+    Given:
+        - An Azure client and a table_name missing the required _SRCH suffix.
+    When:
+        - log_analytics_table_run_command is called.
+    Then:
+        - It raises a DemistoException about the required suffix.
+    """
+    from Azure import log_analytics_table_run_command
+
+    client = mocker.MagicMock()
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_table", "query": "AuditLogs", "first_run": "true"}
+    with pytest.raises(DemistoException, match="_SRCH"):
+        log_analytics_table_run_command(args, client, {})
+
+
+def test_log_analytics_table_run_command_api_failure(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_table_run raises an error from the API call.
+    When:
+        - log_analytics_table_run_command is called with first_run=True.
+    Then:
+        - The raised exception propagates out of the command (terminal failure).
+    """
+    from Azure import log_analytics_table_run_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_table_run", side_effect=DemistoException("API error"))
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_SRCH", "query": "AuditLogs", "first_run": "true"}
+    with pytest.raises(DemistoException, match="API error"):
+        log_analytics_table_run_command(args, client, {})
+
+
+def test_log_analytics_table_delete_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_table_delete succeeds and a valid _SRCH table name.
+    When:
+        - log_analytics_table_delete_command is called.
+    Then:
+        - It returns a success readable output.
+    """
+    from Azure import log_analytics_table_delete_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_table_delete", return_value=None)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_SRCH"}
+    result = log_analytics_table_delete_command(client, {}, args)
+
+    assert "Search job mock_SRCH deleted successfully" in result.readable_output
+
+
+def test_log_analytics_table_delete_command_invalid_table_name(mocker):
+    """
+    Given:
+        - An Azure client and a table_name missing the required _SRCH suffix.
+    When:
+        - log_analytics_table_delete_command is called.
+    Then:
+        - It raises a DemistoException about the disallowed suffix.
+    """
+    from Azure import log_analytics_table_delete_command
+
+    client = mocker.MagicMock()
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_table"}
+    with pytest.raises(DemistoException, match="_SRCH"):
+        log_analytics_table_delete_command(client, {}, args)
+
+
+def test_log_analytics_tags_arg_to_request_format():
+    """
+    Given:
+        - A well-formed 'name=value;name=value' tags string and a malformed one.
+    When:
+        - log_analytics_tags_arg_to_request_format is called.
+    Then:
+        - The well-formed string is parsed to the API list format and the malformed one raises.
+    """
+    from Azure import log_analytics_tags_arg_to_request_format
+
+    assert log_analytics_tags_arg_to_request_format("a=1;b=2") == [
+        {"name": "a", "value": "1"},
+        {"name": "b", "value": "2"},
+    ]
+    assert log_analytics_tags_arg_to_request_format(None) is None
+    with pytest.raises(DemistoException, match="malformed"):
+        log_analytics_tags_arg_to_request_format("a=1;bad")
 
 
 # ---------------------------------------------------------------------------
