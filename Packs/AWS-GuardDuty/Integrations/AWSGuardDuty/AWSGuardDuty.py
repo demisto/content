@@ -596,8 +596,6 @@ def gd_severity_mapping(severity_list: List[str]):
         gd_severity = 4
     elif "High" in severity_list:
         gd_severity = 7
-    elif "Critical" in severity_list:
-        gd_severity = 9
     else:
         gd_severity = 1
 
