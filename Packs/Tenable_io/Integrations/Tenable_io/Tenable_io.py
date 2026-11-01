@@ -750,7 +750,7 @@ def persist_vulns_progress(assets_last_run: dict, remaining_chunks: list) -> Non
     demisto.setAssetsLastRun(assets_last_run)
 
 
-def handle_vulns_chunks(client: Client, assets_last_run) -> tuple[int, dict]:  # pylint: disable=W9014
+def handle_vulns_chunks(client: Client, assets_last_run: dict) -> tuple[int, dict]:  # pylint: disable=W9014
     """
     Download, send and persist the stored vulns chunks one at a time, so only one chunk is held in memory.
 
@@ -763,13 +763,21 @@ def handle_vulns_chunks(client: Client, assets_last_run) -> tuple[int, dict]:  #
     """
     demisto.debug("in handle vulns chunks")
     stored_chunks = assets_last_run.get("vulns_available_chunks", [])
+    if not stored_chunks:
+        # A FINISHED export can have zero chunks; close it so the next cycle can fetch assets again.
+        demisto.debug("Vulnerabilities export finished with no chunks; closing the vulns export.")
+        assets_last_run.pop("vulns_404_retry_count", None)
+        persist_vulns_progress(assets_last_run, remaining_chunks=[])
+        return 0, assets_last_run
+
     updated_stored_chunks = stored_chunks.copy()
-    export_uuid = assets_last_run.get("vuln_export_uuid")
+    export_uuid: str = assets_last_run.get("vuln_export_uuid") or ""
     total_sent = 0
     try:
         for chunk_id in stored_chunks[:MAX_VULNS_CHUNKS_PER_FETCH]:
             result = client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
             if result == NOT_FOUND_ERROR:
+                # A new export job is started; chunks already sent from this export are sent again (at-least-once).
                 handle_vulns_chunk_not_found(client, assets_last_run)
                 return total_sent, assets_last_run
 
