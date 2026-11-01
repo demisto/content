@@ -147,9 +147,9 @@ def fetch_events(
     the result set and the offset does not skip or repeat them. No key-based de-duplication is done,
     because different findings can share the same rolledup_observation_id and first_seen.
 
-    State saved by versions that did not sort the findings (recognised by the missing `api_count` key)
-    has an offset that counts findings in a different order. For that state the offset is reset to 0
-    once, so every finding since `first_fetch` is fetched again in the sorted order (some may be sent twice).
+    State saved by versions that did not sort the findings is used as is. Its offset counts the same set
+    of findings (everything since `first_fetch`), so a caught-up offset points at the end of the sorted
+    list and the next fetch returns only new findings, without re-sending older ones.
 
     Args:
         client (Client): Initialized API client.
@@ -167,12 +167,6 @@ def fetch_events(
     if "offset" in last_run:
         offset = last_run["offset"]
         first_fetch_date = last_run["first_fetch"]
-        if "api_count" not in last_run:
-            demisto.info(
-                f"BitSight: state from a version without sorted findings (offset={offset}). "
-                f"Resetting offset to 0 to fetch all findings since {first_fetch_date} in sorted order."
-            )
-            offset = 0
     else:
         # Initial fetch - start from current date or lookback
         offset = 0
@@ -205,7 +199,7 @@ def fetch_events(
         "first_fetch": first_fetch_date,
         "offset": new_offset,
         # Total findings in the window as reported by the API. After a fetch that drained the window,
-        # offset == api_count. Its presence also marks the state as using the sorted order.
+        # offset == api_count. Used to detect an offset that ran past the end of the window.
         "api_count": api_count,
     }
     if isinstance(api_count, int) and new_offset > api_count:

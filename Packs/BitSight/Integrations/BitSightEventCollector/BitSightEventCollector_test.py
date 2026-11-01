@@ -662,15 +662,15 @@ class TestBitSightEventCollector:
         assert len(events) == 2
         assert new_last_run == {"first_fetch": "2026-09-25", "offset": 642, "api_count": 642}
 
-    def test_fetch_events_legacy_state_resets_offset_and_drops_keys(self, mock_client, mocker):
+    def test_fetch_events_legacy_state_keeps_offset_and_drops_keys(self, mock_client, mocker):
         """
         Given: A last_run saved by an older build, without api_count. It includes already_fetched_findings
                from 1.3.10 and debug keys written by diagnostic builds that ran on a customer tenant.
 
         When: fetch_events runs
 
-        Then: The offset is reset to 0 once (first_fetch is kept), and only first_fetch, offset and
-              api_count are saved.
+        Then: The stored offset and first_fetch are used as is (older findings are not fetched again),
+              and only first_fetch, offset and api_count are saved.
         """
         mocker.patch.object(mock_client, "get_company_findings", return_value={"results": [], "count": 640})
         last_run = {
@@ -686,31 +686,35 @@ class TestBitSightEventCollector:
 
         assert events == []
         mock_client.get_company_findings.assert_called_once_with(
-            "test-guid", first_seen_gte="2026-09-25", last_seen_lte="2026-10-26", limit=1000, offset=0
+            "test-guid", first_seen_gte="2026-09-25", last_seen_lte="2026-10-26", limit=1000, offset=640
         )
-        assert new_last_run == {"first_fetch": "2026-09-25", "offset": 0, "api_count": 640}
+        assert new_last_run == {"first_fetch": "2026-09-25", "offset": 640, "api_count": 640}
 
-    def test_fetch_events_legacy_state_refetches_from_start(self, mock_client, sample_findings, mocker):
+    def test_fetch_events_legacy_state_upgrade_sends_only_new_findings(self, mock_client, mocker):
         """
-        Given: A pre-sort last_run (offset, no api_count)
+        Given: A caught-up last_run from a version that did not sort (offset == number of findings, no api_count),
+               and one new finding that appears after the upgrade
 
-        When: Two fetches run
+        When: The first fetch with the sorted order runs
 
-        Then: The first fetch starts at offset 0 and saves api_count; the second keeps its offset (no second reset).
+        Then: Only the new finding is returned - older findings are not sent again.
         """
-        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings, "count": 4})
+        dataset = [{"id": f"f{i}", "first_seen": f"2026-10-0{i}"} for i in range(1, 4)]
+        dataset.append({"id": "f-new", "first_seen": "2026-10-25"})
+
+        def fake_findings(guid, first_seen_gte, last_seen_lte, limit, offset):
+            ordered = sorted(dataset, key=lambda finding: finding["first_seen"])
+            return {"results": ordered[offset : offset + limit], "count": len(ordered)}
+
+        mocker.patch.object(mock_client, "get_company_findings", side_effect=fake_findings)
 
         with freeze_time("2026-10-26 12:00:00"):
-            _, first_run, _ = fetch_events(
-                client=mock_client, guid="g", max_fetch=1000, last_run={"first_fetch": "2026-09-25", "offset": 300}
+            events, new_last_run, _ = fetch_events(
+                client=mock_client, guid="g", max_fetch=1000, last_run={"first_fetch": "2026-10-01", "offset": 3}
             )
-            mock_client.get_company_findings.return_value = {"results": [], "count": 4}
-            _, second_run, _ = fetch_events(client=mock_client, guid="g", max_fetch=1000, last_run=first_run)
 
-        assert first_run == {"first_fetch": "2026-09-25", "offset": 4, "api_count": 4}
-        assert mock_client.get_company_findings.call_args_list[0].kwargs["offset"] == 0
-        assert mock_client.get_company_findings.call_args_list[1].kwargs["offset"] == 4
-        assert second_run == {"first_fetch": "2026-09-25", "offset": 4, "api_count": 4}
+        assert [event["id"] for event in events] == ["f-new"]
+        assert new_last_run == {"first_fetch": "2026-10-01", "offset": 4, "api_count": 4}
 
     def test_fetch_events_null_results_and_no_count(self, mock_client, mocker):
         """
