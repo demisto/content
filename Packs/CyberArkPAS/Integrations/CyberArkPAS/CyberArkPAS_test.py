@@ -1,5 +1,8 @@
 import pytest
 
+import demistomock as demisto
+import CyberArkPAS
+from CommonServerPython import *  # noqa: F401
 from CyberArkPAS import (
     Client,
     add_user_command,
@@ -20,6 +23,7 @@ from CyberArkPAS import (
     get_account_details_command,
     order_properties_to_dict,
 )
+from CyberArkPAS import test_module as run_test_module
 from test_data.context import (
     ADD_USER_CONTEXT,
     GET_USERS_CONTEXT,
@@ -571,3 +575,144 @@ def test_order_properties_to_dict_failure(properties, expected):
     """
     with pytest.raises(expected):
         order_properties_to_dict(properties)
+
+
+BASE_URL = "https://example.privilegecloud.cyberark.cloud"
+LOGON_URL = f"{BASE_URL}/PasswordVault/API/Auth/CyberArk/Logon"
+LOGOFF_URL = f"{BASE_URL}/PasswordVault/API/Auth/Logoff"
+SAFES_URL = f"{BASE_URL}/PasswordVault/api/Safes"
+PTA_EVENTS_URL = f"{BASE_URL}/PasswordVault/API/pta/API/Events/"
+IIS_NOT_FOUND_PAGE = "<html><head><title>404 - File or directory not found.</title></head></html>"
+
+
+@pytest.fixture
+def pam_client(requests_mock) -> Client:
+    requests_mock.post(LOGON_URL, json="TOKEN")
+    return Client(server_url=BASE_URL, username="user1", password="12345", use_ssl=False, proxy=False, max_fetch=50)
+
+
+def test_test_module_without_fetch_does_not_call_pta(requests_mock, pam_client):
+    """
+    Given:
+        - Fetch incidents is disabled, and the tenant has no PTA endpoint (404, as on Privilege Cloud in XSUP-78844)
+    When:
+        - test-module runs
+    Then:
+        - A simple read-only command (list safes) is tested and "ok" is returned
+        - The PTA security events endpoint is never called
+    """
+    safes_mock = requests_mock.get(SAFES_URL, json={"value": [], "count": 0})
+    pta_mock = requests_mock.get(PTA_EVENTS_URL, status_code=404, text=IIS_NOT_FOUND_PAGE)
+
+    assert run_test_module(pam_client, is_fetch=False) == "ok"
+    assert safes_mock.called
+    assert not pta_mock.called
+
+
+def test_test_module_without_fetch_fails_when_command_fails(requests_mock, pam_client):
+    """
+    Given:
+        - Fetch incidents is disabled, and the user is not allowed to list safes
+    When:
+        - test-module runs
+    Then:
+        - The error from CyberArk is raised, so the test does not pass without performing a real action
+    """
+    requests_mock.get(SAFES_URL, status_code=403, json={"ErrorCode": "PASWS041E", "ErrorMessage": "Access denied."})
+
+    with pytest.raises(DemistoException, match="403"):
+        run_test_module(pam_client, is_fetch=False)
+
+
+@pytest.mark.parametrize(
+    "events",
+    [[], [{"id": "1", "type": "VaultViaIrregularIp", "score": 50.0}]],
+    ids=["no_events", "valid_event"],
+)
+def test_test_module_with_fetch_tests_security_events(requests_mock, pam_client, events):
+    """
+    Given:
+        - Fetch incidents is enabled and the PTA security events endpoint is available
+    When:
+        - test-module runs
+    Then:
+        - The fetch flow (security events) is tested and "ok" is returned
+    """
+    pta_mock = requests_mock.get(PTA_EVENTS_URL, json=events)
+
+    assert run_test_module(pam_client, is_fetch=True) == "ok"
+    assert pta_mock.called
+
+
+def test_test_module_with_fetch_fails_when_pta_missing(requests_mock, pam_client):
+    """
+    Given:
+        - Fetch incidents is enabled, but the tenant has no PTA endpoint (404)
+    When:
+        - test-module runs
+    Then:
+        - The test fails, since fetch incidents cannot work on this tenant
+    """
+    requests_mock.get(PTA_EVENTS_URL, status_code=404, text=IIS_NOT_FOUND_PAGE)
+
+    with pytest.raises(DemistoException, match="404"):
+        run_test_module(pam_client, is_fetch=True)
+
+
+@pytest.mark.parametrize("is_fetch, expected_url", [(False, SAFES_URL), (True, PTA_EVENTS_URL)], ids=["fetch_off", "fetch_on"])
+def test_main_test_module_passes_is_fetch(requests_mock, mocker, is_fetch, expected_url):
+    """
+    Given:
+        - An instance with the isFetch parameter set to False or True
+    When:
+        - main() runs test-module
+    Then:
+        - The matching endpoint is tested and "ok" is returned
+    """
+    requests_mock.post(LOGON_URL, json="TOKEN")
+    requests_mock.post(LOGOFF_URL, json={})
+    endpoint_mock = requests_mock.get(expected_url, json=[] if is_fetch else {"value": [], "count": 0})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"credentials": {"identifier": "user1", "password": "12345"}, "url": BASE_URL, "isFetch": is_fetch},
+    )
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "args", return_value={})
+    return_results_mock = mocker.patch.object(CyberArkPAS, "return_results")
+
+    CyberArkPAS.main()
+
+    assert endpoint_mock.called
+    return_results_mock.assert_called_once_with("ok")
+
+
+def test_main_logon_failure_does_not_mask_error(requests_mock, mocker):
+    """
+    Given:
+        - Logon to CyberArk fails with 403 (authentication failure)
+    When:
+        - main() runs
+    Then:
+        - The real error is returned
+        - No logout is attempted on a client that was never created (no UnboundLocalError)
+    """
+    requests_mock.post(
+        LOGON_URL,
+        status_code=403,
+        json={"ErrorCode": "PASWS013E", "ErrorMessage": "Authentication failure for User user1."},
+    )
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"credentials": {"identifier": "user1", "password": "12345"}, "url": BASE_URL},
+    )
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "args", return_value={})
+    return_error_mock = mocker.patch.object(CyberArkPAS, "return_error")
+    info_mock = mocker.patch.object(demisto, "info")
+
+    CyberArkPAS.main()
+
+    assert "PASWS013E" in return_error_mock.call_args[0][0]
+    assert not any("local variable" in str(call.args) for call in info_mock.call_args_list)

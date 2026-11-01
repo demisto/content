@@ -15,7 +15,7 @@ CSC delivers global managed domain takedown and brand enforcement services to co
 
 # What does this pack do?
 
-The actions included in this pack allow the user to manage domains from Cortex XSOAR.
+The actions included in this pack allow users to access and monitor changes across their CSC-managed domain portfolios; identify and mitigate phishing, business email compromise (BEC), malicious websites, typo-squatted domains, and broader digital fraud threats; and submit requests to CSC for managed domain takedown and brand enforcement services to combat phishing, fraud, and brand abuse.
 
 # For more information
 
