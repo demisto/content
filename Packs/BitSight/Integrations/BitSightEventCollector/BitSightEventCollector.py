@@ -203,7 +203,9 @@ def fetch_events(
         "api_count": api_count,
     }
     if isinstance(api_count, int) and new_offset > api_count:
-        demisto.info(
+        # Logged as an error, not raised: the condition persists across runs, so raising would block
+        # every future fetch, while the events from this run are still valid.
+        demisto.error(
             f"BitSight: offset {new_offset} is larger than the total findings reported by the API ({api_count}). "
             "Findings may have been removed from the window, so newer findings could be skipped."
         )

@@ -743,14 +743,14 @@ class TestBitSightEventCollector:
         """
         import BitSightEventCollector
 
-        info = mocker.patch.object(BitSightEventCollector.demisto, "info")
+        error = mocker.patch.object(BitSightEventCollector.demisto, "error")
         mocker.patch.object(mock_client, "get_company_findings", return_value={"results": [], "count": 5})
         last_run = {"first_fetch": "2026-09-25", "offset": 10, "api_count": 10}
 
         with freeze_time("2026-10-26 12:00:00"):
             fetch_events(client=mock_client, guid="g", max_fetch=1000, last_run=last_run)
 
-        assert any("larger than the total findings" in call.args[0] for call in info.call_args_list)
+        assert any("larger than the total findings" in call.args[0] for call in error.call_args_list)
 
     def test_fetch_events_sorted_pagination_picks_up_new_tail_finding(self, mock_client, mocker):
         """
