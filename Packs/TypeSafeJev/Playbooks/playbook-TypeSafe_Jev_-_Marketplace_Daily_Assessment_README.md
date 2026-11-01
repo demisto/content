@@ -7,6 +7,8 @@ response, resolves mandatory dependencies, verifies installation results, and
 creates deduplicated review cases for updates that are held, uncertain, or
 failed.
 
+![TypeSafe Jev - Marketplace Daily Assessment](../doc_files/TypeSafe_Jev_-_Marketplace_Daily_Assessment.png)
+
 ## Prerequisites
 
 - Configure and enable a **TypeSafe Jev** integration instance.
@@ -17,10 +19,31 @@ failed.
 
 ## Inputs
 
-| Input | Description | Default |
-|---|---|---|
-| `DryRun` | When `true`, evaluates and reports without installing packs or changing cases. Set to `false` only after validating the results. | `true` |
-| `CoreInstance` | Optional Core REST API instance name. Leave empty to use the enabled instance automatically. | Empty |
+| Input | Description | Required | Default |
+|---|---|---|---|
+| `DryRun` | When `true`, evaluates and reports without installing packs or changing cases. Set to `false` only after validating the results. | No | `true` |
+| `CoreInstance` | Core REST API instance name. An explicit instance prevents calls from being sent to multiple instances. | Yes | None |
+| `JevModel` | TypeSafe Jev model alias expected in each response. | No | `jev-1.13.0` |
+
+## Dependencies
+
+### Sub-playbooks
+
+- TypeSafe Jev - Marketplace Release Analysis
+
+### Integrations
+
+- TypeSafe Jev
+- Core REST API
+
+### Scripts
+
+- TypeSafeJevMarketplaceAssessment
+
+### Commands
+
+- `jev-evaluate`
+- `closeInvestigation`
 
 ## Workflow
 
@@ -41,7 +64,7 @@ and case handling are controlled by deterministic checks in the
 Collect a read-only tenant snapshot:
 
 ```text
-!TypeSafeJevMarketplaceAssessment action=collect
+!TypeSafeJevMarketplaceAssessment action=collect core_instance="Core REST API instance name"
 ```
 
 Use a specific Core REST API instance:
@@ -53,7 +76,7 @@ Use a specific Core REST API instance:
 Inspect one pack without changing it:
 
 ```text
-!TypeSafeJevMarketplaceAssessment action=pack_detail pack=TypeSafeJev
+!TypeSafeJevMarketplaceAssessment action=pack_detail pack=TypeSafeJev core_instance="Core REST API instance name"
 ```
 
 Run the full playbook from the playbook editor with `DryRun=true`. Review

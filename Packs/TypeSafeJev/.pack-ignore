@@ -1,1 +1,5 @@
 # No validation exclusions.
+
+[known_words]
+Jev
+deduplicated

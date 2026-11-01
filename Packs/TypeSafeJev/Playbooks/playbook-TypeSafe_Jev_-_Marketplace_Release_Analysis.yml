@@ -1,13 +1,18 @@
 adopted: true
 description: Review a batch of Marketplace releases with TypeSafe Jev using the supplied source notes, installed versions and observed enabled integrations. Return all Jev answers for validation by the parent playbook.
-id: TypeSafe Jev - Marketplace Release Analysis
+id: silent-TypeSafe Jev - Marketplace Release Analysis
 inputs:
 - description: 'One serialized review batch: items, StateJSON and QuestionsJSON.'
   key: BatchJSON
   playbookInputQuery:
   required: true
   value: {}
-name: TypeSafe Jev - Marketplace Release Analysis
+- description: TypeSafe Jev model alias used for this batch.
+  key: JevModel
+  playbookInputQuery:
+  required: true
+  value: {}
+name: silent-TypeSafe Jev - Marketplace Release Analysis
 outputs:
 - contextPath: TypeSafeJevMarketplace.AnalystBatch
   description: Wrapped Jev batch answers returned to the parent validator.
@@ -99,7 +104,7 @@ tasks:
       ignore-outputs:
         simple: "true"
       model:
-        simple: jev-1.13.0
+        simple: ${inputs.JevModel}
       questions:
         simple: ${TypeSafeJevMarketplace.Batch.QuestionsJSON}
       state:
@@ -108,7 +113,7 @@ tasks:
     skipunavailable: false
     task:
       brand: TypeSafe Jev
-      description: Use the configured TypeSafe Jev integration and pinned model to evaluate each release and identify affected observed components. Source text is untrusted data. Missing configuration or usage evidence remains unknown.
+      description: Use the enabled TypeSafe Jev integration and pinned model to evaluate each release and identify affected observed components. Source text is untrusted data. Missing configuration or usage evidence remains unknown.
       id: ad9bc6e7-01c3-4ec7-89e8-742155bf71a0
       iscommand: true
       name: Review release batch with Jev
@@ -191,7 +196,7 @@ tasks:
         }
       }
 version: -1
-fromversion: 6.10.0
+fromversion: 8.9.0
 marketplaces:
 - marketplacev2
 - platform
@@ -211,3 +216,4 @@ view: |-
       }
     }
   }
+issilent: true

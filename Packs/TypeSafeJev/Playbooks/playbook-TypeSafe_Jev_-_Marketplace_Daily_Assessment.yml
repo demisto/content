@@ -2,7 +2,7 @@ adopted: true
 contentitemexportablefields:
   contentitemfields: {}
 description: Daily Jev Marketplace assessment with recursive mandatory dependency planning, platform-catalog installation, verified versions, and deduplicated issues for evidenced breaking impact. Held, unresolved or failed updates get one deduplicated manual-review case each.
-id: TypeSafe Jev - Marketplace Daily Assessment
+id: silent-TypeSafe Jev - Marketplace Daily Assessment
 inputs:
 - description: Run without installing packs or creating, updating, or closing cases. Set to false only after reviewing the playbook behavior in your environment.
   key: DryRun
@@ -10,12 +10,18 @@ inputs:
   required: false
   value:
     simple: "true"
-- description: Optional Core REST API integration instance name. Leave empty to use the enabled instance automatically.
+- description: Core REST API integration instance name. An explicit instance prevents tenant inventory or state-changing requests from being sent to multiple instances.
   key: CoreInstance
   playbookInputQuery:
-  required: false
+  required: true
   value: {}
-name: TypeSafe Jev - Marketplace Daily Assessment
+- description: TypeSafe Jev model alias used for Marketplace release judgments.
+  key: JevModel
+  playbookInputQuery:
+  required: false
+  value:
+    simple: jev-1.13.0
+name: silent-TypeSafe Jev - Marketplace Daily Assessment
 outputs: []
 starttaskid: "0"
 tasks:
@@ -102,6 +108,8 @@ tasks:
         simple: prepare_ai
       core_instance:
         simple: ${inputs.CoreInstance}
+      jev_model:
+        simple: ${inputs.JevModel}
       snapshot:
         simple: ${TypeSafeJevMarketplace.Snapshot}
     separatecontext: false
@@ -259,6 +267,8 @@ tasks:
     scriptarguments:
       BatchJSON:
         simple: ${TypeSafeJevMarketplace.ReviewPlan.BatchJSON}
+      JevModel:
+        simple: ${inputs.JevModel}
     separatecontext: true
     skipunavailable: false
     task:
@@ -413,7 +423,7 @@ tasks:
         }
       }
 version: -1
-fromversion: 6.10.0
+fromversion: 8.9.0
 marketplaces:
 - marketplacev2
 - platform
@@ -433,3 +443,4 @@ view: |-
       }
     }
   }
+issilent: true
