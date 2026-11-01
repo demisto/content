@@ -1,5 +1,5 @@
 import uuid
-from typing import Any, Dict
+from typing import Any
 
 import demistomock as demisto
 import urllib3
@@ -117,9 +117,7 @@ _OBSERVABLE_TYPES = {
 
 _PATTERN_HEAD = re.compile(r"\[\s*([a-z0-9-]+):", re.I)
 _PATTERN_VALUE = re.compile(r"=\s*'((?:[^'\\]|\\.)*)'")
-_HASH_PATTERN = re.compile(
-    r"file:hashes\.(?:'([\w-]+)'|\"([\w-]+)\"|([\w-]+))\s*=\s*'([^']+)'", re.I
-)
+_HASH_PATTERN = re.compile(r"file:hashes\.(?:'([\w-]+)'|\"([\w-]+)\"|([\w-]+))\s*=\s*'([^']+)'", re.I)
 
 _HASH_FIELDS = {
     "md5": "md5",
@@ -231,9 +229,7 @@ def get_ti_ext_id(data_type: str) -> str:
 
 
 class Client(BaseClient):
-
     def _identify_feed_type(self, obj: dict) -> tuple[str, str]:
-
         obj_type = str(obj.get("type") or "").lower()
 
         if obj_type == "indicator":
@@ -284,14 +280,14 @@ class Client(BaseClient):
 
         feed_rel_type = feed_rel_obj.get("relationship_type")
 
-        source_value = source_obj.get("value") or source_obj.get("name")    # pyright: ignore
-        source_type = source_obj.get("type")    # pyright: ignore
+        source_value = source_obj.get("value") or source_obj.get("name")  # pyright: ignore
+        source_type = source_obj.get("type")  # pyright: ignore
 
         if source_type == "indicator":
             feed_rel_type = EntityRelationship.Relationships.INDICATOR_OF
 
-        target_value = target_obj.get("value") or target_obj.get("name")    # pyright: ignore
-        target_type = source_obj.get("type")    # pyright: ignore
+        target_value = target_obj.get("value") or target_obj.get("name")  # pyright: ignore
+        target_type = source_obj.get("type")  # pyright: ignore
 
         if source_value and source_type and target_value and target_type:
             return EntityRelationship(
@@ -310,17 +306,12 @@ class Client(BaseClient):
         if not stix_pattern_val or "file:hashes." not in stix_pattern_val:
             return file_hash_values
 
-        for key_, val_ in re.findall(
-            r"file:hashes\.'?([\w-]+)'?\s*=\s*'([^']+)'", stix_pattern_val
-        ):
+        for key_, val_ in re.findall(r"file:hashes\.'?([\w-]+)'?\s*=\s*'([^']+)'", stix_pattern_val):
             file_hash_values[key_] = val_
 
         return file_hash_values
 
-    def _convert_threat_intel_obj(
-        self, obj: dict, tlp_color: str, feed_reputation: str, feed_tags: list
-    ) -> dict:
-
+    def _convert_threat_intel_obj(self, obj: dict, tlp_color: str, feed_reputation: str, feed_tags: list) -> dict:
         value, ti_type = self._identify_feed_type(obj)  # unpack the tuple
         if not (value and ti_type):
             return {}
@@ -333,11 +324,7 @@ class Client(BaseClient):
 
         extensions = obj.get("extensions") or {}
 
-        tags = list(
-            dict.fromkeys(
-                [*(feed_tags or []), *[str(x) for x in _as_list(obj.get("labels"))]]
-            )
-        )
+        tags = list(dict.fromkeys([*(feed_tags or []), *[str(x) for x in _as_list(obj.get("labels"))]]))
 
         fields: dict[str, Any] = {
             "firstseenbysource": obj.get("created", ""),
@@ -370,7 +357,7 @@ class Client(BaseClient):
             ti_obj["fields"]["geocountry"] = ext.get("country", "")
 
             recommended_action: str = ext.get("recommended_action", "MONITOR")
-            if "BLOCK" == recommended_action.upper():
+            if recommended_action.upper() == "BLOCK":
                 ti_obj["fields"]["blocked"] = True
 
         elif obj_type == "vulnerability":
@@ -394,10 +381,7 @@ class Client(BaseClient):
             elif cvss_version and cvss_version[0] == "3":
                 names += _CVSS_VERSION_METRICS_3
 
-            metrics = [
-                {"metrics": m.replace("_", " ").capitalize(), "value": ext.get(m)}
-                for m in names
-            ]
+            metrics = [{"metrics": m.replace("_", " ").capitalize(), "value": ext.get(m)} for m in names]
 
             for key, label in (
                 ("kev", "KEV"),
@@ -444,18 +428,13 @@ class Client(BaseClient):
             params["page"] += 1
 
     def _fecth_threat_actors_data(self, ta_names: list, feeds):
-
         if ta_names:
             for start in range(0, len(ta_names), 10):
-                chunk = ta_names[start: start + 10]
+                chunk = ta_names[start : start + 10]
                 try:
-                    ta_res_data = self.call_api(
-                        _TA_SEARCH_API_PATHS, params={"values": chunk}
-                    )
+                    ta_res_data = self.call_api(_TA_SEARCH_API_PATHS, params={"values": chunk})
                 except Exception as e:
-                    demisto.error(
-                        f"Threat actor enrichment failed for {chunk}: {e}\n{traceback.format_exc()}"
-                    )
+                    demisto.error(f"Threat actor enrichment failed for {chunk}: {e}\n{traceback.format_exc()}")
                     continue
 
                 for obj in (ta_res_data or {}).get("objects") or []:
@@ -471,18 +450,15 @@ class Client(BaseClient):
         fetch_tailored_indicators: bool,
         fetch_tailored_vulnerabilities: bool,
     ) -> list:
-
         params = {
             "withRelationships": True,
             "lookBackDays": int(first_fetch),
             "delta": True,
         }
-        self._headers["X-Request-ID"] = str(uuid.uuid4())   # pyright: ignore
+        self._headers["X-Request-ID"] = str(uuid.uuid4())  # pyright: ignore
 
         ioc_suffix_path = _TAILORED_PATHS if fetch_tailored_indicators else _ALL_PATHS
-        vul_suffix_path = (
-            _TAILORED_PATHS if fetch_tailored_vulnerabilities else _ALL_PATHS
-        )
+        vul_suffix_path = _TAILORED_PATHS if fetch_tailored_vulnerabilities else _ALL_PATHS
 
         indicator_path = f"{_IOC_API_PATHS}{ioc_suffix_path}"
         vulnerability_path = f"{_VUL_API_PATHS}{vul_suffix_path}"
@@ -521,9 +497,7 @@ class Client(BaseClient):
 
         rel_data = []
         for rel in raw_rels:
-            relationship = self._build_relationships(
-                feed_rel_obj=rel, feed_objs=raw_feed_ids
-            )
+            relationship = self._build_relationships(feed_rel_obj=rel, feed_objs=raw_feed_ids)
             if relationship:
                 rel_data.append(relationship)
 
@@ -538,7 +512,6 @@ def test_module(
     first_fetch,
 ) -> str:
     try:
-
         if not fetch_tailored_indicators or not fetch_tailored_vulnerabilities:
             if first_fetch > 2:
                 return "If tailored indicator or vulnerablities false, must be not greater that 2 days look back histories data for indicator and vunerablities. Please set it out 0 to 2 days"
@@ -607,8 +580,7 @@ def fetch_feeds(
         raise e
 
 
-def build_result(data: List[Dict], data_type: str, title: str):
-
+def build_result(data: List[dict], data_type: str, title: str):
     if not data:
         return CommandResults(readable_output="For current request no data found.")
     table_data = []
@@ -617,7 +589,6 @@ def build_result(data: List[Dict], data_type: str, title: str):
     ext_id = get_ti_ext_id(data_type)
 
     for ti_data in data:
-
         ext: dict[str, Any] = ti_data.get("extensions", {}).get(ext_id, {})
         confidence = ti_data.get("confidence", 0)
         score = 1
@@ -783,9 +754,7 @@ def fetch_feeds_by_type(client: Client, feed_type: str):
         response = client.call_api(_IOC_API_PATHS, params=params)
         return response.get("objects", [])
     except Exception as e:
-        demisto.error(
-            f"Error at fetch_feeds_by_type: {e}\nTraceback: {traceback.format_exc()}"
-        )
+        demisto.error(f"Error at fetch_feeds_by_type: {e}\nTraceback: {traceback.format_exc()}")
         raise e
 
 
@@ -818,9 +787,7 @@ def feed_search(client: Client, search_type: str, args: dict):
     search_response = client.call_api(end_point=path, params=params)
 
     if not search_response or "objects" not in search_response:
-        return CommandResults(
-            readable_output="No results found for the given search criteria."
-        )
+        return CommandResults(readable_output="No results found for the given search criteria.")
 
     return build_result(
         data=search_response.get("objects", []),
@@ -841,12 +808,8 @@ def main():
     feed_tags = argToList(params.get("feedTags"))
     tlp_color = params.get("tlp_color")
     feed_reputation = params.get("feedReputation")
-    fetch_tailored_indicators = argToBoolean(
-        params.get("fetchTailoredIndicators", True)
-    )
-    fetch_tailored_vulnerabilities = argToBoolean(
-        params.get("fetchTailoredVulnerability", True)
-    )
+    fetch_tailored_indicators = argToBoolean(params.get("fetchTailoredIndicators", True))
+    fetch_tailored_vulnerabilities = argToBoolean(params.get("fetchTailoredVulnerability", True))
 
     base_url = urljoin(api_url, _BASE_PREFIX_PATH)
     command = demisto.command()
@@ -855,9 +818,7 @@ def main():
     demisto.info(f"Command being called is {demisto.command()}")
 
     try:
-        client = Client(
-            base_url=base_url, verify=verify_cert, headers=headers, proxy=proxy
-        )
+        client = Client(base_url=base_url, verify=verify_cert, headers=headers, proxy=proxy)
         args = demisto.args()
 
         if command == "test-module":

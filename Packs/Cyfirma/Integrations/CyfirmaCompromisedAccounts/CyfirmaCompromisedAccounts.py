@@ -1,6 +1,6 @@
 import json
 import uuid
-from typing import Any, Dict
+from typing import Any
 
 import dateparser
 import demistomock as demisto
@@ -52,7 +52,6 @@ _SKIP_FIELDS = [
 
 
 class Client(BaseClient):
-
     def call_api(self, end_point: str, params: dict | None = None):
         response = self._http_request(
             url_suffix=end_point,
@@ -69,35 +68,20 @@ class Client(BaseClient):
         return {}
 
     def _populate_custom_fields(self, data: dict):
-
         comon_fields: list[dict[str, Any]] = (
             [
                 {"fields": "Subcategory", "values": data.get("subCategoryLabel", "")},
                 {"fields": "Category", "values": data.get("categoryLabel", "")},
             ]
-            + [
-                {"fields": key.capitalize(), "values": value}
-                for key, value in data.items()
-                if key not in _SKIP_FIELDS
-            ]
-            + [
-                {"fields": key.capitalize(), "values": value}
-                for key, value in data.get("compromisedDetails", {}).items()
-            ]
+            + [{"fields": key.capitalize(), "values": value} for key, value in data.items() if key not in _SKIP_FIELDS]
+            + [{"fields": key.capitalize(), "values": value} for key, value in data.get("compromisedDetails", {}).items()]
         )
 
         return {"cyfirmacompromisedaccountdetails": comon_fields}
 
     def _build_incident_json(self, event: dict) -> dict[str, Any]:
-
-        occurred_date = dateparser.parse(
-            event.get("lastModifiedDate", "createdDate")
-        )
-        occurred = (
-            occurred_date.strftime(DATE_FORMAT)
-            if isinstance(occurred_date, datetime)
-            else None
-        )
+        occurred_date = dateparser.parse(event.get("lastModifiedDate", "createdDate"))
+        occurred = occurred_date.strftime(DATE_FORMAT) if isinstance(occurred_date, datetime) else None
 
         category = event.get("category", "")
         sub_category = event.get("subCategory", "")
@@ -120,13 +104,13 @@ class Client(BaseClient):
         return return_data
 
     def get_incidents(self, params: dict):
-        request_params: Dict[str, Any] = params.copy()
+        request_params: dict[str, Any] = params.copy()
         incidents = []
 
-        for k, api_path in _API_PATHS.items():
+        for _k, api_path in _API_PATHS.items():
             request_params["page"] = 0
             self._headers["X-Request-Id"] = str(uuid.uuid4())  # pyright: ignore
-    
+
             while True:
                 current_page: int = request_params.get("page", 0)
                 events_response = self.call_api(
@@ -134,10 +118,10 @@ class Client(BaseClient):
                     params=request_params,
                 )
 
-                meta_data: Dict[str, Any] = events_response.get("metaData", {})
+                meta_data: dict[str, Any] = events_response.get("metaData", {})
                 is_last: bool = meta_data.get("isLast", True)
 
-                data: List[Dict[str, Any]] = events_response.get("data", [])
+                data: List[dict[str, Any]] = events_response.get("data", [])
 
                 if len(data) > 0:
                     for event in data:
@@ -146,8 +130,7 @@ class Client(BaseClient):
 
                 if is_last:
                     break
-                else:
-                    request_params["page"] = current_page + 1
+                request_params["page"] = current_page + 1
 
         return incidents
 
@@ -181,14 +164,8 @@ def fetch_incidents(client, first_fetch, max_fetch):
         params = demisto.params()
         last_run = demisto.getLastRun()
         include_third_party = argToBoolean(params.get("includeThirdPartyCompromisedAccounts", False))
-        start_fetch = (
-            dateparser.parse(last_run.get("last_fetch"))
-            if last_run
-            else dateparser.parse(first_fetch)
-        )
-        start_fetch_timestamp_val: float = (
-            start_fetch.timestamp() if isinstance(start_fetch, datetime) else 0.0
-        )
+        start_fetch = dateparser.parse(last_run.get("last_fetch")) if last_run else dateparser.parse(first_fetch)
+        start_fetch_timestamp_val: float = start_fetch.timestamp() if isinstance(start_fetch, datetime) else 0.0
 
         after_fetch_timestamp: int = int(start_fetch_timestamp_val * 1000)
 
@@ -232,9 +209,7 @@ def main():
     demisto.info(f"Command being called is {demisto.command()}")
 
     try:
-        client = Client(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         if command == "test-module":
             result = test_module(client)

@@ -1,18 +1,18 @@
 import json
 import uuid
-from typing import Any, Dict
+from typing import Any
 
 import dateparser
 import demistomock as demisto
 import urllib3
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import 
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-""" CONSTANTS """ 
+""" CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 _BASE_PREFIX_PATH = "/api/ex/v3/da"
@@ -60,12 +60,11 @@ _SKIP_FIELDS = [
     "subCategory",
     "subCategoryLabel",
     "compromisedDetails",
-    "user"
+    "user",
 ]
 
 
 class Client(BaseClient):
-
     def call_api(self, end_point: str, params: dict | None = None):
         response = self._http_request(
             url_suffix=end_point,
@@ -94,7 +93,6 @@ class Client(BaseClient):
             return IncidentSeverity.UNKNOWN
 
     def _populate_custom_fields(self, data: dict):
-
         comon_fields = []
 
         event_details = data.get("alertDetails", data)
@@ -104,11 +102,7 @@ class Client(BaseClient):
             {"fields": "Category", "values": data.get("categoryLabel", "")},
             {"fields": "Alertid", "values": data.get("alertId", "")},
             {"fields": "Objectid", "values": event_details.get("uid", "")},
-        ] + [
-            {"fields": key.capitalize(), "values": value}
-            for key, value in event_details.items()
-            if key not in _SKIP_FIELDS
-        ]
+        ] + [{"fields": key.capitalize(), "values": value} for key, value in event_details.items() if key not in _SKIP_FIELDS]
 
         if data.get("compromisedDetails"):
             comon_fields = (
@@ -126,58 +120,40 @@ class Client(BaseClient):
                 ]
                 + [
                     {"fields": key.capitalize(), "values": value}
-                    for key, value in event_details.get(
-                        "compromisedDetails", {}
-                    ).items()
+                    for key, value in event_details.get("compromisedDetails", {}).items()
                 ]
             )
             retrun_data = {"cyfirmacompromisedaccountdetails": comon_fields}
 
         else:
-
             network_attributes = event_details.get("networkAttributes", {})
 
             retrun_data = {
                 "cyfirmaalertdetails": comon_fields,
                 "cyfirmanetworkattributes": [
-                    {"fields": key.capitalize(), "values": value}
-                    for key, value in network_attributes.items()
+                    {"fields": key.capitalize(), "values": value} for key, value in network_attributes.items()
                 ],
-                "cyfirmadigitalfootprints": self._build_sub_category_data_fields(
-                    event_details, data.get("subCategory", "")
-                ),
+                "cyfirmadigitalfootprints": self._build_sub_category_data_fields(event_details, data.get("subCategory", "")),
             }
 
             deep_fake_details = event_details.get("deepFakeDetails", {})
             if deep_fake_details:
                 retrun_data["cyfirmadeepfakedetails"] = [
-                    {"fields": key.capitalize(), "values": value}
-                    for key, value in deep_fake_details.items()
+                    {"fields": key.capitalize(), "values": value} for key, value in deep_fake_details.items()
                 ]
 
             if data.get("subCategory", "") == "DOMAIN_IP_VULNERABILITY":
-                retrun_data["cyfirmavulnerabilities"] = self._vulnerability_fields(
-                    event_details.get("vulnerabilities", [])
-                )
+                retrun_data["cyfirmavulnerabilities"] = self._vulnerability_fields(event_details.get("vulnerabilities", []))
 
         return retrun_data
 
-    def _build_sub_category_data_fields(
-        self, alert_details: dict, sub_category: str
-    ) -> list:
-
+    def _build_sub_category_data_fields(self, alert_details: dict, sub_category: str) -> list:
         if sub_category == "OPEN_PORTS":
-            ports = [
-                str(port_data["port"])
-                for port_data in alert_details.get("portDetails", [])
-                if "port" in port_data
-            ]
+            ports = [str(port_data["port"]) for port_data in alert_details.get("portDetails", []) if "port" in port_data]
             return [{"fields": "Open Ports", "values": ",".join(ports)}]
 
         if sub_category == "CERTIFICATES":
-            return self._details_fields(
-                alert_details.get("certificateDetails", {}), join_keys={"issuer"}
-            )
+            return self._details_fields(alert_details.get("certificateDetails", {}), join_keys={"issuer"})
 
         if sub_category == "CONFIGURATION":
             return self._details_fields(
@@ -192,10 +168,7 @@ class Client(BaseClient):
                 only_keys={"reportedCategories"},
             )
 
-        return [
-            {"fields": key.capitalize(), "values": value}
-            for key, value in alert_details.get("assetDetails", {}).items()
-        ]
+        return [{"fields": key.capitalize(), "values": value} for key, value in alert_details.get("assetDetails", {}).items()]
 
     @staticmethod
     def _vulnerability_fields(vulnerabilities: list) -> list:
@@ -212,9 +185,7 @@ class Client(BaseClient):
         return data
 
     @staticmethod
-    def _details_fields(
-        details: dict, join_keys: set, only_keys: set | None = None
-    ) -> list:
+    def _details_fields(details: dict, join_keys: set, only_keys: set | None = None) -> list:
         result = []
         for key, value in details.items():
             if only_keys is not None and key not in only_keys:
@@ -225,15 +196,8 @@ class Client(BaseClient):
         return result
 
     def _build_incident_json(self, event: dict) -> dict[str, Any]:
-
-        occurred_date = dateparser.parse(
-            event.get("alertCreatedDate", "lastModifiedDate")
-        )
-        occurred = (
-            occurred_date.strftime(DATE_FORMAT)
-            if isinstance(occurred_date, datetime)
-            else None
-        )
+        occurred_date = dateparser.parse(event.get("alertCreatedDate", "lastModifiedDate"))
+        occurred = occurred_date.strftime(DATE_FORMAT) if isinstance(occurred_date, datetime) else None
 
         category = event.get("category", "")
         sub_category = event.get("subCategory", "")
@@ -258,12 +222,12 @@ class Client(BaseClient):
         return return_data
 
     def get_incidents(self, params: dict, alerts_to_fetch: dict):
-        request_params: Dict[str, Any] = params.copy()
+        request_params: dict[str, Any] = params.copy()
         incidents = []
 
         for alert_type, is_fetch_alert in alerts_to_fetch.items():
             request_params["page"] = 0
-            self._headers["X-Request-Id"] = str(uuid.uuid4())   # pyright: ignore
+            self._headers["X-Request-Id"] = str(uuid.uuid4())  # pyright: ignore
             if not is_fetch_alert:
                 continue
             else:
@@ -274,10 +238,10 @@ class Client(BaseClient):
                         params=request_params,
                     )
 
-                    meta_data: Dict[str, Any] = events_response.get("metaData", {})
+                    meta_data: dict[str, Any] = events_response.get("metaData", {})
                     is_last: bool = meta_data.get("isLast", True)
 
-                    data: List[Dict[str, Any]] = events_response.get("data", [])
+                    data: List[dict[str, Any]] = events_response.get("data", [])
 
                     if len(data) > 0:
                         for event in data:
@@ -286,8 +250,7 @@ class Client(BaseClient):
 
                     if is_last:
                         break
-                    else:
-                        request_params["page"] = current_page + 1
+                    request_params["page"] = current_page + 1
 
         return incidents
 
@@ -316,7 +279,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def take_down_list_command_results(data: List[Dict], title: str) -> CommandResults:
+def take_down_list_command_results(data: List[dict], title: str) -> CommandResults:
     if not data:
         return CommandResults(readable_output="No data found for current request.")
 
@@ -382,7 +345,7 @@ def take_down_list_command_results(data: List[Dict], title: str) -> CommandResul
 def initiate_take_down_request(client: Client):
     args = demisto.args()
     alert_id = args.get("alert_id")
-    data: Dict = client.initiate_take_down(alert_id, "")
+    data: dict = client.initiate_take_down(alert_id, "")
     msg: str = ""
 
     if not data:
@@ -399,7 +362,7 @@ def initiate_take_down_request(client: Client):
             raw_response=data,
         )
 
-    da: Dict = data.get("response", {})
+    da: dict = data.get("response", {})
     if da:
         ticket_id = da.get("ticketName", "")
         msg = f"Take Down Request Created Successfully - TIcket ID: {ticket_id}"
@@ -438,15 +401,9 @@ def fetch_incidents(client, first_fetch, max_fetch):
 
         fetch_attack_surface = argToBoolean(params.get("fetchAttackSurface", False))
         fetch_brand_exposure = argToBoolean(params.get("fetchBrandExposure", False))
-        fetch_data_breach_web_monitor = argToBoolean(
-            params.get("fetchDataBreachWebMonitor", False)
-        )
-        fetch_social_public_exposure = argToBoolean(
-            params.get("fetchSocialPublicExposure", False)
-        )
-        fetch_compromised_accounts = argToBoolean(
-            params.get("fetchCompromisedAccounts", False)
-        )
+        fetch_data_breach_web_monitor = argToBoolean(params.get("fetchDataBreachWebMonitor", False))
+        fetch_social_public_exposure = argToBoolean(params.get("fetchSocialPublicExposure", False))
+        fetch_compromised_accounts = argToBoolean(params.get("fetchCompromisedAccounts", False))
 
         alerts_to_fetch = {
             "AS": fetch_attack_surface,
@@ -458,14 +415,8 @@ def fetch_incidents(client, first_fetch, max_fetch):
             "PUB": fetch_compromised_accounts,
         }
 
-        start_fetch = (
-            dateparser.parse(last_run.get("last_fetch"))
-            if last_run
-            else dateparser.parse(first_fetch)
-        )
-        start_fetch_timestamp_val: float = (
-            start_fetch.timestamp() if isinstance(start_fetch, datetime) else 0.0
-        )
+        start_fetch = dateparser.parse(last_run.get("last_fetch")) if last_run else dateparser.parse(first_fetch)
+        start_fetch_timestamp_val: float = start_fetch.timestamp() if isinstance(start_fetch, datetime) else 0.0
 
         after_fetch_timestamp: int = int(start_fetch_timestamp_val * 1000)
 
@@ -491,9 +442,7 @@ def fetch_incidents(client, first_fetch, max_fetch):
 
 
 def command_alertdetailextraction():
-    raws = (demisto.incident().get("CustomFields") or {}).get(
-        "cyfirmaalertdetails"
-    ) or []
+    raws = (demisto.incident().get("CustomFields") or {}).get("cyfirmaalertdetails") or []
     if not raws:
         return_error("cyfirmaalertdetails is empty on this incident")
 
@@ -554,9 +503,7 @@ def main():
     demisto.info(f"Command being called is {demisto.command()}")
 
     try:
-        client = Client(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         if command == "test-module":
             result = test_module(client)
