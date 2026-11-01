@@ -1,0 +1,6 @@
+{
+    "PartitionKey": "mock-partition",
+    "RowKey": "mock-row",
+    "Timestamp": "2021-08-16T14:52:20.7422729Z",
+    "Age": 20
+}

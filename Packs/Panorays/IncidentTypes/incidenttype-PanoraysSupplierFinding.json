@@ -1,0 +1,29 @@
+{
+    "id": "Panorays Supplier Finding",
+    "version": -1,
+    "name": "Panorays Supplier Finding",
+    "prevName": "Panorays Supplier Finding",
+    "color": "#295AFF",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 1,
+    "daysR": 1,
+    "weeksR": 1,
+    "autorun": false,
+    "system": false,
+    "readonly": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.10.0",
+    "layout": "Panorays Supplier Finding",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

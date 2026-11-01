@@ -36,6 +36,9 @@
                 "Vega Created At": {
                     "simple": "createdAt"
                 },
+                "Vega Last Updated": {
+                    "simple": "updatedAt"
+                },
                 "occurred": {
                     "simple": "createdAt"
                 },
@@ -78,6 +81,9 @@
                 "Vega Comments": {
                     "simple": "vegaComments"
                 },
+                "Vega Comments Source": {
+                    "simple": "VegaCommentsSource"
+                },
                 "dbotMirrorDirection": {
                     "simple": "mirror_direction"
                 },
@@ -103,6 +109,9 @@
                 },
                 "Vega Incident Status": {
                     "simple": "status"
+                },
+                "Vega Investigation Status": {
+                    "simple": "investigationStatus"
                 },
                 "Vega Assignee": {
                     "simple": "assignee.displayName"
@@ -132,6 +141,9 @@
                     "simple": "vegaIncidentFindings"
                 },
                 "Vega Assets": {
+                    "simple": "typedAssets"
+                },
+                "Vega Assets Value": {
                     "simple": "assets"
                 },
                 "Vega Observables": {
@@ -140,14 +152,23 @@
                 "Vega Alerts Count": {
                     "simple": "alertsCount"
                 },
+                "Vega Alerts": {
+                    "simple": "alerts"
+                },
                 "Vega Incident Link": {
                     "simple": "link"
                 },
                 "Vega Timeline Events": {
                     "simple": "vegaTimelineEvents"
                 },
+                "Vega Timeline Events Source": {
+                    "simple": "timelineEvents"
+                },
                 "Vega Comments": {
                     "simple": "vegaComments"
+                },
+                "Vega Comments Source": {
+                    "simple": "VegaCommentsSource"
                 },
                 "Vega Recommended Actions": {
                     "simple": "recommendedActions"

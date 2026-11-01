@@ -120,6 +120,31 @@ Get Job Summary
 | Twinwave.JobSummary.Tasks.ID | Unknown | Task ID |
 | Twinwave.JobSummary.Tasks.JobID | Unknown | Job ID associated to the task |
 
+### twinwave-wait-job
+
+***
+Wait for a Twinwave job to complete and return its final summary and score. This command uses polling and requires Cortex XSOAR 6.2.0 or later.
+
+#### Base Command
+
+`twinwave-wait-job`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | The ID of the Twinwave job to wait for. | Required |
+| interval_in_seconds | How often to check the job status, in seconds. Default is 60. | Optional |
+| timeout_in_seconds | Maximum time to wait for the job to complete, in seconds. Default is 3600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Twinwave.JobSummary.ID | Unknown | Twinwave job ID. |
+| Twinwave.JobSummary.State | Unknown | Current job status while polling, or final status. |
+| Twinwave.JobSummary.DisplayScore | Unknown | Final score, returned after the job completes. |
+
 ### twinwave-download-job-pdf
 
 ***
