@@ -1,5 +1,5 @@
 import logging
-from contextlib import ExitStack, contextmanager, suppress
+from contextlib import ExitStack, contextmanager
 from functools import partial
 from threading import Event, Lock, Thread
 
@@ -36,12 +36,6 @@ CLOSE_TIMEOUT = 60  # Timeout for closing the connection in seconds
 MAX_MESSAGE_SIZE: int | None = None  # Disable the 1 MiB default size limit on incoming messages
 RECEIVE_TIMEOUT = 1  # Timeout for receiving events in seconds
 WEBSOCKETS_LOGGER_NAME = "websockets"
-
-
-def log_debug_safely(message: str) -> None:
-    """Log a debug message without ever raising, for use in background threads where an escaping exception is fatal."""
-    with suppress(Exception):
-        demisto.debug(message)
 
 
 def route_websockets_logs_to_debug() -> None:
@@ -165,35 +159,24 @@ class EventConnection:
         Heartbeat thread function to periodically send keep-alives (pong) to the server.
         Keep-alives are sent regardless of the actual connection activity to ensure the connection remains open.
         Stops when the connection is closed.
-
-        The thread never lets an exception escape: an uncaught thread exception is printed to stderr,
-        which makes the platform mark the whole long-running execution as failed.
         """
         while not self.stop_event.is_set():
-            try:
-                self.send_keepalive()
-            except Exception as e:
-                log_debug_safely(f"[{self.event_type}] Heartbeat iteration failed, retrying in {self.idle_timeout}s: {e!s}")
+            with self.lock:
+                if self.stop_event.is_set():
+                    break
+                try:
+                    self.connection.pong()
+                    demisto.info(f"[{self.event_type}] Sent heartbeat pong")
+                except exceptions.ConnectionClosedError as e:
+                    demisto.error(f"[{self.event_type}] Connection closed due to error in thread - {self.event_type}: {e!s}")
+                    self.reconnect()
+                except exceptions.ConnectionClosedOK:
+                    demisto.info(f"[{self.event_type}] Connection closed OK in thread - {self.event_type}")
+                    self.reconnect()
+                except Exception as e:
+                    demisto.error(f"[{self.event_type}] Unexpected error in heartbeat: {e!s} {traceback.format_exc()}")
+                    self.reconnect()
             self.stop_event.wait(self.idle_timeout)
-
-    def send_keepalive(self):
-        """Send a single pong to the server, reconnecting if the connection was closed."""
-        with self.lock:
-            if self.stop_event.is_set():
-                return
-            try:
-                self.connection.pong()
-            except exceptions.ConnectionClosedError as e:
-                demisto.error(f"[{self.event_type}] Connection closed due to error in thread - {self.event_type}: {e!s}")
-                self.reconnect()
-            except exceptions.ConnectionClosedOK:
-                demisto.info(f"[{self.event_type}] Connection closed OK in thread - {self.event_type}")
-                self.reconnect()
-            except Exception as e:
-                demisto.error(f"[{self.event_type}] Unexpected error in heartbeat: {e!s} {traceback.format_exc()}")
-                self.reconnect()
-            else:
-                log_debug_safely(f"[{self.event_type}] Sent heartbeat pong")
 
     def receive(self, timeout: int = RECEIVE_TIMEOUT) -> dict[str, Any]:
         """Receive a new event from the websocket connection.
@@ -319,10 +302,12 @@ def fetch_events(
         list[dict]: A list of events
     """
     event_type = connection.event_type
+    demisto.debug(f"[{event_type}] Starting to fetch events.")
     events: list[dict] = []
     event_ids = set()  # For deduplication within the *same* fetch cycle only! (Cannot deduplicate all events from the websocket)
     fetch_start_time = datetime.utcnow()
 
+    demisto.info(f"[{event_type}] Preparing to acquire lock & recv.")
     with connection.lock:
         while not is_interval_passed(fetch_start_time, fetch_interval):
             try:
@@ -335,8 +320,8 @@ def fetch_events(
                 events.append(event)
 
             except TimeoutError:
-                # This exception typically indicates no new events from websocket stream (normal path, not logged to keep
-                # the per-cycle log volume low)
+                # This exception typically indicates no new events from websocket stream
+                demisto.debug(f"[{event_type}] Timeout while waiting for a new event in stream. Breaking.")
                 break
 
             except exceptions.InvalidStatus as e:
@@ -369,10 +354,11 @@ def fetch_events(
                     set_integration_context(integration_context)
                 raise DemistoException(str(e))
 
+    demisto.info(f"[{event_type}] Released the lock and finished recv.")
     num_events = len(events)
     last_event_time = events[-1].get("_time") if events else None
-    if num_events:
-        demisto.debug(f"[{event_type}] Fetched {num_events} events with {last_event_time=}")
+    demisto.debug(f"[{event_type}] Fetched {num_events} events with {last_event_time=}")
+    demisto.debug(f"[{event_type}] Fetched events IDs: {', '.join([str(event_id) for event_id in event_ids])}.")
     if write_to_integration_context:
         fetch_end_time = datetime.utcnow()
         results_by_type = demisto.getIntegrationContext().get("last_run_results_by_type") or {}
@@ -520,12 +506,16 @@ def perform_long_running_loop(connections: list[EventConnection], fetch_interval
         events = fetch_events(connection, fetch_interval, integration_context, should_skip_sleeping)
         events.extend(integration_context.get(connection.event_type, []))
         integration_context[connection.event_type] = events  # update events in context in case of fail
+        demisto.debug(f"[{connection.event_type}] Adding {len(events)} events to XSIAM")
         events_to_send.extend(events)
+    demisto.info(f"Going to send {len(events_to_send)} events to xsiam.")
     # Send the events to the XSIAM, with events from the context
     try:
         if events_to_send:
             send_events_to_xsiam(events_to_send, vendor=VENDOR, product=PRODUCT)
-            demisto.info(f"Finished sending {len(events_to_send)} events to xsiam, going to clear context.")
+        else:
+            demisto.info("No events to send to xsiam.")
+        demisto.info(f"Finished sending {len(events_to_send)} events to xsiam, going to clear context.")
         # clear the context after sending the events
         for connection in connections:
             set_the_integration_context(connection.event_type, [])
@@ -565,7 +555,9 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
                     should_skip_sleeping: List[bool] = []
                     perform_long_running_loop(connections, fetch_interval, should_skip_sleeping)
                     # sleep for a bit to not throttle the CPU
-                    if not any(should_skip_sleeping):
+                    if any(should_skip_sleeping):
+                        demisto.info("Finished perform_long_running_loop, should_skip_sleeping evaluated to True.")
+                    else:
                         demisto.info(
                             "Finished perform_long_running_loop, should_skip_sleeping evaluated to False,  going to"
                             f"sleep {FETCH_SLEEP} seconds."
