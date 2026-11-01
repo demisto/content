@@ -1,6 +1,5 @@
 import gc
 import re  # pylint: disable=W9011
-import resource
 import sys
 import time
 import traceback
@@ -710,33 +709,9 @@ def handle_assets_chunks(client: Client, assets_last_run):  # pylint: disable=W9
     return assets, assets_last_run
 
 
-def log_peak_memory(stage: str) -> None:
-    """
-    Log the peak memory (max RSS) of the process so far, to follow the memory usage of a fetch-assets run.
-
-    The value is a high-water mark: it shows growth but never goes down, even after memory is released.
-
-    Args:
-        stage: A short description of where in the run the measurement is taken.
-    """
-    try:
-        # On Linux (the integration's Docker image) ru_maxrss is in kilobytes.
-        peak_mb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
-        demisto.debug(f"[mem] {stage}: peak RSS so far {peak_mb:.0f} MB (high-water mark, never decreases)")
-    except Exception as e:  # pragma: no cover - diagnostics must never break the fetch
-        demisto.debug(f"[mem] could not read the peak RSS at {stage}: {e}")
-        demisto.debug(traceback.format_exc())
-
-
 def send_vulnerabilities_chunk(vulnerabilities: list) -> None:
     """
-    Send one chunk of vulnerabilities to XSIAM with the streaming send.
-
-    The streaming send serializes and gzips one record at a time, so the legacy path's list of JSON strings and the
-    joined payload string are never built. The records themselves stay in memory until the send returns: the caller
-    still holds the list, and the retry wrapper streams a copy of it, so the streaming send's free-as-you-go does
-    not release them. Peak memory is therefore about one chunk of records plus one compressed request buffer
-    (XSUP-79661). The list passed in is not modified.
+    Send one chunk of vulnerabilities to XSIAM using the streaming send.
 
     Args:
         vulnerabilities: The vulnerabilities of a single export chunk.
@@ -745,7 +720,7 @@ def send_vulnerabilities_chunk(vulnerabilities: list) -> None:
         data=vulnerabilities,
         vendor=VENDOR,
         product=f"{PRODUCT}_vulnerabilities",
-        # The module health is updated once per run with the total, not once per chunk.
+        # Module health is updated once per run with the total.
         should_update_health_module=False,
         use_streaming_send=True,
     )
@@ -753,16 +728,10 @@ def send_vulnerabilities_chunk(vulnerabilities: list) -> None:
 
 def persist_vulns_progress(assets_last_run: dict, remaining_chunks: list) -> None:
     """
-    Save the vulnerabilities fetch progress right after a chunk was sent.
-
-    Persisting after every chunk means that if the run is killed (for example OOM) the next run resumes from the
-    next unsent chunk instead of re-downloading the whole batch, so the fetch always makes progress (XSUP-79661).
-
-    The order is send, then save (at-least-once): if the run is killed between the two, that one chunk is sent
-    again by the next run. No chunk is ever skipped.
+    Save the vulns fetch progress after a chunk was sent, so an interrupted run resumes from the next chunk.
 
     Args:
-        assets_last_run: The assets last run object (shared with the assets flow, saved as a whole).
+        assets_last_run: The assets last run object.
         remaining_chunks: The chunk IDs that were not sent yet.
     """
     if remaining_chunks:
@@ -783,23 +752,14 @@ def persist_vulns_progress(assets_last_run: dict, remaining_chunks: list) -> Non
 
 def handle_vulns_chunks(client: Client, assets_last_run) -> tuple[int, dict]:  # pylint: disable=W9014
     """
-    Download, send and persist the vulns chunks stored in the last run object, one chunk at a time.
-
-    Each chunk is sent to XSIAM and released before the next one is downloaded, and the progress is saved after
-    every chunk. Peak memory is therefore about one chunk, and a killed run re-sends at most one chunk (XSUP-79661).
-
-    The module health is updated with the number of vulnerabilities sent on every exit path, including the 404
-    paths and a failed send, because the chunks sent before that point did reach XSIAM.
-
-    On a 404 a new export is started from scratch, so chunks already sent from the expired export are sent again
-    by the new export (at-least-once delivery).
+    Download, send and persist the stored vulns chunks one at a time, so only one chunk is held in memory.
 
     Args:
         client: Client class object.
         assets_last_run: assets last run object.
 
     Returns:
-        tuple[int, dict]: The number of vulnerabilities sent to XSIAM in this run, and the updated last run.
+        tuple[int, dict]: The number of vulnerabilities sent in this run, and the updated last run.
     """
     demisto.debug("in handle vulns chunks")
     stored_chunks = assets_last_run.get("vulns_available_chunks", [])
@@ -813,7 +773,6 @@ def handle_vulns_chunks(client: Client, assets_last_run) -> tuple[int, dict]:  #
                 handle_vulns_chunk_not_found(client, assets_last_run)
                 return total_sent, assets_last_run
 
-            # A chunk was downloaded successfully, so the 404 retry streak is over.
             assets_last_run.pop("vulns_404_retry_count", None)
             for vuln in result:
                 vuln["_time"] = vuln.get("received") or vuln.get("indexed")
@@ -822,11 +781,10 @@ def handle_vulns_chunks(client: Client, assets_last_run) -> tuple[int, dict]:  #
             demisto.debug(f"sending vulns chunk {chunk_id} with {chunk_count} vulnerabilities to XSIAM.")
             send_vulnerabilities_chunk(chunk_vulnerabilities)
             total_sent += chunk_count
-            # Release the chunk before the next download so that only one chunk is ever held in memory.
+            # Release the chunk before the next download.
             result = chunk_vulnerabilities = None
             updated_stored_chunks.remove(chunk_id)
             persist_vulns_progress(assets_last_run, updated_stored_chunks)
-            log_peak_memory(f"after vulns chunk {chunk_id} ({chunk_count} sent, {len(updated_stored_chunks)} chunks left)")
     finally:
         if total_sent:
             demisto.updateModuleHealth({"eventsPulled": total_sent})
@@ -2181,15 +2139,8 @@ def send_data_to_xsiam_with_retry(*args: Any, **kwargs: Any) -> None:
     Only the product, the data type, the attempt number, the error class and the HTTP status code are
     logged here - never the payload, the headers or the response body.
 
-    Delivery is at-least-once. ``send_data_to_xsiam`` splits the data into several requests (and already
-    retries each one internally), so when a later request fails, the retry here re-sends the whole data,
-    including the requests that already succeeded.
-
-    With ``use_streaming_send`` the streaming send empties the list it is given (free-as-you-go), so every attempt
-    gets its own shallow copy and a retry after a mid-stream failure re-sends the full data. The caller's list is
-    never modified. Because the caller and this function still hold the records, they stay in memory until the send
-    returns; the streaming send only avoids building the serialized copies. This works whether ``data`` is passed
-    as a keyword or as the first positional argument.
+    Delivery is at-least-once: a retry re-sends the whole data. With ``use_streaming_send`` each attempt gets a
+    shallow copy, because the streaming send empties the list it is given.
 
     Args:
         *args: Positional arguments forwarded to ``send_data_to_xsiam``.
@@ -2368,7 +2319,6 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 assets = run_assets_fetch(client, assets_last_run)
 
             demisto.info(f"Received {len(assets)} assets.")
-            log_peak_memory(f"after downloading assets ({len(assets)} assets)")
 
             demisto.debug(f"new lastrun assets: {assets_last_run}")
             demisto.setAssetsLastRun(assets_last_run)
@@ -2415,7 +2365,6 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                     # rather than just the count from this single batch
                     should_update_health_module=False,
                 )
-                log_peak_memory(f"after sending assets ({len(assets)} assets)")
                 # Update cumulative asset count AFTER successful send_data_to_xsiam()
                 # This ensures the counter only reflects assets that were actually sent to XSIAM
                 assets_last_run["total_assets"] = cumulative_total
@@ -2471,8 +2420,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             gc.collect()
 
             # Fetch Vulnerabilities: Run if there's an ongoing vulns export OR if assets fetch is complete.
-            # Executed only after assets have been sent and freed above. Vulnerabilities are sent to XSIAM
-            # chunk by chunk inside the fetch and are never accumulated here (XSUP-79661).
+            # Executed only after assets have been sent and freed above. Vulnerabilities are sent chunk by chunk.
             if should_fetch_vulns:
                 vulnerabilities_sent = run_vulnerabilities_fetch(client, last_run=assets_last_run)
                 demisto.info(f"Sent {vulnerabilities_sent} vulnerabilities.")

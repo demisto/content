@@ -819,13 +819,11 @@ def test_handle_vulns_chunks_preserves_snapshot_state(mocker, requests_mock):
 def test_handle_vulns_chunks_sends_and_persists_each_chunk(mocker, requests_mock):
     """
     Given:
-        - Three vulnerability chunks ready to be downloaded.
+        - Three vulnerability chunks.
     When:
         - handle_vulns_chunks runs.
     Then:
-        - Each chunk is sent to XSIAM in its own call, with the streaming send enabled (XSUP-79661).
-        - The progress is saved after every chunk, with the sent chunk removed from the pending list.
-        - The number of vulnerabilities sent is returned instead of the vulnerabilities themselves.
+        - Each chunk is sent separately with streaming, progress is saved after each one, and the count is returned.
     """
     mock_demisto(mocker)
     mocker.patch.object(demisto, "updateModuleHealth")
@@ -838,7 +836,6 @@ def test_handle_vulns_chunks_sends_and_persists_each_chunk(mocker, requests_mock
     sent_batches: list = []
 
     def fake_send(**kwargs):
-        # Record only the size and the flag; production never empties the caller's list.
         sent_batches.append((len(kwargs["data"]), kwargs.get("use_streaming_send")))
 
     mocker.patch.object(Tenable_io, "send_data_to_xsiam_with_retry", new=fake_send)
@@ -859,12 +856,11 @@ def test_handle_vulns_chunks_sends_and_persists_each_chunk(mocker, requests_mock
 def test_handle_vulns_chunks_resumes_after_failure_mid_batch(mocker, requests_mock):
     """
     Given:
-        - Three vulnerability chunks, where sending the second chunk fails (for example, the run is killed).
+        - Three vulnerability chunks, where sending the second chunk fails.
     When:
         - handle_vulns_chunks runs.
     Then:
-        - The progress saved before the failure already excludes the first chunk, so the next run resumes
-          from chunk 2 instead of re-downloading the whole batch (XSUP-79661).
+        - The saved progress excludes the first chunk, so the next run resumes from chunk 2.
     """
     mock_demisto(mocker)
     mocker.patch.object(demisto, "updateModuleHealth")
@@ -884,21 +880,17 @@ def test_handle_vulns_chunks_resumes_after_failure_mid_batch(mocker, requests_mo
         handle_vulns_chunks(client, last_run)
 
     assert persisted_chunks == [[2, 3]]
-    # The chunk that was sent before the failure is still reported in the module health.
     demisto.updateModuleHealth.assert_called_once_with({"eventsPulled": 1})
 
 
 def test_handle_vulns_chunks_404_after_some_chunks_were_sent(mocker, requests_mock):
     """
     Given:
-        - Three vulnerability chunks, where chunk 3 returns 404 after chunks 1 and 2 were sent and saved.
+        - Three vulnerability chunks, where chunk 3 returns 404.
     When:
         - handle_vulns_chunks runs.
     Then:
-        - The vulnerabilities from chunks 1 and 2 are returned and reported in the module health, even though the
-          function returns early on the 404.
-        - A new export is started: the new export UUID and the retry count are stored, and the pending chunk list
-          is cleared.
+        - Chunks 1 and 2 are counted and reported in the module health, and a new export is started.
     """
     mock_demisto(mocker)
     mocker.patch.object(demisto, "updateModuleHealth")
@@ -921,13 +913,12 @@ def test_handle_vulns_chunks_404_after_some_chunks_were_sent(mocker, requests_mo
 
 
 def _peak_memory_of_handle_vulns_chunks(mocker, number_of_chunks: int) -> int:
-    """Run handle_vulns_chunks over `number_of_chunks` synthetic chunks and return the traced peak memory in bytes."""
+    """Return the traced peak memory (bytes) of handle_vulns_chunks over `number_of_chunks` chunks."""
     import tracemalloc
 
     records_per_chunk = 500
 
     def fake_download(export_uuid, chunk_id):
-        # A fresh list per call, with records of about 1 KB shaped like Tenable vulnerability rows.
         return [
             {
                 "asset": {"uuid": f"asset-{chunk_id}-{index}", "hostname": f"host-{index}"},
@@ -938,8 +929,7 @@ def _peak_memory_of_handle_vulns_chunks(mocker, number_of_chunks: int) -> int:
             for index in range(records_per_chunk)
         ]
 
-    # Plain functions (new=) so that the mocks do not record call arguments and keep every chunk alive.
-    # The send does not empty the list, matching production where the retry wrapper streams a copy.
+    # Plain functions (new=) so the mocks don't keep references to the chunks.
     mocker.patch.object(
         Client, "download_vulnerabilities_chunk", new=lambda self, export_uuid, chunk_id: fake_download(export_uuid, chunk_id)
     )
@@ -960,13 +950,11 @@ def _peak_memory_of_handle_vulns_chunks(mocker, number_of_chunks: int) -> int:
 def test_handle_vulns_chunks_peak_memory_does_not_grow_with_chunks(mocker):
     """
     Given:
-        - One vulnerability chunk in one run, and eight chunks of the same size in another run.
+        - One chunk in one run, and eight chunks of the same size in another.
     When:
         - handle_vulns_chunks runs.
     Then:
-        - The peak memory for eight chunks stays close to the peak for one chunk, because each chunk is sent and
-          released before the next one is downloaded. Before XSUP-79661 all chunks were accumulated in one list,
-          so the peak grew about 8x.
+        - The peak memory for eight chunks stays close to the peak for one chunk.
     """
     mock_demisto(mocker)
     mocker.patch.object(demisto, "updateModuleHealth")
@@ -981,11 +969,11 @@ def test_handle_vulns_chunks_peak_memory_does_not_grow_with_chunks(mocker):
 def test_send_data_to_xsiam_with_retry_streaming_retry_gets_full_data(mocker):
     """
     Given:
-        - A streaming send that empties its input list and then fails with a retryable error on the first attempt.
+        - A streaming send that empties its input and fails with a retryable error on the first attempt.
     When:
-        - Sending with send_data_to_xsiam_with_retry and use_streaming_send=True.
+        - Sending with use_streaming_send=True.
     Then:
-        - The retry receives the full data again, not the emptied list (XSUP-79661).
+        - The retry receives the full data and the caller's list is not modified.
     """
     mocker.patch.object(Tenable_io.time, "sleep")
     received_sizes: list = []
@@ -1002,19 +990,17 @@ def test_send_data_to_xsiam_with_retry_streaming_retry_gets_full_data(mocker):
     send_data_to_xsiam_with_retry(data=data, vendor="tenable", product="io_vulnerabilities", use_streaming_send=True)
 
     assert received_sizes == [3, 3]
-    assert len(data) == 3  # the caller's list is never modified
+    assert len(data) == 3
 
 
 def test_send_data_to_xsiam_with_retry_streaming_copies_positional_data(mocker):
     """
     Given:
-        - Data passed as the first positional argument, with use_streaming_send=True.
-        - A streaming send that empties its input list and fails with a retryable error on the first attempt.
+        - Data passed positionally, and a streaming send that empties its input and fails on the first attempt.
     When:
-        - Sending with send_data_to_xsiam_with_retry.
+        - Sending with use_streaming_send=True.
     Then:
-        - Every attempt gets its own copy of the positional data, so the retry re-sends all of it and the caller's
-          list is not modified.
+        - The retry receives the full data and the caller's list is not modified.
     """
     mocker.patch.object(Tenable_io.time, "sleep")
     received_sizes: list = []
@@ -1365,7 +1351,6 @@ def test_fetch_assets_sends_assets_before_fetching_vulnerabilities(mocker):
             call_order.append("send_vulns")
 
     def fake_run_vulnerabilities_fetch(client, last_run):
-        # Vulnerabilities are now sent chunk by chunk inside the fetch, which returns only a count.
         call_order.append("fetch_vulns")
         fake_send_data_to_xsiam(data=[{"id": "vuln-1"}], product="io_vulnerabilities")
         return 1
