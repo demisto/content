@@ -1,8 +1,8 @@
 {
-    "name": "Google Cloud Functions",
-    "description": "Google Cloud Functions",
+    "name": "Google Cloud Functions (Deprecated)",
+    "description": "Deprecated. Use Google Cloud Platform instead.",
     "support": "xsoar",
-    "currentVersion": "1.0.35",
+    "currentVersion": "1.0.36",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

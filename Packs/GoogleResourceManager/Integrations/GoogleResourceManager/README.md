@@ -1,3 +1,5 @@
+Note: This integration is deprecated. Use the **Google Cloud Platform** integration instead.
+
 <!-- HTML_DOC -->
 <h2>Configure Google Resource Manager on Cortex XSOAR</h2>
 <ol>

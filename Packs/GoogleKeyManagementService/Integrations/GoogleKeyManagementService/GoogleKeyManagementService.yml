@@ -58,8 +58,8 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Use the Google Key Management Service API for CryptoKey management and encrypt/decrypt functionality.
-display: Google Key Management Service
+description: Deprecated. Use Google Cloud Platform instead.
+display: Google Key Management Service (Deprecated)
 name: Google Key Management Service
 script:
   commands:
@@ -236,6 +236,7 @@ script:
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime
       description: The time this CryptoKeyVersion's key material was generated.
       type: Date
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
@@ -304,6 +305,7 @@ script:
     - contextPath: GoogleKMS.SymmetricDecrypt.Plaintext
       description: The decrypted plaintext.
       type: String
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
@@ -373,6 +375,7 @@ script:
     - contextPath: GoogleKMS.SymmetricEncrypt.Ciphertext
       description: The encrypted ciphertext.
       type: String
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
@@ -466,6 +469,7 @@ script:
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime
       description: The time this CryptoKeyVersion's key material was generated.
       type: Date
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
@@ -622,6 +626,7 @@ script:
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime
       description: The time this CryptoKeyVersion's key material was generated.
       type: Date
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
@@ -674,6 +679,7 @@ script:
       required: true
     description: Schedules a CryptoKeyVersion for destruction.
     name: google-kms-destroy-key
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
@@ -726,6 +732,7 @@ script:
       required: true
     description: Restores a CryptoKeyVersion in the DESTROY_SCHEDULED state.
     name: google-kms-restore-key
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
@@ -778,6 +785,7 @@ script:
       required: true
     description: Disables a CryptoKeyVersion of a given CryptoKey.
     name: google-kms-disable-key
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
@@ -830,6 +838,7 @@ script:
       required: true
     description: Enables a CryptoKeyVersion of a given CryptoKey.
     name: google-kms-enable-key
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
@@ -887,6 +896,7 @@ script:
       - IMPORT_FAILED
     description: Lists all keys in key ring.
     name: google-kms-list-keys
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
@@ -954,6 +964,7 @@ script:
     - contextPath: GoogleKMS.AsymmetricEncrypt.Ciphertext
       description: The encrypted ciphertext.
       type: String
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
@@ -1020,6 +1031,7 @@ script:
     - contextPath: GoogleKMS.AsymmetricDecrypt.Plaintext
       description: The decrypted plain text.
       type: String
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
@@ -1073,6 +1085,7 @@ script:
     - contextPath: GoogleKMS.KeyRing.CreateTime
       description: The creation time of the KeyRing.
       type: Date
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
@@ -1177,6 +1190,7 @@ script:
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime
       description: The time this CryptoKeyVersion's key material was generated.
       type: Date
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
       defaultValue: default
@@ -1238,11 +1252,13 @@ script:
     - contextPath: GoogleKMS.PublicKey.Algorithm
       description: The algorithm used in the CryptoKey.
       type: String
+    deprecated: true
   dockerimage: demisto/google-kms:1.0.0.13548907
   runonce: false
   script: '-'
   type: python
   subtype: python3
 tests:
-- Google-KMS-test
+- No tests (deprecated)
 fromversion: 5.0.0
+deprecated: true
