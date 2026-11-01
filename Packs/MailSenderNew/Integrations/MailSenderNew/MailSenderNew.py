@@ -26,6 +26,10 @@ from itertools import zip_longest
 
 SERVER: Optional[smtplib.SMTP] = None
 UTF_8 = "utf-8"
+# RFC 5322 section 2.1.1: header lines SHOULD be no more than 78 characters (MUST be <= 998).
+# Without folding, long headers (e.g. a long non-ASCII Subject) are sent as a single line,
+# which some SMTP servers reject by dropping the connection.
+MAX_HEADER_LINE_LENGTH = 78
 
 
 def randomword(length):
@@ -284,16 +288,17 @@ def create_msg():
     msg["From"] = header(demisto.getArg("sender") or demisto.getParam("from"))
     if reply_to:
         msg["Reply-To"] = header(reply_to)
+    # Join addresses with ", " so the header has whitespace folding points (RFC 5322 address-list).
     if to:
-        msg["To"] = header(",".join(to))
+        msg["To"] = header(", ".join(to))
     if cc:
-        msg["CC"] = header(",".join(cc))
+        msg["CC"] = header(", ".join(cc))
     if additional_header:
         for h in additional_header:
             header_name_and_value = h.split("=", 1)
             msg[header_name_and_value[0]] = header(header_name_and_value[1])
     # Notice we should not add BCC header since Python2 does not filter it
-    return body, html_body, msg.as_string(), to, cc, bcc
+    return body, html_body, msg.as_string(maxheaderlen=MAX_HEADER_LINE_LENGTH), to, cc, bcc
 
 
 def get_user_pass():
@@ -365,7 +370,8 @@ def main():
             msg["Subject"] = "Test mail from Demisto"
             msg["From"] = from_email
             msg["To"] = from_email
-            SERVER.sendmail(from_email, [from_email], msg.as_string())  # type: ignore[union-attr]
+            test_message = msg.as_string(maxheaderlen=MAX_HEADER_LINE_LENGTH)
+            SERVER.sendmail(from_email, [from_email], test_message)  # type: ignore[union-attr]
             SERVER.quit()  # type: ignore[union-attr]
             demisto.results("ok")
         elif demisto.command() == "send-mail":

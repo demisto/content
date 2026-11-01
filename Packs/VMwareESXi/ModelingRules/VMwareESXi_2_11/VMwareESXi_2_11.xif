@@ -9,7 +9,7 @@ alter
         _raw_log ~= "(?i)user\s+\'\w+\'\s+running\s+command\s+\'.+\'" OR
         _raw_log ~= "\s+(?i)shell\[\d+\]\:\s+\[\w+\]\:\s.+" OR
         _raw_log ~= "\s+Console\s+log\s+content\s+for\s+the\s+command\s+.+" OR
-        _raw_log ~= "started\s+from\s+\'\w+\'\s+\d+\s+with\s+cmdline\s+\'.+\'\,\s+parent\s+\d+" OR
+        _raw_log ~= "(?:started\s+from|UserWorld)\s+\'[^\']+\'\s+\d+\s+with\s+cmdline\s+\'.+\'" OR
         _raw_log ~= "crond\[\d+\]\:\s+USER\s+\w+\s+pid\s+\d+\s+cmd\s+.+"
         ),
     is_connection = if(
@@ -180,17 +180,23 @@ call esxi_event_classification
 // Log format 4#: started from <process_name> <pid> with cmdline '<command_line>', parent <ppid>
 call esxi_event_classification
 | call esxi_general_fields_mapping
-| filter esxi_event_type = "Command Execution" AND _raw_log ~= "started\s+from\s+\'\w+\'\s+\d+\s+with\s+cmdline\s+\'.+\'\,\s+parent\s+\d+"
+| filter esxi_event_type = "Command Execution" AND _raw_log ~= "(?:started\s+from|UserWorld)\s+\'[^\']+\'\s+\d+\s+with\s+cmdline\s+\'.+\'"
 | alter // Extract fields
-    source_process_name = arrayindex(regextract(msg, "started\s+from\s+\'(\w+)\'"),0),
-    target_pid = arrayindex(regextract(msg, "started\s+from\s+\'\w+\'\s+(\d+)"),0),
-    command_line = arrayindex(regextract(msg, "with\s+cmdline\s+\'(.+)\'"),0),
+    source_process_name = arrayindex(regextract(msg, "(?:started\s+from|UserWorld)\s+\'([^\']+)\'"),0),
+    target_pid = arrayindex(regextract(msg, "(?:started\s+from|UserWorld)\s+\'[^\']+\'\s+(\d+)"),0),
+    command_line = arrayindex(regextract(msg, "with\s+cmdline\s+\'(.+?)\'(?:\,\s+parent\s+\d+)?\s*$"),0),
     source_pid = arrayindex(regextract(msg, "parent\s+(\d+)"),0)
 | alter // Derive target process from the cmdline
     target_first_token = arrayindex(regextract(command_line, "^(\S+)"),0)
 | alter
     target_process_name = arrayindex(regextract(target_first_token, "([^\/]+)$"),0),
     target_process_path = if(target_first_token ~= "\/", target_first_token, null)
+| alter // Suppress target process values corrupted by upstream multi-line concatenation (embedded timestamp, leaked punctuation, or single character)
+    tmp_target_corrupt = if(target_process_name = null, false, target_process_name ~= "\d{4}\-\d{2}\-\d{2}T" or target_process_name ~= "['\)\,]" or len(target_process_name) < 2, true, false)
+| alter
+    target_process_name = if(tmp_target_corrupt, null, target_process_name),
+    target_process_path = if(tmp_target_corrupt, null, target_process_path),
+    command_line = if(tmp_target_corrupt, null, command_line)
 
 | alter // Map to XDM
     xdm.source.host.hostname = parsed_fields -> hostname,

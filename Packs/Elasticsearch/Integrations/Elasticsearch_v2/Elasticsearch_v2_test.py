@@ -1445,6 +1445,25 @@ def test_search_command_with_query_esql(mocker):
     assert call_args["body"] == {"query": f"{query}| LIMIT 2"}
 
 
+def test_update_http_body():
+    original_body = {"endpoint_ids": ["agent-1"]}
+
+    result = Elasticsearch_v2.update_http_body(
+        original_body,
+        {"alert_ids": "alert-1,alert-2", "comment": "investigation", "agent_type": ""},
+        array_fields={"alert_ids", "case_ids"},
+        string_fields={"agent_type", "comment"},
+    )
+
+    assert result is not original_body
+    assert original_body == {"endpoint_ids": ["agent-1"]}
+    assert result == {
+        "endpoint_ids": ["agent-1"],
+        "alert_ids": ["alert-1", "alert-2"],
+        "comment": "investigation",
+    }
+
+
 class TestGetElasticToken:
     """Tests for the get_elastic_token function."""
 
@@ -2790,6 +2809,308 @@ class TestEsKibanaDetectionAlertStatusSetCommand:
             Elasticsearch_v2.es_kibana_detection_alert_status_set_command({}, {})
 
 
+class TestEsKibanaEndpointIsolateCommand:
+    """Tests for es_kibana_endpoint_isolate_command."""
+
+    def test_isolate_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "action": "action-1",
+            "data": {
+                "id": "action-1",
+                "agentType": "endpoint",
+                "command": "isolate",
+                "isComplete": False,
+                "status": "pending",
+                "wasSuccessful": False,
+            },
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        markdown = mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Isolation submitted")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_isolate_command(
+            {
+                "space_id": "security",
+                "endpoint_ids": "endpoint-1,endpoint-2",
+                "agent_type": "endpoint",
+                "alert_ids": "alert-1,alert-2",
+                "case_ids": "case-1",
+                "comment": "Isolating as initial response",
+            },
+            {},
+        )
+
+        mock_request.assert_called_once_with(
+            "POST",
+            "/api/endpoint/action/isolate",
+            space_id="security",
+            json_data={
+                "endpoint_ids": ["endpoint-1", "endpoint-2"],
+                "agent_type": "endpoint",
+                "alert_ids": ["alert-1", "alert-2"],
+                "case_ids": ["case-1"],
+                "comment": "Isolating as initial response",
+            },
+            proxies={},
+        )
+        expected_output = response["data"]
+        assert result.outputs == expected_output
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointIsolationAction"
+        assert result.readable_output == "Isolation submitted"
+        hr = markdown.call_args.args[1]
+        assert hr["Id"] == "action-1"
+        assert hr["Is Complete"] is False
+        assert hr["Was Successful"] is False
+
+    def test_missing_endpoint_ids_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="endpoint_ids"):
+            Elasticsearch_v2.es_kibana_endpoint_isolate_command({}, {})
+
+
+class TestEsKibanaEndpointUnisolateCommand:
+    """Tests for es_kibana_endpoint_unisolate_command."""
+
+    def test_unisolate_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "action": "action-2",
+            "data": {
+                "id": "action-2",
+                "agentType": "endpoint",
+                "command": "unisolate",
+                "isComplete": True,
+                "status": "completed",
+                "wasSuccessful": True,
+            },
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        markdown = mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Unisolation submitted")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_unisolate_command(
+            {
+                "space_id": "security",
+                "endpoint_ids": "endpoint-1,endpoint-2",
+                "agent_type": "endpoint",
+                "alert_ids": "alert-1,alert-2",
+                "case_ids": "case-1",
+                "comment": "Releasing endpoint",
+            },
+            {},
+        )
+
+        mock_request.assert_called_once_with(
+            "POST",
+            "/api/endpoint/action/unisolate",
+            space_id="security",
+            json_data={
+                "endpoint_ids": ["endpoint-1", "endpoint-2"],
+                "agent_type": "endpoint",
+                "alert_ids": ["alert-1", "alert-2"],
+                "case_ids": ["case-1"],
+                "comment": "Releasing endpoint",
+            },
+            proxies={},
+        )
+        expected_output = response["data"]
+        assert result.outputs == expected_output
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointUnisolationAction"
+        assert result.readable_output == "Unisolation submitted"
+        hr = markdown.call_args.args[1]
+        assert hr["Id"] == "action-2"
+        assert hr["Command"] == "unisolate"
+        assert hr["Was Successful"] is True
+
+    def test_missing_endpoint_ids_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="endpoint_ids"):
+            Elasticsearch_v2.es_kibana_endpoint_unisolate_command({}, {})
+
+
+class TestEsKibanaEndpointAgentGetCommand:
+    """Tests for es_kibana_endpoint_agent_get_command."""
+
+    def test_get_agent_passes_path_id_and_metrics_param(self, mocker):
+        import Elasticsearch_v2
+
+        response = {"item": {"id": "agent-1", "status": "online", "local_metadata": {"host": {"hostname": "host-1"}}}}
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Fleet agents")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_agent_get_command(
+            {
+                "space_id": "security",
+                "agent_id": "agent-1",
+                "with_metrics": "true",
+            },
+            {},
+        )
+
+        mock_request.assert_called_once_with(
+            "GET",
+            "/api/fleet/agents/agent-1",
+            space_id="security",
+            params={"withMetrics": True},
+            proxies={},
+        )
+        assert result.outputs == response
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointAgentGet"
+        assert result.readable_output == "Fleet agents"
+
+    def test_get_agent_without_optional_params(self, mocker):
+        import Elasticsearch_v2
+
+        response = {"item": {"id": "agent-1", "status": "online"}}
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Fleet agent")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_agent_get_command({"agent_id": "agent-1"}, {})
+
+        mock_request.assert_called_once_with("GET", "/api/fleet/agents/agent-1", space_id=None, params={}, proxies={})
+        assert result.outputs == response
+        assert result.readable_output == "Fleet agent"
+
+    def test_get_agent_requires_agent_id(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="agent_id"):
+            Elasticsearch_v2.es_kibana_endpoint_agent_get_command({}, {})
+
+
+class TestEsKibanaEndpointExecuteCommand:
+    """Tests for es_kibana_endpoint_execute_command."""
+
+    def test_execute_command_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "data": {
+                "id": "action-1",
+                "agents": ["agent-1"],
+                "agentType": "endpoint",
+                "command": "execute",
+                "status": "pending",
+                "parameters": {"command": "ls -al", "timeout": 600},
+            }
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Command submitted")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_execute_command(
+            {
+                "space_id": "security",
+                "endpoint_ids": "agent-1,agent-2",
+                "command": "ls -al",
+                "timeout": "600",
+                "alert_ids": "alert-1",
+                "case_ids": "case-1,case-2",
+                "agent_type": "endpoint",
+                "comment": "investigation",
+            },
+            {},
+        )
+
+        mock_request.assert_called_once_with(
+            "POST",
+            "/api/endpoint/action/execute",
+            space_id="security",
+            json_data={
+                "endpoint_ids": ["agent-1", "agent-2"],
+                "parameters": {"command": "ls -al", "timeout": 600},
+                "alert_ids": ["alert-1"],
+                "case_ids": ["case-1", "case-2"],
+                "agent_type": "endpoint",
+                "comment": "investigation",
+            },
+            proxies={},
+        )
+        expected_output = response["data"]
+        assert result.outputs == expected_output
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointExecuteCommandAction"
+        assert result.readable_output == "Command submitted"
+
+    @pytest.mark.parametrize("args", [{}, {"endpoint_ids": "agent-1"}])
+    def test_execute_command_requires_endpoint_ids_and_command(self, args):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        expected_argument = "endpoint_ids" if not args else "command"
+        with pytest.raises(DemistoException, match=expected_argument):
+            Elasticsearch_v2.es_kibana_endpoint_execute_command(args, {})
+
+
+class TestEsKibanaEndpointActionDetailsCommand:
+    """Tests for es_kibana_endpoint_action_details_command."""
+
+    def test_action_details_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {"data": {"id": "action-1", "command": "execute", "status": "completed"}}
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Action details")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_action_details_command({"space_id": "security", "action_id": "action-1"}, {})
+
+        mock_request.assert_called_once_with(
+            "GET",
+            "/api/endpoint/action/action-1",
+            space_id="security",
+            proxies={},
+        )
+        expected_output = response["data"]
+        assert result.outputs == expected_output
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointGetActionDetails"
+        assert result.readable_output == "Action details"
+
+    def test_action_details_requires_action_id(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="action_id"):
+            Elasticsearch_v2.es_kibana_endpoint_action_details_command({}, {})
+
+
+class TestEsKibanaEndpointMetadataGetCommand:
+    """Tests for es_kibana_endpoint_metadata_get_command."""
+
+    def test_get_metadata_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "host_status": "online",
+            "last_checkin": "2026-10-02T12:00:00Z",
+            "metadata": {"hostname": "host-1"},
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Endpoint metadata")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_metadata_get_command({"space_id": "security", "id": "agent-1"}, {})
+
+        mock_request.assert_called_once_with(
+            "GET",
+            "/api/endpoint/metadata/agent-1",
+            space_id="security",
+            proxies={},
+        )
+        assert result.outputs == {**response, "agent_id": "agent-1"}
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointMetadataGet"
+        assert result.readable_output == "Endpoint metadata"
+
+    def test_get_metadata_requires_agent_id(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match='"id"'):
+            Elasticsearch_v2.es_kibana_endpoint_metadata_get_command({}, {})
+
+
 MOCK_EXCEPTION_ITEM = {
     "id": "item-id-1",
     "item_id": "trusted-linux-processes",
@@ -4085,3 +4406,111 @@ class TestGetModifiedRemoteData:
         with pytest.raises(SystemExit):
             Elasticsearch_v2.get_modified_remote_data_command({"lastUpdate": "2020-01-01T00:00:00Z"}, {})
         assert return_error.called
+
+
+class TestFetchSecurityAlertsSubSecondCursor:
+    """The fetch cursor must preserve sub-second precision.
+
+    fetch_security_alerts used to derive its cursor from `occurred`, which format_to_iso
+    truncates at the decimal point. When a full page of alerts shared the same second, every
+    hit collapsed to one cursor value, the cursor could never advance past that second, and
+    each later fetch re-read the same documents only to drop them via the ID dedup - producing
+    0 incidents indefinitely.
+    """
+
+    PARAMS = {
+        "client_type": "Elasticsearch",
+        "fetch_index": "alerts",
+        "fetch_time_field": "@timestamp",
+        "time_method": "Simple-Date",
+        "fetch_incident_type": "Elasticsearch Security Alert",
+        "map_labels": False,
+        "credentials": {"identifier": "mock", "password": "demisto"},
+    }
+
+    @staticmethod
+    def _hit(alert_id, timestamp):
+        return {
+            "_index": ".alerts-security.alerts-default",
+            "_id": alert_id,
+            "_source": {"@timestamp": timestamp, "kibana.alert.uuid": alert_id},
+        }
+
+    def _run_fetch(self, mocker, hits, last_run):
+        """Runs fetch_security_alerts against a canned response, returning (incidents, last_run)."""
+        mocker.patch.object(demisto, "params", return_value=self.PARAMS)
+        importlib.reload(Elasticsearch_v2)
+
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+        mocker.patch.object(demisto, "integrationInstance", return_value="test-instance")
+        set_last_run = mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder", return_value=MagicMock())
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "execute_raw_query",
+            return_value={"hits": {"hits": hits}},
+        )
+        mocker.patch.object(Elasticsearch_v2, "RAW_QUERY", "*")
+
+        incidents = Elasticsearch_v2.fetch_security_alerts({})
+        return incidents, set_last_run.call_args[0][0]
+
+    def test_cursor_retains_milliseconds(self, mocker):
+        """
+        Given: A single alert whose @timestamp carries milliseconds.
+        When:  fetch_security_alerts runs.
+        Then:  The persisted alert_time keeps sub-second precision (the direct bug guard).
+        """
+        incidents, last_run = self._run_fetch(
+            mocker, [self._hit("a1", "2026-09-28T12:00:00.750Z")], {"alert_time": "2026-09-28T00:00:00Z"}
+        )
+
+        assert len(incidents) == 1
+        # Before the fix this was '2026-09-28T12:00:00+00:00' - truncated to a whole second.
+        assert "." in last_run["alert_time"], f"cursor lost sub-second precision: {last_run['alert_time']}"
+        assert dateparser.parse(last_run["alert_time"]).microsecond == 750000
+
+    def test_cursor_advances_to_latest_ms_in_page(self, mocker):
+        """
+        Given: A page of alerts that all share the same second but differ in milliseconds.
+        When:  fetch_security_alerts runs.
+        Then:  The cursor advances to the greatest timestamp in the page, not the truncated second.
+        """
+        hits = [self._hit(f"a{ms}", f"2026-09-28T12:00:00.{ms:03d}Z") for ms in (100, 400, 990)]
+        incidents, last_run = self._run_fetch(mocker, hits, {"alert_time": "2026-09-28T00:00:00Z"})
+
+        assert len(incidents) == 3
+        assert dateparser.parse(last_run["alert_time"]).microsecond == 990000
+
+    def test_second_alert_in_same_second_is_ingested_next_cycle(self, mocker):
+        """
+        Given: Two alerts in the same second with different milliseconds, arriving in
+               separate fetch cycles, with the lastRun of cycle 1 fed into cycle 2.
+        When:  Both fetch cycles run.
+        Then:  The later alert is still ingested - the fetch does not stall at 0 incidents.
+        """
+        incidents1, last_run1 = self._run_fetch(
+            mocker, [self._hit("a1", "2026-09-28T12:00:00.100Z")], {"alert_time": "2026-09-28T00:00:00Z"}
+        )
+        assert [inc["dbotMirrorId"] for inc in incidents1] == ["a1"]
+
+        # Cycle 2: gte is now the cycle-1 cursor, so Elasticsearch returns both documents.
+        hits = [self._hit("a1", "2026-09-28T12:00:00.100Z"), self._hit("a2", "2026-09-28T12:00:00.900Z")]
+        incidents2, last_run2 = self._run_fetch(mocker, hits, last_run1)
+
+        # 'a1' is suppressed by the ID dedup; 'a2' must still come through.
+        assert [inc["dbotMirrorId"] for inc in incidents2] == ["a2"]
+        assert dateparser.parse(last_run2["alert_time"]).microsecond == 900000
+
+    def test_occurred_field_remains_truncated(self, mocker):
+        """
+        Given: An alert whose @timestamp carries milliseconds.
+        When:  fetch_security_alerts runs.
+        Then:  The incident's `occurred` display field keeps its existing truncated format,
+               so the fix changes the cursor only.
+        """
+        incidents, _ = self._run_fetch(
+            mocker, [self._hit("a1", "2026-09-28T12:00:00.750Z")], {"alert_time": "2026-09-28T00:00:00Z"}
+        )
+
+        assert incidents[0]["occurred"] == "2026-09-28T12:00:00Z"

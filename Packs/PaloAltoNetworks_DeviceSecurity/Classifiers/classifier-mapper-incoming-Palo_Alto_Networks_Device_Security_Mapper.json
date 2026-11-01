@@ -22,7 +22,145 @@
                     "simple": "devicesecurityservicenowtablename"
                 },
                 "Device Security ServiceNow Record ID": {
-                    "simple": "devicesecurityservicenowrecordid"
+                    "simple": "url"
+                },
+                "Alert Title": {
+                    "simple": "name"
+                },
+                "Alert Type": {
+                    "simple": "msg.alertType"
+                },
+                "Alert Unique ID": {
+                    "simple": "msg.id"
+                },
+                "App Name": {
+                    "simple": "msg.appName"
+                },
+                "Client Port": {
+                    "simple": "msg.values.[0].value"
+                },
+                "Created At": {
+                    "simple": "created_at"
+                },
+                "Date": {
+                    "simple": "date"
+                },
+                "Destination Port": {
+                    "complex": {
+                        "filters": [],
+                        "root": ".",
+                        "transformers": [
+                            {
+                                "operator": "FormatDeviceSecurityDestinationPort"
+                            }
+                        ]
+                    }
+                },
+                "Device Id": {
+                    "simple": "deviceid"
+                },
+                "Device Labels": {
+                    "simple": "msg.localDeviceLabels.[0]"
+                },
+                "Device Local IP": {
+                    "simple": "msg.localip"
+                },
+                "Device Role": {
+                    "simple": "msg.localDeviceRole"
+                },
+                "Device Security MITRE Mappings Raw": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mitre_mappings",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "Firewall Action": {
+                    "simple": "msg.values.[9].value"
+                },
+                "Firewall Name": {
+                    "simple": "msg.values.[7].value"
+                },
+                "Firewall Serial Number": {
+                    "simple": "inspectorid"
+                },
+                "Forensic Search Timestamp": {
+                    "simple": "msg.forensicData.search.timestamp"
+                },
+                "Inbound Interface": {
+                    "simple": "msg.values.[10].value"
+                },
+                "Message ID": {
+                    "simple": "msg.id"
+                },
+                "Network": {
+                    "simple": "msg.remoteHostMetadata.[0].network"
+                },
+                "Outbound Interface": {
+                    "simple": "msg.values.[11].value"
+                },
+                "Profile": {
+                    "simple": "profileId"
+                },
+                "Profile Category": {
+                    "simple": "profileCategory"
+                },
+                "Profile Confidence Level": {
+                    "simple": "display_profile_confidence_level"
+                },
+                "Profile Vertical": {
+                    "simple": "profileVertical"
+                },
+                "Recommended Actions": {
+                    "simple": "msg.recommendation.content"
+                },
+                "Remote Host Category": {
+                    "simple": "msg.remoteHostMetadata.[0].deviceProfileCategory"
+                },
+                "Remote Host MAC": {
+                    "simple": "msg.remoteHostMetadata.[0].deviceMacAddress"
+                },
+                "Severity (raw / display)": {
+                    "complex": {
+                        "filters": [],
+                        "root": ".",
+                        "transformers": [
+                            {
+                                "operator": "CombineSeverity"
+                            }
+                        ]
+                    }
+                },
+                "Severity Number": {
+                    "simple": "severityNumber"
+                },
+                "Site ID": {
+                    "simple": "siteid"
+                },
+                "Device Security Site Names": {
+                    "simple": "siteName"
+                },
+                "Source IP": {
+                    "simple": "msg.fromip"
+                },
+                "Source Labels": {
+                    "simple": "msg.remoteHostLabels.[0]"
+                },
+                "Threat Category": {
+                    "simple": "msg.values.[2].value"
+                },
+                "Threat ID": {
+                    "simple": "msg.values.[1].value"
+                },
+                "Traffic Direction": {
+                    "simple": "msg.trafficDirection"
+                },
+                "Vendor": {
+                    "simple": "vendor"
                 }
             }
         },
@@ -46,6 +184,137 @@
                 },
                 "Device Security ServiceNow Record ID": {
                     "simple": "devicesecurityservicenowrecordid"
+                },
+                "APT List": {
+                    "simple": "apt_list"
+                },
+                "Asset Criticality": {
+                    "simple": "asset_criticality"
+                },
+                "Asset Tag": {
+                    "simple": "asset_tag"
+                },
+                "Assignees": {
+                    "simple": "ticketAssignees"
+                },
+                "CVSS Score": {
+                    "simple": "cvss_score"
+                },
+                "Detected Date": {
+                    "simple": "detected_date"
+                },
+                "Device Last Activity": {
+                    "simple": "device_last_activity"
+                },
+                "Device Id": {
+                    "simple": "deviceid"
+                },
+                "Device Local IP": {
+                    "simple": "ip"
+                },
+                "Device Model": {
+                    "simple": "model"
+                },
+                "Device Name": {
+                    "simple": "name"
+                },
+                "ICS-CERT": {
+                    "simple": "ics_cert"
+                },
+                "Last Detected Date": {
+                    "simple": "last_detected_date"
+                },
+                "OS Detail": {
+                    "simple": "osCombined"
+                },
+                "OS Type": {
+                    "simple": "os"
+                },
+                "Profile": {
+                    "simple": "profile"
+                },
+                "Profile Category": {
+                    "simple": "display_profile_category"
+                },
+                "Profile Confidence Level": {
+                    "simple": "display_profile_confidence_level"
+                },
+                "Profile Vertical": {
+                    "simple": "profile_vertical"
+                },
+                "Reason History": {
+                    "complex": {
+                        "filters": [],
+                        "root": "reason_history",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "Remediation Confirmed": {
+                    "simple": "remediate_checkbox"
+                },
+                "Remediation Instructions": {
+                    "simple": "remediate_instruction"
+                },
+                "Risk Level": {
+                    "simple": "risk_level"
+                },
+                "Risk Score": {
+                    "simple": "risk_score"
+                },
+                "SBOM": {
+                    "simple": "is_sbom"
+                },
+                "Serial Number": {
+                    "simple": "sn"
+                },
+                "Site ID": {
+                    "simple": "siteid"
+                },
+                "Device Security Site Names": {
+                    "simple": "siteName"
+                },
+                "Subnets": {
+                    "simple": "subnets"
+                },
+                "Tags": {
+                    "simple": "allTags"
+                },
+                "Ticket ID": {
+                    "simple": "zb_ticketid"
+                },
+                "Ticket State": {
+                    "simple": "ticketState"
+                },
+                "Traffic Restricted": {
+                    "simple": "trafficRestricted"
+                },
+                "Updated Date": {
+                    "simple": "updateDate"
+                },
+                "Vendor": {
+                    "simple": "vendor"
+                },
+                "Vulnerability Name": {
+                    "simple": "vulnerability_name"
+                },
+                "Vulnerability Priority": {
+                    "simple": "vuln_priority"
+                },
+                "Vulnerability Status": {
+                    "simple": "status"
+                },
+                "Work Order": {
+                    "simple": "remediate_workorder"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "Device Security Source": {
+                    "simple": "source"
                 }
             }
         }

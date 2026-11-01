@@ -31,6 +31,7 @@ from GCenter import (
     GwAPIException,
 )
 import inspect
+import io
 import json
 import pytest
 
@@ -473,7 +474,7 @@ def test_gw_send_malware(client, mocker, requests_mock, filename, fileid, prefix
         "CommonServerPython.demisto.getFilePath",
         mocker.MagicMock(return_value={"id": fileid, "path": filename, "name": filename}),
     )
-    mocker.patch("builtins.open", mocker.mock_open())
+    mocker.patch("builtins.open", mocker.MagicMock(side_effect=lambda *args, **kwargs: io.BytesIO(b"this is a dummy response")))
     requests_mock.post(f"https://{client.ip}/api/gscan/malcore/", json=send_malware, status_code=201)
     response = gw_send_malware(client, args)
     assert response.outputs == send_malware
@@ -495,7 +496,7 @@ def test_gw_send_powershell(client, mocker, requests_mock, filename, fileid, pre
         "CommonServerPython.demisto.getFilePath",
         mocker.MagicMock(return_value={"id": fileid, "path": filename, "name": filename}),
     )
-    mocker.patch("builtins.open", mocker.mock_open())
+    mocker.patch("builtins.open", mocker.MagicMock(side_effect=lambda *args, **kwargs: io.BytesIO(b"this is a dummy response")))
     requests_mock.post(f"https://{client.ip}/api/gscan/powershell/", json=send_powershell, status_code=201)
     response = gw_send_powershell(client, args)
     assert response.outputs == send_powershell
@@ -517,7 +518,7 @@ def test_gw_send_shellcode(client, mocker, requests_mock, filename, fileid, pref
         "CommonServerPython.demisto.getFilePath",
         mocker.MagicMock(return_value={"id": fileid, "path": filename, "name": filename}),
     )
-    mocker.patch("builtins.open", mocker.mock_open())
+    mocker.patch("builtins.open", mocker.MagicMock(side_effect=lambda *args, **kwargs: io.BytesIO(b"this is a dummy response")))
     requests_mock.post(f"https://{client.ip}/api/gscan/shellcode/", json=send_shellcode, status_code=201)
     response = gw_send_shellcode(client, args)
     assert response.outputs == send_shellcode

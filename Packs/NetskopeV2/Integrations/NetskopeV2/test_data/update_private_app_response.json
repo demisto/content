@@ -1,0 +1,23 @@
+{
+    "data": {
+        "app_id": 3,
+        "app_name": "[quarantine]",
+        "clientless_access": true,
+        "host": "172.31.34.6",
+        "modified_by": "apigw",
+        "modify_time": "2023-12-01 00:20:14",
+        "policies": [],
+        "protocols": [
+            {"id": 9, "port": "443", "service_id": 2, "transport": "tcp"}
+        ],
+        "service_publisher_assignments": [
+            {"publisher_id": 15, "publisher_name": "AWS-NPA", "service_id": 3}
+        ],
+        "tags": [
+            {"tag_id": 3, "tag_name": "quarantine"}
+        ],
+        "trust_self_signed_certs": true,
+        "use_publisher_dns": false
+    },
+    "status": "success"
+}

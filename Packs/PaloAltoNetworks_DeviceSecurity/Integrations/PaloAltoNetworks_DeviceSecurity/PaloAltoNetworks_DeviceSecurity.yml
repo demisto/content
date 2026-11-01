@@ -27,6 +27,8 @@ configuration:
   name: client_secret
   type: 4
   required: true
+  displaypassword: Client Secret
+  hiddenusername: true
 - section: Connect
   advanced: true
   display: Trust any certificate (not secure)
@@ -80,6 +82,7 @@ configuration:
   defaultvalue: '1'
   type: 19
   required: false
+  additionalinfo: The interval between automatic incident fetches. This setting applies when you enable Fetch incidents.
 - section: Connect
   advanced: true
   display: The timeout for querying APIs
@@ -100,7 +103,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: Retrieves the device UID (mac address).
+      description: The UID (MAC address) of the device.
     outputs:
     - contextPath: PaloAltoNetworksDeviceSecurity.Device
       description: The device details.
@@ -391,7 +394,7 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
-  dockerimage: demisto/fastapi:0.125.0.10158186
+  dockerimage: demisto/fastapi:0.142.2.13587997
 fromversion: 6.10.0
 tests:
 - PaloAltoNetworks_DeviceSecurity-Test

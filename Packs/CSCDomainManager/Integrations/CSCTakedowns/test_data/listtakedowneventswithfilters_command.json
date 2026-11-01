@@ -1,0 +1,17 @@
+{
+    "CSCTakedowns": {
+        "status": "success",
+        "message": "Data Fetched Successfully",
+        "data": [],
+        "meta": {
+            "currentPage": 1,
+            "pageSize": 101,
+            "total": 3,
+            "hasPrevious": true,
+            "pages": 1,
+            "hasNext": false,
+            "previousPage": 0,
+            "nextPage": null
+        }
+    }
+}

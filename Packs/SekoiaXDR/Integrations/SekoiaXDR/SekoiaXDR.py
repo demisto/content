@@ -24,6 +24,11 @@ INCIDENT_TYPE_NAME = "Sekoia XDR"
 API_RETRIES = 3
 API_BACKOFF_FACTOR = 1
 API_STATUS_LIST_TO_RETRY = [429, 500, 502, 503, 504]
+# Max number of times an expired/gone events search job is recreated before giving up on the events
+MAX_EVENTS_JOB_ATTEMPTS = 3
+# Event search job statuses: 0 not started, 1 in-progress, 2 done, 3 canceled
+EVENTS_JOB_STATUS_DONE = 2
+EVENTS_JOB_STATUS_CANCELED = 3
 SEKOIA_INCIDENT_FIELDS = {
     "short_id": "The ID of the alert to edit",
     "status": "The name of the status.",
@@ -605,6 +610,7 @@ def handle_alert_events_query(
         # Events are ready - add them to the alert
         undoted_events = undot(json_data=events)
         alert["events"] = undoted_events
+        alert.pop("job_uuid", None)
         demisto.debug(f"Events ready for alert {alert.get('short_id')}")
     else:
         # Events not ready yet - store job_uuid for later retry
@@ -612,6 +618,42 @@ def handle_alert_events_query(
         demisto.debug(f"Events not ready for alert {alert.get('short_id')}, stored job_uuid {search_job_uuid}")
 
     return alert, is_ready
+
+
+def recreate_events_job(client: Client, alert: dict[str, Any]) -> bool:
+    """
+    Recreate the events search job of a cached alert whose previous job is no longer available (e.g. HTTP 410 Gone).
+
+    Returns:
+        bool: True if the alert can leave the cache (events retrieved or max attempts reached), False otherwise.
+    """
+    attempts = alert.pop("events_job_attempts", 0) + 1
+    if attempts > MAX_EVENTS_JOB_ATTEMPTS:
+        demisto.debug(f"Giving up retrieving events for alert {alert.get('short_id')} after {MAX_EVENTS_JOB_ATTEMPTS} attempts")
+        alert.pop("job_uuid", None)
+        return True
+
+    alert["events_job_attempts"] = attempts
+    try:
+        _, is_ready = handle_alert_events_query(
+            client, alert, alert["first_seen_at"], "now", f"alert_short_ids:{alert['short_id']}"
+        )
+    except Exception as e:
+        demisto.debug(f"Failed to recreate events job for alert {alert.get('short_id')} (attempt {attempts}): {e}")
+        return False
+
+    return is_ready
+
+
+def is_events_job_done(client: Client, job_uuid: str) -> bool:
+    """
+    Returns True if the events search job is done, False if still running.
+    Raises DemistoException if the job was canceled.
+    """
+    query_status = client.query_events_status(event_search_job_uuid=job_uuid)
+    if query_status["status"] == EVENTS_JOB_STATUS_CANCELED:
+        raise DemistoException(f"Events search job {job_uuid} was canceled")
+    return query_status["status"] == EVENTS_JOB_STATUS_DONE
 
 
 def check_id_in_context(alert_id: str, cache: dict[str, Any] | None) -> tuple[dict[str, Any], int] | None:
@@ -717,41 +759,30 @@ def fetch_incidents(
 
     # Making sure that the context is not empty and contains the fetch cache
     if cached_context:
-        fetch_context = cached_context.get("fetch_cache")
-        if fetch_context:
+        if fetch_context := cached_context.get("fetch_cache"):
             # Loop through the cached incidents and check their status
             # If the status is not finished, we will keep it in the cache
             # If the status is finished, we will add it to the incidents list
             for incident in fetch_context:
-                incident_job_uuid = incident["rawJSON"]["job_uuid"]
+                raw_alert = incident["rawJSON"]
                 try:
-                    query_status = client.query_events_status(event_search_job_uuid=incident_job_uuid)
-                    finished_status = query_status["status"] == 2
-
-                    if not finished_status:
+                    if not is_events_job_done(client, raw_alert["job_uuid"]):
                         not_finished_incident.append(incident)
                         continue
 
-                    events = client.retrieve_events(event_search_job_uuid=incident_job_uuid)
-                    undoted_events = undot(json_data=events)
-                    incident["rawJSON"]["events"] = undoted_events
-                    # Serialize the rawJSON to a string
-                    incident["rawJSON"] = json.dumps(incident["rawJSON"])
-                    incidents.append(incident)
+                    events = client.retrieve_events(event_search_job_uuid=raw_alert["job_uuid"])
+                    raw_alert["events"] = undot(json_data=events)
                 except Exception as e:
-                    # Case where the job uuid is not valid anymore
-                    demisto.debug(f"Error fetching incident {incident['rawJSON']['short_id']}: {e}")
-                    # Rerun command to get events
-                    earliest_time = incident["rawJSON"]["first_seen_at"]
-                    # Upper bound "now": capture events timestamped/indexed slightly after last_seen_at
-                    # (results stay scoped to this alert via the alert_short_ids term).
-                    latest_time = "now"
-                    term = f"alert_short_ids:{incident['rawJSON']['short_id']}"
+                    # Case where the job is not valid anymore (e.g. HTTP 410 Gone or canceled)
+                    demisto.debug(f"Error fetching incident {raw_alert.get('short_id')}: {e}")
+                    if not recreate_events_job(client, raw_alert):
+                        not_finished_incident.append(incident)
+                        continue
 
-                    alert, _ = handle_alert_events_query(client, incident["rawJSON"], earliest_time, latest_time, term)
-                    incident["rawJSON"] = alert
-                    # If the incident is not finished, we will keep it in the cache
-                    not_finished_incident.append(incident)
+                raw_alert.pop("job_uuid", None)
+                raw_alert.pop("events_job_attempts", None)
+                incident["rawJSON"] = json.dumps(raw_alert)
+                incidents.append(incident)
 
         # If there are any incidents that are not finished, we will keep them in the cache
         cached_context["fetch_cache"] = not_finished_incident
@@ -1052,42 +1083,26 @@ def get_remote_data_command(
     else:
         # If the alert id is in the context, we will get the alert from the context
         alert_object, index = check_id
+        cached_alert = alert_object["alert"]
         try:
-            alert_job_uuid = alert_object["alert"]["job_uuid"]
-            query_status = client.query_events_status(event_search_job_uuid=alert_job_uuid)
-            finished_status = query_status["status"] == 2
-
-            # If the alert is not finished, we will not return it
-            if not finished_status:
+            if not is_events_job_done(client, cached_alert["job_uuid"]):
                 return None
 
-            # If the alert is finished, we will get the events
-            events = client.retrieve_events(event_search_job_uuid=alert_job_uuid)
-            undoted_events = undot(json_data=events)
-            alert_object["alert"]["events"] = undoted_events
-
-            # Delete the object from the context
-            del context_cache["mirroring_cache"][index]
-            set_integration_context(context_cache)
-
-            return GetRemoteDataResponse(mirrored_object=alert_object["alert"], entries=alert_object["entries"])
+            events = client.retrieve_events(event_search_job_uuid=cached_alert["job_uuid"])
+            cached_alert["events"] = undot(json_data=events)
         except Exception as e:
-            # Case where the job uuid is not valid anymore
-            demisto.debug(f"Error fetching incident {alert_object['alert']['short_id']}: {e}")
-            # Rerun command to get events
-            earliest_time = alert_object["alert"]["first_seen_at"]
-            # Upper bound "now": capture events timestamped/indexed slightly after last_seen_at
-            # (results stay scoped to this alert via the alert_short_ids term).
-            latest_time = "now"
-            term = f"alert_short_ids:{alert_object['alert']['short_id']}"
+            # Case where the job is not valid anymore (e.g. HTTP 410 Gone or canceled)
+            demisto.debug(f"Error fetching incident {cached_alert.get('short_id')}: {e}")
+            if not recreate_events_job(client, cached_alert):
+                set_integration_context(context_cache)
+                return None
 
-            alert, _ = handle_alert_events_query(client, alert_object["alert"], earliest_time, latest_time, term)
-            alert_object["alert"] = alert
+        cached_alert.pop("job_uuid", None)
+        cached_alert.pop("events_job_attempts", None)
+        del context_cache["mirroring_cache"][index]
+        set_integration_context(context_cache)
 
-            # Update the cached alert in the context
-            context_cache["mirroring_cache"][index]["alert"] = alert_object["alert"]
-
-            return None
+        return GetRemoteDataResponse(mirrored_object=cached_alert, entries=alert_object["entries"])
 
 
 def get_modified_remote_data_command(client: Client, args):

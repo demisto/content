@@ -5,9 +5,6 @@ from MCPApiModule import *
 import asyncio
 
 
-from urllib.parse import unquote
-
-
 ATLASSIAN_BASE_URL = "https://mcp.atlassian.com/v1/mcp"
 ATLASSIAN_REDIRECT_URI = "http://127.0.0.1:8000/callback"
 ATLASSIAN_AUTH_TYPE = AuthMethods.DYNAMIC_CLIENT_REGISTRATION.value
@@ -22,7 +19,9 @@ async def main() -> None:  # pragma: no cover
 
     client = None
     try:
-        auth_code = unquote(params.get("auth_code", {}).get("password") or "")
+        auth_code = params.get("auth_code", {}).get("password") or ""
+        # Not url-decoded here: MCPApiModule.parse_authorization_response accepts either a
+        # bare code or a full redirect URL and decodes each form correctly.
 
         client = Client(
             base_url=ATLASSIAN_BASE_URL,

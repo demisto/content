@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EnumerationResults ServiceEndpoint="https://mockaccount.blob.core.windows.net/" ContainerName="mock-container-1">
+  <Blobs>
+    <Blob>
+      <Name>mock-blob-1.txt</Name>
+      <Properties>
+        <Last-Modified>Wed, 14 Aug 2024 10:00:00 GMT</Last-Modified>
+        <Etag>"0x8DB7F5589F2DC4A"</Etag>
+        <Content-Length>100</Content-Length>
+        <Content-Type>text/plain</Content-Type>
+        <BlobType>BlockBlob</BlobType>
+      </Properties>
+    </Blob>
+    <Blob>
+      <Name>mock-blob-2.txt</Name>
+      <Properties>
+        <Last-Modified>Wed, 14 Aug 2024 11:00:00 GMT</Last-Modified>
+        <Etag>"0x8DB7F5589F2DC4B"</Etag>
+        <Content-Length>200</Content-Length>
+        <Content-Type>text/plain</Content-Type>
+        <BlobType>BlockBlob</BlobType>
+      </Properties>
+    </Blob>
+  </Blobs>
+  <NextMarker>mock-next-marker</NextMarker>
+</EnumerationResults>

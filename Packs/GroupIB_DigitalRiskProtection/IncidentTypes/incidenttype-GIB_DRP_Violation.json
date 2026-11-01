@@ -1,5 +1,5 @@
 {
-    "autorun": false,
+    "autorun": true,
     "color": "#01A2EC",
     "days": 0,
     "daysR": 0,
@@ -23,5 +23,6 @@
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "playbookId": "Group-IB Digital Risk Protection - Violation Incident Postprocessing"
 }

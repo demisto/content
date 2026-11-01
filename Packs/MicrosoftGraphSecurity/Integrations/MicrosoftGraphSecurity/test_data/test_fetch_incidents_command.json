@@ -1,7 +1,7 @@
 {
     "test_case_1": {
         "mock_response": {"@odata.context": "https://graph.microsoft.com/v1.0/$metadata#Security/alerts", "value": [{
-            "id": "da637229984903196572_-755436942", "azureTenantId": "<azureTenantId>",
+            "id": "da222222222222222222_-222222222", "azureTenantId": "<azureTenantId>",
             "azureSubscriptionId": null, "riskScore": null, "tags": [], "activityGroupName": null,
             "assignedTo": null,
             "category": "None", "closedDateTime": null, "comments": [], "confidence": null,
@@ -11,7 +11,7 @@
             "lastModifiedDateTime": "2020-04-20T16:54:51.57Z", "recommendedActions": [],
             "severity": "medium",
             "sourceMaterials": [
-                "https://securitycenter.microsoft.com/alert/da637229984903196572_-755436942"],
+                "https://securitycenter.microsoft.com/alert/da222222222222222222_-222222222"],
             "status": "newAlert", "title": "test alert",
             "vendorInformation": {"provider": "Microsoft Defender ATP", "providerVersion": null,
                                   "subProvider": "MicrosoftDefenderATP", "vendor": "Microsoft"},
@@ -25,7 +25,7 @@
             "historyStates": [], "malwareStates": [], "networkConnections": [], "processes": [],
             "registryKeyStates": [],
             "triggers": [], "userStates": [], "vulnerabilityStates": []},
-            {"id": "da637218501473413212_-1554891308", "azureTenantId": "<azureTenantId>",
+            {"id": "da444444444444444444_-4444444444", "azureTenantId": "<azureTenantId>",
              "azureSubscriptionId": null, "riskScore": null, "tags": [], "activityGroupName": null,
              "assignedTo": null,
              "category": "None", "closedDateTime": null, "comments": [], "confidence": null,
@@ -35,7 +35,7 @@
              "lastModifiedDateTime": "2020-04-20T13:54:13.7933333Z", "recommendedActions": [],
              "severity": "medium",
              "sourceMaterials": [
-                 "https://securitycenter.microsoft.com/alert/da637218501473413212_-1554891308"],
+                 "https://securitycenter.microsoft.com/alert/da444444444444444444_-4444444444"],
              "status": "newAlert", "title": "test alert",
              "vendorInformation": {"provider": "Microsoft Defender ATP", "providerVersion": null,
                                    "subProvider": "MicrosoftDefenderATP", "vendor": "Microsoft"},
@@ -49,7 +49,7 @@
              "networkConnections": [], "processes": [], "registryKeyStates": [], "triggers": [],
              "userStates": [],
              "vulnerabilityStates": []},
-            {"id": "da637226278996299656_1986871053", "azureTenantId": "<azureTenantId>",
+            {"id": "da333333333333333333_3333333333", "azureTenantId": "<azureTenantId>",
              "azureSubscriptionId": null, "riskScore": null, "tags": [], "activityGroupName": null,
              "assignedTo": "Automation",
              "category": "None", "closedDateTime": "2020-04-19T07:09:16.2118771Z",
@@ -60,7 +60,7 @@
              "lastModifiedDateTime": "2020-04-20T12:34:46.29Z", "recommendedActions": [],
              "severity": "medium",
              "sourceMaterials": [
-                 "https://securitycenter.microsoft.com/alert/da637226278996299656_1986871053"],
+                 "https://securitycenter.microsoft.com/alert/da333333333333333333_3333333333"],
              "status": "resolved", "title": "test alert",
              "vendorInformation": {"provider": "Microsoft Defender ATP", "providerVersion": null,
                                    "subProvider": "MicrosoftDefenderATP", "vendor": "Microsoft"},

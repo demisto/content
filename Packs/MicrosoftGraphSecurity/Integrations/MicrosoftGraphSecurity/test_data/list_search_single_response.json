@@ -11,7 +11,7 @@
                 "user": {
                     "displayName": "Content Test",
                     "id": "38c41451-94b8-44cc-8c02-649208c43b6b",
-                    "userPrincipalName": "ContentTest@demistodev.onmicrosoft.com"
+                    "userPrincipalName": "contenttest@example.com"
                 }
             },
             "createdDateTime": "2023-08-10T09:15:03.9436228Z",

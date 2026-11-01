@@ -92,6 +92,16 @@ MOCK_EMPTY_RESPONSE = {"candidates": []}
 MOCK_NO_TEXT_RESPONSE = {"candidates": [{"content": {"parts": []}}]}
 
 
+def test_arg_to_float():
+    """Test decimal parsing and empty-value handling for optional float arguments"""
+    assert GoogleGemini.arg_to_float(" 0.75 ") == 0.75
+    assert GoogleGemini.arg_to_float(None) is None
+    assert GoogleGemini.arg_to_float("") is None
+
+    with pytest.raises(ValueError, match="not a valid number"):
+        GoogleGemini.arg_to_float("invalid")
+
+
 def test_client_init():
     """Test Client initialization with all parameters (AI Studio)"""
     client = GoogleGemini.Client(
@@ -213,6 +223,69 @@ def test_send_chat_message_default_model(client_fixture):
     assert f"/v1beta/models/{client_fixture.model}:generateContent" in url_suffix
 
 
+def test_count_tokens(client_fixture):
+    """Test token counting uses the countTokens endpoint and returns its total"""
+    client_fixture._http_request.return_value = {"totalTokens": 42}
+    contents = [{"role": "user", "parts": [{"text": "Count this"}]}]
+
+    result = client_fixture.count_tokens(contents, "gemini-2.0-flash")
+
+    assert result == 42
+    client_fixture._http_request.assert_called_once_with(
+        method="POST",
+        url_suffix="/v1beta/models/gemini-2.0-flash:countTokens",
+        json_data={"contents": contents},
+        headers=None,
+    )
+
+
+def test_count_tokens_missing_total(client_fixture):
+    """Test token counting defaults to zero when the API omits totalTokens"""
+    client_fixture._http_request.return_value = {}
+
+    assert client_fixture.count_tokens([]) == 0
+
+
+def test_truncate_to_token_budget_trims_prompt(client_fixture):
+    """Test prompt trimming when the prompt alone exceeds the token budget"""
+
+    def mock_http_request(**kwargs):
+        prompt_text = kwargs["json_data"]["contents"][-1]["parts"][0]["text"]
+        return {"totalTokens": 100 if len(prompt_text) > 5 else 5}
+
+    client_fixture._http_request.side_effect = mock_http_request
+    contents = client_fixture.build_contents("A long prompt that needs trimming")
+
+    result, token_count, truncated = GoogleGemini._truncate_to_token_budget(client_fixture, contents, None, 10)
+
+    assert token_count == 5
+    assert truncated is True
+    assert len(result[-1]["parts"][0]["text"]) <= 5
+
+
+def test_truncate_to_token_budget_stops_at_one_character(client_fixture):
+    """Test prompt truncation stops when no shorter prompt is possible"""
+    client_fixture._http_request.return_value = {"totalTokens": 100}
+    contents = client_fixture.build_contents("A")
+
+    result, token_count, truncated = GoogleGemini._truncate_to_token_budget(client_fixture, contents, None, 1)
+
+    assert result[-1]["parts"][0]["text"] == "A"
+    assert token_count == 100
+    assert truncated is False
+
+
+def test_generate_content_max_tokens_override(client_fixture):
+    """Test direct generate_content max token override"""
+    client_fixture._http_request.return_value = MOCK_SUCCESSFUL_CHAT_RESPONSE
+    contents = [{"role": "user", "parts": [{"text": "Generate"}]}]
+
+    client_fixture.generate_content(contents, max_tokens=2048)
+
+    generation_config = client_fixture._http_request.call_args[1]["json_data"]["generationConfig"]
+    assert generation_config["maxOutputTokens"] == 2048
+
+
 def test_test_module_success(client_fixture):
     """Test test_module function with successful response"""
     client_fixture._http_request.return_value = MOCK_SUCCESSFUL_CHAT_RESPONSE
@@ -286,6 +359,63 @@ def test_google_gemini_send_message_command_unsupported_model(client_fixture):
     assert isinstance(result.outputs, dict)
     assert result.outputs["Prompt"] == "Test prompt"
     assert result.outputs["Model"] == "unsupported-model"
+
+
+def test_google_gemini_send_message_command_max_input_tokens_exceeded_no_truncate(client_fixture):
+    """Test that exceeding max_input_tokens without truncate raises an error"""
+
+    def mock_http_request(**kwargs):
+        if kwargs["url_suffix"].endswith(":countTokens"):
+            return {"totalTokens": 100}
+        return MOCK_SUCCESSFUL_CHAT_RESPONSE
+
+    client_fixture._http_request.side_effect = mock_http_request
+    args = {"prompt": "Test prompt", "max_input_tokens": "10"}
+
+    with pytest.raises(DemistoException) as e:
+        GoogleGemini.google_gemini_send_message_command(client_fixture, args)
+    assert "exceeds max_input_tokens" in str(e.value)
+
+
+def test_google_gemini_send_message_command_max_input_tokens_truncate(client_fixture):
+    """Test that truncate=true drops oldest history entries to fit within max_input_tokens"""
+
+    def mock_http_request(**kwargs):
+        if kwargs["url_suffix"].endswith(":countTokens"):
+            contents = kwargs["json_data"]["contents"]
+            return {"totalTokens": 100 if len(contents) > 1 else 5}
+        return MOCK_SUCCESSFUL_CHAT_RESPONSE
+
+    client_fixture._http_request.side_effect = mock_http_request
+
+    history = [
+        {"role": "user", "parts": [{"text": "Old question"}]},
+        {"role": "model", "parts": [{"text": "Old answer"}]},
+    ]
+    args = {"prompt": "Test prompt", "history": history, "max_input_tokens": "10", "truncate": "true"}
+
+    result = GoogleGemini.google_gemini_send_message_command(client_fixture, args)
+
+    assert result.outputs["Truncated"] is True
+    final_call_args = client_fixture._http_request.call_args_list[-1][1]["json_data"]
+    assert final_call_args["contents"] == [{"role": "user", "parts": [{"text": "Test prompt"}]}]
+
+
+def test_google_gemini_send_message_command_token_usage_metadata(client_fixture):
+    """Test that usageMetadata from the API response is surfaced in outputs"""
+    response_with_usage = {
+        **MOCK_SUCCESSFUL_CHAT_RESPONSE,
+        "usageMetadata": {"promptTokenCount": 12, "candidatesTokenCount": 8, "totalTokenCount": 20},
+    }
+    client_fixture._http_request.return_value = response_with_usage
+    args = {"prompt": "Test prompt"}
+
+    result = GoogleGemini.google_gemini_send_message_command(client_fixture, args)
+
+    assert result.outputs["InputTokenCount"] == 12
+    assert result.outputs["OutputTokenCount"] == 8
+    assert result.outputs["TotalTokenCount"] == 20
+    assert result.outputs["Truncated"] is False
 
 
 def test_google_gemini_send_message_command_with_history_string(client_fixture):
@@ -382,10 +512,24 @@ def test_google_gemini_send_message_command_default_values(client_fixture):
     assert isinstance(result.outputs, dict)
     assert result.outputs["Model"] == client_fixture.model
 
-    # Check that instance default values were used in the API call
+    # Check that instance-level defaults are used in the API call when not explicitly provided.
     call_args = client_fixture._http_request.call_args[1]["json_data"]
-    assert call_args["generationConfig"]["maxOutputTokens"] == 1024
-    assert call_args["generationConfig"]["temperature"] == 0.7
+    assert call_args["generationConfig"]["maxOutputTokens"] == client_fixture.max_tokens
+    assert call_args["generationConfig"]["temperature"] == client_fixture.temperature
+    assert result.outputs["MaxTokens"] == client_fixture.max_tokens
+    assert result.outputs["Temperature"] == client_fixture.temperature
+
+
+def test_google_gemini_send_message_command_max_tokens_override(client_fixture):
+    """Test that max_tokens overrides the instance-level value for one command execution"""
+    client_fixture._http_request.return_value = MOCK_SUCCESSFUL_CHAT_RESPONSE
+    args = {"prompt": "Test prompt", "max_tokens": "2048"}
+
+    result = GoogleGemini.google_gemini_send_message_command(client_fixture, args)
+
+    call_args = client_fixture._http_request.call_args[1]["json_data"]
+    assert call_args["generationConfig"]["maxOutputTokens"] == 2048
+    assert result.outputs["MaxTokens"] == 2048
 
 
 def test_google_gemini_send_message_command_save_conversation_false(client_fixture, mocker):
@@ -638,14 +782,16 @@ def test_main_model_freetext_override(mocker):
 
 def test_supported_models_list():
     """Test that SUPPORTED_MODELS contains expected models"""
-    assert "gemini-2.5-pro" in GoogleGemini.SUPPORTED_MODELS
     assert "gemini-2.5-flash" in GoogleGemini.SUPPORTED_MODELS
-    assert "gemini-2.0-flash" in GoogleGemini.SUPPORTED_MODELS
-    assert "gemini-2.0-flash-lite" in GoogleGemini.SUPPORTED_MODELS
-    assert "gemini-3.1-pro-preview" in GoogleGemini.SUPPORTED_MODELS
-    assert "gemini-3.1-flash-preview" in GoogleGemini.SUPPORTED_MODELS
+    assert "gemini-2.5-pro" in GoogleGemini.SUPPORTED_MODELS
     assert "gemini-3.1-flash-lite" in GoogleGemini.SUPPORTED_MODELS
-    assert len(GoogleGemini.SUPPORTED_MODELS) == 7
+    assert "gemini-3.5-flash-lite" in GoogleGemini.SUPPORTED_MODELS
+    assert "gemini-3.5-flash" in GoogleGemini.SUPPORTED_MODELS
+    assert "gemini-3.6-flash" in GoogleGemini.SUPPORTED_MODELS
+    assert "gemini-3.7-flash" in GoogleGemini.SUPPORTED_MODELS
+    assert "gemini-3.8-flash" in GoogleGemini.SUPPORTED_MODELS
+    assert "" not in GoogleGemini.SUPPORTED_MODELS
+    assert len(GoogleGemini.SUPPORTED_MODELS) == 8
 
 
 def test_send_chat_message_with_instance_parameters():

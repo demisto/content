@@ -1,13 +1,18 @@
 import html
 import mimetypes
+import re
+from email import message_from_bytes
 from pathlib import Path
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from parse_emails.handle_eml import get_attachment_filename
 from parse_emails.parse_emails import EmailParser
 
 logger = logging.getLogger("parse-email")  # type: ignore[assignment]
 logger.addHandler(DemistoHandler)  # type: ignore[attr-defined]
+
+HEADER_LINE_REGEX = re.compile(rb"From |[\041-\071\073-\176]*:|[\t ]")  # a header line, as the email package reads it
 
 
 def html_unescape(html_body: str) -> str:
@@ -55,6 +60,49 @@ def remove_bom(file_path: str, file_type: str, file_name: str) -> tuple[str, Opt
     else:  # keep the exists behaviour (without BOM)
         demisto.info(f"BOM not detected in file: {file_name}, {file_type=}")
         return file_path, file_type, file_name
+
+
+def remove_root_attachment_disposition(file_path: str) -> str:
+    """
+    The email parser handles an email whose top-level part is marked as an attachment (`Content-Disposition: attachment`)
+    as a single attachment, so the emails attached to it are not parsed.
+    If such an email contains an attached email (`message/rfc822`, or an `application/octet-stream` file named `.eml`, as the
+    parser identifies attached emails), saves a copy of the file without the `Content-Disposition` header
+    of the top-level part, so that the parser handles it as a regular email. The rest of the file is copied as is.
+
+    Args:
+        file_path (str): The path of the email file.
+
+    Returns:
+        str: The path of the copy if one was saved, otherwise the path of the file.
+    """
+    path = Path(file_path)
+    content = path.read_bytes()
+    lines = content.splitlines(keepends=True)
+    headers_end = next((index for index, line in enumerate(lines) if not HEADER_LINE_REGEX.match(line)), len(lines))
+    headers = message_from_bytes(b"".join(lines[:headers_end]))
+    if headers.get_content_maintype() != "multipart" or headers.get_content_disposition() != "attachment":
+        return file_path
+
+    if not any(
+        part.get_content_type() == "message/rfc822"
+        or (part.get_content_type() == "application/octet-stream" and (get_attachment_filename(part) or "").endswith(".eml"))
+        for part in message_from_bytes(content).walk()
+    ):
+        return file_path
+
+    header_lines: list[bytes] = []
+    is_disposition_header = False
+    for line in lines[:headers_end]:
+        if not line.startswith((b" ", b"\t")):  # the line starts a header, and does not continue the previous one
+            is_disposition_header = line.lower().startswith(b"content-disposition:")
+        if not is_disposition_header:
+            header_lines.append(line)
+
+    email_path = path.with_name("without_disposition_" + path.name)
+    email_path.write_bytes(b"".join(header_lines + lines[headers_end:]))
+    demisto.debug(f"Removed the Content-Disposition header of the top-level part, parsing {email_path}")
+    return str(email_path)
 
 
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False) -> str:
@@ -201,10 +249,11 @@ def main():
 
     # Remove BOM and parse the email
     cleaned_file_path, file_type, file_name = remove_bom(file_path, file_type, file_name)
+    email_file_path = cleaned_file_path if parse_only_headers else remove_root_attachment_disposition(cleaned_file_path)
 
     try:
         email_parser = EmailParser(
-            file_path=cleaned_file_path,
+            file_path=email_file_path,
             max_depth=max_depth,
             parse_only_headers=parse_only_headers,
             file_info=file_type,

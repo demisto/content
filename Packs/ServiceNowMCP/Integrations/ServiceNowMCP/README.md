@@ -9,7 +9,7 @@ This integration was integrated and tested with the latest version of ServiceNow
 | MCP Server Name | The name of the MCP server on the ServiceNow instance. Defaults to the preconfigured Quickstart Server \`sn_mcp_server_default\`.<br/> |  |
 | Client ID | The Client ID from the OAuth Inbound Integration created on the ServiceNow instance.<br/> | True |
 | Client Secret | The Client Secret from the OAuth Inbound Integration created on the ServiceNow instance.<br/> | True |
-| Authorization code | Authorization code returned after running the \`\!servicenow-mcp-generate-login-url\` command and authenticating.<br/> |  |
+| Redirect URL or Authorization Code | Paste the full redirect URL you were sent to after running the \`\!servicenow-mcp-generate-login-url\` command and authenticating. Pasting only the authorization code still works, but is deprecated.<br/> |  |
 | Redirect URI | The redirect URI registered in the ServiceNow OAuth Inbound Integration. Must match the URI configured on the ServiceNow side.<br/> |  |
 | Trust any certificate (not secure) |  |  |
 

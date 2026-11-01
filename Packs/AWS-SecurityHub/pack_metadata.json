@@ -2,7 +2,7 @@
     "name": "AWS - Security Hub",
     "description": "Amazon Web Services Security Hub Service.",
     "support": "xsoar",
-    "currentVersion": "2.0.4",
+    "currentVersion": "2.0.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -26,7 +26,6 @@
     "itemPrefix": [
         "AWS Security Hub"
     ],
-    "defaultDataSource": "AWS Security Hub Event Collector",
     "supportedModules": [
         "agentix",
         "xsiam"

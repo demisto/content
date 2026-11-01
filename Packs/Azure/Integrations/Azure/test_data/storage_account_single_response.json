@@ -1,0 +1,18 @@
+{
+  "sku": {
+    "name": "Standard_LRS",
+    "tier": "Standard"
+  },
+  "kind": "Storage",
+  "id": "/subscriptions/mock_subscription_id/resourceGroups/mock_resource_group/providers/Microsoft.Storage/storageAccounts/mock_account_name",
+  "name": "mock_account_name",
+  "type": "Microsoft.Storage/storageAccounts",
+  "location": "eastus",
+  "properties": {
+    "provisioningState": "Succeeded",
+    "primaryLocation": "eastus",
+    "statusOfPrimary": "available",
+    "secondaryLocation": "westus",
+    "statusOfSecondary": "available"
+  }
+}

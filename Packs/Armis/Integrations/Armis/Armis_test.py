@@ -3,6 +3,7 @@ This file contains the Pytest Tests for the Armis Integration
 """
 
 import json
+import re
 
 import pytest
 import time
@@ -320,6 +321,30 @@ def test_fetch_incidents_no_duplicates(mocker):
     assert incidents[0]["rawJSON"] == json.dumps(armis_incident)
     _, incidents = fetch_incidents(client, next_run, None, "Low", [], [], "", 1)
     assert not incidents
+
+
+def test_fetch_incidents_free_search_string_quotes_time_frame(mocker):
+    """
+    Given:
+    - A custom AQL free search string that already contains a timeFrame filter.
+
+    When:
+    - Running fetch incidents.
+
+    Then:
+    - Ensure the appended time frame value is wrapped in quotes, as Armis rejects (or silently
+      returns no results for) an unquoted value such as `timeFrame:757713 seconds`.
+
+    """
+    from Armis import Client, fetch_incidents
+
+    client = Client("secret-example", "https://test.com/api/v1", verify=False, proxy=False)
+    mock_search = mocker.patch.object(client, "free_string_search_alerts", return_value={"results": []})
+    free_search_string = 'status:Open severity:High timeFrame:"30 Days"'
+    fetch_incidents(client, {"last_fetch": "2021-03-09T01:00:00.000001+00:00"}, None, "Low", [], [], free_search_string, 1)
+    aql_string = mock_search.call_args.args[0]
+    assert aql_string.startswith(f"{free_search_string} timeFrame:")
+    assert re.search(r'timeFrame:"\d+ seconds"$', aql_string)
 
 
 class MockClient:

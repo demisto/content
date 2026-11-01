@@ -1,5 +1,3 @@
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM. This integration was developed and tested using Mimecast API 2.0.
-
 ## Configure Mimecast Event Collector v2 in Cortex
 
 | **Parameter** | **Description** | **Required** |

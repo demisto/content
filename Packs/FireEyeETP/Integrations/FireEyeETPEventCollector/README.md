@@ -1,7 +1,5 @@
 Use this integration to fetch email security incidents from Trellix Email Security - Cloud as XSIAM events.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 ## Authentication Prerequisites
 
 To ensure a successful connection, you must select the correct authentication method based on the **Server URL** (Instance URL) you are configuring.

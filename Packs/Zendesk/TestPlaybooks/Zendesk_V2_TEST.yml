@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 245,
+          "x": 275,
           "y": 50
         }
       }
@@ -53,7 +53,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 245,
+          "x": 275,
           "y": 370
         }
       }
@@ -78,14 +78,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "38"
+      - "49"
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 245,
+          "x": 275,
           "y": 515
         }
       }
@@ -96,6 +96,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      user_name:
+        simple: ${inputs.users_test_username}
   "3":
     id: "3"
     taskid: 6a204bf3-2b1c-4f03-808b-fd9ccaac1c1f
@@ -127,7 +130,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 245,
+          "x": 275,
           "y": 195
         }
       }
@@ -167,7 +170,7 @@ tasks:
                 value:
                   simple: inputs.users_test_username
                 iscontext: true
-            - operator: isEqualString
+          - - operator: isEqualString
               left:
                 value:
                   simple: Zendesk.User.email
@@ -183,8 +186,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 245,
-          "y": 1040
+          "x": 162.5,
+          "y": 1390
         }
       }
     note: false
@@ -222,13 +225,15 @@ tasks:
         simple: ${inputs.users_test_role}
       verified:
         simple: "true"
+      extend-context:
+        simple: created_test_user_id=id
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 245,
-          "y": 1215
+          "x": 275,
+          "y": 1565
         }
       }
     note: false
@@ -269,8 +274,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 245,
-          "y": 1390
+          "x": 275,
+          "y": 1740
         }
       }
     note: false
@@ -300,8 +305,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 245,
-          "y": 1565
+          "x": 275,
+          "y": 1915
         }
       }
     note: false
@@ -311,6 +316,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      user_id:
+        simple: ${created_test_user_id}
   "8":
     id: "8"
     taskid: 6f799e61-420f-4348-8bcd-c69d27a4d3af
@@ -326,7 +334,7 @@ tasks:
       '#default#':
       - "16"
       "yes":
-      - "42"
+      - "48"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -360,8 +368,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 245,
-          "y": 1740
+          "x": 275,
+          "y": 2090
         }
       }
     note: false
@@ -402,8 +410,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 2965
+          "x": 387.5,
+          "y": 3140
         }
       }
     note: false
@@ -457,8 +465,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 2790
+          "x": 387.5,
+          "y": 2965
         }
       }
     note: false
@@ -488,8 +496,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 3140
+          "x": 387.5,
+          "y": 3315
         }
       }
     note: false
@@ -499,6 +507,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      user_id:
+        simple: ${created_test_user_id}
   "14":
     id: "14"
     taskid: c5b67662-bece-4308-84d1-16fa83ed8ce7
@@ -534,7 +545,7 @@ tasks:
                       value:
                         simple: inputs.users_test_email
                       iscontext: true
-                  - operator: isEqualString
+                - - operator: isEqualString
                     left:
                       value:
                         simple: Zendesk.User.name
@@ -548,8 +559,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 3315
+          "x": 387.5,
+          "y": 3490
         }
       }
     note: false
@@ -579,8 +590,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
-          "y": 3490
+          "x": 500,
+          "y": 3665
         }
       }
     note: false
@@ -611,8 +622,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 7715
+          "x": 80,
+          "y": 7890
         }
       }
     note: false
@@ -642,8 +653,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
-          "y": 3810
+          "x": 500,
+          "y": 3985
         }
       }
     note: false
@@ -673,8 +684,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
-          "y": 3955
+          "x": 500,
+          "y": 4130
         }
       }
     note: false
@@ -713,8 +724,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
-          "y": 4130
+          "x": 500,
+          "y": 4305
         }
       }
     note: false
@@ -744,8 +755,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4305
+          "x": 612.5,
+          "y": 4480
         }
       }
     note: false
@@ -772,8 +783,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 7940
+          "x": 622.5,
+          "y": 8065
         }
       }
     note: false
@@ -803,8 +814,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 5295
+          "x": 612.5,
+          "y": 5470
         }
       }
     note: false
@@ -847,8 +858,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 5615
+          "x": 612.5,
+          "y": 5790
         }
       }
     note: false
@@ -887,8 +898,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 5440
+          "x": 612.5,
+          "y": 5615
         }
       }
     note: false
@@ -929,8 +940,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 2440
+          "x": 387.5,
+          "y": 2615
         }
       }
     note: false
@@ -960,8 +971,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 2615
+          "x": 387.5,
+          "y": 2790
         }
       }
     note: false
@@ -971,6 +982,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      user_id:
+        simple: ${created_test_user_id}
   "27":
     id: "27"
     taskid: 55a3f4c8-ff43-4b33-8b80-9cc70031b8be
@@ -996,8 +1010,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 5790
+          "x": 612.5,
+          "y": 5965
         }
       }
     note: false
@@ -1030,8 +1044,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 6315
+          "x": 612.5,
+          "y": 6490
         }
       }
     note: false
@@ -1070,8 +1084,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 5965
+          "x": 612.5,
+          "y": 6140
         }
       }
     note: false
@@ -1108,8 +1122,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 6140
+          "x": 612.5,
+          "y": 6315
         }
       }
     note: false
@@ -1150,8 +1164,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 6490
+          "x": 612.5,
+          "y": 6665
         }
       }
     note: false
@@ -1187,8 +1201,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 6665
+          "x": 612.5,
+          "y": 6840
         }
       }
     note: false
@@ -1231,8 +1245,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 7540
+          "x": 612.5,
+          "y": 7715
         }
       }
     note: false
@@ -1268,8 +1282,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 7190
+          "x": 612.5,
+          "y": 7365
         }
       }
     note: false
@@ -1305,8 +1319,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 6840
+          "x": 612.5,
+          "y": 7015
         }
       }
     note: false
@@ -1342,8 +1356,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 7365
+          "x": 612.5,
+          "y": 7540
         }
       }
     note: false
@@ -1384,8 +1398,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 7015
+          "x": 612.5,
+          "y": 7190
         }
       }
     note: false
@@ -1410,7 +1424,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - "50"
     scriptarguments:
       filter:
         simple: requested
@@ -1427,7 +1441,7 @@ tasks:
                 value:
                   simple: inputs.users_test_username
                 iscontext: true
-            - operator: isEqualString
+          - - operator: isEqualString
               left:
                 value:
                   simple: Zendesk.User.email
@@ -1442,8 +1456,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 245,
-          "y": 690
+          "x": 162.5,
+          "y": 865
         }
       }
     note: false
@@ -1480,8 +1494,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 245,
-          "y": 865
+          "x": 50,
+          "y": 1215
         }
       }
     note: false
@@ -1523,8 +1537,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4450
+          "x": 612.5,
+          "y": 4625
         }
       }
     note: false
@@ -1565,8 +1579,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
-          "y": 3635
+          "x": 500,
+          "y": 3810
         }
       }
     note: false
@@ -1594,14 +1608,14 @@ tasks:
       - "25"
     scriptarguments:
       group_id:
-        simple: ${Zendesk.User.default_group_id}
+        simple: ${test_group_id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 2265
+          "x": 387.5,
+          "y": 2440
         }
       }
     note: false
@@ -1631,8 +1645,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4625
+          "x": 612.5,
+          "y": 4800
         }
       }
     note: false
@@ -1663,8 +1677,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4770
+          "x": 612.5,
+          "y": 4945
         }
       }
     note: false
@@ -1701,8 +1715,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4945
+          "x": 612.5,
+          "y": 5120
         }
       }
     note: false
@@ -1743,8 +1757,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 5120
+          "x": 612.5,
+          "y": 5295
         }
       }
     note: false
@@ -1778,8 +1792,149 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 7760
+          "x": 622.5,
+          "y": 7890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 9c3f6e2a-7b41-4d8e-a5f2-1e6d0b8c4a37
+    type: regular
+    task:
+      id: 9c3f6e2a-7b41-4d8e-a5f2-1e6d0b8c4a37
+      version: -1
+      name: get an agent's default group
+      script: 'Zendesk v2|||zendesk-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      extend-context:
+        simple: test_group_id=default_group_id
+      ignore-outputs:
+        simple: "true"
+      limit:
+        simple: "1"
+      role:
+        simple: agent
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 2d8b5f41-6c3e-4a9b-9e17-4f0a7c2b8d63
+    type: condition
+    task:
+      id: 2d8b5f41-6c3e-4a9b-9e17-4f0a7c2b8d63
+      version: -1
+      name: leftover test user exists?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Zendesk.User
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Zendesk.User.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.users_test_username
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Zendesk.User.email
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.users_test_email
+                      iscontext: true
+                accessor: id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 7e1c3a92-5b4d-4f86-8a20-c9d6e3f1b574
+    type: condition
+    task:
+      id: 7e1c3a92-5b4d-4f86-8a20-c9d6e3f1b574
+      version: -1
+      name: tickets found?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Zendesk.Ticket.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1040
         }
       }
     note: false
@@ -1793,12 +1948,12 @@ view: |-
   {
     "linkLabelsPosition": {
       "33_16_#default#": 0.21,
-      "8_42_yes": 0.49
+      "8_48_yes": 0.49
     },
     "paper": {
       "dimensions": {
-        "height": 7955,
-        "width": 1030,
+        "height": 8080,
+        "width": 952.5,
         "x": 50,
         "y": 50
       }

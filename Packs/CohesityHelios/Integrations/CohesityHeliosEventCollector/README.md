@@ -1,7 +1,5 @@
 This is the Cohesity Helios Event Collector integration for XSIAM.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 ## Configure Cohesity Helios Event Collector in Cortex
 
 | **Parameter** | **Description** | **Required** |

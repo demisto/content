@@ -89,6 +89,30 @@ send HTTP PUT request
 | uri | Request endpoint (e.g. /user). | Required |
 | body | Request body. | Optional |
 
+### core-api-patch
+
+***
+send HTTP PATCH request
+
+#### Base Command
+
+`core-api-patch`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uri | Request endpoint (e.g. /platform/iam/v1/user/{user_email}). | Required |
+| body | Request body. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!core-api-patch uri=/platform/iam/v1/user/user@example.com body={\"first_name\":\"John\"}```
+
 ### core-api-delete
 
 ***

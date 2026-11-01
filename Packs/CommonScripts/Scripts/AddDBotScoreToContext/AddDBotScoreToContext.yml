@@ -26,7 +26,7 @@ comment: Add DBot score to context for indicators with custom vendor, score, rel
 commonfields:
   id: AddDBotScoreToContext
   version: -1
-dockerimage: demisto/python3:3.12.13.10404775
+dockerimage: demisto/python3:3.12.14.13053055
 enabled: true
 name: AddDBotScoreToContext
 runas: DBotWeakRole

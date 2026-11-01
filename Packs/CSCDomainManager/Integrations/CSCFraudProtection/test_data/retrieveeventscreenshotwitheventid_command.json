@@ -1,0 +1,11 @@
+{
+    "CSCFraudProtection": {
+        "data": {
+            "eventId": "123456",
+            "screenshot": "blob",
+            "screenshotTimeStamp": "2024-06-25 13:12:21.553812"
+        },
+        "message": "Data Fetched Successfully",
+        "status": "success"
+    }
+}

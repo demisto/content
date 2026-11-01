@@ -1,0 +1,7 @@
+{
+    "CSCFraudProtection": {
+        "code": "Ref00-6708",
+        "message": "Event is not found in the application",
+        "status": "error"
+    }
+}

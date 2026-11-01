@@ -846,7 +846,7 @@ script:
     - contextPath: ServiceDeskPlus.Request.Note.created_by.is_vip_user
       description: 'Whether the request note creator is a VIP user.'
       type: Boolean
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.15.14069087
   isfetch: true
   runonce: false
   script: '-'

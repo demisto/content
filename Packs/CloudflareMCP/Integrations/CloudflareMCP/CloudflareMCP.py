@@ -5,9 +5,6 @@ from MCPApiModule import *
 import asyncio
 
 
-from urllib.parse import unquote
-
-
 CLOUDFLARE_BASE_URL = "https://{server}.mcp.cloudflare.com/mcp"
 CLOUDFLARE_AUTH_TYPE = AuthMethods.DYNAMIC_CLIENT_REGISTRATION.value
 COMMAND_PREFIX = "cloudflare-mcp"
@@ -25,7 +22,9 @@ async def main() -> None:  # pragma: no cover
         cloudflare_server = params.get("cloudflare_server", "")
         cloudflare_url = CLOUDFLARE_BASE_URL.format(server=cloudflare_server)
         auth_type = AuthMethods.NO_AUTHORIZATION.value if cloudflare_server in SERVERS_NO_AUTHORIZATION else CLOUDFLARE_AUTH_TYPE
-        auth_code = unquote(params.get("auth_code", {}).get("password") or "")
+        auth_code = params.get("auth_code", {}).get("password") or ""
+        # Not url-decoded here: MCPApiModule.parse_authorization_response accepts either a
+        # bare code or a full redirect URL and decodes each form correctly.
         redirect_uri = params.get("redirect_uri") or REDIRECT_URI
 
         client = Client(

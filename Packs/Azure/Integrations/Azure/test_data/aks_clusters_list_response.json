@@ -1,0 +1,68 @@
+{
+  "value": [
+    {
+      "id": "/subscriptions/mock_subid/resourceGroups/mock_rg/providers/Microsoft.ContainerService/managedClusters/mock_cluster_name",
+      "location": "eastus",
+      "name": "mock_cluster_name",
+      "tags": {
+        "archv2": "",
+        "tier": "production"
+      },
+      "type": "Microsoft.ContainerService/ManagedClusters",
+      "properties": {
+        "provisioningState": "Succeeded",
+        "kubernetesVersion": "1.9.6",
+        "maxAgentPools": 1,
+        "dnsPrefix": "dnsprefix1",
+        "fqdn": "dnsprefix1-abcd1234.hcp.eastus.azmk8s.io",
+        "agentPoolProfiles": [
+          {
+            "name": "nodepool1",
+            "count": 3,
+            "vmSize": "Standard_DS1_v2",
+            "maxPods": 110,
+            "osType": "Linux",
+            "provisioningState": "Succeeded",
+            "orchestratorVersion": "1.9.6"
+          }
+        ],
+        "linuxProfile": {
+          "adminUsername": "azureuser",
+          "ssh": {
+            "publicKeys": [
+              {
+                "keyData": "ssh-rsa AAAAB3NzaC1mock"
+              }
+            ]
+          }
+        },
+        "servicePrincipalProfile": {
+          "clientId": "mock_client_id"
+        },
+        "nodeResourceGroup": "MC_rg1_clustername1_location1",
+        "enableRBAC": false,
+        "diskEncryptionSetID": "/subscriptions/mock_subid/resourceGroups/mock_rg/providers/Microsoft.Compute/diskEncryptionSets/mock_des",
+        "networkProfile": {
+          "networkPlugin": "kubenet",
+          "podCidr": "mock_pod_cidr",
+          "serviceCidr": "mock_service_cidr",
+          "dnsServiceIP": "mock_dns_service_ip"
+        },
+        "addonProfiles": {
+          "omsagent": {
+            "enabled": false,
+            "config": {
+              "logAnalyticsWorkspaceResourceID": "mock_workspace"
+            }
+          },
+          "httpApplicationRouting": {
+            "enabled": true,
+            "config": {
+              "HTTPApplicationRoutingZoneName": "zone"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+    "elements": [
+        {
+            "id": "69c0661d-3e5d-49d6-88ee-3c1390955004",
+            "name": "Engineering department",
+            "description": "Network profile for Engineering division",
+            "values": ["192.168.0.1/24", "10.0.0.1-10.0.0.254"],
+            "values_count": 2,
+            "status": "applied",
+            "create_by": "API Token",
+            "create_time": "2024-05-20T12:00:55.168Z",
+            "modify_by": "Another API Token",
+            "modify_time": "2024-06-10T12:00:23.168Z"
+        }
+    ],
+    "total_count": 1
+}

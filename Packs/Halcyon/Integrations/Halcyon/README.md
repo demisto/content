@@ -114,3 +114,5 @@ If events are not being fetched:
 2. Check that the correct log types are selected.
 3. Ensure the account has permissions to access the selected log types.
 4. Review the integration logs for any error messages.
+
+**Note:** A small number of events may occasionally be missing due to a Halcyon API limitation: the API sometimes indexes events several minutes after they occur. To minimize this, each fetch cycle looks back over the fetch interval plus 10 minutes. This window cannot be extended further, so events indexed later than that cannot be collected. This is expected behavior and not an integration malfunction.

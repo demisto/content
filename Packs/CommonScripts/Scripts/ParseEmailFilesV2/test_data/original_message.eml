@@ -1,0 +1,32 @@
+From: Example Sender <sender@example.com>
+To: Example Recipient <recipient@example.org>
+Subject: Harmless attachment regression
+Date: Sat, 01 Jan 2000 00:00:00 +0000
+Message-ID: <original-message@example.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="alternative-boundary"
+
+--alternative-boundary
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Harmless message for attachment parsing regression.
+--alternative-boundary
+Content-Type: multipart/related; boundary="related-boundary"
+
+--related-boundary
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html><body><p>Harmless message for attachment parsing regression.</p>
+<img src=3D"cid:pixel@example.org" alt=3D"Harmless pixel"></body></html>
+--related-boundary
+Content-Type: image/png; name="pixel.png"
+Content-Disposition: inline; filename="pixel.png"
+Content-Transfer-Encoding: base64
+Content-ID: <pixel@example.org>
+
+iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4//8/AAX+Av4N70a4AAAA
+AElFTkSuQmCC
+--related-boundary--
+--alternative-boundary--

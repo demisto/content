@@ -1,0 +1,9 @@
+{
+    "data": {
+        "userName": "MOCK_USER",
+        "is2FactorRedirectRequired": "false",
+        "role": "Administrator",
+        "email": [],
+        "jwtToken": "new_token"
+    }
+}

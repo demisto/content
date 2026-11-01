@@ -32,3 +32,7 @@ ignore=GR107
 ignore=GR105
 [file:layoutscontainer-System_Diagnostics_and_Health_Check.json]
 ignore=GR105
+[file:HealthCheck-xsiam.yml]
+ignore=RM116
+[file:HealthCheckCustomScripts.yml]
+ignore=BA110

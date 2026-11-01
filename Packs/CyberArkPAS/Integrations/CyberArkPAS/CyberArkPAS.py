@@ -559,14 +559,20 @@ class Client(BaseClient):
 
 def test_module(
     client: Client,
+    is_fetch: bool = False,
 ) -> str:
     """
-    If a client was made then an accesses token was successfully reached,
-    therefor, the username and password are valid and a connection was made
-    checks that the fetch command works as well, using the client function -
+    Tests the connection to CyberArk PAM by performing a real action.
+    If fetch incidents is enabled, tests the fetch flow (PTA security events).
+    Otherwise, tests a simple read-only command (list safes), since PTA is optional and not available on every tenant.
     :param client: the client object with an access token
-    :return: ok if got a valid accesses token
+    :param is_fetch: whether fetch incidents is enabled on the instance
+    :return: ok if the action succeeded
     """
+    if not is_fetch:
+        client.get_list_safes()
+        return "ok"
+
     start, _ = parse_date_range("7 days")
     start_time_timestamp = str(date_to_timestamp(start))
     security_events = client.get_security_events(start_time_timestamp)
@@ -1334,8 +1340,8 @@ def main():
 
     command = demisto.command()
     LOG(f"Command being called in CyberArkPAS is: {command}")
+    is_fetch = argToBoolean(params.get("isFetch", False))
     commands = {
-        "test-module": test_module,
         "cyberark-pas-user-add": add_user_command,
         "cyberark-pas-user-update": update_user_command,
         "cyberark-pas-user-delete": delete_user_command,
@@ -1364,12 +1370,15 @@ def main():
         "cyberark-pas-security-events-get": get_security_events_command,
     }
 
+    client: Client | None = None
     try:
         client = Client(
             server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy, max_fetch=int(max_fetch)
         )
 
-        if command in commands:
+        if command == "test-module":
+            return_results(test_module(client, is_fetch=is_fetch))
+        elif command in commands:
             return_results(commands[command](client, **demisto.args()))  # type: ignore[operator]
         elif command == "fetch-incidents":
             next_run, incidents = fetch_incidents(
@@ -1383,10 +1392,11 @@ def main():
     except Exception as err:
         return_error(f"Unexpected error: {str(err)}", error=traceback.format_exc())
     finally:
-        try:
-            client._logout()
-        except Exception as err:
-            demisto.info(f"CyberArk PAS error: {str(err)}")
+        if client:
+            try:
+                client._logout()
+            except Exception as err:
+                demisto.info(f"CyberArk PAS error: {str(err)}")
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:
