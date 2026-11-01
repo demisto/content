@@ -1286,12 +1286,7 @@ class Client(BaseClient):
             Response dict from ServiceNow.
         """
         body = {"records": events}
-        return self.send_request(
-            path="",
-            method="POST",
-            body=body,
-            custom_api="/api/global/em/jsonv2",
-        )
+        return self.send_request(path="", method="POST", body=body, custom_api="/api/global/em/jsonv2")
 
     def get_co_tasks(self, sys_id: str) -> dict:
         """Get item details from service catalog by sending a GET request to the Change Request REST API.
@@ -3844,23 +3839,8 @@ def create_event_command(client: Client, args: dict) -> CommandResults:
 
     result = client.create_event(events)
 
-    if not result:
-        return CommandResults(readable_output="No response received from ServiceNow Event Management.")
-
-    # The em/jsonv2 endpoint returns {"result": {"status": "...", ...}} on success.
-    result_data = result.get("result", result)
-
-    human_readable = tableToMarkdown(
-        "ServiceNow Event Management - Created Event(s)",
-        result_data if isinstance(result_data, list) else [result_data],
-        removeNull=True,
-    )
-
     return CommandResults(
-        outputs_prefix="ServiceNow.Event",
-        outputs_key_field="",
-        outputs=result_data,
-        readable_output=human_readable,
+        readable_output="Event(s) successfully sent to ServiceNow Event Management.",
         raw_response=result,
     )
 

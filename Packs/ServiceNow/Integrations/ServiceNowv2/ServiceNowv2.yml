@@ -1825,13 +1825,6 @@ script:
       for a single event; (2) events — a JSON array or object; (3) individual
       field arguments (source, node, type, resource, severity, etc.).
     name: servicenow-create-event
-    outputs:
-    - contextPath: ServiceNow.Event.status
-      description: Status returned by ServiceNow Event Management.
-      type: String
-    - contextPath: ServiceNow.Event.message
-      description: Message returned by ServiceNow Event Management.
-      type: String
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'GET'

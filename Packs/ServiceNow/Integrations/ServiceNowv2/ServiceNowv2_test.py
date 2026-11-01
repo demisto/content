@@ -3195,8 +3195,8 @@ def test_create_event_command_sends_correct_payload(args, expected_events, mocke
     result = create_event_command(client, args)
 
     mock_create_event.assert_called_once_with(expected_events)
-    assert result.outputs == snow_response["result"]
-    assert "ServiceNow Event Management" in result.readable_output
+    assert result.outputs is None
+    assert "Event(s) successfully sent to ServiceNow Event Management." in result.readable_output
 
 
 def test_create_event_command_no_fields_raises(mocker):
