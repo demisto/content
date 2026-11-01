@@ -1,0 +1,14 @@
+[
+    {
+        "type": "WinLocal",
+        "id": "88788f9e-d8f5-4eb4-bc4f-9b3f5403bcec",
+        "name": "Default Backup Repository",
+        "description": "Created by Veeam Backup",
+        "hostId": "6745a759-2205-4cd2-b172-8ec8f7e60ef8",
+        "hostName": "WIN-Q4F3IF4VR1L",
+        "path": "C:\\Backup",
+        "capacityGB": 149.4,
+        "freeGB": 68.9,
+        "usedSpaceGB": 30.6
+    }
+]

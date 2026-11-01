@@ -552,5 +552,9 @@
     "name": "Course of Action",
     "system": false,
     "version": -1,
-    "description": "Course of Action Indicator Layout"
+    "description": "Course of Action Indicator Layout",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

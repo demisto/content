@@ -3856,6 +3856,118 @@ def test_fetch_incidents_with_refetch_ids_scenarios(mocker, client, integration_
     assert isinstance(new_last_run, dict)
 
 
+@pytest.mark.parametrize(
+    "create_multiple_flag, last_created_events_input, expected_incident_count",
+    [
+        pytest.param(False, ["Accounts_36"], 0, id="flag-disabled-deduplicates"),
+        pytest.param(True, ["Accounts_36"], 1, id="flag-enabled-bypasses-dedup"),
+        pytest.param(None, ["Accounts_36"], 0, id="flag-not-provided-defaults-to-dedup"),
+    ],
+)
+def test_fetch_incidents_create_multiple_by_timestamp_dedup_behavior(
+    mocker, client, create_multiple_flag, last_created_events_input, expected_incident_count
+):
+    """
+    Given:
+    - A client object.
+    - A last_run with Accounts_36 already present in last_created_events.
+    - The create_multiple_incidents_by_timestamp flag set to False, True, or not provided.
+
+    When:
+    - Fetching incidents using the 'fetch_incidents' function.
+
+    Then:
+    - When the flag is False or not provided: the already-seen event is deduplicated (0 incidents created).
+    - When the flag is True: the dedup check is bypassed and a new incident is created (1 incident).
+    """
+    last_run = {
+        "Accounts": {
+            "last_timestamp": "2022-07-03T23:34:07Z",
+            "id": "",
+            "last_created_events": list(last_created_events_input),
+        }
+    }
+    VectraDetect.global_UI_URL = SERVER_URL
+
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "info")
+
+    account_data = load_test_data("single_account.json")
+    mocker.patch.object(client, "search_accounts", return_value={"count": 1, "results": [account_data]})
+    mocker.patch.object(client, "search_detections", return_value={"count": 0, "results": []})
+    mocker.patch.object(client, "list_group_request", return_value={"count": 0, "results": []})
+    mocker.patch.object(client, "list_assignments_request", return_value={"count": 0, "results": []})
+
+    mocker.patch.object(VectraDetect, "get_integration_context", return_value={})
+    mocker.patch.object(VectraDetect, "set_integration_context")
+
+    params: dict = {
+        "isFetch": True,
+        "first_fetch": "1 hour",
+        "max_fetch": "200",
+        "fetch_entity_types": ["Accounts"],
+    }
+    if create_multiple_flag is not None:
+        params["create_multiple_incidents_by_timestamp"] = create_multiple_flag
+
+    _, incidents = fetch_incidents(client, params)
+
+    assert len(incidents) == expected_incident_count
+
+
+def test_fetch_incidents_create_multiple_by_timestamp_no_duplicate_uid_in_checkpoint(mocker, client):
+    """
+    Given:
+    - A client object.
+    - A last_run with an empty last_created_events for Accounts.
+    - The create_multiple_incidents_by_timestamp flag enabled.
+
+    When:
+    - Fetching incidents using the 'fetch_incidents' function with a single account result.
+
+    Then:
+    - Exactly one incident is created.
+    - The checkpoint uid 'Accounts_36' is written to last_created_events exactly once,
+      confirming the guard against duplicate entries holds even when dedup is bypassed.
+    """
+    VectraDetect.global_UI_URL = SERVER_URL
+
+    last_run = {
+        "Accounts": {
+            "last_timestamp": "2022-07-03T23:34:07Z",
+            "id": "",
+            "last_created_events": [],
+        }
+    }
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "info")
+
+    account_data = load_test_data("single_account.json")
+    mocker.patch.object(client, "search_accounts", return_value={"count": 1, "results": [account_data]})
+    mocker.patch.object(client, "search_detections", return_value={"count": 0, "results": []})
+    mocker.patch.object(client, "list_group_request", return_value={"count": 0, "results": []})
+    mocker.patch.object(client, "list_assignments_request", return_value={"count": 0, "results": []})
+
+    mocker.patch.object(VectraDetect, "get_integration_context", return_value={})
+    mocker.patch.object(VectraDetect, "set_integration_context")
+
+    params = {
+        "isFetch": True,
+        "first_fetch": "1 hour",
+        "max_fetch": "200",
+        "fetch_entity_types": ["Accounts"],
+        "create_multiple_incidents_by_timestamp": True,
+    }
+
+    new_last_run, incidents = fetch_incidents(client, params)
+
+    assert len(incidents) == 1
+    checkpoint_events = new_last_run["Accounts"]["last_created_events"]
+    assert checkpoint_events.count("Accounts_36") == 1
+
+
 def test_update_remote_system_closing_notes_refetch(client, mocker):
     """
     Given:

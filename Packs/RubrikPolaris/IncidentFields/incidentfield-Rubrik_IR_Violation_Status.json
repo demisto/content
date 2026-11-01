@@ -1,0 +1,39 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Rubrik IR Violation"
+    ],
+    "caseInsensitive": true,
+    "cliName": "rubrikirviolationstatus",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_rubrikirviolationstatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Rubrik IR Violation Status",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "script": "RubrikPushIRViolationStatus",
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "selectValues": [
+        "",
+        "OPEN",
+        "IN_PROGRESS",
+        "REMEDIATED",
+        "DISMISSED",
+        "CLOSED"
+    ]
+}

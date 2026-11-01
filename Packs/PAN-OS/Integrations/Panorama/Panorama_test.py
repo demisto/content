@@ -2108,9 +2108,9 @@ class TestPanoramaCommitCommand:
 
     EXPECTED_COMMIT_REQUEST_URL_PARAMS = {
         "action": "partial",
-        "cmd": "<commit><device-group><entry "
-        'name="some_device"/></device-group><description>a simple commit</description><partial><admin>'
-        "<member>some_admin_name</member></admin></partial></commit>",
+        "cmd": "<commit><description>a simple commit</description>"
+        "<partial><device-group><member>some_device</member></device-group>"
+        "<admin><member>some_admin_name</member></admin></partial></commit>",
         "key": "APIKEY",
         "type": "commit",
     }
@@ -2162,10 +2162,9 @@ class TestPanoramaCommitCommand:
                 },
                 {
                     "action": "partial",
-                    "cmd": "<commit><device-group><entry "
-                    'name="some_device"/></device-group><description>a simple commit</description>'
-                    "<partial><admin>"
-                    "<member>some_admin_name</member></admin></partial></commit>",
+                    "cmd": "<commit><description>a simple commit</description>"
+                    "<partial><device-group><member>some_device</member></device-group>"
+                    "<admin><member>some_admin_name</member></admin></partial></commit>",
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2176,13 +2175,21 @@ class TestPanoramaCommitCommand:
                     status_code=200,
                     reason="",
                 ),
-                {"Description": "a simple commit", "JobID": "19420", "Status": "Pending"},
+                {
+                    "Description": "a simple commit",
+                    "JobID": "19420",
+                    "Status": "Pending",
+                    "Scope": "Partial",
+                    "Details": "device-group=some_device; admin=some_admin_name",
+                },
                 id="only admin changes commit",
             ),
             pytest.param(
                 {"device-group": "some_device", "force_commit": "true", "polling": "false"},
                 {
-                    "cmd": '<commit><device-group><entry name="some_device"/></device-group><force></force></commit>',
+                    "action": "partial",
+                    "cmd": "<commit><force></force>"
+                    "<partial><device-group><member>some_device</member></device-group></partial></commit>",
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2193,16 +2200,23 @@ class TestPanoramaCommitCommand:
                     status_code=200,
                     reason="",
                 ),
-                {"Description": "", "JobID": "19420", "Status": "Pending"},
+                {
+                    "Description": "",
+                    "JobID": "19420",
+                    "Status": "Pending",
+                    "Scope": "Partial",
+                    "Details": "device-group=some_device",
+                },
                 id="force commit",
             ),
             pytest.param(
                 {"device-group": "some_device", "exclude_device_network_configuration": "true", "polling": "false"},
                 {
                     "action": "partial",
-                    "cmd": '<commit><device-group><entry name="some_device"/></device-group>'
-                    "<partial><device-and-network>excluded</"
-                    "device-and-network></partial></commit>",
+                    "cmd": "<commit><partial>"
+                    "<device-group><member>some_device</member></device-group>"
+                    "<device-and-network>excluded</device-and-network>"
+                    "</partial></commit>",
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2213,16 +2227,23 @@ class TestPanoramaCommitCommand:
                     status_code=200,
                     reason="",
                 ),
-                {"Description": "", "JobID": "19420", "Status": "Pending"},
+                {
+                    "Description": "",
+                    "JobID": "19420",
+                    "Status": "Pending",
+                    "Scope": "Partial",
+                    "Details": "device-group=some_device; exclude_device_network_configuration=true",
+                },
                 id="device and network excluded",
             ),
             pytest.param(
                 {"device-group": "some_device", "exclude_shared_objects": "true", "polling": "false"},
                 {
                     "action": "partial",
-                    "cmd": '<commit><device-group><entry name="some_device"/></device-group>'
-                    "<partial><shared-object>excluded"
-                    "</shared-object></partial></commit>",
+                    "cmd": "<commit><partial>"
+                    "<device-group><member>some_device</member></device-group>"
+                    "<shared-object>excluded</shared-object>"
+                    "</partial></commit>",
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2233,13 +2254,20 @@ class TestPanoramaCommitCommand:
                     status_code=200,
                     reason="",
                 ),
-                {"Description": "", "JobID": "19420", "Status": "Pending"},
+                {
+                    "Description": "",
+                    "JobID": "19420",
+                    "Status": "Pending",
+                    "Scope": "Partial",
+                    "Details": "device-group=some_device; exclude_shared_objects=true",
+                },
                 id="exclude shared objects",
             ),
             pytest.param(
                 {"device-group": "some_device", "polling": "false"},
                 {
-                    "cmd": '<commit><device-group><entry name="some_device"/></device-group></commit>',
+                    "action": "partial",
+                    "cmd": "<commit>" "<partial><device-group><member>some_device</member></device-group></partial>" "</commit>",
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2250,7 +2278,13 @@ class TestPanoramaCommitCommand:
                     status_code=200,
                     reason="",
                 ),
-                {"Description": "", "JobID": "19420", "Status": "Pending"},
+                {
+                    "Description": "",
+                    "JobID": "19420",
+                    "Status": "Pending",
+                    "Scope": "Partial",
+                    "Details": "device-group=some_device",
+                },
                 id="no args",
             ),
         ],
@@ -2339,7 +2373,17 @@ class TestPanoramaCommitCommand:
         assert called_request_params == expected_commit_request_url_params  # check that the URL is sent as expected.
         assert command_result.readable_output == f'Waiting for commit "{description}" with job ID 123 to finish...'
 
-        polling_args = {"commit_job_id": "123", "description": description, "hide_polling_output": True, "polling": True}
+        polling_args = {
+            "commit_job_id": "123",
+            "description": description,
+            "hide_polling_output": True,
+            "polling": True,
+            "device-group": args.get("device-group"),
+            "admin_name": args.get("admin_name"),
+            "template": args.get("template"),
+            "exclude_device_network_configuration": args.get("exclude_device_network_configuration"),
+            "exclude_shared_objects": args.get("exclude_shared_objects"),
+        }
 
         command_result = panorama_commit_command(polling_args)
         while command_result.scheduled_command:  # if scheduled_command is set, it means that command should still poll
@@ -2348,7 +2392,13 @@ class TestPanoramaCommitCommand:
             command_result = panorama_commit_command(polling_args)
 
         # last response of the command should be job status and the commit description
-        assert command_result.outputs == {"JobID": "123", "Description": description, "Status": "Success"}
+        assert command_result.outputs == {
+            "JobID": "123",
+            "Description": description,
+            "Status": "Success",
+            "Scope": "Partial",
+            "Details": "device-group=some_device; admin=some_admin_name",
+        }
 
 
 class TestPanoramaPushToDeviceGroupCommand:
@@ -3490,11 +3540,11 @@ class TestUniversalCommand:
     @patch("Panorama.run_op_command")
     def test_get_system_info(self, patched_run_op_command, mock_topology):
         """Given the output XML for show system info, assert it is parsed into the dataclasses correctly."""
-        from Panorama import UniversalCommand
+        import Panorama
 
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_SYSTEM_INFO_XML)
 
-        result = UniversalCommand.get_system_info(mock_topology)
+        result = Panorama.UniversalCommand.get_system_info(mock_topology)
         # Check all attributes of result data have values
         for result_dataclass in result.result_data:
             for value in result_dataclass.__dict__.values():
@@ -3504,6 +3554,35 @@ class TestUniversalCommand:
         for result_dataclass in result.summary_data:
             for value in result_dataclass.__dict__.values():
                 assert value
+
+    def test_get_system_info_ignores_platform_injected_args(self, mocker):
+        """
+        Regression (CRTX-240383): when the command is invoked with a brand-scoped context
+        (e.g. as an Agentix action), the platform injects a 'using-brand' arg. The
+        pan-os-platform-get-system-info handler must not forward it to the typed
+        get_system_info() function (which would raise 'unexpected keyword argument').
+        """
+        import Panorama
+
+        mocker.patch.object(Panorama, "get_topology", return_value=MagicMock())
+        mocker.patch.object(
+            demisto,
+            "args",
+            return_value={"device_filter_string": "fw1", "target": "007", "using-brand": "Panorama"},
+        )
+        mocker.patch.object(demisto, "command", return_value="pan-os-platform-get-system-info")
+        mocker.patch.object(demisto, "params", return_value=integration_firewall_params)
+        get_system_info_mock = mocker.patch.object(Panorama, "get_system_info", return_value=MagicMock())
+        mocker.patch.object(Panorama, "dataclasses_to_command_results", return_value=MagicMock())
+        mocker.patch.object(Panorama, "return_results")
+
+        Panorama.main()
+
+        # Must have been called without raising, and without the platform-injected key.
+        get_system_info_mock.assert_called_once()
+        _, kwargs = get_system_info_mock.call_args
+        assert "using-brand" not in kwargs
+        assert kwargs == {"device_filter_string": "fw1", "target": "007"}
 
     def test_get_available_software(self, mock_topology):
         """
@@ -3567,6 +3646,190 @@ class TestUniversalCommand:
             "warnings": None,
         }
 
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_polling_terminal(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: polling=true, a single job id, and a job whose status is 'FIN'.
+        When: get_jobs_command is invoked.
+        Then: The returned CommandResults have no scheduled_command (polling stops).
+        """
+        from Panorama import ShowJobsAllResultData, get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+        patched_get_jobs.return_value = ShowJobsAllResultData(
+            hostid="fw1",
+            id=7,
+            type="Commit",
+            tfin="2024/08/25 22:09:00",
+            status="FIN",
+            result="OK",
+            user="admin",
+            tenq="2024/08/25 22:07:53",
+            stoppable="no",
+            positionInQ=0,
+            progress=100,
+            warnings=None,
+            description="",
+        )
+
+        result = get_jobs_command({"polling": "true", "id": "7"})
+
+        assert result.scheduled_command is None
+        assert result.outputs["status"] == "FIN"
+        assert result.outputs["result"] == "OK"
+        assert result.outputs["id"] == 7
+
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_polling_still_running(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: polling=true, a single job id, and a job whose status is 'ACT' (still running).
+        When: get_jobs_command is invoked.
+        Then: The returned CommandResults have a scheduled_command (polling continues).
+        """
+        from Panorama import ShowJobsAllResultData, get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+        patched_get_jobs.return_value = ShowJobsAllResultData(
+            hostid="fw1",
+            id=7,
+            type="Commit",
+            tfin="",
+            status="ACT",
+            result="PEND",
+            user="admin",
+            tenq="2024/08/25 22:07:53",
+            stoppable="no",
+            positionInQ=0,
+            progress=50,
+            warnings=None,
+            description="",
+        )
+
+        result = get_jobs_command({"polling": "true", "id": "7"})
+
+        assert result.scheduled_command is not None
+
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_no_polling(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: no polling argument (defaults to false).
+        When: get_jobs_command is invoked without polling.
+        Then: The returned CommandResults have no scheduled_command regardless of status.
+        """
+        from Panorama import ShowJobsAllResultData, get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+        patched_get_jobs.return_value = ShowJobsAllResultData(
+            hostid="fw1",
+            id=7,
+            type="Commit",
+            tfin="",
+            status="ACT",
+            result="PEND",
+            user="admin",
+            tenq="2024/08/25 22:07:53",
+            stoppable="no",
+            positionInQ=0,
+            progress=50,
+            warnings=None,
+            description="",
+        )
+
+        result = get_jobs_command({"id": "7"})
+
+        assert result.scheduled_command is None
+
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_polling_no_id_raises(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: polling=true but no id argument.
+        When: get_jobs_command is invoked.
+        Then: A DemistoException is raised, since polling requires a single job id.
+        """
+        from Panorama import get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+
+        with pytest.raises(DemistoException, match="The 'id' argument is required when 'polling' is set to true."):
+            get_jobs_command({"polling": "true"})
+
+        # get_jobs must not be called when the validation fails.
+        patched_get_jobs.assert_not_called()
+
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_polling_ignores_status_and_job_type(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: polling=true, a single job id, and status/job_type filters provided.
+        When: get_jobs_command is invoked.
+        Then: get_jobs is called with status=None and job_type=None (filters ignored),
+              so a still-running job is not filtered out and polling can continue.
+        """
+        from Panorama import ShowJobsAllResultData, get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+        patched_get_jobs.return_value = ShowJobsAllResultData(
+            hostid="fw1",
+            id=7,
+            type="Downloadxxx",
+            tfin="",
+            status="ACT",
+            result="PEND",
+            user="admin",
+            tenq="2024/08/25 22:07:53",
+            stoppable="no",
+            positionInQ=0,
+            progress=50,
+            warnings=None,
+            description="",
+        )
+
+        result = get_jobs_command({"polling": "true", "id": "7", "status": "FIN", "job_type": "Commit"})
+
+        # Filters must be dropped while polling by id.
+        assert patched_get_jobs.call_args.kwargs["status"] is None
+        assert patched_get_jobs.call_args.kwargs["job_type"] is None
+        assert patched_get_jobs.call_args.kwargs["id"] == "7"
+        # Job is still running, so polling should continue.
+        assert result.scheduled_command is not None
+
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_no_polling_keeps_status_and_job_type(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: no polling (defaults to false), a job id, and status/job_type filters.
+        When: get_jobs_command is invoked.
+        Then: get_jobs is called with the provided status/job_type (non-polling flow unchanged).
+        """
+        from Panorama import ShowJobsAllResultData, get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+        patched_get_jobs.return_value = ShowJobsAllResultData(
+            hostid="fw1",
+            id=7,
+            type="Commit",
+            tfin="2024/08/25 22:09:00",
+            status="FIN",
+            result="OK",
+            user="admin",
+            tenq="2024/08/25 22:07:53",
+            stoppable="no",
+            positionInQ=0,
+            progress=100,
+            warnings=None,
+            description="",
+        )
+
+        get_jobs_command({"id": "7", "status": "FIN", "job_type": "Commit"})
+
+        # Non-polling flow must keep applying the filters.
+        assert patched_get_jobs.call_args.kwargs["status"] == "FIN"
+        assert patched_get_jobs.call_args.kwargs["job_type"] == "Commit"
+
     def test_download_software(self, mock_topology):
         """
         Test the download software function returns the correct data.
@@ -3628,6 +3891,85 @@ class TestUniversalCommand:
         result = UniversalCommand.check_system_availability(mock_topology, "fake")
         assert result
         assert not result.up
+
+    def test_system_status_command_polling_device_up(self, mocker, mock_topology):
+        """
+        Given:
+            - polling=true and a target device that is already up (operational_mode == 'normal').
+        When:
+            - Running system_status_command.
+        Then:
+            - Polling stops immediately (no scheduled_command) and the SystemStatus context is returned.
+        """
+        from CommonServerPython import ScheduledCommand
+        from Panorama import CheckSystemStatus, system_status_command
+
+        mocker.patch("Panorama.get_topology", return_value=mock_topology)
+        mocker.patch(
+            "Panorama.system_status",
+            return_value=CheckSystemStatus(hostid=MOCK_PANORAMA_SERIAL, up=True),
+        )
+        mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+
+        args = {"target": MOCK_PANORAMA_SERIAL, "polling": "true"}
+        result = system_status_command(args)
+
+        assert result.scheduled_command is None
+        assert result.outputs == {"hostid": MOCK_PANORAMA_SERIAL, "up": True}
+
+    def test_system_status_command_polling_device_down(self, mocker, mock_topology):
+        """
+        Given:
+            - polling=true and a target device that is not yet available (up=False).
+        When:
+            - Running system_status_command.
+        Then:
+            - A scheduled_command is returned so polling continues.
+            - A "waiting" message is shown.
+            - The last known status (up=False) is still written to context so that on
+              polling timeout the war-room shows the final PANOS.SystemStatus entry.
+        """
+        from CommonServerPython import ScheduledCommand
+        from Panorama import CheckSystemStatus, system_status_command
+
+        mocker.patch("Panorama.get_topology", return_value=mock_topology)
+        mocker.patch(
+            "Panorama.system_status",
+            return_value=CheckSystemStatus(hostid=MOCK_PANORAMA_SERIAL, up=False),
+        )
+        mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+
+        args = {"target": MOCK_PANORAMA_SERIAL, "polling": "true"}
+        result = system_status_command(args)
+
+        assert result.scheduled_command is not None
+        assert "Waiting for device" in (result.readable_output or "")
+        # Last-known status must still be in context so a polling timeout leaves the
+        # war-room with a meaningful final entry rather than only a waiting message.
+        assert result.outputs == {"hostid": MOCK_PANORAMA_SERIAL, "up": False}
+
+    def test_system_status_command_no_polling(self, mocker, mock_topology):
+        """
+        Given:
+            - polling not provided (default false) even if the device is not up.
+        When:
+            - Running system_status_command.
+        Then:
+            - The command does not poll (no scheduled_command) and returns the current status as-is.
+        """
+        from Panorama import CheckSystemStatus, system_status_command
+
+        mocker.patch("Panorama.get_topology", return_value=mock_topology)
+        mocker.patch(
+            "Panorama.system_status",
+            return_value=CheckSystemStatus(hostid=MOCK_PANORAMA_SERIAL, up=False),
+        )
+
+        args = {"target": MOCK_PANORAMA_SERIAL}
+        result = system_status_command(args)
+
+        assert result.scheduled_command is None
+        assert result.outputs == {"hostid": MOCK_PANORAMA_SERIAL, "up": False}
 
 
 class TestFirewallCommand:
@@ -3819,6 +4161,7 @@ def test_panorama_apply_dns_command(mocker, args, expected_request_params, reque
 
     Panorama.API_KEY = "fakeAPIKEY!"
     Panorama.DEVICE_GROUP = "fakeDeviceGroup"
+    Panorama.VSYS = ""  # ensure the Panorama (device-group) xpath is used, not a leaked firewall VSYS
     request_mock = mocker.patch.object(requests, "request", return_value=request_result)
     command_result: CommandResults = apply_dns_signature_policy_command(args)
 
@@ -3841,6 +4184,7 @@ def test_panorama_apply_dns_command2(mocker):
 
     Panorama.API_KEY = "fakeAPIKEY!"
     Panorama.DEVICE_GROUP = "fakeDeviceGroup"
+    Panorama.VSYS = ""  # ensure the Panorama (device-group) xpath is used, not a leaked firewall VSYS
     request_mock = mocker.patch.object(Panorama, "http_request", return_value={})
     apply_dns_signature_policy_command({"anti_spyware_profile_name": "fake_profile_name"})
 
@@ -9012,21 +9356,35 @@ class TestDynamicUpdateCommands:
         elif update_phase == "start-with-polling":
             """
             Run the command for the first time, with an API response indicating the job has been enqueued.
-            Verify that the response contains a ScheduledCommand object to poll for job status.
+            Verify that the response contains a ScheduledCommand object to poll for job status and that the
+            default polling timeout/interval are applied when not provided.
             """
             panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337"})
             returned_results = mock_command_return.call_args[0][0]
             assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+            assert returned_results.scheduled_command._timeout == "3600"
+            assert returned_results.scheduled_command._next_run == "30"
 
         elif update_phase == "check":
             """
             Run the command as if a download has been started and check for the status of it.
             Verify that when the API response shows that the job is still pending that a ScheduledCommand
-            object is returned to continue to poll for the download to complete.
+            object is returned to continue to poll for the download to complete, honoring custom
+            timeout_in_seconds/interval_in_seconds when provided.
             """
-            panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "job_id": job_id})
+            panorama_download_latest_dynamic_update_command(
+                DynamicUpdateType.ANTIVIRUS,
+                {
+                    "target": "1337",
+                    "job_id": job_id,
+                    "timeout_in_seconds": "1200",
+                    "interval_in_seconds": "45",
+                },
+            )
             returned_results = mock_command_return.call_args[0][0]
             assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+            assert returned_results.scheduled_command._timeout == "1200"
+            assert returned_results.scheduled_command._next_run == "45"
 
         elif update_phase == "finished":
             """
@@ -9213,21 +9571,35 @@ class TestDynamicUpdateCommands:
         elif install_phase == "start-with-polling":
             """
             Run the command for the first time, with an API response indicating the job has been enqueued.
-            Verify that the response contains a ScheduledCommand object to poll for job status.
+            Verify that the response contains a ScheduledCommand object to poll for job status and that the
+            default polling timeout/interval are applied when not provided.
             """
             panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337"})
             returned_results = mock_command_return.call_args[0][0]
             assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+            assert returned_results.scheduled_command._timeout == "3600"
+            assert returned_results.scheduled_command._next_run == "30"
 
         elif install_phase == "check":
             """
             Run the command as if an install has been started and check for the status of it.
             Verify that when the API response shows that the job is still pending that a ScheduledCommand
-            object is returned to continue to poll for the install to complete.
+            object is returned to continue to poll for the install to complete, honoring custom
+            timeout_in_seconds/interval_in_seconds when provided.
             """
-            panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "job_id": job_id})
+            panorama_install_latest_dynamic_update_command(
+                DynamicUpdateType.ANTIVIRUS,
+                {
+                    "target": "1337",
+                    "job_id": job_id,
+                    "timeout_in_seconds": "1200",
+                    "interval_in_seconds": "45",
+                },
+            )
             returned_results = mock_command_return.call_args[0][0]
             assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+            assert returned_results.scheduled_command._timeout == "1200"
+            assert returned_results.scheduled_command._next_run == "45"
 
         elif install_phase == "finished":
             """
@@ -9494,6 +9866,112 @@ def test_get_hitcounts_filters_param(unused_only, no_new_hits_since, expected_co
         if no_new_hits_since is not None:
             last_hit_dt = datetime.strptime(r.last_hit_timestamp, "%Y-%m-%dT%H:%M:%SZ")
             assert last_hit_dt <= no_new_hits_since
+
+
+@pytest.mark.parametrize(
+    "pre_post, expected_names",
+    [
+        # No filter -> every rule comes back: pre-pushed, post-pushed and local.
+        (None, {"PreRule", "PostRule", "LocalRule"}),
+        # pre_rulebase -> only the Panorama-pushed pre-rulebase rule.
+        ("pre_rulebase", {"PreRule"}),
+        # post_rulebase -> only the Panorama-pushed post-rulebase rule.
+        ("post_rulebase", {"PostRule"}),
+    ],
+)
+def test_get_hitcounts_pre_post_filter(pre_post, expected_names, mocker):
+    """Validate the new ``pre_post`` filter in ``FirewallCommand.get_hitcounts``.
+
+    Given:
+        - A topology with one firewall and one vsys.
+        - The Panorama-pushed policy enrichment returns one rule in ``pre-rulebase`` ("PreRule")
+          and one rule in ``post-rulebase`` ("PostRule"); these populate ``result.position``
+          with the underscore form ("pre_rulebase" / "post_rulebase").
+        - The ``show rule-hit-count`` response contains those two pushed rules plus a local
+          firewall rule ("LocalRule") that is NOT present in the pushed-policy map.
+
+    When:
+        - Calling ``get_hitcounts`` with the ``pre_post`` kwarg unset / "pre_rulebase" / "post_rulebase".
+
+    Then:
+        - With no filter, all three rules are returned.
+        - With a ``pre_post`` value set, only the matching Panorama-pushed rule is returned;
+          the rule from the other position AND the local rule are both excluded.
+    """
+    import xml.etree.ElementTree as ET
+    from Panorama import FirewallCommand, PushedSharedPolicy
+
+    # Topology with a single firewall and a single vsys.
+    mock_firewall = mocker.Mock()
+    mock_firewall.id = "FW1"
+    mock_firewall.serial = "111111111111111"
+    mock_firewall.hostname = None
+
+    mock_topology = mocker.Mock()
+    mock_topology.firewalls.return_value = [mock_firewall]
+    mock_topology.panorama_objects = []
+
+    mocker.patch.object(FirewallCommand, "get_vsys_list", return_value=["vsys1"])
+
+    # Stub the pushed-policy lookup directly with the underscore-position form that the real
+    # code stores on ``result.position``. This avoids re-asserting XML-parsing behavior and
+    # isolates the test to the pre_post filter logic.
+    pushed_map = {
+        "PreRule": PushedSharedPolicy(hostid="FW1", name="PreRule", policy_type="security", position="pre_rulebase", loc="DG-1"),
+        "PostRule": PushedSharedPolicy(
+            hostid="FW1", name="PostRule", policy_type="security", position="post_rulebase", loc="DG-1"
+        ),
+    }
+    mocker.patch.object(FirewallCommand, "get_pushed_shared_policy_rules", return_value=pushed_map)
+
+    # Fake ``show rule-hit-count`` response containing all three rules (pre, post, local).
+    def fake_run_op(firewall, cmd, cmd_xml=False):
+        xml_root = ET.Element("show")
+        rhc = ET.SubElement(xml_root, "rule-hit-count")
+        vsys_elem = ET.SubElement(rhc, "vsys")
+        vsys_name_elem = ET.SubElement(vsys_elem, "vsys-name")
+        entry = ET.SubElement(vsys_name_elem, "entry", name="vsys1")
+        rb = ET.SubElement(entry, "rule-base")
+        rb_entry = ET.SubElement(rb, "entry", name="security")
+        rules_elem = ET.SubElement(rb_entry, "rules")
+
+        for name in ("PreRule", "PostRule", "LocalRule"):
+            rule = ET.SubElement(rules_elem, "entry", name=name)
+            ET.SubElement(rule, "hit_count").text = "10"
+            ET.SubElement(rule, "last_hit_timestamp").text = "1742482324"
+            ET.SubElement(rule, "latest").text = "false"
+            ET.SubElement(rule, "last_reset_timestamp").text = "0"
+            ET.SubElement(rule, "first_hit_timestamp").text = "0"
+            ET.SubElement(rule, "rule_creation_timestamp").text = "0"
+            ET.SubElement(rule, "rule_modification_timestamp").text = "0"
+
+        return xml_root
+
+    mocker.patch("Panorama.run_op_command", side_effect=fake_run_op)
+    mocker.patch("Panorama.demisto.debug")
+    mocker.patch("Panorama.demisto.callingContext", new={"context": {"IntegrationInstance": "test_instance"}})
+
+    results = FirewallCommand.get_hitcounts(
+        mock_topology,
+        "security",
+        "vsys1",
+        "all",
+        no_new_hits_since=None,
+        device_filter_string=None,
+        target=None,
+        unused_only="false",
+        pre_post=pre_post,
+    )
+
+    returned_names = {r.name for r in results}
+    assert returned_names == expected_names
+
+    # When the filter is set, every returned row must come from Panorama at the requested position
+    # — local rules and rules from the other rulebase must be excluded.
+    if pre_post is not None:
+        for r in results:
+            assert r.is_from_panorama is True
+            assert r.position == pre_post
 
 
 def test_get_hitcounts_vsys_specific_enrichment(mocker):

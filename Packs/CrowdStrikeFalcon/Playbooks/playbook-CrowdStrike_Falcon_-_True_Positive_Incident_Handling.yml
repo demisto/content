@@ -1,8 +1,8 @@
 id: CrowdStrike Falcon - True Positive Incident Handling
 version: -1
-fromversion: 6.5.0
+fromversion: 6.10.0
 name: CrowdStrike Falcon - True Positive Incident Handling
-description: This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles a CrowdStrike incident that was determined to be a true positive by the analyst. Actions include isolating the host, blocking the indicator by the EDR, and tagging it.
+description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. \nThis playbook handles a CrowdStrike case or detection that was determined to be a true positive by the analyst. Actions include isolating the host, blocking the indicator by the EDR, and tagging it."
 starttaskid: '0'
 tasks:
   '0':
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": -1540
+          "x": 2055,
+          "y": 50
         }
       }
     note: false
@@ -54,8 +54,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -150,
-          "y": -140
+          "x": 1850,
+          "y": 1907.5
         }
       }
     note: false
@@ -121,8 +121,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -150,
-          "y": 20
+          "x": 1850,
+          "y": 2075
         }
       }
     note: false
@@ -159,8 +159,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -360,
-          "y": 735
+          "x": 2392.5,
+          "y": 2425
         }
       }
     note: false
@@ -190,8 +190,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -150,
-          "y": 920
+          "x": 1942.5,
+          "y": 2600
         }
       }
     note: false
@@ -221,8 +221,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 30
+          "x": 50,
+          "y": 1740
         }
       }
     note: false
@@ -266,8 +266,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 620,
-          "y": 760
+          "x": 50,
+          "y": 2425
         }
       }
     note: false
@@ -308,8 +308,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1550,
-          "y": 510
+          "x": 910,
+          "y": 2425
         }
       }
     note: false
@@ -339,8 +339,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 930
+          "x": 142.5,
+          "y": 2600
         }
       }
     note: false
@@ -370,8 +370,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 1080
+          "x": 1482.5,
+          "y": 2760
         }
       }
     note: false
@@ -402,8 +402,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 1560
+          "x": 1482.5,
+          "y": 3445
         }
       }
     note: false
@@ -416,31 +416,31 @@ tasks:
     continueonerrortype: ""
   '14':
     id: '14'
-    taskid: bfacf224-5d44-475f-8704-2a208fc11e17
+    taskid: 4ac9f5e9-dd1d-4de3-930d-9b3f2f125457
     type: regular
     task:
-      id: bfacf224-5d44-475f-8704-2a208fc11e17
+      id: 4ac9f5e9-dd1d-4de3-930d-9b3f2f125457
       version: -1
-      name: Resolve CS incident
-      description: Resolves the CrowdStrike Falcon incident.
-      script: '|||cs-falcon-resolve-incident'
+      name: Resolve CS case
+      description: Resolves or updates a case.
+      script: '|||cs-falcon-resolve-case'
       type: regular
       iscommand: true
       brand: ''
     nexttasks:
       '#none#':
-      - '12'
+      - "65"
     scriptarguments:
-      ids:
-        simple: ${incident.externalsystemid}
       status:
-        simple: Closed
+        simple: closed
+      id:
+        simple: ${incident.externalsystemid}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 530,
-          "y": 1390
+          "x": 1697.5,
+          "y": 3095
         }
       }
     note: false
@@ -478,8 +478,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1390
+          "x": 1267.5,
+          "y": 3270
         }
       }
     note: false
@@ -492,24 +492,24 @@ tasks:
     continueonerrortype: ""
   '20':
     id: '20'
-    taskid: 13e4742d-d344-4795-874e-bfe7f3d19013
+    taskid: 5834c4f3-3623-4e43-99dd-d582fe2facfb
     type: condition
     task:
-      id: 13e4742d-d344-4795-874e-bfe7f3d19013
+      id: 5834c4f3-3623-4e43-99dd-d582fe2facfb
       version: -1
-      name: Was this an incident or alert?
+      name: Was this a case or a detection?
       type: condition
       iscommand: false
       brand: ''
-      description: 'Was this an incident or alert?'
+      description: 'Was this a case or a detection?'
     nexttasks:
       detection:
       - '15'
-      incident:
-      - '14'
+      ngsiem_case:
+      - "14"
     separatecontext: false
     conditions:
-    - label: incident
+    - label: ngsiem_case
       condition:
       - - operator: isEqualString
           left:
@@ -518,7 +518,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: incident
+              simple: ngsiem_case
     - label: detection
       condition:
       - - operator: isEqualString
@@ -532,8 +532,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 1220
+          "x": 1482.5,
+          "y": 2920
         }
       }
     note: false
@@ -569,8 +569,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -360,
-          "y": 320
+          "x": 2280,
+          "y": 2250
         }
       }
     note: false
@@ -606,8 +606,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 320
+          "x": 1830,
+          "y": 2250
         }
       }
     note: false
@@ -645,8 +645,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2020,
-          "y": 510
+          "x": 2842.5,
+          "y": 2425
         }
       }
     note: false
@@ -676,8 +676,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": -140
+          "x": 2730,
+          "y": 1907.5
         }
       }
     note: false
@@ -707,8 +707,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 145
+          "x": 2730,
+          "y": 2075
         }
       }
     note: false
@@ -778,8 +778,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 920
+          "x": 2730,
+          "y": 2600
         }
       }
     note: false
@@ -818,8 +818,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 300,
-          "y": 510
+          "x": 1370,
+          "y": 2425
         }
       }
     note: false
@@ -849,8 +849,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 300,
-          "y": 30
+          "x": 1257.5,
+          "y": 1907.5
         }
       }
     note: false
@@ -894,8 +894,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 300,
-          "y": 150
+          "x": 1257.5,
+          "y": 2075
         }
       }
     note: false
@@ -925,8 +925,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 300,
-          "y": 930
+          "x": 1257.5,
+          "y": 2600
         }
       }
     note: false
@@ -966,8 +966,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 735
+          "x": 1942.5,
+          "y": 2425
         }
       }
     note: false
@@ -1029,8 +1029,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1110,
-          "y": 510
+          "x": 50,
+          "y": 2250
         }
       }
     note: false
@@ -1074,8 +1074,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1020,
-          "y": 760
+          "x": 480,
+          "y": 2425
         }
       }
     note: false
@@ -1105,8 +1105,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 150
+          "x": 50,
+          "y": 1900
         }
       }
     note: false
@@ -1183,8 +1183,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 320
+          "x": 50,
+          "y": 2075
         }
       }
     note: false
@@ -1226,8 +1226,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 315
+          "x": 2730,
+          "y": 2250
         }
       }
     note: false
@@ -1259,8 +1259,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": -130
+          "x": 490,
+          "y": 1580
         }
       }
     note: false
@@ -1292,8 +1292,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": -1410
+          "x": 2055,
+          "y": 210
         }
       }
     note: false
@@ -1325,8 +1325,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": -280
+          "x": 1830,
+          "y": 1420
         }
       }
     note: false
@@ -1396,8 +1396,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": -940
+          "x": 1717.5,
+          "y": 720
         }
       }
     note: false
@@ -1454,8 +1454,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": -1280
+          "x": 2055,
+          "y": 370
         }
       }
     note: false
@@ -1485,8 +1485,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": -1110
+          "x": 2280,
+          "y": 545
         }
       }
     note: false
@@ -1638,8 +1638,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 260,
-          "y": -600
+          "x": 1830,
+          "y": 1070
         }
       }
     note: false
@@ -1675,8 +1675,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 260,
-          "y": -450
+          "x": 1830,
+          "y": 1245
         }
       }
     note: false
@@ -1731,8 +1731,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": -770
+          "x": 1717.5,
+          "y": 895
         }
       }
     note: false
@@ -1785,8 +1785,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": -940
+          "x": 2280,
+          "y": 720
         }
       }
     note: false
@@ -1818,8 +1818,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 320
+          "x": 1145,
+          "y": 2250
         }
       }
     note: false
@@ -1847,6 +1847,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 7bfa73c9-d822-4f43-b912-2cb17aeba353
+    type: regular
+    task:
+      id: 7bfa73c9-d822-4f43-b912-2cb17aeba353
+      version: -1
+      name: Add CS case tag
+      description: Adds tags to the specified case.
+      script: '|||cs-falcon-add-case-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      id:
+        simple: ${incident.externalsystemid}
+      tags:
+        simple: ${inputs.CloseNotes}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1697.5,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1854,10 +1891,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3165,
-        "width": 2760,
-        "x": -360,
-        "y": -1540
+        "height": 3455,
+        "width": 3172.5,
+        "x": 50,
+        "y": 50
       }
     }
   }
@@ -2009,6 +2046,5 @@ tests:
 - Test - CrowdStrike Falcon
 contentitemexportablefields:
   contentitemfields: {}
-system: true
 marketplaces:
 - xsoar

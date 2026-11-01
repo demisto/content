@@ -16,6 +16,32 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from datetime import datetime, timedelta
 
+
+# Site-specific allowlist for safe pickle loading — extends the shared base with classes this site needs.
+_ALLOWED_CLASSES = BASE_PICKLE_ALLOWED_CLASSES | {
+    # Pandas internals (legacy BlockManager-based format)
+    ("pandas.core.internals.managers", "BlockManager"),
+    ("pandas.core.internals.blocks", "IntBlock"),
+    ("pandas.core.internals.blocks", "FloatBlock"),
+    ("pandas.core.internals.blocks", "ObjectBlock"),
+    ("pandas.core.internals.blocks", "new_block"),
+    ("pandas._libs.internals", "_unpickle_block"),
+    # Python 2 compatibility aliases
+    ("__builtin__", "dict"),
+    ("__builtin__", "list"),
+    ("__builtin__", "tuple"),
+    ("__builtin__", "set"),
+    ("__builtin__", "str"),
+    ("__builtin__", "int"),
+    ("__builtin__", "float"),
+    ("__builtin__", "bool"),
+    ("__builtin__", "bytes"),
+    ("copy_reg", "_reconstructor"),
+}
+
+# Safe top-level modules whose internal submodules are all data-science code.
+_SAFE_MODULE_PREFIXES = {"numpy", "pandas"}
+
 # disable-secrets-detection-start
 FEATURES_OTHERS_STRING = (
     'x\x9c\xed\x9d\t\\U\xc5\xfe\xc0\xd1\\\x11\x17\x14\x85\x14\x91\x14\x11\xd7\xc0]\x11/\x17\xc1\r5C\x8f\x99\x1b\xb1\xe9\xc5\x009pIs/WJ[\xdc\xcb\xb5rIRSS4\xd3\x02\xcd\xad\xcc\xd44\xf7\x9e\xfbn\x9a\xf6\xf4Yf\xef\x9c3\xcc9\x9e9w\xeeY\xef\xbd \xf3\xfb\xbc\xff\xfb\xbe3g\xe67\xbf\xf9\xfd~\xf3\x9b9'  # noqa: E501
@@ -646,7 +672,12 @@ def has_phishing_labels(incident):
 
 
 def load_compressed_features(features_str):
-    return pickle.loads(zlib.decompress(features_str))
+    try:
+        return safe_pickle_loads(zlib.decompress(features_str), _ALLOWED_CLASSES, _SAFE_MODULE_PREFIXES)
+    except UnsafePickleError as e:
+        return_error("Security: blocked unsafe pickle payload: %s" % str(e))
+    except Exception as e:
+        return_error("Unable to load feature data: %s" % str(e))
 
 
 def get_incident_email_labels(incident):

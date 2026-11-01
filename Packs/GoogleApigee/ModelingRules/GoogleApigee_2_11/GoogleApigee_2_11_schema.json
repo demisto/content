@@ -1,0 +1,28 @@
+{
+    "google_apigee_raw": {
+        "operation": {
+            "type": "string",
+            "is_array": false
+        },
+        "request": {
+            "type": "string",
+            "is_array": false
+        },
+        "requestUri": {
+            "type": "string",
+            "is_array": false
+        },
+        "responseCode": {
+            "type": "string",
+            "is_array": false
+        },
+        "SOURCE_LOG_TYPE": {
+            "type": "string",
+            "is_array": false
+        },
+        "user": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

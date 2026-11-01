@@ -9,3 +9,6 @@ ignore=RN113,RN114
 
 [file:2_0_0.md]
 ignore=RN113,RN114
+
+[file:pack_metadata.json]
+ignore=PA134

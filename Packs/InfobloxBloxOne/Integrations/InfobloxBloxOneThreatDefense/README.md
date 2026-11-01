@@ -1,4 +1,4 @@
-Infoblox Threat Defense with DDI integration leverages DNS as the first line of defense to detect and block cyber threats, while also using threat intelligence to manage insight incident response and enrich indicators.
+Infoblox Threat Defense with DDI integration leverages DNS as the first line of defense to detect and block cyber threats, while also using threat intelligence to manage IQ for TD Insight incident response and enrich indicators.
 This integration was integrated and tested with version 1.0.0 of Infoblox Threat Defense with DDI.
 
 ## Configure Infoblox Threat Defense with DDI in Cortex
@@ -10,10 +10,13 @@ This integration was integrated and tested with version 1.0.0 of Infoblox Threat
 | Create relationships | Create relationships between indicators as part of Enrichment. | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
-| Ingestion Type | Select the ingestion type to fetch as XSOAR incident. Default is SOC Insight. | False |
-| SOC Insight Status | Retrieve the SOC Insights as specified status. | False |
-| SOC Insight Threat Type | Retrieve the SOC Insights as specified threat type. | False |
-| SOC Insight Priority Level | Retrieve the SOC Insights as specified priority level. | False |
+| Ingestion Type | Select the ingestion type to fetch as Cortex XSOAR incident. Default is IQ for TD Insight. 'SOC Insight' is deprecated. | False |
+| IQ for TD Insight Status | Retrieve the IQ for TD Insights matching the specified workflow status. | False |
+| IQ for TD Insight Severity | Retrieve the IQ for TD Insights matching the specified severity. | False |
+| IQ for TD Insight Threat Properties | Retrieve the IQ for TD Insights matching the specified threat properties \(free text\), e.g. malware, phishing, ransomware. | False |
+| Deprecated - SOC Insight Status | Retrieve the SOC Insights as specified status. | False |
+| Deprecated - SOC Insight Threat Type | Retrieve the SOC Insights as specified threat type. | False |
+| Deprecated - SOC Insight Priority Level | Retrieve the SOC Insights as specified priority level. | False |
 | DNS Security Event Feed Name | Retrieve the DNS Security Events as specified feed name or custom list name. | False |
 | DNS Security Event Network | Retrieve the DNS Security Events as specified network name. | False |
 | DNS Security Event Policy Action | Retrieve the DNS Security Events as specified policy action. | False |
@@ -23,8 +26,8 @@ This integration was integrated and tested with version 1.0.0 of Infoblox Threat
 | DNS Security Event Threat Family | Retrieve the DNS Security Events as specified threat family. | False |
 | DNS Security Event Threat Indicator | Retrieve the DNS Security Events as specified threat indicator. | False |
 | DNS Security Event Threat Level | Retrieve the DNS Security Events as specified threat level. | False |
-| Max Fetch | The maximum number of SOC Insights or DNS Security Events to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200. | False |
-| First fetch timestamp | The date or relative timestamp from which to begin fetching incidents. Note: This parameter is only applicable for DNS Security Events.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z. | False |
+| Max Fetch | The maximum number of SOC Insights, DNS Security Events, or IQ for TD Insights to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200. Default is 50. | False |
+| First fetch timestamp | The date or relative timestamp from which to begin fetching incidents.<br/><br/>Note: This parameter is only applicable for DNS Security Events and IQ for TD Insights. Default is '24 hours'.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z. | False |
 | Incidents Fetch Interval |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -45,23 +48,23 @@ The Dossier Lookup API returns detailed information on the specified indicator f
 
 #### Input
 
-| **Argument Name**   | **Description**                                                                                                                                                                                                               | **Required** |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| indicator_type      | The type of indcator to search by. Possible values are: host, ip, url, hash, email.                                                                                                                                           | Required     |
-| value               | The indicator to search on.                                                                                                                                                                                                   | Required     |
-| sources             | The sources to query. Multiple sources can be specified. If no source is specified, the call will search on all available sources. (You can see the list of the available sources by running bloxone-td-dossier-source-list). | Optional     |
-| interval_in_seconds | The interval in seconds between each poll. Default is 10.                                                                                                                                                                     | Optional     |
-| timeout             | The timeout in seconds until polling ends. Default is 600.                                                                                                                                                                    | Optional     |
-| job_id              | used for polling.                                                                                                                                                                                                             | Optional     |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_type | The type of indicator to search by. Possible values are: host, ip, url, hash, email. | Required |
+| value | The indicator to search on. | Required |
+| sources | The sources to query. Multiple sources can be specified. If no source is specified, the call will search on all available sources. (You can see the list of the available sources by running bloxone-td-dossier-source-list). | Optional |
+| interval_in_seconds | The interval in seconds between each poll. Default is 10. | Optional |
+| timeout | The timeout in seconds until polling ends. Default is 600. | Optional |
+| job_id | used for polling. | Optional |
 
 #### Context Output
 
-| **Path**                        | **Type** | **Description**         |
-| ------------------------------- | -------- | ----------------------- |
-| BloxOneTD.DossierLookup.source  | String   | The Dossier source.     |
-| BloxOneTD.DossierLookup.target  | String   | The targeted indicator. |
-| BloxOneTD.DossierLookup.task_id | String   | The Dossier task ID.    |
-| BloxOneTD.DossierLookup.type    | String   | The indicator type.     |
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| BloxOneTD.DossierLookup.source | String | The Dossier source. |
+| BloxOneTD.DossierLookup.target | String | The targeted indicator. |
+| BloxOneTD.DossierLookup.task_id | String | The Dossier task ID. |
+| BloxOneTD.DossierLookup.type | String | The indicator type. |
 
 #### Command example
 
@@ -143,9 +146,9 @@ There are no input arguments for this command.
 
 #### Context Output
 
-| **Path**                | **Type** | **Description**            |
-| ----------------------- | -------- | -------------------------- |
-| BloxOneTD.DossierSource | String   | Available Dossier sources. |
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| BloxOneTD.DossierSource | String | Available Dossier sources. |
 
 #### Command example
 
@@ -190,23 +193,23 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                  | **Required** |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| filter            | The free query filter argument.                                                                                                                                  | Optional     |
-| target_domain     | Filter by target domain.                                                                                                                                         | Optional     |
-| detected_at       | Filter by values that are greater than or equal to the given value. You can use ISO format (e.g. '2023-02-14T00:11:22Z') or use a relative time (e.g. "3 days"). | Optional     |
-| limit             | Maximum number of results to return from the query. Default is 50.                                                                                               | Optional     |
-| offset            | Return results starting at this offset. Should be an integer. Default is 0.                                                                                      | Optional     |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | The free query filter argument. | Optional |
+| target_domain | Filter by target domain. | Optional |
+| detected_at | Filter by values that are greater than or equal to the given value. You can use ISO format (e.g. '2023-02-14T00:11:22Z') or use a relative time (e.g. "3 days"). | Optional |
+| limit | Maximum number of results to return from the query. Default is 50. | Optional |
+| offset | Return results starting at this offset. Should be an integer. Default is 0. | Optional |
 
 #### Context Output
 
-| **Path**                                   | **Type** | **Description**                                       |
-| ------------------------------------------ | -------- | ----------------------------------------------------- |
-| BloxOneTD.LookalikeDomain.detected_at      | Date     | The date of the lookalike detection.                  |
-| BloxOneTD.LookalikeDomain.lookalike_domain | String   | The lookalike domain.                                 |
-| BloxOneTD.LookalikeDomain.lookalike_host   | String   | The lookalike host.                                   |
-| BloxOneTD.LookalikeDomain.reason           | String   | The reason for the detection.                         |
-| BloxOneTD.LookalikeDomain.target_domain    | String   | The domain that was targeted by the lookalike domain. |
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| BloxOneTD.LookalikeDomain.detected_at | Date | The date of the lookalike detection. |
+| BloxOneTD.LookalikeDomain.lookalike_domain | String | The lookalike domain. |
+| BloxOneTD.LookalikeDomain.lookalike_host | String | The lookalike host. |
+| BloxOneTD.LookalikeDomain.reason | String | The reason for the detection. |
+| BloxOneTD.LookalikeDomain.target_domain | String | The domain that was targeted by the lookalike domain. |
 
 #### Command example
 
@@ -1477,7 +1480,7 @@ Enrich a MAC address with DHCP lease information.
 ### infobloxcloud-soc-insight-list
 
 ***
-List SOC Insights from Infoblox Cloud.
+Deprecated. Use 'infobloxcloud-iq-for-td-insight-list' instead. List SOC Insights from Infoblox Cloud.
 
 #### Base Command
 
@@ -1571,7 +1574,7 @@ List SOC Insights from Infoblox Cloud.
 ### infobloxcloud-soc-insight-event-list
 
 ***
-List events for a specific SOC Insight.
+Deprecated. Use 'infobloxcloud-iq-for-td-insight-event-list' instead. List events for a specific SOC Insight.
 
 #### Base Command
 
@@ -1677,7 +1680,7 @@ List events for a specific SOC Insight.
 ### infobloxcloud-soc-insight-indicator-list
 
 ***
-List indicators for a specific SOC Insight.
+Deprecated. Use 'infobloxcloud-iq-for-td-insight-indicator-list' instead. List indicators for a specific SOC Insight.
 
 #### Base Command
 
@@ -1754,7 +1757,7 @@ List indicators for a specific SOC Insight.
 ### infobloxcloud-soc-insight-asset-list
 
 ***
-List assets for a specific SOC Insight.
+Deprecated. Use 'infobloxcloud-iq-for-td-insight-asset-list' instead. List assets for a specific SOC Insight.
 
 #### Base Command
 
@@ -1833,7 +1836,7 @@ List assets for a specific SOC Insight.
 ### infobloxcloud-soc-insight-comment-list
 
 ***
-List comments for a specific SOC Insight.
+Deprecated. No available replacement. List comments for a specific SOC Insight.
 
 #### Base Command
 
@@ -1892,3 +1895,833 @@ List comments for a specific SOC Insight.
 >|---|---|---|---|
 >| abc.zyx.com | 2025-08-02T08:39:43.675 | Active | <br/>Asset IP: 0.0.0.0<br/>Scan ID: None<br/>Reference ID: None<br/>Qualys Scan Report URL: https:<span>//</span>example.com/fo/report/report\_view.php?&id=None<br/> |
 >| abc.zyx.com | 2025-07-15T05:24:29.803 | Active | <br/>Asset IP: 0.0.0.0<br/>Scan ID: None<br/>Reference ID: None<br/>Qualys Scan Report URL: https:<span>//</span>example.com/fo/report/report\_view.php?&id=None<br/> |
+
+### infobloxcloud-iq-for-td-insight-list
+
+***
+List IQ for TD Insights from Infoblox Cloud.
+
+#### Base Command
+
+`infobloxcloud-iq-for-td-insight-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| status | Filter by the insight's current workflow status. Possible values are: Needs Review, In Progress, Resolved, Reopened, Accepted Risk, False Positive. | Optional |
+| name | Filter by the user-facing insight name (case-insensitive partial match). | Optional |
+| severity | Filter by severity level (case-insensitive match). Possible values are: Critical, High, Medium, Low. | Optional |
+| threat_properties | Threat Property(ies) to search for. Multiple properties queried by specifying comma-separated values.<br/><br/>Example: malware,phishing,ransomware. | Optional |
+| date_created | Filter by the insight creation timestamp. Provide an RFC 3339 date-time value.<br/><br/>Example: 2025-12-19T07:01:56Z. Only insights created on or after this date are returned. | Optional |
+| indicators | Threat indicator(s) to filter by. Multiple indicators queried by specifying comma-separated values. | Optional |
+| assets | Asset(s) to filter by. Multiple assets queried by specifying comma-separated values. | Optional |
+| user | User(s) to filter by. Multiple users queried by specifying comma-separated values. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfobloxCloud.IQForTDInsight.insight_id | String | Unique display identifier for the insight. |
+| InfobloxCloud.IQForTDInsight.name | String | Human-readable name summarizing the threat or attack pattern. |
+| InfobloxCloud.IQForTDInsight.description | String | Detailed description of what the insight represents. |
+| InfobloxCloud.IQForTDInsight.severity | String | Severity level: Critical, High, Medium, or Low. |
+| InfobloxCloud.IQForTDInsight.status | String | Current workflow status of the insight. |
+| InfobloxCloud.IQForTDInsight.date_created | Date | Timestamp when the insight was first created, e.g. 2026-08-19T07:01:56Z. |
+| InfobloxCloud.IQForTDInsight.evaluation_start_date | Date | Start of the time window evaluated to generate this insight. |
+| InfobloxCloud.IQForTDInsight.evaluation_end_date | Date | End of the time window evaluated to generate this insight. |
+| InfobloxCloud.IQForTDInsight.total_events | Number | Total number of DNS security events correlated into this insight. |
+| InfobloxCloud.IQForTDInsight.total_indicators | Number | Total number of distinct threat indicators associated with this insight. |
+| InfobloxCloud.IQForTDInsight.total_assets | Number | Total number of affected assets linked to this insight. |
+| InfobloxCloud.IQForTDInsight.total_users | Number | Total number of unique users whose queries triggered events in this insight. |
+| InfobloxCloud.IQForTDInsight.expiring_in_days | Number | Number of days until this insight expires and is automatically archived. |
+| InfobloxCloud.IQForTDInsight.threat_properties | String | List of threat property labels associated with this insight. |
+| InfobloxCloud.IQForTDInsight.time_saved_seconds | Number | Total time saved in seconds by automated analysis for this insight. |
+
+#### Command example
+
+```!infobloxcloud-iq-for-td-insight-list severity="High"```
+
+#### Context Example
+
+```json
+{
+    "InfobloxCloud": {
+        "IQForTDInsight": [
+            {
+                "total_events": 10,
+                "total_assets": 1,
+                "insight_id": "insight-v2-001",
+                "name": "Sample Malvertising Connection from dummy-host-01",
+                "description": "This insight is raised on observed domains that are generated by specific threat actor based patterns.",
+                "severity": "High",
+                "date_created": "2026-12-01T10:00:00Z",
+                "evaluation_start_date": "2026-11-30T00:00:00Z",
+                "evaluation_end_date": "2026-12-01T00:00:00Z",
+                "total_indicators": 2,
+                "total_users": 1,
+                "status": "In Progress",
+                "expiring_in_days": 2,
+                "threat_properties": [
+                    "Malicious_TDS",
+                    "Suspicious_Generic"
+                ],
+                "time_saved_seconds": 3600
+            },
+            {
+                "total_events": 20,
+                "total_assets": 1,
+                "insight_id": "insight-v2-002",
+                "name": "Sample Beaconing Activity from dummy-host-02",
+                "description": "This insight is raised when an asset contacts a domain consistently across many hours with low volume, suggesting beaconing.",
+                "severity": "Critical",
+                "date_created": "2026-12-01T11:00:00Z",
+                "evaluation_start_date": "2026-11-30T11:00:00Z",
+                "evaluation_end_date": "2026-12-01T11:00:00Z",
+                "total_indicators": 3,
+                "total_users": 1,
+                "status": "Needs Review",
+                "expiring_in_days": 2,
+                "threat_properties": [
+                    "Malicious_Generic"
+                ],
+                "time_saved_seconds": 1800
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### IQ for TD Insights
+>
+>|Insight ID|Name|Description|Severity|Status|Date Created|Evaluation Start Date|Evaluation End Date|Total Events|Total Indicators|Total Assets|Total Users|Expiring In Days|Threat Properties|Time Saved Seconds|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| insight-v2-001 | Sample Malvertising Connection from dummy-host-01 | This insight is raised on observed domains that are generated by specific threat actor based patterns. | High | In Progress | 2026-12-01T10:00:00Z | 2026-11-30T00:00:00Z | 2026-12-01T00:00:00Z | 10 | 2 | 1 | 1 | 2 | Malicious_TDS,<br/>Suspicious_Generic | 3600 |
+>| insight-v2-002 | Sample Beaconing Activity from dummy-host-02 | This insight is raised when an asset contacts a domain consistently across many hours with low volume, suggesting beaconing. | Critical | Needs Review | 2026-12-01T11:00:00Z | 2026-11-30T11:00:00Z | 2026-12-01T11:00:00Z | 20 | 3 | 1 | 1 | 2 | Malicious_Generic | 1800 |
+
+### infobloxcloud-iq-for-td-insight-get
+
+***
+Get the full detail view for a single IQ for TD Insight from Infoblox Cloud.
+
+#### Base Command
+
+`infobloxcloud-iq-for-td-insight-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| insight_id | The unique display identifier of the insight to retrieve. The insight_id can be fetched from the output context path (InfobloxCloud.IQForTDInsight.insight_id) of the 'infobloxcloud-iq-for-td-insight-list command'. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfobloxCloud.IQForTDInsight.insight_id | String | Unique display identifier for the insight. |
+| InfobloxCloud.IQForTDInsight.name | String | Human-readable name summarizing the threat or attack pattern. |
+| InfobloxCloud.IQForTDInsight.description | String | Detailed description of what the insight represents. |
+| InfobloxCloud.IQForTDInsight.severity | String | Severity level: Critical, High, Medium, or Low. |
+| InfobloxCloud.IQForTDInsight.status | String | Current workflow status of the insight. |
+| InfobloxCloud.IQForTDInsight.date_created | Date | Timestamp when the insight was first created. |
+| InfobloxCloud.IQForTDInsight.evaluation_start_date | Date | Start of the time window evaluated to generate this insight. |
+| InfobloxCloud.IQForTDInsight.evaluation_end_date | Date | End of the time window evaluated to generate this insight. |
+| InfobloxCloud.IQForTDInsight.total_events | Number | Total number of DNS security events correlated into this insight. |
+| InfobloxCloud.IQForTDInsight.total_indicators | Number | Total number of distinct threat indicators associated with this insight. |
+| InfobloxCloud.IQForTDInsight.total_assets | Number | Total number of affected assets linked to this insight. |
+| InfobloxCloud.IQForTDInsight.total_verified_assets | Number | Number of assets that have been verified by an analyst. |
+| InfobloxCloud.IQForTDInsight.total_unverified_assets | Number | Number of assets that have not yet been verified. |
+| InfobloxCloud.IQForTDInsight.total_users | Number | Total number of unique users whose queries triggered events in this insight. |
+| InfobloxCloud.IQForTDInsight.expiring_in_days | Number | Number of days until this insight expires and is automatically archived. |
+| InfobloxCloud.IQForTDInsight.threat_properties | String | List of threat property labels associated with this insight. |
+| InfobloxCloud.IQForTDInsight.top_indicators.indicator | String | The threat indicator value \(e.g., domain, IP, URL\). |
+| InfobloxCloud.IQForTDInsight.top_indicators.description | String | Human-readable explanation of why this indicator is significant. |
+| InfobloxCloud.IQForTDInsight.top_indicators.threat_actors.id | String | Unique identifier for the threat actor. |
+| InfobloxCloud.IQForTDInsight.top_indicators.threat_actors.name | String | Name of the threat actor or group. |
+| InfobloxCloud.IQForTDInsight.top_assets.asset | String | Device name or identifier of the affected asset. |
+| InfobloxCloud.IQForTDInsight.top_assets.description | String | Summary of the asset's involvement in the insight. |
+| InfobloxCloud.IQForTDInsight.threat_actors.actor_name | String | Name of the threat actor or group. |
+| InfobloxCloud.IQForTDInsight.threat_actors.actor_description | String | Description of the threat actor's known tactics, techniques, and objectives. |
+| InfobloxCloud.IQForTDInsight.overview | String | AI-generated overview summarizing notable patterns in the insight data. |
+| InfobloxCloud.IQForTDInsight.key_recommendations.id | String | Identifier of the underlying recommendation action row that this displayed recommendation corresponds to. |
+| InfobloxCloud.IQForTDInsight.key_recommendations.recommendation | String | Human-readable recommendation text. |
+| InfobloxCloud.IQForTDInsight.key_recommendations.type | String | Recommendation category: indicator, asset, policy, or empty. |
+| InfobloxCloud.IQForTDInsight.key_recommendations.action_taken | String | Whether the recommended action has already been taken. |
+| InfobloxCloud.IQForTDInsight.time_saved_seconds | Number | Total time saved in seconds by automated analysis for this insight. |
+
+#### Command example
+
+```!infobloxcloud-iq-for-td-insight-get insight_id="insight-v2-001"```
+
+#### Context Example
+
+```json
+{
+    "InfobloxCloud": {
+        "IQForTDInsight": {
+            "insight_id": "insight-v2-001",
+            "name": "Sample Malvertising Connection from dummy-host-01",
+            "description": "This insight is raised on observed domains that are generated by specific threat actor based patterns.",
+            "severity": "High",
+            "date_created": "2026-12-01T10:00:00Z",
+            "evaluation_start_date": "2026-11-30T00:00:00Z",
+            "evaluation_end_date": "2026-12-01T00:00:00Z",
+            "total_events": 10,
+            "total_indicators": 2,
+            "total_assets": 1,
+            "total_verified_assets": 1,
+            "total_unverified_assets": 0,
+            "total_users": 1,
+            "status": "In Progress",
+            "expiring_in_days": 2,
+            "threat_properties": [
+                "Malicious_TDS",
+                "Suspicious_Generic"
+            ],
+            "top_indicators": [
+                {
+                    "indicator": "dummy-malicious-domain.example",
+                    "description": "Domain associated with known malvertising campaign infrastructure.",
+                    "threat_actors": [
+                        {
+                            "id": "actor-001",
+                            "name": "Dummy Threat Group"
+                        }
+                    ]
+                }
+            ],
+            "top_assets": [
+                {
+                    "asset": "dummy-host-01",
+                    "description": "Repeatedly contacted the malicious domain over the evaluation window."
+                }
+            ],
+            "threat_actors": [
+                {
+                    "actor_name": "Dummy Threat Group",
+                    "actor_description": "Known for operating malvertising redirection chains."
+                }
+            ],
+            "overview": [
+                "dummy-host-01 contacted 1 malicious domain 10 times during the evaluation window.",
+                "The activity pattern matches known Dummy Threat Group infrastructure."
+            ],
+            "key_recommendations": [
+                {
+                    "id": "rec-001",
+                    "recommendation": "Block the unblocked threat indicator: dummy-malicious-domain.example",
+                    "type": "indicator",
+                    "action_taken": "false"
+                }
+            ],
+            "time_saved_seconds": 3600
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### IQ for TD Insight Details
+>
+>|Insight ID|Name|Description|Severity|Status|Date Created|Evaluation Start Date|Evaluation End Date|Total Events|Total Indicators|Total Assets|Total Verified Assets|Total Unverified Assets|Total Users|Expiring In Days|Threat Properties|Time Saved Seconds|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| insight-v2-001 | Sample Malvertising Connection from dummy-host-01 | This insight is raised on observed domains that are generated by specific threat actor based patterns. | High | In Progress | 2026-12-01T10:00:00Z | 2026-11-30T00:00:00Z | 2026-12-01T00:00:00Z | 10 | 2 | 1 | 1 | 0 | 1 | 2 | Malicious_TDS,<br/>Suspicious_Generic | 3600 |
+>
+>### Overview
+>
+>|Observation|
+>|---|
+>| dummy-host-01 contacted 1 malicious domain 10 times during the evaluation window. |
+>| The activity pattern matches known Dummy Threat Group infrastructure. |
+>
+>### Top Indicators
+>
+>|Description|Indicator|Threat Actors|
+>|---|---|---|
+>| Domain associated with known malvertising campaign infrastructure. | dummy-malicious-domain.example | Dummy Threat Group (actor-001) |
+>
+>### Top Assets
+>
+>|Asset|Description|
+>|---|---|
+>| dummy-host-01 | Repeatedly contacted the malicious domain over the evaluation window. |
+>
+>### Threat Actors
+>
+>|Actor Description|Actor Name|
+>|---|---|
+>| Known for operating malvertising redirection chains. | Dummy Threat Group |
+>
+>### Key Recommendations
+>
+>|Action Taken|ID|Recommendation|Type|
+>|---|---|---|---|
+>| false | rec-001 | Block the unblocked threat indicator: dummy-malicious-domain.example | indicator |
+
+### infobloxcloud-iq-for-td-insight-status-update
+
+***
+Update the workflow status of an IQ for TD Insight from Infoblox Cloud, with an optional analyst comment.
+
+#### Base Command
+
+`infobloxcloud-iq-for-td-insight-status-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| insight_id | The unique display identifier of the insight whose status should be updated. The insight_id can be fetched from the output context path (InfobloxCloud.IQForTDInsight.insight_id) of the 'infobloxcloud-iq-for-td-insight-list command'. | Required |
+| status | New workflow status to assign to the insight. Possible values are: Needs Review, In Progress, Resolved, Reopened, Accepted Risk, False Positive. | Required |
+| comment | Optional analyst comment explaining the status change. Persisted in the insight's audit trail. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfobloxCloud.IQForTDInsight.insight_id | String | Unique display identifier for the insight. |
+| InfobloxCloud.IQForTDInsight.status | String | The workflow status that was assigned to the insight. |
+| InfobloxCloud.IQForTDInsight.comment | String | The analyst comment recorded with the status change, if provided. |
+
+#### Command example
+
+```!infobloxcloud-iq-for-td-insight-status-update insight_id="insight-v2-001" status="Resolved" comment="Remediated the affected asset."```
+
+#### Context Example
+
+```json
+{
+    "InfobloxCloud": {
+        "IQForTDInsight": {
+            "insight_id": "insight-v2-001",
+            "status": "Resolved",
+            "comment": "Remediated the affected asset."
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Successfully updated the status of IQ for TD Insight 'insight-v2-001' to 'Resolved'.
+
+### infobloxcloud-iq-for-td-insight-asset-list
+
+***
+List assets associated with a specific IQ for TD Insight from Infoblox Cloud.
+
+#### Base Command
+
+`infobloxcloud-iq-for-td-insight-asset-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| insight_id | The unique display identifier of the insight whose assets to list. The insight_id can be fetched from the output context path (InfobloxCloud.IQForTDInsight.insight_id) of the 'infobloxcloud-iq-for-td-insight-list command'. | Required |
+| device_name | Filter assets by device or host name (case-insensitive partial match). | Optional |
+| indicators | Indicator(s) to filter by. Multiple indicators queried by specifying comma-separated values.<br/><br/>Example: dummy-indicator-1.com,dummy-indicator-2.com. | Optional |
+| users | User(s) to filter by. Multiple users queried by specifying comma-separated values.<br/><br/>Example: dummy-user-1,dummy-user-2. | Optional |
+| ip_address | IP address(es) to filter by. Multiple IP addresses queried by specifying comma-separated values.<br/><br/>Example: 0.0.0.0,0.0.0.1. | Optional |
+| is_verified | Filter by asset verification state. Set to True to return only verified assets, or False for unverified assets only. Omit to return both. Possible values are: True, False. | Optional |
+| limit | Maximum number of asset records to return per request. Must be a positive integer. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfobloxCloud.IQForTDInsightAsset.insight_id | String | The unique display identifier of the insight this asset belongs to. |
+| InfobloxCloud.IQForTDInsightAsset.device_name | String | Hostname or device name of the asset, when known. |
+| InfobloxCloud.IQForTDInsightAsset.ip_address | String | IP addresses observed for this asset during the insight evaluation window. |
+| InfobloxCloud.IQForTDInsightAsset.mac_address | String | MAC addresses observed for this asset, when available from DHCP or device telemetry. |
+| InfobloxCloud.IQForTDInsightAsset.is_verified | Boolean | True when the asset has been matched to an inventory record; false when only an unverified IP/MAC observation is available. |
+| InfobloxCloud.IQForTDInsightAsset.is_risky | Boolean | True when an analyst has flagged this asset as risky for the insight; false otherwise. |
+| InfobloxCloud.IQForTDInsightAsset.total_events | Number | Number of DNS security events from this asset that contributed to the insight. |
+| InfobloxCloud.IQForTDInsightAsset.indicators | String | Threat indicators \(e.g., malicious domains, IPs, URLs\) this asset interacted with. |
+| InfobloxCloud.IQForTDInsightAsset.users | String | Users whose activity on this asset triggered events in the insight. |
+| InfobloxCloud.IQForTDInsightAsset.locations | String | Geographic locations \(city, region, or country\) associated with the asset. |
+| InfobloxCloud.IQForTDInsightAsset.first_detected | Date | Timestamp of the earliest event involving this asset within the insight. |
+| InfobloxCloud.IQForTDInsightAsset.last_detected | Date | Timestamp of the most recent event involving this asset within the insight. |
+| InfobloxCloud.IQForTDInsightAsset.description | String | Human-readable summary describing the asset's role or involvement in the insight. |
+| InfobloxCloud.IQForTDInsightAsset.asset_key | String | Internal composite key used to merge duplicate assets in context across command runs. |
+
+#### Command example
+
+```!infobloxcloud-iq-for-td-insight-asset-list insight_id="insight-v2-001"```
+
+#### Context Example
+
+```json
+{
+    "InfobloxCloud": {
+        "IQForTDInsightAsset": [
+            {
+                "device_name": "dummy-host-01",
+                "ip_address": [
+                    "0.0.0.0"
+                ],
+                "mac_address": [
+                    "00:11:22:33:44:55"
+                ],
+                "is_verified": true,
+                "is_risky": false,
+                "total_events": 10,
+                "indicators": [
+                    "dummy-indicator-1.com"
+                ],
+                "users": [
+                    "dummy-user-1"
+                ],
+                "locations": [
+                    "Amsterdam, Netherlands"
+                ],
+                "first_detected": "2026-11-30T00:00:00Z",
+                "last_detected": "2026-12-01T00:00:00Z",
+                "description": "Sample asset flagged for repeated contact with a malicious domain.",
+                "insight_id": "insight-v2-001",
+                "asset_key": "insight-v2-001|dummy-host-01"
+            },
+            {
+                "device_name": "dummy-host-02",
+                "ip_address": [
+                    "0.0.0.1"
+                ],
+                "mac_address": [
+                    "66:77:88:99:AA:BB"
+                ],
+                "is_verified": false,
+                "is_risky": true,
+                "total_events": 5,
+                "indicators": [
+                    "dummy-indicator-2.com"
+                ],
+                "users": [
+                    "dummy-user-2"
+                ],
+                "locations": [
+                    "Minneapolis, United States"
+                ],
+                "first_detected": "2026-11-30T11:00:00Z",
+                "last_detected": "2026-12-01T11:00:00Z",
+                "description": "Sample unverified asset observed beaconing to a threat indicator.",
+                "insight_id": "insight-v2-001",
+                "asset_key": "insight-v2-001|dummy-host-02"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Assets for the given IQ for TD Insight: insight-v2-001
+>
+>|Device Name|IP Address|Mac Address|Is Verified|Is Risky|Total Events|Indicators|Users|Locations|First Detected|Last Detected|Description|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| dummy-host-01 | 0.0.0.0 | 00:11:22:33:44:55 | True | False | 10 | dummy-indicator-1.com | dummy-user-1 | Amsterdam, Netherlands | 2026-11-30T00:00:00Z | 2026-12-01T00:00:00Z | Sample asset flagged for repeated contact with a malicious domain. |
+>| dummy-host-02 | 0.0.0.1 | 66:77:88:99:AA:BB | False | True | 5 | dummy-indicator-2.com | dummy-user-2 | Minneapolis, United States | 2026-11-30T11:00:00Z | 2026-12-01T11:00:00Z | Sample unverified asset observed beaconing to a threat indicator. |
+
+### infobloxcloud-iq-for-td-insight-event-list
+
+***
+List events for a specific IQ for TD Insight from Infoblox Cloud.
+
+#### Base Command
+
+`infobloxcloud-iq-for-td-insight-event-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| insight_id | Specify the IQ for TD Insight ID to fetch events for. The insight_id can be fetched from the output context path (InfobloxCloud.IQForTDInsight.insight_id) of the 'infobloxcloud-iq-for-td-insight-list command'. | Required |
+| threat_level | Filter events by numeric threat level.<br/><br/>Possible values are: "1" (Low), "2" (Medium), "3" (High). | Optional |
+| threat_confidence | Filter events by detection confidence level. Possible values are: Low, Medium, High. | Optional |
+| indicators | Indicator(s) to filter by. Multiple indicators queried by specifying comma-separated values.<br/><br/>Example: dummy-indicator-1.com,dummy-indicator-2.com. | Optional |
+| detected_from | Start of the detection time range (inclusive).<br/><br/>Format: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.<br/><br/>Example: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun. | Optional |
+| detected_to | End of the detection time range (inclusive).<br/><br/>Format: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.<br/><br/>Example: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun. | Optional |
+| tclass | Filter by threat class category (e.g. Malware, Phishing, C2, Data Exfiltration). | Optional |
+| query | Filter by the DNS query name. | Optional |
+| query_type | Filter by DNS query type. Possible values are: A, AAAA, CNAME, TXT, MX. | Optional |
+| users | User(s) to filter by. Multiple users queried by specifying comma-separated values.<br/><br/>Example: dummy-user-1,dummy-user-2. | Optional |
+| device_ips | Device IP address(es) to filter by. Multiple IP addresses queried by specifying comma-separated values.<br/><br/>Example: 0.0.0.0,0.0.0.1. | Optional |
+| device_name | Filter by the name of the device that generated the event. | Optional |
+| policy | Filter by the security policy name applied to the event. | Optional |
+| source | Filter by the network source identifier where the DNS query originated. | Optional |
+| response | Filter by the DNS response returned (e.g. NXDOMAIN, a resolved IP). | Optional |
+| dns_view | Filter by the DNS view configuration under which the query was resolved. | Optional |
+| feed | Filter by the threat intelligence feed name that flagged the indicator. | Optional |
+| mac_addresses | MAC address(es) to filter by. Multiple MAC addresses queried by specifying comma-separated values.<br/><br/>Example: 00:11:22:33:44:55,AA:BB:CC:DD:EE:FF. | Optional |
+| os_version | Filter by the operating system version of the device. | Optional |
+| dhcp_fingerprint | Filter by the DHCP fingerprint of the device. | Optional |
+| response_region | Filter by the geographic region of the DNS response destination. | Optional |
+| response_country | Filter by the country of the DNS response destination. | Optional |
+| device_region | Filter by the geographic region where the source device is located. | Optional |
+| device_country | Filter by the country where the source device is located. | Optional |
+| limit | Maximum number of event records to return per request. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfobloxCloud.IQForTDInsightEvent.threat_level | String | Numeric threat severity assigned to the event. |
+| InfobloxCloud.IQForTDInsightEvent.threat_confidence | String | Detection confidence score for the event. |
+| InfobloxCloud.IQForTDInsightEvent.detected_at | Date | Timestamp when the event was detected. |
+| InfobloxCloud.IQForTDInsightEvent.query | String | DNS query name that was looked up. |
+| InfobloxCloud.IQForTDInsightEvent.tclass | String | Threat class category for the event. |
+| InfobloxCloud.IQForTDInsightEvent.actor_name | String | Threat actor or group attributed to the activity. |
+| InfobloxCloud.IQForTDInsightEvent.query_type | String | DNS record type queried. |
+| InfobloxCloud.IQForTDInsightEvent.user | String | User identity associated with the DNS query. |
+| InfobloxCloud.IQForTDInsightEvent.device_name | String | Hostname of the source device. |
+| InfobloxCloud.IQForTDInsightEvent.device_ip | String | IP address of the source device. |
+| InfobloxCloud.IQForTDInsightEvent.tfamily | String | Threat family classification. |
+| InfobloxCloud.IQForTDInsightEvent.tproperty | String | Threat property label associated with the event. |
+| InfobloxCloud.IQForTDInsightEvent.policy | String | Security policy that matched the event. |
+| InfobloxCloud.IQForTDInsightEvent.action | String | Enforcement action taken by the policy. |
+| InfobloxCloud.IQForTDInsightEvent.source | String | Network source identifier where the query originated. |
+| InfobloxCloud.IQForTDInsightEvent.indicator | String | Threat indicator that flagged the event. |
+| InfobloxCloud.IQForTDInsightEvent.response | String | DNS response returned to the client. |
+| InfobloxCloud.IQForTDInsightEvent.dns_view | String | DNS view configuration under which the query resolved. |
+| InfobloxCloud.IQForTDInsightEvent.feed | String | Threat intelligence feed that contributed the indicator match. |
+| InfobloxCloud.IQForTDInsightEvent.mac_address | String | MAC address of the source device, when available. |
+| InfobloxCloud.IQForTDInsightEvent.os_version | String | Operating system and version reported for the source device. |
+| InfobloxCloud.IQForTDInsightEvent.dhcp_fingerprint | String | DHCP fingerprint used to identify the source device type. |
+| InfobloxCloud.IQForTDInsightEvent.response_region | String | Geographic region of the DNS response destination. |
+| InfobloxCloud.IQForTDInsightEvent.response_country | String | Country of the DNS response destination. |
+| InfobloxCloud.IQForTDInsightEvent.device_region | String | Geographic region where the source device is located. |
+| InfobloxCloud.IQForTDInsightEvent.device_country | String | Country where the source device is located. |
+| InfobloxCloud.IQForTDInsightEvent.event_count | Number | Number of duplicate events collapsed into this entry. |
+| InfobloxCloud.IQForTDInsightEvent.event_key | String | Internal composite key used to merge duplicate events in context across command runs. |
+
+#### Command example
+
+```!infobloxcloud-iq-for-td-insight-event-list insight_id="insight-v2-001"```
+
+#### Context Example
+
+```json
+{
+    "InfobloxCloud": {
+        "IQForTDInsightEvent": [
+            {
+                "threat_level": "3",
+                "threat_confidence": "90",
+                "detected_at": "2026-12-01T02:55:00Z",
+                "query": "dummy-indicator-1.com",
+                "tclass": "Malware",
+                "actor_name": "DUMMY_ACTOR",
+                "query_type": "A",
+                "user": "dummy-user-1",
+                "device_name": "dummy-host-01",
+                "device_ip": "0.0.0.0",
+                "tfamily": "DUMMY_ACTOR",
+                "tproperty": "dga",
+                "policy": "Default",
+                "action": "Block",
+                "source": "unknown",
+                "indicator": "dummy-indicator-1.com",
+                "response": "NXDOMAIN",
+                "dns_view": "default",
+                "feed": "AntiMalware",
+                "mac_address": "00:11:22:33:44:55",
+                "os_version": "Windows 11",
+                "dhcp_fingerprint": "MSFT 5.0",
+                "response_region": "North Holland",
+                "response_country": "Netherlands",
+                "device_region": "North Holland",
+                "device_country": "Netherlands",
+                "event_count": 1,
+                "event_key": "3|90|2026-12-01T02:55:00Z|dummy-indicator-1.com|Malware|DUMMY_ACTOR|A|dummy-user-1|dummy-host-01|0.0.0.0|DUMMY_ACTOR|dga|Default|Block|unknown|dummy-indicator-1.com|NXDOMAIN|default|AntiMalware|00:11:22:33:44:55|Windows 11|MSFT 5.0|North Holland|Netherlands|North Holland|Netherlands|insight-v2-001"
+            },
+            {
+                "threat_level": "1",
+                "threat_confidence": "40",
+                "detected_at": "2026-12-01T11:00:00Z",
+                "query": "dummy-indicator-2.com",
+                "tclass": "Phishing",
+                "actor_name": "DUMMY_ACTOR_2",
+                "query_type": "AAAA",
+                "user": "dummy-user-2",
+                "device_name": "dummy-host-02",
+                "device_ip": "0.0.0.1",
+                "tfamily": "DUMMY_ACTOR_2",
+                "tproperty": "phishing",
+                "policy": "Default",
+                "action": "Log",
+                "source": "unknown",
+                "indicator": "dummy-indicator-2.com",
+                "response": "0.0.0.2",
+                "dns_view": "default",
+                "feed": "PhishFeed",
+                "mac_address": "66:77:88:99:AA:BB",
+                "os_version": "macOS 15",
+                "dhcp_fingerprint": "Apple",
+                "response_region": "Minnesota",
+                "response_country": "United States",
+                "device_region": "Minnesota",
+                "device_country": "United States",
+                "event_count": 1,
+                "event_key": "1|40|2026-12-01T11:00:00Z|dummy-indicator-2.com|Phishing|DUMMY_ACTOR_2|AAAA|dummy-user-2|dummy-host-02|0.0.0.1|DUMMY_ACTOR_2|phishing|Default|Log|unknown|dummy-indicator-2.com|0.0.0.2|default|PhishFeed|66:77:88:99:AA:BB|macOS 15|Apple|Minnesota|United States|Minnesota|United States|insight-v2-001"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Events for the given IQ for TD Insight: insight-v2-001
+>
+>|Event Count|Threat Level|Threat Confidence|Detected At|Query|Tclass|Actor Name|Query Type|User|Device Name|Device IP|Tfamily|Tproperty|Policy|Action|Source|Indicator|Response|Dns View|Feed|Mac Address|Os Version|Dhcp Fingerprint|Response Region|Response Country|Device Region|Device Country|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 1 | 3 | 90 | 2026-12-01T02:55:00Z | dummy-indicator-1.com | Malware | DUMMY_ACTOR | A | dummy-user-1 | dummy-host-01 | 0.0.0.0 | DUMMY_ACTOR | dga | Default | Block | unknown | dummy-indicator-1.com | NXDOMAIN | default | AntiMalware | 00:11:22:33:44:55 | Windows 11 | MSFT 5.0 | North Holland | Netherlands | North Holland | Netherlands |
+>| 1 | 1 | 40 | 2026-12-01T11:00:00Z | dummy-indicator-2.com | Phishing | DUMMY_ACTOR_2 | AAAA | dummy-user-2 | dummy-host-02 | 0.0.0.1 | DUMMY_ACTOR_2 | phishing | Default | Log | unknown | dummy-indicator-2.com | 0.0.0.2 | default | PhishFeed | 66:77:88:99:AA:BB | macOS 15 | Apple | Minnesota | United States | Minnesota | United States |
+
+### infobloxcloud-iq-for-td-insight-indicator-list
+
+***
+List threat indicators associated with a specific IQ for TD Insight from Infoblox Cloud.
+
+#### Base Command
+
+`infobloxcloud-iq-for-td-insight-indicator-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| insight_id | The unique display identifier of the insight whose indicators to list. The insight_id can be fetched from the output context path (InfobloxCloud.IQForTDInsight.insight_id) of the 'infobloxcloud-iq-for-td-insight-list command'. | Required |
+| indicators | Indicator(s) to filter by. Multiple indicators queried by specifying comma-separated values.<br/><br/>Example: dummy-indicator-1.com,dummy-indicator-2.com. | Optional |
+| threat_level | Filter indicators by numeric threat level.<br/><br/>Possible values are: "1" (Low), "2" (Medium), "3" (High). | Optional |
+| statuses | Blocking/enforcement status value(s) to filter by. Multiple statuses specified as comma-separated values. Possible values are: Blocked, Not Blocked. | Optional |
+| users | User(s) to filter by. Multiple users queried by specifying comma-separated values.<br/><br/>Example: dummy-user-1,dummy-user-2. | Optional |
+| detected_at | Filter indicators by detection timestamp. Returns only indicators detected on this specified date.<br/><br/>Format: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.<br/><br/>Example: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun. | Optional |
+| limit | Maximum number of indicator records to return per request. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfobloxCloud.IQForTDInsightIndicator.insight_id | String | The unique display identifier of the insight this indicator belongs to. |
+| InfobloxCloud.IQForTDInsightIndicator.threat_indicator | String | The indicator value \(e.g., malicious domain, IP, or URL\). |
+| InfobloxCloud.IQForTDInsightIndicator.threat_level | Number | Numeric threat severity assigned to the indicator. |
+| InfobloxCloud.IQForTDInsightIndicator.confidence_level | Number | Numeric confidence rating for the detection. |
+| InfobloxCloud.IQForTDInsightIndicator.status | String | Blocking/enforcement status values for the indicator \(e.g., "Blocked", "Not Blocked"\). |
+| InfobloxCloud.IQForTDInsightIndicator.total_events | Number | Number of DNS security events involving this indicator within the insight. |
+| InfobloxCloud.IQForTDInsightIndicator.verified_assets | String | Verified assets \(matched to inventory\) that interacted with this indicator. |
+| InfobloxCloud.IQForTDInsightIndicator.unverified_assets | String | Unverified assets \(observed only by IP/MAC, not matched to inventory\) that interacted with this indicator. |
+| InfobloxCloud.IQForTDInsightIndicator.users | String | Users whose queries involved this indicator. |
+| InfobloxCloud.IQForTDInsightIndicator.threat_actors | String | Threat actors or groups attributed to this indicator. |
+| InfobloxCloud.IQForTDInsightIndicator.first_detected | Date | Timestamp of the first detection of this indicator within the insight. |
+| InfobloxCloud.IQForTDInsightIndicator.last_detected | Date | Timestamp of the most recent detection of this indicator within the insight. |
+| InfobloxCloud.IQForTDInsightIndicator.detected_at | Date | Timestamp of the most recent detection of this indicator within the insight. |
+| InfobloxCloud.IQForTDInsightIndicator.description | String | Human-readable description of why the indicator is significant. |
+| InfobloxCloud.IQForTDInsightIndicator.indicator_key | String | Internal composite key \(insight_id and threat_indicator\) used to merge context across command runs. |
+
+#### Command example
+
+```!infobloxcloud-iq-for-td-insight-indicator-list insight_id="insight-v2-001"```
+
+#### Context Example
+
+```json
+{
+    "InfobloxCloud": {
+        "IQForTDInsightIndicator": [
+            {
+                "threat_indicator": "dummy-indicator-1.com",
+                "threat_level": 3,
+                "confidence_level": 90,
+                "status": [
+                    "Blocked"
+                ],
+                "total_events": 12,
+                "verified_assets": [
+                    "dummy-host-01"
+                ],
+                "unverified_assets": [],
+                "users": [
+                    "dummy-user-1"
+                ],
+                "threat_actors": [
+                    "DUMMY_ACTOR"
+                ],
+                "first_detected": "2026-11-28T02:55:00Z",
+                "last_detected": "2026-12-01T02:55:00Z",
+                "detected_at": "2026-12-01T02:55:00Z",
+                "description": "Malicious domain associated with malware distribution.",
+                "insight_id": "insight-v2-001",
+                "indicator_key": "insight-v2-001|dummy-indicator-1.com"
+            },
+            {
+                "threat_indicator": "dummy-indicator-2.com",
+                "threat_level": 1,
+                "confidence_level": 40,
+                "status": [
+                    "Not Blocked"
+                ],
+                "total_events": 3,
+                "verified_assets": [],
+                "unverified_assets": [
+                    "0.0.0.1"
+                ],
+                "users": [
+                    "dummy-user-2"
+                ],
+                "threat_actors": [
+                    "DUMMY_ACTOR_2"
+                ],
+                "first_detected": "2026-11-30T11:00:00Z",
+                "last_detected": "2026-12-01T11:00:00Z",
+                "detected_at": "2026-12-01T11:00:00Z",
+                "description": "Suspicious domain flagged by phishing feed.",
+                "insight_id": "insight-v2-001",
+                "indicator_key": "insight-v2-001|dummy-indicator-2.com"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Indicators for the given IQ for TD Insight: insight-v2-001
+>
+>|Threat Indicator|Threat Level|Confidence Level|Status|Total Events|Verified Assets|Unverified Assets|Users|Threat Actors|First Detected|Last Detected|Detected At|Description|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| dummy-indicator-1.com | 3 | 90 | Blocked | 12 | dummy-host-01 |  | dummy-user-1 | DUMMY_ACTOR | 2026-11-28T02:55:00Z | 2026-12-01T02:55:00Z | 2026-12-01T02:55:00Z | Malicious domain associated with malware distribution. |
+>| dummy-indicator-2.com | 1 | 40 | Not Blocked | 3 |  | 0.0.0.1 | dummy-user-2 | DUMMY_ACTOR_2 | 2026-11-30T11:00:00Z | 2026-12-01T11:00:00Z | 2026-12-01T11:00:00Z | Suspicious domain flagged by phishing feed. |
+
+### infobloxcloud-iq-for-td-insight-action-execute
+
+***
+Execute a recommendation action on a specific IQ for TD Insight from Infoblox Cloud.
+
+#### Base Command
+
+`infobloxcloud-iq-for-td-insight-action-execute`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| insight_id | The unique display identifier of the insight whose recommendations are being actioned. The insight_id can be fetched from the output context path (InfobloxCloud.IQForTDInsight.insight_id) of the 'infobloxcloud-iq-for-td-insight-list command'. | Required |
+| recommendation_id | UUID of the recommendation to action. The recommendation_id can be fetched from the output context path (InfobloxCloud.IQForTDInsight.key_recommendations.id) of the 'infobloxcloud-iq-for-td-insight-get command'.<br/><br/>Example: dummy-recommendation-id-1. | Required |
+| action | Action verb to execute, overriding the server's default. If not specified, the server selects the canonical verb for the recommendation type: 'block' for indicator, 'mark_risky' for asset, or 'update_policy' for policy. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfobloxCloud.IQForTDInsightAction.insight_id | String | The unique display identifier of the insight whose recommendations were actioned. |
+| InfobloxCloud.IQForTDInsightAction.recommendation_id | String | UUID of the recommendation that was actioned. |
+| InfobloxCloud.IQForTDInsightAction.action | String | The action verb that was executed \(e.g., block, mark_risky, update_policy\). |
+| InfobloxCloud.IQForTDInsightAction.status | String | Outcome status of the action \(succeeded or failed\). |
+| InfobloxCloud.IQForTDInsightAction.audit_entry_id | String | ID of the audit log entry; can be used to reverse this action. Empty on failure. |
+| InfobloxCloud.IQForTDInsightAction.reason | String | Classification of the outcome \(e.g., applied, already_applied, action_failed, resource_not_found, invalid_request, not_eligible\). |
+| InfobloxCloud.IQForTDInsightAction.message | String | Human-readable detail for failed items. Empty on success. |
+
+#### Command example
+
+```!infobloxcloud-iq-for-td-insight-action-execute insight_id="insight-v2-001" recommendation_id="dummy-recommendation-id-1"```
+
+#### Context Example
+
+```json
+{
+    "InfobloxCloud": {
+        "IQForTDInsightAction": {
+            "action": "block",
+            "status": "succeeded",
+            "audit_entry_id": "dummy-audit-entry-1",
+            "reason": "applied",
+            "message": "",
+            "insight_id": "insight-v2-001",
+            "recommendation_id": "dummy-recommendation-id-1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Action execution result for the given IQ for TD Insight: insight-v2-001
+>
+>|Recommendation Id|Action|Status|Audit Entry Id|Reason|
+>|---|---|---|---|---|
+>| dummy-recommendation-id-1 | block | succeeded | dummy-audit-entry-1 | applied |
+
+### infobloxcloud-iq-for-td-insight-action-undo
+
+***
+Undo a previously executed recommendation action on a specific IQ for TD Insight from Infoblox Cloud.
+
+#### Base Command
+
+`infobloxcloud-iq-for-td-insight-action-undo`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| audit_entry_id | ID of the audit log entry to undo. The audit_entry_id can be fetched from the output context path (InfobloxCloud.IQForTDInsightAction.audit_entry_id) of the 'infobloxcloud-iq-for-td-insight-action-execute command'.<br/><br/>Example: dummy-audit-entry-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfobloxCloud.IQForTDInsightAction.audit_entry_id | String | ID of the audit log entry that was undone. |
+| InfobloxCloud.IQForTDInsightAction.action | String | The undo action that was performed \(e.g., allow, undo_risky, revert_policy\). |
+| InfobloxCloud.IQForTDInsightAction.status | String | Outcome status of the undo operation \(succeeded or failed\). |
+
+#### Command example
+
+```!infobloxcloud-iq-for-td-insight-action-undo audit_entry_id="dummy-audit-entry-1"```
+
+#### Context Example
+
+```json
+{
+    "InfobloxCloud": {
+        "IQForTDInsightAction": {
+            "action": "allow",
+            "status": "succeeded",
+            "audit_entry_id": "dummy-audit-entry-1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Action undo result for the given audit entry: dummy-audit-entry-1
+>
+>|Audit Entry Id|Action|Status|
+>|---|---|---|
+>| dummy-audit-entry-1 | allow | succeeded |
+
+## Migration Guide
+
+If the **Ingestion Type** parameter was configured as **SOC Insight**, update it to **IQ for TD Insight**. Once updated, configure the relevant **IQ for TD Insight Status**, **IQ for TD Insight Severity**, and **IQ for TD Insight Threat Properties** filter parameters to match the fetch behavior previously configured via the SOC Insight filter parameters (**SOC Insight Status**, **SOC Insight Threat Type**, **SOC Insight Priority Level**).
+
+### Migrated Commands
+
+Some of the previous integration's commands have been migrated to new commands. Below is the table showing the commands that have been migrated to the new ones.
+
+| **SOC Insight Command** | **Migrated IQ for TD Insight Command** |
+| --- | --- |
+| infobloxcloud-soc-insight-list | infobloxcloud-iq-for-td-insight-list |
+| infobloxcloud-soc-insight-event-list | infobloxcloud-iq-for-td-insight-event-list |
+| infobloxcloud-soc-insight-indicator-list | infobloxcloud-iq-for-td-insight-indicator-list |
+| infobloxcloud-soc-insight-asset-list | infobloxcloud-iq-for-td-insight-asset-list |
+
+### Deprecated Commands
+
+Some of the previous integration's commands have been deprecated, for which there is no replacement available.
+
+| **Deprecated Command** |
+| --- |
+| infobloxcloud-soc-insight-comment-list |

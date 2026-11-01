@@ -1,0 +1,22 @@
+args:
+- defaultValue: Resolved
+  default: true
+  description: The reason the alert was closed (either 'Resolved' or 'No Action Needed').
+  name: close_reason
+comment: Resolves the alert in the Device Security portal via the API. Designed to run as a post-processing script.
+commonfields:
+  id: device-security-alert-post-processing
+  version: -1
+enabled: true
+name: device-security-alert-post-processing
+script: '-'
+tags:
+- device security
+- post-processing
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.13.10404775
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

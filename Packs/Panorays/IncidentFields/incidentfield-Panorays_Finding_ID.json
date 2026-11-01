@@ -1,0 +1,22 @@
+{
+    "cliName": "panoraysfindingid",
+    "description": "The unique ID of the Panorays finding.",
+    "group": 0,
+    "id": "incident_panoraysfindingid",
+    "name": "Panorays Finding ID",
+    "associatedTypes": [
+        "Panorays Finding",
+        "Panorays Supplier Finding"
+    ],
+    "associatedToAll": false,
+    "type": "shortText",
+    "content": true,
+    "unsearchable": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "system": false,
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

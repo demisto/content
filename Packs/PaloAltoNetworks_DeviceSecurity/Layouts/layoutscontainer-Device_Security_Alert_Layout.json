@@ -1,0 +1,591 @@
+{
+    "description": "Layout for Device Security Alert incidents.",
+    "details": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_devicesecurityincidenturl",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicesecurityservicenowtablename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicesecurityservicenowrecordid",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Device Security Fields",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "i": "caseinfoid-676848e0-c300-11f1-8690-bd98af6fa476",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "deviceid",
+                                "height": 22,
+                                "id": "8a99af20-c300-11f1-8690-bd98af6fa476",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devicelocalip",
+                                "height": 22,
+                                "id": "8ed86a40-c300-11f1-8690-bd98af6fa476",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "vendor",
+                                "height": 22,
+                                "id": "92257260-c300-11f1-8690-bd98af6fa476",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "profile",
+                                "height": 22,
+                                "id": "96a8feb0-c300-11f1-8690-bd98af6fa476",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "profilecategory",
+                                "height": 22,
+                                "id": "973f2430-c300-11f1-8690-bd98af6fa476",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "profilevertical",
+                                "height": 22,
+                                "id": "987fe190-c300-11f1-8690-bd98af6fa476",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devicelabels",
+                                "height": 22,
+                                "id": "9df288d0-c300-11f1-8690-bd98af6fa476",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devicerole",
+                                "height": 22,
+                                "id": "a0fd57d0-c300-11f1-8690-bd98af6fa476",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devicesecuritysitenames",
+                                "height": 22,
+                                "id": "f851e410-c337-11f1-8a4b-4f7f37005168",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "siteid",
+                                "height": 22,
+                                "id": "a5d4f790-c300-11f1-8690-bd98af6fa476",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "profileconfidencelevel",
+                                "height": 22,
+                                "id": "a9d941c0-c300-11f1-8690-bd98af6fa476",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Asset \u0026 Target Identification",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0,
+                        "hideName": false,
+                        "minH": 1
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-ac83a140-c300-11f1-8690-bd98af6fa476",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Threat Actor Context",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0,
+                        "displayType": "ROW",
+                        "hideName": false,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceip",
+                                "height": 22,
+                                "id": "ba880a10-c300-11f1-8690-bd98af6fa476",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "remotehostmac",
+                                "height": 22,
+                                "id": "bde98490-c300-11f1-8690-bd98af6fa476",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "remotehostcategory",
+                                "height": 22,
+                                "id": "beb2c800-c300-11f1-8690-bd98af6fa476",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "network",
+                                "height": 22,
+                                "id": "c1f56fe0-c300-11f1-8690-bd98af6fa476",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcelabels",
+                                "height": 22,
+                                "id": "c4dc8a40-c300-11f1-8690-bd98af6fa476",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "minH": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "i": "caseinfoid-c60811f0-c300-11f1-8690-bd98af6fa476",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Threat \u0026 Alert Metadata",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0,
+                        "hideName": false,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "alerttitle",
+                                "height": 22,
+                                "id": "97298b30-c3c2-11f1-a089-175b3101a8cf",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devicesecuritythreatid",
+                                "height": 22,
+                                "id": "55eb65b0-c301-11f1-8690-bd98af6fa476",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "threatcategory",
+                                "height": 22,
+                                "id": "58980f20-c301-11f1-8690-bd98af6fa476",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "alerttype",
+                                "height": 22,
+                                "id": "5c3e0cb0-c301-11f1-8690-bd98af6fa476",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severityrawdisplay",
+                                "height": 22,
+                                "id": "5f6f2860-c301-11f1-8690-bd98af6fa476",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severitynumber",
+                                "height": 22,
+                                "id": "6173d200-c301-11f1-8690-bd98af6fa476",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "alertuniqueid",
+                                "height": 22,
+                                "id": "647997f0-c301-11f1-8690-bd98af6fa476",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "messageid",
+                                "height": 22,
+                                "id": "67b4c5c0-c301-11f1-8690-bd98af6fa476",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "minH": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-70a7ba20-c301-11f1-8690-bd98af6fa476",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Relevant Links",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2,
+                        "hideName": false,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "devicesecurityincidenturl",
+                                "height": 22,
+                                "id": "7ecffea0-c301-11f1-8690-bd98af6fa476",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devicesecurityservicenowrecordid",
+                                "height": 22,
+                                "id": "816835b0-c301-11f1-8690-bd98af6fa476",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devicesecurityservicenowtablename",
+                                "height": 22,
+                                "id": "8234fb90-c301-11f1-8690-bd98af6fa476",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "minH": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-8c2059b0-c301-11f1-8690-bd98af6fa476",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "appname",
+                                "height": 22,
+                                "id": "94f16e30-c301-11f1-8690-bd98af6fa476",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "destinationport",
+                                "height": 22,
+                                "id": "0d6dca80-c338-11f1-8a4b-4f7f37005168",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "clientport",
+                                "height": 22,
+                                "id": "9d8615f0-c301-11f1-8690-bd98af6fa476",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficdirection",
+                                "height": 22,
+                                "id": "11648020-c338-11f1-8a4b-4f7f37005168",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "inboundinterface",
+                                "height": 22,
+                                "id": "a57a37f0-c301-11f1-8690-bd98af6fa476",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "outboundinterface",
+                                "height": 22,
+                                "id": "a896e140-c301-11f1-8690-bd98af6fa476",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Network \u0026 Application Session Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4,
+                        "hideName": false,
+                        "minH": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-aace33a0-c301-11f1-8690-bd98af6fa476",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "firewallname",
+                                "height": 22,
+                                "id": "b59a7be0-c301-11f1-8690-bd98af6fa476",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "firewallserialnumber",
+                                "height": 22,
+                                "id": "b6f21ca0-c301-11f1-8690-bd98af6fa476",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "firewallaction",
+                                "height": 22,
+                                "id": "b7c683a0-c301-11f1-8690-bd98af6fa476",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Sensor Infrastructure \u0026 Enforcement",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 4,
+                        "hideName": false,
+                        "minH": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-b9bdbfc0-c301-11f1-8690-bd98af6fa476",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "date",
+                                "height": 22,
+                                "id": "be278280-c301-11f1-8690-bd98af6fa476",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "createdat",
+                                "height": 22,
+                                "id": "c56e7490-c301-11f1-8690-bd98af6fa476",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "forensicsearchtimestamp",
+                                "height": 22,
+                                "id": "c8534500-c301-11f1-8690-bd98af6fa476",
+                                "index": 2,
+                                "listId": "caseinfoid-b9bdbfc0-c301-11f1-8690-bd98af6fa476",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Event Timestamps",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 4,
+                        "hideName": false,
+                        "minH": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-ceb9c220-c301-11f1-8690-bd98af6fa476",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "recommendedactions",
+                                "height": 22,
+                                "id": "d6bdc2a0-c301-11f1-8690-bd98af6fa476",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Recommended Action Items",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-d9669b80-c301-11f1-8690-bd98af6fa476",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Threat Intelligence \u0026 Compliance Framework Mappings",
+                        "query": "DeviceSecurityThreatFrameworkMappings",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 8
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Device Security Alert",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "Device Security Alert Layout",
+    "name": "Device Security Alert Layout",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

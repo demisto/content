@@ -2,6 +2,7 @@ import base64
 
 # -*- coding: iso-8859-1 -*-
 import demistomock as demisto
+import pytest
 
 
 def test_parse_mail_parts(mocker):
@@ -188,3 +189,44 @@ def test_parse_header_error_handling(mocker):
     # Debug should have been called
     debug_mock.assert_called_once()
     assert "Failed to decode" in debug_mock.call_args[0][0]
+
+
+@pytest.mark.parametrize(
+    "date_header, expected",
+    [
+        ("Tue, 23 Sep 2025 08:18:52", "2025-09-23T08:18:52Z"),
+        ("23 Sep 2025 08:18:52", "2025-09-23T08:18:52Z"),
+        ("Tue, 23 Sep 2025 08:18:52 +0200", "2025-09-23T08:18:52Z"),
+        ("23 Sep 2025 08:18:52 -0500", "2025-09-23T08:18:52Z"),
+    ],
+)
+def test_parse_time_variants(mocker, date_header, expected):
+    """
+    Given
+    - An email Date header, with or without a leading day-of-week and/or timezone
+    When
+    - parse_time is called
+    Then
+    - Ensure it returns a normalized ISO-8601 string with a trailing 'Z'
+    """
+    mocker.patch.object(demisto, "params", return_value={"credentials_password": {"password": "password"}})
+    from MailListener_POP3 import parse_time
+
+    assert parse_time(date_header) == expected
+
+
+@pytest.mark.parametrize("date_header", ["not a valid date", ""])
+def test_parse_time_invalid(mocker, date_header):
+    """
+    Given
+    - A Date header that cannot be parsed by any supported format (including an empty string)
+    When
+    - parse_time is called
+    Then
+    - Ensure a ValueError is raised
+    """
+    mocker.patch.object(demisto, "params", return_value={"credentials_password": {"password": "password"}})
+    from MailListener_POP3 import parse_time
+
+    with pytest.raises(ValueError):
+        parse_time(date_header)

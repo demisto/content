@@ -639,7 +639,7 @@ Retrieves asset from the Cortex platform using optional filter criteria.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_size | The number of assets to return per page. Default is 100. | Optional |
+| page_size | The number of assets to return per page. Default is 100. Maximum is 5000. | Optional |
 | page_number | The page number for the assets to return for pagination. Default is 0. | Optional |
 | asset_names | Comma-separated list of asset names to search for. (e.g., "asset_name1,asset_name2"). | Optional |
 | asset_types | Comma-separated list of asset types to search for. (e.g., "asset_type1,asset_type2"). | Optional |
@@ -1060,3 +1060,26 @@ Retrieves endpoint update versions for the provided endpoint IDs.
 | Core.EndpointUpdateVersion.distributions.endpoints_with_higher_version_count | String | The number of endpoints running a version later than the specified update. |
 | Core.EndpointUpdateVersion.distributions.endpoints_with_same_version_count | String | The number of endpoints running the same version as the specified update. |
 | Core.EndpointUpdateVersion.distributions.endpoints_with_lower_version_count | String | The number of endpoints running a version earlier than the specified update. |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following commands require one of these licenses: **Cortex XSIAM**, **EP / EDR - Endpoint Protection**, **Cortex Cloud**, **Cloud Posture (Security)**, or **Cloud Runtime Security**:
+
+- `core-list-endpoints`
+
+The following commands require one of these licenses: **Cortex XSIAM**, **EP / EDR - Endpoint Protection**, or **Cloud Runtime Security**:
+
+- `core-get-endpoint-support-file`
+- `core-list-scripts`
+- `core-run-script-agentix`
+- `core-get-endpoint-update-version`
+- `core-update-endpoint-version`
+
+The following commands require one of these licenses: **Cloud Posture (Security)** or **Cloud Runtime Security**:
+
+- `core-add-assessment-profile`
+- `core-list-compliance-standards`
+
+</~PLATFORM>

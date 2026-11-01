@@ -1,0 +1,12 @@
+{
+  "uid": "dns-uid-1",
+  "name": ".example.com",
+  "type": "dns-domain",
+  "is-sub-domain": true,
+  "domain-name": "example.com",
+  "domain": {
+    "uid": "domain-uid",
+    "name": "SMC User",
+    "domain-type": "domain"
+  }
+}

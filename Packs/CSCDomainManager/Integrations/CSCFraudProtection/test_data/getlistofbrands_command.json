@@ -1,0 +1,43 @@
+{
+    "CSCFraudProtection": {
+        "status": "success",
+        "message": "fetched successfully",
+        "data": [
+            {
+                "brandId": 4843,
+                "brandName": "CSC Demo",
+                "isActive": true
+            },
+            {
+                "brandId": 1122,
+                "brandName": "Sales Demo Account",
+                "isActive": true
+            },
+            {
+                "brandId": 4778,
+                "brandName": "Sales Demo Brand 1",
+                "isActive": true
+            },
+            {
+                "brandId": 4779,
+                "brandName": "Sales Demo Brand 2",
+                "isActive": true
+            },
+            {
+                "brandId": 4780,
+                "brandName": "Sales Demo Brand 3",
+                "isActive": true
+            },
+            {
+                "brandId": 4781,
+                "brandName": "Sales Demo Brand 4",
+                "isActive": true
+            },
+            {
+                "brandId": 4782,
+                "brandName": "Sales Demo Brand 5",
+                "isActive": true
+            }
+        ]
+    }
+}

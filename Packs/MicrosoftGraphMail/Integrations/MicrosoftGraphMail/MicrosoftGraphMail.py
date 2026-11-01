@@ -234,6 +234,14 @@ def main():  # pragma: no cover
             return_results(list_rule_action_command(client, args))
         elif command == "msgraph-mail-delete-rule":
             return_results(delete_rule_command(client, args))
+        elif command == "msgraph-mail-create-rule":
+            return_results(create_rule_command(client, args))
+        elif command == "msgraph-mail-update-rule":
+            return_results(update_rule_command(client, args))
+        elif command == "msgraph-mail-get-settings":
+            return_results(get_mailbox_settings_command(client, args))
+        elif command == "msgraph-mail-get-mailtips":
+            return_results(get_mail_tips_command(client, args))
 
     # Log exceptions
     except Exception as e:

@@ -170,12 +170,29 @@ class Client(BaseClient):
                 )
         self._headers.update({"Authorization": "Bearer " + access_token})
 
-    def http_request(self, method, url_suffix, full_url=None, params=None):
+    def http_request(self, method, url_suffix, full_url=None, params=None, data=None):
+        """
+        Sends an HTTP request to Service Desk Plus.
+
+        Args:
+            method: The HTTP method.
+            url_suffix: The API endpoint suffix.
+            full_url: A full URL to use instead of the base URL + suffix.
+            params: URL query string parameters (use only for small payloads, e.g. GET filters).
+            data: Form-encoded request body. Write payloads (input_data) must be sent here to avoid
+                  '414 Request-URI Too Large' errors with long values.
+        """
         ok_codes = (200, 201, 401)  # includes responses that are ok (200) and error responses that should be
         # handled by the client and not in the BaseClient
         try:
             res = self._http_request(
-                method, url_suffix, full_url=full_url, resp_type="response", ok_codes=ok_codes, params=params
+                method,
+                url_suffix,
+                full_url=full_url,
+                resp_type="response",
+                ok_codes=ok_codes,
+                params=params,
+                data=data,
             )
             if res.status_code in [200, 201]:
                 try:
@@ -188,12 +205,14 @@ class Client(BaseClient):
                     datetime.now()
                 ):
                     self.get_access_token()
-                    return self.http_request(method, url_suffix, full_url=full_url, params=params)
+                    return self.http_request(method, url_suffix, full_url=full_url, params=params, data=data)
                 try:
                     err_msg = f"Unauthorized request - check domain location and the given credentials \n{res.json()!s}"
                 except ValueError:
                     err_msg = f"Unauthorized request - check domain location and the given credentials -\n{res!s}"
                 raise DemistoException(err_msg)
+
+            raise DemistoException(f"Unexpected response status code {res.status_code}: {res.text}")
 
         except Exception as e:
             if "SSL Certificate Verification Failed" in e.args[0]:
@@ -348,6 +367,23 @@ def resolution_human_readable(output: dict) -> dict:
         else:
             hr[key] = output.get(key, "")
     return hr
+
+
+def note_human_readable(res: dict | list) -> str:
+    if isinstance(res, dict):
+        prefix = f"Note of request {res.get('request', {}).get('id')}:"
+        res = [res]
+    else:
+        prefix = f"Notes of request {res[0].get('request', {}).get('id')}:"
+    hr = [
+        {
+            "Note ID": note.get("id"),
+            "Description": note.get("description"),
+            "Created time": note.get("created_time", {}).get("display_value"),
+        }
+        for note in res
+    ]
+    return tableToMarkdown(prefix, t=hr)
 
 
 def create_requests_list_info(start_index, row_count, search_fields, filter_by):
@@ -513,8 +549,7 @@ def create_request_command(client: Client, args: dict) -> tuple[str, dict, Any]:
         Demisto Outputs.
     """
     query = args_to_query(args)
-    params = {"input_data": f"{query}"}
-    result = client.http_request("POST", url_suffix="requests", params=params)
+    result = client.http_request("POST", url_suffix="requests", data={"input_data": f"{query}"})
     request = result.get("request", None)
 
     output = {}
@@ -539,9 +574,8 @@ def update_request_command(client: Client, args: dict) -> tuple[str, dict, Any]:
         Demisto Outputs.
     """
     query = args_to_query(args)
-    params = {"input_data": f"{query}"}
     request_id = args.get("request_id")
-    result = client.http_request("PUT", url_suffix=f"requests/{request_id}", params=params)
+    result = client.http_request("PUT", url_suffix=f"requests/{request_id}", data={"input_data": f"{query}"})
     request = result.get("request", None)
     output = {}
     context: dict = defaultdict(list)
@@ -566,9 +600,8 @@ def assign_request_command(client: Client, args: dict) -> tuple[str, dict, Any]:
         Demisto Outputs.
     """
     query = args_to_query(args)
-    params = {"input_data": f"{query}"}
     request_id = args.get("request_id")
-    result = client.http_request("PUT", url_suffix=f"requests/{request_id}/_assign", params=params)
+    result = client.http_request("PUT", url_suffix=f"requests/{request_id}/_assign", data={"input_data": f"{query}"})
     markdown = f"### Service Desk Plus request {request_id} was successfully assigned"
     return markdown, {}, result
 
@@ -633,11 +666,11 @@ def modify_linked_request_command(client: Client, args: dict) -> tuple[str, dict
     linked_requests_id = args.get("linked_requests_id", "").split(",")
     comment = args.get("comment", "")
     input_data = create_modify_linked_input_data(linked_requests_id, comment)
-    params = {"input_data": f"{input_data}"}
+    body = {"input_data": f"{input_data}"}
     if action == "Link":
-        result = client.http_request("POST", url_suffix=f"requests/{request_id}/link_requests", params=params)
+        result = client.http_request("POST", url_suffix=f"requests/{request_id}/link_requests", data=body)
     else:
-        result = client.http_request("DELETE", url_suffix=f"requests/{request_id}/link_requests", params=params)
+        result = client.http_request("DELETE", url_suffix=f"requests/{request_id}/link_requests", data=body)
     markdown = f"## {result.get('response_status', {}).get('messages')[0].get('message')}"
     return markdown, {}, result
 
@@ -657,8 +690,7 @@ def add_resolution_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     resolution_content = args.get("resolution_content")
     add_to_linked_requests = args.get("add_to_linked_requests") if args.get("add_to_linked_requests") else "false"
     query = {"resolution": {"content": resolution_content, "add_to_linked_requests": add_to_linked_requests}}
-    params = {"input_data": f"{query}"}
-    result = client.http_request("POST", url_suffix=f"requests/{request_id}/resolutions", params=params)
+    result = client.http_request("POST", url_suffix=f"requests/{request_id}/resolutions", data={"input_data": f"{query}"})
 
     if add_to_linked_requests == "true":
         markdown = f"### Resolution was successfully added to {request_id} and the linked requests"
@@ -712,10 +744,97 @@ def close_request_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     if args.get("closure_code"):
         closure_info["closure_code"] = {"name": args.get("closure_code")}
     input_data = {"request": {"closure_info": closure_info}}
-    params = {"input_data": f"{input_data}"}
-    result = client.http_request("PUT", url_suffix=f"requests/{request_id}/_close", params=params)
+    result = client.http_request("PUT", url_suffix=f"requests/{request_id}/_close", data={"input_data": f"{input_data}"})
     hr = f"### Successfully closed request {request_id}"
     return hr, {}, result
+
+
+def get_request_notes_list_command(client: Client, args: dict) -> CommandResults:
+    request_id = args.get("request_id")
+    request_note_id = args.get("request_note_id")
+    if request_note_id:
+        raw_result = client.http_request("GET", url_suffix=f"requests/{request_id}/notes/{request_note_id}")
+        res = raw_result.get("request_note")
+    else:
+        raw_result = client.http_request("GET", url_suffix=f"requests/{request_id}/notes")
+        res = raw_result.get("notes")
+
+    return CommandResults(
+        outputs_prefix="ServiceDeskPlus.Request.Note",
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=note_human_readable(res),
+        raw_response=raw_result,
+    )
+
+
+def add_request_note_command(client: Client, args: dict) -> CommandResults:
+    request_id = args.get("request_id")
+    description = args.get("description")
+
+    data = {
+        "request_note": {
+            "mark_first_response": argToBoolean(args.get("mark_first_response")) or False,
+            "add_to_linked_requests": argToBoolean(args.get("add_to_linked_requests")) or False,
+            "notify_technician": argToBoolean(args.get("notify_technician")) or False,
+            "show_to_requester": argToBoolean(args.get("show_to_requester")) or False,
+            "description": description,
+        }
+    }
+    raw_result = client.http_request(method="POST", url_suffix=f"requests/{request_id}/notes", data={"input_data": f"{data}"})
+    res = raw_result.get("request_note")
+
+    return CommandResults(
+        outputs_prefix="ServiceDeskPlus.Request.Note",
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=note_human_readable(res),
+        raw_response=raw_result,
+    )
+
+
+def delete_request_note_command(client: Client, args: dict) -> CommandResults:
+    request_id = args.get("request_id")
+    request_note_id = args.get("request_note_id")
+
+    raw_result = client.http_request("DELETE", url_suffix=f"requests/{request_id}/notes/{request_note_id}")
+    res = raw_result.get("request_note")
+
+    return CommandResults(
+        outputs_prefix="ServiceDeskPlus.Request.Note",
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=f"The request note {request_note_id} has been successfully deleted from the request {request_id}.",
+        raw_response=raw_result,
+    )
+
+
+def update_request_note_command(client: Client, args: dict) -> CommandResults:
+    request_id = args.get("request_id")
+    request_note_id = args.get("request_note_id")
+    description = args.get("description")
+
+    data = {
+        "request_note": {
+            "mark_first_response": argToBoolean(args.get("mark_first_response")) or False,
+            "add_to_linked_requests": argToBoolean(args.get("add_to_linked_requests")) or False,
+            "notify_technician": argToBoolean(args.get("notify_technician")) or False,
+            "show_to_requester": argToBoolean(args.get("show_to_requester")) or False,
+            "description": description,
+        }
+    }
+    raw_result = client.http_request(
+        method="PUT", url_suffix=f"requests/{request_id}/notes/{request_note_id}", data={"input_data": f"{data}"}
+    )
+    res = raw_result.get("request_note")
+
+    return CommandResults(
+        outputs_prefix="ServiceDeskPlus.Request.Note",
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=note_human_readable(res),
+        raw_response=raw_result,
+    )
 
 
 def fetch_incidents(client: Client, test_command: bool = False) -> list:
@@ -891,6 +1010,12 @@ def main():
         "service-desk-plus-request-resolution-add": add_resolution_command,
         "service-desk-plus-request-resolutions-list": get_resolutions_list_command,
     }
+    notes_commands = {
+        "service-desk-plus-request-notes-list": get_request_notes_list_command,
+        "service-desk-plus-request-notes-add": add_request_note_command,
+        "service-desk-plus-request-notes-delete": delete_request_note_command,
+        "service-desk-plus-request-notes-update": update_request_note_command,
+    }
     command = demisto.command()
     LOG(f"Command being called is {command}")
 
@@ -902,6 +1027,8 @@ def main():
             demisto.incidents(incidents)
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
+        elif command in notes_commands:
+            return_results(notes_commands[command](client, demisto.args()))
         else:
             return_error("Command not found.")
     except Exception as e:

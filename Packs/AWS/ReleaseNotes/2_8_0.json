@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The context outputs paths of the following command was updated: aws-cloudtrail-trails-describe. Now all of the command outputs have the same prefix AWS.CloudTrail.Trails."
+}

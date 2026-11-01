@@ -10,7 +10,8 @@ urllib3.disable_warnings()
 ACCEPT_HEADER = {
     "Accept": "application/json, "
     "application/vnd.docker.distribution.manifest.v2+json, "
-    "application/vnd.docker.distribution.manifest.list.v2+json"
+    "application/vnd.docker.distribution.manifest.list.v2+json, "
+    "application/vnd.oci.image.manifest.v1+json"
 }
 
 # use 10 seconds timeout for requests

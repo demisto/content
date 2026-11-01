@@ -1,0 +1,77 @@
+{
+    "raw_response": {
+        "content": [
+            {
+                "createDate": "2020-01-01T00:00:00.000+00:00",
+                "createdBy": "test_user",
+                "deprecated": false,
+                "itemsCount": 0,
+                "listId": "11111_TESTLISTA",
+                "listType": "CL",
+                "name": "TEST_LIST_A",
+                "productionActivationStatus": "INACTIVE",
+                "stagingActivationStatus": "ACTIVE",
+                "tags": [],
+                "type": "IP",
+                "version": 1
+            },
+            {
+                "createDate": "2020-02-02T00:00:00.000+00:00",
+                "createdBy": "test_user",
+                "deprecated": false,
+                "itemsCount": 3,
+                "listId": "22222_TESTLISTB",
+                "listType": "CL",
+                "name": "TEST_LIST_B",
+                "productionActivationStatus": "ACTIVE",
+                "stagingActivationStatus": "INACTIVE",
+                "tags": ["blocklist"],
+                "type": "IP",
+                "version": 13
+            }
+        ],
+        "page": 0,
+        "pageSize": 50,
+        "totalElements": 2,
+        "totalPages": 1
+    },
+    "human_readable": "### Akamai WAF Client List\n|List ID|Name|Notes|Production Activation Status|Staging Activation Status|Tags|Type|\n|---|---|---|---|---|---|---|\n| 11111_TESTLISTA | TEST_LIST_A |  | INACTIVE | ACTIVE |  | IP |\n| 22222_TESTLISTB | TEST_LIST_B |  | ACTIVE | INACTIVE | blocklist | IP |\n",
+    "context_entry": {
+        "Akamai.ClientList": {
+            "content": [
+                {
+                    "createDate": "2020-01-01T00:00:00.000+00:00",
+                    "createdBy": "test_user",
+                    "deprecated": false,
+                    "itemsCount": 0,
+                    "listId": "11111_TESTLISTA",
+                    "listType": "CL",
+                    "name": "TEST_LIST_A",
+                    "productionActivationStatus": "INACTIVE",
+                    "stagingActivationStatus": "ACTIVE",
+                    "tags": [],
+                    "type": "IP",
+                    "version": 1
+                },
+                {
+                    "createDate": "2020-02-02T00:00:00.000+00:00",
+                    "createdBy": "test_user",
+                    "deprecated": false,
+                    "itemsCount": 3,
+                    "listId": "22222_TESTLISTB",
+                    "listType": "CL",
+                    "name": "TEST_LIST_B",
+                    "productionActivationStatus": "ACTIVE",
+                    "stagingActivationStatus": "INACTIVE",
+                    "tags": ["blocklist"],
+                    "type": "IP",
+                    "version": 13
+                }
+            ],
+            "page": 0,
+            "pageSize": 50,
+            "totalElements": 2,
+            "totalPages": 1
+        }
+    }
+}

@@ -1,3 +1,6 @@
 [file:IvantiConnectSecure.yml]
 ignore=MR108,PR101
 
+
+[file:IvantiConnectSecure_2_11.yml]
+ignore=MR108

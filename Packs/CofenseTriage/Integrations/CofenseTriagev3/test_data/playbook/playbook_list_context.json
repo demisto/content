@@ -1,0 +1,150 @@
+[
+    {
+        "attributes": {
+            "active": true,
+            "add_rule_tags_to_report_tags": false,
+            "button_color": "#000000",
+            "cluster_tags": [
+                "one",
+                "two"
+            ],
+            "created_at": "2026-07-30T07:25:00.334Z",
+            "delete_report": true,
+            "description": "Spam playbook for common spam we see from reporters.",
+            "name": "Spam",
+            "remove_existing_cluster_tags": true,
+            "remove_existing_report_tags": false,
+            "report_tags": [
+                "one",
+                "two"
+            ],
+            "trigger_only": false,
+            "updated_at": "2026-08-01T10:04:50.734Z"
+        },
+        "id": "1",
+        "links": {
+            "self": "https://triage.example.com/api/public/v2/playbooks/1"
+        },
+        "relationships": {
+            "category": {
+                "data": {
+                    "id": "1",
+                    "type": "categories"
+                },
+                "links": {
+                    "related": "https://triage.example.com/api/public/v2/playbooks/1/category",
+                    "self": "https://triage.example.com/api/public/v2/playbooks/1/relationships/category"
+                }
+            },
+            "owner": {
+                "data": {
+                    "id": "1",
+                    "type": "owners"
+                },
+                "links": {
+                    "related": "https://triage.example.com/api/public/v2/playbooks/1/owner",
+                    "self": "https://triage.example.com/api/public/v2/playbooks/1/relationships/owner"
+                }
+            },
+            "reporter_response": {
+                "data": {
+                    "id": "1",
+                    "type": "outbound_templates"
+                },
+                "links": {
+                    "related": "https://triage.example.com/api/public/v2/playbooks/1/reporter_response",
+                    "self": "https://triage.example.com/api/public/v2/playbooks/1/relationships/reporter_response"
+                }
+            },
+            "team_notifications": {
+                "links": {
+                    "related": "https://triage.example.com/api/public/v2/playbooks/1/team_notifications",
+                    "self": "https://triage.example.com/api/public/v2/playbooks/1/relationships/team_notifications"
+                }
+            },
+            "triggers": {
+                "links": {
+                    "related": "https://triage.example.com/api/public/v2/playbooks/1/triggers",
+                    "self": "https://triage.example.com/api/public/v2/playbooks/1/relationships/triggers"
+                }
+            },
+            "vip_response": {
+                "data": {
+                    "id": "1",
+                    "type": "outbound_templates"
+                },
+                "links": {
+                    "related": "https://triage.example.com/api/public/v2/playbooks/1/vip_response",
+                    "self": "https://triage.example.com/api/public/v2/playbooks/1/relationships/vip_response"
+                }
+            }
+        },
+        "type": "playbooks"
+    },
+    {
+        "attributes": {
+            "active": false,
+            "add_rule_tags_to_report_tags": true,
+            "button_color": "#ff0000",
+            "created_at": "2026-08-05T09:12:31.104Z",
+            "delete_report": false,
+            "description": "Playbook used only by triggers for credential phishing.",
+            "name": "Phishing",
+            "remove_existing_cluster_tags": false,
+            "remove_existing_report_tags": false,
+            "trigger_only": true,
+            "updated_at": "2026-08-07T11:45:22.512Z"
+        },
+        "id": "2",
+        "links": {
+            "self": "https://triage.example.com/api/public/v2/playbooks/2"
+        },
+        "relationships": {
+            "category": {
+                "data": {
+                    "id": "4",
+                    "type": "categories"
+                },
+                "links": {
+                    "related": "https://triage.example.com/api/public/v2/playbooks/2/category",
+                    "self": "https://triage.example.com/api/public/v2/playbooks/2/relationships/category"
+                }
+            },
+            "owner": {
+                "data": {
+                    "id": "3",
+                    "type": "api_applications"
+                },
+                "links": {
+                    "related": "https://triage.example.com/api/public/v2/playbooks/2/owner",
+                    "self": "https://triage.example.com/api/public/v2/playbooks/2/relationships/owner"
+                }
+            },
+            "reporter_response": {
+                "links": {
+                    "related": "https://triage.example.com/api/public/v2/playbooks/2/reporter_response",
+                    "self": "https://triage.example.com/api/public/v2/playbooks/2/relationships/reporter_response"
+                }
+            },
+            "team_notifications": {
+                "links": {
+                    "related": "https://triage.example.com/api/public/v2/playbooks/2/team_notifications",
+                    "self": "https://triage.example.com/api/public/v2/playbooks/2/relationships/team_notifications"
+                }
+            },
+            "triggers": {
+                "links": {
+                    "related": "https://triage.example.com/api/public/v2/playbooks/2/triggers",
+                    "self": "https://triage.example.com/api/public/v2/playbooks/2/relationships/triggers"
+                }
+            },
+            "vip_response": {
+                "links": {
+                    "related": "https://triage.example.com/api/public/v2/playbooks/2/vip_response",
+                    "self": "https://triage.example.com/api/public/v2/playbooks/2/relationships/vip_response"
+                }
+            }
+        },
+        "type": "playbooks"
+    }
+]

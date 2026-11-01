@@ -1,4 +1,7 @@
 category: Vulnerability Management
+sectionorder:
+- Connect
+- Collect
 provider: Edgescan
 commonfields:
   id: Edgescan
@@ -8,52 +11,70 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: API Key
   name: api_key
   required: true
   type: 4
+  section: Connect
 - defaultvalue: '50'
   display: Max number of incidents to fetch at once
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Fetch vulnerabilities with CVS score greater than. This can be a decimal point number. Disabled if empty. Mutually exclusive with cvss_score
   display: Fetch vulnerabilities with CVSS greater than
   name: cvss_score_greater_than
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Disabled if empty
   display: Fetch vulnerabilities with risk more than
   name: risk_more_than
   type: 0
   required: false
+  section: Collect
 - additionalinfo: 'How many days to fetch back on first run. It can be: 360 days, 12 months, 1 year, etc.'
   defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  advanced: true
+  section: Collect
 - additionalinfo: Fetch vulnerabilities with CVS score that exactly equals the provided value. This can be a decimal point number. Disabled if empty. Mutually exclusive with cvss_score_greater_than
   display: Fetch vulnerabilities with CVSS with exact value
   name: cvss_score
   type: 0
   required: false
+  section: Collect
 description: Cloud-based continuous vulnerability management and penetration testing solution.
 display: Edgescan
 name: Edgescan

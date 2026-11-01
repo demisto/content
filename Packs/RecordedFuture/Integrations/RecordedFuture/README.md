@@ -10,11 +10,16 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | --- | --- | --- |
 | Server URL (e.g., https://api.recordedfuture.com/gw/xsoar/) |  | True |
 | API Token |  | True |
-| File Threshold | Minimum risk score from Recorded Future to consider the file malicious. | False |
-| CVE Threshold | Minimum risk score from Recorded Future to consider the CVE malicious. | False |
-| IP Threshold | Minimum risk score from RF to consider the IP malicious. | False |
-| Domain Threshold | Minimum risk score from Recorded Future to consider the domain malicious. | False |
-| URL Threshold | Minimum risk score from Recorded Future to consider the URL malicious. | False |
+| File Suspicious Threshold | Minimum risk score from Recorded Future to consider the file suspicious. | False |
+| File Malicious Threshold | Minimum risk score from Recorded Future to consider the file malicious. | False |
+| CVE Suspicious Threshold | Minimum risk score from Recorded Future to consider the CVE suspicious. | False |
+| CVE Malicious Threshold | Minimum risk score from Recorded Future to consider the CVE malicious. | False |
+| IP Suspicious Threshold | Minimum risk score from Recorded Future to consider the IP suspicious. | False |
+| IP Malicious Threshold | Minimum risk score from Recorded Future to consider the IP malicious. | False |
+| Domain Suspicious Threshold | Minimum risk score from Recorded Future to consider the domain suspicious. | False |
+| Domain Malicious Threshold | Minimum risk score from Recorded Future to consider the domain malicious. | False |
+| URL Suspicious Threshold | Minimum risk score from Recorded Future to consider the URL suspicious. | False |
+| URL Malicious Threshold | Minimum risk score from Recorded Future to consider the URL malicious. | False |
 | Vulnerability Threshold | Minimum risk score from Recorded Future to consider the vulnerability critical. | False |
 | Collective Insights | The Recorded Future Intelligence Cloud aggregates data related to indicators, driving collective insights to better identify threats. Anonymized data is collected for analytical purposes to identify trends and insights with the Intelligence Cloud. Go to the Recorded Future support site to learn more about Collective Insights. | True |
 | Trust any certificate (not secure) |  | False |

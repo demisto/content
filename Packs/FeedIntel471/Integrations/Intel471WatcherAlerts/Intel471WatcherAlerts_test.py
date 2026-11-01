@@ -49,7 +49,7 @@ def test_fetch_incidents(requests_mock):
     get_alert API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
     """
-    from Intel471WatcherAlerts import Client, fetch_incidents
+    from Intel471WatcherAlerts import Client, fetch_incidents_titan
 
     mock_response = util_load_json("test_data/search_alerts.json")
     requests_mock.get(
@@ -64,13 +64,12 @@ def test_fetch_incidents(requests_mock):
         "last_fetch": 1581944401  # Mon Feb 17 2020
     }
 
-    latest_alert_uid, next_run, incidents = fetch_incidents(
+    latest_alert_uid, next_run, incidents = fetch_incidents_titan(
         client=client,
         max_results=1,
         last_run=last_run,
         first_fetch_time=0,
         watcher_group_uids=None,
-        severity="Medium",
         last_alert_uid="",
     )
 
@@ -82,10 +81,10 @@ def test_fetch_incidents(requests_mock):
             "type": "Intel 471 Watcher Alert",
             "severity": 2,
             "CustomFields": {
-                "titanurl": "https://titan.intel471.com/ims_thread/45678901234567890123456789012345?message_uid"
+                "intel471url": "https://titan.intel471.com/ims_thread/45678901234567890123456789012345?message_uid"
                 "=34567890123456789012345678901234",
-                "titanwatchergroup": "Test Watcher Group 1",
-                "titanwatcher": 'Watcher on "sell"',
+                "watchergroup": "Test Watcher Group 1",
+                "watcher": 'Watcher on "sell"',
             },
             "details": "Source Object: INSTANT MESSAGE\nService: TestService\nChannel:"
             " TEST CHANNEL\nActor: \n\nPart 1 sell part2",

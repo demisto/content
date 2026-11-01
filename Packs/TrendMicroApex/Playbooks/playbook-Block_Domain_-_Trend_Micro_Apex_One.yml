@@ -2,8 +2,8 @@ id: Block Domain - Trend Micro Apex One
 version: -1
 name: Block Domain - Trend Micro Apex One
 description: |-
-  This playbook blocks domains using Trend Micro Apex One.
-  The playbook checks whether the Trend Micro Apex One integration is enabled, whether the Domain input has been provided and if so, blocks the domain.
+  This playbook blocks domains using TrendAI™ Apex One.
+  The playbook checks whether the TrendAI™ Apex One integration is enabled, whether the Domain input has been provided and if so, blocks the domain.
 starttaskid: "0"
 tasks:
   "0":
@@ -40,8 +40,8 @@ tasks:
     task:
       id: b414b6be-6e40-48a4-8612-d7cc449eb0cf
       version: -1
-      name: Is Trend Micro Apex One enabled?
-      description: Verify that there is a valid instance of Check Point Firewall enabled.
+      name: Is TrendAI™ Apex One enabled?
+      description: Verify that there is a valid instance of TrendAI™ Apex One enabled.
       type: condition
       iscommand: false
       brand: ""

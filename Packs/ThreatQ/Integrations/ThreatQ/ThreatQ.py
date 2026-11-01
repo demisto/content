@@ -103,7 +103,7 @@ def query_tq(keyword):
     try:
         object_type = str(response['data'][0]['object'])
         object_id = str(response['data'][0]['id']) # get the object id from the query results
-    except Exception, e:
+    except Exception:
         results = {'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': "No results from ThreatQ"}
         return results
     results = describe_by_id(object_type,object_id)
@@ -322,7 +322,7 @@ try:
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
 
-except Exception, e:
+except Exception as e:
     raise
     return_error(e)
 

@@ -51,6 +51,35 @@ MAP_ASSET_TYPE_TO_REQUEST_KEY = {
 }
 
 
+# IEEE 754 max safe integer (2^53 - 1). Integers larger than this lose
+# numerical precision when parsed as floats during JSON unmarshaling in XSOAR Core.
+MAX_SAFE_INT = 9007199254740991
+
+
+def sanitize_large_ints(obj: Any) -> Any:
+    """
+    Recursively finds integers larger than the JS/Go max safe integer (2^53 - 1)
+    and converts them to strings to prevent IEEE 754 precision loss in XSOAR Core.
+
+    ThreatConnect object IDs can exceed the IEEE 754 safe integer limit
+    (9,007,199,254,740,991), which causes rounding drift when parsed as floats
+    during JSON unmarshaling in XSOAR Core. Casting such integers to strings
+    preserves numerical fidelity so downstream commands can reference the
+    correct ThreatConnect object IDs.
+    """
+    if isinstance(obj, bool):
+        # bool is a subclass of int in Python, preserve as-is
+        return obj
+    if isinstance(obj, int):
+        return str(obj) if obj > MAX_SAFE_INT else obj
+    if isinstance(obj, dict):
+        return {k: sanitize_large_ints(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [sanitize_large_ints(i) for i in obj]
+
+    return obj
+
+
 class Client(BaseClient):
     def __init__(self, api_id: str, api_secret: str, base_url: str, verify: bool = True, proxy: bool = False):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
@@ -75,6 +104,10 @@ class Client(BaseClient):
         response = self._http_request(
             method=method.value, url_suffix=url_suffix, data=payload, resp_type=responseType, params=params, headers=headers
         )
+
+        if responseType == "json":
+            return sanitize_large_ints(response)
+
         return response
 
     def create_header(self, url_suffix: str, method: Method) -> dict:

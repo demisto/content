@@ -4,78 +4,37 @@ Unit 42 Feed integration provides threat intelligence from Palo Alto Networks Un
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Fetch indicators | Select this check box to fetch indicators \(default selected\). | True |
-| Feed Types | Choose the requested indicator feeds. Indicators feed and Threat Objects \(actors, malware, campaigns, techniques, etc.\) feed \(default is both\). | True |
-| Indicator Types | Comma-separated list of indicator types to fetch \(File, IP, URL, Domain\). If not specified, all indicator types are fetched. | False |
-| Maximum Indicators Per Fetch | Maximum number of indicators to fetch per type. | False |
-| Source Reliability | Reliability of the source providing the intelligence context. | True |
+| Fetch indicators | Select this check box to fetch indicators \(default selected\). |  |
+| Feed Types | Choose the requested indicator feeds. Indicators feed and Threat Objects \(actors, malware, campaigns, techniques, etc.\) feed \(default is both\). | False |
+| Indicator Types | Comma-separated list of indicator types to fetch \(File, IP, URL, Domain\). If not specified, all indicator types are fetched. Changing the indicator types on an existing instance is not supported; to change them, create a new integration instance. | False |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+| Source Reliability | Reliability of the source providing the intelligence context. | False |
 | Tags | Supports CSV values. | False |
-| Traffic Light Protocol Color (TLP). | The Traffic Light Protocol \(TLP\) designation is to apply to indicators fetched from the feed. | False |
-| Indicator Reputation | Indicators from this integration instance will be marked with this reputation | True |
-| Feed Expiration Policy | The feed's expiration policy. | True |
+| Traffic Light Protocol Color (TLP). | The Traffic Light Protocol \(TLP\) designation applied to indicators fetched from the feed. | False |
+|  | The feed's expiration policy. | False |
 | Indicator Expiration Interval | The indicator's expiration policy. | False |
 | Create relationships | Create relationships with other indicators. | False |
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
 
-## How the Maximum Indicators Per Fetch Parameter Works
+## How Fetching Works
 
-The **Maximum Indicators Per Fetch** parameter controls the maximum number of indicators fetched per type during each fetch cycle. The integration enforces a total limit of **100,000 indicators** across all types to ensure optimal performance.
+The integration fetches indicators and threat objects, each capped by its own independent limit per fetch. Indicators are capped at **20,000** items per run, and threat objects are capped separately at **5,000** items per run.
 
-### Limit Calculation Algorithm
+Fetch order within a run:
 
-The limit per indicator type is calculated using the following logic:
+1. **Threat Objects** are fetched first, up to their own 5,000-item limit.
+2. **Indicators** (all configured indicator types, queried together) are then fetched with the full 20,000-item limit, independent of how many threat objects were fetched.
 
-1. **If the limit is not specified or is negative**:
-   - Default limit per type = `100,000 / total_number_of_types`
+### Fetch Frequency
 
-2. **If the limit × total_number_of_types > 100,000**:
-   - Adjusted limit per type = `100,000 / total_number_of_types`
+- **Indicators** are fetched every hour.
+- **Threat Objects** are fetched at most once every 24 hours. If a threat objects fetch is interrupted (more data is available than the limit allows), it resumes on the next run without waiting for the 24-hour window, until it completes.
 
-3. **Otherwise**:
-   - Uses the specified limit per type.
+### Incremental Fetch
 
-### Examples
-
-#### Example 1: No Limit Specified with 4 Types
-
-- **Configuration**: Threat Objects + 3 indicator types (IP, Domain, URL)
-- **Total number of types**: 4
-- **Calculation**: `100,000 / 4 = 25,000` per type
-- **Result**: Fetches up to 25,000 of each type (100,000 total)
-
-#### Example 2: Limit Exceeds Total
-
-- **Configuration**: Limit = 30,000, with 4 types selected
-- **Calculation**: `30,000 × 4 = 120,000 > 100,000` (exceeds total limit)
-- **Adjusted**: `100,000 / 4 = 25,000` per type
-- **Result**: Fetches up to 25,000 of each type (100,000 total)
-
-#### Example 3: Limit within Total
-
-- **Configuration**: Limit = 20,000, with 4 types selected
-- **Calculation**: `20,000 × 4 = 80,000 ≤ 100,000` (within total limit)
-- **Result**: Fetches up to 20,000 of each type (80,000 total)
-
-#### Example 4: Single Type
-
-- **Configuration**: Limit not specified, only IP indicators selected
-- **Total types**: 1
-- **Calculation**: `100,000 / 1 = 100,000` per type
-- **Result**: Fetches up to 100,000 IP indicators
-
-### Fetch Priority Order
-
-When multiple types are configured, the integration fetches in the following priority order:
-
-1. **Threat Objects** (if enabled)
-2. **IP** indicators
-3. **Domain** indicators
-4. **URL** indicators
-5. **File** indicators
-
-If any type returns fewer indicators than its allocated limit, the unused quota is added to the last enabled type in the priority order, allowing it to fetch up to the total limit of 100,000 indicators.
+When a feed reaches its limit during a run and more data is still available, the integration saves its position and resumes from where it stopped on the next run, instead of restarting the same query. This ensures no data is skipped across runs.
 
 ## Commands
 
@@ -120,3 +79,11 @@ Gets threat objects from the feed.
 #### Context Output
 
 There is no context output for this command.
+
+## Troubleshooting
+
+- *HTTP 403 Forbidden* error when fetching indicators behind a corporate proxy or firewall.
+  - This occurs when the proxy or firewall blocks outbound requests to the Unit 42 Feed API endpoint (`prod-us.tas.crtx.paloaltonetworks.com`), which is not listed in the standard Cortex XSOAR System Requirements documentation.
+  - **Resolution**: Add `prod-us.tas.crtx.paloaltonetworks.com` (or the wildcard `*.tas.crtx.paloaltonetworks.com`) to your proxy or firewall allowlist. The integration requires outbound HTTPS (port 443) access to the following endpoints:
+    - `https://prod-us.tas.crtx.paloaltonetworks.com/api/v1/feeds/indicators`
+    - `https://prod-us.tas.crtx.paloaltonetworks.com/api/v1/feeds/threat_objects`

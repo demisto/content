@@ -4,8 +4,10 @@ import demistomock as demisto
 from CommonServerPython import *
 
 TESSERACT_EXE = "tesseract"
-CORRUPTED_ERR = "pix not read"
+CORRUPTED_ERRORS = ("pix not read", "truncated file")
+CORRUPTED_ERR = CORRUPTED_ERRORS[0]  # kept for backward compatibility
 CORRUPTED_MSG = "WARNING: failed to extract text - image is corrupted"
+EMPTY_FILE_MSG = "WARNING: failed to extract text - file is empty"
 
 
 def list_languages() -> list[str]:
@@ -53,6 +55,19 @@ def extract_text_command(args: dict, instance_languages: list, skip_corrupted: b
             if not file_path:
                 raise DemistoException(f"Couldn't find entry id: {entry_id}")
 
+            if os.path.getsize(file_path["path"]) == 0:
+                demisto.debug(f"File with entry ID {entry_id} is empty, skipping OCR.")
+                results.append(
+                    CommandResults(
+                        readable_output=f"## Could not process file with entry ID {entry_id} - file is empty",
+                        outputs_prefix="File",
+                        outputs_key_field="EntryID",
+                        outputs={"EntryID": entry_id, "Text": EMPTY_FILE_MSG},
+                        entry_type=EntryType.WARNING,
+                    )
+                )
+                continue
+
             demisto.debug(f"Extracting text from file: {file_path}")
             res = extract_text(file_path["path"], langs, verbose)
             file_entry = {"EntryID": entry_id, "Text": res}
@@ -66,7 +81,7 @@ def extract_text_command(args: dict, instance_languages: list, skip_corrupted: b
                 )
             )
         except subprocess.CalledProcessError as cpe:
-            if CORRUPTED_ERR in cpe.stderr and skip_corrupted:
+            if any(err in cpe.stderr for err in CORRUPTED_ERRORS) and skip_corrupted:
                 file_entry = {"EntryID": entry_id, "Text": CORRUPTED_MSG}
                 results.append(
                     CommandResults(

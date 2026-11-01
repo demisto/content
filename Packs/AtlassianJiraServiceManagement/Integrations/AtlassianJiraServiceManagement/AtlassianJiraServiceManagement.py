@@ -506,7 +506,9 @@ def jira_asset_object_search_command(client: Client, args: dict[str, Any]) -> Co
 
     # build outputs
     res = client.search_objects(ql_query, include_attributes, page, page_size, limit)
-    objects = res["objectEntries"]
+    objects = res.get("objectEntries", [])
+    if not objects:
+        return CommandResults(readable_output="No objects found.")
     hr_headers = ["ID", "Label", "Type", "ObjectKey"]
     readable_output = get_object_readable_outputs(objects)
     outputs = [{k: v for k, v in obj.items() if k != "objectType" and k != "avatar"} for obj in objects]

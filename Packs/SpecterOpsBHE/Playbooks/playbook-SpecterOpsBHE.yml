@@ -189,4 +189,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
-description: Automated playbook that enriches BloodHound Enterprise attack path incidents with object information and validates attack path existence between security principals.
+deprecated: true
+description: Deprecated. Use the SpecterOpsBloodHoundEnterprise playbook instead. Automated playbook that enriches BloodHound Enterprise attack path incidents with object information and validates attack path existence between security principals.

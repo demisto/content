@@ -1,0 +1,7 @@
+fromversion: 8.15.0
+id: OracleDBEventCollector
+name: OracleDBEventCollector
+rules: ''
+schema: ''
+supportedModules:
+- xsiam

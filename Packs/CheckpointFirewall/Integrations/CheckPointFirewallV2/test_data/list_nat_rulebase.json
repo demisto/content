@@ -1,0 +1,23 @@
+{
+  "from": 1,
+  "to": 2,
+  "total": 2,
+  "rulebase": [
+    {
+      "uid": "nat-rule-uid-1234",
+      "name": "nat-rule-1",
+      "type": "nat-rule",
+      "enabled": true,
+      "method": "static",
+      "rule-number": 1
+    },
+    {
+      "uid": "nat-rule-uid-5678",
+      "name": "nat-rule-2",
+      "type": "nat-rule",
+      "enabled": true,
+      "method": "hide",
+      "rule-number": 2
+    }
+  ]
+}

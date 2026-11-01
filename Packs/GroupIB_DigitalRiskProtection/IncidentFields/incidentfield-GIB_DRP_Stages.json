@@ -1,0 +1,87 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB DRP Violation"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibdrpstages",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Stage",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": true,
+            "key": "stagename",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 220
+        },
+        {
+            "displayName": "Code",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": true,
+            "key": "type",
+            "orgType": "number",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "number",
+            "width": 90
+        },
+        {
+            "displayName": "Datetime",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": true,
+            "key": "datetime",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 220
+        },
+        {
+            "displayName": "Times",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": true,
+            "key": "times",
+            "orgType": "number",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "number",
+            "width": 100
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {}
+    ],
+    "editForm": false,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibdrpstages",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB DRP Stages",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

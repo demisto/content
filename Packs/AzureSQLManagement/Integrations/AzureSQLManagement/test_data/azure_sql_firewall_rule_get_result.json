@@ -1,0 +1,9 @@
+{
+    "id": "/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft.Sql/servers/integration/firewallRules/test-rule",
+    "name": "test-rule",
+    "type": "Microsoft.Sql/servers/firewallRules",
+    "properties": {
+        "startIpAddress": "0.0.0.0",
+        "endIpAddress": "0.0.0.0"
+    }
+}

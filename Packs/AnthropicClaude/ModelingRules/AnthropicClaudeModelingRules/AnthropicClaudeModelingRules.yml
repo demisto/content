@@ -1,0 +1,9 @@
+fromversion: 8.5.0
+toversion: 8.14.0
+id: AnthropicClaude_ModelingRule
+name: Anthropic Claude Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam

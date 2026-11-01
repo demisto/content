@@ -6,6 +6,33 @@
         "Ignite Alert": {
             "dontMapEventToLabels": true,
             "internalMapping": {
+                "Flashpoint Alert Body": {
+                    "complex": {
+                        "accessor": "body",
+                        "filters": [],
+                        "root": "highlights",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "\u003cbr/\u003e"
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Flashpoint Alert ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    }
+                },
                 "Flashpoint Alert Text": {
                     "complex": {
                         "filters": [],
@@ -40,10 +67,17 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "headers": {},
-                                    "is_auto_json_transform": {},
-                                    "json_transform_properties": {},
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
                                     "title": {
+                                        "isContext": false,
                                         "value": {
                                             "simple": "Flashpoint Container"
                                         }
@@ -99,13 +133,6 @@
                         "transformers": []
                     }
                 },
-                "Flashpoint Alert ID": {
-                    "complex": {
-                        "filters": [],
-                        "root": "id",
-                        "transformers": []
-                    }
-                },
                 "Flashpoint Image Safe Search": {
                     "complex": {
                         "accessor": "safe_search",
@@ -126,10 +153,17 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "headers": {},
-                                    "is_auto_json_transform": {},
-                                    "json_transform_properties": {},
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
                                     "title": {
+                                        "isContext": false,
                                         "value": {
                                             "simple": "Flashpoint Image Safe Search"
                                         }
@@ -196,6 +230,7 @@
                             {
                                 "args": {
                                     "separator": {
+                                        "isContext": false,
                                         "value": {
                                             "simple": ", "
                                         }
@@ -213,17 +248,17 @@
                         "transformers": []
                     }
                 },
-                "Flashpoint Reason Name": {
+                "Flashpoint Reason ID": {
                     "complex": {
-                        "accessor": "name",
+                        "accessor": "id",
                         "filters": [],
                         "root": "reason",
                         "transformers": []
                     }
                 },
-                "Flashpoint Reason ID": {
+                "Flashpoint Reason Name": {
                     "complex": {
-                        "accessor": "id",
+                        "accessor": "name",
                         "filters": [],
                         "root": "reason",
                         "transformers": []
@@ -278,6 +313,7 @@
                             {
                                 "args": {
                                     "separator": {
+                                        "isContext": false,
                                         "value": {
                                             "simple": ", "
                                         }
@@ -307,10 +343,17 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "headers": {},
-                                    "is_auto_json_transform": {},
-                                    "json_transform_properties": {},
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
                                     "title": {
+                                        "isContext": false,
                                         "value": {
                                             "simple": "Flashpoint Shodan Host"
                                         }
@@ -412,6 +455,14 @@
                     "complex": {
                         "filters": [],
                         "root": "status",
+                        "transformers": []
+                    }
+                },
+                "Flashpoint Vulnerability Details": {
+                    "complex": {
+                        "accessor": "vulns",
+                        "filters": [],
+                        "root": "resource",
                         "transformers": []
                     }
                 },

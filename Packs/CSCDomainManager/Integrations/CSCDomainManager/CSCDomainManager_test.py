@@ -15,7 +15,7 @@ from CSCDomainManager import (
     get_whois_contacts_fields_for_domain,
 )
 
-EXAMPLE_BASE_URL = "https://test.com/api"
+EXAMPLE_BASE_URL = "https://test.com/api"  # pragma: allowlist secret
 VERIFY = True
 ACCEPT_VAL = "example"
 

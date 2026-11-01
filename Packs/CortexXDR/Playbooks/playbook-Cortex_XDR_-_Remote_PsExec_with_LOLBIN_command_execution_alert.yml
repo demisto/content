@@ -523,8 +523,8 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Incident
-                accessor: critical_severity_alert_count
+                root: PaloAltoNetworksXDR.Case
+                accessor: critical_severity_issue_count
             iscontext: true
           right:
             value:
@@ -534,7 +534,7 @@ tasks:
         - operator: greaterThanOrEqual
           left:
             value:
-              simple: PaloAltoNetworksXDR.Incident.high_severity_alert_count
+              simple: PaloAltoNetworksXDR.Case.high_severity_issue_count
             iscontext: true
           right:
             value:

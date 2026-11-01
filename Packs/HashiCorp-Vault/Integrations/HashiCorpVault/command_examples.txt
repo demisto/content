@@ -15,3 +15,4 @@
 !hashicorp-unseal-vault
 !hashicorp-get-role-id role_name=app-read-write
 !hashicorp-generate-role-secret role_name=app-read-write
+!hashicorp-create-update-secret-metadata engine="secret" secret_path="demo-secret" custom_metadata="{\"some_key\": \"some_value\"}"

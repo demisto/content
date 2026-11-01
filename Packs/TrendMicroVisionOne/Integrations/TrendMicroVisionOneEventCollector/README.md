@@ -1,18 +1,18 @@
-Palo Alto Networks Trend Vision One Event Collector integration for Cortex XSIAM collects the Workbench, Observed Attack Techniques, Search Detections and Audit logs.
-Trend Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Vision One prevents the majority of attacks with automated protection.
+**Important:** This integration is supported by Palo Alto Networks.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+Palo Alto Networks TrendAI Vision One™ Event Collector integration for Cortex XSIAM collects the Workbench, Observed Attack Techniques, Search Detections and Audit logs.
+TrendAI Vision One™ is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—TrendAI Vision One™ prevents the majority of attacks with automated protection.
 
-## Configure Trend Vision One Event Collector on Cortex XSIAM
+## Configure TrendAI Vision One™ Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
-2. Search for Trend Vision One Event Collector.
+2. Search for TrendAI Vision One™ Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter**                                                                    | **Description**                                                                                                                                                                                                   | **Required** |
 |----------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| Your server URL                                                                  | The API endpoint to the Trend Vision One instance, see domains list: <https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs>                                                         | True         |
-| Trend Vision One API Key                                                   | The Trend Vision One API Key. Refer to the help section or to the information below on how to retrieve the API key.                                                                                         | False        |
+| Your server URL                                                                  | The API endpoint to the TrendAI Vision One™ instance, see domains list: <https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs>                                                         | True         |
+| TrendAI Vision One™ API Key                                                   | The TrendAI Vision One™ API Key. Refer to the help section or to the information below on how to retrieve the API key.                                                                                         | False        |
 | The maximum number of events per fetch                                           | The maximum number of events to fetch every time fetch is executed for each specified log type \(Workbench, Observed Attack Techniques, Search Detections and Audit logs\).                                       | False        |
 | Observed attack techniques and Search detections logs date-time range (hours)    | Defines the date-range (hours) in each API call that retrieves observed attack techniques and search detections logs. Used mainly to prevent timeouts by looping over large amount of logs.  Default is 24 hours. | False        |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | The first fetch time, since when to start fetching events                                                                                                                                                         | False        |
@@ -24,7 +24,7 @@ This is the default integration for this content pack when configured by the Dat
 4. Click **Test** to validate the URLs, token, and connection.
 
 ***
-This integration fetches the following logs/alerts from Trend Vision One and requires the following permissions:
+This integration fetches the following logs/alerts from TrendAI Vision One™ and requires the following permissions:
 
 | **Log Type**                    | **Action Role Permission Required** | **API Documentation**                                                                                |
 |---------------------------------|-------------------------------------|------------------------------------------------------------------------------------------------------|
@@ -34,7 +34,7 @@ This integration fetches the following logs/alerts from Trend Vision One and req
 | Audit Logs                      | Audit Logs                          | <https://automation.trendmicro.com/xdr/api-v3#tag/Audit-Logs>                                          |
 
 ***
-You can then create a user account and generate an API key to be used for the Cortex XSIAM integration by following these steps in Trend Vision One.
+You can then create a user account and generate an API key to be used for the Cortex XSIAM integration by following these steps in TrendAI Vision One™.
 
 1. Navigate to **Administration** > **User Accounts**.
 2. Click **Add Account**.
@@ -44,15 +44,15 @@ You can then create a user account and generate an API key to be used for the Co
 
 ***
 **Built-in Roles:**
-Trend Vision One has built-in roles with fixed permissions that Master Administrators can assign to accounts.
+TrendAI Vision One™ has built-in roles with fixed permissions that Master Administrators can assign to accounts.
 
 The following table provides a brief description of each role.
 
 | **Role**                          | **Description**                                                                                               |
 |-----------------------------------|---------------------------------------------------------------------------------------------------------------
-| Master Administrator              | Can access all apps and Trend Vision One features.                                                            |
+| Master Administrator              | Can access all apps and TrendAI Vision One™ features.                                                            |
 | Operator (formerly Administrator) | Can configure system settings and connect products.                                                           |
-| Auditor                           | Has "View" access to specific Trend Vision One apps and features.                                             |
+| Auditor                           | Has "View" access to specific TrendAI Vision One™ apps and features.                                             |
 | Senior Analyst                    | Can investigate XDR alerts, take response actions, approve managed XDR requests, and manage detection models. |
 | Analyst                           | Can investigate XDR alerts and take response actions.                                                         |
 
@@ -62,6 +62,14 @@ The following table provides a brief description of each role.
 * For API rate limits, refer [here](https://automation.trendmicro.com/xdr/Guides/API-Request-Limits)
 * Observed Attack Techniques Logs and Search Detection Logs are fetched from the newest to the oldest as its the logs are returned in descending order from the api.
 * For Observed Attack Techniques Logs and Search Detection Logs it is possible that the limit will be exceeded due to api limitations.
+
+### Reliability and fetch behavior
+
+* **Automatic retry with backoff:** transient failures (HTTP *500*, *502*, *503* and *504*, dropped connections and read timeouts) are retried automatically with exponential backoff and jitter, so a short-lived API outage does not abort an entire fetch round.
+* **Page size handling:** the *maximum number of events per fetch* is mapped to the closest valid page size accepted by the API. For Observed Attack Techniques logs the accepted values are *50*, *100* and *200*; for Search Detections logs they are *50*, *100*, *500*, *1000* and *5000*. When the fetch-timeout backoff reduces the limit, the resulting value is clamped to a valid page size.
+* **Per-log-type checkpoints:** each log type is sent to Cortex XSIAM and checkpointed as soon as it is fetched, instead of accumulating all types and sending them at the end. If one log type fails, the others keep their progress and the failed type resumes from its last saved checkpoint on the next run.
+* **Fetch-timeout backoff:** if a fetch round reaches the execution timeout, the next round halves the page size and is scheduled *30* seconds later, so the collector catches up on a large backlog instead of re-scanning overlapping time windows.
+* **User-Agent header:** all API requests include a *User-Agent* header identifying the integration (for example *TMV1CortexXSOAREventCollector/4.6.0*), so traffic from this collector can be traced in TrendAI Vision One™.
 
 ## Commands
 
@@ -91,4 +99,4 @@ Returns a list of logs.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicroVisionOne.Events | Unknown | Trend Vision One events. |
+| TrendMicroVisionOne.Events | Unknown | TrendAI Vision One™ events. |

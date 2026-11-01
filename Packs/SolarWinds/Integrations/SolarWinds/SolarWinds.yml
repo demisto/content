@@ -152,6 +152,13 @@ configuration:
   type: 13
   section: Connect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -468,7 +475,7 @@ script:
       Executes a query request.
       Note: The guidelines for composing the query can be found in the 'View Integration Documentation' linked in the integration tips.
     name: swis-query
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   runonce: false
   script: '-'

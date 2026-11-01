@@ -223,6 +223,32 @@ def test_offboard_machine_command(mocker):
     assert result.outputs[0]["Type"] == "Offboard"
 
 
+@pytest.mark.parametrize("isolation_type", ["Full", "Selective", "UnManagedDevice"])
+def test_isolate_machine_command_sends_isolation_type(mocker, isolation_type):
+    """
+    Given:
+        - An isolation_type argument (including the "UnManagedDevice" value).
+    When:
+        - Running the microsoft-atp-isolate-machine command.
+    Then:
+        - The request is sent to the machine isolate endpoint with the given
+          isolation_type in the "IsolationType" body field.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import isolate_machine_command
+
+    machine_id = "4899036531e374137f63289c3267bad772c13fef"
+    http_request = mocker.patch.object(client_mocker.ms_client, "http_request", return_value=MACHINE_OFFBOARD_API_RESPONSE)
+    args = {"machine_id": machine_id, "comment": "test", "isolation_type": isolation_type}
+
+    isolate_machine_command(client_mocker, args)
+
+    http_request.assert_called_once()
+    call_kwargs = http_request.call_args[1]
+    assert call_kwargs["method"] == "POST"
+    assert call_kwargs["url_suffix"] == f"/machines/{machine_id}/isolate"
+    assert call_kwargs["json_data"] == {"Comment": "test", "IsolationType": isolation_type}
+
+
 def test_get_investigation_package_sas_uri_command(mocker):
     from MicrosoftDefenderAdvancedThreatProtection import get_investigation_package_sas_uri_command
 
@@ -4120,3 +4146,33 @@ def test_file_command(mocker):
             "DeterminationValue": "PUA:Win32/FusionCore",
         },
     }
+
+
+@pytest.mark.parametrize(
+    "endpoint_type, expected_scope",
+    [
+        ("com", "https://securitycenter.onmicrosoft.com/windowsatpservice/.default"),
+        ("gcc", "https://securitycenter.onmicrosoft.com/windowsatpservice/.default"),
+        ("geo-us", "https://securitycenter.onmicrosoft.com/windowsatpservice/.default"),
+        ("geo-eu", "https://securitycenter.onmicrosoft.com/windowsatpservice/.default"),
+        ("geo-uk", "https://securitycenter.onmicrosoft.com/windowsatpservice/.default"),
+        ("gcc-high", "https://api-gov.securitycenter.microsoft.us/.default"),
+        ("dod", "https://api-gov.securitycenter.microsoft.us/.default"),
+    ],
+)
+def test_get_defender_scope(endpoint_type, expected_scope):
+    """
+    Given:
+    - An MDE endpoint type
+
+    When:
+    - Calling get_defender_scope to determine the OAuth scope
+
+    Then:
+    - For commercial endpoints (com, gcc, geo-*), the scope should use the APT service endpoint with /windowsatpservice/.default
+    - For government endpoints (gcc-high, dod), the scope should use the API endpoint with /.default
+      because the windowsatpservice resource principal does not exist in government Azure AD tenants
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import get_defender_scope
+
+    assert get_defender_scope(endpoint_type) == expected_scope

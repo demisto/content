@@ -26,11 +26,12 @@ script: >
 
   demisto.results(result)
 type: python
-subtype: python2
+subtype: python3
 tags: []
 enabled: true
 scripttarget: 0
 runonce: false
 comment: ''
+dockerimage: demisto/python3:3.12.13.10116658
 runas: DBotWeakRole
 fromversion: 5.0.0

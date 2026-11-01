@@ -20,6 +20,8 @@ args:
   description: 'The name of the task to search.'
 - name: tag
   description: 'The tag to search.'
+- name: using
+  description: 'The Cortex REST API integration instance to use for the API request. If not provided, the default instance is used.'
 outputs:
 - contextPath: Tasks
   description: The entire task object.

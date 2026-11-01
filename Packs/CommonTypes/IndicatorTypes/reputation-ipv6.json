@@ -257,5 +257,10 @@
     },
     "manualMapping": null,
     "fileHashesPriority": null,
-    "layout": "ipRep"
+    "layout": "ipRep",
+    "supportedModules": [
+        "agentix",
+        "xsiam",
+        "xti"
+    ]
 }

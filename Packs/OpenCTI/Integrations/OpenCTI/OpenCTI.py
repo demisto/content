@@ -1551,7 +1551,7 @@ def main():
     credentials = params.get("credentials", {})
     api_key = credentials.get("password")
     base_url = params.get("base_url").strip("/")
-    verify = not argToBoolean(params.get("insecure"))
+    verify = not argToBoolean(params.get("insecure", False))
 
     try:
         client = OpenCTIApiClient(base_url, api_key, ssl_verify=verify, log_level="error", proxies=handle_proxy())

@@ -36,6 +36,13 @@ configuration:
   type: 13
   section: Connect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - additionalinfo: Public token obtained by creating an API token pair on the /config configuration page
   display: Public API Token
   name: publicApiKey
@@ -206,7 +213,7 @@ script:
     - contextPath: Darktrace.AIAnalyst.groupCategory
       description: Group category.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   runonce: false
   script: '-'

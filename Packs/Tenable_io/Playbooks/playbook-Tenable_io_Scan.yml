@@ -192,3 +192,6 @@ inputs:
 outputs: []
 tests:
 - Tenable.io Scan Test
+supportedModules:
+- agentix
+- xsiam

@@ -1,0 +1,46 @@
+{
+  "data": [
+    {
+      "mailAddress": "test1@8bt3cp.onmicrosoft.com",
+      "userName": "test1@8bt3cp.onmicrosoft.com",
+      "userType": "Member",
+      "employeeType": "Employee",
+      "accountEnabled": true,
+      "companyName": "Veeam Software",
+      "creationType": null,
+      "department": "Marketing",
+      "country": "United States",
+      "jobTitle": "Manager",
+      "officeLocation": "Miami",
+      "type": "User",
+      "id": "fee6a1c9-6f07-4729-bf46-d3d4f45c7ad0",
+      "displayName": "Test 1",
+      "restorePointId": "e41b1345-a565-4db8-82f5-0632403630e8",
+      "restorePointDate": "2024-10-15T22:11:26.218187+02:00"
+    },
+    {
+      "mailAddress": "test2@8bt3cp.onmicrosoft.com",
+      "userName": "test2@8bt3cp.onmicrosoft.com",
+      "userType": "Guest",
+      "employeeType": "Contractor",
+      "accountEnabled": true,
+      "companyName": "Veeam Software",
+      "creationType": null,
+      "department": "Marketing",
+      "country": "United States",
+      "jobTitle": "Specialist",
+      "officeLocation": null,
+      "type": "User",
+      "id": "8d9c14c9-822b-4b9d-ba1c-531275f1c6c6",
+      "displayName": "Test 2",
+      "restorePointId": "e41b1345-a565-4db8-82f5-0632403630e8",
+      "restorePointDate": "2024-10-15T22:11:26.218187+02:00"
+    }
+  ],
+  "pagination": {
+    "total": 2,
+    "count": 2,
+    "skip": null,
+    "limit": null
+  }
+}

@@ -1,0 +1,17 @@
+{
+    "success": {
+        "caseId": "1001",
+        "alertGroupIdentifier": "Access Disabled Accounts_00000000-0000-0000-0000-000000000001",
+        "alertIdentifier": "ACCESS DISABLED ACCOUNTS_00000000-0000-0000-0000-000000000002",
+        "playbookName": "Phishing Investigation",
+        "originalWorkflowDefinitionIdentifier": "00000000-0000-0000-0000-000000000001",
+        "success": true
+    },
+    "failed": {
+        "caseId": "1001",
+        "alertGroupIdentifier": "Access Disabled Accounts_00000000-0000-0000-0000-000000000006",
+        "alertIdentifier": "ACCESS DISABLED ACCOUNTS_00000000-0000-0000-0000-000000000007",
+        "playbookName": "Phishing Investigation",
+        "success": false
+    }
+}

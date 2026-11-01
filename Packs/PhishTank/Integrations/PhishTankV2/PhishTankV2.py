@@ -311,7 +311,7 @@ def main() -> None:
     use_https = params.get("use_https", False)
     proxy = params.get("proxy")
     verify = not params.get("insecure")
-    fetch_interval_hours = params.get("fetchIntervalHours")
+    fetch_interval_hours = params.get("fetchIntervalHours") or "1"
     reliability = params.get("integrationReliability")
     username = params.get("username")
 

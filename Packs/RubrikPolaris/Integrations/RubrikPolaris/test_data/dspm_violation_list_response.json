@@ -1,0 +1,328 @@
+{
+    "raw_response": {
+        "data": {
+            "policyViolations": {
+                "edges": [
+                    {
+                        "node": {
+                            "policyViolationId": "00000000-0000-0000-0000-000000000001",
+                            "status": "POLICY_VIOLATION_STATUS_OPEN",
+                            "__typename": "PolicyViolation",
+                            "createdAt": "2026-03-06T06:30:45.000Z",
+                            "lastUpdatedAt": "2026-03-24T05:30:07.000Z",
+                            "name": "Secrets stored outside of vault",
+                            "violationSeverity": "MEDIUM",
+                            "policy": {
+                                "policyId": "00000000-0000-0000-0000-000000000010",
+                                "name": "Secrets stored outside of vault",
+                                "policySeverity": "MEDIUM",
+                                "policyCategory": "MISPLACED",
+                                "description": "Detects secrets stored outside of vault",
+                                "__typename": "DSPMPolicy"
+                            },
+                            "resourceId": "00000000-0000-0000-0000-000000000020",
+                            "resourceType": "RESOURCE_TYPE_OBJECT",
+                            "resourceMetadata": {
+                                "metadata": {
+                                    "name": "DEMO-RADAR02",
+                                    "objectType": "VSPHERE_VIRTUAL_MACHINE",
+                                    "platform": "PLATFORM_DATA_CENTER",
+                                    "physicalHost": "rubrikdemo.com/Datacenters/Data Center/vm/Discovered virtual machine",
+                                    "cloudAccountInfo": {
+                                        "accountName": "",
+                                        "__typename": "CloudAccountInfo"
+                                    },
+                                    "__typename": "CommonAssetMetadata"
+                                },
+                                "__typename": "ResourceMetadata"
+                            },
+                            "details": {
+                                "dataCategories": [
+                                    {
+                                        "__typename": "DataCategoryStats",
+                                        "id": "00000000-0000-0000-0000-000000000010",
+                                        "name": "",
+                                        "totalViolatedHits": 1
+                                    },
+                                    {
+                                        "__typename": "DataCategoryStats",
+                                        "id": "00000000-0000-0000-0000-000000000020",
+                                        "name": "",
+                                        "totalViolatedHits": 1
+                                    }
+                                ],
+                                "dataTypes": [
+                                    {
+                                        "__typename": "DataTypeStats",
+                                        "id": "00000000-0000-0000-0000-000000000010",
+                                        "name": "",
+                                        "totalViolatedHits": 1
+                                    },
+                                    {
+                                        "__typename": "DataTypeStats",
+                                        "id": "00000000-0000-0000-0000-000000000020",
+                                        "name": "",
+                                        "totalViolatedHits": 1
+                                    }
+                                ],
+                                "violatedNoRiskSensitiveHits": 37,
+                                "violatedLowRiskSensitiveHits": 2,
+                                "violatedMediumRiskSensitiveHits": 1,
+                                "violatedHighRiskSensitiveHits": 0,
+                                "snapshotId": "00000000-0000-0000-0000-000000000030",
+                                "__typename": "DataGovViolationDetails"
+                            },
+                            "remediations": [
+                                {
+                                    "type": "REMEDIATION_TYPE_EXPORT_ACTIONS_LOG_TO_CSV",
+                                    "state": "REMEDIATION_STATE_SUCCESS",
+                                    "remediationDetails": null,
+                                    "__typename": "RemediationMetadata"
+                                }
+                            ]
+                        },
+                        "cursor": "hash_cursor",
+                        "__typename": "PolicyViolationEdge"
+                    },
+                    {
+                        "node": {
+                            "policyViolationId": "00000000-0000-0000-0000-000000000002",
+                            "status": "POLICY_VIOLATION_STATUS_OPEN",
+                            "__typename": "PolicyViolation",
+                            "createdAt": "2026-02-25T15:30:25.000Z",
+                            "lastUpdatedAt": "2026-03-23T16:30:05.000Z",
+                            "name": "Stale sensitive data",
+                            "violationSeverity": "LOW",
+                            "policy": {
+                                "policyId": "00000000-0000-0000-0000-000000000011",
+                                "name": "Stale sensitive data - not modified for over a year",
+                                "policySeverity": "LOW",
+                                "policyCategory": "REDUNDANT",
+                                "description": "Detects stale sensitive data",
+                                "__typename": "DSPMPolicy"
+                            },
+                            "resourceId": "00000000-0000-0000-0000-000000000021",
+                            "resourceType": "RESOURCE_TYPE_OBJECT",
+                            "resourceMetadata": {
+                                "metadata": {
+                                    "name": "file-store",
+                                    "objectType": "AWS_NATIVE_S3_BUCKET",
+                                    "platform": "PLATFORM_AWS",
+                                    "physicalHost": "rubrik-lab/us-east-1",
+                                    "cloudAccountInfo": {
+                                        "accountName": "rubrik-lab",
+                                        "__typename": "CloudAccountInfo"
+                                    },
+                                    "__typename": "CommonAssetMetadata"
+                                },
+                                "__typename": "ResourceMetadata"
+                            },
+                            "details": {
+                                "dataCategories": [
+                                    {
+                                        "__typename": "DataCategoryStats",
+                                        "id": "00000000-0000-0000-0000-000000000010",
+                                        "name": "",
+                                        "totalViolatedHits": 1
+                                    },
+                                    {
+                                        "__typename": "DataCategoryStats",
+                                        "id": "00000000-0000-0000-0000-000000000020",
+                                        "name": "",
+                                        "totalViolatedHits": 1
+                                    }
+                                ],
+                                "dataTypes": [
+                                    {
+                                        "__typename": "DataTypeStats",
+                                        "id": "00000000-0000-0000-0000-000000000010",
+                                        "name": "",
+                                        "totalViolatedHits": 1
+                                    },
+                                    {
+                                        "__typename": "DataTypeStats",
+                                        "id": "00000000-0000-0000-0000-000000000020",
+                                        "name": "",
+                                        "totalViolatedHits": 1
+                                    }
+                                ],
+                                "violatedNoRiskSensitiveHits": 83,
+                                "violatedLowRiskSensitiveHits": 0,
+                                "violatedMediumRiskSensitiveHits": 0,
+                                "violatedHighRiskSensitiveHits": 7,
+                                "snapshotId": "00000000-0000-0000-0000-000000000031",
+                                "__typename": "DataGovViolationDetails"
+                            },
+                            "remediations": null
+                        },
+                        "cursor": "hash_cursor_2",
+                        "__typename": "PolicyViolationEdge"
+                    }
+                ],
+                "pageInfo": {
+                    "startCursor": "hash_cursor",
+                    "endCursor": "hash_token_2",
+                    "hasNextPage": true,
+                    "hasPreviousPage": false,
+                    "__typename": "PageInfo"
+                },
+                "count": 147,
+                "__typename": "PolicyViolationConnection"
+            }
+        }
+    },
+    "outputs": {
+        "RubrikPolaris.DSPMViolation(val.policyViolationId == obj.policyViolationId)": [
+            {
+                "policyViolationId": "00000000-0000-0000-0000-000000000001",
+                "status": "POLICY_VIOLATION_STATUS_OPEN",
+                "__typename": "PolicyViolation",
+                "createdAt": "2026-03-06T06:30:45.000Z",
+                "lastUpdatedAt": "2026-03-24T05:30:07.000Z",
+                "name": "Secrets stored outside of vault",
+                "violationSeverity": "MEDIUM",
+                "policy": {
+                    "policyId": "00000000-0000-0000-0000-000000000010",
+                    "name": "Secrets stored outside of vault",
+                    "policySeverity": "MEDIUM",
+                    "policyCategory": "MISPLACED",
+                    "description": "Detects secrets stored outside of vault",
+                    "__typename": "DSPMPolicy"
+                },
+                "resourceId": "00000000-0000-0000-0000-000000000020",
+                "resourceType": "RESOURCE_TYPE_OBJECT",
+                "resourceMetadata": {
+                    "metadata": {
+                        "name": "DEMO-RADAR02",
+                        "objectType": "VSPHERE_VIRTUAL_MACHINE",
+                        "platform": "PLATFORM_DATA_CENTER",
+                        "physicalHost": "rubrikdemo.com/Datacenters/Data Center/vm/Discovered virtual machine",
+                        "cloudAccountInfo": {
+                            "accountName": "",
+                            "__typename": "CloudAccountInfo"
+                        },
+                        "__typename": "CommonAssetMetadata"
+                    },
+                    "__typename": "ResourceMetadata"
+                },
+                "details": {
+                    "dataCategories": [
+                        {
+                            "__typename": "DataCategoryStats",
+                            "id": "00000000-0000-0000-0000-000000000010",
+                            "name": "",
+                            "totalViolatedHits": 1
+                        },
+                        {
+                            "__typename": "DataCategoryStats",
+                            "id": "00000000-0000-0000-0000-000000000020",
+                            "name": "",
+                            "totalViolatedHits": 1
+                        }
+                    ],
+                    "dataTypes": [
+                        {
+                            "__typename": "DataTypeStats",
+                            "id": "00000000-0000-0000-0000-000000000010",
+                            "name": "",
+                            "totalViolatedHits": 1
+                        },
+                        {
+                            "__typename": "DataTypeStats",
+                            "id": "00000000-0000-0000-0000-000000000020",
+                            "name": "",
+                            "totalViolatedHits": 1
+                        }
+                    ],
+                    "violatedNoRiskSensitiveHits": 37,
+                    "violatedLowRiskSensitiveHits": 2,
+                    "violatedMediumRiskSensitiveHits": 1,
+                    "violatedHighRiskSensitiveHits": 0,
+                    "snapshotId": "00000000-0000-0000-0000-000000000030",
+                    "__typename": "DataGovViolationDetails"
+                },
+                "remediations": [
+                    {
+                        "type": "REMEDIATION_TYPE_EXPORT_ACTIONS_LOG_TO_CSV",
+                        "state": "REMEDIATION_STATE_SUCCESS",
+                        "__typename": "RemediationMetadata"
+                    }
+                ]
+            },
+            {
+                "policyViolationId": "00000000-0000-0000-0000-000000000002",
+                "status": "POLICY_VIOLATION_STATUS_OPEN",
+                "__typename": "PolicyViolation",
+                "createdAt": "2026-02-25T15:30:25.000Z",
+                "lastUpdatedAt": "2026-03-23T16:30:05.000Z",
+                "name": "Stale sensitive data",
+                "violationSeverity": "LOW",
+                "policy": {
+                    "policyId": "00000000-0000-0000-0000-000000000011",
+                    "name": "Stale sensitive data - not modified for over a year",
+                    "policySeverity": "LOW",
+                    "policyCategory": "REDUNDANT",
+                    "description": "Detects stale sensitive data",
+                    "__typename": "DSPMPolicy"
+                },
+                "resourceId": "00000000-0000-0000-0000-000000000021",
+                "resourceType": "RESOURCE_TYPE_OBJECT",
+                "resourceMetadata": {
+                    "metadata": {
+                        "name": "file-store",
+                        "objectType": "AWS_NATIVE_S3_BUCKET",
+                        "platform": "PLATFORM_AWS",
+                        "physicalHost": "rubrik-lab/us-east-1",
+                        "cloudAccountInfo": {
+                            "accountName": "rubrik-lab",
+                            "__typename": "CloudAccountInfo"
+                        },
+                        "__typename": "CommonAssetMetadata"
+                    },
+                    "__typename": "ResourceMetadata"
+                },
+                "details": {
+                    "dataCategories": [
+                        {
+                            "__typename": "DataCategoryStats",
+                            "id": "00000000-0000-0000-0000-000000000010",
+                            "name": "",
+                            "totalViolatedHits": 1
+                        },
+                        {
+                            "__typename": "DataCategoryStats",
+                            "id": "00000000-0000-0000-0000-000000000020",
+                            "name": "",
+                            "totalViolatedHits": 1
+                        }
+                    ],
+                    "dataTypes": [
+                        {
+                            "__typename": "DataTypeStats",
+                            "id": "00000000-0000-0000-0000-000000000010",
+                            "name": "",
+                            "totalViolatedHits": 1
+                        },
+                        {
+                            "__typename": "DataTypeStats",
+                            "id": "00000000-0000-0000-0000-000000000020",
+                            "name": "",
+                            "totalViolatedHits": 1
+                        }
+                    ],
+                    "violatedNoRiskSensitiveHits": 83,
+                    "violatedLowRiskSensitiveHits": 0,
+                    "violatedMediumRiskSensitiveHits": 0,
+                    "violatedHighRiskSensitiveHits": 7,
+                    "snapshotId": "00000000-0000-0000-0000-000000000031",
+                    "__typename": "DataGovViolationDetails"
+                }
+            }
+        ],
+        "RubrikPolaris.PageToken.DSPMViolation(val.name == obj.name)": {
+            "name": "rubrik-data-security-violation-list",
+            "next_page_token": "hash_token_2",
+            "has_next_page": true
+        }
+    }
+}

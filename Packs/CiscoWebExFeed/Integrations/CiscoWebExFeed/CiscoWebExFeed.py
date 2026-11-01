@@ -19,8 +19,8 @@ DOMAIN_REGEX = r"([\^]*[\*\.]*[a-z0-9+\-]+\.+.*)*"
 def grab_domain_table(html_section: element.Tag) -> List:
     """Gets the domain table from the given html section"""
     table = html_section.find("table", attrs={"class": "li"})
-    table_body = table.find("tbody")
-    rows = table_body.find_all("tr")
+    table_body = table.find("tbody")  # type: ignore[union-attr]
+    rows = table_body.find_all("tr")  # type: ignore[union-attr]
     data = []
     for row in rows:
         cols = row.find_all("td")
@@ -93,11 +93,11 @@ def parse_indicators_from_response(response: requests.Response) -> Dict[str, Lis
         domainsSection = soup.find("div", {"id": "id_135010"})
 
         # Get Domains
-        domainTable = grab_domain_table(domainsSection)
+        domainTable = grab_domain_table(domainsSection)  # type: ignore[arg-type]
         all_domains_lst = grab_domains(domainTable)
 
         # Get IPS
-        ipTable = grab_ip_table(ipsSection)
+        ipTable = grab_ip_table(ipsSection)  # type: ignore[arg-type]
         all_IPs_lst = grab_CIDR_ips(ipTable)
     except Exception as e:
         raise DemistoException(f"Failed to parse the response from the website. Error: {e!s}")

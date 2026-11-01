@@ -839,12 +839,12 @@ tasks:
           - operator: uniq
       username:
         complex:
-          root: PaloAltoNetworksXDR.Incident.alerts.user_name
+          root: PaloAltoNetworksXDR.Case.Issues.user_name
           filters:
           - - operator: notStartWith
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.user_name
+                  simple: PaloAltoNetworksXDR.Case.Issues.user_name
                 iscontext: true
               right:
                 value:
@@ -852,7 +852,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.user_name
+                  simple: PaloAltoNetworksXDR.Case.Issues.user_name
                 iscontext: true
               right:
                 value:
@@ -911,12 +911,12 @@ tasks:
         simple: "10"
       Username:
         complex:
-          root: PaloAltoNetworksXDR.Incident.alerts.user_name
+          root: PaloAltoNetworksXDR.Case.Issues.user_name
           filters:
             - - operator: notStartWith
                 left:
                   value:
-                    simple: PaloAltoNetworksXDR.Incident.alerts.user_name
+                    simple: PaloAltoNetworksXDR.Case.Issues.user_name
                   iscontext: true
                 right:
                   value:
@@ -924,7 +924,7 @@ tasks:
               - operator: notStartWith
                 left:
                   value:
-                    simple: PaloAltoNetworksXDR.Incident.alerts.user_name
+                    simple: PaloAltoNetworksXDR.Case.Issues.user_name
                   iscontext: true
                 right:
                   value:

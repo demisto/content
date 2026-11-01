@@ -21,7 +21,7 @@ PATH=~/.local/bin:$PATH
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     cat << __EOF__
 Setup development environment (run with no arguments):
-* install pre-commit hooks (set NO_HOOKS=1 to skip)
+* install pre-commit and pre-push hooks (set NO_HOOKS=1 to skip)
 __EOF__
     exit 0
 fi
@@ -39,6 +39,14 @@ GIT_HOOKS_DIR="${PWD}/.git/hooks"
 if [ -n "${NO_HOOKS}" ]; then
     echo "Skipping hooks setup as environment variable NO_HOOKS is set"
 else
+    if [ ! -e "${GIT_HOOKS_DIR}/pre-push" ]; then
+        echo "Installing 'pre-push' hook"
+        ln -s "${HOOKS_DIR}/pre-push" "${GIT_HOOKS_DIR}/pre-push"
+        exit_on_error $? "Failed to install pre-push hook"
+    else
+        echo "Skipping install of pre-push hook as it already exists."
+    fi
+
     if [ ! -e "${GIT_HOOKS_DIR}/pre-commit" ]; then
         echo "Installing 'pre-commit' hooks"
         ln -s "${HOOKS_DIR}/pre-commit" "${GIT_HOOKS_DIR}/pre-commit"

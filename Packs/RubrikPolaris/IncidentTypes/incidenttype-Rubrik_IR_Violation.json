@@ -1,0 +1,72 @@
+{
+    "id": "Rubrik IR Violation",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Rubrik IR Violation",
+    "prevName": "Rubrik IR Violation",
+    "color": "#F8B7EC",
+    "playbookId": "Rubrik IR Violation Remediation - Rubrik Security Cloud",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Rubrik IR Violation",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "rubrikactorname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "rubrikdomainname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "domainRepUnified"
+                ]
+            },
+            "rubrikentityname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "rubrikrootdomainname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "domainRepUnified"
+                ]
+            },
+            "rubriktargetname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "rubriktargetsource": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "domainRepUnified"
+                ]
+            },
+            "rubrikuserprincipalname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            }
+        }
+    },
+    "fromVersion": "6.10.0"
+}

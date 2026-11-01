@@ -1,0 +1,8 @@
+name: CiscoFirepower Parsing Rule
+id: Cisco_Firepower_ParsingRule
+fromversion: 8.11.0
+tags: []
+rules: ''
+samples: ''
+supportedModules:
+- xsiam

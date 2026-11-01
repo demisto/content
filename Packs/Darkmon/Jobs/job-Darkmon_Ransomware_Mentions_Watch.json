@@ -1,0 +1,17 @@
+{
+    "id": "Darkmon - Ransomware Mentions Watch",
+    "name": "Darkmon - Ransomware Mentions Watch",
+    "details": "Scheduled trigger for the 'Darkmon - Ransomware Mentions Watch' playbook.",
+    "type": "Darkmon Ransomware Mention",
+    "scheduled": true,
+    "cronView": true,
+    "playbookId": "Darkmon - Ransomware Mentions Watch",
+    "fromVersion": "6.8.0",
+    "isFeed": false,
+    "selectedFeeds": [],
+    "isAllFeeds": false,
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
+}

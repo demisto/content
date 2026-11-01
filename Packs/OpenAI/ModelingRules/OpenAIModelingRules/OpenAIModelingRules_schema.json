@@ -1,0 +1,182 @@
+{
+    "openai_admin_audit_raw": {
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor": {
+            "type": "string",
+            "is_array": false
+        },
+        "object": {
+            "type": "string",
+            "is_array": false
+        },
+        "effective_at": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "project": {
+            "type": "string",
+            "is_array": false
+        },
+        "login": {
+            "type": "string",
+            "is_array": false
+        },
+        "logout": {
+            "type": "string",
+            "is_array": false
+        },
+        "api_key_created": {
+            "type": "string",
+            "is_array": false
+        },
+        "api_key_updated": {
+            "type": "string",
+            "is_array": false
+        },
+        "api_key_deleted": {
+            "type": "string",
+            "is_array": false
+        },
+        "invite_sent": {
+            "type": "string",
+            "is_array": false
+        },
+        "invite_accepted": {
+            "type": "string",
+            "is_array": false
+        },
+        "invite_deleted": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_added": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_updated": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_deleted": {
+            "type": "string",
+            "is_array": false
+        },
+        "project_created": {
+            "type": "string",
+            "is_array": false
+        },
+        "project_updated": {
+            "type": "string",
+            "is_array": false
+        },
+        "project_archived": {
+            "type": "string",
+            "is_array": false
+        },
+        "service_account_created": {
+            "type": "string",
+            "is_array": false
+        },
+        "service_account_updated": {
+            "type": "string",
+            "is_array": false
+        },
+        "service_account_deleted": {
+            "type": "string",
+            "is_array": false
+        },
+        "role_created": {
+            "type": "string",
+            "is_array": false
+        },
+        "role_updated": {
+            "type": "string",
+            "is_array": false
+        },
+        "group_created": {
+            "type": "string",
+            "is_array": false
+        },
+        "group_updated": {
+            "type": "string",
+            "is_array": false
+        },
+        "certificate_created": {
+            "type": "string",
+            "is_array": false
+        },
+        "certificate_updated": {
+            "type": "string",
+            "is_array": false
+        },
+        "certificate_deleted": {
+            "type": "string",
+            "is_array": false
+        },
+        "ip_allowlist_created": {
+            "type": "string",
+            "is_array": false
+        },
+        "ip_allowlist_deleted": {
+            "type": "string",
+            "is_array": false
+        },
+        "organization_updated": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "openai_chatgpt_compliance_raw": {
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor": {
+            "type": "string",
+            "is_array": false
+        },
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "action_result": {
+            "type": "string",
+            "is_array": false
+        },
+        "action_privilege": {
+            "type": "string",
+            "is_array": false
+        },
+        "principal": {
+            "type": "string",
+            "is_array": false
+        },
+        "request_metadata": {
+            "type": "string",
+            "is_array": false
+        },
+        "workspace_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "conversation_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "timestamp": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

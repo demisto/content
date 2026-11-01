@@ -1,0 +1,115 @@
+{
+    "cases": [
+        {
+            "name": "projects/chronicle-mock-proj/locations/us/instances/00000000-0000-0000-0000-000000000001/cases/1001",
+            "lastModifyingUserId": "00000000-0000-0000-0000-000000000002",
+            "createTime": "1778778979232",
+            "updateTime": "1779426987796",
+            "displayName": "Test Case 1",
+            "alertCount": 15,
+            "stage": "Triage",
+            "priority": "PRIORITY_MEDIUM",
+            "important": false,
+            "incident": false,
+            "assignee": "@Tier1",
+            "type": "EXTERNAL",
+            "overflowCase": false,
+            "environment": "Default Environment",
+            "status": "OPENED",
+            "workflowStatus": "PENDING_FOR_USER",
+            "sla": {
+                "expirationTime": "1780832620238",
+                "criticalExpirationTime": "1780580620238",
+                "expirationStatus": "OPEN_SLA"
+            },
+            "alertsSla": {
+                "expirationTime": "1782774000000",
+                "expirationStatus": "OPEN_SLA"
+            },
+            "source": "Server",
+            "involvedSuspiciousEntity": false,
+            "tags": [
+                {
+                    "displayName": "demo 1",
+                    "priority": 0
+                },
+                {
+                    "displayName": "demo 2",
+                    "priority": 1
+                }
+            ],
+            "products": [
+                {
+                    "displayName": "Test Case",
+                    "alert": "alert 1"
+                },
+                {
+                    "displayName": "Test Case",
+                    "alert": "alert 2"
+                }
+            ],
+            "tasks": [
+                {
+                    "id": "3",
+                    "createTime": "1779447705049",
+                    "updateTime": "1779447705049",
+                    "content": "Testing",
+                    "title": "XSOAR testing",
+                    "author": "00000000-0000-0000-0000-000000000001",
+                    "lastAuthor": "00000000-0000-0000-0000-000000000002",
+                    "assignee": "00000000-0000-0000-0000-000000000001",
+                    "status": "PENDING",
+                    "favorite": false,
+                    "caseId": 1001
+                }
+            ],
+            "closureDetails": {
+                "reason": "NOT_MALICIOUS",
+                "rootCause": "False positive from detection rule",
+                "caseClosedAction": "MANUALLY",
+                "comment": "Reviewed and confirmed benign activity.\n Case closed by Siemplify API. \nAll attached playbooks and playbook blocks have been terminated.\nAll Alerts were closed."
+            }
+        },
+        {
+            "name": "projects/chronicle-mock-proj/locations/us/instances/00000000-0000-0000-0000-000000000001/cases/1002",
+            "lastModifyingUserId": "00000000-0000-0000-0000-000000000003",
+            "createTime": "1778714179967",
+            "updateTime": "1779416182426",
+            "displayName": "Test Case 2",
+            "alertCount": 5,
+            "stage": "Investigation",
+            "priority": "PRIORITY_HIGH",
+            "important": true,
+            "incident": false,
+            "assignee": "00000000-0000-0000-0000-000000000004",
+            "type": "EXTERNAL",
+            "overflowCase": false,
+            "environment": "Production",
+            "status": "OPENED",
+            "workflowStatus": "IN_PROGRESS",
+            "sla": {
+                "expirationStatus": "NO_SLA"
+            },
+            "alertsSla": {
+                "expirationStatus": "NO_SLA"
+            },
+            "source": "Agent",
+            "involvedSuspiciousEntity": true,
+            "tags": [
+                {
+                    "displayName": "critical",
+                    "priority": 0
+                }
+            ],
+            "products": [
+                {
+                    "displayName": "Test Product",
+                    "alert": "alert 3"
+                }
+            ],
+            "tasks": []
+        }
+    ],
+    "nextPageToken": "next_page_token_value",
+    "totalSize": 2
+}

@@ -879,3 +879,132 @@ def test_tc_get_indicator_command_by_id(mocker):
     call_kwargs = get_indicators_mock.call_args[1]
     assert call_kwargs.get("indicator_id") == "99999"
     assert call_kwargs.get("summary") == ""
+
+
+class TestSanitizeLargeInts:
+    """Tests for the sanitize_large_ints helper function.
+
+    ThreatConnect object IDs can exceed 2^53 - 1 (9,007,199,254,740,991),
+    causing IEEE 754 precision loss when parsed as floats in XSOAR Core.
+    The helper converts such integers to strings while leaving smaller
+    integers and non-integer values untouched.
+    """
+
+    def test_small_int_unchanged(self):
+        """
+        Given: An integer at or below the max safe integer.
+        When:  sanitize_large_ints is called.
+        Then:  The value is returned unchanged as an int.
+        """
+        assert sanitize_large_ints(0) == 0
+        assert sanitize_large_ints(1) == 1
+        assert sanitize_large_ints(MAX_SAFE_INT) == MAX_SAFE_INT
+        assert isinstance(sanitize_large_ints(MAX_SAFE_INT), int)
+
+    def test_large_int_stringified(self):
+        """
+        Given: An integer greater than the max safe integer.
+        When:  sanitize_large_ints is called.
+        Then:  The value is converted to a string preserving all digits.
+        """
+        large_id = 13510798884070691
+        result = sanitize_large_ints(large_id)
+        assert result == "13510798884070691"
+        assert isinstance(result, str)
+
+    def test_bool_preserved(self):
+        """
+        Given: Boolean values (which subclass int in Python).
+        When:  sanitize_large_ints is called.
+        Then:  Booleans are returned unchanged, not converted to int/str.
+        """
+        assert sanitize_large_ints(True) is True
+        assert sanitize_large_ints(False) is False
+
+    def test_non_int_types_unchanged(self):
+        """
+        Given: Non-integer values (str, float, None).
+        When:  sanitize_large_ints is called.
+        Then:  Values are returned unchanged.
+        """
+        assert sanitize_large_ints("abc") == "abc"
+        assert sanitize_large_ints(1.5) == 1.5
+        assert sanitize_large_ints(None) is None
+
+    def test_nested_dict(self):
+        """
+        Given: A nested dict containing large integer IDs.
+        When:  sanitize_large_ints is called.
+        Then:  All large ints are stringified recursively while other
+               values remain unchanged.
+        """
+        payload = {
+            "data": {
+                "id": 13510798884070691,
+                "name": "test-group",
+                "confidence": 75,
+                "nested": {"indicatorId": 13510798884679648},
+            }
+        }
+        result = sanitize_large_ints(payload)
+        assert result["data"]["id"] == "13510798884070691"
+        assert result["data"]["name"] == "test-group"
+        assert result["data"]["confidence"] == 75
+        assert result["data"]["nested"]["indicatorId"] == "13510798884679648"
+
+    def test_list_of_objects(self):
+        """
+        Given: A list containing dicts with large integer IDs.
+        When:  sanitize_large_ints is called.
+        Then:  All large ints inside list elements are stringified.
+        """
+        payload = [
+            {"id": 13510798884679647, "rating": 3},
+            {"id": 13510798884679645, "rating": 4},
+            {"id": 12345, "rating": 5},
+        ]
+        result = sanitize_large_ints(payload)
+        assert result[0]["id"] == "13510798884679647"
+        assert result[1]["id"] == "13510798884679645"
+        assert result[2]["id"] == 12345
+        assert result[0]["rating"] == 3
+
+    def test_list_of_mixed_types(self):
+        """
+        Given: A list containing mixed types (large int, small int, str, float,
+               bool, None, nested dict, nested list).
+        When:  sanitize_large_ints is called.
+        Then:  Only ints exceeding MAX_SAFE_INT are stringified; all other
+               types are returned unchanged, and nested containers are
+               processed recursively.
+        """
+        payload = [
+            13510798884679647,
+            12345,
+            "abc",
+            1.5,
+            True,
+            False,
+            None,
+            {"id": 13510798884679648, "name": "nested"},
+            [13510798884679649, 10],
+        ]
+        result = sanitize_large_ints(payload)
+        assert result[0] == "13510798884679647"
+        assert result[1] == 12345
+        assert result[2] == "abc"
+        assert result[3] == 1.5
+        assert result[4] is True
+        assert result[5] is False
+        assert result[6] is None
+        assert result[7] == {"id": "13510798884679648", "name": "nested"}
+        assert result[8] == ["13510798884679649", 10]
+
+    def test_empty_containers(self):
+        """
+        Given: Empty dict and list inputs.
+        When:  sanitize_large_ints is called.
+        Then:  Empty containers are returned unchanged.
+        """
+        assert sanitize_large_ints({}) == {}
+        assert sanitize_large_ints([]) == []

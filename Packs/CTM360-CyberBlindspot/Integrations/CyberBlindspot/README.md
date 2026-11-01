@@ -6,7 +6,7 @@ This integration was integrated and tested with version `1.0.0` of CTM360_CyberB
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from CyberBlindspot to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CyberBlindspot\), or Incoming and Outgoing \(from/to Cortex XSOAR and CyberBlindspot\). | False |
-| Module To Use | Choose the module you want to use: Incidents, Compromised Cards, Breached Credentials, and Domain/Subdomain Infringements. | False |
+| Module To Use | The module to use: Incidents, Compromised Cards, Breached Credentials, Malware Logs, Domain/Subdomain Infringements, Social Media Fraud, Gambling Sites, or Money Mules. | False |
 | Retrieve Screenshots |  | False |
 | First fetch (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours. Default is `7 days`) | The time the incidents should be fetched starting from. | False |
 | API Key | The CTM360 CyberBlindspot API Key to use for fetching data. | True |
@@ -204,15 +204,15 @@ Fetch details of a single incident from the CyberBlindspot platform.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberBlindspot.RemoteIncident.id | unknown | Unique ID for the incident record. |
+| CyberBlindspot.RemoteIncident.id | unknown | The unique ID for the incident record. |
 | CyberBlindspot.RemoteIncident.brand | unknown | The organization the incident is associated with. |
 | CyberBlindspot.RemoteIncident.coa | unknown | The course of action to take. |
 | CyberBlindspot.RemoteIncident.class | unknown | The classification of the incident on remote server. |
 | CyberBlindspot.RemoteIncident.status | unknown | The current status of the incident on remote server. |
 | CyberBlindspot.RemoteIncident.severity | unknown | The severity of the incident. |
-| CyberBlindspot.RemoteIncident.subject | unknown | Asset or title of incident. |
-| CyberBlindspot.RemoteIncident.type | unknown | Incident type on remote server. |
-| CyberBlindspot.RemoteIncident.remarks | unknown | Remarks about the incident. |
+| CyberBlindspot.RemoteIncident.subject | unknown | The asset or title of the incident. |
+| CyberBlindspot.RemoteIncident.type | unknown | The incident type on the remote server. |
+| CyberBlindspot.RemoteIncident.remarks | unknown | The remarks about the incident. |
 | CyberBlindspot.RemoteIncident.created_date | unknown | The creation date of the incident \(legacy\). |
 | CyberBlindspot.RemoteIncident.updated_date | unknown | The date the incident last got updated \(legacy\). |
 | CyberBlindspot.RemoteIncident.first_seen | unknown | The creation date of the incident. |
@@ -224,10 +224,10 @@ Fetch details of a single incident from the CyberBlindspot platform.
 | CyberBlindspot.RemoteIncident.expiry_year | unknown | The compromised card's expiration year. |
 | CyberBlindspot.RemoteIncident.breach_source | unknown | The source of the breached data. |
 | CyberBlindspot.RemoteIncident.domain | unknown | The domain related to the breached data or compromised device. |
-| CyberBlindspot.RemoteIncident.email | unknown | Email found in the breached data. |
-| CyberBlindspot.RemoteIncident.username | unknown | Username found in the breached data. |
-| CyberBlindspot.RemoteIncident.password | unknown | Password found in the breached data or compromised account. |
-| CyberBlindspot.RemoteIncident.executive_name | unknown | Executive member's name related to the breached data. |
+| CyberBlindspot.RemoteIncident.email | unknown | The email found in the breached data. |
+| CyberBlindspot.RemoteIncident.username | unknown | The username found in the breached data. |
+| CyberBlindspot.RemoteIncident.password | unknown | The password found in the breached data or compromised account. |
+| CyberBlindspot.RemoteIncident.executive_name | unknown | The executive member's name related to the breached data. |
 | CyberBlindspot.RemoteIncident.confirmation_time | unknown | The time of infringement confirmation. |
 | CyberBlindspot.RemoteIncident.risks | unknown | The potential difficulties carried by the infringement. |
 | CyberBlindspot.RemoteIncident.incident_status | unknown | The status of the infringement incident. |
@@ -235,19 +235,45 @@ Fetch details of a single incident from the CyberBlindspot platform.
 | CyberBlindspot.RemoteIncident.date_compromised | unknown | The date of the compromise. |
 | CyberBlindspot.RemoteIncident.computer_name | unknown | The name of the computer that was compromised. |
 | CyberBlindspot.RemoteIncident.operating_system | unknown | The operating system of the compromised device. |
-| CyberBlindspot.RemoteIncident.malware_path | unknown | The path of the in which the malware was installed on the compromised device. |
+| CyberBlindspot.RemoteIncident.malware_path | unknown | The path in which the malware was installed on the compromised device. |
 | CyberBlindspot.RemoteIncident.url_path | unknown | The path of the URL. |
 | CyberBlindspot.RemoteIncident.masked_password | unknown | The masked password of the compromised account. |
 | CyberBlindspot.RemoteIncident.software | unknown | The software that was compromised. |
 | CyberBlindspot.RemoteIncident.user | unknown | The user of the compromised account. |
 | CyberBlindspot.RemoteIncident.user_domain | unknown | The domain of the compromised user. |
-| CyberBlindspot.RemoteIncident.website | unknown | The website compromised. |
+| CyberBlindspot.RemoteIncident.website | unknown | The website that was compromised. |
 | CyberBlindspot.RemoteIncident.sources | unknown | The sources reporting the compromise. |
 | CyberBlindspot.RemoteIncident.source_uri | unknown | The source URI of the compromise report. |
 | CyberBlindspot.RemoteIncident.hostname | unknown | The hostname of the compromised device. |
 | CyberBlindspot.RemoteIncident.stealer_family | unknown | The family of the malware. |
 | CyberBlindspot.RemoteIncident.external_link | unknown | The external link to the remote platform. |
 | CyberBlindspot.RemoteIncident.compromise_details | unknown | The details of the compromise. |
+| CyberBlindspot.RemoteIncident.platform | unknown | The social network platform for social media fraud findings. |
+| CyberBlindspot.RemoteIncident.risk_score | unknown | The numeric risk score from CBS. |
+| CyberBlindspot.RemoteIncident.money_mule_id | unknown | The CBS money mule finding ID. |
+| CyberBlindspot.RemoteIncident.account_identifier | unknown | The account identifier tied to the money mule. |
+| CyberBlindspot.RemoteIncident.suspect_names | unknown | The names associated with the money mule. |
+| CyberBlindspot.RemoteIncident.suspect_emails | unknown | The email addresses associated with the money mule. |
+| CyberBlindspot.RemoteIncident.suspect_phones | unknown | The phone numbers associated with the money mule. |
+| CyberBlindspot.RemoteIncident.transfer_amount | unknown | The transfer amount when present. |
+| CyberBlindspot.RemoteIncident.transfer_currency | unknown | The currency code for the transfer. |
+| CyberBlindspot.RemoteIncident.bank_account_holder_name | unknown | The name on the bank account. |
+| CyberBlindspot.RemoteIncident.bank_name | unknown | The bank name tied to the money mule. |
+| CyberBlindspot.RemoteIncident.bank_account_country | unknown | The country of the bank account. |
+| CyberBlindspot.RemoteIncident.bic | unknown | The Bank Identifier Code. |
+| CyberBlindspot.RemoteIncident.finding_id | unknown | The CBS gambling-site finding ID. |
+| CyberBlindspot.RemoteIncident.url | unknown | The primary gambling site URL. |
+| CyberBlindspot.RemoteIncident.submitted_url | unknown | The URL submitted to CBS for scanning. |
+| CyberBlindspot.RemoteIncident.landing_url | unknown | The landing page URL observed for the site. |
+| CyberBlindspot.RemoteIncident.title | unknown | The page title observed during scan. |
+| CyberBlindspot.RemoteIncident.resolving_ip | unknown | The resolved IP for the gambling site. |
+| CyberBlindspot.RemoteIncident.tags | unknown | The tags applied to the gambling site finding. |
+| CyberBlindspot.RemoteIncident.status_code | unknown | The HTTP status code from scan. |
+| CyberBlindspot.RemoteIncident.url_status | unknown | The URL reachability status. |
+| CyberBlindspot.RemoteIncident.scan_status | unknown | The scan completion status. |
+| CyberBlindspot.RemoteIncident.enrichment | unknown | The DNS enrichment payload. |
+| CyberBlindspot.RemoteIncident.external_links | unknown | The external links discovered on the gambling site. |
+| CyberBlindspot.RemoteIncident.internal_links | unknown | The internal links discovered on the gambling site. |
 
 ### ctm360-cbs-incident-retrieve-screenshots
 

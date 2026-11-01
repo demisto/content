@@ -60,6 +60,10 @@
             "type": "string",
             "is_array": false
         },
+        "productName": {
+            "type": "string",
+            "is_array": false
+        },
         "detectionSource": {
             "type": "string",
             "is_array": false

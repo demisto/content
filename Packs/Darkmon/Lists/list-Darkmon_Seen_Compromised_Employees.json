@@ -1,0 +1,22 @@
+{
+    "id": "Darkmon - Seen Compromised Employees",
+    "version": -1,
+    "name": "Darkmon - Seen Compromised Employees",
+    "description": "State store: employee account IDs already actioned.",
+    "type": "plain_text",
+    "fromVersion": "6.8.0",
+    "itemVersion": "",
+    "locked": false,
+    "nameLocked": false,
+    "packID": "Darkmon",
+    "system": false,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
+}

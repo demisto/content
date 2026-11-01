@@ -1,0 +1,19 @@
+commonfields:
+  id: MicrosoftGraphTeamsApiModule
+  version: -1
+name: MicrosoftGraphTeamsApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: Provides common Microsoft Graph Teams code that is appended into Cortex integrations during deployment.
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/crypto:1.0.0.11658507
+fromversion: 6.10.0
+tests:
+- No tests

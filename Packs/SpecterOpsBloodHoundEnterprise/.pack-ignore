@@ -1,0 +1,5 @@
+[file:playbook-SpecterOpsBloodHoundEnterprise.yml]
+ignore=PB106
+
+[file:SpecterOpsBloodHoundEnterprise.yml]
+ignore=IN126

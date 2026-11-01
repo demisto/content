@@ -33,7 +33,7 @@ MAX_CUSTOMER_EVENTS_PER_FETCH = 2000
 
 # scopes
 CUSTOMER_EVENTS_SCOPE = ["signature", "impersonation"]
-USER_DATA_SCOPE = ["organization_read", "user_read", "signature"]
+USER_DATA_SCOPE = ["organization_read", "user_read", "signature", "impersonation"]
 
 SCOPES_PER_FETCH_TYPE = {
     CUSTOMER_EVENTS_TYPE: CUSTOMER_EVENTS_SCOPE,

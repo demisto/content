@@ -1,0 +1,171 @@
+{
+    "violation_response": {
+        "data": {
+            "policyViolation": {
+                "policyViolationId": "00000000-0000-0000-0000-000000000001",
+                "name": "Excessive admin privileges",
+                "status": "POLICY_VIOLATION_STATUS_OPEN",
+                "violationSeverity": "HIGH",
+                "createdAt": "2026-03-25T09:29:55.000Z",
+                "lastUpdatedAt": "2026-03-25T13:29:54.000Z",
+                "resourceId": "00000000-0000-0000-0000-000000000101",
+                "resourceType": "RESOURCE_TYPE_IDENTITY",
+                "__typename": "PolicyViolation",
+                "policy": {
+                    "policyId": "00000000-0000-0000-0000-000000000201",
+                    "name": "Excessive admin privileges",
+                    "description": "Users with excessive admin privileges pose a risk of privilege escalation.",
+                    "policyCategory": "IDENTITY_HYGIENE",
+                    "policySeverity": "HIGH",
+                    "policyType": "POLICY_TYPE_IDENTITY",
+                    "frameworks": ["NIST", "CIS"],
+                    "manualRemediationProcess": "Review and revoke excess admin roles.",
+                    "__typename": "IRPolicy"
+                },
+                "details": {
+                    "domainUniqueId": "00000000-0000-0000-0000-000000000301",
+                    "mitreTactic": "Privilege Escalation",
+                    "__typename": "IdentityViolationDetails"
+                },
+                "resourceMetadata": {
+                    "metadata": {
+                        "displayName": "John Doe",
+                        "domainName": "rubrikdemo.com",
+                        "idpType": "ENTRA_ID",
+                        "principalType": "USER",
+                        "privilegeType": "PRIVILEGED",
+                        "userPrincipalName": "demo@rubrik.com",
+                        "status": "ACTIVE",
+                        "title": "Engineer",
+                        "source": "ON_PREM_AD",
+                        "nativeType": "User",
+                        "__typename": "IdentityMetadata"
+                    },
+                    "__typename": "ResourceMetadata"
+                }
+            }
+        }
+    },
+    "principal_summary_response": {
+        "data": {
+            "principalSummary": {
+                "summary": {
+                    "identityTags": ["PRIVILEGED"],
+                    "sensitiveHits": {
+                        "highRiskHits": {
+                            "violatedHits": 5,
+                            "__typename": "SensitiveHits"
+                        },
+                        "mediumRiskHits": {
+                            "violatedHits": 3,
+                            "__typename": "SensitiveHits"
+                        },
+                        "lowRiskHits": {
+                            "violatedHits": 2,
+                            "__typename": "SensitiveHits"
+                        },
+                        "noRiskHits": {
+                            "violatedHits": 10,
+                            "__typename": "SensitiveHits"
+                        },
+                        "totalHits": {
+                            "violatedHits": 20,
+                            "__typename": "SensitiveHits"
+                        },
+                        "__typename": "SensitiveHitsInfo"
+                    },
+                    "dataCategoryResults": [
+                        {
+                            "dataCategoryName": "Financial",
+                            "dataCategoryHits": {
+                                "dataCategoryId": "00000000-0000-0000-0000-000000000601",
+                                "totalViolatedHits": 8,
+                                "__typename": "DataCategoryHits"
+                            },
+                            "__typename": "DataCategoryResult"
+                        }
+                    ]
+                },
+                "__typename": "PrincipalSummaryResponse"
+            }
+        }
+    },
+    "context": {
+        "policyViolationId": "00000000-0000-0000-0000-000000000001",
+        "name": "Excessive admin privileges",
+        "status": "POLICY_VIOLATION_STATUS_OPEN",
+        "violationSeverity": "HIGH",
+        "createdAt": "2026-03-25T09:29:55.000Z",
+        "lastUpdatedAt": "2026-03-25T13:29:54.000Z",
+        "resourceId": "00000000-0000-0000-0000-000000000101",
+        "resourceType": "RESOURCE_TYPE_IDENTITY",
+        "__typename": "PolicyViolation",
+        "policy": {
+            "policyId": "00000000-0000-0000-0000-000000000201",
+            "name": "Excessive admin privileges",
+            "description": "Users with excessive admin privileges pose a risk of privilege escalation.",
+            "policyCategory": "IDENTITY_HYGIENE",
+            "policySeverity": "HIGH",
+            "policyType": "POLICY_TYPE_IDENTITY",
+            "frameworks": ["NIST", "CIS"],
+            "manualRemediationProcess": "Review and revoke excess admin roles.",
+            "__typename": "IRPolicy"
+        },
+        "details": {
+            "domainUniqueId": "00000000-0000-0000-0000-000000000301",
+            "mitreTactic": "Privilege Escalation",
+            "__typename": "IdentityViolationDetails"
+        },
+        "resourceMetadata": {
+            "metadata": {
+                "displayName": "John Doe",
+                "domainName": "rubrikdemo.com",
+                "idpType": "ENTRA_ID",
+                "principalType": "USER",
+                "privilegeType": "PRIVILEGED",
+                "userPrincipalName": "demo@rubrik.com",
+                "status": "ACTIVE",
+                "title": "Engineer",
+                "source": "ON_PREM_AD",
+                "nativeType": "User",
+                "__typename": "IdentityMetadata"
+            },
+            "__typename": "ResourceMetadata"
+        },
+        "identityTags": ["PRIVILEGED"],
+        "sensitiveHits": {
+            "highRiskHits": {
+                "violatedHits": 5,
+                "__typename": "SensitiveHits"
+            },
+            "mediumRiskHits": {
+                "violatedHits": 3,
+                "__typename": "SensitiveHits"
+            },
+            "lowRiskHits": {
+                "violatedHits": 2,
+                "__typename": "SensitiveHits"
+            },
+            "noRiskHits": {
+                "violatedHits": 10,
+                "__typename": "SensitiveHits"
+            },
+            "totalHits": {
+                "violatedHits": 20,
+                "__typename": "SensitiveHits"
+            },
+            "__typename": "SensitiveHitsInfo"
+        },
+        "dataCategoryResults": [
+            {
+                "dataCategoryName": "Financial",
+                "dataCategoryHits": {
+                    "dataCategoryId": "00000000-0000-0000-0000-000000000601",
+                    "totalViolatedHits": 8,
+                    "__typename": "DataCategoryHits"
+                },
+                "__typename": "DataCategoryResult"
+            }
+        ]
+    }
+}

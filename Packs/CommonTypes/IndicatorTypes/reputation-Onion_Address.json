@@ -13,5 +13,9 @@
     "updateAfter": 0,
     "version": -1,
     "fromVersion": "5.0.0",
-    "layout": "domainRepUnified"
+    "layout": "domainRepUnified",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

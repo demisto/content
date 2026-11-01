@@ -1,0 +1,40 @@
+{
+  "orca_security_raw": {
+    "details": {
+      "type": "string",
+      "is_array": false
+    },
+    "data": {
+      "type": "string",
+      "is_array": false
+    },
+    "cloud_account_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "account_name": {
+      "type": "string",
+      "is_array": false
+    },
+    "model": {
+      "type": "string",
+      "is_array": false
+    },
+    "state": {
+      "type": "string",
+      "is_array": false
+    },
+    "cloud_provider": {
+      "type": "string",
+      "is_array": false
+    },
+    "category": {
+      "type": "string",
+      "is_array": false
+    },
+    "type_string": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

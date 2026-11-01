@@ -55,6 +55,9 @@ CLIENT_SECRET = demisto.params().get("client_secret", {}).get("password") if dem
 USE_OAUTH2 = bool(CLIENT_ID and CLIENT_SECRET)
 TOKEN_OAUTH2 = ""
 DEFAULT_POLICY_TYPE = "blockedsenders"
+# v2 blocked-senders endpoints (OAuth2 only); the other policy types still use the v1 /api/policy routes.
+BLOCKED_SENDERS_V2_ENDPOINT = "/policy-management/cloud-gateway/v1/blocked-senders/policies"
+BLOCKED_SENDERS_HR_HEADERS = ["Policy ID", "Sender", "Receiver", "Bidirectional", "Start", "End"]
 LOG(f"command is {demisto.command()}")
 PAGE_SIZE_MAX = 100
 DEFAULT_PAGE_SIZE = 50
@@ -284,9 +287,11 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
             return res
         return res.json()
 
-    except HTTPError as e:
+    except (HTTPError, requests.exceptions.HTTPError) as e:
         LOG(e)
-        if e.response.status_code == 418:  # type: ignore  # pylint: disable=no-member
+        response = getattr(e, "response", None)
+        status_code = getattr(response, "status_code", None)
+        if status_code == 418:
             if not APP_ID or not EMAIL_ADDRESS or not PASSWORD:
                 raise Exception(
                     "Credentials provided are expired, could not automatically refresh tokens."
@@ -294,6 +299,14 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
                     "+ Password are required."
                 )
         else:
+            # Attempt to parse v2 error envelope: {"error": [{"code": ..., "message": ...}]}
+            try:
+                error_body = response.json() if response is not None else None
+                if error_body and (errors := error_body.get("error")):
+                    messages = "; ".join(err.get("message", str(err)) for err in errors)
+                    raise DemistoException(messages) from e
+            except (ValueError, AttributeError):
+                demisto.debug("Could not parse v2 error body; re-raising original HTTPError")
             raise
 
     except Exception as e:
@@ -301,14 +314,15 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
         raise
 
 
-def token_oauth2_request():
+def token_oauth2_request() -> tuple[str, int]:
+    """Fetch a new OAuth2 token and return (access_token, expires_in)."""
     api_endpoint = "/oauth/token"
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = {"client_id": CLIENT_ID, "client_secret": CLIENT_SECRET, "grant_type": "client_credentials"}
     response = http_request("POST", api_endpoint, user_auth=False, headers=headers, data=data)
     if failure_response := response.get("fail"):
         handle_error_response(failure_response, error_key="message")
-    return response.get("access_token")
+    return response.get("access_token"), int(response.get("expires_in", 1799))
 
 
 def search_message_request(args):
@@ -525,24 +539,17 @@ def auto_refresh_token():
 
 
 def updating_token_oauth2():
-    """
-    Ensures the OAuth2 token is up to date, refreshing it if necessary.
-
-    Returns:
-        str: The updated OAuth2 token.
-    """
+    """Ensures the OAuth2 token is up to date, refreshing it if necessary."""
     global TOKEN_OAUTH2
-    global USE_SSL
-    USE_SSL = False
 
     integration_context = demisto.getIntegrationContext()
     current_ts = epoch_seconds()
     last_update_ts = integration_context.get("last_update")
-    if last_update_ts is None or (current_ts - last_update_ts > 15 * 60):
-        TOKEN_OAUTH2 = token_oauth2_request()
+    expires_in = integration_context.get("expires_in", 1799)
+    if last_update_ts is None or (current_ts - last_update_ts >= expires_in - 60):
+        TOKEN_OAUTH2, expires_in = token_oauth2_request()
         if TOKEN_OAUTH2:
-            token_oauth2 = {"value": TOKEN_OAUTH2, "last_update": current_ts}
-            demisto.setIntegrationContext(token_oauth2)
+            demisto.setIntegrationContext({"value": TOKEN_OAUTH2, "last_update": current_ts, "expires_in": expires_in})
     else:
         TOKEN_OAUTH2 = integration_context.get("value")
 
@@ -1029,12 +1036,46 @@ def list_blocked_sender_policies_command(args):
     return results
 
 
+def build_blocked_senders_v2_hr_row(policy: dict) -> dict:
+    """Map one flat v2 blocked-senders policy to a war-room table row."""
+    sender = policy.get("from") or {}
+    receiver = policy.get("to") or {}
+    return {
+        "Policy ID": policy.get("id"),
+        "Sender": sender.get("emailAddress") or sender.get("domain") or (sender.get("group") or {}).get("id"),
+        "Receiver": receiver.get("emailAddress") or receiver.get("domain") or (receiver.get("group") or {}).get("id"),
+        "Bidirectional": policy.get("bidirectional"),
+        "Start": policy.get("fromDateTime"),
+        "End": policy.get("toDateTime"),
+    }
+
+
+def get_blocked_senders_policy_command(policy_id: str) -> CommandResults:
+    """Get a single Blocked Senders policy by ID using the v2 GET API. The flat response is emitted verbatim."""
+    if not policy_id:
+        raise DemistoException("You need to enter policy ID")
+
+    policy = http_request("GET", f"{BLOCKED_SENDERS_V2_ENDPOINT}/{policy_id}")
+
+    return CommandResults(
+        outputs_prefix="Mimecast.BlockedSendersPolicy",
+        outputs=policy,
+        readable_output=tableToMarkdown(
+            "Mimecast Get blockedsenders Policy", build_blocked_senders_v2_hr_row(policy), BLOCKED_SENDERS_HR_HEADERS
+        ),
+        outputs_key_field="id",
+    )
+
+
 def get_policy_command(args):
     headers = ["Policy ID", "Sender", "Reciever", "Bidirectional", "Start", "End"]
     contents = []
     policy_id = args.get("policyID")
     policy_type = args.get("policyType", "blockedsenders")
     title = f"Mimecast Get {policy_type} Policy"
+
+    if policy_type == DEFAULT_POLICY_TYPE:
+        return get_blocked_senders_policy_command(policy_id)
 
     policies_list = get_policy_request(policy_type, policy_id)
     policies_context = []
@@ -1183,72 +1224,19 @@ def get_arguments_for_policy_command(args):
     return policy_obj, option
 
 
-def create_block_sender_policy_command(policy_args):
-    headers = ["Policy ID", "Description", "Sender", "Receiver", "Bidirectional", "Start", "End"]
-    policy_obj, option = get_arguments_for_policy_command(policy_args)
-    policy_list = create_or_update_policy_request(policy_obj, option)
-    policy = policy_list.get("policy")
-    policy_id = policy_list.get("id")
-    title = "Mimecast Create block sender Policy: \n Policy Was Created Successfully!"
-    sender = policy.get("from")
-    receiver = policy.get("to")
-    description = policy.get("description")
-    content = {
-        "Policy ID": policy_id,
-        "Description": description,
-        "Sender": {
-            "Group": sender.get("groupId"),
-            "Email Address": sender.get("emailAddress"),
-            "Domain": sender.get("emailDomain"),
-            "Type": sender.get("type"),
-        },
-        "Receiver": {
-            "Group": receiver.get("groupId"),
-            "Email Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Reciever": {
-            "Group": receiver.get("groupId"),
-            "Email Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Bidirectional": policy.get("bidirectional"),
-        "Start": policy.get("fromDate"),
-        "End": policy.get("toDate"),
-    }  # type: Dict[Any, Any]
-    policies_context = {
-        "ID": policy_id,
-        "Description": description,
-        "Sender": {
-            "Group": sender.get("groupId"),
-            "Address": sender.get("emailAddress"),
-            "Domain": sender.get("emailDomain"),
-            "Type": sender.get("type"),
-        },
-        "Receiver": {
-            "Group": receiver.get("groupId"),
-            "Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Reciever": {
-            "Group": receiver.get("groupId"),
-            "Email Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Bidirectional": policy.get("bidirectional"),
-        "FromDate": policy.get("fromDate"),
-        "ToDate": policy.get("toDate"),
-    }  # type: Dict[Any, Any]
+def create_block_sender_policy_command(policy_args: dict) -> CommandResults:
+    """Create a Blocked Senders policy using the v2 POST API. The response holds only the new policy ID."""
+    body = build_blocked_senders_policy_v2_body(policy_args)
+
+    response = http_request("POST", BLOCKED_SENDERS_V2_ENDPOINT, payload=body)
+    policy_id = response.get("id")
+    demisto.debug(f"Created blocked-senders policy {policy_id}")
 
     return CommandResults(
+        readable_output=f"Policy {policy_id} was created successfully.",
         outputs_prefix="Mimecast.BlockedSendersPolicy",
-        outputs=policies_context,
-        readable_output=tableToMarkdown(title, content, headers),
         outputs_key_field="id",
+        outputs={"id": policy_id},
     )
 
 
@@ -1432,67 +1420,76 @@ def update_policy_command():
     return results
 
 
-def update_block_sender_policy_command(policy_args):
+def build_policy_target(target_type: str, value: str | None, attribute_id: str | None, attribute_value: str | None) -> dict:
     """
-    Update policy according to policy ID
+    Build a v2 policy target object (the 'from' or 'to' member of a blocked-senders policy).
+
+    The key carrying the value depends on the target type: email_domain uses 'domain',
+    individual_email_address uses 'emailAddress', profile_group uses 'groupId', and
+    address_attribute_value uses a nested 'attribute' object. The remaining types
+    (everyone, internal_addresses, external_addresses) carry no value at all.
     """
-    headers = ["Policy ID", "Description", "Sender", "Receiver", "Bidirectional", "Start", "End"]
-    policy_obj, option = get_arguments_for_policy_command(policy_args)
+    attribute = assign_params(id=attribute_id, value=attribute_value) if target_type == "address_attribute_value" else None
+
+    return assign_params(
+        type=target_type,
+        domain=value if target_type == "email_domain" else None,
+        emailAddress=value if target_type == "individual_email_address" else None,
+        groupId=value if target_type == "profile_group" else None,
+        attribute=attribute,
+    )
+
+
+def build_blocked_senders_policy_v2_body(args: dict) -> dict:
+    """Build body for v2 blocked-senders create/update requests."""
+    from_date_str = arg_to_datetime(args["from_date"]).strftime(DATE_FORMAT) if args.get("from_date") else None  # type: ignore
+    to_date_str = arg_to_datetime(args["to_date"]).strftime(DATE_FORMAT) if args.get("to_date") else None  # type: ignore
+
+    body: dict = assign_params(
+        description=args.get("description"),
+        option=args.get("option"),
+        fromPart=args.get("fromPart"),
+        fromDateTime=from_date_str,
+        toDateTime=to_date_str,
+    )
+
+    from_type = args.get("fromType")
+    if from_type is not None:
+        body["from"] = build_policy_target(
+            from_type,
+            args.get("fromValue"),
+            args.get("from_attribute_id"),
+            args.get("from_attribute_value"),
+        )
+
+    to_type = args.get("toType")
+    if to_type is not None:
+        body["to"] = build_policy_target(
+            to_type,
+            args.get("toValue"),
+            args.get("to_attribute_id"),
+            args.get("to_attribute_value"),
+        )
+
+    return body
+
+
+def update_block_sender_policy_command(policy_args: dict) -> CommandResults:
+    """
+    Update an existing Blocked Senders policy using the v2 PATCH API.
+    Only fields explicitly provided are sent (partial update semantics).
+    """
     policy_id = str(policy_args.get("policy_id", ""))
     if not policy_id:
-        raise Exception("You need to enter policy ID")
-    policy_obj, option, policy_id = set_empty_value_args_policy_update(policy_obj, option, policy_id)
-    response = create_or_update_policy_request(policy_obj, option, policy_id=policy_id)
-    policy = response.get("policy")
-    title = "Mimecast Update Policy: \n Policy Was Updated Successfully!"
-    sender = policy.get("from")
-    receiver = policy.get("to")
-    description = policy.get("description")
-    contents = {
-        "Policy ID": policy_id,
-        "Description": description,
-        "Sender": {
-            "Group": sender.get("groupId"),
-            "Email Address": sender.get("emailAddress"),
-            "Domain": sender.get("emailDomain"),
-            "Type": sender.get("type"),
-        },
-        "Receiver": {
-            "Group": receiver.get("groupId"),
-            "Email Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Bidirectional": policy.get("bidirectional"),
-        "Start": policy.get("fromDate"),
-        "End": policy.get("toDate"),
-    }  # type: Dict[Any, Any]
-    policies_context = {
-        "ID": policy_id,
-        "Description": description,
-        "Sender": {
-            "Group": sender.get("groupId"),
-            "Address": sender.get("emailAddress"),
-            "Domain": sender.get("emailDomain"),
-            "Type": sender.get("type"),
-        },
-        "Receiver": {
-            "Group": receiver.get("groupId"),
-            "Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Bidirectional": policy.get("bidirectional"),
-        "FromDate": policy.get("fromDate"),
-        "ToDate": policy.get("toDate"),
-    }  # type: Dict[Any, Any]
+        raise DemistoException("You need to enter policy ID")
 
-    return CommandResults(
-        outputs_prefix="Mimecast.BlockedSendersPolicy",
-        outputs=policies_context,
-        readable_output=tableToMarkdown(title, contents, headers),
-        outputs_key_field="id",
-    )
+    body = build_blocked_senders_policy_v2_body(policy_args)
+
+    api_endpoint = f"/policy-management/cloud-gateway/v1/blocked-senders/policies/{policy_id}"
+    # is_file=True returns the raw response without parsing JSON, as the endpoint returns 204 No Content
+    http_request("PATCH", api_endpoint, payload=body, is_file=True)
+
+    return CommandResults(readable_output=f"Policy {policy_id} was updated successfully.")
 
 
 def create_or_update_policy_request(policy, option, policy_id=None, policy_type="blockedsenders"):
@@ -1515,14 +1512,19 @@ def create_or_update_policy_request(policy, option, policy_id=None, policy_type=
 
 def delete_policy(args):
     policy_id = args.get("policyID")
-    policy_type = args.get("policyType")
+    policy_type = args.get("policyType") or DEFAULT_POLICY_TYPE
 
-    delete_policy_request(policy_type, policy_id)
+    if policy_type == DEFAULT_POLICY_TYPE:
+        # is_file=True returns the raw response without parsing JSON, as the endpoint returns 204 No Content
+        http_request("DELETE", f"{BLOCKED_SENDERS_V2_ENDPOINT}/{policy_id}", is_file=True)
+        demisto.debug(f"Deleted blocked-senders policy {policy_id}")
+    else:
+        delete_policy_request(policy_type, policy_id)
 
     context = {"ID": policy_id, "Deleted": True}
 
     output_type = {
-        "blockedsenders": "Blockedsenders",
+        "blockedsenders": "BlockedSendersPolicy",
         "antispoofing-bypass": "AntispoofingBypassPolicy",
         "address-alteration": "AddressAlterationPolicy",
     }
@@ -1548,7 +1550,6 @@ def delete_policy_request(policy_type, policy_id=None):
     api_endpoints = {
         "antispoofing-bypass": "antispoofing-bypass/delete-policy",
         "address-alteration": "address-alteration/delete-policy",
-        "blockedsenders": "blockedsenders/delete-policy",
     }
     api_endpoint = f"/api/policy/{api_endpoints[policy_type]}"
     id = "id"
@@ -3611,14 +3612,48 @@ def list_account_command(args: dict) -> CommandResults:
     return CommandResults(outputs_prefix="Mimecast.Account", outputs=response[0], outputs_key_field="accountCode")
 
 
+def list_blocked_senders_policies_command(args: dict) -> CommandResults:
+    """List Blocked Senders policies using the v2 GET API. The flat items are emitted verbatim.
+
+    Args:
+        args: Command arguments. Supports ``next_token`` to fetch a specific page returned
+        by a previous call, and ``page_size`` to control the number of results per page.
+    """
+    params = assign_params(
+        pageToken=args.get("next_token"),
+        pageSize=arg_to_number(args.get("page_size")),
+    )
+    limit = arg_to_number(args.get("limit")) or 50
+
+    response = http_request("GET", BLOCKED_SENDERS_V2_ENDPOINT, params=params)
+    policies = response.get("policies", [])
+    policies = policies[:limit]
+    next_token = (response.get("meta") or {}).get("nextPage")
+    demisto.debug(f"Got {len(policies)} blocked-senders policies, nextPage={next_token!r}")
+
+    title = "Mimecast list blockedsenders policies: \n These are the existing blockedsenders Policies:"
+    contents = [build_blocked_senders_v2_hr_row(policy) for policy in policies]
+
+    context_outputs = assign_params(policies=policies, NextToken=next_token)
+
+    return CommandResults(
+        outputs_prefix="Mimecast.BlockedSendersPolicy",
+        outputs=context_outputs,
+        readable_output=tableToMarkdown(title, contents, BLOCKED_SENDERS_HR_HEADERS),
+        outputs_key_field="id",
+    )
+
+
 def list_policies_command(args: dict) -> CommandResults:
     policy_type = args.get("policyType", "blockedsenders")
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
     limit = arg_to_number(args.get("limit"))
 
+    if policy_type == DEFAULT_POLICY_TYPE:
+        return list_blocked_senders_policies_command(args)
+
     api_endpoints = {
-        "blockedsenders": "blockedsenders/get-policy",
         "antispoofing-bypass": "antispoofing-bypass/get-policy",
         "address-alteration": "address-alteration/get-policy",
     }
@@ -3662,7 +3697,6 @@ def list_policies_command(args: dict) -> CommandResults:
     title = f"Mimecast list {policy_type} policies: \n These are the existing {policy_type} Policies:"
 
     output_type = {
-        "blockedsenders": "BlockedSendersPolicy",
         "antispoofing-bypass": "AntispoofingBypassPolicy",
         "address-alteration": "AddressAlterationPolicy",
     }

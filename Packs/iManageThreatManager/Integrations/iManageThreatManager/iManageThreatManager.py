@@ -694,7 +694,7 @@ def test_module_command(client: Client, params: dict[str, Any], event_types: Lis
         # Test each configured event type
         for event_type in event_types:
             demisto.debug(f"Testing connectivity for event type: {event_type}")
-            client._fetch_alerts(event_type, start_time, end_time, 1)
+            client._fetch_alerts(event_type, start_time, end_time, 1, enable_retries=False)
 
     except Exception as e:
         error_str = str(e)

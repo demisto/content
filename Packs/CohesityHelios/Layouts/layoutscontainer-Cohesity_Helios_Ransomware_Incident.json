@@ -158,7 +158,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cohesityheliosanomalousobjectname",
+                                "fieldId": "cohesityheliosalertid",
                                 "height": 22,
                                 "id": "46926460-1b77-11ec-b233-87ab18a97b71",
                                 "index": 0,
@@ -169,7 +169,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cohesityheliosobjectenvironment",
+                                "fieldId": "cohesityheliosobjectid",
                                 "height": 22,
                                 "id": "4c506c80-1b77-11ec-b233-87ab18a97b71",
                                 "index": 1,
@@ -194,7 +194,7 @@
                                 "fieldId": "cohesityheliosclustername",
                                 "height": 22,
                                 "id": "4af60ca0-1b77-11ec-b233-87ab18a97b71",
-                                "index": 2,
+                                "index": 3,
                                 "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -218,8 +218,8 @@
                         "items": [
                             {
                                 "args": {
-                                    "object_name": {
-                                        "simple": "${incident.cohesityheliosanomalousobjectname}"
+                                    "alert_id": {
+                                        "simple": "${incident.cohesityheliosalertid}"
                                     }
                                 },
                                 "buttonClass": "primary",
@@ -235,8 +235,8 @@
                             },
                             {
                                 "args": {
-                                    "object_name": {
-                                        "simple": "${incident.cohesityheliosanomalousobjectname}"
+                                    "alert_id": {
+                                        "simple": "${incident.cohesityheliosalertid}"
                                     }
                                 },
                                 "buttonClass": "success",
@@ -268,22 +268,11 @@
                         "isVisible": true,
                         "items": [
                             {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "cohesityheliosanomalystrength",
-                                "height": 22,
-                                "id": "a25b16c2-2158-11ec-9155-d941fe7e773e",
-                                "index": 0,
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "endCol": 2,
                                 "fieldId": "cohesityheliosalertdescription",
                                 "height": 44,
                                 "id": "a25b16c3-2158-11ec-9155-d941fe7e773e",
-                                "index": 1,
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -292,7 +281,7 @@
                                 "fieldId": "cohesityheliosalertcause",
                                 "height": 44,
                                 "id": "a25b16c4-2158-11ec-9155-d941fe7e773e",
-                                "index": 2,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

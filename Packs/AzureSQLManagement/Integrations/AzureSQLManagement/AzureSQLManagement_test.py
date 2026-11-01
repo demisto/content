@@ -3,6 +3,7 @@ import json
 import demistomock as demisto
 import pytest
 from AzureSQLManagement import Client
+from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
@@ -416,3 +417,285 @@ def test_command_with_multiple_resource_group_name(mocker):
     resource_group_name_list = ["resourceGroupName", "resourceGroupName"]
     results = command_with_multiple_resource_group_name(client, args, command, resource_group_name_list)
     assert len(results) == 2
+
+
+def test_azure_sql_firewall_rule_list_command(mocker):
+    """
+    Given:
+        - server_name
+    When:
+        - Retrieving list of all firewall rules using azure_sql_firewall_rule_list_command
+    Then
+        - Assert the returned markdown and context data are as expected.
+    """
+    from AzureSQLManagement import azure_sql_firewall_rule_list_command
+
+    client = mock_client(mocker, util_load_json("test_data/azure_sql_firewall_rule_list_result.json"))
+    http_spy = mocker.spy(client, "azure_sql_firewall_rule_list")
+    args = {"server_name": "integration"}
+    results = azure_sql_firewall_rule_list_command(client, args, "resourceGroupName")
+    http_spy.assert_called_once_with("integration", "resourceGroupName", None)
+    assert "### Firewall Rules" in results.readable_output
+    assert len(results.outputs) == 2
+    assert results.outputs[0].get("name") == "AllowAllWindowsAzureIps"
+    assert results.outputs[0].get("properties", {}).get("startIpAddress") == "0.0.0.0"
+    assert results.outputs[1].get("name") == "test-rule"
+
+
+def test_azure_sql_firewall_rule_list_command_single_rule(mocker):
+    """
+    Given:
+        - server_name and firewall_rule_name
+    When:
+        - Retrieving a specific firewall rule using azure_sql_firewall_rule_list_command
+    Then
+        - Assert the returned markdown and context data are as expected.
+    """
+    from AzureSQLManagement import azure_sql_firewall_rule_list_command
+
+    client = mock_client(mocker, util_load_json("test_data/azure_sql_firewall_rule_get_result.json"))
+    http_spy = mocker.spy(client, "azure_sql_firewall_rule_list")
+    args = {"server_name": "integration", "firewall_rule_name": "test-rule"}
+    results = azure_sql_firewall_rule_list_command(client, args, "resourceGroupName")
+    http_spy.assert_called_once_with("integration", "resourceGroupName", "test-rule")
+    assert "### Firewall Rules" in results.readable_output
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get("name") == "test-rule"
+    assert results.outputs[0].get("properties", {}).get("startIpAddress") == "0.0.0.0"
+    assert results.outputs[0].get("properties", {}).get("endIpAddress") == "0.0.0.0"
+
+
+def test_azure_sql_firewall_rule_list_command_with_not_found(mocker):
+    """
+    Given:
+        - A wrong server_name
+    When:
+        - Retrieving list of firewall rules using azure_sql_firewall_rule_list_command
+    Then
+        - Assert that we get the failure message.
+    """
+    from AzureSQLManagement import azure_sql_firewall_rule_list_command
+
+    failure_message = "Resource group 'resource-group' could not be found."
+    client = mock_client(mocker, failure_message)
+    args = {"server_name": "wrong-server"}
+    result = azure_sql_firewall_rule_list_command(client, args, "resource-group")
+    assert result.readable_output == failure_message
+
+
+def test_azure_sql_firewall_rule_create_update_command(mocker):
+    """
+    Given:
+        - server_name, firewall_rule_name, start_ip_address, end_ip_address
+    When:
+        - Creating or updating a firewall rule using azure_sql_firewall_rule_create_update_command
+    Then
+        - Assert the returned markdown and context data are as expected.
+    """
+    from AzureSQLManagement import azure_sql_firewall_rule_create_update_command
+
+    client = mock_client(mocker, util_load_json("test_data/azure_sql_firewall_rule_create_update_result.json"))
+    args = {
+        "server_name": "integration",
+        "firewall_rule_name": "new-rule",
+        "start_ip_address": "0.0.0.0",
+        "end_ip_address": "0.0.0.0",
+    }
+    http_spy = mocker.spy(client, "azure_sql_firewall_rule_create_update")
+    results = azure_sql_firewall_rule_create_update_command(client, args, "resourceGroupName")
+    http_spy.assert_called_once_with(
+        server_name="integration",
+        resource_group_name="resourceGroupName",
+        firewall_rule_name="new-rule",
+        start_ip_address="0.0.0.0",
+        end_ip_address="0.0.0.0",
+    )
+    # Verify the IP addresses reached the request body sent to the API.
+    request_body = client.http_request.call_args.kwargs["data"]
+    assert request_body["properties"]["startIpAddress"] == "0.0.0.0"
+    assert request_body["properties"]["endIpAddress"] == "0.0.0.0"
+    assert "Successfully updated the firewall rule new-rule" in results.readable_output
+    assert results.outputs.get("name") == "new-rule"
+    assert results.outputs.get("properties", {}).get("startIpAddress") == "0.0.0.0"
+    assert results.outputs.get("properties", {}).get("endIpAddress") == "0.0.0.0"
+
+
+def test_azure_sql_firewall_rule_create_update_command_with_not_found(mocker):
+    """
+    Given:
+        - A wrong server_name
+    When:
+        - Creating or updating a firewall rule using azure_sql_firewall_rule_create_update_command
+    Then
+        - Assert that we get the failure message.
+    """
+    from AzureSQLManagement import azure_sql_firewall_rule_create_update_command
+
+    failure_message = "Can not perform requested operation on nested resource. Parent resource 'wrong-server' not found."
+    client = mock_client(mocker, failure_message)
+    args = {
+        "server_name": "wrong-server",
+        "firewall_rule_name": "new-rule",
+        "start_ip_address": "0.0.0.0",
+        "end_ip_address": "0.0.0.0",
+    }
+    result = azure_sql_firewall_rule_create_update_command(client, args, "resourceGroupName")
+    assert result.readable_output == failure_message
+
+
+def test_azure_sql_firewall_rule_delete_command(mocker):
+    """
+    Given:
+        - server_name and firewall_rule_name
+    When:
+        - Deleting a firewall rule using azure_sql_firewall_rule_delete_command
+    Then
+        - Assert the returned readable output confirms deletion.
+    """
+    from AzureSQLManagement import azure_sql_firewall_rule_delete_command
+
+    client = mock_client(mocker, None)
+    delete_mock = mocker.patch.object(client, "azure_sql_firewall_rule_delete", return_value=None)
+    args = {
+        "server_name": "integration",
+        "firewall_rule_name": "test-rule",
+    }
+    results = azure_sql_firewall_rule_delete_command(client, args, "resourceGroupName")
+    delete_mock.assert_called_once_with(
+        server_name="integration",
+        resource_group_name="resourceGroupName",
+        firewall_rule_name="test-rule",
+    )
+    assert "The firewall rule test-rule has been successfully deleted." in results.readable_output
+
+
+def test_azure_sql_firewall_rule_replace_command(mocker):
+    """
+    Given:
+        - server_name, firewall_rule_name, start_ip_address, end_ip_address
+    When:
+        - Replacing firewall rules using azure_sql_firewall_rule_replace_command
+    Then
+        - Assert the returned markdown and context data are as expected.
+    """
+    from AzureSQLManagement import azure_sql_firewall_rule_replace_command
+
+    client = mock_client(mocker, util_load_json("test_data/azure_sql_firewall_rule_replace_result.json"))
+    args = {
+        "server_name": "integration",
+        "firewall_rule_name": "replaced-rule",
+        "start_ip_address": "0.0.0.0",
+        "end_ip_address": "0.0.0.0",
+    }
+    http_spy = mocker.spy(client, "azure_sql_firewall_rule_replace")
+    results = azure_sql_firewall_rule_replace_command(client, args, "resourceGroupName")
+    http_spy.assert_called_once_with(
+        server_name="integration",
+        resource_group_name="resourceGroupName",
+        firewall_rule_name="replaced-rule",
+        start_ip_address="0.0.0.0",
+        end_ip_address="0.0.0.0",
+        request_body=None,
+    )
+    # The replace endpoint has no rule name in the URL, so the body must carry it
+    # in the FirewallRuleList schema: {"values": [{"name": ..., "properties": {...}}]}.
+    request_body = client.http_request.call_args.kwargs["data"]
+    sent_rule = request_body["values"][0]
+    assert sent_rule["name"] == "replaced-rule"
+    assert sent_rule["properties"]["startIpAddress"] == "0.0.0.0"
+    assert sent_rule["properties"]["endIpAddress"] == "0.0.0.0"
+    assert "Successfully updated the firewall rule" in results.readable_output
+    assert results.outputs.get("name") == "replaced-rule"
+    assert results.outputs.get("properties", {}).get("startIpAddress") == "0.0.0.0"
+    assert results.outputs.get("properties", {}).get("endIpAddress") == "0.0.0.0"
+
+
+def test_azure_sql_firewall_rule_replace_command_with_not_found(mocker):
+    """
+    Given:
+        - A wrong server_name
+    When:
+        - Replacing firewall rules using azure_sql_firewall_rule_replace_command
+    Then
+        - Assert that we get the failure message.
+    """
+    from AzureSQLManagement import azure_sql_firewall_rule_replace_command
+
+    failure_message = "Can not perform requested operation on nested resource. Parent resource 'wrong-server' not found."
+    client = mock_client(mocker, failure_message)
+    args = {
+        "server_name": "wrong-server",
+        "firewall_rule_name": "replaced-rule",
+        "start_ip_address": "0.0.0.0",
+        "end_ip_address": "0.0.0.0",
+    }
+    result = azure_sql_firewall_rule_replace_command(client, args, "resourceGroupName")
+    assert result.readable_output == failure_message
+
+
+def test_azure_sql_firewall_rule_replace_command_with_entry_id(mocker):
+    """
+    Given:
+        - An entry_id pointing to a file containing the full request JSON.
+    When:
+        - Replacing firewall rules using azure_sql_firewall_rule_replace_command.
+    Then:
+        - Assert the request body is taken from the file as-is.
+    """
+    from AzureSQLManagement import azure_sql_firewall_rule_replace_command
+
+    client = mock_client(mocker, util_load_json("test_data/azure_sql_firewall_rule_replace_result.json"))
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/azure_sql_firewall_rule_replace_request.json"})
+    args = {"server_name": "integration", "entry_id": "123@456"}
+    results = azure_sql_firewall_rule_replace_command(client, args, "resourceGroupName")
+
+    request_body = client.http_request.call_args.kwargs["data"]
+    sent_rule = request_body["values"][0]
+    assert sent_rule["name"] == "test-rule"
+    assert sent_rule["properties"]["startIpAddress"] == "0.0.0.0"
+    assert sent_rule["properties"]["endIpAddress"] == "0.0.0.0"
+    assert "Successfully updated the firewall rule" in results.readable_output
+
+
+@pytest.mark.parametrize(
+    "extra_arg",
+    [
+        {"firewall_rule_name": "replaced-rule"},
+        {"start_ip_address": "0.0.0.0"},
+        {"end_ip_address": "0.0.0.0"},
+    ],
+)
+def test_azure_sql_firewall_rule_replace_command_entry_id_with_other_args(mocker, extra_arg):
+    """
+    Given:
+        - An entry_id together with one of firewall_rule_name / start_ip_address / end_ip_address.
+    When:
+        - Replacing firewall rules using azure_sql_firewall_rule_replace_command.
+    Then:
+        - Assert a meaningful DemistoException is raised.
+    """
+    from AzureSQLManagement import azure_sql_firewall_rule_replace_command
+
+    client = mock_client(mocker, None)
+    args = {"server_name": "integration", "entry_id": "123@456", **extra_arg}
+    with pytest.raises(DemistoException) as e:
+        azure_sql_firewall_rule_replace_command(client, args, "resourceGroupName")
+    assert "When 'entry_id' is provided" in str(e.value)
+
+
+def test_azure_sql_firewall_rule_replace_command_missing_required_args(mocker):
+    """
+    Given:
+        - No entry_id and missing rule arguments.
+    When:
+        - Replacing firewall rules using azure_sql_firewall_rule_replace_command.
+    Then:
+        - Assert a meaningful DemistoException is raised.
+    """
+    from AzureSQLManagement import azure_sql_firewall_rule_replace_command
+
+    client = mock_client(mocker, None)
+    args = {"server_name": "integration", "firewall_rule_name": "replaced-rule"}
+    with pytest.raises(DemistoException) as e:
+        azure_sql_firewall_rule_replace_command(client, args, "resourceGroupName")
+    assert "Either 'entry_id' must be provided" in str(e.value)

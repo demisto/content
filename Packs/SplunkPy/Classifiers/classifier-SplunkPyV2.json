@@ -1,0 +1,29 @@
+{
+    "description": "Classifies SplunkPy v2 events (Splunk Finding and Splunk Investigation).",
+    "feed": false,
+    "id": "SplunkPyV2 - Classifier",
+    "keyTypeMap": {
+        "Finding": "Splunk Finding",
+        "Investigation": "Splunk Investigation"
+    },
+    "name": "SplunkPyV2 - Classifier",
+    "transformer": {
+        "complex": {
+            "filters": [],
+            "root": "splunk_es_event_type",
+            "transformers": []
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
+}

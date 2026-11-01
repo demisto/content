@@ -1,0 +1,13 @@
+{
+  "Vectra.Entity.Notes(val.entity_id && val.entity_id == obj.entity_id && val.entity_type && val.entity_type == obj.entity_type && val.note_id && val.note_id == obj.note_id)": {
+    "id": 8,
+    "date_created": "2023-06-16T04:55:58Z",
+    "date_modified": "2023-06-22T04:57:09Z",
+    "created_by": "test_user",
+    "modified_by": "test_user",
+    "note": "note modified",
+    "note_id": 8,
+    "entity_id": 1,
+    "entity_type": "account"
+  }
+}

@@ -9,10 +9,10 @@ To use the v1 alpha API, your Customer Experience Engineer (CEE) will provide a 
 ### Create a v1 alpha API supported Service Account JSON
 
 * Log in to [Google Cloud Console](https://console.cloud.google.com/) and select the GCP Project ID shown in the Profile page of the Google SecOps platform.
-* Navigate to IAM & Admin → Service Accounts, click \"+ CREATE SERVICE ACCOUNT\", and provide a descriptive name (e.g., secops-v1alpha-service-account).
+* Navigate to **IAM & Admin > Service Accounts**, click **+ CREATE SERVICE ACCOUNT**, and provide a descriptive name (e.g., secops-v1alpha-service-account).
 * Grant appropriate Chronicle roles:
-  * Viewer Permission: If you only need to get or list resources, the Chronicle Viewer role is sufficient. [Learn more](https://cloud.google.com/iam/docs/roles-permissions/chronicle#chronicle.viewer)
-* Go to the created service account → Keys tab → ADD KEY → Create new key → Choose JSON format → Click CREATE.
+  * **Viewer** Permission: If you only need to get or list resources, the Chronicle Viewer role is sufficient. [Learn more](https://cloud.google.com/iam/docs/roles-permissions/chronicle#chronicle.viewer)
+* Go to the created service account > **Keys** tab > **ADD KEY** > **Create new key** > Choose **JSON** format > Click **CREATE**.
 * The JSON file will automatically download. Keep this file secure as it contains authentication credentials.
 
 ### Instance Configuration

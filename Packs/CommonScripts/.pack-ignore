@@ -26,7 +26,7 @@ ignore=SC105
 ignore=SC105
 
 [file:GenerateInvestigationSummaryReport.yml]
-ignore=SC105
+ignore=SC105,DS108
 
 [file:script-hideFieldsOnNewIncident.yml]
 ignore=SC105
@@ -279,3 +279,6 @@ ignore=GR103
 
 [file:1_19_78.md]
 ignore=RN114
+
+[file:SendNotification.yml]
+ignore=GR109

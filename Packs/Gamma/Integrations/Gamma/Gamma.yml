@@ -25,6 +25,7 @@ configuration:
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
 - additionalinfo: Enter the violation ID to begin fetching from. If empty, the API will default to your first violation
   display: Starting Violation
   name: first_fetch
@@ -55,6 +56,13 @@ configuration:
   type: 13
   section: Connect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -156,7 +164,7 @@ script:
       name: notes
     description: Update a specific violation.
     name: gamma-update-violation
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   runonce: false
   script: '-'

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Removed the obj_ext_browser argument from the anyrun-detonate-url-android command and from the ANYRUN Detonate Url Android playbook. Android detonation does not support browser selection via the API. Custom playbooks or automations that pass this argument to anyrun-detonate-url-android or use it as an input to the ANYRUN Detonate Url Android playbook must be updated to remove it."
+}

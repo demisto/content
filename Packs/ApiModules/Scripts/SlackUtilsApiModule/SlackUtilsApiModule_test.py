@@ -8,6 +8,8 @@ from SlackUtilsApiModule import (
     parse_md_table_to_slack_table,
     process_md_text_part,
     format_md_to_slack_message,
+    split_blocks_into_chunks,
+    SLACK_MAX_BLOCKS_PER_MESSAGE,
     create_agent_selection_blocks,
     get_feedback_buttons_block,
     get_approval_buttons_block,
@@ -180,6 +182,94 @@ def test_parse_to_rich_text_elements_empty():
     result = parse_md_to_rich_text_elements("")
     assert len(result) == 1
     assert result[0]["text"] == " "
+
+
+def test_parse_md_empty_style_delimiters_kept_as_literal_text():
+    """
+    Given:
+        Text containing markdown delimiters that wrap no content (e.g. a bare "__"
+        segment, which the italic pattern matches with empty inner content).
+    When:
+        Parsing to rich text elements.
+    Then:
+        The delimiters are preserved as literal, unstyled text (no element is
+        dropped and no element is emitted with an empty "text"). This prevents the
+        Slack `invalid_blocks` error "missing required field: text", which occurs
+        because the Slack SDK strips falsy fields (e.g. "text": "") on
+        serialization, leaving an element with only "type"/"style".
+    """
+    result = parse_md_to_rich_text_elements("Action: Action__UpdateIssueFields")
+
+    # No element may have an empty/missing text field.
+    for element in result:
+        assert element.get("text")
+
+    # The literal underscores are preserved and carry no style.
+    literal = next(element for element in result if "__" in element["text"])
+    assert "style" not in literal
+
+    # The surrounding content is retained.
+    joined = "".join(element["text"] for element in result)
+    assert joined == "Action: Action__UpdateIssueFields"
+
+
+def test_parse_md_empty_bold_delimiters_kept_as_literal_text():
+    """
+    Given:
+        Text containing empty bold delimiters ("****").
+    When:
+        Parsing to rich text elements.
+    Then:
+        The delimiters are kept as literal, unstyled text with a non-empty "text"
+        field so Slack does not reject the block.
+    """
+    result = parse_md_to_rich_text_elements("before****after")
+
+    for element in result:
+        assert element.get("text")
+
+    joined = "".join(element["text"] for element in result)
+    assert joined == "before****after"
+
+
+def test_parse_md_intraword_underscores_not_italicized():
+    """
+    Given:
+        Text where underscores are adjacent to word characters, e.g. a token like
+        "run__script" or "first_name". These must NOT be treated as italic
+        emphasis (which would strip the underscores and, in the empty-content case,
+        cause the Slack `invalid_attachments`/`invalid_blocks` error).
+    When:
+        Parsing to rich text elements.
+    Then:
+        The underscores are preserved literally, no element is italicized, and no
+        element has an empty "text".
+    """
+    result = parse_md_to_rich_text_elements("Use the run__script and first_name now")
+
+    for element in result:
+        assert element.get("text")
+        assert "style" not in element
+
+    joined = "".join(element["text"] for element in result)
+    assert joined == "Use the run__script and first_name now"
+
+
+def test_parse_md_italic_with_surrounding_spaces_still_works():
+    """
+    Given:
+        Legitimate italic markdown where the underscore delimiters are bounded by
+        whitespace/edges (e.g. "_italic_" and "__also italic__").
+    When:
+        Parsing to rich text elements.
+    Then:
+        The emphasized text is italicized and the delimiters are removed.
+    """
+    result = parse_md_to_rich_text_elements("This is _italic_ and __also italic__ end")
+
+    italic_texts = [element["text"] for element in result if element.get("style", {}).get("italic")]
+    assert "italic" in italic_texts
+    assert "also italic" in italic_texts
 
 
 # ============================================================================
@@ -815,3 +905,47 @@ def test_process_text_part_complex_with_dividers():
     assert result[0]["text"]["text"] == "Case Details"
     assert result[1]["type"] == "divider"
     assert result[2]["type"] == "rich_text"
+
+
+def test_split_blocks_into_chunks_empty():
+    """
+    Given: An empty block list.
+    When: Splitting into chunks.
+    Then: Returns an empty list.
+    """
+    assert split_blocks_into_chunks([]) == []
+
+
+def test_split_blocks_into_chunks_respects_default_limit():
+    """
+    Given: More blocks than the default Slack limit.
+    When: Splitting into chunks.
+    Then: Each chunk holds at most SLACK_MAX_BLOCKS_PER_MESSAGE blocks and order is preserved.
+    """
+    blocks = [{"i": i} for i in range(SLACK_MAX_BLOCKS_PER_MESSAGE * 2 + 3)]
+    chunks = split_blocks_into_chunks(blocks)
+
+    assert [len(c) for c in chunks] == [SLACK_MAX_BLOCKS_PER_MESSAGE, SLACK_MAX_BLOCKS_PER_MESSAGE, 3]
+    assert [b for c in chunks for b in c] == blocks
+
+
+def test_split_blocks_into_chunks_single_chunk_when_under_limit():
+    """
+    Given: Fewer blocks than the limit.
+    When: Splitting into chunks.
+    Then: Returns a single chunk containing all blocks.
+    """
+    blocks = [{"i": 0}, {"i": 1}]
+    assert split_blocks_into_chunks(blocks, max_blocks=5) == [blocks]
+
+
+def test_split_blocks_into_chunks_custom_limit():
+    """
+    Given: A custom max_blocks value.
+    When: Splitting into chunks.
+    Then: Chunks respect the custom limit.
+    """
+    blocks = [{"i": i} for i in range(120)]
+    chunks = split_blocks_into_chunks(blocks, max_blocks=40)
+
+    assert [len(c) for c in chunks] == [40, 40, 40]

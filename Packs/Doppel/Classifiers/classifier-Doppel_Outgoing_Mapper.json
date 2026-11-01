@@ -8,6 +8,9 @@
 		"Doppel Alert Crypto": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
+				"closeNotes": {
+					"simple": "closeNotes"
+				},
 				"queue_state": {
 					"complex": {
 						"filters": [],
@@ -19,7 +22,10 @@
 		},
 		"Doppel Alert Domains": {
 			"dontMapEventToLabels": false,
-			"internalMapping": {			
+			"internalMapping": {
+				"closeNotes": {
+					"simple": "closeNotes"
+				},
 				"queue_state": {
 					"complex": {
 						"filters": [],
@@ -31,7 +37,10 @@
 		},
 		"Doppel Alert Ecommerce": {
 			"dontMapEventToLabels": false,
-			"internalMapping": {			
+			"internalMapping": {
+				"closeNotes": {
+					"simple": "closeNotes"
+				},
 				"queue_state": {
 					"complex": {
 						"filters": [],
@@ -43,7 +52,10 @@
 		},
 		"Doppel Alert Email": {
 			"dontMapEventToLabels": false,
-			"internalMapping": {			
+			"internalMapping": {
+				"closeNotes": {
+					"simple": "closeNotes"
+				},
 				"queue_state": {
 					"complex": {
 						"filters": [],
@@ -56,6 +68,9 @@
 		"Doppel Alert Mobile_Apps": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
+				"closeNotes": {
+					"simple": "closeNotes"
+				},
 				"queue_state": {
 					"complex": {
 						"filters": [],
@@ -67,7 +82,10 @@
 		},
 		"Doppel Alert Paid_Ads": {
 			"dontMapEventToLabels": false,
-			"internalMapping": {		
+			"internalMapping": {
+				"closeNotes": {
+					"simple": "closeNotes"
+				},
 				"queue_state": {
 					"complex": {
 						"filters": [],
@@ -80,6 +98,24 @@
 		"Doppel Alert Social_Media": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
+				"closeNotes": {
+					"simple": "closeNotes"
+				},
+				"queue_state": {
+					"complex": {
+						"filters": [],
+						"root": "doppelqueuestate",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"Doppel Alert Telco": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"closeNotes": {
+					"simple": "closeNotes"
+				},
 				"queue_state": {
 					"complex": {
 						"filters": [],
@@ -93,5 +129,9 @@
 	"name": "Doppel Outgoing_Mapper",
 	"type": "mapping-outgoing",
 	"version": -1,
-	"fromVersion": "6.10.0"
+	"fromVersion": "6.10.0",
+	"supportedModules": [
+		"agentix",
+		"xsiam"
+	]
 }

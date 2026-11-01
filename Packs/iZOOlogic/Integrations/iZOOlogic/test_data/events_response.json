@@ -1,0 +1,48 @@
+{
+    "result": {
+        "currentPage": 1,
+        "nextPage": null,
+        "totalRecords": 3,
+        "incidents": [
+            {
+                "incidentID": "abc123",
+                "createdOn": "1700000200",
+                "detectionDate": "1700000100",
+                "incidentType": "Phishing",
+                "subIncidentType": null,
+                "url": "https://example-phishing.com",
+                "status": "Open",
+                "statusCode": 15,
+                "brand": "TestBrand",
+                "threatType": "Substantial Threat"
+            },
+            {
+                "incidentID": "def456",
+                "createdOn": "1700000100",
+                "detectionDate": "1700000050",
+                "incidentType": "Brand Abuse - Fake Website",
+                "subIncidentType": "Fake Website",
+                "url": "https://example-brand.com",
+                "status": "Open",
+                "statusCode": 15,
+                "brand": "TestBrand",
+                "threatType": "High Threat"
+            },
+            {
+                "incidentID": "ghi789",
+                "createdOn": "1700000000",
+                "detectionDate": "1699999900",
+                "incidentType": "Malware",
+                "subIncidentType": null,
+                "url": "https://example-malware.com",
+                "status": "Closed",
+                "statusCode": 16,
+                "brand": "TestBrand",
+                "threatType": "Critical Threat"
+            }
+        ]
+    },
+    "success": true,
+    "message": "",
+    "errorCode": ""
+}

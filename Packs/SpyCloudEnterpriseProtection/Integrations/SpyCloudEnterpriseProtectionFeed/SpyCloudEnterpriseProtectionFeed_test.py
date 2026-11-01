@@ -7,10 +7,14 @@ from SpyCloudEnterpriseProtectionFeed import (
     create_spycloud_args,
     fetch_incident,
     fetch_domain_or_watchlist_data,
+    INCIDENT_NAME,
+    INCIDENT_TYPE,
+    SEVERITY_VALUE,
     LIMIT_EXCEED,
     MONTHLY_QUOTA_EXCEED_MSG,
     TOO_MANY_REQUESTS,
 )
+from CommonServerPython import IncidentSeverity
 
 
 def util_load_json(path):
@@ -124,3 +128,21 @@ def test_create_spycloud_args():
     args = {"severity": "2, 1"}
     with pytest.raises(DemistoException):
         create_spycloud_args(args, client)
+
+
+def test_create_spycloud_args_accepts_severity_30(mocker):
+    # Severity 30 (SpyCloud Access Data) must be accepted, not rejected as invalid.
+    mocker.patch.object(client, "get_last_run", return_value="2023-05-30")
+    result = create_spycloud_args({"severity": "30"}, client)
+    assert result["severity"] == "30"
+
+    # The full set of supported severities, including 30, passes validation.
+    result = create_spycloud_args({"severity": "2, 5, 20, 25, 30"}, client)
+    assert result["severity"] == "2,5,20,25,30"
+
+
+def test_severity_30_mappings():
+    # Severity 30 maps to the SpyCloud Access Data incident type at CRITICAL severity.
+    assert INCIDENT_TYPE[30] == "SpyCloud Access Data"
+    assert INCIDENT_NAME[30] == "SpyCloud Access Alert on"
+    assert SEVERITY_VALUE[30] == IncidentSeverity.CRITICAL

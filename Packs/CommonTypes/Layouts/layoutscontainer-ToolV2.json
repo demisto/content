@@ -760,5 +760,9 @@
         ]
     },
     "fromVersion": "6.10.0",
-    "description": "Tool Indicator Layout"
+    "description": "Tool Indicator Layout",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

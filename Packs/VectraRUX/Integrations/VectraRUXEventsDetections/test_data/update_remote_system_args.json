@@ -1,0 +1,25 @@
+{
+    "remoteId": "12345",
+    "delta": {
+        "tags": ["tag1", "tag2"]
+    },
+    "data": {
+        "id": "456",
+        "vectraruxdetectionid": "12345",
+        "vectraruxinvestigationstatus": "",
+        "vectraruxentityprioritystatus": "",
+        "vectraruxentityunresolvedprioritystatus": "",
+        "vectraruxentityid": "100",
+        "vectraruxentitytype": "account"
+    },
+    "entries": [
+        {
+            "id": "note_id",
+            "type": "note",
+            "contents": "Test note contents",
+            "user": "user1"
+        }
+    ],
+    "incidentChanged": true,
+    "status": 2
+}

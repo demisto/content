@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The CohesityHelios integration removed deprecated ransomware alert output fields (anomalous_object_name, anomalous_object_env, anomaly_strength) and now requires alert_id instead of object_name for ignore and restore commands."
+}

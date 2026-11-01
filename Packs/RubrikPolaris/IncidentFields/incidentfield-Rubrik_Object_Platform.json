@@ -1,0 +1,29 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Rubrik DSPM Violation"
+    ],
+    "caseInsensitive": true,
+    "cliName": "rubrikobjectplatform",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_rubrikobjectplatform",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Rubrik Object Platform",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

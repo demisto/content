@@ -6,7 +6,6 @@ This integration was integrated and tested with version 1.0 of Sekoia XDR.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| API key |  | True |
 | API Key |  | True |
 | Server URL (i.e. <https://api.sekoia.io>) |  | True |
 | Trust any certificate (not secure) |  | False |
@@ -24,11 +23,11 @@ This integration was integrated and tested with version 1.0 of Sekoia XDR.
 | Events fields to exclude from the events search result. | These are the names of the headers presented in the events table. If the header is not in the dropdown list write it and press enter. | False |
 | Include assets information in the alerts when fetching. | When selected, it includes the assets information in the alert when fetched from Sekoia.<br/>And also If there's no max_fetch it will fetch 10 incidents by default. | False |
 | Include kill chain information in the alerts when fetching. | When selected, it includes the kill chain information in the alert when fetched from Sekoia.<br/>And also If there's no max_fetch it will fetch 10 incidents by default. | False |
-| Incident Mirroring Direction. | Choose the direction to mirror the incident: None\(Disable mirroring\), Incoming \(from Sekoia XDR  to Cortex XSOAR\) , Outgoing \(from Cortex XSOAR to Sekoia XDR\), or Incoming and Outgoing \(from/to Cortex XSOAR and Sekoia XDR\). | True |
+| Incident Mirroring Direction. | Choose the direction to mirror the incident: None\(Disable mirroring\), Incoming \(from Sekoia XDR  to Cortex XSOAR\) , Outgoing \(from Cortex XSOAR to Sekoia XDR\), or Incoming and Outgoing \(from/to Cortex XSOAR and Sekoia XDR\). Cortex XSOAR only parameter. | False |
 | Include events in the mirroring of the alerts. | When selected, it includes the events in the mirrored alerts when an alert is updated in Sekoia. | False |
 | Include kill chain information in the mirroring of the alerts. | When selected, it includes the kill chain information of the alert in the mirrored alerts when an alert is updated in Sekoia. | False |
 | Reopen Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, reopening the Sekoia XDR alert will reopen the Cortex XSOAR incident. | False |
-| Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Sekoia XDR alert with a "Closed" or "Reject" status will close the Cortex XSOAR incident. | False |
+| Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Sekoia XDR alert with a "Closed" or "Reject" status will close the Cortex XSOAR incident. Cortex XSOAR only parameter. | False |
 | Close notes. | Change the closing notes that will be added to the tickets closed automatically by the automation. | True |
 | Timezone ( TZ format ) | This will be used to present dates in the appropiate timezones,  used for comment timestamps, etc. | True |
 
@@ -816,6 +815,174 @@ Command that performs a HTTP request to Sekoia using the integration authenticat
 #### Context Output
 
 There is no context output for this command.
+
+### sekoia-xdr-run-query
+
+***
+Command to run a query and get its result. This is a combination of 3 commands: sekoia-xdr-execute-query, sekoia-xdr-get-query-run and sekoia-xdr-download-query-result.
+
+#### Base Command
+
+`sekoia-xdr-run-query`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_definition | Query definition in JSON. | Required |
+| result_format | File format for the result. Possible values are: csv, jsonl. | Required |
+| query_parameters | Query parameters in JSON. | Optional |
+| query_uuid | Query UUID. | Optional |
+| parent_uuid | Parent UUID. | Optional |
+| parent_slug | Parent slug. | Optional |
+| parent_type | Parent type. Possible values are: notebook, query, task, agent_run, alert, case. | Optional |
+| community_uuid | Community UUID. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!sekoia-xdr-run-query query_definition="{\"ql_query\": \"events | limit 5\"}" result_format=csv```
+
+### sekoia-xdr-execute-query
+
+***
+Command to create a query run on Sekoia XDR, after this execute "sekoia-xdr-get-query-run" to see the status of the query run and "sekoia-xdr-download-query-result" to retrieve the results.
+
+#### Base Command
+
+`sekoia-xdr-execute-query`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_definition | Query definition in JSON. | Required |
+| query_parameters | Query parameters in JSON. | Optional |
+| query_uuid | Query UUID. | Optional |
+| parent_uuid | Parent UUID. | Optional |
+| parent_slug | Parent slug. | Optional |
+| parent_type | Parent type. Possible values are: notebook, query, task, agent_run, alert, case. | Optional |
+| community_uuid | Community UUID. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SekoiaXDR.QueryRun.task_id | string | Task UUID. |
+| SekoiaXDR.QueryRun.uuid | string | Query Run UUID. |
+
+#### Command example
+
+```!sekoia-xdr-execute-query query_definition="{\"ql_query\": \"events | limit 5\"}"```
+
+#### Context Example
+
+```json
+{
+    "SekoiaXDR": {
+        "QueryRun": {
+            "task_id": "eccb7dac-58bd-4d22-8f62-feb94dfdd57b",
+            "uuid": "8d466b50-d963-44bd-85f8-e461cca13832"       
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+### Triggered query execution
+
+|task_id|uuid|
+|---|---|
+| eccb7dac-58bd-4d22-8f62-feb94dfdd57b | 8d466b50-d963-44bd-85f8-e461cca13832 |
+
+### sekoia-xdr-get-query-run
+
+***
+Gets the query run status.
+
+#### Base Command
+
+`sekoia-xdr-get-query-run`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_run_uuid | Query run UUID. | Required |
+
+#### Context Output
+
+| **Path**                           | **Type** | **Description**  |
+|------------------------------------|----------|------------------|
+| SekoiaXDR.QueryRun.community_uuid  | string   | Community UUID.  |
+| SekoiaXDR.QueryRun.created_at      | date     | Created at.      |
+| SekoiaXDR.QueryRun.created_by      | string   | Created by.      |
+| SekoiaXDR.QueryRun.created_by_type | string   | Created by type. |
+| SekoiaXDR.QueryRun.duration        | number   | Duration.        |
+| SekoiaXDR.QueryRun.error           | string   | Error.           |
+| SekoiaXDR.QueryRun.parent_slug     | string   | Parent slug.     |
+| SekoiaXDR.QueryRun.parent_type     | string   | Parent type.     |
+| SekoiaXDR.QueryRun.parent_uuid     | string   | Parent UUID.     |
+| SekoiaXDR.QueryRun.status          | string   | Status.          |
+| SekoiaXDR.QueryRun.total           | number   | Total.           |
+
+#### Command example
+
+```!sekoia-xdr-get-query-run query_run_uuid=8ff54bcf-210a-40e9-9241-9f179834e7aa```
+
+#### Context Example
+
+```json
+{
+    "SekoiaXDR": {
+        "QueryRun": {
+            "community_uuid": "359994fa-0905-408b-baaa-a26e2272cffc",
+            "created_at": "2026-07-31T11:02:35.980580Z",
+            "created_by": "d741767b-6b0f-44af-8b48-e736613ca4f8",
+            "created_by_type": "apikey",
+            "duration": 432,
+            "status": "finished",
+            "total": 5
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Status of the query run 4c7e69fb-9a64-4463-a065-ba5fad0aa507
+>
+>|community_uuid|created_at|created_by|created_by_type|duration|error|parent_slug|parent_type|parent_uuid|status|total|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 359994fa-0905-408b-baaa-a26e2272cffc | 2026-07-31T11:02:35.980580Z | d741767b-6b0f-44af-8b48-e736613ca4f8 | apikey | 432 |  |  |  |  | finished | 5 |
+
+### sekoia-xdr-download-query-result
+
+***
+Downloads the query result as a file.
+
+#### Base Command
+
+`sekoia-xdr-download-query-result`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_run_uuid | Query run UUID. | Required |
+| result_format | File format for the result. Possible values are: csv, jsonl. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!sekoia-xdr-download-query-result query_run_uuid=8ff54bcf-210a-40e9-9241-9f179834e7aa result_format=csv```
 
 ## Incident Mirroring
 

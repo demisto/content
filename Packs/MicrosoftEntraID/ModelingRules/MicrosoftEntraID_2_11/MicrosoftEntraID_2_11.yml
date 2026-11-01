@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: MicrosoftEntraID_ModelingRule
+name: MicrosoftEntraID Modeling Rule
+rules: ''
+schema: ''
+tags: Microsoft Entra ID
+supportedModules:
+- xsiam

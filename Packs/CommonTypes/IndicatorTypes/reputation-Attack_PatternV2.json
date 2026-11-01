@@ -51,5 +51,9 @@
     "updateAfter": 0,
     "version": -1,
     "fromVersion": "6.10.0",
-    "layout": "STIX Attack Pattern"
+    "layout": "STIX Attack Pattern",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

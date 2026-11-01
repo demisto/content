@@ -1,0 +1,1 @@
+{"breakingChanges": true, "breakingChangesNotes": "STIX indicator labels are no longer automatically mapped to XSOAR indicator tags by default. Labels will only be added as tags when the **Update Custom Fields** integration parameter is enabled. Existing instances relying on automatic label-to-tag mapping must enable this parameter to preserve the previous behavior."}

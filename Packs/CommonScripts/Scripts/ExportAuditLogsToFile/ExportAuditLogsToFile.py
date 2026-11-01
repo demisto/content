@@ -23,7 +23,7 @@ def get_audit_logs_count(res: Dict):
 
     def get_xsoar8_audit_logs_count():
         reply = res.get("reply", {})
-        return reply.get('total_count') or 0
+        return reply.get("total_count") or 0
 
     return arg_to_number(get_xsoar6_audit_logs_count() or get_xsoar8_audit_logs_count())
 

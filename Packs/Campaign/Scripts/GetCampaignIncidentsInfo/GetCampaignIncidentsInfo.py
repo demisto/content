@@ -1,4 +1,6 @@
 import copy
+from collections.abc import Callable
+from typing import Any
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -6,7 +8,6 @@ from CommonServerPython import *  # noqa: F401
 DEFAULT_HEADERS = ["id", "name", "added_manually_to_campaign", "emailfrom", "recipients", "severity", "status", "created"]
 KEYS_FETCHED_BY_QUERY = ["status", "severity"]
 NO_CAMPAIGN_INCIDENTS_MSG = "There is no Campaign Incidents in the Context"
-LINKABLE_ID_FORMAT = "[{incident_id}](#/Details/{incident_id})"
 STATUS_DICT = {
     0: "Pending",
     1: "Active",
@@ -20,6 +21,33 @@ DEFAULT_CUSTOM_FIELDS = {
     "selectcampaignincidents": ["All"],
 }
 SEVERITIES = {4: "Critical", 3: "High", 2: "Medium", 1: "Low", 0.5: "Info", 0: "Unknown"}
+
+
+def get_incident_link_creator() -> Callable[[Any], str]:
+    """Returns a function to build a markdown link to an incident details page.
+
+    The URL format depends on the platform:
+
+    - Unified Cortex platform (XSIAM v3 / XSOAR on platform): ``/issue-view/{id}``
+    - Cortex XSOAR 8.x (SaaS, non-platform): ``/Details/{id}``
+    - Cortex XSOAR 6.x (on-prem, legacy): ``#/Details/{id}``
+
+    This ensures the generated hyperlinks navigate directly to the incident/issue on
+    every supported platform.
+
+    :return: A function that takes an incident_id and returns a markdown-formatted link.
+    """
+    if is_platform():
+        template = "[{id}](/issue-view/{id})"
+    elif is_demisto_version_ge("8.4.0"):
+        template = "[{id}](/Details/{id})"
+    else:
+        template = "[{id}](#/Details/{id})"
+
+    def create_incident_link(incident_id: Any) -> str:
+        return template.format(id=incident_id)
+
+    return create_incident_link
 
 
 def update_incident_with_required_keys(incidents: list, required_keys: list):
@@ -56,7 +84,7 @@ def update_incident_with_required_keys(incidents: list, required_keys: list):
     return incidents
 
 
-def convert_incident_to_hr(incident) -> dict:
+def convert_incident_to_hr(incident, create_incident_link: Callable[[Any], str] | None = None) -> dict:
     """
     Get the value from incident dict and convert it in some cases e.g. make id linkable etc.
     Note: this script change the original incident
@@ -64,9 +92,16 @@ def convert_incident_to_hr(incident) -> dict:
     :type incident: ``dict``
     :param incident: the incident to get the value from
 
+    :type create_incident_link: ``Callable``
+    :param create_incident_link: function building a platform-aware markdown link for an incident id.
+        Built via ``get_incident_link_creator()`` when not supplied.
+
     :rtype: ``dict``
     :return Converted incident
     """
+    if create_incident_link is None:
+        create_incident_link = get_incident_link_creator()
+
     converted_incident = copy.deepcopy(incident)
 
     for key in converted_incident:
@@ -74,7 +109,7 @@ def convert_incident_to_hr(incident) -> dict:
             converted_incident[key] = STATUS_DICT.get(converted_incident.get(key))
 
         if key == "id":
-            converted_incident[key] = LINKABLE_ID_FORMAT.format(incident_id=converted_incident.get(key))
+            converted_incident[key] = create_incident_link(converted_incident.get(key))
 
         if key == "severity":
             converted_incident[key] = SEVERITIES.get(converted_incident.get(key), "None")
@@ -118,7 +153,8 @@ def get_incidents_info_md(incidents: list, fields_to_display: list | None = None
 
     if incidents:
         headers = fields_to_display or DEFAULT_HEADERS
-        converted_incidents = [convert_incident_to_hr(incident) for incident in incidents]
+        create_incident_link = get_incident_link_creator()
+        converted_incidents = [convert_incident_to_hr(incident, create_incident_link) for incident in incidents]
 
         return tableToMarkdown(
             name="",

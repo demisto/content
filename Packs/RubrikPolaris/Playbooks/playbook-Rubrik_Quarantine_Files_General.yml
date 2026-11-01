@@ -1,0 +1,370 @@
+id: Rubrik Quarantine Files General
+version: -1
+name: Rubrik Quarantine Files General
+description: This playbook quarantines files using the Microsoft Graph Search (O365 File Management) integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ccaa50b0-96b1-4e50-8216-7d5ee073a1ae
+    type: start
+    task:
+      id: ccaa50b0-96b1-4e50-8216-7d5ee073a1ae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: f0706f50-49a1-4ae5-84f3-5b2e654fe09e
+    type: title
+    task:
+      id: f0706f50-49a1-4ae5-84f3-5b2e654fe09e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 20225ad2-8bb4-4559-80a1-1898678cbdde
+    type: regular
+    task:
+      id: 20225ad2-8bb4-4559-80a1-1898678cbdde
+      version: -1
+      name: Set the delete keys
+      description: Set the custom context keys to delete.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: delete_keys_for_rubrik_quarantine_file_general_playbook
+      value:
+        simple: Collect quarantine folder ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 30235085-a750-495b-8b46-a3539f6d3ca7
+    type: regular
+    task:
+      id: 30235085-a750-495b-8b46-a3539f6d3ca7
+      version: -1
+      name: Clear Previous Inputs
+      description: Delete the custom keys from the context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        complex:
+          root: delete_keys_for_rubrik_quarantine_file_general_playbook
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: b7f0f97d-23ad-4856-8218-7a97933521b9
+    type: collection
+    task:
+      id: b7f0f97d-23ad-4856-8218-7a97933521b9
+      version: -1
+      name: Collect the quarantine folder information
+      description: |-
+        Collects the quarantine folder ID required to upload the file.
+
+        To get the folder ID use the msgraph-list-drive-content command for object type as drive.
+
+        If the quarantine folder does not exist, User can create the folder using the msgraph-create-new-folder command.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Collect quarantine folder ID
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the quarantine folder ID
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The ID of the folder where the file will be  uploaded for quarantine.
+        readonly: false
+      title: Collect quarantine folder ID
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 1435636c-85db-4a58-80ab-a02d7c3247cb
+    type: playbook
+    task:
+      id: 1435636c-85db-4a58-80ab-a02d7c3247cb
+      version: -1
+      name: Rubrik Quarantine Files using MS Graph Search (O365 File Management)
+      description: This playbook quarantines files using the Microsoft Graph Search (O365 File Management) integration by downloading them, uploading them to a quarantine folder and deleting them from their original location.
+      playbookName: Rubrik Quarantine Files using MS Graph Search
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      file_name:
+        complex:
+          root: inputs.file_information
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
+          - operator: trim
+      file_path:
+        complex:
+          root: inputs.file_information
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: path
+          - operator: trim
+      quarantine_folder_id:
+        complex:
+          root: inputs.quarantine_folder_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect quarantine folder ID.Answers.0
+                iscontext: true
+          - operator: trim
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 2
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 53a0f1cf-d734-43b6-8a64-96be5efb4493
+    type: condition
+    task:
+      id: 53a0f1cf-d734-43b6-8a64-96be5efb4493
+      version: -1
+      name: Is quarantine folder ID present in the playbook inputs?
+      description: Checks whether the quarantine folder ID is provided in the playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.quarantine_folder_id
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "18_17_yes": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 602.5,
+        "x": -70,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: file_information
+  value: {}
+  required: false
+  description: |-
+    The list of files to quarantine. Each entry should contain the file name and its path.
+    Example: [{"name": "<file_name>", "path": "<file_path>"}]
+  playbookInputQuery:
+- key: quarantine_folder_id
+  value: {}
+  required: false
+  description: The ID of the quarantine folder where the file will be moved.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

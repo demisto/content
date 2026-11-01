@@ -1,0 +1,18 @@
+[
+    {
+        "id": 100001,
+        "name": "repo-alpha",
+        "full_name": "my-org/repo-alpha",
+        "private": false,
+        "default_branch": "main",
+        "updated_at": "2025-06-01T10:00:00Z"
+    },
+    {
+        "id": 100002,
+        "name": "repo-beta",
+        "full_name": "my-org/repo-beta",
+        "private": true,
+        "default_branch": "develop",
+        "updated_at": "2025-05-20T08:30:00Z"
+    }
+]

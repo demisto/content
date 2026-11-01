@@ -528,5 +528,10 @@
       "sha1",
       "sha256"
     ],
-    "layout": "unifiedFileRep1"
+    "layout": "unifiedFileRep1",
+    "supportedModules": [
+        "agentix",
+        "xsiam",
+        "xti"
+    ]
 }

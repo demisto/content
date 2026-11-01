@@ -11,7 +11,7 @@
 		"incident": "CrowdStrike Falcon Incident",
 		"IDP detection": "CrowdStrike Falcon IDP Detection",
 		"iom_configurations": "CrowdStrike Falcon IOM Event",
-		"ioa_events": "CrowdStrike Falcon IOA Event",
+		"ioa_detection": "CrowdStrike Falcon IOA Event",
         "MOBILE detection": "CrowdStrike Falcon Mobile Detection",
         "On-Demand Scans detection": "CrowdStrike Falcon On-Demand Scans Detection",
         "OFP detection": "CrowdStrike Falcon OFP Detection",

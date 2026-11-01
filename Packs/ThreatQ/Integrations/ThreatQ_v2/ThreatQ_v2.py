@@ -672,7 +672,7 @@ def build_readable(readable_title, obj_type, data, metadata=None):
 
 def test_module():
     token = request_new_access_token()
-    threshold = demisto.params().get("threshold")
+    threshold = demisto.params().get("threshold") or "8"
     threshold_is_integer = isinstance(threshold, int) or (isinstance(threshold, str) and threshold.isdigit())
     if token and threshold_is_integer and 0 <= int(threshold) <= 10:
         demisto.results("ok")

@@ -18,6 +18,25 @@ from sklearn.pipeline import Pipeline
 
 from CommonServerUserPython import *
 
+
+# Site-specific allowlist for safe pickle loading — extends the shared base with classes this site needs.
+_ALLOWED_CLASSES: set[tuple[str, str]] = BASE_PICKLE_ALLOWED_CLASSES | {
+    # Custom schema classes (defined in this script)
+    ("__main__", "PostProcessing"),
+    ("__main__", "Clustering"),
+    # HDBSCAN
+    ("hdbscan.hdbscan_", "HDBSCAN"),
+    # Scikit-learn
+    ("sklearn.cluster._dbscan", "DBSCAN"),
+    ("sklearn.cluster._kmeans", "KMeans"),
+    # Datetime
+    ("datetime", "datetime"),
+}
+
+# Safe top-level modules whose internal submodules are all data-science code.
+_SAFE_MODULE_PREFIXES = {"sklearn", "numpy", "pandas", "hdbscan", "scipy"}
+
+
 GENERAL_MESSAGE_RESULTS = "\n".join(
     (
         "#### - Successfully grouped **{} incidents into {} groups**.",
@@ -781,9 +800,13 @@ def get_model(model_name: str) -> Optional[PostProcessing]:
         return None
     model_base64 = res_model["Contents"]["modelData"]
     try:
-        return cast(PostProcessing, pickle.loads(base64.b64decode(model_base64)))  # guardrails-disable-line
+        raw_bytes = base64.b64decode(model_base64)
+        return cast(PostProcessing, safe_pickle_loads(raw_bytes, _ALLOWED_CLASSES, _SAFE_MODULE_PREFIXES))
+    except UnsafePickleError as e:
+        demisto.error(f"Security: blocked unsafe model payload: {e}")
+        return None
     except Exception as e:
-        demisto.debug(f"Unable to load data: {model_base64}, {e=}")
+        demisto.debug(f"Unable to load model data: {e}")
     return None
 
 

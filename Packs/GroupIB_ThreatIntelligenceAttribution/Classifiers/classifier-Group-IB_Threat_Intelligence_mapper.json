@@ -499,6 +499,14 @@
                         "root": "title",
                         "transformers": []
                     }
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -586,6 +594,14 @@
                 },
                 "GIB Related Indicators Data": {
                     "simple": "indicators"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -670,6 +686,14 @@
                 },
                 "GIB Source": {
                     "simple": "sourceType"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -796,6 +820,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -882,6 +914,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -974,6 +1014,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1027,6 +1075,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1110,6 +1166,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1193,6 +1257,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1255,6 +1327,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1332,6 +1412,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1568,6 +1656,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1731,6 +1827,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1784,6 +1888,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1828,6 +1940,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1872,6 +1992,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1910,6 +2038,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1954,6 +2090,14 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
                 }
             }
         },
@@ -1990,6 +2134,299 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                }
+            }
+        },
+        "GIB Compromised Masked Card": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB ID": {
+                    "simple": "id"
+                },
+                "GIB Base Name": {
+                    "simple": "baseName"
+                },
+                "GIB Card BIN": {
+                    "simple": "card_bin"
+                },
+                "GIB CVV": {
+                    "simple": "cvv"
+                },
+                "GIB Card Dump": {
+                    "simple": "card_dump"
+                },
+                "GIB Card Issuer Country Code": {
+                    "simple": "issuer_country_code"
+                },
+                "GIB Card Issuer Country Name": {
+                    "simple": "issuer_country_name"
+                },
+                "GIB Card Issuer": {
+                    "simple": "issuer"
+                },
+                "GIB Card Number": {
+                    "simple": "number"
+                },
+                "GIB Card PIN": {
+                    "simple": "card_pin"
+                },
+                "GIB Payment System": {
+                    "simple": "payment_system"
+                },
+                "GIB Card Category": {
+                    "simple": "card_category"
+                },
+                "GIB Card Type": {
+                    "simple": "type"
+                },
+                "GIB Card Valid Thru": {
+                    "simple": "validThru"
+                },
+                "GIB Card Valid Thru Date": {
+                    "simple": "validThruDate"
+                },
+                "GIB Client ASN": {
+                    "simple": "client_asn"
+                },
+                "GIB Client City": {
+                    "simple": "client_city"
+                },
+                "GIB Client Region": {
+                    "simple": "client_region"
+                },
+                "GIB Client Provider": {
+                    "simple": "client_provider"
+                },
+                "GIB Client Country Code": {
+                    "simple": "client_country_code"
+                },
+                "GIB Client Country Name": {
+                    "simple": "client_country_name"
+                },
+                "GIB Client IP": {
+                    "simple": "client_ip"
+                },
+                "GIB CNC": {
+                    "simple": "cnc"
+                },
+                "GIB CNC Domain": {
+                    "simple": "cnc_domain"
+                },
+                "GIB CNC IP": {
+                    "simple": "cnc_ip"
+                },
+                "GIB CNC ASN": {
+                    "simple": "cnc_asn"
+                },
+                "GIB CNC City": {
+                    "simple": "cnc_city"
+                },
+                "GIB CNC Region": {
+                    "simple": "cnc_region"
+                },
+                "GIB CNC Provider": {
+                    "simple": "cnc_provider"
+                },
+                "GIB CNC Country Code": {
+                    "simple": "cnc_country_code"
+                },
+                "GIB CNC Country Name": {
+                    "simple": "cnc_country_name"
+                },
+                "GIB CNC URL": {
+                    "simple": "cnc_url"
+                },
+                "GIB Date of Detection": {
+                    "simple": "dateDetected"
+                },
+                "GIB Date Compromised": {
+                    "simple": "dateCompromised"
+                },
+                "GIB Admiralty Code": {
+                    "simple": "evaluation.admiraltyCode"
+                },
+                "GIB Credibility": {
+                    "simple": "evaluation.credibility"
+                },
+                "GIB Reliability": {
+                    "simple": "evaluation.reliability"
+                },
+                "GIB Severity": {
+                    "simple": "evaluation.severity"
+                },
+                "GIB TLP": {
+                    "complex": {
+                        "accessor": "tlp",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
+                },
+                "GIB TTL": {
+                    "complex": {
+                        "accessor": "ttl",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    }
+                },
+                "GIB Is Dump": {
+                    "simple": "isDump"
+                },
+                "GIB Is Expired": {
+                    "simple": "isExpired"
+                },
+                "GIB Is Masked": {
+                    "simple": "isMasked"
+                },
+                "GIB Malware Name": {
+                    "simple": "malware_name"
+                },
+                "GIB Malware ID": {
+                    "simple": "malware_id"
+                },
+                "GIB Malware STIX GUID": {
+                    "simple": "malware_stix_guid"
+                },
+                "GIB Address": {
+                    "simple": "address"
+                },
+                "GIB Owner Birthday": {
+                    "simple": "owner_birthday"
+                },
+                "GIB Owner Country Code": {
+                    "simple": "owner_country_code"
+                },
+                "GIB Email": {
+                    "simple": "email"
+                },
+                "GIB Person": {
+                    "simple": "owner_name"
+                },
+                "GIB Owner Passport": {
+                    "simple": "owner_passport"
+                },
+                "Phone Number": {
+                    "simple": "phone"
+                },
+                "GIB Owner State": {
+                    "simple": "owner_state"
+                },
+                "GIB Owner Tax Number": {
+                    "simple": "owner_tax_number"
+                },
+                "GIB Owner ZIP": {
+                    "simple": "owner_zip"
+                },
+                "GIB Owner City": {
+                    "simple": "owner_city"
+                },
+                "GIB Price Currency": {
+                    "simple": "price_currency"
+                },
+                "GIB Price Value": {
+                    "simple": "price_value"
+                },
+                "GIB Source Link": {
+                    "simple": "sourceLink"
+                },
+                "GIB Source": {
+                    "simple": "sourceType"
+                },
+                "GIB Threat Actor Name": {
+                    "simple": "threat_actor_name"
+                },
+                "GIB Threat Actor ID": {
+                    "simple": "threat_actor_id"
+                },
+                "GIB Threat Actor STIX GUID": {
+                    "simple": "threat_actor_stix_guid"
+                },
+                "GIB Threat Actor is APT": {
+                    "simple": "threat_actor_is_apt"
+                },
+                "GIB Threat Actor Country": {
+                    "simple": "threat_actor_country"
+                },
+                "GIB Track": {
+                    "simple": "track"
+                },
+                "GIB Portal Link": {
+                    "simple": "portalLink"
+                },
+                "GIB Related Indicators Data": {
+                    "simple": "indicators"
+                },
+                "severity": {
+                    "simple": "systemSeverity"
+                }
+            }
+        },
+        "GIB SPD": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "GIB Admiralty Code": {
+                    "simple": "evaluation.admiraltyCode"
+                },
+                "GIB Credibility": {
+                    "simple": "evaluation.credibility"
+                },
+                "GIB Date Created At": {
+                    "simple": "createdAt"
+                },
+                "GIB Date First Seen": {
+                    "simple": "firstSeenAt"
+                },
+                "GIB Date Last Seen": {
+                    "simple": "lastSeenAt"
+                },
+                "GIB ID": {
+                    "simple": "id"
+                },
+                "GIB SPD Events Table": {
+                    "simple": "events"
+                },
+                "GIB SPD Illegal Score": {
+                    "simple": "illegalScore"
+                },
+                "GIB SPD Malware Table": {
+                    "simple": "malware"
+                },
+                "GIB SPD Owner Name": {
+                    "simple": "ownerName"
+                },
+                "GIB Portal Link": {
+                    "simple": "portalLink"
+                },
+                "GIB Reliability": {
+                    "simple": "evaluation.reliability"
+                },
+                "GIB SPD Service Type": {
+                    "simple": "serviceType"
+                },
+                "GIB Severity": {
+                    "simple": "evaluation.severity"
+                },
+                "GIB SPD Sources Table": {
+                    "simple": "sources"
+                },
+                "GIB SPD Threat Actor Table": {
+                    "simple": "threatActor"
+                },
+                "GIB TLP": {
+                    "simple": "evaluation.tlp"
+                },
+                "GIB TTL": {
+                    "simple": "evaluation.ttl"
+                },
+                "GIB SPD Type": {
+                    "simple": "type"
+                },
+                "GIB SPD Value": {
+                    "simple": "value"
+                },
+                "severity": {
+                    "simple": "systemSeverity"
                 }
             }
         }

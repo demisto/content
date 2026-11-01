@@ -44,6 +44,7 @@ DESIRED_TYPES = {
     316: "Job Disabling",
     342: "Possible Malware Activity",
     381: "Job Duration Deviation (Veeam Backup for Microsoft 365)",
+    419: "Recon Scanner Threat State",
 }
 
 SEVERITY_MAP = {
@@ -61,6 +62,7 @@ SEVERITY_MAP = {
     316: IncidentSeverity.MEDIUM,
     342: IncidentSeverity.CRITICAL,
     381: IncidentSeverity.MEDIUM,
+    419: IncidentSeverity.HIGH,
 }
 
 ERROR_COUNT_MAP = {
@@ -222,9 +224,9 @@ class Client(BaseClient):
 
 def get_triggered_alarms_command(client: Client, args: dict[str, Any]) -> CommandResults:
     Offset = args.get("Offset", None)
-    try_cast_to_int(Offset)
+    validate_int(Offset)
     Limit = args.get("Limit", None)
-    try_cast_to_int(Limit)
+    validate_int(Limit)
     Filter = str(args.get("Filter", ""))
     Sort = str(args.get("Sort", ""))
     Select = str(args.get("Select", ""))
@@ -262,15 +264,15 @@ def convert_to_list(string: str) -> list:
         else:
             return []
     except Exception as e:
-        raise Exception(f"Failed to convert '{string}' to list. Exception: {e!s}")
+        raise Exception(f"Failed to convert '{string}' to list. Exception: {str(e)}")
 
 
-def try_cast_to_int(value: str) -> None:
+def validate_int(value: str) -> None:
     if value:
         try:
             int(value)
         except ValueError as e:
-            raise ValueError(f"Failed to convert '{value}' to integer. Exception: {e!s}")
+            raise ValueError(f"Invalid integer value: '{value}'") from e
 
 
 def check_version(version_: str) -> None:
@@ -295,9 +297,7 @@ def test_module(client: Client) -> str:
         Exception: If an error occurred during the test.
     """
     try:
-        response = client.get_about_request()
-        version = response.get("version", "")
-        check_version(version)
+        handle_command_with_token_refresh(client.get_about_request, {}, client)
     except Exception as e:
         exception_text = str(e).lower()
         if "forbidden" in exception_text or "authorization" in exception_text:
@@ -307,15 +307,20 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def update_token(client: Client, username: str, password: str) -> str:
+def get_access_token(client: Client, username: str, password: str) -> str:
     response = client.authentication_create_token_request(GRANT_TYPE, username, password)
     token = response.get("access_token")
     return token
 
 
 def search_with_paging(
-    method: Callable[..., Any], args: dict[str, Any] = {}, page_size=DEFAULT_PAGE_SIZE, size_limit=DEFAULT_SIZE_LIMIT
+    method: Callable[..., Any], args: dict[str, Any] = None, page_size=DEFAULT_PAGE_SIZE, size_limit=DEFAULT_SIZE_LIMIT
 ) -> list[dict]:
+    if args is None:
+        args = {}
+    else:
+        args = dict(args)
+
     skip_items = 0
     args["Offset"] = 0
     items_to_fetch = size_limit
@@ -383,9 +388,10 @@ def convert_triggered_alarms_to_incidents(
     filter_builder.add_property("status", Operation.IN, DESIRED_STATUSES)
     Filter = str(filter_builder)
 
-    response = search_with_paging(
-        method=client.get_triggered_alarms_request, args={"Filter": Filter, "Sort": sorting}, size_limit=max_results
-    )
+    def _paged_alarms_method(**kwargs):
+        return handle_command_with_token_refresh(client.get_triggered_alarms_request, kwargs, client)
+
+    response = search_with_paging(method=_paged_alarms_method, args={"Filter": Filter, "Sort": sorting}, size_limit=max_results)
     incidents: list[dict] = []
     new_ids = set()
 
@@ -420,13 +426,12 @@ def fetch_converted_incidents(
 ) -> tuple[list[dict], set[str], str]:
     last_fetch_time = last_fetch
     incidents: list[dict] = []
+    alarms_ids: set[str] = set()
     error_count: int = errors_by_command.get(ERROR_IN_TRIGGERED_ALARMS, 0)
     try:
         alarms_ids = set(last_run.get("alarms_ids", []))
-        incidents, alarms_ids, last_fetch_time = handle_command_with_token_refresh(
-            convert_triggered_alarms_to_incidents,
-            {"client": client, "start_time": parser.parse(last_fetch), "existed_ids": alarms_ids, "max_results": max_results},
-            client,
+        incidents, alarms_ids, last_fetch_time = convert_triggered_alarms_to_incidents(
+            client=client, start_time=parser.parse(last_fetch), existed_ids=alarms_ids, max_results=max_results
         )
         error_count = 0
     except Exception as e:
@@ -437,7 +442,7 @@ def fetch_converted_incidents(
             incidents.append(incident)
     finally:
         errors_by_command[ERROR_IN_TRIGGERED_ALARMS] = error_count
-        return incidents, alarms_ids, last_fetch_time
+    return incidents, alarms_ids, last_fetch_time
 
 
 def fetch_incidents(
@@ -485,7 +490,7 @@ def process_command(
     }
 
     if command == "test-module":
-        result = handle_command_with_token_refresh(test_module, {"client": client}, client, max_attempts)
+        result = test_module(client)
         return result
 
     elif command == "fetch-incidents":
@@ -513,7 +518,7 @@ def get_api_key(client: Client) -> str:
     credentials: dict[str, str] = demisto.params().get("credentials")
     username: str = credentials.get("identifier", "")
     password: str = credentials.get("password", "")
-    token = update_token(client, username, password)
+    token = get_access_token(client, username, password)
     api_key = f"Bearer {token}"
     return api_key
 
@@ -531,15 +536,19 @@ def handle_command_with_token_refresh(command: Callable, command_params: dict, c
         try:
             context = demisto.getIntegrationContext()
             api_key = context.get("token")
+            new_token = False
             if not api_key:
                 api_key = get_api_key(client)
-                demisto.setIntegrationContext({"token": api_key})
+                new_token = True
 
             set_api_key(client, api_key)
 
-            response = client.get_about_request()
-            version = response.get("version", "")
-            check_version(version)
+            if new_token:
+                response = client.get_about_request()
+                version = response.get("version", "")
+                check_version(version)
+                context["token"] = api_key
+                demisto.setIntegrationContext(context)
 
             res = command(**command_params)
             return res

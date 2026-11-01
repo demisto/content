@@ -4,3 +4,6 @@ ignore=PR101
 [file:Auditd_1_3.yml]
 ignore=MR108
 
+[file:Auditd_2_11.yml]
+ignore=MR108
+

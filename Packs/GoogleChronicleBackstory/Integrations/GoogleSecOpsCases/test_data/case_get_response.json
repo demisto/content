@@ -1,0 +1,145 @@
+{
+    "raw_response": {
+        "name": "projects/chronicle-mock-proj/locations/us/instances/00000000-0000-0000-0000-000000000001/cases/1001",
+        "lastModifyingUserId": "00000000-0000-0000-0000-000000000002",
+        "createTime": "1778778979232",
+        "updateTime": "1779426987796",
+        "displayName": "Test Case",
+        "alertCount": 15,
+        "stage": "Triage",
+        "priority": "PRIORITY_MEDIUM",
+        "important": false,
+        "incident": false,
+        "assignee": "@Tier1",
+        "type": "EXTERNAL",
+        "overflowCase": false,
+        "environment": "Default Environment",
+        "status": "OPENED",
+        "workflowStatus": "PENDING_FOR_USER",
+        "sla": {
+            "expirationTime": "1780832620238",
+            "criticalExpirationTime": "1780580620238",
+            "expirationStatus": "OPEN_SLA",
+            "remainingTimeSinceLastPause": 3600000
+        },
+        "alertsSla": {
+            "expirationTime": "1782774000000",
+            "expirationStatus": "OPEN_SLA"
+        },
+        "source": "Server",
+        "involvedSuspiciousEntity": false,
+        "tags": [
+            {
+                "displayName": "demo 1",
+                "priority": 0
+            },
+            {
+                "displayName": "demo 2",
+                "priority": 1
+            }
+        ],
+        "products": [
+            {
+                "displayName": "Test Case",
+                "alert": "alert 1"
+            },
+            {
+                "displayName": "Test Case",
+                "alert": "alert 2"
+            }
+        ],
+        "tasks": [
+            {
+                "id": "3",
+                "createTime": "1779447705049",
+                "updateTime": "1779447705049",
+                "content": "Testing",
+                "title": "XSOAR testing",
+                "author": "00000000-0000-0000-0000-000000000001",
+                "lastAuthor": "00000000-0000-0000-0000-000000000002",
+                "assignee": "00000000-0000-0000-0000-000000000001",
+                "status": "PENDING",
+                "favorite": false,
+                "caseId": 1001
+            }
+        ],
+        "closureDetails": {
+            "reason": "NOT_MALICIOUS",
+            "rootCause": "False positive from detection rule",
+            "caseClosedAction": "MANUALLY",
+            "comment": "Reviewed and confirmed benign activity.\n Case closed by Siemplify API. \nAll attached playbooks and playbook blocks have been terminated.\nAll Alerts were closed."
+        }
+    },
+    "outputs": {
+        "name": "projects/chronicle-mock-proj/locations/us/instances/00000000-0000-0000-0000-000000000001/cases/1001",
+        "caseId": "1001",
+        "lastModifyingUserId": "00000000-0000-0000-0000-000000000002",
+        "createTime": "1778778979232",
+        "updateTime": "1779426987796",
+        "displayName": "Test Case",
+        "alertCount": 15,
+        "stage": "Triage",
+        "priority": "PRIORITY_MEDIUM",
+        "important": false,
+        "incident": false,
+        "assignee": "@Tier1",
+        "type": "EXTERNAL",
+        "overflowCase": false,
+        "environment": "Default Environment",
+        "status": "OPENED",
+        "workflowStatus": "PENDING_FOR_USER",
+        "sla": {
+            "expirationTime": "1780832620238",
+            "criticalExpirationTime": "1780580620238",
+            "expirationStatus": "OPEN_SLA",
+            "remainingTimeSinceLastPause": 3600000
+        },
+        "alertsSla": {
+            "expirationTime": "1782774000000",
+            "expirationStatus": "OPEN_SLA"
+        },
+        "source": "Server",
+        "involvedSuspiciousEntity": false,
+        "tags": [
+            {
+                "displayName": "demo 1",
+                "priority": 0
+            },
+            {
+                "displayName": "demo 2",
+                "priority": 1
+            }
+        ],
+        "products": [
+            {
+                "displayName": "Test Case",
+                "alert": "alert 1"
+            },
+            {
+                "displayName": "Test Case",
+                "alert": "alert 2"
+            }
+        ],
+        "tasks": [
+            {
+                "id": "3",
+                "createTime": "1779447705049",
+                "updateTime": "1779447705049",
+                "content": "Testing",
+                "title": "XSOAR testing",
+                "author": "00000000-0000-0000-0000-000000000001",
+                "lastAuthor": "00000000-0000-0000-0000-000000000002",
+                "assignee": "00000000-0000-0000-0000-000000000001",
+                "status": "PENDING",
+                "favorite": false,
+                "caseId": 1001
+            }
+        ],
+        "closureDetails": {
+            "reason": "NOT_MALICIOUS",
+            "rootCause": "False positive from detection rule",
+            "caseClosedAction": "MANUALLY",
+            "comment": "Reviewed and confirmed benign activity.\n Case closed by Siemplify API. \nAll attached playbooks and playbook blocks have been terminated.\nAll Alerts were closed."
+        }
+    }
+}

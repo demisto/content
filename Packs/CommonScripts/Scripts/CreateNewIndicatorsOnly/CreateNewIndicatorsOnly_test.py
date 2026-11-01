@@ -73,7 +73,7 @@ def test_all_indicators_exist_with_single_value(mocker):
     """
 
     def mock_search_indicators(query=None, size=100, **kwargs):
-        if query and 'value:"1.1.1.1"' in query:
+        if query and '"1.1.1.1"' in query:
             return {
                 "iocs": [{"id": "0", "value": "1.1.1.1", "score": 0, "indicator_type": "Unknown"}],
                 "total": 1,
@@ -127,9 +127,9 @@ def test_all_indicators_exist_with_multiple_value(mocker):
 
     def mock_search_indicators(query=None, size=100, **kwargs):
         iocs = []
-        if query and 'value:"1.1.1.1"' in query:
+        if query and '"1.1.1.1"' in query:
             iocs.append({"id": "0", "value": "1.1.1.1", "score": 0, "indicator_type": "Unknown"})
-        if query and 'value:"2.2.2.2"' in query:
+        if query and '"2.2.2.2"' in query:
             iocs.append({"id": "0", "value": "2.2.2.2", "score": 0, "indicator_type": "Unknown"})
         return {"iocs": iocs, "total": len(iocs), "searchAfter": None}
 
@@ -180,7 +180,7 @@ def test_some_indicators_exist_with_multiple_value(mocker):
 
     def mock_search_indicators(query=None, size=100, **kwargs):
         iocs = []
-        if query and 'value:"1.1.1.1"' in query:
+        if query and '"1.1.1.1"' in query:
             iocs.append({"id": "0", "value": "1.1.1.1", "score": 0, "indicator_type": "Unknown"})
         # 2.2.2.2 is NOT in the system, so we don't add it
         return {"iocs": iocs, "total": len(iocs), "searchAfter": None}
@@ -400,7 +400,8 @@ def test_findIndicators_called_with_escaped_quotes(mocker):
 
     def mock_search_indicators(query=None, size=100, **kwargs):
         assert query is not None
-        assert f'value:"{escaped_value}"' in query
+        assert f'"{escaped_value}"' in query
+        assert query.startswith("value:(")
         return {
             "iocs": [
                 {
@@ -523,9 +524,10 @@ def test_find_existing_indicators_duplicate_inputs(mocker):
     from CreateNewIndicatorsOnly import find_existing_indicators_by_value
 
     def mock_search_indicators(query=None, **kwargs):
-        # Assert the query contains value:"1.1.1.1" only once
+        # Assert the query contains "1.1.1.1" only once (deduplicated within the batched query)
         assert query is not None
-        assert query.count('value:"1.1.1.1"') == 1
+        assert query.count('"1.1.1.1"') == 1
+        assert query.startswith("value:(")
         return {
             "iocs": [{"value": "1.1.1.1", "id": "1"}],
             "total": 1,

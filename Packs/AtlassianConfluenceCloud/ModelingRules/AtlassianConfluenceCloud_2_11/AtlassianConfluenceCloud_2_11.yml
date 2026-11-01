@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: Atlassian_Confluence_ModelingRule
+name: Atlassian Confluence Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam

@@ -1,5 +1,6 @@
 import json
-from datetime import datetime, timedelta
+import traceback
+from datetime import datetime, timedelta, UTC
 
 import dateparser
 import demistomock as demisto
@@ -18,38 +19,187 @@ BLOCKED_MESSAGES = "Blocked Messages"
 DELIVERED_MESSAGES = "Delivered Messages"
 
 DEFAULT_LIMIT = 50
+DEFAULT_LOOK_BACK_MINUTES = 30
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+MAX_SEEN_IDS = 10_000
+
+# Hard cap on the number of incidents that can remain in the fetch buffer.
+# Events that do not fit within these bounds are NOT discarded - `last_fetch` is rewound
+# so they are re-fetched on a later cycle. See `fetch_incidents`.
+MAX_REMAINED_INCIDENTS = 10_000
+MAX_REMAINED_INCIDENTS_BYTES = 10 * 1024 * 1024  # 10 MB, well under the 100 MB server cap
+
+# Warn once the fetch watermark falls this far behind real time. A growing lag means the
+# event rate exceeds what this instance can turn into incidents per cycle. Proofpoint
+# retains only 7 days, so a lag that keeps growing eventually becomes real data loss -
+# this is the signal to narrow the `events_type` / threat filters.
+WATERMARK_LAG_WARNING_MINUTES = 24 * 60
 
 
 def get_now():
-    """A wrapper function for datetime.now
+    """A wrapper function for datetime.now(timezone.utc)
     helps handle tests
     Returns:
-        datetime: time right now
+        datetime: time right now in the UTC timezone (naive, for backward compatibility).
     """
-    return datetime.now()
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
-def get_fetch_times(last_fetch):
-    """Get list of every hour since last_fetch. last is now.
+def prune_seen_ids(seen_ids: dict[str, str], look_back_minutes: int, reference_time: datetime | None = None) -> dict[str, str]:
+    """Remove event IDs outside the lookback window. Apply hard cap if needed.
+
     Args:
-        last_fetch (datetime or str): last_fetch time
+        seen_ids: Mapping of event_id → interval_end_str (the end of the fetch interval
+                  in which the event was first seen) for deduplication.
+        look_back_minutes: The lookback window in minutes. A 30-minute safety margin is
+                           added on top to tolerate clock skew and API indexing delay.
+        reference_time: Point in time the window is measured back from. Defaults to now.
+                        When an overflow rewinds `last_fetch`, the next fetch resumes from
+                        that earlier watermark, so the window must be measured from there -
+                        measuring from `now` would discard the IDs that keep the re-fetched
+                        events from being reported twice.
+
     Returns:
-        List[str]: list of str represents every hour since last_fetch
+        Pruned dict with only IDs whose interval_end is within the lookback window + 30min margin.
+    """
+    if not seen_ids:
+        return seen_ids
+
+    cutoff = ((reference_time or get_now()) - timedelta(minutes=look_back_minutes + 30)).strftime(DATE_FORMAT)
+    pruned = {event_id: interval_end for event_id, interval_end in seen_ids.items() if interval_end >= cutoff}
+
+    if len(pruned) > MAX_SEEN_IDS:
+        demisto.info(f"seen_ids exceeded {MAX_SEEN_IDS}, pruning oldest 25%")
+        sorted_ids = sorted(pruned.items(), key=lambda x: x[1])
+        pruned = dict(sorted_ids[len(sorted_ids) // 4 :])
+
+    demisto.debug(f"Pruned seen_ids: {len(seen_ids)=}, {len(pruned)=}")
+    return pruned
+
+
+def bound_remained_incidents(remained_incidents: list) -> tuple[list, list]:
+    """Split the overflow backlog into the part we can persist and the part we defer.
+
+    The integration context is a single Elasticsearch document. Writing more than
+    `http.max_content_length` (100 MB by default) is rejected by the server, which wedges
+    the instance permanently: the rejected write means the drained backlog is never saved,
+    so every later fetch re-reads the same oversized document and fails the same way.
+
+    The backlog is drained from the front (`remained_incidents[:limit]`), so the OLDEST
+    incidents are kept and the NEWEST are deferred. Deferring the newest is what makes the
+    `last_fetch` rewind in `fetch_incidents` possible: the deferred events then form a
+    single contiguous tail of time, which one watermark can replay exactly. Deferring the
+    oldest instead would leave a hole no single watermark could re-cover.
+
+    Args:
+        remained_incidents: Overflow incidents that did not fit into the current fetch,
+                            ordered oldest first.
+
+    Returns:
+        (kept, deferred) - `kept` fits within both bounds and is safe to persist;
+        `deferred` is the newest tail, to be re-fetched after a `last_fetch` rewind.
+    """
+    if not remained_incidents:
+        return remained_incidents, []
+
+    # Count bound first - cheap, and usually the binding constraint.
+    kept = remained_incidents[:MAX_REMAINED_INCIDENTS]
+    deferred = remained_incidents[MAX_REMAINED_INCIDENTS:]
+
+    # Size bound: incident sizes vary widely (rawJSON payloads), so a count cap alone
+    # cannot guarantee the document stays under the server limit.
+    if sum(len(incident.get("rawJSON", "")) for incident in kept) > MAX_REMAINED_INCIDENTS_BYTES:
+        kept_bytes = 0
+        fits = 0
+        for incident in kept:
+            kept_bytes += len(incident.get("rawJSON", ""))
+            if kept_bytes > MAX_REMAINED_INCIDENTS_BYTES:
+                break
+            fits += 1
+        deferred = kept[fits:] + deferred
+        kept = kept[:fits]
+
+    if deferred:
+        demisto.info(
+            f"Backlog exceeded the integration context bounds "
+            f"({MAX_REMAINED_INCIDENTS} incidents / {MAX_REMAINED_INCIDENTS_BYTES} bytes); "
+            f"keeping {len(kept)} and deferring the {len(deferred)} newest for a later fetch. "
+            f"The fetch rate cannot keep up with the event volume - consider narrowing the "
+            f"'Events to fetch' / threat filters for this instance."
+        )
+    return kept, deferred
+
+
+def get_fetch_times(last_fetch, look_back_minutes: int = 0):
+    """Generate time intervals for fetching events from Proofpoint TAP API.
+
+    When `look_back_minutes` > 0, the effective fetch window between the start time
+    (derived from `last_fetch`) and `now` is guaranteed to be at least
+    `look_back_minutes` long. Equivalently:
+    ``effective_start = now - max(now - last_fetch, look_back_minutes)``.
+
+    - If ``now - last_fetch >= look_back_minutes``: leave the start unchanged
+      (do NOT add `look_back_minutes` on top of an already-large gap).
+    - If ``now - last_fetch <  look_back_minutes``: shift the start back so that
+      ``now - effective_start == look_back_minutes``, ensuring late-indexed events
+      from the last `look_back_minutes` are re-scanned.
+
+    Deduplication (handled by the caller) prevents duplicates produced by the
+    overlapping region.
+
+    Args:
+        last_fetch (datetime or str): Starting time for fetch. May be shifted back so
+                                      that the window length is at least `look_back_minutes`.
+        look_back_minutes (int): Minimum length (in minutes) of the fetch window, used to
+                                 re-scan for late-indexed events. Default is 0 (no look-back).
+
+    Returns:
+        List[tuple[str, str]]: List of (start_time, end_time) tuples in DATE_FORMAT.
+                               Each interval is ≤59 minutes and ≥30 seconds.
+                               Returns empty list if no valid intervals can be created.
     """
     now = get_now()
-    times = []
     time_format = DATE_FORMAT
+
     if isinstance(last_fetch, str):
-        times.append(last_fetch)
         last_fetch = datetime.strptime(last_fetch, time_format)
-    elif isinstance(last_fetch, datetime):
-        times.append(last_fetch.strftime(time_format))
-    while now - last_fetch > timedelta(minutes=59):
-        last_fetch += timedelta(minutes=59)
-        times.append(last_fetch.strftime(time_format))
-    times.append(now.strftime(time_format))
-    return times
+
+    # Ensure the window [effective_start, now] is at least `look_back_minutes` long.
+    # Equivalent to: effective_start = now - max(now - last_fetch, look_back_minutes).
+    # Only shift back when the existing gap is smaller than `look_back_minutes`; do not
+    # subtract `look_back_minutes` on top of an already-sufficient gap.
+    effective_start = last_fetch
+    if look_back_minutes > 0:
+        look_back_delta = timedelta(minutes=look_back_minutes)
+        if (now - last_fetch) < look_back_delta:
+            effective_start = now - look_back_delta
+
+    # Guard against invalid intervals
+    if effective_start >= now:
+        demisto.debug(f"Skipping fetch. {effective_start=} >= {now=}")
+        return []
+
+    intervals = []
+    current_start = effective_start
+
+    # Create 59-minute intervals
+    while now - current_start > timedelta(minutes=59):
+        current_end = current_start + timedelta(minutes=59)
+        intervals.append((current_start.strftime(time_format), current_end.strftime(time_format)))
+        current_start = current_end
+
+    # Add final interval (minimum 30 seconds)
+    seconds_remaining = (now - current_start).total_seconds()
+    if seconds_remaining >= 30:
+        intervals.append((current_start.strftime(time_format), now.strftime(time_format)))
+        demisto.debug(f"Final interval: {seconds_remaining:.0f} seconds")
+    else:
+        demisto.debug(f"Skipping final interval: only {seconds_remaining:.0f} seconds remaining (< 30s minimum)")
+
+    demisto.debug(
+        f"Generated {len(intervals)} intervals from {effective_start.strftime(time_format)} to {now.strftime(time_format)}"
+    )
+    return intervals
 
 
 class Client:
@@ -506,6 +656,44 @@ def get_events_command(client, args):
     )
 
 
+def _build_incident(raw_event: dict, event_type: str, occurred: str, raw_json_encoding: str | None = None) -> dict:
+    """Build an incident dict from a raw event.
+
+    Args:
+        raw_event: The raw event data from Proofpoint API.
+        event_type: Human-readable event type (e.g., "messages delivered").
+        occurred: The event timestamp string.
+        raw_json_encoding: Optional encoding for the raw JSON.
+
+    Returns:
+        dict: Incident dict with name, rawJSON, and occurred fields.
+    """
+    raw_event["type"] = event_type
+    event_id = raw_event.get("id") or raw_event.get("GUID", "")
+
+    if raw_json_encoding:
+        raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
+    else:
+        raw_json = json.dumps(raw_event)
+
+    type_label = event_type.replace("_", " ").title()
+    return {
+        "name": f"Proofpoint - {type_label} - {event_id}",
+        "rawJSON": raw_json,
+        "occurred": occurred,
+    }
+
+
+# Event type configuration: (response_key, event_type_label, dedup_field, time_field_or_None)
+# When time_field is None, use max(threatTime, clickTime)
+EVENT_TYPE_CONFIGS = [
+    ("messagesDelivered", "messages delivered", "GUID", "messageTime"),
+    ("messagesBlocked", "messages blocked", "GUID", "messageTime"),
+    ("clicksPermitted", "clicks permitted", "id", None),
+    ("clicksBlocked", "clicks blocked", "id", None),
+]
+
+
 def validate_first_fetch_time(first_fetch_time: str):
     """
     validate that the start time is less than 7 days ago
@@ -526,7 +714,7 @@ def validate_first_fetch_time(first_fetch_time: str):
 
 
 def fetch_incidents(
-    client,
+    client: Client,
     last_run,
     first_fetch_time,
     event_type_filter,
@@ -535,106 +723,220 @@ def fetch_incidents(
     limit=DEFAULT_LIMIT,
     integration_context=None,
     raw_json_encoding: str | None = None,
+    look_back_minutes: int = 0,
 ) -> tuple[dict, list, list]:
     incidents = []
     end_query_time = ""
-    # check if there're incidents saved in context
+
+    carried_over_incidents: list = []
     if integration_context:
-        remained_incidents = integration_context.get("incidents")
-        demisto.debug(f"remained_incidents: {len(remained_incidents)}")
-        # return incidents if exists in context.
-        if remained_incidents:
-            return last_run, remained_incidents[:limit], remained_incidents[limit:]
+        carried_over_incidents = integration_context.get("incidents") or []
+        demisto.debug(f"remained_incidents: {len(carried_over_incidents)}")
+
+    # Load dedup state
+    seen_ids: dict[str, str] = last_run.get("seen_ids", {})
+    demisto.debug(f"Loaded {len(seen_ids)} seen_ids from last_run")
+
     # Get the last fetch time, if exists
     start_query_time = last_run.get("last_fetch")
+    is_first_fetch = not start_query_time
     # Handle first time fetch, fetch incidents retroactively
-    if not start_query_time:
+    if is_first_fetch:
         start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
-    fetch_times = get_fetch_times(start_query_time)
-    for i in range(len(fetch_times) - 1):
-        start_query_time = fetch_times[i]
-        end_query_time = fetch_times[i + 1]
-        demisto.debug(f"{start_query_time=}  {end_query_time=}")
+
+    # Look-back ramp-up for legacy / freshly-upgraded instances.
+    # Relevant for v1.3.0 and above (introduced with the look-back feature in v1.3.0).
+    # Purpose: gradually ramp up the look-back window for legacy / freshly-upgraded
+    # instances so events are not re-fetched as duplicates.
+    # NOTE: This block can (and should) be removed in the future once all existing
+    # instances have completed the gradual ramp-up and it is no longer relevant.
+    # ------------------------------------------------------------------
+    # Applying the full `look_back_minutes` immediately on an instance that has
+    # no (or recently-initialized) `seen_ids` state would cause events from the
+    # look-back window to be re-fetched as duplicates, because there is nothing
+    # in `seen_ids` to dedupe against.
+    #
+    # First-time fetches do not need ramp-up (no prior state to duplicate).
+    now = get_now()
+    look_back_enabled_from_str = last_run.get("look_back_enabled_from")
+    effective_look_back_minutes = look_back_minutes
+    carry_enabled_from: str | None = None
+
+    if look_back_minutes > 0 and not is_first_fetch:
+        if "seen_ids" not in last_run and look_back_enabled_from_str is None:
+            # Legacy instance: first fetch under the look-back feature.
+            carry_enabled_from = now.strftime(DATE_FORMAT)
+            effective_look_back_minutes = 0
+            demisto.debug(
+                f"Legacy instance detected (last_fetch present but no seen_ids in last_run); "
+                f"initializing look_back ramp-up from {carry_enabled_from} and skipping look_back "
+                f"of {look_back_minutes} minutes for this fetch to avoid duplicates."
+            )
+        elif look_back_enabled_from_str is not None:
+            # Ramp-up in progress: grow effective look-back with elapsed wall-clock time.
+            enabled_from_dt = datetime.strptime(look_back_enabled_from_str, DATE_FORMAT)
+            elapsed_minutes = int((now - enabled_from_dt).total_seconds() // 60)
+            ramp_minutes = max(0, min(look_back_minutes, elapsed_minutes))
+            effective_look_back_minutes = ramp_minutes
+            if ramp_minutes < look_back_minutes:
+                # Still ramping up — carry the stamp forward.
+                carry_enabled_from = look_back_enabled_from_str
+                demisto.debug(
+                    f"Look-back ramp-up active: enabled_from={look_back_enabled_from_str}, "
+                    f"elapsed={elapsed_minutes} min, effective look_back={ramp_minutes} "
+                    f"(target {look_back_minutes})."
+                )
+            else:
+                # Ramp-up complete — drop the stamp; steady-state full look-back from now on.
+                demisto.debug(
+                    f"Look-back ramp-up complete (elapsed={elapsed_minutes} min "
+                    f">= {look_back_minutes} min target); using full look_back and clearing stamp."
+                )
+
+    fetch_intervals = get_fetch_times(start_query_time, effective_look_back_minutes)
+
+    # If no valid intervals, skip querying the API but still drain the carried-over backlog.
+    if not fetch_intervals:
+        demisto.debug("No fetch intervals generated - skipping the API query for this fetch cycle")
+        kept, deferred = bound_remained_incidents(carried_over_incidents[limit:])
+        if deferred:
+            # Nothing was fetched this cycle, so there is no interval to rewind to. The
+            # deferred incidents are already materialized and cannot be re-derived from
+            # the API without a watermark move, so keep them rather than lose them.
+            kept = kept + deferred
+        return last_run, carried_over_incidents[:limit], kept
+
+    dedup_count = 0
+    # Both parallel to `incidents`: the start of the interval each incident was fetched
+    # from, and its dedup key. Used to rewind precisely if the incident is later deferred.
+    incident_interval_starts: list[str] = []
+    incident_dedup_keys: list[str] = []
+
+    for interval_start, interval_end in fetch_intervals:
+        demisto.debug(f"Fetching interval: {interval_start} / {interval_end}")
         raw_events = client.get_events(
-            interval=start_query_time + "/" + end_query_time,
+            interval=interval_start + "/" + interval_end,
             event_type_filter=event_type_filter,
             threat_status=threat_status,
             threat_type=threat_type,
         )
 
-        message_delivered = raw_events.get("messagesDelivered", [])
-        demisto.debug(f"Fetched {len(message_delivered)} messagesDelivered events")
-        for raw_event in message_delivered:
-            raw_event["type"] = "messages delivered"
-            event_guid = raw_event.get("GUID", "")
-            if raw_json_encoding:
-                raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
-            else:
-                raw_json = json.dumps(raw_event)
-            incident = {
-                "name": f"Proofpoint - Message Delivered - {event_guid}",
-                "rawJSON": raw_json,
-                "occurred": raw_event["messageTime"],
-            }
-            demisto.debug(f'{event_guid=} - Event Time: {incident.get("occurred")}')
-            incidents.append(incident)
+        for response_key, event_type_label, dedup_field, time_field in EVENT_TYPE_CONFIGS:
+            events = raw_events.get(response_key, [])
+            if events:
+                demisto.debug(f"Fetched {len(events)} {response_key} events")
 
-        message_blocked = raw_events.get("messagesBlocked", [])
-        demisto.debug(f"Fetched {len(message_blocked)} messagesBlocked events")
-        for raw_event in message_blocked:
-            raw_event["type"] = "messages blocked"
-            event_guid = raw_event.get("GUID", "")
-            if raw_json_encoding:
-                raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
-            else:
-                raw_json = json.dumps(raw_event)
-            incident = {
-                "name": f"Proofpoint - Message Blocked - {event_guid}",
-                "rawJSON": raw_json,
-                "occurred": raw_event["messageTime"],
-            }
-            demisto.debug(f'{event_guid=} - Event Time: {incident.get("occurred")}')
-            incidents.append(incident)
+            for raw_event in events:
+                # Get the dedup key
+                dedup_key = raw_event.get(dedup_field, "")
 
-        clicks_permitted = raw_events.get("clicksPermitted", [])
-        demisto.debug(f"Fetched {len(clicks_permitted)} clicks_permitted events")
-        for raw_event in clicks_permitted:
-            raw_event["type"] = "clicks permitted"
-            event_guid = raw_event.get("GUID", "")
-            if raw_json_encoding:
-                raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
-            else:
-                raw_json = json.dumps(raw_event)
-            incident = {
-                "name": f"Proofpoint - Click Permitted - {event_guid}",
-                "rawJSON": raw_json,
-                "occurred": max(raw_event["threatTime"], raw_event["clickTime"]),
-            }
-            demisto.debug(f'{event_guid=} - Event Time: {incident.get("occurred")}')
-            incidents.append(incident)
+                # Skip if already seen (dedup)
+                if dedup_key and dedup_key in seen_ids:
+                    demisto.debug(
+                        f"Dedup: skipping event {dedup_key} ({response_key}) — "
+                        f"already seen in interval ended by {seen_ids[dedup_key]}"
+                    )
+                    dedup_count += 1
+                    continue
 
-        clicks_blocked = raw_events.get("clicksBlocked", [])
-        demisto.debug(f"Fetched {len(clicks_blocked)} clicks_blocked events")
-        for raw_event in clicks_blocked:
-            raw_event["type"] = "clicks blocked"
-            event_guid = raw_event.get("GUID", "")
-            if raw_json_encoding:
-                raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
-            else:
-                raw_json = json.dumps(raw_event)
-            incident = {
-                "name": f"Proofpoint - Click Blocked - {event_guid}",
-                "rawJSON": raw_json,
-                "occurred": max(raw_event["threatTime"], raw_event["clickTime"]),
-            }
-            demisto.debug(f'{event_guid=} - Event Time: {incident.get("occurred")}')
-            incidents.append(incident)
+                # Determine occurred time
+                if time_field:
+                    occurred = raw_event.get(time_field, "")
+                else:
+                    # Safely pick the latest of threatTime / clickTime, ignoring missing values
+                    candidate_times = [t for t in (raw_event.get("threatTime"), raw_event.get("clickTime")) if t]
+                    occurred = max(candidate_times) if candidate_times else ""
+                if not occurred:
+                    demisto.debug(f"Event {dedup_key} ({response_key}) is missing an occurred time; using empty value")
 
-    # Cut the milliseconds from last fetch if exists
-    end_query_time = end_query_time[:-5] + "Z" if end_query_time[-5] == "." else end_query_time
-    next_run = {"last_fetch": end_query_time}
-    demisto.debug(f"{last_run}=")
-    return next_run, incidents[:limit], incidents[limit:]
+                # Build incident
+                incident = _build_incident(raw_event, event_type_label, occurred, raw_json_encoding)
+                incidents.append(incident)
+                # Remember which interval produced it, so that if this incident is later
+                # deferred we know exactly how far back to rewind `last_fetch`.
+                incident_interval_starts.append(interval_start)
+                incident_dedup_keys.append(dedup_key)
+
+                # Track this event for dedup — store the end of the fetch interval
+                if dedup_key:
+                    seen_ids[dedup_key] = interval_end
+
+    if dedup_count > 0:
+        demisto.debug(f"Deduplicated {dedup_count} events")
+
+    # Serve the carried-over backlog before the newly fetched incidents, so incidents are
+    # created in roughly the order they occurred and the backlog cannot starve.
+    pending_incidents = carried_over_incidents + incidents
+    remained_incidents, deferred_incidents = bound_remained_incidents(pending_incidents[limit:])
+
+    # Advance last_fetch to end of last interval (real now, not shifted)
+    end_query_time = fetch_intervals[-1][1]
+
+    # Overflow handling: rather than discarding the events that did not fit, rewind the
+    # watermark so they are re-fetched later. `bound_remained_incidents` defers the NEWEST
+    # incidents, so the deferred set is a contiguous tail of `incidents` that a single
+    # watermark can replay.
+    if deferred_incidents:
+        # The carried-over backlog is served first and kept in full, so the deferred tail
+        # maps onto the end of `incidents` (which is parallel to the tracking lists).
+        first_deferred_offset = len(incidents) - len(deferred_incidents)
+        if 0 <= first_deferred_offset < len(incident_interval_starts):
+            end_query_time = incident_interval_starts[first_deferred_offset]
+            # Re-fetching that interval also returns the events from it that were already
+            # reported or kept. Those must stay in `seen_ids` so they are deduplicated on
+            # the next cycle; only the deferred events are released for re-fetching.
+            # (A purge by timestamp would clear the whole interval and duplicate them.)
+            for dedup_key in incident_dedup_keys[first_deferred_offset:]:
+                seen_ids.pop(dedup_key, None)
+            demisto.info(
+                f"Rewinding last_fetch to {end_query_time} to re-fetch "
+                f"{len(deferred_incidents)} deferred incidents on a later cycle."
+            )
+        else:
+            # Defensive: without a usable rewind point the deferred incidents can only be
+            # recovered by keeping them, so accept a larger context over losing events.
+            remained_incidents = remained_incidents + deferred_incidents
+            demisto.error(
+                f"Could not determine a rewind point for {len(deferred_incidents)} deferred incidents; "
+                f"keeping them in the integration context instead of dropping them."
+            )
+
+    # Prune old IDs outside the lookback window (always, to avoid unbounded growth of
+    # last_run). Measure the window from the watermark we are about to persist: after an
+    # overflow rewind that is earlier than `now`, and pruning relative to `now` would drop
+    # the IDs that stop the re-fetched events from being reported twice.
+    seen_ids = prune_seen_ids(seen_ids, look_back_minutes, datetime.strptime(end_query_time, DATE_FORMAT))
+
+    next_run: dict = {
+        "last_fetch": end_query_time,
+        "seen_ids": seen_ids,
+    }
+    # Carry the look-back ramp-up stamp forward while ramp-up is still in progress.
+    if carry_enabled_from is not None:
+        next_run["look_back_enabled_from"] = carry_enabled_from
+
+    # A watermark that keeps falling behind means the instance cannot keep up with the
+    # event rate. Proofpoint retains only 7 days, so this eventually becomes data loss.
+    lag_minutes = (now - datetime.strptime(end_query_time, DATE_FORMAT)).total_seconds() / 60
+    if lag_minutes > WATERMARK_LAG_WARNING_MINUTES:
+        demisto.error(
+            f"Fetch is {lag_minutes / 60:.1f} hours behind real time (last_fetch={end_query_time}). "
+            f"Proofpoint retains events for 7 days only - if the lag keeps growing, events will be "
+            f"lost. Consider narrowing the 'Events to fetch' / threat filters for this instance."
+        )
+
+    demisto.debug(
+        f"Fetch summary: {len(fetch_intervals)} intervals, "
+        f"{len(incidents)} new incidents, "
+        f"{len(carried_over_incidents)} carried over, "
+        f"returning {min(len(pending_incidents), limit)}, "
+        f"remaining {len(remained_incidents)}, "
+        f"deferred {len(deferred_incidents)}, "
+        f"seen_ids={len(seen_ids)}, "
+        f"next last_fetch={end_query_time}"
+    )
+
+    return next_run, pending_incidents[:limit], remained_incidents
 
 
 def handle_interval(time_range: datetime, is_hours_interval: bool = True, is_days_interval: bool = False):
@@ -1317,13 +1619,17 @@ def main():
     raw_json_encoding = params.get("raw_json_encoding")
 
     fetch_limit = min(int(params.get("limit", DEFAULT_LIMIT)), DEFAULT_LIMIT)
+
+    # Get look-back buffer parameter (default 0 for backward compatibility)
+    look_back_minutes = arg_to_number(params.get("look_back_minutes", DEFAULT_LOOK_BACK_MINUTES)) or DEFAULT_LOOK_BACK_MINUTES
+
     # Remove proxy if not set to true in params
     proxies = handle_proxy()
 
     command = demisto.command()
     args = demisto.args()
     demisto.info(f"Command being called is {command}")
-    demisto.debug(f"{fetch_time=}")
+    demisto.debug(f"{fetch_time=}, {look_back_minutes=}")
     try:
         client = Client(server_url, api_version, verify_certificate, service_principal, secret, proxies)
         commands = {"proofpoint-get-events": get_events_command, "proofpoint-get-forensics": get_forensic_command}
@@ -1343,12 +1649,26 @@ def main():
                 limit=fetch_limit,
                 integration_context=integration_context,
                 raw_json_encoding=raw_json_encoding,
+                look_back_minutes=look_back_minutes,
             )
             # Save last_run, incidents, remained incidents into integration
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-            # preserve context dict
-            demisto.setIntegrationContext({"incidents": remained_incidents})
+            # Preserve the overflow backlog. `bound_remained_incidents` keeps this document
+            # well under the server's size limit, but guard the write anyway: if persisting
+            # the backlog ever fails, clearing it is far better than failing the whole fetch,
+            # which would re-create the already-reported incidents on the next run. Events
+            # cleared here remain recoverable via the look-back window.
+            try:
+                demisto.setIntegrationContext({"incidents": remained_incidents})
+            except Exception as context_error:
+                demisto.error(
+                    f"Failed to persist {len(remained_incidents)} queued incidents to the integration "
+                    f"context: {context_error}. Dropping the backlog to keep fetching; these events "
+                    f"may be re-fetched on a later cycle if they fall within the look-back window.\n"
+                    f"{traceback.format_exc()}"
+                )
+                demisto.setIntegrationContext({"incidents": []})
 
         elif command in commands:
             return_outputs(*commands[command](client, args))

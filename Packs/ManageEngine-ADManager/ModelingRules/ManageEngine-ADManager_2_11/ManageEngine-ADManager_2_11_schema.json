@@ -1,0 +1,16 @@
+{
+    "manageengine_admanager_raw": {
+    "_raw_log": {
+        "type": "string",
+        "is_array": false
+    },
+    "_vendor": {
+      "type": "string",
+      "is_array": false
+    },
+    "_product": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

@@ -1,0 +1,124 @@
+{
+    "alert": {
+        "name": "Policy V2 7770001: Sysdig Runtime Activity Logs",
+        "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+        "severity": 7,
+        "severityLabel": "Info",
+        "subject": "Sysdig Runtime Activity Logs triggered at 04/28/2026 10:45 AM UTC",
+        "body": "Policy event triggered at 04/28/2026 10:45 AM UTC\n\nPolicy:             Sysdig Runtime Activity Logs\nPolicy URL:         https://app.example.sysdig.com/secure//#/policies/7770001\nDescription:        This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.\n\nTimestamp:          04/28/2026 10:45 AM UTC\nURL:                https://app.example.sysdig.com/secure//#/events/00000000000000000000000000000003\nRule:               Write below monitored dir\nRule URL:           https://app.example.sysdig.com/secure//#/policies/rules/falco/Write%20below%20monitored%20dir\nSeverity:           Info\nScope:\n    cloudProvider.account.id:      111122223333\n    container.label.io.kubernetes.pod.namespace:      pygoat\n    cloudProvider.region:      us-east-1\n    host.mac:      aa:bb:cc:dd:ee:03\n    kubernetes.workload.name:      pygoat-deployment\n    cloudProvider.name:      aws\n    kubernetes.cluster.name:      test-eks-cluster\n    kubernetes.deployment.name:      pygoat-deployment\n    host.hostName:      ip-10-0-0-2.ec2.internal\n    orchestrator.type:      k8s\n    aws.accountId:      111122223333\n    container.image.tag:      1.3\n    host.id:      cccc000011112222333344445555666677778888999900001111222233334444\n    kubernetes.replicaSet.name:      pygoat-deployment-7c746f576f\n    kubernetes.pod.name:      pygoat-deployment-7c746f576f-qfw6r\n    container.image.digest:      sha256:1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff\n    aws.instanceId:      i-0ccc3333dddd44444\n    container.name:      client\n    agent.version:      14.5.1\n    container.image.repo:      docker.io/example/test-app\n    container.label.io.kubernetes.container.name:      client\n    container.image.id:      bbb000000002\n    kubernetes.node.name:      i-0ccc3333dddd44444\n    kubernetes.cluster.distribution:      EKS\n    process.name:      strip -x /usr/local/bin/nmap\n    kubernetes.namespace.name:      pygoat\n    agent.variant:      traditional\n    aws.region:      us-east-1\n    kubernetes.workload.type:      deployment\n    cloudProvider.organization:      o-exampleorgid\n    container.label.io.kubernetes.pod.name:      pygoat-deployment-7c746f576f-qfw6r\nActions:            No actions performed\nDetails:            File below a monitored directory /usr/local/bin opened for writing by process strip with parent make on client under user root (proc.name=strip proc.exepath=/usr/bin/x86_64-linux-gnu-strip proc.pname=make gparent=sh ggparent=python gggparent=<NA> image=docker.io/example/test-app proc.pcmdline=make install user.name=root user.loginuid=-1 proc.cmdline=strip -x /usr/local/bin/nmap fd.name=/usr/local/bin/nmap container.id=aaa000000003 evt.type=openat evt.res=SUCCESS proc.pid=4041035 proc.cwd=/opt/nmap-7.92/ proc.ppid=4040961 proc.sid=1 user.uid=0 user.loginname=<NA> group.gid=0 group.name=root container.name=client proc.pid.ts=1777373129746313639 proc.ppid.ts=1777373129160532332 proc.hash.sha256=aaa0000000000000000000000000000000000000000000000000000000000001)"
+    },
+    "event": {
+        "url": "https://app.example.sysdig.com/secure//#/events/?from=1777373069&to=1777373130"
+    },
+    "condition": "count(policyEvent) > 0",
+    "source": "Sysdig Secure",
+    "state": "ACTIVE",
+    "timestamp": 1777373129785610,
+    "timespan": 60000000,
+    "entities": [
+        {
+            "metricValues": [
+                {
+                    "metric": "policyEvent",
+                    "aggregation": "count",
+                    "groupAggregation": "none",
+                    "value": 1
+                }
+            ],
+            "policyEvents": [
+                {
+                    "id": "00000000000000000000000000000003",
+                    "containerId": "aaa000000003",
+                    "name": "Sysdig Runtime Activity Logs",
+                    "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+                    "severity": 7,
+                    "policyId": 7770001,
+                    "output": "File below a monitored directory /usr/local/bin opened for writing by process strip with parent make on client under user root (proc.name=strip proc.exepath=/usr/bin/x86_64-linux-gnu-strip proc.pname=make gparent=sh ggparent=python gggparent=<NA> image=docker.io/example/test-app proc.pcmdline=make install user.name=root user.loginuid=-1 proc.cmdline=strip -x /usr/local/bin/nmap fd.name=/usr/local/bin/nmap container.id=aaa000000003 evt.type=openat evt.res=SUCCESS proc.pid=4041035 proc.cwd=/opt/nmap-7.92/ proc.ppid=4040961 proc.sid=1 user.uid=0 user.loginname=<NA> group.gid=0 group.name=root container.name=client proc.pid.ts=1777373129746313639 proc.ppid.ts=1777373129160532332 proc.hash.sha256=aaa0000000000000000000000000000000000000000000000000000000000001)",
+                    "ruleName": "Write below monitored dir",
+                    "ruleType": "RULE_TYPE_FALCO",
+                    "matchedOnDefault": false,
+                    "fields": {
+                        "proc.pname": "make",
+                        "evt.type": "openat",
+                        "proc.cmdline": "strip -x /usr/local/bin/nmap",
+                        "proc.ppid": "4040961",
+                        "user.name": "root",
+                        "proc.sid": "1",
+                        "fd.directory": "/usr/local/bin",
+                        "proc.aname[2]": "sh",
+                        "proc.pid": "4041035",
+                        "container.id": "aaa000000003",
+                        "proc.aname[4]": "<NA>",
+                        "proc.hash.sha256": "aaa0000000000000000000000000000000000000000000000000000000000001",
+                        "container.name": "client",
+                        "proc.name": "strip",
+                        "group.gid": "0",
+                        "proc.pcmdline": "make install",
+                        "fd.name": "/usr/local/bin/nmap",
+                        "user.uid": "0",
+                        "group.name": "root",
+                        "proc.cwd": "/opt/nmap-7.92/",
+                        "proc.exepath": "/usr/bin/x86_64-linux-gnu-strip",
+                        "proc.pid.ts": "1777373129746313639",
+                        "proc.aname[3]": "python",
+                        "user.loginuid": "-1",
+                        "container.image.repository": "docker.io/example/test-app",
+                        "proc.ppid.ts": "1777373129160532332",
+                        "user.loginname": "<NA>",
+                        "evt.res": "SUCCESS"
+                    },
+                    "eventLabels": {
+                        "kubernetes.node.name": "i-0ccc3333dddd44444",
+                        "kubernetes.workload.name": "pygoat-deployment",
+                        "container.image.tag": "1.3",
+                        "kubernetes.deployment.name": "pygoat-deployment",
+                        "host.mac": "aa:bb:cc:dd:ee:03",
+                        "kubernetes.workload.type": "deployment",
+                        "container.name": "client",
+                        "container.image.repo": "docker.io/example/test-app",
+                        "cloudProvider.organization": "o-exampleorgid",
+                        "kubernetes.pod.name": "pygoat-deployment-7c746f576f-qfw6r",
+                        "cloudProvider.region": "us-east-1",
+                        "container.label.io.kubernetes.pod.namespace": "pygoat",
+                        "cloudProvider.name": "aws",
+                        "kubernetes.replicaSet.name": "pygoat-deployment-7c746f576f",
+                        "container.label.io.kubernetes.container.name": "client",
+                        "host.id": "cccc000011112222333344445555666677778888999900001111222233334444",
+                        "container.image.id": "bbb000000002",
+                        "kubernetes.namespace.name": "pygoat",
+                        "agent.variant": "traditional",
+                        "orchestrator.type": "k8s",
+                        "kubernetes.cluster.name": "test-eks-cluster",
+                        "process.name": "strip -x /usr/local/bin/nmap",
+                        "aws.region": "us-east-1",
+                        "kubernetes.cluster.distribution": "EKS",
+                        "aws.accountId": "111122223333",
+                        "container.label.io.kubernetes.pod.name": "pygoat-deployment-7c746f576f-qfw6r",
+                        "container.image.digest": "sha256:1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff",
+                        "host.hostName": "ip-10-0-0-2.ec2.internal",
+                        "agent.version": "14.5.1",
+                        "cloudProvider.account.id": "111122223333",
+                        "aws.instanceId": "i-0ccc3333dddd44444"
+                    },
+                    "falsePositive": false,
+                    "policyVersion": 65,
+                    "origin": "Sysdig",
+                    "timestamp": 1777373129785610,
+                    "hostMac": "aa:bb:cc:dd:ee:03",
+                    "isAggregated": false
+                }
+            ],
+            "policies": [
+                {
+                    "name": "Sysdig Runtime Activity Logs",
+                    "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+                    "origin": "Secure UI",
+                    "versionId": "0.0.0",
+                    "severity": 7,
+                    "enabled": false,
+                    "id": 7770001
+                }
+            ]
+        }
+    ]
+}

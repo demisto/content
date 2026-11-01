@@ -609,7 +609,7 @@ def get_request_timeout():
     :raises ValueError: if timeout parameter is not a positive integer or exceeds the maximum allowed value
     """
     try:
-        request_timeout = int(demisto.params().get("request_timeout"))
+        request_timeout = int(demisto.params().get("request_timeout") or 60)
     except ValueError:
         raise ValueError(MESSAGES["REQUEST_TIMEOUT_VALIDATION"])
 
@@ -2837,7 +2837,7 @@ def main():
         validate_params_for_fetch_incidents(params)
 
         # Get first fetch time from integration params.
-        first_fetch_time = params.get("first_fetch")
+        first_fetch_time = params.get("first_fetch") or "10 minutes"
 
         # getting numeric value from string representation
         start_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)

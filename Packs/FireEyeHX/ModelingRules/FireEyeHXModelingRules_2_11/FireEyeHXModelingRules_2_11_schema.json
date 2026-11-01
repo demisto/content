@@ -1,0 +1,190 @@
+{
+    "fireeye_hx_raw": {
+        "event_values": {
+            "type": "string",
+            "is_array": false
+        },
+        "_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "condition": {
+            "type": "string",
+            "is_array": false
+        },
+        "appliance": {
+            "type": "string",
+            "is_array": false
+        },
+        "indicator": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_id": {
+            "type": "int",
+            "is_array": false
+        },
+        "source": {
+            "type": "string",
+            "is_array": false
+        },
+        "subtype": {
+            "type": "string",
+            "is_array": false
+        },
+        "resolution": {
+            "type": "string",
+            "is_array": false
+        },
+        "md5values": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs1Label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs1": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs2Label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs2": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs3Label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs3": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs4Label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs4": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs6Label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs6": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs7Label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs7": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs8Label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs8": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs9Label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs9": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs10Label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs10": {
+            "type": "string",
+            "is_array": false
+        },
+        "dst": {
+            "type": "string",
+            "is_array": false
+        },
+        "dhost": {
+            "type": "string",
+            "is_array": false
+        },
+        "categoryOutcome": {
+            "type": "string",
+            "is_array": false
+        },
+        "dmac": {
+            "type": "string",
+            "is_array": false
+        },
+        "dntdom": {
+            "type": "string",
+            "is_array": false
+        },
+        "dvchost": {
+            "type": "string",
+            "is_array": false
+        },
+        "externalId": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefName": {
+            "type": "string",
+            "is_array": false
+        },
+        "msg": {
+            "type": "string",
+            "is_array": false
+        },
+        "categoryTupleDescription": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefSeverity": {
+            "type": "string",
+            "is_array": false
+        },
+        "suser": {
+            "type": "string",
+            "is_array": false
+        },
+        "fname": {
+            "type": "string",
+            "is_array": false
+        },
+        "filePath": {
+            "type": "string",
+            "is_array": false
+        },
+        "request": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefVersion": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "fireeye_hx_audit_raw": {
+        "_raw_log": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

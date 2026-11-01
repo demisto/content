@@ -1,0 +1,19 @@
+commonfields:
+  id: PrismaAirsApiModule
+  version: -1
+name: PrismaAirsApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: Provides shared Prisma AIRS code (OAuth2 client, plane routing, and scanner transport) that each Prisma AIRS integration reuses.
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/python3:3.10.14.95956
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

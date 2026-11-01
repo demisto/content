@@ -37,3 +37,6 @@
 !qradar-log-source-delete name=example
 !qradar-log-source-create type_id=11 name=example protocol_type_id=0 protocol_parameters="identifier=id,incomingPayloadEncoding=UTF-8" target_event_collector_id=7
 !qradar-log-source-update id=1900 description="A demo log source"
+!qradar-reference-maps-list
+!qradar-reference-maps-list ref_name="Monitoring Identifier Gaps"
+!qradar-reference-map-value-upsert ref_name="Monitoring Identifier Gaps" value="12345" key="demoKey"

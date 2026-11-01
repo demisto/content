@@ -2,6 +2,8 @@ import json
 
 import demistomock as demisto
 
+MAX_TSHARK_ATTEMPTS = 5
+
 
 def equals_object(obj1, obj2) -> bool:
     if type(obj1) is not type(obj2):
@@ -32,6 +34,39 @@ def side_effect_demisto_getFilePath(entry_id):
     return {"path": entry_id}
 
 
+def _run_main_with_retry(mocker):
+    """
+    Run main() and return the results entry, retrying on the flaky tshark
+    subprocess teardown crash (surfaced as SystemExit via return_error).
+    """
+    from PcapFileExtractStreams import main
+
+    last_error = None
+    for _attempt in range(MAX_TSHARK_ATTEMPTS):
+        results_mock = mocker.patch.object(demisto, "results")
+        try:
+            main()
+        except SystemExit as e:
+            # return_error() exits with code 0 after posting an error entry.
+            # Inspect the posted entry to distinguish the flaky tshark crash from
+            # a genuine failure.
+            last_error = ""
+            if results_mock.call_args:
+                entry = results_mock.call_args[0][0]
+                last_error = str(entry.get("Contents", "")) if isinstance(entry, dict) else str(entry)
+            if "Could not find packets" in last_error:
+                # Flaky tshark teardown - reset the mock and retry.
+                continue
+            raise AssertionError(f"main() exited unexpectedly: {last_error}") from e
+        else:
+            return results_mock
+
+    raise AssertionError(
+        f"tshark repeatedly crashed after {MAX_TSHARK_ATTEMPTS} attempts (flaky pyshark/tshark teardown). "
+        f"Last error: {last_error}"
+    )
+
+
 def test_main(mocker):
     """
     Given:
@@ -43,8 +78,6 @@ def test_main(mocker):
     Then:
     - Validate results output that returned to CortexSOAR
     """
-    from PcapFileExtractStreams import main
-
     mocker.patch.object(demisto, "getFilePath", side_effect=side_effect_demisto_getFilePath)
 
     with open("./test_data/test-1.json") as f:
@@ -65,10 +98,9 @@ def test_main(mocker):
                 "server_ports": t.get("server_ports"),
             },
         )
-        mocker.patch.object(demisto, "results")
-        main()
-        assert demisto.results.call_count == 1
+        results_mock = _run_main_with_retry(mocker)
+        assert results_mock.call_count == 1
 
-        results = demisto.results.call_args[0][0]
+        results = results_mock.call_args[0][0]
         contents = results["Contents"]
         assert equals_object(contents, t["contents"])

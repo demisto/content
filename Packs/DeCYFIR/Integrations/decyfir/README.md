@@ -32,16 +32,18 @@ Initiate a take down request.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The ID of the alert for which to initiate the take down request. | Required | 
+| alert_id | The ID of the alert for which to initiate the take down request. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command example
+
 ```!decyfir-takedown-initiate alert_id=123```
 
 #### Human Readable Output
+>
 >The take down request was initiated successfully.
 
 ### decyfir-takedown-list
@@ -57,16 +59,18 @@ Get take down list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sub_category | The sub-category for which to retrieve the take down list. If not provided, the take down list for all sub-categories will be retrieved. | Optional | 
-| size | The number of records to retrieve. Default is 100. | Optional | 
-| page | The page number to retrieve. Default is 0. | Optional | 
+| sub_category | The sub-category for which to retrieve the take down list. If not provided, the take down list for all sub-categories will be retrieved. | Optional |
+| size | The number of records to retrieve. Default is 100. | Optional |
+| page | The page number to retrieve. Default is 0. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command example
+
 ```!decyfir-takedown-list```
 
 #### Human Readable Output
+>
 >The take down list retrieved successfully..

@@ -741,41 +741,42 @@ class MicrosoftClient(BaseClient):
         self.retry_on_rate_limit = retry_on_rate_limit
         if retry_on_rate_limit and (429 not in self._ok_codes):
             self._ok_codes = self._ok_codes + (429,)
-        if not self_deployed:
-            auth_id_and_token_retrieval_url = auth_id.split("@")
-            auth_id = auth_id_and_token_retrieval_url[0]
-            if len(auth_id_and_token_retrieval_url) != 2:
-                self.token_retrieval_url = "https://oproxy.demisto.ninja/obtain-token"  # guardrails-disable-line
+        if not should_use_ucp_auth():
+            if not self_deployed:
+                auth_id_and_token_retrieval_url = auth_id.split("@")
+                auth_id = auth_id_and_token_retrieval_url[0]
+                if len(auth_id_and_token_retrieval_url) != 2:
+                    self.token_retrieval_url = "https://oproxy.demisto.ninja/obtain-token"  # guardrails-disable-line
+                else:
+                    self.token_retrieval_url = auth_id_and_token_retrieval_url[1]
+
+                self.app_name = app_name
+                self.auth_id = auth_id
+                self.enc_key = enc_key
+                self.refresh_token = refresh_token
+
             else:
-                self.token_retrieval_url = auth_id_and_token_retrieval_url[1]
+                self.token_retrieval_url = token_retrieval_url.format(
+                    tenant_id=tenant_id, endpoint=self.azure_cloud.endpoints.active_directory.rstrip("/")
+                )
+                self.client_id = auth_id
+                self.client_secret = enc_key
+                self.auth_code = auth_code
+                self.grant_type = grant_type
+                self.resource = resource
+                self.scope = scope.format(graph_endpoint=self.azure_cloud.endpoints.microsoft_graph_resource_id.rstrip("/"))
+                self.redirect_uri = redirect_uri
+                if certificate_thumbprint and private_key:
+                    try:
+                        import msal  # pylint: disable=E0401
 
-            self.app_name = app_name
-            self.auth_id = auth_id
-            self.enc_key = enc_key
-            self.refresh_token = refresh_token
-
-        else:
-            self.token_retrieval_url = token_retrieval_url.format(
-                tenant_id=tenant_id, endpoint=self.azure_cloud.endpoints.active_directory.rstrip("/")
-            )
-            self.client_id = auth_id
-            self.client_secret = enc_key
-            self.auth_code = auth_code
-            self.grant_type = grant_type
-            self.resource = resource
-            self.scope = scope.format(graph_endpoint=self.azure_cloud.endpoints.microsoft_graph_resource_id.rstrip("/"))
-            self.redirect_uri = redirect_uri
-            if certificate_thumbprint and private_key:
-                try:
-                    import msal  # pylint: disable=E0401
-
-                    self.jwt = msal.oauth2cli.assertion.JwtAssertionCreator(
-                        private_key, "RS256", certificate_thumbprint
-                    ).create_normal_assertion(audience=self.token_retrieval_url, issuer=self.client_id)
-                except ModuleNotFoundError:
-                    raise DemistoException("Unable to use certificate authentication because `msal` is missing.")
-            else:
-                self.jwt = None
+                        self.jwt = msal.oauth2cli.assertion.JwtAssertionCreator(
+                            private_key, "RS256", certificate_thumbprint
+                        ).create_normal_assertion(audience=self.token_retrieval_url, issuer=self.client_id)
+                    except ModuleNotFoundError:
+                        raise DemistoException("Unable to use certificate authentication because `msal` is missing.")
+                else:
+                    self.jwt = None
 
         self.tenant_id = tenant_id
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
@@ -828,8 +829,11 @@ class MicrosoftClient(BaseClient):
         """
         if "ok_codes" not in kwargs and not self._ok_codes:
             kwargs["ok_codes"] = (200, 201, 202, 204, 206, 404)
-        token = self.get_access_token(resource=resource, scope=scope)
-        default_headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
+
+        default_headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+        if not should_use_ucp_auth():
+            default_headers["Authorization"] = f"Bearer {self.get_access_token(resource=resource, scope=scope)}"
 
         if headers:
             default_headers |= headers
@@ -1171,7 +1175,11 @@ class MicrosoftClient(BaseClient):
             if SESSION_STATE in self.auth_code:
                 raise ValueError(
                     "Malformed auth_code parameter: Please copy the auth code from the redirected uri "
-                    'without any additional info and without the "session_state" query parameter.'
+                    "without any additional info and without the 'session_state' query parameter. "
+                    "For example, if the redirected URI is: "
+                    "'https://your-url.com/myapps?code=AUTHORIZATION_CODE&session_state=SESSION_STATE', "
+                    "the relevant part is only the value after 'code=' and before '&session_state': "
+                    "'AUTHORIZATION_CODE'."
                 )
             data["grant_type"] = AUTHORIZATION_CODE
             data["code"] = self.auth_code

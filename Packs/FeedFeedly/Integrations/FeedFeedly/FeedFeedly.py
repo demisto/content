@@ -115,6 +115,10 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
 
 
 class Client(BaseClient):
+    def __init__(self, *args, feed_tags: Optional[list] = None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.feed_tags = feed_tags or []
+
     def fetch_indicators_from_stream(self, stream_id: str, newer_than: float, *, limit: Optional[int] = None) -> list:
         params = {
             "streamId": stream_id,
@@ -145,8 +149,15 @@ class Client(BaseClient):
         for indicator in indicators:
             indicator["type"] = indicator.get("indicator_type", "")
             indicator["fields"] = indicator.get("customFields", {})
+            self._add_tags(indicator)
 
         return indicators
+
+    def _add_tags(self, indicator: dict[str, Any]) -> None:
+        if not self.feed_tags:
+            return
+        fields = indicator["fields"]
+        fields["tags"] = list(set(fields.get("tags", []) + self.feed_tags))
 
 
 class STIX2Parser:
@@ -993,6 +1004,7 @@ def main():  # pragma: no cover
     try:
         client = Client(
             base_url=FEEDLY_BASE_URL,
+            feed_tags=argToList(params.get("feedTags")),
             verify=not params.get("insecure", False),
             proxy=params.get("proxy", False),
             headers={"Authorization": f"Bearer {params['credentials']['password']}"},

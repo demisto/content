@@ -1,3 +1,4 @@
+import time
 from collections.abc import Callable
 from itertools import chain
 
@@ -16,11 +17,37 @@ DEFAULT_LIMIT = 250
 MAX_FETCH = 5000
 VENDOR = "CyberArk"
 PRODUCT = "EPM"
+
 XSIAM_EVENT_TYPE = {
     "policy_audits": "policy audit raw event details",
     "admin_audits": "set admin audit data",
     "detailed_events": "detailed raw",
 }
+
+
+class Config:
+    """Global static configuration for authentication, OAuth and command outputs."""
+
+    # Authentication methods
+    AUTH_METHOD_OAUTH = "Idira OAuth"
+    AUTH_METHOD_EPM = "EPM"
+    AUTH_METHOD_SAML = "SAML"
+
+    # OAuth (CyberArk Identity / Idira ISPSS) constants
+    GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials"
+    ACCESS_TOKEN = "access_token"
+    EXPIRES_IN = "expires_in"
+    VALID_UNTIL = "valid_until"
+    DEFAULT_TOKEN_TTL_SECONDS = 6 * 60 * 60
+    CACHE_BUFFER_SECONDS = 60
+    # Context outputs prefix per event type. The *-get-events commands expose the parsed/normalized
+    # events under these prefixes so operators can verify the normalization while debugging.
+    OUTPUTS_PREFIX = {
+        "policy_audits": "CyberArkEPM.PolicyAudit",
+        "admin_audits": "CyberArkEPM.AdminAudit",
+        "detailed_events": "CyberArkEPM.Event",
+    }
+
 
 """ CLIENT CLASS """
 
@@ -38,6 +65,10 @@ class Client(BaseClient):
         proxy=False,
         policy_audits_event_type=None,
         raw_events_event_type=None,
+        auth_method=None,
+        identity_url=None,
+        web_app_id=None,
+        server_url=None,
     ):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._headers = {
@@ -49,12 +80,193 @@ class Client(BaseClient):
         self.application_id = application_id
         self.authentication_url = authentication_url
         self.application_url = application_url
-        if self.authentication_url and self.application_url:
+        self.identity_url = identity_url
+        self.web_app_id = web_app_id
+        # `server_url` is the EPM server address used only for the Idira OAuth method (e.g.
+        # https://example.epm.cyberark.com). For the EPM/SAML methods the base URL is resolved
+        # from the login response within the code. Already normalized by `normalize_server_url`
+        # at the parameter-parsing layer.
+        self.server_url = server_url
+        # Resolve the authentication method. When `auth_method` is not provided (e.g. instances
+        # created before the parameter existed), fall back to the legacy behavior: SAML when both
+        # SAML URLs are set, otherwise EPM. This keeps existing instances backward compatible.
+        if not auth_method:
+            auth_method = (
+                Config.AUTH_METHOD_SAML if (self.authentication_url and self.application_url) else Config.AUTH_METHOD_EPM
+            )
+        self.auth_method = auth_method
+
+        if self.auth_method == Config.AUTH_METHOD_OAUTH:
+            self.oauth_auth_to_cyber_ark()
+        elif self.auth_method == Config.AUTH_METHOD_SAML:
             self.saml_auth_to_cyber_ark()
         else:
             self.epm_auth_to_cyber_ark()
         self.policy_audits_event_type = policy_audits_event_type
         self.raw_events_event_type = raw_events_event_type
+        self._log_configuration()
+
+    def _log_configuration(self) -> None:
+        """Log the non-sensitive client configuration to aid troubleshooting.
+
+        Emitted once per execution, since the Client is constructed a single time in `main()`, so
+        this does not add per-request log noise.
+
+        Only connection-shaping values are logged. Credentials (username, password) and the
+        Authorization header are deliberately excluded so nothing sensitive reaches the logs; the
+        booleans below record whether a credential was supplied, never its value.
+        """
+        demisto.debug(
+            "[Client] Configuration: "
+            f"auth_method={self.auth_method!r}, "
+            f"base_url={self._base_url!r}, "
+            f"server_url={self.server_url!r}, "
+            f"identity_url={self.identity_url!r}, "
+            f"web_app_id={self.web_app_id!r}, "
+            f"authentication_url={self.authentication_url!r}, "
+            f"application_url={self.application_url!r}, "
+            f"application_id={self.application_id!r}, "
+            f"policy_audits_event_type={self.policy_audits_event_type!r}, "
+            f"raw_events_event_type={self.raw_events_event_type!r}, "
+            f"verify={self._verify}, "
+            f"has_username={bool(self.username)}, "
+            f"has_password={bool(self.password)}"
+        )
+
+    def _get_access_token(self, force_refresh: bool = False) -> str:
+        """Get or refresh the OAuth2 access token, with caching in the integration context.
+
+        Args:
+            force_refresh: When True, ignore any cached token and always request a fresh one.
+                Used to reactively recover from a server-side 401 (e.g. the token was revoked,
+                rotated, or expired earlier than our computed `valid_until` due to clock skew).
+        """
+        current_timestamp = int(time.time())
+        cached_context = get_integration_context() or {}
+        cached_token = cached_context.get(Config.ACCESS_TOKEN)
+        cached_valid_until = cached_context.get(Config.VALID_UNTIL)
+
+        # Return the cached token if it is still valid (unless a forced refresh was requested).
+        if not force_refresh and cached_token and cached_valid_until:
+            try:
+                valid_until_timestamp = int(float(cached_valid_until))
+                if current_timestamp < valid_until_timestamp:
+                    demisto.debug("[Token Cache] Hit! Token is still valid.")
+                    return cached_token
+                demisto.debug("[Token Cache] Miss. Token expired.")
+            except (ValueError, TypeError):
+                demisto.debug("[Token Cache] Error parsing cache. Ignoring.")
+
+        if not self.identity_url or not self.web_app_id:
+            raise DemistoException("Identity URL and Web App ID are required for OAuth authentication.")
+        token_url = f"{self.identity_url.rstrip('/')}/oauth2/token/{self.web_app_id}"
+        demisto.debug(f"[Token Request] Requesting new token from {token_url}")
+
+        token_data = {"grant_type": Config.GRANT_TYPE_CLIENT_CREDENTIALS}
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+
+        try:
+            # Use `super()._http_request` (not `self._http_request`) so the token request itself
+            # never enters the OAuth 401 retry logic. A 401 here means bad credentials, and it
+            # should surface directly as an auth failure rather than triggering a refresh-and-retry.
+            token_response = super()._http_request(
+                method="POST",
+                full_url=token_url,
+                data=token_data,
+                headers=headers,
+                auth=(self.username, self.password),
+                resp_type="json",
+            )
+        except DemistoException as error:
+            error_msg = str(error)
+            demisto.debug(f"[Token Request] Traceback: {traceback.format_exc()}")
+            demisto.error(f"[Token Request] Failed: {error_msg}")
+            raise DemistoException(f"Failed to obtain access token: {error_msg}")
+
+        access_token = token_response.get(Config.ACCESS_TOKEN)
+        if not access_token:
+            raise DemistoException("Failed to obtain access token. Response missing access_token.")
+
+        token_expires_in = arg_to_number(token_response.get(Config.EXPIRES_IN)) or Config.DEFAULT_TOKEN_TTL_SECONDS
+        token_valid_until = current_timestamp + token_expires_in - Config.CACHE_BUFFER_SECONDS
+        demisto.debug(f"[Token Request] Success. Expires in {token_expires_in}s.")
+
+        cached_context[Config.ACCESS_TOKEN] = access_token
+        cached_context[Config.VALID_UNTIL] = str(token_valid_until)
+        set_integration_context(cached_context)
+
+        return access_token
+
+    def oauth_auth_to_cyber_ark(self, force_refresh: bool = False) -> None:
+        # Reference: CyberArk Identity (Idira ISPSS) OAuth2 client_credentials flow.
+        # For the Idira OAuth method the EPM server address is provided directly via the
+        # `server_url` parameter, so there is no need to discover the tenant URL at runtime.
+        if not self.server_url:
+            raise DemistoException("Server URL is required for Idira OAuth authentication.")
+        access_token = self._get_access_token(force_refresh=force_refresh)
+        # An empty version selects the version-less path, which the tenant resolves to its latest
+        # deployed version. Interpolating an empty segment would produce a double slash
+        # ("/EPM/API//Sets") and 404, so the two shapes are built separately rather than by
+        # formatting "" into the middle of the path.
+        # The version-less path. CyberArk resolves it to the latest API version deployed on the
+        # tenant, which is what we want: a pinned version is only ever a routing token that can go
+        # stale, and when it does the request fails as a bare 404 with nothing to explain it.
+        # Confirmed against a live tenant - `GET /EPM/API/Sets` returns 200.
+        self._base_url = f"{self.server_url}/EPM/API/"
+        demisto.debug(f"[oauth_auth_to_cyber_ark] Using EPM SET API base URL: {self._base_url}")
+        self._headers["Authorization"] = f"Bearer {access_token}"
+
+    def _refresh_oauth_token(self) -> None:
+        """Force a new OAuth token and update the Authorization header.
+
+        Clears the cached token/validity so `_get_access_token(force_refresh=True)` cannot
+        return the stale (now-rejected) token, then re-authenticates. Called reactively when
+        the server returns 401 for a token our cache still considered valid (early revocation,
+        rotation, clock skew, or a shorter-than-reported lifetime).
+        """
+        demisto.debug("[Token Refresh] Server rejected the token (401). Forcing a new token.")
+        cached_context = get_integration_context() or {}
+        cached_context.pop(Config.ACCESS_TOKEN, None)
+        cached_context.pop(Config.VALID_UNTIL, None)
+        set_integration_context(cached_context)
+        # Re-authenticating issues its own HTTP request (the token request). Guard against
+        # that request re-entering the 401 retry logic (which would recurse infinitely if the
+        # token endpoint itself returns 401, e.g. bad credentials).
+        self._is_authenticating = True
+        try:
+            self.oauth_auth_to_cyber_ark(force_refresh=True)
+        finally:
+            self._is_authenticating = False
+
+    def _http_request(self, *args, **kwargs):
+        """Wrap BaseClient._http_request to transparently recover from an expired OAuth token.
+
+        For the OAuth auth method, if a data request fails with 401 Unauthorized, force a token
+        refresh once and retry the request a single time. This complements the proactive
+        time-based refresh (the `CACHE_BUFFER_SECONDS` buffer) by covering cases where the token
+        becomes invalid before its computed expiry. Other auth methods keep the default behavior.
+        """
+        # Only apply the retry logic for OAuth data requests, and never while we are in the
+        # middle of (re)authenticating, to avoid recursive refresh attempts.
+        if self.auth_method != Config.AUTH_METHOD_OAUTH or getattr(self, "_is_authenticating", False):
+            return super()._http_request(*args, **kwargs)
+        try:
+            return super()._http_request(*args, **kwargs)
+        except DemistoException as error:
+            if not self._is_unauthorized_error(error):
+                raise
+            demisto.debug("[Token Refresh] Received 401 on a data request. Refreshing token and retrying once.")
+            self._refresh_oauth_token()
+            return super()._http_request(*args, **kwargs)
+
+    @staticmethod
+    def _is_unauthorized_error(error: DemistoException) -> bool:
+        """Return True if the given DemistoException represents an HTTP 401 Unauthorized."""
+        response = getattr(error, "res", None)
+        if response is not None and getattr(response, "status_code", None) == 401:
+            return True
+        # Fallback for cases where the response object is not attached to the exception.
+        return re.search(r"\b401\b", str(error)) is not None
 
     def epm_auth_to_cyber_ark(self):  # pragma: no cover
         data = {
@@ -106,13 +318,35 @@ class Client(BaseClient):
         self._base_url = urljoin(result.get("ManagerURL"), "/EPM/API/")
         self._headers["Authorization"] = f"basic {result.get('EPMAuthenticationResult')}"
 
+    def _log_request_url(self, caller: str, url_suffix: str) -> None:
+        """Log the fully-resolved request URL for a data-plane call.
+
+        The version segment is chosen once, in `oauth_auth_to_cyber_ark`, and then lives inside
+        `self._base_url` where no per-call log ever showed it. That is precisely how the malformed
+        version segment stayed invisible in a customer's debug log for as long as it did. Logging
+        the resolved URL on every data call means the path shape actually used - version-pinned or
+        version-less - is provable from the logs for *every* endpoint, not just for `Sets`.
+
+        Args:
+            caller: The calling method, used as the log prefix.
+            url_suffix: The suffix appended to the base URL for this call.
+        """
+        demisto.debug(f"[{caller}] Request URL: {self._base_url}{url_suffix}")
+
     def get_set_list(self) -> dict:
+        self._log_request_url("Client.get_set_list", "Sets")
         result = self._http_request("GET", url_suffix="Sets")
-        demisto.debug(f"[Client.get_set_list] Retrieved {len(result.get('Sets', []))} sets from API")
+        sets = result.get("Sets", [])
+        demisto.debug(f"[Client.get_set_list] Retrieved {len(sets)} sets from API")
+        # The tenant's own set names are logged in full because name resolution is an exact string
+        # match: when it fails, the only way to see why is to compare what was configured against
+        # what the tenant actually returned, character for character.
+        demisto.debug(f"[Client.get_set_list] Set names returned by the tenant: {[entry.get('Name') for entry in sets]}")
         return result
 
     def get_admin_audits(self, set_id: str, from_date: str = "", limit: int = ADMIN_AUDITS_MAX_LIMIT) -> dict:
         url_suffix = f"Sets/{set_id}/AdminAudit?dateFrom={from_date}&limit={min(limit, ADMIN_AUDITS_MAX_LIMIT)}"
+        self._log_request_url("Client.get_admin_audits", url_suffix)
         return self._http_request("GET", url_suffix=url_suffix)
 
     def get_policy_audits(self, set_id: str, from_date: str = "", limit: int = MAX_LIMIT, next_cursor: str = "start") -> dict:
@@ -120,6 +354,8 @@ class Client(BaseClient):
         filter_params = f"arrivalTime GE {from_date}"
         if self.policy_audits_event_type:
             filter_params += f' AND eventType IN {",".join(self.policy_audits_event_type)}'
+        self._log_request_url("Client.get_policy_audits", url_suffix)
+        demisto.debug(f"[Client.get_policy_audits] filter={filter_params}")
         data = assign_params(
             filter=filter_params,
         )
@@ -134,7 +370,8 @@ class Client(BaseClient):
             f"[Client.get_events] set_id={set_id}, from_date={from_date}, limit={limit}, next_cursor={next_cursor}, "
             f"raw_events_event_type={self.raw_events_event_type}"
         )
-        demisto.debug(f"[Client.get_events] url_suffix={url_suffix} filter={filter_params}")
+        self._log_request_url("Client.get_events", url_suffix)
+        demisto.debug(f"[Client.get_events] filter={filter_params}")
         data = assign_params(
             filter=filter_params,
         )
@@ -274,6 +511,68 @@ def reconcile_last_run_with_current_sets(last_run: dict, current_set_ids: list, 
     return last_run
 
 
+def reconcile_split_set_names(configured_names: list[str], tenant_names: list[str]) -> list[str]:
+    """Repair set names that a comma split broke apart, using the tenant's real names as the authority.
+
+    The *Set name* parameter is a comma-separated list, so a set whose own name contains a comma -
+    such as "CybrWorld-Windows(cyberark software, inc._11)" - arrives here already torn into
+    ["CybrWorld-Windows(cyberark software", "inc._11)"]. Neither fragment matches anything and the
+    fetch fails. On a tenant where EPM has appended an account name like "…, Inc." to every set,
+    that makes the parameter unusable no matter what the operator types.
+
+    The ambiguity is only unresolvable in isolation: "Alpha, Inc., Beta, Inc." could be two names or
+    four. But we are not in isolation - we know the exact set names the tenant returned, so we can
+    ask which reading corresponds to reality. Consecutive fragments are rejoined and tested against
+    that list, longest run first, so a real name always wins over the fragments it contains.
+
+    Args:
+        configured_names: The names as parsed from the parameter, possibly split mid-name.
+        tenant_names: The set names the tenant actually returned.
+
+    Returns:
+        The configured names with any split names rejoined. Fragments that match nothing are
+        preserved unchanged so the caller can still report them as unresolved.
+    """
+    if not configured_names or not tenant_names:
+        return configured_names
+
+    tenant_lookup = {name.strip().casefold(): name for name in tenant_names if name}
+    repaired: list[str] = []
+    index = 0
+
+    while index < len(configured_names):
+        # Try the longest run of consecutive fragments first: a shorter run may also match, but a
+        # longer one that matches a real set name is always the better reading. Preferring the
+        # short match would let a set named "Alpha" swallow the first half of "Alpha, Inc.".
+        for end in range(len(configured_names), index, -1):
+            run = configured_names[index:end]
+            # argToList strips whitespace around each element, so the original spacing is gone.
+            # Both spellings are tried because either could be what the operator typed.
+            candidates = [", ".join(run), ",".join(run)] if len(run) > 1 else [run[0]]
+            match = next((tenant_lookup[c.strip().casefold()] for c in candidates if c.strip().casefold() in tenant_lookup), None)
+            if match is not None:
+                if len(run) > 1:
+                    demisto.debug(
+                        f"[reconcile_split_set_names] Rejoined {len(run)} comma-split fragment(s) into the "
+                        f"tenant set name {match!r}."
+                    )
+                repaired.append(match)
+                index = end
+                break
+        else:
+            # No run starting here matches a real set. Keep the fragment as configured so the
+            # caller reports it as unresolved rather than silently dropping it.
+            repaired.append(configured_names[index])
+            index += 1
+
+    if repaired != configured_names:
+        demisto.debug(
+            f"[reconcile_split_set_names] Repaired the configured set names against the tenant list: "
+            f"{configured_names} -> {repaired}"
+        )
+    return repaired
+
+
 def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
     """
     Gets a list of set names and returns a list of set IDs.
@@ -284,15 +583,28 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
         (dict) A dict of {set_id: events (list events associated with a list of set names)}.
     """
     demisto.debug(f"[get_set_ids_by_set_names] Requested set_names from config: {set_names}")
-    context_set_items = get_integration_context().get("set_items", {})
+    integration_context = get_integration_context() or {}
+    context_set_items = integration_context.get("set_items", {})
     demisto.debug(f"[get_set_ids_by_set_names] Cached set_items in context: {context_set_items}")
 
-    if context_set_items.keys() != set(set_names):
+    # The cache is keyed by the REPAIRED names, because that is what resolved against the tenant.
+    # A comma-bearing name arrives here as fragments, so comparing the fragments directly against
+    # the cache could never match and every fetch cycle would re-issue GET /Sets forever. Rejoining
+    # the fragments the same way first makes the comparison meaningful again.
+    cached_names = list(context_set_items.keys())
+    lookup_names = reconcile_split_set_names(set_names, cached_names) if cached_names else set_names
+
+    if context_set_items.keys() != set(lookup_names):
         result = client.get_set_list()
         all_sets = result.get("Sets", [])
         # Log all available set names from API for debugging
         all_set_names_from_api = [set_item.get("Name") for set_item in all_sets]
         demisto.debug(f"[get_set_ids_by_set_names] All available set names from API: {all_set_names_from_api}")
+
+        # Repair any name the comma split tore apart, now that the tenant's real names are known.
+        # This is the only point in the flow where both halves of the problem are in scope: the
+        # configured value, and the authoritative list to check it against.
+        set_names = reconcile_split_set_names(set_names, all_set_names_from_api)
 
         context_set_items = {
             set_item.get("Name"): set_item.get("Id") for set_item in result.get("Sets", []) if set_item.get("Name") in set_names
@@ -302,21 +614,32 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
         resolved_set_names = set(context_set_items.keys())
         unresolved_set_names = set(set_names) - resolved_set_names
 
-        demisto.info(f"[get_set_ids_by_set_names] Successfully resolved set names: {resolved_set_names}")
-        demisto.info(f"[get_set_ids_by_set_names] Resolved set_name -> set_id mapping: {context_set_items}")
+        demisto.debug(f"[get_set_ids_by_set_names] Successfully resolved set names: {resolved_set_names}")
+        demisto.debug(f"[get_set_ids_by_set_names] Resolved set_name -> set_id mapping: {context_set_items}")
 
         if unresolved_set_names:
+            # Both sides of the comparison are logged together. Resolution is an exact string
+            # match, so an unresolved name is only ever explicable by seeing it next to the names
+            # the tenant actually returned. Note that a comma-split name would already have been
+            # rejoined above, so anything still unresolved here is a genuine mismatch - a typo, or
+            # a set that no longer exists - rather than a formatting artifact.
             demisto.error(
                 f"[get_set_ids_by_set_names] Could not resolve the following set names to set IDs: "
-                f"{unresolved_set_names}. These sets will not be fetched."
+                f"{unresolved_set_names}. These sets will not be fetched. "
+                f"Names available on the tenant: {all_set_names_from_api}. "
+                f"Check for a typo, or for a set that has been renamed or deleted in CyberArk EPM."
             )
 
-        set_integration_context({"set_items": context_set_items})
+        # Merge into the existing context instead of overwriting it, so we don't clobber
+        # other cached keys (e.g. the OAuth `access_token`/`valid_until` written by
+        # `_get_access_token`).
+        integration_context["set_items"] = context_set_items
+        set_integration_context(integration_context)
     else:
-        demisto.debug("[get_set_ids_by_set_names] Using cached set_items from integration context")
+        demisto.debug(f"[get_set_ids_by_set_names] Using cached set_items from integration context: {lookup_names}")
 
     set_ids = list(context_set_items.values())
-    demisto.info(f"[get_set_ids_by_set_names] Final set_ids to fetch events from: {set_ids}")
+    demisto.debug(f"[get_set_ids_by_set_names] Final set_ids to fetch events from: {set_ids}")
 
     return set_ids
 
@@ -417,7 +740,14 @@ def get_events_command(client: Client, event_type: str, last_run: dict, limit: i
 
     human_readable = tableToMarkdown(string_to_table_header(event_type), events_list)
 
-    return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
+    # Expose the parsed/normalized events in `outputs` so operators can verify the normalization
+    # while debugging (in addition to the raw response).
+    return events_list, CommandResults(
+        readable_output=human_readable,
+        outputs_prefix=Config.OUTPUTS_PREFIX[event_type],
+        outputs=events_list,
+        raw_response=events_list,
+    )
 
 
 def fetch_events(
@@ -437,9 +767,13 @@ def fetch_events(
     """
     events: list = []
     set_ids_to_process = list(last_run.keys())
-    demisto.info(f"[fetch_events] Start fetching, {last_run=}")
-    demisto.info(f"[fetch_events] Set IDs to process: {set_ids_to_process}")
+    demisto.debug(f"[fetch_events] Start fetching, {last_run=}")
+    demisto.debug(f"[fetch_events] Set IDs to process: {set_ids_to_process}")
     demisto.debug(f"[fetch_events] params: {max_fetch=}, {enable_admin_audits=}")
+    # Restate the base URL at the start of every fetch. The client is built once and its base URL
+    # logged once, but a fetch is what runs every cycle - so this is the line that proves, per
+    # cycle, which URL the event calls actually went to.
+    demisto.debug(f"[fetch_events] Using base_url={client._base_url!r}")
 
     if enable_admin_audits:
         for set_id, admin_audits in get_admin_audits(client, last_run, max_fetch).items():
@@ -473,7 +807,7 @@ def fetch_events(
 
     unique_types = list(dict.fromkeys(e.get("eventType") for e in events if isinstance(e, dict)))
     demisto.debug(f"[fetch_events] unique_event_types fetched during this fetch={unique_types}")
-    demisto.info(
+    demisto.debug(
         f"[fetch_events] Sending {len(events)} events to XSIAM. "
         f"first_event_keys={(list(events[0].keys()) if events else [])} "
         f"updated_next_run={last_run}"
@@ -483,22 +817,149 @@ def fetch_events(
 
 
 def test_module(client: Client, last_run: dict) -> str:
-    """
-    Tests API connectivity and authentication'
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is successful.
-    Raises exceptions if something goes wrong.
+    """Test API connectivity and authentication by running a small real fetch.
+
+    A trimmed fetch is used rather than a single probe call because it exercises the whole chain the
+    customer depends on - authentication, set-name resolution, and the event endpoints - so a
+    misconfiguration surfaces here instead of at the first scheduled fetch.
+
     Args:
         client (Client): CyberArkEPM client to use.
+        last_run (dict): The current last-run object, passed through to the test fetch.
+
     Returns:
-        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
+        str: 'ok' if the test passed. Any failure raises and fails the test.
     """
-    demisto.debug("[test_module] starting test fetch with max_fetch=5")
+    demisto.debug(f"[test_module] Starting test fetch with max_fetch=5 using base_url={client._base_url!r}")
     fetch_events(client=client, last_run=last_run, max_fetch=5)
-    demisto.debug("[test_module] test fetch completed successfully")
+    demisto.info(f"[test_module] PASSED: test fetch succeeded against base_url={client._base_url!r}")
     return "ok"
 
 
 """ MAIN FUNCTION """
+
+
+def parse_set_names(raw_set_names: Any) -> list[str]:
+    """Parse the *Set name* parameter into a list of set names.
+
+    The parameter has always been a comma-separated list, which silently breaks for any set whose
+    name contains a comma. That is not an edge case: CyberArk EPM appends the account name to every
+    set on a tenant, so an account registered as "Example Corp, Inc." yields set names such as
+    "ExWorld-Windows(example corp, inc._11)" - and EPM offers no way to rename them. On such a
+    tenant `argToList` turns one set into two fragments that match nothing, and no combination of
+    sets can be configured at all.
+
+    The repair happens later, in `reconcile_split_set_names`, where the tenant's real set list is
+    in hand and can say which reading of the commas corresponds to reality. Operators therefore
+    keep entering a plain comma-separated list exactly as before, whatever their names contain.
+
+    A JSON array is also accepted, for the case where the tenant list is unavailable or a name is
+    genuinely ambiguous, since JSON quotes each element and a comma inside quotes is just a
+    character:
+
+        ["ExWorld-Windows(example corp, inc._11)", "ExWorld-Linux(example corp, inc._11)"]
+
+    Args:
+        raw_set_names: The raw parameter value, as configured on the instance.
+
+    Returns:
+        The configured set names. Empty when nothing was configured.
+    """
+    if isinstance(raw_set_names, list):  # already a list (e.g. multi-select), nothing to parse
+        return [str(name).strip() for name in raw_set_names if str(name).strip()]
+
+    raw = str(raw_set_names or "").strip()
+    if not raw:
+        return []
+
+    if raw.startswith("["):
+        try:
+            parsed = json.loads(raw)
+        except json.JSONDecodeError as json_error:
+            # A value that opens with "[" was clearly meant to be JSON, so a silent fall back to the
+            # comma split would hand back fragments and a baffling "set not found" later on. This
+            # also catches a valid array followed by trailing junk, e.g. '["a"], "b"'.
+            raise DemistoException(
+                f'The "Set name" parameter looks like a JSON array but could not be parsed: {json_error}. '
+                f'Provide a valid JSON array, for example ["Set One", "Set Two"], or a comma-separated '
+                f"list of names that do not themselves contain commas."
+            ) from json_error
+
+        # `parsed` is necessarily a list: json.loads only reaches here for input starting with "[".
+        set_names = [str(name).strip() for name in parsed if str(name).strip()]
+        # The names themselves are logged, not just a count. A count cannot answer the only
+        # question that matters on a tenant with comma-bearing names - did each name survive
+        # whole, or was it split? Seeing the parsed list settles that from the log alone.
+        demisto.debug(
+            f"[parse_set_names] mode=json-array: parsed {len(set_names)} set name(s) from a JSON array. "
+            f"Commas within a name are preserved. names={set_names}"
+        )
+        return set_names
+
+    set_names = argToList(raw)
+    demisto.debug(
+        f"[parse_set_names] mode=comma-separated: parsed {len(set_names)} set name(s) using the comma split. "
+        f"A name that itself contains a comma is split into fragments here and is rejoined later by "
+        f"reconcile_split_set_names against the tenant's real set list. names={set_names}"
+    )
+    return set_names
+
+
+def normalize_server_url(server_url: str | None) -> str | None:
+    """Normalize the *Server URL* parameter so it can be joined into a path without duplicate slashes.
+
+    Args:
+        server_url: The raw parameter value, which may be None, empty, or have a trailing slash.
+
+    Returns:
+        The trimmed server URL without a trailing slash, or None when no value was provided. The
+        empty/None case is preserved rather than defaulted, because `oauth_auth_to_cyber_ark`
+        reports a missing Server URL as a user-facing error.
+    """
+    normalized = (server_url or "").strip().rstrip("/")
+    return normalized or None
+
+
+def validate_params(
+    auth_method: str,
+    base_url: str | None,
+    authentication_url: str | None,
+    application_url: str | None,
+    identity_url: str | None,
+    web_app_id: str | None,
+    server_url: str | None,
+) -> None:
+    """Validate the authentication-related parameters based on the selected authentication method.
+
+    Args:
+        auth_method: The selected authentication method (one of Config.AUTH_METHOD_OAUTH,
+            Config.AUTH_METHOD_SAML, Config.AUTH_METHOD_EPM).
+        base_url: The SAML/EPM Logon URL.
+        authentication_url: The SAML Authentication URL.
+        application_url: The SAML Application URL.
+        identity_url: The Idira OAuth Identity URL.
+        web_app_id: The Idira OAuth Web App ID.
+        server_url: The Idira OAuth Server URL.
+
+    Raises:
+        SystemExit: Via `return_error` when the required parameters for the selected method are missing or invalid.
+    """
+    demisto.info(f"Authentication method is: {auth_method}")
+
+    if auth_method == Config.AUTH_METHOD_OAUTH:
+        if not server_url or not identity_url or not web_app_id:
+            return_error("Server URL, Identity URL, and Web App ID are required for Idira OAuth authentication.")
+        if "/oauth2/token" in (identity_url or ""):
+            return_error(
+                "Identity URL must be the bare FQDN (e.g. https://<sub-domain>.id.cyberark.cloud) "
+                "without a '/oauth2/token' suffix."
+            )
+    elif auth_method == Config.AUTH_METHOD_SAML:
+        if not base_url or not authentication_url or not application_url:
+            return_error("SAML/EPM Logon URL, Authentication URL, and Application URL are required for SAML authentication.")
+    else:  # AUTH_METHOD_EPM
+        if not base_url:
+            return_error("SAML/EPM Logon URL is required for EPM authentication.")
 
 
 def main():  # pragma: no cover
@@ -511,9 +972,24 @@ def main():  # pragma: no cover
     application_id = params.get("application_id")
     authentication_url = params.get("authentication_url")
     application_url = params.get("application_url")
+    auth_method = params.get("authentication_method") or Config.AUTH_METHOD_EPM
+    identity_url = params.get("identity_url")
+    web_app_id = params.get("web_app_id")
+    server_url = normalize_server_url(params.get("server_url"))
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
-    set_names = argToList(params.get("set_name"))
+
+    validate_params(
+        auth_method=auth_method,
+        base_url=base_url,
+        authentication_url=authentication_url,
+        application_url=application_url,
+        identity_url=identity_url,
+        web_app_id=web_app_id,
+        server_url=server_url,
+    )
+
+    set_names = parse_set_names(params.get("set_name"))
     enable_admin_audits = argToBoolean(params.get("enable_admin_audits", False))
     policy_audits_event_type = argToList(params.get("policy_audits_event_type"))
     raw_events_event_type = argToList(params.get("raw_events_event_type"))
@@ -545,13 +1021,16 @@ def main():  # pragma: no cover
             application_url=application_url,
             policy_audits_event_type=policy_audits_event_type,
             raw_events_event_type=raw_events_event_type,
+            auth_method=auth_method,
+            identity_url=identity_url,
+            web_app_id=web_app_id,
+            server_url=server_url,
         )
 
         set_ids = get_set_ids_by_set_names(client, set_names)
         demisto.debug(f"[main] Resolved {len(set_ids)} set ID(s) from {len(set_names)} configured set name(s)")
         demisto.debug(f"[main] resolved {set_ids=}")
 
-        # Validate we got set IDs
         if not set_ids:
             raise DemistoException(
                 f"No set IDs were resolved from configured set names: {set_names}. "
@@ -602,14 +1081,23 @@ def main():  # pragma: no cover
             demisto.debug(
                 f"[main] executing cyberarkepm-get-events with limit={max_limit}, "
                 f"from_date={args.get('from_date')}, "
-                f"raw_events_event_type={raw_events_event_type}, "
+                f"raw_events_event_type={raw_events_event_type}, {enable_admin_audits=}, "
                 f"should_push_events={argToBoolean(args.get('should_push_events', False))}"
             )
             events, command_result = get_events_command(client, "detailed_events", last_run, max_limit)  # type: ignore
+            command_results = [command_result]
+            # When admin audits are enabled in the instance configuration, also fetch and include
+            # them in this command's results (in addition to the detailed events). Keep the admin
+            # audits as their own CommandResults so their normalized `outputs` are preserved.
+            if enable_admin_audits:
+                admin_events, admin_command_result = get_events_command(client, "admin_audits", last_run, max_limit)  # type: ignore
+                demisto.debug(f"[cyberarkepm-get-events] admin audits enabled, fetched {len(admin_events)} admin audit(s)")
+                events = events + admin_events
+                command_results.append(admin_command_result)
             if argToBoolean(args.get("should_push_events", False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.debug(f"[cyberarkepm-get-events] send_events_to_xsiam: {len(events)} events, {events=}")
-            return_results(command_result)
+            return_results(command_results)
 
         elif command in "fetch-events":
             events, next_run = fetch_events(client, last_run, max_fetch, enable_admin_audits)  # type: ignore
@@ -617,8 +1105,12 @@ def main():  # pragma: no cover
             demisto.debug(f"[fetch-events] send_events_to_xsiam: {len(events)} events, {events=}")
             demisto.setLastRun(next_run)
 
-    except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
+    except Exception as error:
+        error_msg = f"Failed to execute {command}. Error: {error!s}"
+        demisto.error(f"{error_msg}\n{traceback.format_exc()}")
+        return_error(error_msg)
+
+    demisto.debug("CyberArkEPMEventCollector integration finished")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

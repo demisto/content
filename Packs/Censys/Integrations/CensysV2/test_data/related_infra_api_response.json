@@ -1,0 +1,136 @@
+{
+    "host_initiate": {
+        "result": {
+            "job_id": "00000000-0000-0000-0000-000000000001",
+            "target": {
+                "host_id": "0.0.0.1"
+            },
+            "state": "started",
+            "create_time": "2026-03-12T19:06:09.688084181Z",
+            "delete_time": "2026-03-19T19:06:09.584158687Z"
+        }
+    },
+    "host_initiate_no_job_id": {
+        "result": {
+            "target": {
+                "host_id": "0.0.0.1"
+            },
+            "state": "started",
+            "create_time": "2026-03-12T19:06:09.688084181Z",
+            "delete_time": "2026-03-19T19:06:09.584158687Z"
+        }
+    },
+    "web_property_initiate": {
+        "result": {
+            "job_id": "00000000-0000-0000-0000-000000000002",
+            "target": {
+                "webproperty_id": "example.com:443"
+            },
+            "state": "started",
+            "create_time": "2026-03-12T19:05:25.989855785Z",
+            "delete_time": "2026-03-19T19:05:25.886163952Z"
+        }
+    },
+    "certificate_initiate": {
+        "result": {
+            "job_id": "00000000-0000-0000-0000-000000000003",
+            "target": {
+                "certificate_id": "0000000000000000000000000000000000000000000000000000000000000001"
+            },
+            "state": "started",
+            "create_time": "2026-03-12T19:07:27.608720144Z",
+            "delete_time": "2026-03-19T19:07:27.485943876Z"
+        }
+    },
+    "job_status_in_progress": {
+        "result": {
+            "job_id": "00000000-0000-0000-0000-000000000001",
+            "target": {
+                "host_id": "0.0.0.1"
+            },
+            "state": "started",
+            "create_time": "2026-03-12T19:06:09.688084181Z",
+            "delete_time": "2026-03-19T19:06:09.584158687Z"
+        }
+    },
+    "job_status_completed": {
+        "result": {
+            "job_id": "00000000-0000-0000-0000-000000000001",
+            "target": {
+                "host_id": "0.0.0.1"
+            },
+            "state": "completed",
+            "at_time": "2026-03-12T19:06:09.513044333Z",
+            "create_time": "2026-03-12T19:06:09.688084181Z",
+            "update_time": "2026-03-12T19:06:10.618970068Z",
+            "delete_time": "2026-03-19T19:06:09.584158687Z",
+            "result_count": 4
+        }
+    },
+    "host_job_results": {
+        "result": {
+            "results": [
+                {
+                    "count": 5395,
+                    "field_value_pairs": [
+                        {
+                            "field": "host.services.banner_hash_sha256",
+                            "value": "0000000000000000000000000000000000000000000000000000000000000001"
+                        }
+                    ]
+                },
+                {
+                    "count": 123620,
+                    "field_value_pairs": [
+                        {
+                            "field": "host.services.endpoints.http.headers.key",
+                            "value": "Connection"
+                        },
+                        {
+                            "field": "host.services.endpoints.http.headers.value",
+                            "value": "close"
+                        }
+                    ]
+                },
+                {
+                    "count": 5395,
+                    "field_value_pairs": [
+                        {
+                            "field": "host.services.endpoints.banner_hash_sha256",
+                            "value": "0000000000000000000000000000000000000000000000000000000000000001"
+                        }
+                    ]
+                },
+                {
+                    "count": 36216,
+                    "field_value_pairs": [
+                        {
+                            "field": "host.services.endpoints.http.headers.key",
+                            "value": "Content-Type"
+                        },
+                        {
+                            "field": "host.services.endpoints.http.headers.value",
+                            "value": "text/plain"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "job_status_failed": {
+        "result": {
+            "job_id": "00000000-0000-0000-0000-000000000001",
+            "target": {
+                "host_id": "0.0.0.1"
+            },
+            "state": "failed",
+            "create_time": "2026-03-12T19:06:09.688084181Z",
+            "delete_time": "2026-03-19T19:06:09.584158687Z"
+        }
+    },
+    "host_job_results_empty": {
+        "result": {
+            "results": []
+        }
+    }
+}

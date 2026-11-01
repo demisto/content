@@ -1,0 +1,307 @@
+{
+    "data": {
+        "policyViolations": {
+            "edges": [
+                {
+                    "node": {
+                        "policyViolationId": "00000000-0000-0000-0000-000000000001",
+                        "status": "POLICY_VIOLATION_STATUS_OPEN",
+                        "name": "",
+                        "violationSeverity": "HIGH",
+                        "createdAt": "2026-03-25T09:29:55.000Z",
+                        "lastUpdatedAt": "2026-03-25T13:29:54.000Z",
+                        "resourceId": "00000000-0000-0000-0000-000000000101",
+                        "resourceType": "RESOURCE_TYPE_IDENTITY",
+                        "policy": {
+                            "policyId": "00000000-0000-0000-0000-000000000201",
+                            "name": "Excessive admin privileges",
+                            "description": "Users with excessive admin privileges pose a risk of privilege escalation.",
+                            "policySeverity": "HIGH",
+                            "policyCategory": "IDENTITY_HYGIENE",
+                            "policyType": "POLICY_TYPE_IDENTITY",
+                            "frameworks": [],
+                            "manualRemediationProcess": "",
+                            "__typename": "IRPolicy"
+                        },
+                        "details": {
+                            "domainUniqueId": "00000000-0000-0000-0000-000000000301",
+                            "__typename": "IdentityViolationDetails"
+                        },
+                        "resourceMetadata": {
+                            "metadata": {
+                                "displayName": "John Doe",
+                                "domainName": "rubrikdemo.com",
+                                "idpType": "ENTRA_ID",
+                                "principalType": "USER",
+                                "privilegeType": "PRIVILEGED",
+                                "userPrincipalName": "demo@rubrik.com",
+                                "status": "ACTIVE",
+                                "title": "Engineer",
+                                "source": "ON_PREM_AD",
+                                "identityTags": ["PRIVILEGED"],
+                                "uniqueId": "00000000-0000-0000-0000-000000000401",
+                                "nativeType": "User",
+                                "__typename": "IdentityMetadata"
+                            },
+                            "__typename": "ResourceMetadata"
+                        },
+                        "__typename": "PolicyViolation"
+                    },
+                    "cursor": "cursor_0",
+                    "__typename": "PolicyViolationEdge"
+                },
+                {
+                    "node": {
+                        "policyViolationId": "00000000-0000-0000-0000-000000000002",
+                        "status": "POLICY_VIOLATION_STATUS_IN_PROGRESS",
+                        "name": "",
+                        "violationSeverity": "CRITICAL",
+                        "createdAt": "2026-03-25T14:30:02.000Z",
+                        "lastUpdatedAt": "2026-03-25T17:30:00.000Z",
+                        "resourceId": "00000000-0000-0000-0000-000000000102",
+                        "resourceType": "RESOURCE_TYPE_IDENTITY",
+                        "policy": {
+                            "policyId": "00000000-0000-0000-0000-000000000202",
+                            "name": "Stale MFA not enforced",
+                            "description": "Accounts without MFA enforcement are vulnerable to unauthorized access.",
+                            "policySeverity": "CRITICAL",
+                            "policyCategory": "AUTHENTICATION_AND_SECRET_MANAGEMENT",
+                            "policyType": "POLICY_TYPE_IDENTITY",
+                            "frameworks": [],
+                            "manualRemediationProcess": "",
+                            "__typename": "IRPolicy"
+                        },
+                        "details": {
+                            "domainUniqueId": "00000000-0000-0000-0000-000000000302",
+                            "__typename": "IdentityViolationDetails"
+                        },
+                        "resourceMetadata": {
+                            "metadata": {
+                                "displayName": "Jane Smith",
+                                "domainName": "rubrikdemo.com",
+                                "idpType": "ON_PREM_AD",
+                                "principalType": "USER",
+                                "privilegeType": "STANDARD",
+                                "userPrincipalName": "demo2@rubrik.com",
+                                "status": "ACTIVE",
+                                "title": "Analyst",
+                                "source": "ON_PREM_AD",
+                                "identityTags": ["AT_RISK"],
+                                "uniqueId": "00000000-0000-0000-0000-000000000402",
+                                "nativeType": "User",
+                                "__typename": "IdentityMetadata"
+                            },
+                            "__typename": "ResourceMetadata"
+                        },
+                        "__typename": "PolicyViolation"
+                    },
+                    "cursor": "cursor_1",
+                    "__typename": "PolicyViolationEdge"
+                },
+                {
+                    "node": {
+                        "policyViolationId": "00000000-0000-0000-0000-000000000003",
+                        "status": "POLICY_VIOLATION_STATUS_OPEN",
+                        "name": "",
+                        "violationSeverity": "MEDIUM",
+                        "createdAt": "2026-03-25T16:45:30.000Z",
+                        "lastUpdatedAt": "2026-03-25T18:30:15.000Z",
+                        "resourceId": "00000000-0000-0000-0000-000000000103",
+                        "resourceType": "RESOURCE_TYPE_IDP",
+                        "policy": {
+                            "policyId": "00000000-0000-0000-0000-000000000203",
+                            "name": "Overly permissive IDP configuration",
+                            "description": "Identity provider with overly permissive configuration.",
+                            "policySeverity": "MEDIUM",
+                            "policyCategory": "IDENTITY_PROVIDER_SECURITY",
+                            "policyType": "POLICY_TYPE_IDP",
+                            "frameworks": [],
+                            "manualRemediationProcess": "",
+                            "__typename": "IRPolicy"
+                        },
+                        "details": {
+                            "domainUniqueId": "00000000-0000-0000-0000-000000000303",
+                            "__typename": "IdpViolationDetails"
+                        },
+                        "resourceMetadata": {
+                            "metadata": {
+                                "domainName": "rubrikdemo.com",
+                                "domainUniqueId": "00000000-0000-0000-0000-000000000303",
+                                "idpType": "OKTA",
+                                "rootDomainName": "rubrikdemo.com",
+                                "rootDomainId": "00000000-0000-0000-0000-000000000501",
+                                "__typename": "IdpMetadata"
+                            },
+                            "__typename": "ResourceMetadata"
+                        },
+                        "__typename": "PolicyViolation"
+                    },
+                    "cursor": "cursor_2",
+                    "__typename": "PolicyViolationEdge"
+                },
+                {
+                    "node": {
+                        "policyViolationId": "00000000-0000-0000-0000-000000000004",
+                        "status": "POLICY_VIOLATION_STATUS_OPEN",
+                        "name": "Policy rule match (access)",
+                        "violationSeverity": "LOW",
+                        "createdAt": "2026-03-25T11:08:07.000Z",
+                        "lastUpdatedAt": "2026-03-25T11:27:30.000Z",
+                        "resourceId": "00000000-0000-0000-0000-000000000104",
+                        "resourceType": "RESOURCE_TYPE_IDENTITY",
+                        "policy": {
+                            "policyId": "00000000-0000-0000-0000-000000000204",
+                            "name": "Crowdstrike Alert Integration",
+                            "description": "Detects identity-based threats via CrowdStrike alert integration.",
+                            "policySeverity": "HIGH",
+                            "policyCategory": "CATEGORY_UNSPECIFIED",
+                            "policyType": "POLICY_TYPE_CROWDSTRIKE",
+                            "frameworks": [],
+                            "manualRemediationProcess": "",
+                            "__typename": "IRPolicy"
+                        },
+                        "details": {
+                            "__typename": "CrowdStrikeAlertViolationDetails",
+                            "detectionTime": "2026-03-25T11:09:50.488Z",
+                            "startTime": "2026-03-25T11:08:07.680Z",
+                            "endTime": "2026-03-25T11:08:07.680Z",
+                            "mitreTactic": ""
+                        },
+                        "resourceMetadata": {
+                            "metadata": {
+                                "__typename": "CrowdStrikeAlertMetadata",
+                                "actorIdentityId": "00000000-0000-0000-0000-000000000601",
+                                "actorIdentityName": "svc sql",
+                                "actorIdentityType": "USER",
+                                "actorPrivilegeType": "PRIVILEGED",
+                                "actorState": "Active",
+                                "entityName": "Sample Entity",
+                                "entityId": "00000000-0000-0000-0000-000000000701",
+                                "targetIdentityUniqueIdentifier": "00000000-0000-0000-0000-000000000801",
+                                "targetIdentityName": "ZY1-AD01",
+                                "targetIdentitySource": "rubrikdemo.com",
+                                "targetIdentityStatus": "ENABLED",
+                                "targetIdentityType": "COMPUTER",
+                                "targetIdpType": "ON_PREM_AD",
+                                "targetPrivilegeType": "NORMAL"
+                            },
+                            "__typename": "ResourceMetadata"
+                        },
+                        "__typename": "PolicyViolation"
+                    },
+                    "cursor": "cursor_3",
+                    "__typename": "PolicyViolationEdge"
+                },
+                {
+                    "node": {
+                        "policyViolationId": "00000000-0000-0000-0000-000000000005",
+                        "status": "POLICY_VIOLATION_STATUS_OPEN",
+                        "name": "",
+                        "violationSeverity": "HIGH",
+                        "createdAt": "2026-03-25T11:23:33.000Z",
+                        "lastUpdatedAt": "2026-03-25T11:39:11.000Z",
+                        "resourceId": "00000000-0000-0000-0000-000000000105",
+                        "resourceType": "RESOURCE_TYPE_IDENTITY",
+                        "policy": {
+                            "policyId": "00000000-0000-0000-0000-000000000205",
+                            "name": "Microsoft Defender Alert Integration",
+                            "description": "Detects identity-based threats via Microsoft Defender alert integration.",
+                            "policySeverity": "HIGH",
+                            "policyCategory": "CATEGORY_UNSPECIFIED",
+                            "policyType": "POLICY_TYPE_MICROSOFT_DEFENDER",
+                            "frameworks": [],
+                            "manualRemediationProcess": "",
+                            "__typename": "IRPolicy"
+                        },
+                        "details": {
+                            "__typename": "DefenderAlertViolationDetails",
+                            "detectionTime": "2026-03-25T11:27:27.383Z",
+                            "startTime": "2026-03-25T11:23:33.959Z",
+                            "endTime": "2026-03-25T11:23:37.337Z",
+                            "mitreTactic": "CredentialAccess"
+                        },
+                        "resourceMetadata": {
+                            "metadata": {
+                                "__typename": "DefenderAlertMetadata",
+                                "actorIdentityId": "00000000-0000-0000-0000-000000000602",
+                                "actorIdentityName": "Administrator",
+                                "actorIdentityType": "USER",
+                                "actorPrivilegeType": "PRIVILEGED",
+                                "targetIdentityUniqueIdentifier": "00000000-0000-0000-0000-000000000802",
+                                "targetIdentityName": "ZY1-AD05",
+                                "targetIdentitySource": "rubrikdemo.com",
+                                "targetIdentityStatus": "IDENTITY_STATUS_UNSPECIFIED",
+                                "targetIdentityType": "UNKNOWN",
+                                "targetIdpType": "IDP_UNSPECIFIED",
+                                "targetPrivilegeType": "PRIVILEGE_TYPE_UNSPECIFIED"
+                            },
+                            "__typename": "ResourceMetadata"
+                        },
+                        "__typename": "PolicyViolation"
+                    },
+                    "cursor": "cursor_4",
+                    "__typename": "PolicyViolationEdge"
+                },
+                {
+                    "node": {
+                        "policyViolationId": "00000000-0000-0000-0000-000000000006",
+                        "status": "POLICY_VIOLATION_STATUS_OPEN",
+                        "name": "Suspicious lateral movement detected",
+                        "violationSeverity": "CRITICAL",
+                        "createdAt": "2026-03-25T08:15:00.000Z",
+                        "lastUpdatedAt": "2026-03-25T08:45:00.000Z",
+                        "resourceId": "00000000-0000-0000-0000-000000000106",
+                        "resourceType": "RESOURCE_TYPE_IDENTITY",
+                        "policy": {
+                            "policyId": "00000000-0000-0000-0000-000000000206",
+                            "name": "Identity Event Monitoring",
+                            "description": "Monitors identity-related events for suspicious activity.",
+                            "policySeverity": "CRITICAL",
+                            "policyCategory": "CATEGORY_UNSPECIFIED",
+                            "policyType": "POLICY_TYPE_IDENTITY_EVENT",
+                            "frameworks": [],
+                            "manualRemediationProcess": "",
+                            "__typename": "IRPolicy"
+                        },
+                        "details": {
+                            "domainUniqueId": "00000000-0000-0000-0000-000000000304",
+                            "__typename": "IdentityViolationDetails"
+                        },
+                        "resourceMetadata": {
+                            "metadata": {
+                                "__typename": "IdentityEventMetadata",
+                                "eventTime": "2026-03-25T08:14:30.000Z",
+                                "idpType": "ON_PREM_AD",
+                                "actorIdentityId": "00000000-0000-0000-0000-000000000603",
+                                "actorIdentityName": "svc_lateral",
+                                "actorIdentityType": "USER",
+                                "actorPrivilegeType": "PRIVILEGED",
+                                "actorState": "Active",
+                                "targetIdentityUniqueIdentifier": "00000000-0000-0000-0000-000000000803",
+                                "targetIdentityName": "ZY1-DC01",
+                                "targetIdentityType": "COMPUTER",
+                                "targetIdentitySource": "rubrikdemo.com",
+                                "targetPrivilegeType": "NORMAL",
+                                "entityName": "Sample Event Entity",
+                                "entityId": "00000000-0000-0000-0000-000000000702"
+                            },
+                            "__typename": "ResourceMetadata"
+                        },
+                        "__typename": "PolicyViolation"
+                    },
+                    "cursor": "cursor_5",
+                    "__typename": "PolicyViolationEdge"
+                }
+            ],
+            "pageInfo": {
+                "startCursor": "cursor_0",
+                "endCursor": "cursor_5",
+                "hasNextPage": true,
+                "hasPreviousPage": false,
+                "__typename": "PageInfo"
+            },
+            "count": 6,
+            "__typename": "PolicyViolationConnection"
+        }
+    }
+}

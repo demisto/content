@@ -1,0 +1,38 @@
+{
+  "value": [
+    {
+      "id": "1",
+      "@deprecated.GrantedToIdentities": "GrantedToIdentities has been deprecated. Refer to GrantedToIdentitiesV2",
+      "roles": ["read"],
+      "grantedToIdentities": [{
+        "application": {
+          "id": "new-app-id",
+          "displayName": "Example1 App"
+        }
+      }],
+      "grantedToIdentitiesV2": [{
+        "application": {
+          "id": "new-app-id",
+          "displayName": "Example1 App"
+        }
+      }]
+    },
+    {
+      "id": "2",
+      "@deprecated.GrantedToIdentities": "GrantedToIdentities has been deprecated. Refer to GrantedToIdentitiesV2",
+      "roles": ["write"],
+      "grantedToIdentities": [{
+        "application": {
+          "id": "new-app-id",
+          "displayName": "Example2 App"
+        }
+      }],
+      "grantedToIdentitiesV2": [{
+        "application": {
+          "id": "new-app-id",
+          "displayName": "Example2 App"
+        }
+      }]
+    }
+  ]
+}

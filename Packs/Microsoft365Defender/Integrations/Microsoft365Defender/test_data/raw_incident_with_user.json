@@ -1,0 +1,39 @@
+{
+  "incidentId": 336,
+  "incidentName": "User login from a domain not seen in 60 days",
+  "severity": "Medium",
+  "status": "New",
+  "tags": [],
+  "comments": [],
+  "alerts": [
+    {
+      "alertId": "dc3ad2104b-aa8f-3dbe-420f-0af3fe224e02",
+      "category": "InitialAccess",
+      "creationTime": "2026-04-30T00:19:48.17Z",
+      "detectionSource": "DefenderForDatabases",
+      "serviceSource": "MicrosoftDefenderForCloud",
+      "status": "New",
+      "severity": "Medium",
+      "title": "User login from a domain not seen in 60 days",
+      "firstActivity": "2026-04-30T00:19:24.6383563Z",
+      "lastActivity": "2026-04-30T00:19:24.6383563Z",
+      "devices": [],
+      "entities": [
+        {
+          "entityType": "Ip",
+          "ipAddress": "192.0.2.1",
+          "verdict": "Suspicious"
+        },
+        {
+          "aadUserId": "92c0a42f-cb8d-4bfe-bfc0-add2dd415aa5",
+          "accountName": "username",
+          "domainName": "BOQDEVUSER.LOCAL",
+          "entityType": "User",
+          "userPrincipalName": "username@domain",
+          "userSid": "S-1-9-9999999999-9999999999-9999999999-9999-2607",
+          "verdict": "Suspicious"
+        }
+      ]
+    }
+  ]
+}

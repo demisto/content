@@ -1,0 +1,36 @@
+{
+    "payload": [
+        {
+            "playbookName": "IMPORT 5 - Network Containment Block - Google",
+            "description": "Automated IP containment playbook that queries Google using CVE identifiers, extracts malicious IPs, creates entities in alerts, and blocks them via Zscaler. Supports real-time threat intelligence-based network containment.",
+            "playbookType": "NESTED",
+            "isDebugMode": true,
+            "originalWorkflowDefinitionIdentifier": "00000000-0000-0000-0000-000000000001",
+            "workflowDefinitionIdentifier": "00000000-0000-0000-0000-000000000001"
+        },
+        {
+            "playbookName": "Google Cloud Compute Platform Starting Playbook",
+            "description": "Google Cloud Compute Platform Starting Playbook provides reference implementation of how Google Cloud Compute Platform alerts can be processed in Google SecOps.",
+            "playbookType": "REGULAR",
+            "isDebugMode": false,
+            "originalWorkflowDefinitionIdentifier": "00000000-0000-0000-0000-000000000002",
+            "workflowDefinitionIdentifier": "00000000-0000-0000-0000-000000000002"
+        },
+        {
+            "playbookName": "Set Initial Severity",
+            "description": "An embedded workflow that can receive inputs and return an output.",
+            "playbookType": "NESTED",
+            "isDebugMode": true,
+            "originalWorkflowDefinitionIdentifier": "00000000-0000-0000-0000-000000000003",
+            "workflowDefinitionIdentifier": "00000000-0000-0000-0000-000000000003"
+        },
+        {
+            "playbookName": "Google - Network Containment Block",
+            "description": "Automated IP containment playbook that queries Google using CVE identifiers, extracts malicious IPs, creates entities in alerts, and blocks them via Zscaler. Supports real-time threat intelligence-based network containment.",
+            "playbookType": "NESTED",
+            "isDebugMode": false,
+            "originalWorkflowDefinitionIdentifier": "00000000-0000-0000-0000-000000000004",
+            "workflowDefinitionIdentifier": "00000000-0000-0000-0000-000000000005"
+        }
+    ]
+}

@@ -62,6 +62,13 @@ configuration:
   type: 13
   section: Connect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 description: IRONSCALES, a self-learning email security platform integration.
 display: Ironscales
 name: Ironscales

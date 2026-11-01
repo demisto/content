@@ -157,16 +157,23 @@ class TestsActiveDirectory:
         [
             ("DEMISTO\\test1user", "test1user"),
             ("test2user@demisto.ad", "test2user"),
+            ("mertuz ", "mertuz"),
+            (" mertuz", "mertuz"),
+            ("  mertuz  ", "mertuz"),
+            ("DEMISTO\\test1user ", "test1user"),
+            (" DEMISTO\\test1user", "test1user"),
+            ("test2user@demisto.ad ", "test2user"),
+            (" test2user@demisto.ad", "test2user"),
         ],
     )
     def test_get_ad_username(self, user_logon_name, expected_ad_username):
         """
         Given:
-            - A user logon name (a username to login to XSOAR with).
+            - A user logon name (a username to login to XSOAR with), possibly with surrounding whitespace.
         When:
             - Running the 'get_ad_username()' function.
         Then:
-            - Verify that the returned Active Directory username is as expected.
+            - Verify that the returned Active Directory username is as expected and free of surrounding whitespace.
         """
         client = LdapClient({"ldap_server_vendor": "Active Directory", "host": "server_ip"})
 

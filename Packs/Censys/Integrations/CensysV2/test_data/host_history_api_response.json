@@ -1,0 +1,152 @@
+{
+    "page1_response": {
+        "result": {
+            "events": [
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T10:00:00.000Z",
+                        "service_scanned": {
+                            "scan": {
+                                "port": 443,
+                                "protocol": "https",
+                                "transport_protocol": "tcp"
+                            }
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T09:00:00.000Z",
+                        "reverse_dns_resolved": {
+                            "names": [
+                                "example.com",
+                                "www.example.com"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "scanned_to": "2026-03-01T08:00:00.000Z"
+        }
+    },
+    "page2_response": {
+        "result": {
+            "events": [
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T08:00:00.000Z",
+                        "endpoint_scanned": {
+                            "scan": {
+                                "port": 8080,
+                                "endpoint_type": "http"
+                            }
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T07:00:00.000Z",
+                        "forward_dns_resolved": {
+                            "name": "test.example.com"
+                        }
+                    }
+                }
+            ],
+            "scanned_to": "2026-03-01T06:00:00.000Z"
+        }
+    },
+    "page3_response": {
+        "result": {
+            "events": [
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T06:00:00.000Z",
+                        "jarm_scanned": {
+                            "scan": {
+                                "port": 443,
+                                "fingerprint": "0000000000000000000000000000000000000000000000000000000000001"
+                            }
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T05:00:00.000Z",
+                        "location_updated": {
+                            "location": {
+                                "city": "San Francisco",
+                                "country": "United States"
+                            }
+                        }
+                    }
+                }
+            ],
+            "scanned_to": "2026-03-01T04:00:00.000Z"
+        }
+    },
+    "page4_response": {
+        "result": {
+            "events": [
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T04:00:00.000Z",
+                        "route_updated": {
+                            "route": {
+                                "asn": "15169",
+                                "organization": "Google LLC"
+                            }
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T03:00:00.000Z",
+                        "whois_updated": {
+                            "whois": {
+                                "organization": {
+                                    "name": "Example Organization"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "scanned_to": "0001-01-01T00:00:00Z"
+        }
+    },
+    "page5_response": {
+        "result": {
+            "events": [
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T04:00:00.000Z",
+                        "route_updated": {
+                            "route": {
+                                "asn": "15169",
+                                "organization": "Google LLC"
+                            }
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T03:00:00.000Z",
+                        "whois_updated": {
+                            "whois": {
+                                "organization": {
+                                    "name": "Example Organization"
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "empty_response": {
+        "result": {
+            "events": [],
+            "scanned_to": null
+        }
+    }
+}

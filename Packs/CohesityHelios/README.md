@@ -18,6 +18,20 @@ Cohesity’s comprehensive, end-to-end solution [Cohesity Ransomware](https://ww
 
 - Command to ignore a specified ransomware alert.
 
+#### v2 API migration updates
+
+- The pack now uses the Cohesity v2 alerts endpoint: `/v2/mcm/alerts`.
+- The commands `cohesity-helios-ignore-anomalous-object` and `cohesity-helios-restore-latest-clean-snapshot` now require `alert_id`.
+- The `cohesity-helios-get-ransomware-alerts` command outputs include `cluster_id`, `cluster_name`, `entity_id`, and `job_id`.
+
+Example commands:
+
+```text
+!cohesity-helios-get-ransomware-alerts limit=10 alert_severity_list=kCritical
+!cohesity-helios-ignore-anomalous-object alert_id=9346668452014081:1632849269030240
+!cohesity-helios-restore-latest-clean-snapshot alert_id=2122491972847952:1632848348897740
+```
+
 <~XSIAM>
 
 - Rest API integration for your Cohesity Helios

@@ -27,7 +27,9 @@ The following data points are collected as part of Collective Insights:
 | API Token                                      | Valid API Token from Recorded Future.                                                                                                                                                                                                       |
 | Classifier                                     | Select "Recorded Future - Classifier".                                                                                                                                                                                                      |
 | Mapper (Incoming)                              | Select "Recorded Future - Incoming Mapper".                                                                                                                                                                                                 |
-| IP/Domain/URL/File/CVE/Vulnerability Threshold | Minimum risk score from Recorded Future needed to mark IOC as malicious when doing reputation or intelligence lookups.                                                                                                                      |
+| IP/Domain/URL/File/CVE Suspicious Threshold    | Minimum risk score from Recorded Future needed to mark the IOC as suspicious when doing reputation or intelligence lookups.                                                                                                                  |
+| IP/Domain/URL/File/CVE Malicious Threshold     | Minimum risk score from Recorded Future needed to mark the IOC as malicious when doing reputation or intelligence lookups.                                                                                                                   |
+| Vulnerability Threshold                        | Minimum risk score from Recorded Future needed to mark the vulnerability as critical when doing reputation or intelligence lookups.                                                                                                          |
 | Trust any certificate (not secure)             | -                                                                                                                                                                                                                                           |
 | Use system proxy settings                      | -                                                                                                                                                                                                                                           |
 | First fetch time                               | This threshold will be used during first fetch of the incidents.                                                                                                                                                                            |
@@ -58,5 +60,19 @@ The following data points are collected as part of Collective Insights:
 * Threat assessment action
     * Takes a context, such as phishing or malware and one or more IOC as input.
     * Outputs a verdict (true/false) and related evidence (risk rules) for this context.
+
+---
+
+## Verdict / DBotScore mapping
+Reputation and intelligence lookups translate the Recorded Future risk score into a Cortex DBotScore:
+
+| Condition | Verdict | DBotScore |
+| --- | --- | --- |
+| Risk score at or above the configured Malicious threshold | Malicious | 3 (Bad) |
+| Risk score at or above the configured Suspicious threshold | Suspicious | 2 |
+| Recorded Future reports "No Risk Observed" (the `noKnownRisk` risk rule, available for files, URLs and domains) | Benign | 1 (Good) |
+| No risk data available | Unknown | 0 |
+
+Note: the Benign verdict is signal-driven (it requires the "No Risk Observed" risk rule), not threshold-driven. An indicator that simply has no risk data remains Unknown rather than Benign.
 
 Copyright 2020-2022 Recorded Future, Inc.

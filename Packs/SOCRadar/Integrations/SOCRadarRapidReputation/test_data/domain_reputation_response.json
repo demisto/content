@@ -1,0 +1,17 @@
+{
+  "is_success": true,
+  "data": {
+    "score": 45.0,
+    "is_whitelisted": false,
+    "finding_sources": [
+      {
+        "source_name": "PhishingDB",
+        "main_category": "Phishing",
+        "maintainer_name": "PhishMaintainer",
+        "first_seen_date": "2024-03-01",
+        "last_seen_date": "2024-05-20",
+        "seen_count": 3
+      }
+    ]
+  }
+}

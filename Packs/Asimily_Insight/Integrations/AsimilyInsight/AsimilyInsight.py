@@ -100,6 +100,13 @@ ASIMILY_ASSET_CONTEXT_OUTPUT_KEY_ORDER = [
     "asimilydeviceapplications",
     "asimilydeviceurl",
     "asimilydeviceipv6address",
+    "asimilydevicenasip",
+    "asimilydevicenasport",
+    "asimilydevicelocationlastlocatedat",
+    "asimilydevicelocationaccesspoint",
+    "asimilydevicelocationcampus",
+    "asimilydevicelocationbuilding",
+    "asimilydevicelocationfloor",
 ]
 
 ASIMILY_ANOMALY_CONTEXT_OUTPUT_KEY_ORDER = [
@@ -715,6 +722,18 @@ def map_asimily_asset_entity_from_asimily_assets_json(client: Client, incident, 
         False if raw_data.get("isUsingEndpointSecurity") is None else raw_data.get("isUsingEndpointSecurity")
     )
     incident["customFields"]["asimilydeviceurl"] = construct_asimily_asset_portal_url(base_url, raw_data.get("deviceID"))
+    incident["customFields"]["asimilydevicenasip"] = raw_data.get("nasIP")
+    incident["customFields"]["asimilydevicenasport"] = raw_data.get("nasPort")
+
+    location_map = raw_data.get("locationMap") or {}
+    last_located_at = location_map.get("lastLocatedAt")
+    incident["customFields"]["asimilydevicelocationlastlocatedat"] = (
+        format_date(dateparser.parse(str(last_located_at))) if last_located_at else None
+    )
+    incident["customFields"]["asimilydevicelocationaccesspoint"] = location_map.get("accessPoint")
+    incident["customFields"]["asimilydevicelocationcampus"] = location_map.get("campus")
+    incident["customFields"]["asimilydevicelocationbuilding"] = location_map.get("building")
+    incident["customFields"]["asimilydevicelocationfloor"] = location_map.get("floor")
 
     if raw_data.get("macAddr"):
         incident["customFields"]["asimilydeviceapplications"] = client.get_asset_applications_by_mac_addr(raw_data.get("macAddr"))
@@ -1105,11 +1124,19 @@ def main() -> None:
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
+    source = "PAN XSIAM" if is_xsiam() else "PAN XSOAR"
+
     processed_args = process_params_and_args(params, args, command)
 
     print_debug_msg(f"Command being called is {command}")
     try:
-        client = Client(base_url=base_url, verify=verify_certificate, auth=(user_name, api_key), proxy=proxy)
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            auth=(user_name, api_key),
+            proxy=proxy,
+            headers={"source": source},
+        )
 
         if command == "test-module":
             result = test_module(client, params)

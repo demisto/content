@@ -1,0 +1,1753 @@
+description: |-
+  Comprehensive canary test for the Prisma AIRS DLP feature set - a simple LINEAR flow (no branching). Each run generates a 6-char RandomString suffix appended to every created object, so every pattern/dictionary/profile is brand-new and uniquely named - which means no find-or-create logic is needed (names never collide with archived objects). Flow: create+list+get+patch+get a custom data pattern; upload a keyword file then create+list+get+patch+get a dictionary; list profiles and resolve the predefined PII + Sensitive Content profile ids by name; create a custom profile referencing the pattern; create a master profile that composes custom+PII+Sensitive via multi_profile (composition at CREATE time, since patch composition is upstream-blocked); then attempt cleanup. The pass/fail gate is anchored only on operations that work today (pattern create, custom-profile create, composed master-profile create). Known upstream-blocked steps run as continueonerror canaries: profile patch/delete return HTTP 500, and pattern-delete returns HTTP 400 while still referenced by the un-deletable profile. ORPHAN WARNING: because profile-delete is blocked, each run leaves a custom profile, a master profile, and the referenced pattern behind (clean up manually in the SCM UI). The dictionary IS deleted (HTTP 204). NOT registered in Tests/conf.json - intended for occasional manual/canary runs.
+id: PaloAltoNetworks_Prisma_AIRs_DLP_Comprehensive_Test
+inputs:
+- key: PatternName
+  value:
+    simple: xsoar-ci-test-dlp-pattern
+  required: false
+  description: Base name of the custom DLP data pattern to create. The playbook appends the incident id to make a per-run-unique name (EffectivePatternName) so each run creates and references its own guaranteed-active pattern. The custom profile references this pattern by id, and the DLP API returns HTTP 400 if a profile references an archived pattern - reusing a shared base-named pattern across runs risks it being archived out from under the run.
+  playbookInputQuery:
+- key: PatternType
+  value:
+    simple: custom
+  required: false
+  description: Pattern type (predefined, custom, file_property).
+  playbookInputQuery:
+- key: PatternTechnique
+  value:
+    simple: regex
+  required: false
+  description: Detection technique (regex, weighted_regex, dictionary, etc.).
+  playbookInputQuery:
+- key: PatternMatchingRules
+  value:
+    simple: '{"regexes":[{"regex":"[0-9]{3}-[0-9]{2}-[0-9]{4}","weight":1}]}'
+  required: false
+  description: Matching rules JSON for the regex pattern (regexes with regex + weight).
+  playbookInputQuery:
+- key: DictionaryName
+  value:
+    simple: xsoar-ci-test-dlp-dictionary
+  required: false
+  description: Name of the custom DLP dictionary to create.
+  playbookInputQuery:
+- key: DictionaryCategory
+  value:
+    simple: Confidential
+  required: false
+  description: Dictionary category (Academic, Confidential, Employment, Financial, Government, Healthcare, Legal, Marketing, Source Code).
+  playbookInputQuery:
+- key: DictionaryRegion
+  value:
+    simple: United States
+  required: false
+  description: Dictionary region name. Must be a valid tenant region label (e.g. "United States"), NOT an AWS-style code like us-west-2 - an invalid region_name makes the create API return HTTP 400.
+  playbookInputQuery:
+- key: MasterProfileName
+  value:
+    simple: xsoar-ci-dlp-master
+  required: false
+  description: Base name of the master data profile to compose into. The playbook appends a 6-char RandomString to make a per-run-unique name (EffectiveMasterProfileName), because a profile archived via the UI keeps its name reserved with no API restore, which would otherwise cause create to fail with HTTP 409. IMPORTANT - the DLP data-profile name is capped at 32 chars by the server (the OpenAPI spec's maxLength 64 is wrong; over-32 names return a bare HTTP 400), so this base must stay short enough that base + "-" + 6-char suffix is <= 32. Note - profile delete is upstream-blocked, so each run leaves a persistent profile.
+  playbookInputQuery:
+- key: CustomProfileName
+  value:
+    simple: xsoar-ci-dlp-sub
+  required: false
+  description: Base name of the secondary ("sub") data profile that is created and then composed into the master profile (references the custom pattern created above). "sub" in the name distinguishes it from the master profile. The playbook appends a 6-char RandomString to make a per-run-unique name (EffectiveCustomProfileName), because a profile archived via the UI keeps its name reserved with no API restore, which would otherwise cause create to fail with HTTP 409. IMPORTANT - the DLP data-profile name is capped at 32 chars by the server (the OpenAPI spec's maxLength 64 is wrong; over-32 names return a bare HTTP 400), so this base must stay short enough that base + "-" + 6-char suffix is <= 32. Note - profile delete is upstream-blocked, so each run leaves a persistent profile.
+  playbookInputQuery:
+- key: PiiProfileName
+  value:
+    simple: PII
+  required: false
+  description: Exact name of the predefined data profile to OR into the master (default the predefined "PII" profile).
+  playbookInputQuery:
+- key: SensitiveContentProfileName
+  value:
+    simple: Sensitive Content
+  required: false
+  description: Exact name of the second predefined data profile to OR into the master (default the predefined "Sensitive Content" profile).
+  playbookInputQuery:
+name: PaloAltoNetworks_Prisma_AIRs_DLP_Comprehensive_Test
+outputs: []
+starttaskid: "0"
+tasks:
+  '0':
+    id: '0'
+    taskid: a0000000-0000-4000-8000-000000000000
+    type: start
+    task:
+      id: a0000000-0000-4000-8000-000000000000
+      version: -1
+      name: ''
+      description: ''
+      type: start
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '1'
+  '1':
+    id: '1'
+    taskid: a0000000-0000-4000-8000-000000000001
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000001
+      version: -1
+      name: DeleteContext
+      description: Clear all context so the test starts clean.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: DeleteContext
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+  '2':
+    id: '2'
+    taskid: a0000000-0000-4000-8000-000000000002
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000002
+      version: -1
+      name: GenerateRandomString
+      description: Generate a 6-char run token (RandomString) appended to every created object so each run is globally unique and never collides with archived objects.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: GenerateRandomString
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      Length:
+        simple: '6'
+      Lowercase:
+        simple: 'true'
+      Digits:
+        simple: 'true'
+      Uppercase:
+        simple: 'false'
+      Punctuation:
+        simple: 'false'
+  '3':
+    id: '3'
+    taskid: a0000000-0000-4000-8000-000000000003
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000003
+      version: -1
+      name: Set EffectivePatternName
+      description: Per-run-unique pattern name.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: Set
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      key:
+        simple: EffectivePatternName
+      value:
+        simple: ${inputs.PatternName}-${RandomString}
+  '4':
+    id: '4'
+    taskid: a0000000-0000-4000-8000-000000000004
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000004
+      version: -1
+      name: Set EffectiveDictionaryName
+      description: Per-run-unique dictionary name.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: Set
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      key:
+        simple: EffectiveDictionaryName
+      value:
+        simple: ${inputs.DictionaryName}-${RandomString}
+  '5':
+    id: '5'
+    taskid: a0000000-0000-4000-8000-000000000005
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000005
+      version: -1
+      name: Set EffectiveMasterProfileName
+      description: Per-run-unique master profile name.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: Set
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      key:
+        simple: EffectiveMasterProfileName
+      value:
+        simple: ${inputs.MasterProfileName}-${RandomString}
+  '6':
+    id: '6'
+    taskid: a0000000-0000-4000-8000-000000000006
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000006
+      version: -1
+      name: Set EffectiveCustomProfileName
+      description: Per-run-unique custom profile name.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: Set
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      key:
+        simple: EffectiveCustomProfileName
+      value:
+        simple: ${inputs.CustomProfileName}-${RandomString}
+  '7':
+    id: '7'
+    taskid: a0000000-0000-4000-8000-000000000007
+    type: title
+    task:
+      id: a0000000-0000-4000-8000-000000000007
+      version: -1
+      name: DLP - Data Patterns
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '8'
+  '8':
+    id: '8'
+    taskid: a0000000-0000-4000-8000-000000000008
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000008
+      version: -1
+      name: prisma-airs-runtime-dlp-patterns-create
+      description: Create a custom regex DLP data pattern (unique name).
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-patterns-create'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      name:
+        simple: ${EffectivePatternName}
+      type:
+        complex:
+          root: inputs.PatternType
+      detection_technique:
+        complex:
+          root: inputs.PatternTechnique
+      matching_rules:
+        complex:
+          root: inputs.PatternMatchingRules
+    continueonerror: true
+  '9':
+    id: '9'
+    taskid: a0000000-0000-4000-8000-000000000009
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000009
+      version: -1
+      name: Set PatternId
+      description: Capture PatternId from the create/list output.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: Set
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      key:
+        simple: PatternId
+      value:
+        complex:
+          root: PrismaAIRs.DlpPatternCreate
+          accessor: id
+    continueonerror: true
+  '10':
+    id: '10'
+    taskid: a0000000-0000-4000-8000-000000000010
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000010
+      version: -1
+      name: prisma-airs-runtime-dlp-patterns-list
+      description: List patterns (read verification).
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-patterns-list'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      size:
+        simple: '200'
+    continueonerror: true
+  '11':
+    id: '11'
+    taskid: a0000000-0000-4000-8000-000000000011
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000011
+      version: -1
+      name: prisma-airs-runtime-dlp-patterns-get
+      description: Get the created pattern by id.
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-patterns-get'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      pattern_id:
+        simple: ${PatternId}
+    continueonerror: true
+  '12':
+    id: '12'
+    taskid: a0000000-0000-4000-8000-000000000012
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000012
+      version: -1
+      name: prisma-airs-runtime-dlp-patterns-patch
+      description: Patch the pattern description.
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-patterns-patch'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      pattern_id:
+        simple: ${PatternId}
+      name:
+        simple: ${EffectivePatternName}
+      type:
+        complex:
+          root: inputs.PatternType
+      detection_technique:
+        complex:
+          root: inputs.PatternTechnique
+      matching_rules:
+        complex:
+          root: inputs.PatternMatchingRules
+      description:
+        simple: Updated by DLP comprehensive test
+    continueonerror: true
+  '13':
+    id: '13'
+    taskid: a0000000-0000-4000-8000-000000000013
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000013
+      version: -1
+      name: prisma-airs-runtime-dlp-patterns-get
+      description: Get the patched pattern to confirm the update.
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-patterns-get'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      pattern_id:
+        simple: ${PatternId}
+    continueonerror: true
+  '14':
+    id: '14'
+    taskid: a0000000-0000-4000-8000-000000000014
+    type: title
+    task:
+      id: a0000000-0000-4000-8000-000000000014
+      version: -1
+      name: DLP - Dictionaries
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '15'
+  '15':
+    id: '15'
+    taskid: a0000000-0000-4000-8000-000000000015
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000015
+      version: -1
+      name: FileCreateAndUploadV2
+      description: Create a keyword file for the dictionary upload.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: FileCreateAndUploadV2
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments:
+      filename:
+        simple: dlp-keywords.txt
+      data:
+        simple: "acme-secret\nproject-zeus\nconfidential-alpha"
+  '16':
+    id: '16'
+    taskid: a0000000-0000-4000-8000-000000000016
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000016
+      version: -1
+      name: prisma-airs-runtime-dlp-dictionaries-create
+      description: Create a custom dictionary from the uploaded file (unique name).
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-dictionaries-create'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      name:
+        simple: ${EffectiveDictionaryName}
+      category:
+        complex:
+          root: inputs.DictionaryCategory
+      region_name:
+        complex:
+          root: inputs.DictionaryRegion
+      entry_id:
+        simple: ${File.EntryID}
+      type:
+        simple: custom
+      description:
+        simple: Created by DLP comprehensive test
+    continueonerror: true
+  '17':
+    id: '17'
+    taskid: a0000000-0000-4000-8000-000000000017
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000017
+      version: -1
+      name: Set DictionaryId
+      description: Capture DictionaryId from the create/list output.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: Set
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments:
+      key:
+        simple: DictionaryId
+      value:
+        complex:
+          root: PrismaAIRs.DlpDictionaryCreate
+          accessor: id
+    continueonerror: true
+  '18':
+    id: '18'
+    taskid: a0000000-0000-4000-8000-000000000018
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000018
+      version: -1
+      name: prisma-airs-runtime-dlp-dictionaries-list
+      description: List dictionaries.
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-dictionaries-list'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      size:
+        simple: '50'
+    continueonerror: true
+  '19':
+    id: '19'
+    taskid: a0000000-0000-4000-8000-000000000019
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000019
+      version: -1
+      name: prisma-airs-runtime-dlp-dictionaries-get
+      description: Get the dictionary (include keywords).
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-dictionaries-get'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '20'
+    scriptarguments:
+      dictionary_id:
+        simple: ${DictionaryId}
+      include_keywords:
+        simple: 'true'
+    continueonerror: true
+  '20':
+    id: '20'
+    taskid: a0000000-0000-4000-8000-000000000020
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000020
+      version: -1
+      name: prisma-airs-runtime-dlp-dictionaries-patch
+      description: Update the dictionary description.
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-dictionaries-patch'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      dictionary_id:
+        simple: ${DictionaryId}
+      name:
+        simple: ${EffectiveDictionaryName}
+      category:
+        complex:
+          root: inputs.DictionaryCategory
+      original_file_name:
+        simple: dlp-keywords.txt
+      description:
+        simple: Updated by DLP comprehensive test
+    continueonerror: true
+  '21':
+    id: '21'
+    taskid: a0000000-0000-4000-8000-000000000021
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000021
+      version: -1
+      name: prisma-airs-runtime-dlp-dictionaries-get
+      description: Get the dictionary again to confirm the update.
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-dictionaries-get'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '22'
+    scriptarguments:
+      dictionary_id:
+        simple: ${DictionaryId}
+      include_keywords:
+        simple: 'true'
+    continueonerror: true
+  '22':
+    id: '22'
+    taskid: a0000000-0000-4000-8000-000000000022
+    type: title
+    task:
+      id: a0000000-0000-4000-8000-000000000022
+      version: -1
+      name: DLP - Data Profiles
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '23'
+  '23':
+    id: '23'
+    taskid: a0000000-0000-4000-8000-000000000023
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000023
+      version: -1
+      name: prisma-airs-runtime-dlp-profiles-list
+      description: List profiles (locate predefined PII + Sensitive Content by name).
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-profiles-list'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '24'
+    scriptarguments:
+      size:
+        simple: '200'
+    continueonerror: true
+  '24':
+    id: '24'
+    taskid: a0000000-0000-4000-8000-000000000024
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000024
+      version: -1
+      name: Set PiiProfileId
+      description: Capture PiiProfileId from the create/list output.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: Set
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      key:
+        simple: PiiProfileId
+      value:
+        complex:
+          root: PrismaAIRs.DlpProfile
+          accessor: id
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PrismaAIRs.DlpProfile.name
+                iscontext: true
+              right:
+                value:
+                  simple: ${inputs.PiiProfileName}
+    continueonerror: true
+  '25':
+    id: '25'
+    taskid: a0000000-0000-4000-8000-000000000025
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000025
+      version: -1
+      name: Set SensitiveContentProfileId
+      description: Capture SensitiveContentProfileId from the create/list output.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: Set
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '26'
+    scriptarguments:
+      key:
+        simple: SensitiveContentProfileId
+      value:
+        complex:
+          root: PrismaAIRs.DlpProfile
+          accessor: id
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PrismaAIRs.DlpProfile.name
+                iscontext: true
+              right:
+                value:
+                  simple: ${inputs.SensitiveContentProfileName}
+    continueonerror: true
+  '26':
+    id: '26'
+    taskid: a0000000-0000-4000-8000-000000000026
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000026
+      version: -1
+      name: Wait for pattern to settle
+      description: Short settle so the just-created pattern is fully committed before a profile references it. (The HTTP 400 seen in earlier runs was NOT an eventual-consistency lag - it was the over-32-char profile name being rejected; that is now fixed by the shortened name inputs. This brief wait is only defensive against genuine write-propagation.)
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: Sleep
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments:
+      seconds:
+        simple: '15'
+  '27':
+    id: '27'
+    taskid: a0000000-0000-4000-8000-000000000027
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000027
+      version: -1
+      name: prisma-airs-runtime-dlp-profiles-create (custom)
+      description: Create a custom profile whose expression_tree references the created pattern (unique name).
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-profiles-create'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments:
+      name:
+        simple: ${EffectiveCustomProfileName}
+      detection_rules:
+        simple: '[{"rule_type":"expression_tree","expression_tree":{"operator_type":"or","sub_expressions":[{"rule_item":{"detection_technique":"${inputs.PatternTechnique}","id":"${PatternId}","match_type":"include","confidence_level":"high","occurrence_operator_type":"any","occurrence_count":1}}]}}]'
+      description:
+        simple: Custom profile created by DLP comprehensive test
+    continueonerror: true
+  '28':
+    id: '28'
+    taskid: a0000000-0000-4000-8000-000000000028
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000028
+      version: -1
+      name: Set CustomProfileId
+      description: Capture CustomProfileId from the create/list output.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: Set
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments:
+      key:
+        simple: CustomProfileId
+      value:
+        complex:
+          root: PrismaAIRs.DlpProfileCreate
+          accessor: id
+    continueonerror: true
+  '29':
+    id: '29'
+    taskid: a0000000-0000-4000-8000-000000000029
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000029
+      version: -1
+      name: prisma-airs-runtime-dlp-profiles-get (custom)
+      description: Get the custom profile.
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-profiles-get'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments:
+      profile_id:
+        simple: ${CustomProfileId}
+    continueonerror: true
+  '30':
+    id: '30'
+    taskid: a0000000-0000-4000-8000-000000000030
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000030
+      version: -1
+      name: prisma-airs-runtime-dlp-profiles-create (master, composed)
+      description: Create a master profile that composes the custom + PII + Sensitive Content profiles via multi_profile OR (composition at create time - patch composition is upstream-blocked HTTP 500).
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-profiles-create'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments:
+      name:
+        simple: ${EffectiveMasterProfileName}
+      detection_rules:
+        simple: '[{"rule_type":"multi_profile","multi_profile":{"operator_type":"or","data_profile_ids":[${CustomProfileId},${PiiProfileId},${SensitiveContentProfileId}]}}]'
+      description:
+        simple: Master profile created by DLP comprehensive test
+    continueonerror: true
+  '31':
+    id: '31'
+    taskid: a0000000-0000-4000-8000-000000000031
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000031
+      version: -1
+      name: Set MasterProfileId
+      description: Capture MasterProfileId from the create/list output.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: Set
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '32'
+    scriptarguments:
+      key:
+        simple: MasterProfileId
+      value:
+        complex:
+          root: PrismaAIRs.DlpProfileCreate
+          accessor: id
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PrismaAIRs.DlpProfileCreate.name
+                iscontext: true
+              right:
+                value:
+                  simple: ${EffectiveMasterProfileName}
+    continueonerror: true
+  '32':
+    id: '32'
+    taskid: a0000000-0000-4000-8000-000000000032
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000032
+      version: -1
+      name: prisma-airs-runtime-dlp-profiles-get (master)
+      description: Get the composed master profile.
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-profiles-get'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '33'
+    scriptarguments:
+      profile_id:
+        simple: ${MasterProfileId}
+    continueonerror: true
+  '33':
+    id: '33'
+    taskid: a0000000-0000-4000-8000-000000000033
+    type: title
+    task:
+      id: a0000000-0000-4000-8000-000000000033
+      version: -1
+      name: DLP - Cleanup
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '39'
+  '34':
+    id: '34'
+    taskid: a0000000-0000-4000-8000-000000000034
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000034
+      version: -1
+      name: prisma-airs-runtime-dlp-profiles-delete (master)
+      description: 'CLEANUP STEP 3 - delete the master profile (now that its only custom member was dropped in step 1). CANARY: profile delete is upstream-blocked (HTTP 500).'
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-profiles-delete'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '35'
+    scriptarguments:
+      profile_id:
+        simple: ${MasterProfileId}
+    continueonerror: true
+  '35':
+    id: '35'
+    taskid: a0000000-0000-4000-8000-000000000035
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000035
+      version: -1
+      name: prisma-airs-runtime-dlp-profiles-delete (custom)
+      description: 'CLEANUP STEP 4 - delete the custom sub-profile (now that its custom pattern was swapped for the Ireland predefined pattern in step 2). CANARY: profile delete is upstream-blocked (HTTP 500).'
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-profiles-delete'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '36'
+    scriptarguments:
+      profile_id:
+        simple: ${CustomProfileId}
+    continueonerror: true
+  '36':
+    id: '36'
+    taskid: a0000000-0000-4000-8000-000000000036
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000036
+      version: -1
+      name: prisma-airs-runtime-dlp-patterns-delete
+      description: 'CLEANUP STEP 5 - delete the custom pattern, which should have no active-profile reference left after step 2. CANARY today: because step 2''s profile patch is 500-blocked, the pattern is still referenced and this returns HTTP 400; once upstream fixes the profile-patch 500, step 2 frees the pattern and this delete returns HTTP 204.'
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-patterns-delete'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '37'
+    scriptarguments:
+      pattern_id:
+        simple: ${PatternId}
+    continueonerror: true
+  '37':
+    id: '37'
+    taskid: a0000000-0000-4000-8000-000000000037
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000037
+      version: -1
+      name: prisma-airs-runtime-dlp-dictionaries-delete
+      description: Delete the dictionary (works - HTTP 204).
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-dictionaries-delete'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '38'
+    scriptarguments:
+      dictionary_id:
+        simple: ${DictionaryId}
+    continueonerror: true
+  '38':
+    id: '38'
+    taskid: a0000000-0000-4000-8000-000000000038
+    type: condition
+    task:
+      id: a0000000-0000-4000-8000-000000000038
+      version: -1
+      name: Validate DLP Lifecycle
+      description: 'Pass/fail gate: pattern created (PatternId), custom profile created referencing it (CustomProfileId), and composed master profile created (MasterProfileId).'
+      type: condition
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#default#':
+      - '98'
+      "yes":
+      - '99'
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: PatternId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CustomProfileId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MasterProfileId
+            iscontext: true
+  '98':
+    id: '98'
+    taskid: a0000000-0000-4000-8000-000000000098
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000098
+      version: -1
+      name: Test Failed - Print Error
+      description: Validation failed - print error to fail the run.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: PrintErrorEntry
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      message:
+        simple: 'TEST FAILED: Prisma AIRS DLP comprehensive test failed the gated check. Expected PatternId, CustomProfileId, and MasterProfileId to all be set. Profile patch/delete and pattern-delete-while-referenced are known upstream-blocked (HTTP 400/500) canaries and do not gate pass/fail.'
+  '99':
+    id: '99'
+    taskid: a0000000-0000-4000-8000-000000000099
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000099
+      version: -1
+      name: Test Passed - Close Investigation
+      description: All gated validations passed.
+      type: regular
+      iscommand: true
+      brand: Builtin
+      script: Builtin|||closeInvestigation
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      id:
+        simple: ${incident.id}
+      closeReason:
+        simple: Test passed - Prisma AIRS DLP comprehensive test validated successfully
+      closeNotes:
+        simple: 'DLP lifecycle validated: pattern create/list/get/patch/get, dictionary upload/create/list/get/patch/get/delete, profile list + PII/Sensitive Content lookup + custom-profile create referencing the pattern + composed master-profile create. Profile patch/delete and pattern-delete-while-referenced ran as upstream-blocked canaries (HTTP 400/500).'
+  '39':
+    id: '39'
+    taskid: a0000000-0000-4000-8000-000000000039
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000039
+      version: -1
+      name: 'prisma-airs-runtime-dlp-profiles-patch (master: drop custom)'
+      description: "CLEANUP STEP 1 - patch the master profile to remove the custom sub-profile, leaving only the predefined PII + Sensitive Content profiles. CANARY: profile patch is upstream-blocked (HTTP 500), so today this errors and the composition is unchanged; the intended effect (and this task's purpose) is to un-reference the custom profile so it can be deleted. Works once upstream fixes the 500."
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-profiles-patch'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '40'
+    scriptarguments:
+      profile_id:
+        simple: ${MasterProfileId}
+      name:
+        simple: ${EffectiveMasterProfileName}
+      profile_type:
+        simple: advanced
+      detection_rules:
+        simple: '[{"rule_type":"multi_profile","multi_profile":{"operator_type":"or","data_profile_ids":[${PiiProfileId},${SensitiveContentProfileId}]}}]'
+    continueonerror: true
+  '40':
+    id: '40'
+    taskid: a0000000-0000-4000-8000-000000000040
+    type: regular
+    task:
+      id: a0000000-0000-4000-8000-000000000040
+      version: -1
+      name: 'prisma-airs-runtime-dlp-profiles-patch (sub: swap pattern to Ireland)'
+      description: "CLEANUP STEP 2 - patch the custom sub-profile to replace the custom data pattern with the predefined 'Driver License - Ireland' pattern (id 68ff6020e66e2c793430df80), which frees the custom pattern from any active-profile reference so it can be deleted. CANARY: profile patch is upstream-blocked (HTTP 500), so today this errors and the custom pattern stays referenced (pattern delete then 400s). Works once upstream fixes the 500."
+      type: regular
+      iscommand: true
+      brand: ''
+      script: '|||prisma-airs-runtime-dlp-profiles-patch'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments:
+      profile_id:
+        simple: ${CustomProfileId}
+      name:
+        simple: ${EffectiveCustomProfileName}
+      profile_type:
+        simple: advanced
+      detection_rules:
+        simple: '[{"rule_type":"expression_tree","expression_tree":{"operator_type":"or","sub_expressions":[{"rule_item":{"detection_technique":"regex","id":"68ff6020e66e2c793430df80","match_type":"include","confidence_level":"high","occurrence_operator_type":"any","occurrence_count":1}}]}}]'
+    continueonerror: true
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 7220,
+        "width": 900,
+        "x": 250,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.10.0

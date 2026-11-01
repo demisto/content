@@ -7,7 +7,8 @@
         "Doppel Alert Email",
         "Doppel Alert Mobile_Apps",
         "Doppel Alert Paid_Ads",
-        "Doppel Alert Social_Media"
+        "Doppel Alert Social_Media",
+        "Doppel Alert Telco"
     ],
     "caseInsensitive": true,
     "cliName": "doppelproduct",
@@ -26,13 +27,15 @@
     "required": false,
     "selectValues": [
         "",
-        "domains",
-        "social_media",
-        "mobile_apps",
-        "ecommerce",
         "crypto",
+        "darkweb",
+        "domains",
+        "ecommerce",
         "email",
-        "paid_ads"
+        "mobile_apps",
+        "paid_ads",
+        "social_media",
+        "telco"
     ],
     "sla": 0,
     "system": false,
@@ -42,5 +45,9 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }
