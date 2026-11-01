@@ -144,7 +144,7 @@ class EventConnection:
                 demisto.error(f"[{self.event_type}] General reconnection failure: {e!s}.")
                 raise
 
-    def close(self):
+    def close(self) -> None:
         """
         Stop the heartbeat thread and close the WebSocket connection.
         Releasing the session prevents HTTP 409 (Conflict) errors when a new connection is opened for the same type.
