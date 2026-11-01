@@ -1,5 +1,8 @@
+import re
+import traceback
 import uuid
 from typing import Any
+from urllib.parse import urljoin
 
 import demistomock as demisto
 import urllib3
@@ -19,8 +22,11 @@ LABEL_VULNERABILITY = "Vulnerability"
 LABEL_THREAT_ACTOR = "ThreatActor"
 LABEL_MALWARE = "Malware"
 
-
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+DEFAULT_FIRST_FETCH_DAYS = 60
+MAX_DAYS_WITHOUT_TAILORING = 2
+TA_SEARCH_CHUNK_SIZE = 10
+INDICATOR_BATCH_SIZE = 2500
 
 _BASE_PREFIX_PATH = "/api/ex/v3/da"
 _TEST_PATH = "/foo/ping"
@@ -41,7 +47,6 @@ _INDICATOR_EXTENSION_ID = "extension-definition--4e9c7b2d-8a3f-4c1e-9d6b-5f2a8e7
 _TA_EXTENSION_ID = "extension-definition--a7f3e9d1-2c8b-4b6e-9f5a-1c2d8e7b3a40"
 _MALWARE_EXTENSION_ID = "extension-definition--c1a5b0c2-3b6f-4f92-8e7a-9d5e2c4a1b73"
 
-
 _EXTENSION_IDS = {
     LABEL_INDICATOR: _INDICATOR_EXTENSION_ID,
     LABEL_VULNERABILITY: _VUL_EXTENSION_ID,
@@ -56,6 +61,14 @@ _OUTPUT_PREFIXES = {
     LABEL_MALWARE: "CYFIRMA.Malware",
 }
 
+# search type -> (search path, query-string parameter name)
+_SEARCH_CONFIG = {
+    LABEL_INDICATOR: (_IOC_SEARCH_API_PATHS, "value"),
+    LABEL_THREAT_ACTOR: (_TA_SEARCH_API_PATHS, "values"),
+    LABEL_MALWARE: (_MALWARE_SEARCH_API_PATHS, "value"),
+    LABEL_VULNERABILITY: (_VUL_SEARCH_API_PATHS, "value"),
+}
+
 _CVSS_COMMON_METRICS = [
     "availability_impact",
     "integrity_impact",
@@ -63,9 +76,7 @@ _CVSS_COMMON_METRICS = [
     "exploitability_score",
     "confidentiality_impact",
 ]
-
 _CVSS_VERSION_METRICS_2 = ["access_vector", "access_complexity", "authentication"]
-
 _CVSS_VERSION_METRICS_3 = [
     "attack_vector",
     "attack_complexity",
@@ -74,6 +85,8 @@ _CVSS_VERSION_METRICS_3 = [
     "scope",
 ]
 
+# Older XSOAR content versions may not define FeedIndicatorType.Location.
+# (The original referenced FeedIndicatorType.Location directly in _SDO_TYPES, which could fail at import.)
 _LOCATION_TYPE = getattr(FeedIndicatorType, "Location", "Location")
 
 _TI_SCORES = {
@@ -98,7 +111,7 @@ _SDO_TYPES = {
     "tool": ThreatIntel.ObjectsNames.TOOL,
     "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
     "report": ThreatIntel.ObjectsNames.REPORT,
-    "location": FeedIndicatorType.Location,
+    "location": _LOCATION_TYPE,
 }
 
 # STIX cyber observable object name (first token in an indicator pattern) -> XSOAR type
@@ -131,27 +144,69 @@ _HASH_FIELDS = {
 }
 _HASH_PREFERENCE = ("sha256", "sha1", "md5", "sha512", "ssdeep")
 
-_NETWORK_TYPES = (
-    FeedIndicatorType.IP,
-    FeedIndicatorType.IPv6,
-    FeedIndicatorType.Domain,
-    FeedIndicatorType.URL,
-    FeedIndicatorType.Host,
-)
-
 _STIX_RELATIONSHIP_ALIASES = {"indicates": "indicator-of"}
+
+# (table column label, extension key) pairs used by build_result
+_VUL_COLUMNS = [
+    ("Attack Complexity", "attack_complexity", ""),
+    ("Integrity Impact", "integrity_impact", ""),
+    ("Impact Score", "impact_score", ""),
+    ("CVSS Version", "cvss_version", "0.0"),
+    ("CVSS Base Score", "cvss_base_score", "0.0"),
+    ("Exploitability Score", "exploitability_score", "0.0"),
+    ("Attack Vector", "attack_vector", ""),
+    ("Privileges Required", "privileges_required", ""),
+    ("Availability Impact", "availability_impact", ""),
+    ("User Interaction", "user_interaction", ""),
+    ("CVSS Vector", "cvss_vector", None),
+    ("Scope", "scope", ""),
+    ("Confidentiality Impact", "confidentiality_impact", ""),
+    ("Vendors", "vendors", []),
+]
+_TA_COLUMNS = [
+    ("Origin of Country", "origin_of_country"),
+    ("Target Countries", "target_countries"),
+    ("Motivation", "motivation"),
+    ("Target Technologies", "target_technologies"),
+    ("Target Industries", "target_industries"),
+    ("Associated Malware", "associated_malware"),
+    ("Associated Campaigns", "associated_campaigns"),
+]
+_MALWARE_COLUMNS = [
+    ("Target Technologies", "target_technologies"),
+    ("Target Industries", "target_industries"),
+    ("Target Countries", "target_countries"),
+]
 
 
 """ HELPERS """
 
 
 def _as_list(value: Any) -> list:
+    """Normalize a value to a list.
+
+    Args:
+        value: None/empty string (-> empty list), a list (returned as is) or any scalar (wrapped).
+
+    Returns:
+        The value as a list.
+    """
     if value is None or value == "":
         return []
     return value if isinstance(value, list) else [value]
 
 
 def first_of(data: dict, *keys: str, default: Any = None) -> Any:
+    """Return the first non-empty value among the given keys.
+
+    Args:
+        data: Source dictionary.
+        *keys: Candidate keys, checked in order.
+        default: Returned when every key is missing or empty (None, "", [], {}).
+
+    Returns:
+        The first non-empty value, or ``default``.
+    """
     for key in keys:
         if data.get(key) not in (None, "", [], {}):
             return data[key]
@@ -159,6 +214,14 @@ def first_of(data: dict, *keys: str, default: Any = None) -> Any:
 
 
 def confidence_to_score(confidence: Any) -> tuple[int, str]:
+    """Map a STIX confidence (0-100) to an XSOAR score and verdict.
+
+    Args:
+        confidence: Confidence value; None or non-numeric values are treated as 0.
+
+    Returns:
+        ``(score, verdict)``: >=80 -> (3, "Malicious"), >=50 -> (2, "Suspicious"), else (1, "Benign").
+    """
     try:
         value = int(confidence or 0)
     except (TypeError, ValueError):
@@ -171,6 +234,19 @@ def confidence_to_score(confidence: Any) -> tuple[int, str]:
 
 
 def parse_pattern(pattern: str) -> tuple[str, str, dict[str, str]]:
+    """Parse a STIX indicator pattern such as ``[ipv4-addr:value = '1.2.3.4']``.
+
+    For file patterns, all hashes are collected and the strongest one
+    (sha256 > sha1 > md5 > sha512 > ssdeep) is used as the indicator value.
+    IP values containing "/" are reported as CIDR types.
+
+    Args:
+        pattern: STIX pattern string.
+
+    Returns:
+        ``(xsoar_indicator_type, value, hashes)``; ``("", "", {})`` if the pattern is empty,
+        malformed or of an unsupported observable type.
+    """
     if not pattern:
         return "", "", {}
     head = _PATTERN_HEAD.match(pattern.strip())
@@ -212,10 +288,17 @@ def parse_pattern(pattern: str) -> tuple[str, str, dict[str, str]]:
 
 
 def location_value(obj: dict) -> str:
+    """Build a display value for a STIX location object.
+
+    Args:
+        obj: STIX location object.
+
+    Returns:
+        The name, else "city, region, country", else "lat,lon", else an empty string.
+    """
     if obj.get("name"):
         return str(obj["name"])
-    parts = [obj.get("city"), obj.get("region"), obj.get("country")]
-    parts = [str(p) for p in parts if p]
+    parts = [str(p) for p in (obj.get("city"), obj.get("region"), obj.get("country")) if p]
     if parts:
         return ", ".join(parts)
     lat, lon = obj.get("latitude"), obj.get("longitude")
@@ -225,11 +308,36 @@ def location_value(obj: dict) -> str:
 
 
 def get_ti_ext_id(data_type: str) -> str:
+    """Return the STIX extension-definition ID for a data type (defaults to the indicator one)."""
     return _EXTENSION_IDS.get(data_type, _INDICATOR_EXTENSION_ID)
 
 
+def _parse_days(value: Any, default: int = DEFAULT_FIRST_FETCH_DAYS) -> int:
+    """Extract a number of days from a parameter such as "60", "60 days" or 60.
+
+    Args:
+        value: Raw parameter value.
+        default: Returned when no number can be found.
+
+    Returns:
+        The number of days.
+    """
+    match = re.search(r"\d+", str(value or ""))
+    return int(match.group()) if match else default
+
+
 class Client(BaseClient):
+    """HTTP client for the CYFIRMA threat-intelligence API."""
+
     def _identify_feed_type(self, obj: dict) -> tuple[str, str]:
+        """Determine the XSOAR indicator value and type for a STIX object.
+
+        Args:
+            obj: A STIX object (indicator, SDO or bare observable).
+
+        Returns:
+            ``(value, xsoar_type)``; ``("", "")`` if the object type is unsupported.
+        """
         obj_type = str(obj.get("type") or "").lower()
 
         if obj_type == "indicator":
@@ -240,8 +348,8 @@ class Client(BaseClient):
             detected = auto_detect_indicator_type(name) if name else None
             return (name, detected) if detected else ("", "")
 
-        # if obj_type == "location":
-        #     return location_value(obj), _LOCATION_TYPE
+        if obj_type == "location":
+            return location_value(obj), _LOCATION_TYPE
 
         if obj_type in _SDO_TYPES:
             return str(obj.get("name") or ""), _SDO_TYPES[obj_type]
@@ -254,8 +362,19 @@ class Client(BaseClient):
 
         return "", ""
 
-    def call_api(self, end_point: str, params: dict | None = None):
-        """Trigger the HTTP GET request"""
+    def call_api(self, end_point: str, params: dict | None = None) -> dict:
+        """Perform a GET request with retries on transient gateway errors.
+
+        Args:
+            end_point: URL suffix appended to the base URL.
+            params: Optional query-string parameters.
+
+        Returns:
+            Decoded JSON body, or an empty dict when the response has no content.
+
+        Raises:
+            DemistoException: On HTTP errors (after retrying 502/503/504 up to 3 times).
+        """
         response = self._http_request(
             url_suffix=end_point,
             params=params,
@@ -264,64 +383,72 @@ class Client(BaseClient):
             retries=3,
             status_list_to_retry=(502, 503, 504),
             raise_on_status=True,
-            headers=self._headers,
         )
         if response.status_code == 200 and response.content:
             return response.json()
-
         return {}
 
     def _build_relationships(self, feed_rel_obj: dict, feed_objs: dict) -> dict:
-        source_id = feed_rel_obj.get("source_ref")
-        target_id = feed_rel_obj.get("target_ref")
+        """Convert a STIX relationship object into an XSOAR relationship.
 
-        source_obj = feed_objs.get(source_id)
-        target_obj = feed_objs.get(target_id)
+        Both entities are resolved with the same logic used to create the indicators
+        (so values/types match the created indicators). Fixes in this version:
+        the original used the *source's* type for the target, passed raw STIX type names
+        (e.g. "threat-actor") instead of XSOAR types, and crashed when a referenced object
+        was not part of the feed.
 
-        feed_rel_type = feed_rel_obj.get("relationship_type")
+        Args:
+            feed_rel_obj: STIX relationship object.
+            feed_objs: Mapping of STIX ID -> STIX object for all non-relationship objects.
 
-        source_value = source_obj.get("value") or source_obj.get("name")  # pyright: ignore
-        source_type = source_obj.get("type")  # pyright: ignore
+        Returns:
+            The relationship in indicator format, or an empty dict if it can't be built.
+        """
+        source_obj = feed_objs.get(feed_rel_obj.get("source_ref"))
+        target_obj = feed_objs.get(feed_rel_obj.get("target_ref"))
+        if not source_obj or not target_obj:
+            return {}
 
-        if source_type == "indicator":
-            feed_rel_type = EntityRelationship.Relationships.INDICATOR_OF
+        source_value, source_type = self._identify_feed_type(source_obj)
+        target_value, target_type = self._identify_feed_type(target_obj)
+        if not (source_value and source_type and target_value and target_type):
+            return {}
 
-        target_value = target_obj.get("value") or target_obj.get("name")  # pyright: ignore
-        target_type = source_obj.get("type")  # pyright: ignore
+        rel_type = feed_rel_obj.get("relationship_type") or ""
+        if source_obj.get("type") == "indicator":
+            rel_type = EntityRelationship.Relationships.INDICATOR_OF
+        else:
+            rel_type = _STIX_RELATIONSHIP_ALIASES.get(rel_type, rel_type)
+        if not rel_type:
+            return {}
 
-        if source_value and source_type and target_value and target_type:
-            return EntityRelationship(
-                name=feed_rel_type,
-                entity_a=source_value,
-                entity_a_type=source_type,
-                entity_b=target_value,
-                entity_b_type=target_type,
-            ).to_indicator()
-
-        return {}
-
-    def _fetch_file_hashes_formats(self, stix_pattern_val: str):
-        file_hash_values: dict[str, str] = {}
-
-        if not stix_pattern_val or "file:hashes." not in stix_pattern_val:
-            return file_hash_values
-
-        for key_, val_ in re.findall(r"file:hashes\.'?([\w-]+)'?\s*=\s*'([^']+)'", stix_pattern_val):
-            file_hash_values[key_] = val_
-
-        return file_hash_values
+        return EntityRelationship(
+            name=rel_type,
+            entity_a=source_value,
+            entity_a_type=source_type,
+            entity_b=target_value,
+            entity_b_type=target_type,
+        ).to_indicator()
 
     def _convert_threat_intel_obj(self, obj: dict, tlp_color: str, feed_reputation: str, feed_tags: list) -> dict:
-        value, ti_type = self._identify_feed_type(obj)  # unpack the tuple
+        """Convert a STIX object into an XSOAR indicator dict.
+
+        Args:
+            obj: STIX object.
+            tlp_color: Traffic Light Protocol color to set.
+            feed_reputation: Reputation to set (skipped when empty).
+            feed_tags: Tags to add (merged with the object's STIX labels, de-duplicated).
+
+        Returns:
+            The indicator dict, or an empty dict if the object type is unsupported.
+        """
+        value, ti_type = self._identify_feed_type(obj)
         if not (value and ti_type):
             return {}
 
-        ti_obj: dict[str, Any] = {}
         obj_type = obj.get("type")
-
-        confidence: int = obj.get("confidence", 0)
+        confidence = obj.get("confidence") or 0
         score, verdict = confidence_to_score(confidence)
-
         extensions = obj.get("extensions") or {}
 
         tags = list(dict.fromkeys([*(feed_tags or []), *[str(x) for x in _as_list(obj.get("labels"))]]))
@@ -353,36 +480,35 @@ class Client(BaseClient):
             ext: dict[str, Any] = extensions.get(_INDICATOR_EXTENSION_ID) or {}
 
             fields.update(parse_pattern(obj.get("pattern") or "")[2])
+            fields["geocountry"] = ext.get("country", "")
 
-            ti_obj["fields"]["geocountry"] = ext.get("country", "")
-
-            recommended_action: str = ext.get("recommended_action", "MONITOR")
+            recommended_action = str(first_of(ext, "recommended_action", "recommended_actions", default="MONITOR"))
             if recommended_action.upper() == "BLOCK":
-                ti_obj["fields"]["blocked"] = True
+                fields["blocked"] = True
 
         elif obj_type == "vulnerability":
             ext = extensions.get(_VUL_EXTENSION_ID) or {}
+            cvss_version = str(ext.get("cvss_version") or "")
 
-            ti_obj["fields"]["verdict"] = verdict
-            ti_obj["fields"]["score"] = score
-            ti_obj["fields"]["cvedescription"] = obj.get("description", "")
-            ti_obj["fields"]["cvemodified"] = obj.get("modified", "")
-
-            ti_obj["fields"]["cvssscore"] = ext.get("cvss_base_score", "")
-            ti_obj["fields"]["cvssvector"] = ext.get("cvss_vector", "")
-            ti_obj["fields"]["cvssversion"] = ext.get("cvss_version", "")
-
-            cvss_version = ext.get("cvss_version", "")
+            fields.update(
+                {
+                    "verdict": verdict,
+                    "score": score,
+                    "cvedescription": obj.get("description", ""),
+                    "cvemodified": obj.get("modified", ""),
+                    "cvssscore": ext.get("cvss_base_score", ""),
+                    "cvssvector": ext.get("cvss_vector", ""),
+                    "cvssversion": cvss_version,
+                }
+            )
 
             names = list(_CVSS_COMMON_METRICS)
-
-            if cvss_version and cvss_version[0] == "2":
+            if cvss_version.startswith("2"):
                 names += _CVSS_VERSION_METRICS_2
-            elif cvss_version and cvss_version[0] == "3":
+            elif cvss_version.startswith("3"):
                 names += _CVSS_VERSION_METRICS_3
 
             metrics = [{"metrics": m.replace("_", " ").capitalize(), "value": ext.get(m)} for m in names]
-
             for key, label in (
                 ("kev", "KEV"),
                 ("vendors", "Vendors"),
@@ -390,14 +516,8 @@ class Client(BaseClient):
                 ("technologies", "Technologies"),
             ):
                 if ext.get(key):
-                    metrics.append(
-                        {
-                            "metrics": label,
-                            "value": ", ".join(str(v) for v in _as_list(ext[key])),
-                        }
-                    )
-
-            ti_obj["fields"]["cvsstable"] = metrics
+                    metrics.append({"metrics": label, "value": ", ".join(str(v) for v in _as_list(ext[key]))})
+            fields["cvsstable"] = metrics
 
         elif obj_type == "location":
             ti_obj["score"] = 0
@@ -414,32 +534,43 @@ class Client(BaseClient):
 
         return ti_obj
 
-    def _fetch_all_pages(self, params: dict, path: str, feeds: list):
-        params["page"] = 0
-        while True:
-            response = self.call_api(path, params=params)
-            objects = (response or {}).get("objects") or []
+    def _fetch_all_pages(self, params: dict, path: str, feeds: list) -> None:
+        """Page through an endpoint (starting at page 0) until an empty page is returned.
 
+        Args:
+            params: Base query parameters; copied, so the caller's dict is not modified.
+            path: Endpoint to query.
+            feeds: List that the returned STIX objects are appended to.
+        """
+        request_params = {**params, "page": 0}
+        while True:
+            response = self.call_api(path, params=request_params)
+            objects = (response or {}).get("objects") or []
             if not objects:
                 break
-
             feeds.extend(objects)
+            request_params["page"] += 1
 
-            params["page"] += 1
+    def _fetch_threat_actors_data(self, ta_names: list, feeds: list) -> None:
+        """Enrich the feed with objects related to the given threat actors.
 
-    def _fecth_threat_actors_data(self, ta_names: list, feeds):
-        if ta_names:
-            for start in range(0, len(ta_names), 10):
-                chunk = ta_names[start : start + 10]
-                try:
-                    ta_res_data = self.call_api(_TA_SEARCH_API_PATHS, params={"values": chunk})
-                except Exception as e:
-                    demisto.error(f"Threat actor enrichment failed for {chunk}: {e}\n{traceback.format_exc()}")
-                    continue
+        Names are searched in chunks; a failing chunk is logged and skipped. Threat-actor
+        objects themselves are not re-added (they are already in the feed); related objects
+        and relationships are.
 
-                for obj in (ta_res_data or {}).get("objects") or []:
-                    if obj.get("type") != "threat-actor":
-                        feeds.append(obj)
+        Args:
+            ta_names: Threat actor names to look up.
+            feeds: List that the additional STIX objects are appended to.
+        """
+        for start in range(0, len(ta_names), TA_SEARCH_CHUNK_SIZE):
+            chunk = ta_names[start : start + TA_SEARCH_CHUNK_SIZE]
+            try:
+                ta_res_data = self.call_api(_TA_SEARCH_API_PATHS, params={"values": chunk})
+            except Exception as e:
+                demisto.error(f"Threat actor enrichment failed for {chunk}: {e}\n{traceback.format_exc()}")
+                continue
+
+            feeds.extend(obj for obj in (ta_res_data or {}).get("objects") or [] if obj.get("type") != "threat-actor")
 
     def get_feeds(
         self,
@@ -450,108 +581,102 @@ class Client(BaseClient):
         fetch_tailored_indicators: bool,
         fetch_tailored_vulnerabilities: bool,
     ) -> list:
+        """Fetch indicators and vulnerabilities and convert them (and relationships) to XSOAR format.
+
+        Args:
+            first_fetch: Look-back window in days.
+            tlp_color: TLP color applied to every indicator.
+            feed_reputation: Reputation applied to every indicator.
+            feed_tags: Tags applied to every indicator.
+            fetch_tailored_indicators: Use the tailored (org-specific) indicator endpoint instead of "all".
+            fetch_tailored_vulnerabilities: Use the tailored vulnerability endpoint instead of "all".
+
+        Returns:
+            List of XSOAR indicator dicts followed by relationship dicts.
+        """
         params = {
             "withRelationships": True,
             "lookBackDays": int(first_fetch),
             "delta": True,
         }
-        self._headers["X-Request-ID"] = str(uuid.uuid4())  # pyright: ignore
+        self._headers["X-Request-ID"] = str(uuid.uuid4())  # type: ignore[index]
 
-        ioc_suffix_path = _TAILORED_PATHS if fetch_tailored_indicators else _ALL_PATHS
-        vul_suffix_path = _TAILORED_PATHS if fetch_tailored_vulnerabilities else _ALL_PATHS
+        ioc_suffix = _TAILORED_PATHS if fetch_tailored_indicators else _ALL_PATHS
+        vul_suffix = _TAILORED_PATHS if fetch_tailored_vulnerabilities else _ALL_PATHS
 
-        indicator_path = f"{_IOC_API_PATHS}{ioc_suffix_path}"
-        vulnerability_path = f"{_VUL_API_PATHS}{vul_suffix_path}"
+        raw_ti_feeds: list = []
+        self._fetch_all_pages(params, f"{_IOC_API_PATHS}{ioc_suffix}", raw_ti_feeds)
+        self._fetch_all_pages(params, f"{_VUL_API_PATHS}{vul_suffix}", raw_ti_feeds)
 
-        raw_ti_feeds = []
+        # dict preserves order and gives O(1) de-duplication
+        ta_names = list(dict.fromkeys(f["name"] for f in raw_ti_feeds if f.get("type") == "threat-actor" and f.get("name")))
+        self._fetch_threat_actors_data(ta_names=ta_names, feeds=raw_ti_feeds)
 
-        self._fetch_all_pages(params, indicator_path, raw_ti_feeds)
-        self._fetch_all_pages(params, vulnerability_path, raw_ti_feeds)
-
-        ta_names = []
-        for f_obj in raw_ti_feeds:
-            name = f_obj.get("name")
-            if f_obj.get("type") == "threat-actor" and name and name not in ta_names:
-                ta_names.append(f_obj.get("name"))
-
-        self._fecth_threat_actors_data(ta_names=ta_names, feeds=raw_ti_feeds)
-
-        return_data = []
-        raw_rels = []
-        raw_feed_ids = {}
+        indicators: list = []
+        raw_rels: list = []
+        raw_feed_ids: dict[str, dict] = {}
 
         for f_obj in raw_ti_feeds:
             if f_obj.get("type") == "relationship":
                 raw_rels.append(f_obj)
-            else:
-                if f_obj.get("id") not in raw_feed_ids:
-                    raw_feed_ids[f_obj.get("id")] = f_obj
-                    ti_obj = self._convert_threat_intel_obj(
-                        obj=f_obj,
-                        tlp_color=tlp_color,
-                        feed_reputation=feed_reputation,
-                        feed_tags=feed_tags,
-                    )
-                    if ti_obj:
-                        return_data.append(ti_obj)
+                continue
+            obj_id = f_obj.get("id")
+            if obj_id in raw_feed_ids:
+                continue
+            raw_feed_ids[obj_id] = f_obj
+            ti_obj = self._convert_threat_intel_obj(
+                obj=f_obj,
+                tlp_color=tlp_color,
+                feed_reputation=feed_reputation,
+                feed_tags=feed_tags,
+            )
+            if ti_obj:
+                indicators.append(ti_obj)
 
-        rel_data = []
-        for rel in raw_rels:
-            relationship = self._build_relationships(feed_rel_obj=rel, feed_objs=raw_feed_ids)
-            if relationship:
-                rel_data.append(relationship)
-
-        return_data.extend(rel_data)
-        return return_data
+        relationships = (self._build_relationships(rel, raw_feed_ids) for rel in raw_rels)
+        indicators.extend(rel for rel in relationships if rel)
+        return indicators
 
 
 def test_module(
     client: Client,
-    fetch_tailored_indicators,
-    fetch_tailored_vulnerabilities,
-    first_fetch,
+    fetch_tailored_indicators: bool,
+    fetch_tailored_vulnerabilities: bool,
+    first_fetch: int,
 ) -> str:
-    try:
-        if not fetch_tailored_indicators or not fetch_tailored_vulnerabilities:
-            if first_fetch > 2:
-                return "If tailored indicator or vulnerablities false, must be not greater that 2 days look back histories data for indicator and vunerablities. Please set it out 0 to 2 days"
+    """Validate parameters, connectivity, credentials and that the organization is active.
 
-        res: dict = client.call_api(end_point=_TEST_PATH)
+    Args:
+        client: Configured API client.
+        fetch_tailored_indicators: Whether tailored indicators are enabled.
+        fetch_tailored_vulnerabilities: Whether tailored vulnerabilities are enabled.
+        first_fetch: Look-back window in days.
+
+    Returns:
+        "ok" on success, otherwise a message describing the problem.
+
+    Raises:
+        DemistoException: For errors other than authorization failures.
+    """
+    if (not fetch_tailored_indicators or not fetch_tailored_vulnerabilities) and first_fetch > MAX_DAYS_WITHOUT_TAILORING:
+        return (
+            "When tailored indicators or tailored vulnerabilities is disabled, the look-back period "
+            f"must not be greater than {MAX_DAYS_WITHOUT_TAILORING} days. "
+            f"Please set it between 0 and {MAX_DAYS_WITHOUT_TAILORING} days."
+        )
+
+    try:
+        res = client.call_api(end_point=_TEST_PATH)
     except DemistoException as e:
         if "Forbidden" in str(e) or "Unauthorized" in str(e):
             return "Authorization Error: make sure API Key is correctly set"
-        raise e
+        raise
 
-    if res is None or res == {}:
+    if not res or not res.get("isOrgActive", False):
         return "Not Authorized"
-
-    org_active: bool = res.get("isOrgActive", False)
-    if not org_active:
+    if "isCompanyActive" in res and not res.get("isCompanyActive", False):
         return "Not Authorized"
-
-    if "isCompanyActive" in res:
-        company_active: bool = res.get("isCompanyActive", False)
-        if not company_active:
-            return "Not Authorized"
-
     return "ok"
-
-
-def extract_value(pattern: str) -> str:
-    match = re.search(r"'([^']+)'", pattern or "")
-    return match.group(1) if match else ""
-
-
-def get_type(pattern: str) -> str:
-    if "ipv4-addr" in pattern:
-        return "IP"
-    elif "domain-name" in pattern:
-        return "Domain"
-    elif "url" in pattern:
-        return "URL"
-    elif "file:hashes" in pattern:
-        return "File"
-    return "Unknown"
 
 
 def fetch_feeds(
@@ -562,7 +687,21 @@ def fetch_feeds(
     feed_tags: list,
     fetch_tailored_indicators: bool,
     fetch_tailored_vulnerabilities: bool,
-):
+) -> None:
+    """Command ``fetch-indicators``: fetch feeds and create indicators in batches.
+
+    Args:
+        client: Configured API client.
+        first_fetch: Look-back window in days.
+        tlp_color: TLP color applied to every indicator.
+        feed_reputation: Reputation applied to every indicator.
+        feed_tags: Tags applied to every indicator.
+        fetch_tailored_indicators: Use the tailored indicator endpoint.
+        fetch_tailored_vulnerabilities: Use the tailored vulnerability endpoint.
+
+    Raises:
+        Exception: Any error is logged (with traceback) and re-raised.
+    """
     try:
         indicators = client.get_feeds(
             first_fetch=first_fetch,
@@ -572,295 +711,293 @@ def fetch_feeds(
             fetch_tailored_indicators=fetch_tailored_indicators,
             fetch_tailored_vulnerabilities=fetch_tailored_vulnerabilities,
         )
-        for ioc in batch(indicators, batch_size=2500):
+        for ioc in batch(indicators, batch_size=INDICATOR_BATCH_SIZE):
             demisto.createIndicators(ioc)
-
     except Exception as e:
         demisto.error(f"Error at fetch_feeds: {e}\nTraceback: {traceback.format_exc()}")
-        raise e
+        raise
 
 
-def build_result(data: List[dict], data_type: str, title: str):
+def _indicator_row_output(ti_data: dict, ext: dict, score: int, confidence: int) -> tuple[dict, dict]:
+    """Build the table row and context entry for an indicator search result."""
+    ioc_type, value, _ = parse_pattern(ti_data.get("pattern") or "")
+    value_type = ioc_type or "Unknown"
+    vendors = ext.get("security_vendors", {})
+    country = ext.get("country", "")
+    threat_actor = first_of(ext, "threat_actors", "threat_actor", default="")
+
+    row = {
+        "Value": value,
+        "Type": value_type,
+        "Score": score,
+        "Country": country,
+        "Threat Actor": threat_actor,
+        "Action": first_of(ext, "recommended_actions", "recommended_action"),
+        "Role": ext.get("roles"),
+        "Confidence": confidence,
+        "Description": ti_data.get("description"),
+        "vendors": vendors,
+    }
+    output = {
+        "value": value,
+        "type": value_type,
+        "score": score,
+        "country": country,
+        "threat_actor": threat_actor,
+        "vendors": vendors,
+    }
+    return row, output
+
+
+def _vulnerability_row_output(ti_data: dict, ext: dict, score: int, confidence: int) -> tuple[dict, dict]:
+    """Build the table row and context entry for a vulnerability search result."""
+    value = ti_data.get("name", "")
+    row: dict[str, Any] = {
+        "Value": value,
+        "Type": "CVE",
+        "Score": score,
+        "Country": ext.get("country", ""),
+        "Confidence": confidence,
+        "Description": ti_data.get("description"),
+    }
+    output: dict[str, Any] = {
+        "value": value,
+        "type": "CVE",
+        "score": score,
+        "confidence": confidence,
+    }
+    for label, key, default in _VUL_COLUMNS:
+        row[label] = ext.get(key, default)
+        output[key] = ext.get(key, default)
+    return row, output
+
+
+def _simple_row_output(
+    ti_data: dict,
+    ext: dict,
+    score: int,
+    confidence: int,
+    data_type: str,
+    columns: list[tuple[str, str]],
+    extra_output_keys: tuple[str, ...] = (),
+) -> tuple[dict, dict]:
+    """Build the table row and context entry for threat-actor / malware search results.
+
+    Args:
+        ti_data: STIX object.
+        ext: The object's extension-definition data.
+        score: XSOAR score.
+        confidence: STIX confidence.
+        data_type: LABEL_THREAT_ACTOR or LABEL_MALWARE.
+        columns: ``(table label, extension key)`` pairs to include.
+        extra_output_keys: Additional extension keys to add to the context entry only.
+    """
+    value = ti_data.get("name", "")
+    row: dict[str, Any] = {
+        "Value": value,
+        "Type": data_type,
+        "Score": score,
+        "Confidence": confidence,
+        "Description": ti_data.get("description"),
+    }
+    output: dict[str, Any] = {"value": value, "type": data_type, "score": score}
+    for label, key in columns:
+        row[label] = ext.get(key, "")
+        output[key] = ext.get(key, "")
+    for key in extra_output_keys:
+        output[key] = ext.get(key, "")
+    return row, output
+
+
+def build_result(data: list[dict], data_type: str, title: str) -> CommandResults:
+    """Format STIX search results as a markdown table and context outputs.
+
+    Args:
+        data: STIX objects returned by the API.
+        data_type: One of LABEL_INDICATOR, LABEL_VULNERABILITY, LABEL_THREAT_ACTOR, LABEL_MALWARE.
+        title: Title of the markdown table.
+
+    Returns:
+        CommandResults with the table and ``CYFIRMA.*`` context output.
+
+    Raises:
+        ValueError: If ``data_type`` is not supported.
+    """
     if not data:
         return CommandResults(readable_output="For current request no data found.")
-    table_data = []
-    outputs = []
+    if data_type not in _OUTPUT_PREFIXES:
+        raise ValueError(f"Invalid data type: {data_type}")
 
     ext_id = get_ti_ext_id(data_type)
+    table_data, outputs = [], []
 
     for ti_data in data:
-        ext: dict[str, Any] = ti_data.get("extensions", {}).get(ext_id, {})
-        confidence = ti_data.get("confidence", 0)
-        score = 1
-        if confidence >= 80:
-            score = 3
-        elif confidence >= 50:
-            score = 2
+        ext: dict[str, Any] = (ti_data.get("extensions") or {}).get(ext_id) or {}
+        confidence = ti_data.get("confidence") or 0
+        score, _ = confidence_to_score(confidence)
 
         if data_type == LABEL_INDICATOR:
-            pattern = ti_data.get("pattern", "")
-            value_type = get_type(pattern)
-            value = extract_value(pattern)
-            vendors = ext.get("security_vendors", {})
-
-            # -------- Human Readable Row --------
-            row = {
-                "Value": value,
-                "Type": value_type,
-                "Score": score,
-                "Country": ext.get("country", ""),
-                "Threat Actor": ext.get("threat_actors", ""),
-                "Action": ext.get("recommended_actions"),
-                "Role": ext.get("roles"),
-                "Confidence": confidence,
-                "Description": ti_data.get("description"),
-                "vendors": vendors,
-            }
-            # -------- Context Output --------
-            outputs.append(
-                {
-                    "value": value,
-                    "type": value_type,
-                    "score": score,
-                    "country": ext.get("country", ""),
-                    "threat_actor": ext.get("threat_actors", ""),
-                    "vendors": vendors,
-                }
-            )
-
+            row, output = _indicator_row_output(ti_data, ext, score, confidence)
         elif data_type == LABEL_VULNERABILITY:
-            value = ti_data.get("name", "")
-            value_type = "CVE"
-
-            row = {
-                "Value": value,
-                "Type": value_type,
-                "Score": score,
-                "Country": ext.get("country", ""),
-                "Confidence": confidence,
-                "Description": ti_data.get("description"),
-                "Attack Complexity": ext.get("attack_complexity", ""),
-                "Integrity Impact": ext.get("integrity_impact", ""),
-                "Impact Score": ext.get("impact_score", ""),
-                "CVSS Version": ext.get("cvss_version", "0.0"),
-                "CVSS Base Score": ext.get("cvss_base_score", "0.0"),
-                "Exploitability Score": ext.get("exploitability_score", "0.0"),
-                "Attack Vector": ext.get("attack_vector", ""),
-                "Privileges Required": ext.get("privileges_required", ""),
-                "Availability Impact": ext.get("availability_impact", ""),
-                "User Interaction": ext.get("user_interaction", ""),
-                "CVSS Vector": ext.get("cvss_vector"),
-                "Scope": ext.get("scope", ""),
-                "Confidentiality Impact": ext.get("confidentiality_impact", ""),
-                "Vendors": ext.get("vendors", []),
-            }
-
-            outputs.append(
-                {
-                    "value": value,
-                    "type": value_type,
-                    "score": score,
-                    "confidence": confidence,
-                    "attack_complexity": ext.get("attack_complexity", ""),
-                    "integrity_impact": ext.get("integrity_impact", ""),
-                    "impact_score": ext.get("impact_score", ""),
-                    "cvss_version": ext.get("cvss_version", "0.0"),
-                    "cvss_base_score": ext.get("cvss_base_score", "0.0"),
-                    "exploitability_score": ext.get("exploitability_score", "0.0"),
-                    "attack_vector": ext.get("attack_vector", ""),
-                    "privileges_required": ext.get("privileges_required", ""),
-                    "availability_impact": ext.get("availability_impact", ""),
-                    "user_interaction": ext.get("user_interaction", ""),
-                    "cvss_vector": ext.get("cvss_vector"),
-                    "scope": ext.get("scope", ""),
-                    "confidentiality_impact": ext.get("confidentiality_impact", ""),
-                    "vendors": ext.get("vendors", []),
-                }
-            )
+            row, output = _vulnerability_row_output(ti_data, ext, score, confidence)
         elif data_type == LABEL_THREAT_ACTOR:
-            value = ti_data.get("name", "")
-            row = {
-                "Value": value,
-                "Type": LABEL_THREAT_ACTOR,
-                "Score": score,
-                "Confidence": confidence,
-                "Description": ti_data.get("description"),
-                "Origin of Country": ext.get("origin_of_country", ""),
-                "Target Countries": ext.get("target_countries", ""),
-                "Motivation": ext.get("motivation", ""),
-                "Target Technologies": ext.get("target_technologies", ""),
-                "Target Industries": ext.get("target_industries", ""),
-                "Associated Malware": ext.get("associated_malware", ""),
-                "Associated Campaigns": ext.get("associated_campaigns", ""),
-            }
-            outputs.append(
-                {
-                    "value": value,
-                    "type": LABEL_THREAT_ACTOR,
-                    "score": score,
-                    "origin_of_country": ext.get("origin_of_country", ""),
-                    "target_countries": ext.get("target_countries", ""),
-                    "motivation": ext.get("motivation", ""),
-                    "associated_malware": ext.get("associated_malware", ""),
-                    "target_technologies": ext.get("target_technologies", ""),
-                    "target_industries": ext.get("target_industries", ""),
-                    "associated_campaigns": ext.get("associated_campaigns", ""),
-                }
-            )
-        elif data_type == LABEL_MALWARE:
-            value = ti_data.get("name", "")
-            row = {
-                "Value": value,
-                "Type": LABEL_MALWARE,
-                "Score": score,
-                "Confidence": confidence,
-                "Description": ti_data.get("description"),
-                "Target Technologies": ext.get("target_technologies", ""),
-                "Target Industries": ext.get("target_industries", ""),
-                "Target Countries": ext.get("target_countries", ""),
-            }
-            outputs.append(
-                {
-                    "value": value,
-                    "type": LABEL_MALWARE,
-                    "score": score,
-                    "country": ext.get("country", ""),
-                    "threat_actor": ext.get("threat_actors", ""),
-                    "target_technologies": ext.get("target_technologies", ""),
-                    "target_industries": ext.get("target_industries", ""),
-                    "target_countries": ext.get("target_countries", ""),
-                }
-            )
+            row, output = _simple_row_output(ti_data, ext, score, confidence, LABEL_THREAT_ACTOR, _TA_COLUMNS)
         else:
-            raise ValueError(f"Invalid data type: {data_type}")
+            row, output = _simple_row_output(
+                ti_data,
+                ext,
+                score,
+                confidence,
+                LABEL_MALWARE,
+                _MALWARE_COLUMNS,
+                extra_output_keys=("country", "threat_actors"),
+            )
 
         table_data.append(row)
-
-    human_readable = tableToMarkdown(title, table_data, removeNull=True)
+        outputs.append(output)
 
     return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix=_OUTPUT_PREFIXES.get(data_type, ""),
+        readable_output=tableToMarkdown(title, table_data, removeNull=True),
+        outputs_prefix=_OUTPUT_PREFIXES[data_type],
         outputs_key_field="value",
         outputs=outputs,
         raw_response=data,
     )
 
 
-def fetch_feeds_by_type(client: Client, feed_type: str):
-    try:
-        params = {"types": [feed_type]}
+def fetch_feeds_by_type(client: Client, feed_type: str) -> CommandResults:
+    """Commands ``cyfirma-ip/domain/url/file-get``: list indicators of one observable type.
 
-        response = client.call_api(_IOC_API_PATHS, params=params)
-        return response.get("objects", [])
+    The original returned the raw object list to ``return_results``; it now returns
+    formatted CommandResults like the search commands.
+
+    Args:
+        client: Configured API client.
+        feed_type: Indicator type to query ("ip", "domain", "url" or "file").
+
+    Returns:
+        CommandResults built by ``build_result``.
+
+    Raises:
+        Exception: Errors are logged (with traceback) and re-raised.
+    """
+    try:
+        response = client.call_api(_IOC_API_PATHS, params={"types": [feed_type]})
+        return build_result(
+            data=response.get("objects", []),
+            data_type=LABEL_INDICATOR,
+            title=f"CYFIRMA Indicators - Type: {feed_type}",
+        )
     except Exception as e:
         demisto.error(f"Error at fetch_feeds_by_type: {e}\nTraceback: {traceback.format_exc()}")
-        raise e
+        raise
 
 
-def feed_search(client: Client, search_type: str, args: dict):
-    """Feed search by indicator type based"""
+def feed_search(client: Client, search_type: str, args: dict) -> CommandResults:
+    """Search CYFIRMA data by value for a given object type.
+
+    Args:
+        client: Configured API client.
+        search_type: LABEL_INDICATOR, LABEL_THREAT_ACTOR, LABEL_MALWARE or LABEL_VULNERABILITY.
+        args: Command args; ``value`` (required) is the value to search for.
+
+    Returns:
+        CommandResults with the search results, or a "no results" message.
+
+    Raises:
+        ValueError: If ``value`` is missing or ``search_type`` is invalid.
+    """
     search_value = args.get("value")
     if not search_value:
         raise ValueError("Missing required argument: value")
-
-    params = {"value": [search_value]}
-
-    if search_type == LABEL_INDICATOR:
-        path = f"{_IOC_SEARCH_API_PATHS}"
-        title_type = LABEL_INDICATOR
-    elif search_type == LABEL_THREAT_ACTOR:
-        path = f"{_TA_SEARCH_API_PATHS}"
-        params = {"values": [search_value]}
-        title_type = LABEL_THREAT_ACTOR
-    elif search_type == LABEL_MALWARE:
-        path = f"{_MALWARE_SEARCH_API_PATHS}"
-        title_type = LABEL_MALWARE
-    elif search_type == LABEL_VULNERABILITY:
-        path = f"{_VUL_SEARCH_API_PATHS}"
-        title_type = LABEL_VULNERABILITY
-    else:
+    if search_type not in _SEARCH_CONFIG:
         raise ValueError(f"Invalid search type: {search_type}")
 
-    title = f"Search Results for {title_type} with value: {search_value}"
-
-    search_response = client.call_api(end_point=path, params=params)
+    path, param_name = _SEARCH_CONFIG[search_type]
+    search_response = client.call_api(end_point=path, params={param_name: [search_value]})
 
     if not search_response or "objects" not in search_response:
         return CommandResults(readable_output="No results found for the given search criteria.")
 
     return build_result(
         data=search_response.get("objects", []),
-        data_type=title_type,
-        title=title,
+        data_type=search_type,
+        title=f"Search Results for {search_type} with value: {search_value}",
     )
 
 
-def main():
+def main() -> None:
+    """Read integration parameters, build the client and dispatch the invoked command."""
     params = demisto.params()
+    command = demisto.command()
+
     api_url = params.get("url", "").rstrip("/")
-    api_key = params.get("api_key", {}).get("password")
+    api_key = (params.get("api_key") or {}).get("password")
+    if not api_url or not api_key:
+        return_error("Server URL and API Key are required.")
 
     verify_cert = not argToBoolean(params.get("insecure", False))
-    first_fetch = int(params.get("first_fetch", "60").strip().replace(" days", ""))
     proxy = argToBoolean(params.get("proxy", False))
+    first_fetch = _parse_days(params.get("first_fetch"))
 
     feed_tags = argToList(params.get("feedTags"))
-    tlp_color = params.get("tlp_color")
-    feed_reputation = params.get("feedReputation")
+    tlp_color = params.get("tlp_color") or ""
+    feed_reputation = params.get("feedReputation") or ""
     fetch_tailored_indicators = argToBoolean(params.get("fetchTailoredIndicators", True))
     fetch_tailored_vulnerabilities = argToBoolean(params.get("fetchTailoredVulnerability", True))
 
-    base_url = urljoin(api_url, _BASE_PREFIX_PATH)
-    command = demisto.command()
-    headers = {"X-Api-Key": api_key, "X-App-Name": "PALO_ALTO_XSOAR_V2_TI"}
+    demisto.info(f"Command being called is {command}")
 
-    demisto.info(f"Command being called is {demisto.command()}")
+    type_commands = {
+        "cyfirma-ip-get": "ip",
+        "cyfirma-domain-get": "domain",
+        "cyfirma-url-get": "url",
+        "cyfirma-file-get": "file",
+    }
+    search_commands = {
+        "cyfirma-ioc-search-get": LABEL_INDICATOR,
+        "cyfirma-threat-actor-search-get": LABEL_THREAT_ACTOR,
+        "cyfirma-malware-search-get": LABEL_MALWARE,
+        "cyfirma-vulnerability-search-get": LABEL_VULNERABILITY,
+    }
 
     try:
-        client = Client(base_url=base_url, verify=verify_cert, headers=headers, proxy=proxy)
-        args = demisto.args()
+        client = Client(
+            base_url=urljoin(api_url, _BASE_PREFIX_PATH),
+            verify=verify_cert,
+            headers={"X-Api-Key": api_key, "X-App-Name": "PALO_ALTO_XSOAR_V2_TI"},
+            proxy=proxy,
+        )
 
         if command == "test-module":
-            result = test_module(
-                client,
-                fetch_tailored_indicators=fetch_tailored_indicators,
-                fetch_tailored_vulnerabilities=fetch_tailored_vulnerabilities,
-                first_fetch=first_fetch,
+            # The original also called demisto.results(), which duplicated the output.
+            return_results(
+                test_module(
+                    client,
+                    fetch_tailored_indicators=fetch_tailored_indicators,
+                    fetch_tailored_vulnerabilities=fetch_tailored_vulnerabilities,
+                    first_fetch=first_fetch,
+                )
             )
-            demisto.results(result)
-            return_results(result)
         elif command == "fetch-indicators":
             fetch_feeds(
                 client=client,
                 first_fetch=first_fetch,
-                tlp_color=tlp_color or "",
-                feed_reputation=feed_reputation or "",
+                tlp_color=tlp_color,
+                feed_reputation=feed_reputation,
                 feed_tags=feed_tags,
                 fetch_tailored_indicators=fetch_tailored_indicators,
                 fetch_tailored_vulnerabilities=fetch_tailored_vulnerabilities,
             )
-        elif demisto.command() == "cyfirma-ip-get":
-            return_results(fetch_feeds_by_type(client, "ip"))
-        elif demisto.command() == "cyfirma-domain-get":
-            return_results(fetch_feeds_by_type(client, "domain"))
-        elif demisto.command() == "cyfirma-url-get":
-            return_results(fetch_feeds_by_type(client, "url"))
-        elif demisto.command() == "cyfirma-file-get":
-            return_results(fetch_feeds_by_type(client, "file"))
-        elif demisto.command() == "cyfirma-ioc-search-get":
-            return_results(feed_search(client, LABEL_INDICATOR, args))
-        elif demisto.command() == "cyfirma-threat-actor-search-get":
-            return_results(feed_search(client, LABEL_THREAT_ACTOR, args))
-        elif demisto.command() == "cyfirma-malware-search-get":
-            return_results(feed_search(client, LABEL_MALWARE, args))
-        elif demisto.command() == "cyfirma-vulnerability-search-get":
-            return_results(feed_search(client, LABEL_VULNERABILITY, args))
+        elif command in type_commands:
+            return_results(fetch_feeds_by_type(client, type_commands[command]))
+        elif command in search_commands:
+            return_results(feed_search(client, search_commands[command], demisto.args()))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
