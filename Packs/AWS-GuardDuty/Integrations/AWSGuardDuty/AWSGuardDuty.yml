@@ -115,6 +115,7 @@ configuration:
   - Low
   - Medium
   - High
+  - Critical
   required: false
 - display: Archive findings After Fetch
   name: is_archive
