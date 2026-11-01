@@ -1793,7 +1793,7 @@ def main():
     base_url = params.get("url").strip("/")
 
     cache = get_integration_context()
-    if not cache.get("fieldValueList") or not cache.get("fieldValueNames"):
+    if "fieldValueList" not in cache or "fieldValueNames" not in cache:
         cache.setdefault("fieldValueList", {})
         cache.setdefault("fieldValueNames", {})
         merge_integration_context(cache)
