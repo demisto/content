@@ -9514,8 +9514,10 @@ class SSM:
 
         response = serialize_response_with_datetime_encoding(response)
         parameters = response.get("Parameters", [])
+        next_token = response.get("NextToken")
 
-        if not parameters:
+        # With filters, AWS can return an empty page that still has a NextToken, so only stop when both are missing.
+        if not parameters and not next_token:
             return CommandResults(readable_output="No SSM parameters found.")
 
         headers = [
@@ -9537,8 +9539,8 @@ class SSM:
 
         # Outputs are intentionally not cleaned, so a missing NextToken is written as null and clears a stale token.
         outputs = {
-            "AWS.SSM.Parameters(val.Name && val.Name == obj.Name)": parameters,
-            "AWS.SSM(true)": {"ParametersNextToken": response.get("NextToken")},
+            "AWS.SSM.Parameters(val.ARN && val.ARN == obj.ARN)": parameters,
+            "AWS.SSM(true)": {"ParametersNextToken": next_token},
         }
 
         return CommandResults(

@@ -16846,7 +16846,7 @@ def test_parameters_list_command_success(mocker):
     assert "AWS SSM Parameters" in result.readable_output
     assert "/prod/db/password" in result.readable_output
     assert "Tags" not in result.readable_output
-    assert result.outputs["AWS.SSM.Parameters(val.Name && val.Name == obj.Name)"][1]["Name"] == "/prod/app/region"
+    assert result.outputs["AWS.SSM.Parameters(val.ARN && val.ARN == obj.ARN)"][1]["Name"] == "/prod/app/region"
     assert result.outputs["AWS.SSM(true)"]["ParametersNextToken"] == "param-tok"
     mock_client.describe_parameters.assert_called_once_with(MaxResults=50)
     mock_client.list_tags_for_resource.assert_not_called()
@@ -16884,6 +16884,29 @@ def test_parameters_list_command_no_parameters(mocker):
     result = SSM.parameters_list_command(mock_client, {"account_id": "123456789012", "region": "us-east-1"})
 
     assert result.readable_output == "No SSM parameters found."
+
+
+def test_parameters_list_command_empty_page_with_next_token(mocker):
+    """
+    Given: A mocked SSM client returning an empty Parameters list together with a NextToken.
+    When: parameters_list_command is called.
+    Then: It does not stop with "No SSM parameters found." and returns the NextToken so the next page can be requested.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_parameters.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Parameters": [],
+        "NextToken": "next-page-tok",
+    }
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    result = SSM.parameters_list_command(mock_client, {"account_id": "123456789012", "region": "us-east-1"})
+
+    assert result.readable_output != "No SSM parameters found."
+    assert result.outputs["AWS.SSM.Parameters(val.ARN && val.ARN == obj.ARN)"] == []
+    assert result.outputs["AWS.SSM(true)"] == {"ParametersNextToken": "next-page-tok"}
 
 
 def test_parameters_list_command_with_filters_and_pagination(mocker):
@@ -16938,7 +16961,7 @@ def test_parameters_list_command_with_tags(mocker):
 
     assert mock_client.list_tags_for_resource.call_count == 2
     mock_client.list_tags_for_resource.assert_called_with(ResourceType="Parameter", ResourceId="/prod/app/region")
-    parameters = result.outputs["AWS.SSM.Parameters(val.Name && val.Name == obj.Name)"]
+    parameters = result.outputs["AWS.SSM.Parameters(val.ARN && val.ARN == obj.ARN)"]
     assert all(parameter["Tags"] == [{"Key": "Env", "Value": "Production"}] for parameter in parameters)
     assert "Tags" in result.readable_output
 
