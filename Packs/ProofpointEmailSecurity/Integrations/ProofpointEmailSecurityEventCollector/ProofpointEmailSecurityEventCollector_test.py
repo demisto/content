@@ -298,10 +298,12 @@ def test_route_websockets_logs_to_debug(mocker, capfd, caplog):
     Then:
         - The record is sent to demisto.debug and nothing is written to stderr.
         - Only one handler is attached.
+        - The library's DEBUG records (handshake headers and per-frame noise) are not logged.
     """
     websockets_logger = logging.getLogger("websockets.sync.connection")
     parent_logger = logging.getLogger(ProofpointEmailSecurityEventCollector.WEBSOCKETS_LOGGER_NAME)
     original_handlers, original_propagate = list(parent_logger.handlers), parent_logger.propagate
+    original_level = parent_logger.level
     parent_logger.handlers = []
     parent_logger.propagate = True
     debug_mock = mocker.patch.object(demisto, "debug")
@@ -309,6 +311,7 @@ def test_route_websockets_logs_to_debug(mocker, capfd, caplog):
         ProofpointEmailSecurityEventCollector.route_websockets_logs_to_debug()
         ProofpointEmailSecurityEventCollector.route_websockets_logs_to_debug()
         caplog.clear()
+        logging.getLogger("websockets.client").debug("> %s: %s", "Authorization", "Bearer secret-api-key")
         try:
             raise TimeoutError("timed out while closing connection")
         except TimeoutError:
@@ -318,10 +321,13 @@ def test_route_websockets_logs_to_debug(mocker, capfd, caplog):
         assert parent_logger.propagate is False
         assert caplog.records == []  # nothing reached the root logger (and its stderr last-resort handler)
         assert any("keepalive ping failed" in call.args[0] for call in debug_mock.call_args_list)
+        assert not any("secret-api-key" in str(call.args) for call in debug_mock.call_args_list)
+        assert parent_logger.level == logging.INFO
         assert capfd.readouterr().err == ""
     finally:
         parent_logger.handlers = original_handlers
         parent_logger.propagate = original_propagate
+        parent_logger.setLevel(original_level)
 
 
 def test_recovering_execution(mocker, connection):

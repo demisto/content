@@ -43,8 +43,10 @@ def route_websockets_logs_to_debug() -> None:
 
     Without a handler, Python's last-resort handler writes these records to stderr. Any stderr output makes the
     platform mark the long-running execution as failed, even when the integration recovers from the error.
+    The level is capped at INFO to avoid logging the library's DEBUG records (handshake headers and per-frame noise).
     """
     websockets_logger = logging.getLogger(WEBSOCKETS_LOGGER_NAME)
+    websockets_logger.setLevel(logging.INFO)
     if any(isinstance(handler, DemistoHandler) for handler in websockets_logger.handlers):
         return
     handler = DemistoHandler()
