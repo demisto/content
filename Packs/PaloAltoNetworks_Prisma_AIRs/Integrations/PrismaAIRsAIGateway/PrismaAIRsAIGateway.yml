@@ -1420,7 +1420,7 @@ script:
     - name: workspaces
       description: 'A JSON array of workspace bindings, each: {"id": ..., "enabled": true|false}.'
     - name: global_workspace_access
-      description: 'A JSON object toggling global workspace access, e.g. {"enabled": false}.'
+      description: 'A JSON object that toggles global workspace access, for example, {"enabled": false}.'
     - name: override_existing_workspace_access
       description: Whether to replace existing workspace access rather than merge.
       auto: PREDEFINED
