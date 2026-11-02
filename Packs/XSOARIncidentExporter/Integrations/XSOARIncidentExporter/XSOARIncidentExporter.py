@@ -42,55 +42,11 @@ class XSIAMClient(BaseClient):
         }
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
-    def _http_request(
-        self,
-        method,
-        url_suffix="",
-        full_url=None,
-        headers=None,
-        auth=None,
-        json_data=None,
-        params=None,
-        data=None,
-        files=None,
-        timeout=None,
-        resp_type="json",
-        ok_codes=None,
-        return_empty_response=False,
-        retries=MAX_RETRIES,
-        status_list_to_retry=None,
-        backoff_factor=BACKOFF_FACTOR,
-        raise_on_redirect=True,
-        raise_on_status=True,
-        error_handler=None,
-        empty_valid_codes=None,
-        **kwargs,
-    ) -> Any:
-        if status_list_to_retry is None:
-            status_list_to_retry = [429]
-        return super()._http_request(
-            method=method,
-            url_suffix=url_suffix,
-            full_url=full_url,
-            headers=headers,
-            auth=auth,
-            json_data=json_data,
-            params=params,
-            data=data,
-            files=files,
-            timeout=timeout,
-            resp_type=resp_type,
-            ok_codes=ok_codes,
-            return_empty_response=return_empty_response,
-            retries=retries,
-            status_list_to_retry=status_list_to_retry,
-            backoff_factor=backoff_factor,
-            raise_on_redirect=raise_on_redirect,
-            raise_on_status=raise_on_status,
-            error_handler=error_handler,
-            empty_valid_codes=empty_valid_codes,
-            **kwargs,
-        )
+    def _http_request(self, *args, **kwargs) -> Any:  # type: ignore[override]
+        kwargs.setdefault("retries", MAX_RETRIES)
+        kwargs.setdefault("backoff_factor", BACKOFF_FACTOR)
+        kwargs.setdefault("status_list_to_retry", [429])
+        return super()._http_request(*args, **kwargs)
 
     def insert_parsed_alerts(self, alerts: list) -> dict:
         body = {"request_data": {"alerts": alerts}}
@@ -980,8 +936,7 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == "test-module":
-            result = test_module(xsiam_client, xsoar_client)
-            return_results(result)
+            return_results(test_module(xsiam_client, xsoar_client))
         elif command == "xsoar-exporter-push-incidents":
             result = push_incidents_command(
                 xsiam_client,
