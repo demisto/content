@@ -1,0 +1,17 @@
+{
+    "result": [
+        {
+            "_id": "019888fb-f0eb-4d4f-806e-ac0f066201eb",
+            "client_version": "135.1.10.2611",
+            "nsdeviceuid": "416012FE-E4CD-860D-0DAE-A6432CB21A76",
+            "hostname": "nskp-w11-joe-3",
+            "os": "Windows"
+        }
+    ],
+    "status": {
+        "count": 1,
+        "execution": "SUCCESS",
+        "message": "Executed Successfully",
+        "status_code": 200
+    }
+}
