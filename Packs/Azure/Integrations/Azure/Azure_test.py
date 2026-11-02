@@ -42,6 +42,10 @@ from Azure import (
     CommandResults,
     DemistoException,
     API_VERSION,
+    NSG_API_VERSION,
+    PUBLIC_IP_API_VERSION,
+    BLOB_SERVICE_API_VERSION,
+    RESOURCE_GROUPS_API_VERSION,
     SCOPE_BY_CONNECTION,
     PREFIX_URL_AZURE,
     storage_container_property_get_command,
@@ -2065,8 +2069,72 @@ def test_azure_client_get_rule(mocker, client):
         f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
         "securityRules/test-rule"
     )
-    client.http_request.assert_called_once_with("GET", full_url=expected_url)
+    client.http_request.assert_called_once_with("GET", full_url=expected_url, params={"api-version": NSG_API_VERSION})
     assert result == mock_response
+
+
+@pytest.mark.parametrize(
+    "method_name, kwargs, expected_api_version",
+    [
+        (
+            "create_or_update_rule",
+            {"security_group": "sg", "rule_name": "r", "properties": {}, "subscription_id": "s", "resource_group_name": "rg"},
+            NSG_API_VERSION,
+        ),
+        (
+            "get_rule",
+            {"security_group": "sg", "rule_name": "r", "subscription_id": "s", "resource_group_name": "rg"},
+            NSG_API_VERSION,
+        ),
+        (
+            "list_security_rules",
+            {"subscription_id": "s", "resource_group_name": "rg", "network_security_group_name": "sg"},
+            NSG_API_VERSION,
+        ),
+        ("list_network_security_groups", {"subscription_id": "s", "resource_group_name": "rg"}, NSG_API_VERSION),
+        (
+            "delete_rule",
+            {"security_group_name": "sg", "security_rule_name": "r", "subscription_id": "s", "resource_group_name": "rg"},
+            NSG_API_VERSION,
+        ),
+        ("list_public_ip_addresses_request", {"subscription_id": "s", "resource_group_name": "rg"}, PUBLIC_IP_API_VERSION),
+        ("get_all_public_ip_details_request", {"subscription_id": "s"}, PUBLIC_IP_API_VERSION),
+        (
+            "storage_blob_service_properties_get_request",
+            {"account_name": "acc", "resource_group_name": "rg", "subscription_id": "s"},
+            BLOB_SERVICE_API_VERSION,
+        ),
+        (
+            "storage_blob_containers_create_update_request",
+            {
+                "subscription_id": "s",
+                "resource_group_name": "rg",
+                "args": {"account_name": "acc", "container_name": "c"},
+                "method": "PUT",
+            },
+            BLOB_SERVICE_API_VERSION,
+        ),
+        (
+            "list_resource_groups_request",
+            {"subscription_id": "s", "filter_by_tag": "", "limit": "1"},
+            RESOURCE_GROUPS_API_VERSION,
+        ),
+    ],
+)
+def test_azure_client_requests_pin_explicit_api_version(mocker, client, method_name, kwargs, expected_api_version):
+    """
+    Given: An Azure client and an ARM request method that previously relied on the implicit default api-version.
+    When: The request method is called.
+    Then: The api-version is passed explicitly in params and is never embedded in, or left dangling on, the URL.
+    """
+    mock_response = mocker.Mock(status_code=200)
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    getattr(client, method_name)(**kwargs)
+
+    call_kwargs = client.http_request.call_args.kwargs
+    assert call_kwargs["params"]["api-version"] == expected_api_version
+    assert "?" not in call_kwargs["full_url"]
 
 
 def test_azure_client_create_policy_assignment(mocker, client):
@@ -2160,9 +2228,11 @@ def test_azure_client_create_rule_success(mocker, client):
     # Verify correct API call was made
     expected_url = (
         f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
-        "securityRules/test-rule?"
+        "securityRules/test-rule"
     )
-    client.http_request.assert_called_once_with("PUT", full_url=expected_url, json_data={"properties": properties})
+    client.http_request.assert_called_once_with(
+        "PUT", full_url=expected_url, params={"api-version": NSG_API_VERSION}, json_data={"properties": properties}
+    )
 
     # Verify response
     assert result == mock_response
@@ -2223,9 +2293,11 @@ def test_azure_client_create_rule_with_complex_properties(mocker, client):
     # Verify correct API call was made
     expected_url = (
         f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
-        "securityRules/complex-rule?"
+        "securityRules/complex-rule"
     )
-    client.http_request.assert_called_once_with("PUT", full_url=expected_url, json_data={"properties": properties})
+    client.http_request.assert_called_once_with(
+        "PUT", full_url=expected_url, params={"api-version": NSG_API_VERSION}, json_data={"properties": properties}
+    )
 
     # Verify response contains complex properties
     assert result == mock_response
@@ -5220,7 +5292,11 @@ def test_azure_billing_usage_list_command_with_pagination_token(mocker, client, 
     }
     mocker.patch.object(client, "http_request", return_value=mock_response)
 
-    args = {"subscription_id": "test-subscription-id", "next_page_token": "existing-skiptoken"}
+    args = {
+        "subscription_id": "test-subscription-id",
+        "next_page_token": "https://management.azure.com/subscriptions/test-subscription-id/providers/"
+        "Microsoft.Consumption/usageDetails?api-version=2024-08-01&$skiptoken=existing-skiptoken",
+    }
     params = mock_params
 
     result = azure_billing_usage_list_command(client, params, args)
@@ -5661,7 +5737,7 @@ def test_create_network_security_group(mocker, client):
     client.http_request.assert_called_once_with(
         method="PUT",
         full_url="https://management.azure.com/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-nsg",
-        params={"api-version": "2025-05-01"},
+        params={"api-version": NSG_API_VERSION},
         json_data={"location": "eastus"},
     )
 
@@ -7757,10 +7833,19 @@ def test_ip_group_list_client_uses_next_token(mocker, client):
     assert mock_http_request.call_args.kwargs["params"] == {}
 
 
-def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, client):
+INVALID_NEXT_TOKENS = [
+    "https://attacker.example.com/next-page",
+    "https://management.azure.com.attacker.example.com/next-page",
+    "https://management.azure.com@attacker.example.com/next-page",
+    "http://management.azure.com/next-page",
+]
+
+
+@pytest.mark.parametrize("next_token", INVALID_NEXT_TOKENS)
+def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, client, next_token):
     """
     Given:
-        - An AzureClient and a next token pointing at a host that is not the configured Azure management endpoint.
+        - An AzureClient and a next token that is not an HTTPS URL on the configured Azure management endpoint.
     When:
         - Calling the ip_group_list client method with that token.
     Then:
@@ -7769,11 +7854,89 @@ def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, cli
     mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
 
     with pytest.raises(DemistoException, match="Invalid next_token"):
-        client.ip_group_list(
-            subscription_id="sub-id", resource_group_name="test-rg", next_token="https://attacker.example.com/next-page"
-        )
+        client.ip_group_list(subscription_id="sub-id", resource_group_name="test-rg", next_token=next_token)
 
     mock_http_request.assert_not_called()
+
+
+@pytest.mark.parametrize("next_token", INVALID_NEXT_TOKENS)
+def test_list_vm_request_rejects_invalid_next_token(mocker, client, next_token):
+    """
+    Given:
+        - An AzureClient and a next token that is not an HTTPS URL on the configured Azure management endpoint.
+    When:
+        - Calling the list_vm_request client method with that token.
+    Then:
+        - A DemistoException is raised and no request is sent, so that the Azure access token is not leaked.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.list_vm_request(subscription_id="sub-id", resource_group_name="test-rg", next_token=next_token)
+
+    mock_http_request.assert_not_called()
+
+
+def test_billing_usage_list_with_valid_next_page_token(mocker, client):
+    """
+    Given:
+        - An AzureClient and a next page token returned by a previous call to the usage details API.
+    When:
+        - Calling the billing_usage_list client method with that token.
+    Then:
+        - The request is sent to the next page URL, with the api-version from the token replaced by the default one.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+    next_page_token = (
+        "https://management.azure.com/subscriptions/sub-id/providers/Microsoft.Consumption/usageDetails"
+        "?api-version=2019-01-01&$skiptoken=abc"
+    )
+
+    client.billing_usage_list(subscription_id="sub-id", next_page_token=next_page_token)
+
+    mock_http_request.assert_called_once()
+    assert mock_http_request.call_args.kwargs["full_url"].startswith(
+        "https://management.azure.com/subscriptions/sub-id/providers/Microsoft.Consumption/usageDetails"
+    )
+    assert "api-version" not in mock_http_request.call_args.kwargs["full_url"]
+    assert mock_http_request.call_args.kwargs["params"] == {"api-version": "2024-08-01"}
+
+
+@pytest.mark.parametrize("next_page_token", INVALID_NEXT_TOKENS)
+def test_billing_usage_list_rejects_invalid_next_page_token(mocker, client, next_page_token):
+    """
+    Given:
+        - An AzureClient and a next page token that is not an HTTPS URL on the configured Azure management endpoint.
+    When:
+        - Calling the billing_usage_list client method with that token.
+    Then:
+        - A DemistoException is raised and no request is sent, so that the Azure access token is not leaked.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.billing_usage_list(subscription_id="sub-id", next_page_token=next_page_token)
+
+    mock_http_request.assert_not_called()
+
+
+def test_validate_next_link_accepts_gov_host(mocker):
+    """
+    Given:
+        - A next link on the US Gov management host, and the integration configured for a Gov account.
+    When:
+        - Calling validate_next_link with the host taken from PREFIX_URL_AZURE.
+    Then:
+        - The link is returned unchanged, so valid Gov pagination keeps working.
+    """
+    from urllib.parse import urlparse
+
+    from Azure import validate_next_link
+
+    mocker.patch.object(Azure, "PREFIX_URL_AZURE", "https://management.usgovcloudapi.net/subscriptions/")
+    next_link = "https://management.usgovcloudapi.net/subscriptions/sub-id/next-page?$skipToken=abc"
+
+    assert validate_next_link(next_link, urlparse(Azure.PREFIX_URL_AZURE).hostname or "") == next_link
 
 
 def test_ip_group_list_client_by_subscription(mocker, client):

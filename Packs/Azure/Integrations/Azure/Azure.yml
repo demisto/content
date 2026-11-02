@@ -4051,10 +4051,6 @@ script:
     description: "Updates an existing server. Deprecated due to the retirement of Azure PostgreSQL Single Server. Required permissions: Microsoft.DBforPostgreSQL/servers/read, Microsoft.DBforPostgreSQL/servers/write."
     outputs: [] # No outputs are returned in the response.
     deprecated: true
-  - name: azure-postgres-config-set
-    description: "Updates the configuration of a specific PostgreSQL server parameter. Deprecated due to the retirement of Azure PostgreSQL Single Server. Use azure-postgres-flexible-server-configuration-update instead. Required permissions: Microsoft.DBforPostgreSQL/servers/configurations/read, Microsoft.DBforPostgreSQL/servers/configurations/write."
-    deprecated: true
-    outputs: []
   - arguments:
     - description: Key Vault name.
       name: vault_name
