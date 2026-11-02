@@ -213,8 +213,7 @@ def test_get_sample_benign_403(mocker):
     wildfire_get_sample_command()
     results = demisto.results.call_args[0]
     assert (
-        results[0]
-        == "Sample is not available for download. Benign samples (including files with a malicious static verdict "
+        results[0] == "Sample is not available for download. Benign samples (including files with a malicious static verdict "
         "that were found benign in dynamic analysis) are not available for download. "
         "For more info contact your WildFire representative."
     )
