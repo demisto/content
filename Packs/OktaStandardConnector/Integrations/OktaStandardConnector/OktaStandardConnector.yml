@@ -1895,4 +1895,3 @@ script:
 fromversion: 8.15.0
 tests:
 - No tests
-excludefromtightlycoupled: true

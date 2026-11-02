@@ -34,9 +34,14 @@ configuration:
     section: Connect
   - name: auth_code
     type: 9
-    displaypassword: Authorization code
+    displaypassword: Redirect URL or Authorization Code
     hiddenusername: true
     section: Connect
+    additionalinfo: |
+      Paste the full redirect URL you were sent to after running the `!generic-mcp-generate-login-url` command and authenticating.
+      Providing the full URL lets Cortex verify the `state` and `iss` parameters, which protect against CSRF and authorization server mix-up attacks.
+      Pasting only the authorization code still works, but these verifications are skipped.
+      Support for pasting only the authorization code is deprecated and will be removed in a future version.
   - name: redirect_uri
     section: Connect
     defaultvalue: https://oproxy.demisto.ninja/authcode
@@ -125,7 +130,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/mcp:1.0.0.10120494
+  dockerimage: demisto/mcp:1.0.0.13526390
   mcp: true
 fromversion: 8.13.0
 tests:
