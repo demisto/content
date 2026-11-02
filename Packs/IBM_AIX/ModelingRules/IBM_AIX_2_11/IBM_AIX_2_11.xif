@@ -1,11 +1,13 @@
 [MODEL: dataset="ibm_aix_raw"]
 /* Header: 'Message forwarded from <host>:' */
+/* syslog daemon messages */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+syslog:"
 | alter
     xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
     xdm.source.process.name = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+(\S+):"), ""),
     xdm.source.process.command_line = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+syslog:\s+(.*)"), "");
 
+/* sshd: SSH authentication and session events */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+sshd\["
 | alter
     get_description = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[[^\]]+\]:\s+(.*)"), ""),
@@ -25,6 +27,7 @@ filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+ssh
     xdm.source.port = to_integer(arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[[^\]]+\]:\s+Accepted\s+publickey\s+for\s+aging\s+from\s+\S+\s+port\s+(\d+)"), "")),
     xdm.source.process.executable.sha256 = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[[^\]]+\]:\s+Accepted\s+publickey\s+for\s+aging\s+from\s+\S+\s+port\s+\d+[\s\S]+SHA256:([^\s]+)"), "");
 
+/* unix: kernel and system messages */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+unix:"
 | alter
     xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
@@ -34,6 +37,7 @@ filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+uni
     xdm.source.user.identifier = arraystring(regextract(_raw_log, "executed\s+by\s+user\s+with\s+id\s+(\d+)"), ""),
     xdm.source.identity.identifier = arraystring(regextract(_raw_log, "executed\s+by\s+user\s+with\s+id\s+(\d+)"), "");
 
+/* iib: IBM Integration Bus messages */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+iib\["
 | alter
     xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
@@ -41,6 +45,7 @@ filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+iib
     xdm.source.process.pid = to_integer(arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[([^\]]+)\]"), "")),
     xdm.event.description = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[[^\]]+\]:\s+(.*)"), "");
 
+/* rmsock: socket removal messages */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+rmsock:"
 | alter
     xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
@@ -49,6 +54,7 @@ filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+rms
     xdm.target.process.pid = to_integer(arraystring(regextract(_raw_log, "held\s+by\s+process\s+(\d+)\s+\([^\)]+\)"), "")),
     xdm.target.process.name = rtrim(ltrim(arraystring(regextract(_raw_log, "held\s+by\s+process\s+\d+\s+([^\s]+)"), ""), "("), ")");
 
+/* Oracle Audit: database audit records */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+Oracle\s+Audit\["
 | alter
     get_client_ip = arraystring(regextract(_raw_log, "CLIENT\sADDRESS\:\[\d+\]\s+\'([^\']+)\'"), "")
@@ -70,6 +76,7 @@ filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+Ora
     xdm.source.agent.identifier = arraystring(regextract(_raw_log, "CLIENT\s+TERMINAL\:\[\d+\]\s+\'[^\']\'"), ""),
     xdm.session_context_id = arraystring(regextract(_raw_log, "SESSIONID\:\[\d+\]\s+\'([^\']+)\'"), "");
 
+/* bootpd: BOOTP/DHCP server messages */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+bootpd\["
 | alter
     xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
@@ -78,12 +85,14 @@ filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+boo
     xdm.event.description = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+\S+\[[^\]]+\]:\s+(.*)"), ""),
     xdm.target.host.mac_addresses =regextract(_raw_log, "hardware\s+address\s+not\s+found:\s+(\S+)");
 
+/* 'last message repeated N times' notices */
 filter _raw_log ~= ":\s+last\s+message\s+repeated.*" and _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s"
 | alter
     xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
     xdm.event.description = arraystring(regextract(_raw_log, "last\s+message\s+repeated.*"), "");
 
 /* Header: '<host> <process>[pid]:' */
+/* syslog daemon messages */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+syslog:" and _raw_log !~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s"
 | alter
     get_syslog_msg = arrayindex(regextract(_raw_log, "\ssyslog:\s+(.*)"), 0)
@@ -104,6 +113,7 @@ filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+syslog:" and _raw_log !~= "
     xdm.event.operation = if(get_syslog_msg ~= "(?i)\b(?:log\s?in|logon|authenticat\w*)\b", XDM_CONST.OPERATION_TYPE_AUTH_LOGIN, null),
     xdm.event.outcome = if(get_syslog_msg ~= "(?i)\b(?:fail\w*|invalid|denied|refused|restricted|bad|incorrect|locked)\b", XDM_CONST.OUTCOME_FAILED, get_syslog_msg ~= "(?i)\b(?:success\w*|succeeded|accepted|granted)\b", XDM_CONST.OUTCOME_SUCCESS, null);
 
+/* sshd / sshd-session: SSH authentication and session events */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+sshd(?:-session)?\[" and _raw_log !~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s"
 | alter
     get_description = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+\S+\[[^\]]+\]:\s+(.*)"), ""),
@@ -138,6 +148,7 @@ filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+sshd(?:-session)?\[" and _r
     xdm.event.operation = if(get_ssh_is_auth, XDM_CONST.OPERATION_TYPE_AUTH_LOGIN, null),
     xdm.event.outcome = if(get_ssh_is_auth and get_description ~= "(?i)\b(?:fail\w*|invalid|denied|refused|restricted|incorrect|locked|exceeded)\b", XDM_CONST.OUTCOME_FAILED, get_ssh_is_auth and get_description ~= "(?i)\b(?:accepted|success\w*|succeeded|granted)\b", XDM_CONST.OUTCOME_SUCCESS, null);
 
+/* unix: kernel and system messages */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+unix:" and _raw_log !~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s"
 | alter
     xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+([^\s:]+)\:?\s"), ""),
@@ -147,6 +158,7 @@ filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+unix:" and _raw_log !~= "\d
     xdm.source.user.identifier = arraystring(regextract(_raw_log, "executed\s+by\s+user\s+with\s+id\s+(\d+)"), ""),
     xdm.source.identity.identifier = arraystring(regextract(_raw_log, "executed\s+by\s+user\s+with\s+id\s+(\d+)"), "");
 
+/* iib: IBM Integration Bus messages */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+iib\[" and _raw_log !~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s"
 | alter
     xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+([^\s:]+)\:?\s"), ""),
@@ -154,6 +166,7 @@ filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+iib\[" and _raw_log !~= "\d
     xdm.source.process.pid = to_integer(arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+\S+\[([^\]]+)\]"), "")),
     xdm.event.description = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+\S+\[[^\]]+\]:\s+(.*)"), "");
 
+/* rmsock: socket removal messages */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+rmsock:" and _raw_log !~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s"
 | alter
     xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+([^\s:]+)\:?\s"), ""),
@@ -162,6 +175,7 @@ filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+rmsock:" and _raw_log !~= "
     xdm.target.process.pid = to_integer(arraystring(regextract(_raw_log, "held\s+by\s+process\s+(\d+)\s+\([^\)]+\)"), "")),
     xdm.target.process.name = rtrim(ltrim(arraystring(regextract(_raw_log, "held\s+by\s+process\s+\d+\s+([^\s]+)"), ""), "("), ")");
 
+/* Oracle Audit: database audit records */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+Oracle\s+Audit\[" and _raw_log !~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s"
 | alter
     get_client_ip = arraystring(regextract(_raw_log, "CLIENT\sADDRESS\:\[\d+\]\s+\'([^\']+)\'"), "")
@@ -183,6 +197,7 @@ filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+Oracle\s+Audit\[" and _raw_
     xdm.source.agent.identifier = arraystring(regextract(_raw_log, "CLIENT\s+TERMINAL\:\[\d+\]\s+\'[^\']\'"), ""),
     xdm.session_context_id = arraystring(regextract(_raw_log, "SESSIONID\:\[\d+\]\s+\'([^\']+)\'"), "");
 
+/* bootpd: BOOTP/DHCP server messages */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+bootpd\[" and _raw_log !~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s"
 | alter
     xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+([^\s:]+)\:?\s"), ""),
@@ -191,11 +206,13 @@ filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+bootpd\[" and _raw_log !~= 
     xdm.event.description = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+\S+\[[^\]]+\]:\s+(.*)"), ""),
     xdm.target.host.mac_addresses =regextract(_raw_log, "hardware\s+address\s+not\s+found:\s+(\S+)");
 
+/* 'last message repeated N times' notices */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+(?:\:\s+|\s+)last\s+message\s+repeated" and _raw_log !~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s"
 | alter
     xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+([^\s:]+)\:?\s"), ""),
     xdm.event.description = arraystring(regextract(_raw_log, "last\s+message\s+repeated.*"), "");
 
+/* su / SU_CRON: user switch events */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+(?:su|SU_CRON):\s" and _raw_log !~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s"
 | alter
     get_su_msg = arrayindex(regextract(_raw_log, "\s(?:su|SU_CRON):\s+(.*)"), 0)
@@ -215,6 +232,7 @@ filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+(?:su|SU_CRON):\s" and _raw
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTHENTICATION,
     xdm.event.outcome = if(get_su_msg ~= "(?i)\b(?:bad|fail\w*|denied|incorrect|invalid)\b", XDM_CONST.OUTCOME_FAILED, get_su_msg ~= "\bfrom\s+\S+\s+to\s+\S+", XDM_CONST.OUTCOME_SUCCESS, null);
 
+/* sudo: privileged command execution */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+sudo:\s" and _raw_log !~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s"
 | alter
     get_sudo_user = arrayindex(regextract(_raw_log, "\ssudo:\s+(\S+)\s+:\s"), 0),
@@ -232,6 +250,7 @@ filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+sudo:\s" and _raw_log !~= "
     xdm.event.outcome_reason = arrayindex(regextract(_raw_log, "\ssudo:\s+\S+\s+:\s+([^;]*?\S)\s+;\s+TTY="), 0),
     xdm.event.outcome = if(_raw_log ~= "\ssudo:\s+\S+\s+:\s+[^;]*?\S\s+;\s+TTY=", XDM_CONST.OUTCOME_FAILED, _raw_log ~= ";\s+COMMAND=", XDM_CONST.OUTCOME_SUCCESS, null);
 
+/* any other process not matched above */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+[^\s\[:]+(?:\[\d+\])?:\s" and _raw_log !~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+(?:syslog:|sshd(?:-session)?\[|unix:|iib\[|rmsock:|Oracle\s+Audit\[|bootpd\[|su:|SU_CRON:|sudo:)" and _raw_log !~= ":\s+last\s+message\s+repeated" and _raw_log !~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s"
 | alter
     xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+([^\s:]+)\:?\s"), ""),
