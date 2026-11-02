@@ -356,273 +356,282 @@
                 "type": "canvas"
             },
             {
-                "hidden": false,
-                "id": "js3vpk9qph",
-                "name": "Vega Incident Info",
-                "sections": [
-                    {
-                        "displayType": "ROW",
-                        "h": 8,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": true,
-                        "i": "js3vpk9qph-field-changed-js3vpk9qph-86737c20-f759-48a9-a23b-952f97514846",
-                        "items": [
-                            {
-                                "endCol": 4,
-                                "fieldId": "vegaincidentfindings",
-                                "height": 52,
-                                "id": "2136f6f3-5f17-45e6-acc1-84a43e4f26de",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 4,
-                        "moved": false,
-                        "name": "Key findings",
-                        "static": false,
-                        "w": 2,
-                        "x": 0,
-                        "y": 0
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 4,
-                        "hideName": false,
-                        "i": "js3vpk9qph-fab95442-5b26-47f3-970d-4b89dbfd88b8",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "vegaincidentid",
-                                "height": 53,
-                                "id": "2879156c-323b-48e8-874b-971157e5ecf3",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "vegaseverity",
-                                "height": 53,
-                                "id": "c9000510-fa11-4568-a9a8-c0b2b362638e",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "vegaverdict",
-                                "height": 53,
-                                "id": "71b4b7df-cdad-4eb3-a4a4-2e17cfcc9657",
-                                "index": 3,
-                                "listId": "js3vpk9qph-fab95442-5b26-47f3-970d-4b89dbfd88b8",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "vegaverdictreasoning",
-                                "height": 53,
-                                "id": "d9e5f6a7-b8c9-4012-d3e4-f5a6b7c8d9e0",
-                                "index": 4,
-                                "listId": "js3vpk9qph-fab95442-5b26-47f3-970d-4b89dbfd88b8",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "vegaincidentstatus",
-                                "height": 53,
-                                "id": "19a38271-38da-4261-bd27-947a28a0a2ed",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "externallink",
-                                "height": 53,
-                                "id": "0aaefba2-9893-4edc-bcda-562d402d2b90",
-                                "index": 6,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Properties",
-                        "static": false,
-                        "w": 1,
-                        "wrapLabels": true,
-                        "x": 2,
-                        "y": 0
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 3,
-                        "hideItemTitleOnlyOne": false,
-                        "hideName": true,
-                        "i": "js3vpk9qph-d0e83c11-c991-4691-9d9e-4cf0b5a1c046",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "vegaassets",
-                                "height": 53,
-                                "id": "d66df1ef-0fda-48ad-b41a-dfef01125267",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "vegaobservables",
-                                "height": 53,
-                                "id": "598c9b32-d078-4e1a-9e08-4919cbbd9ccc",
-                                "index": 1,
-                                "listId": "js3vpk9qph-d0e83c11-c991-4691-9d9e-4cf0b5a1c046",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Vega Assets",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 6
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 8,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": true,
-                        "i": "js3vpk9qph-vega-timeline-events-section",
-                        "items": [
-                            {
-                                "endCol": 4,
-                                "fieldId": "vegatimelineevents",
-                                "height": 52,
-                                "id": "a8f3c2e1-4b5d-6e7f-8a9b-0c1d2e3f4a5b",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 4,
-                        "moved": false,
-                        "name": "Investigation Timeline",
-                        "static": false,
-                        "w": 2,
-                        "x": 0,
-                        "y": 8
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 2,
-                        "hideName": true,
-                        "i": "js3vpk9qph-08fbf591-b28b-4665-a558-8ad4519f25f6",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "vegacreatedat",
-                                "height": 53,
-                                "id": "8a832e52-de6b-48b1-ae4e-880b41614a06",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "vegalastupdated",
-                                "height": 53,
-                                "id": "bce6c176-69ef-4c64-9021-e56936a962b2",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "vegadatasources",
-                                "height": 53,
-                                "id": "a618b688-c7e2-4d94-a86b-9aff7a9a8891",
-                                "index": 2,
-                                "listId": "js3vpk9qph-08fbf591-b28b-4665-a558-8ad4519f25f6",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Timestamps & Sources",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 6,
-                        "hideName": true,
-                        "i": "js3vpk9qph-f9e9e215-7864-4007-a6e5-e88126b82ac9",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "vegacomments",
-                                "height": 106,
-                                "id": "vega-incident-comments-field",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Comment",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 9
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 1,
-                        "hideItemTitleOnlyOne": false,
-                        "hideName": true,
-                        "i": "js3vpk9qph-19cbc86d-bec9-4b7f-9142-8c18908774cc",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "veganewcomment",
-                                "height": 53,
-                                "id": "a951005e-765b-4ddb-93fc-76e87812451f",
-                                "index": 0,
-                                "listId": "js3vpk9qph-19cbc86d-bec9-4b7f-9142-8c18908774cc",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Vega New Comment",
-                        "static": false,
-                        "w": 1,
-                        "wrapLabels": true,
-                        "x": 2,
-                        "y": 15
-                    },
+				"hidden": false,
+				"id": "js3vpk9qph",
+				"name": "Vega Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 8,
+						"hideItemTitleOnlyOne": true,
+						"hideName": true,
+						"i": "js3vpk9qph-field-changed-js3vpk9qph-86737c20-f759-48a9-a23b-952f97514846",
+						"items": [
+							{
+								"endCol": 4,
+								"fieldId": "vegaincidentfindings",
+								"height": 52,
+								"id": "2136f6f3-5f17-45e6-acc1-84a43e4f26de",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 4,
+						"moved": false,
+						"name": "Key findings",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 5,
+						"hideName": false,
+						"i": "js3vpk9qph-fab95442-5b26-47f3-970d-4b89dbfd88b8",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "vegaincidentid",
+								"height": 53,
+								"id": "2879156c-323b-48e8-874b-971157e5ecf3",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "vegaseverity",
+								"height": 53,
+								"id": "c9000510-fa11-4568-a9a8-c0b2b362638e",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "vegaverdict",
+								"height": 53,
+								"id": "71b4b7df-cdad-4eb3-a4a4-2e17cfcc9657",
+								"index": 2,
+								"listId": "js3vpk9qph-fab95442-5b26-47f3-970d-4b89dbfd88b8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "vegaverdictreasoning",
+								"height": 106,
+								"id": "d9e5f6a7-b8c9-4012-d3e4-f5a6b7c8d9e0",
+								"index": 3,
+								"listId": "js3vpk9qph-fab95442-5b26-47f3-970d-4b89dbfd88b8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "vegadatasources",
+								"height": 106,
+								"id": "9db0e13e-81cf-41a6-aa32-73997ddc6da2",
+								"index": 4,
+								"listId": "js3vpk9qph-fab95442-5b26-47f3-970d-4b89dbfd88b8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "vegaincidentstatus",
+								"height": 53,
+								"id": "19a38271-38da-4261-bd27-947a28a0a2ed",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "vegainvestigationstatus",
+								"height": 53,
+								"id": "7c4e1a92-6b18-4f0d-9c33-1a8e5d2b64f0",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "externallink",
+								"height": 53,
+								"id": "0aaefba2-9893-4edc-bcda-562d402d2b90",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Properties",
+						"static": false,
+						"w": 1,
+						"wrapLabels": true,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 6,
+						"hideItemTitleOnlyOne": false,
+						"hideName": true,
+						"i": "js3vpk9qph-d0e83c11-c991-4691-9d9e-4cf0b5a1c046",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "vegaassets",
+								"height": 106,
+								"id": "17b4e7f8-6ec2-4456-97f8-f437bebbd6a8",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "vegaobservables",
+								"height": 106,
+								"id": "4856c4ca-8a04-4436-bb3b-42911de5dc6b",
+								"index": 1,
+								"listId": "js3vpk9qph-d0e83c11-c991-4691-9d9e-4cf0b5a1c046",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Vega Assets Value",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 8,
+						"hideItemTitleOnlyOne": true,
+						"hideName": true,
+						"i": "js3vpk9qph-vega-timeline-events-section",
+						"items": [
+							{
+								"endCol": 4,
+								"fieldId": "vegatimelineevents",
+								"height": 52,
+								"id": "a8f3c2e1-4b5d-6e7f-8a9b-0c1d2e3f4a5b",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 4,
+						"moved": false,
+						"name": "Investigation Timeline",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 8
+					},
+					{
+						"displayType": "CARD",
+						"h": 1,
+						"hideName": true,
+						"i": "js3vpk9qph-08fbf591-b28b-4665-a558-8ad4519f25f6",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "vegacreatedat",
+								"height": 53,
+								"id": "8a832e52-de6b-48b1-ae4e-880b41614a06",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "vegalastupdated",
+								"height": 53,
+								"id": "bce6c176-69ef-4c64-9021-e56936a962b2",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Timestamps \u0026 Sources",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 5
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": true,
+						"i": "js3vpk9qph-f9e9e215-7864-4007-a6e5-e88126b82ac9",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "vegacomments",
+								"height": 106,
+								"id": "vega-incident-comments-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Comment",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 12
+					},
+					{
+						"displayType": "CARD",
+						"h": 1,
+						"hideItemTitleOnlyOne": false,
+						"hideName": true,
+						"i": "js3vpk9qph-19cbc86d-bec9-4b7f-9142-8c18908774cc",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "veganewcomment",
+								"height": 53,
+								"id": "a951005e-765b-4ddb-93fc-76e87812451f",
+								"index": 0,
+								"listId": "js3vpk9qph-19cbc86d-bec9-4b7f-9142-8c18908774cc",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Vega New Comment",
+						"static": false,
+						"w": 1,
+						"wrapLabels": true,
+						"x": 2,
+						"y": 15
+					},
 					{
 						"displayType": "CARD",
 						"h": 3,
@@ -648,11 +657,38 @@
 						"static": false,
 						"w": 3,
 						"x": 0,
-						"y": 16
+						"y": 19
+					},
+					{
+						"displayType": "CARD",
+						"h": 6,
+						"hideName": true,
+						"i": "js3vpk9qph-vega-incident-alerts-section",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "vegaalerts",
+								"height": 106,
+								"id": "b7e1c4a2-9d30-4f58-a6c1-2e8f0b5d7a14",
+								"index": 0,
+								"listId": "js3vpk9qph-vega-incident-alerts-section",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Vega Alerts",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 22
 					}
-                ],
-                "type": "custom"
-            }
+				],
+				"type": "custom"
+			}
         ]
     },
     "edit": {
@@ -743,6 +779,10 @@
                         "isVisible": true
                     },
                     {
+                        "fieldId": "vegainvestigationstatus",
+                        "isVisible": true
+                    },
+                    {
                         "fieldId": "vegatimelineevents",
                         "isVisible": true
                     },
@@ -772,6 +812,10 @@
                     },
                     {
                         "fieldId": "vegaassets",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "vegaassetsvalue",
                         "isVisible": true
                     },
                     {
@@ -949,6 +993,10 @@
                         "isVisible": true
                     },
                     {
+                        "fieldId": "vegainvestigationstatus",
+                        "isVisible": true
+                    },
+                    {
                         "fieldId": "vegatimelineevents",
                         "isVisible": true
                     },
@@ -962,6 +1010,10 @@
                     },
                     {
                         "fieldId": "vegaassets",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "vegaassetsvalue",
                         "isVisible": true
                     },
                     {

@@ -37,6 +37,7 @@ demisto-sdk pre-commit -a
 - **Error Handling**: Use `return_error("message")` for user-facing errors. Only raise exceptions for unexpected failures.
 - **Outputs**: Use `CommandResults` objects with `return_results()`: `return_results(CommandResults(outputs_prefix='MyPrefix', outputs=data))`. Output keys should be CamelCase.
 - **Logging**: Use `demisto.debug()` and `demisto.info()`. Avoid `print()`.
+- **Local Investigation Files**: Put every non-content artifact (customer logs, war room exports, HAR files, API responses, scratch scripts, drafts of Jira comments or PR bodies, plans, reports) under `/Investigations/` at the repo root, one subfolder per ticket (for example `Investigations/XSUP-12345/`). The folder is gitignored. Never write these files anywhere else in the repo, and never move them into `Packs/` or other tracked paths. They may contain customer data or secrets.
 
 ## Architecture Notes
 

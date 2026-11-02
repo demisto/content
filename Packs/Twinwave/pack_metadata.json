@@ -3,7 +3,7 @@
     "description": "TwinWave analyzes URLs and files to detect credential phishing and malware threats.",
     "support": "partner",
     "certification": "certified",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.2.0",
     "author": "Twinwave",
     "url": "",
     "email": "support@twinwave.io",

@@ -1,0 +1,67 @@
+{
+    "meta": {
+        "query_time": 0.045123456,
+        "pagination": {
+            "offset": 0,
+            "limit": 1,
+            "total": 1
+        },
+        "powered_by": "device-api",
+        "trace_id": "1a2b3c4d-5e6f-7890-abcd-ef1234567890"
+    },
+    "resources": [
+        {
+            "device_id": "notarealdeviceidnotarealdeviceid",
+            "cid": "notarealcidnotarealcidnotarealci",
+            "agent_load_flags": "0",
+            "agent_local_time": "2024-01-15T10:30:00.000Z",
+            "agent_version": "7.10.16305.0",
+            "bios_manufacturer": "Dell Inc.",
+            "bios_version": "1.15.0",
+            "config_id_base": "65994763",
+            "config_id_build": "16305",
+            "config_id_platform": "3",
+            "cpu_signature": "198386",
+            "external_ip": "0.0.0.0",
+            "hostname": "NOT-A-REAL-HOST",
+            "first_seen": "2023-06-01T08:00:00Z",
+            "last_seen": "2024-01-15T10:29:00Z",
+            "local_ip": "0.0.0.0",
+            "mac_address": "00-00-00-00-00-00",
+            "major_version": "10",
+            "minor_version": "0",
+            "os_version": "Windows 10",
+            "platform_id": "0",
+            "platform_name": "Windows",
+            "product_type": "1",
+            "product_type_desc": "Workstation",
+            "serial_number": "NOT-A-REAL-SERIAL",
+            "status": "normal",
+            "system_manufacturer": "Dell Inc.",
+            "system_product_name": "OptiPlex 7090",
+            "modified_timestamp": "2024-01-15T10:29:30Z",
+            "device_policies": {
+                "prevention": {
+                    "policy_type": "prevention",
+                    "policy_id": "notarealpreventionpolicyid000000",
+                    "applied": true,
+                    "applied_date": "2023-06-01T09:00:00Z"
+                },
+                "sensor_update": {
+                    "policy_type": "sensor-update",
+                    "policy_id": "notarealsensorupdatepolicyid0000",
+                    "applied": true,
+                    "applied_date": "2023-06-01T09:00:00Z",
+                    "uninstall_protection": "ENABLED"
+                }
+            },
+            "tags": [
+                "SensorGroupingTags/test-group"
+            ],
+            "meta": {
+                "version": "42"
+            }
+        }
+    ],
+    "errors": []
+}
