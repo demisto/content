@@ -1,5 +1,5 @@
 [MODEL: dataset="ibm_aix_raw"]
-/* ---------- Relayed format: 'Message forwarded from <host>:' (original rule, unchanged) ---------- */
+/* Header: 'Message forwarded from <host>:' */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+\S+\:\s+syslog:"
 | alter
     xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
@@ -83,7 +83,7 @@ filter _raw_log ~= ":\s+last\s+message\s+repeated.*" and _raw_log ~= "\d{2}:\d{2
     xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
     xdm.event.description = arraystring(regextract(_raw_log, "last\s+message\s+repeated.*"), "");
 
-/* ---------- Direct RFC3164 format: '<PRI>Mmm dd hh:mm:ss <host> <process>[pid]:' (no relay prefix) ---------- */
+/* Header: '<host> <process>[pid]:' */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+[^\s:]+\:?\s+syslog:" and _raw_log !~= "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s"
 | alter
     get_syslog_msg = arrayindex(regextract(_raw_log, "\ssyslog:\s+(.*)"), 0)
