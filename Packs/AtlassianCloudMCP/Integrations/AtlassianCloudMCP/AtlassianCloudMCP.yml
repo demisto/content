@@ -8,9 +8,14 @@ commonfields:
 configuration:
   - name: auth_code
     type: 9
-    displaypassword: Authorization code
+    displaypassword: Redirect URL or Authorization Code
     hiddenusername: true
     section: Connect
+    additionalinfo: |
+      Paste the full redirect URL you were sent to after running the `!atlassian-cloud-mcp-generate-login-url` command and authenticating.
+      Providing the full URL lets Cortex verify the `state` parameter, which protects against CSRF attacks.
+      Pasting only the authorization code still works, but this verification is skipped.
+      Support for pasting only the authorization code is deprecated and will be removed in a future version.
 description: Use this integration to connect securely with an Atlassian Cloud Model Context Protocol (MCP) server and access its tools in real time.
 display: Atlassian Cloud MCP
 name: Atlassian Cloud MCP
