@@ -65,6 +65,10 @@ IP_SEARCH_FIELDS = [
     "host.dns.forward_dns.names",
     "host.whois.network.name",
     "host.whois.network.cidrs",
+]
+
+# Requested only when host reputation scoring is enabled, as host reputation data is limited to Censys Core customers.
+IP_REPUTATION_SEARCH_FIELDS = [
     "host.reputation.label",
     "host.reputation.score",
     "host.reputation.score_level",
@@ -72,6 +76,16 @@ IP_SEARCH_FIELDS = [
     "host.reputation.model_version",
     "host.reputation.class_probabilities.label",
     "host.reputation.class_probabilities.probability",
+    "host.reputation.evidence.category",
+    "host.reputation.evidence.evidence_score",
+    "host.reputation.evidence.additional_fields.field",
+    "host.reputation.evidence.additional_fields.value",
+    "host.reputation.evidence.external_signals.source",
+    "host.reputation.evidence.external_signals.description",
+    "host.reputation.evidence.external_signals.tlp",
+    "host.reputation.evidence.threats.threat_id",
+    "host.reputation.evidence.threats.threat_types",
+    "host.reputation.evidence.threats.last_observed_time",
     "host.reputation.evidence.feature.id",
     "host.reputation.evidence.feature.name",
     "host.reputation.evidence.feature.value",
@@ -812,11 +826,7 @@ def validate_related_infra_command_args(ioc_type: str, ioc_value: str) -> None:
         # Validate that ioc_value includes port (format: hostname:port)
         if ":" not in ioc_value:
             raise ValueError("For Web Property IOC type, ioc_value must include port in the format hostname:port")
-        parts = ioc_value.rsplit(":", 1)
-        if len(parts) != 2:
-            raise ValueError("For Web Property IOC type, ioc_value must include port in the format hostname:port")
-
-        port = int(parts[1])
+        port = int(ioc_value.rsplit(":", 1)[1])
         validate_port_argument(port)
 
 
@@ -1326,7 +1336,11 @@ def get_ip_data_using_search_endpoint(
         List of command results for the given IP addresses.
     """
     results: List[CommandResults] = []
-    fields = IP_SEARCH_FIELDS if params.get("premium_access") else None
+    fields = None
+    if params.get("premium_access"):
+        fields = IP_SEARCH_FIELDS
+        if params.get("host_reputation_score"):
+            fields = IP_SEARCH_FIELDS + IP_REPUTATION_SEARCH_FIELDS
 
     # Build query for all IPs
     query = " or ".join([f'host.ip="{ip_addr}"' for ip_addr in ips])
@@ -1363,12 +1377,12 @@ def get_ip_data_using_search_endpoint(
 
 
 def test_module(client: Client, params: dict[str, Any]) -> str:
-    # Check if the user has selected malicious or suspicious labels without premium access
+    # Check if the user has selected malicious or suspicious labels without enabling label scoring
     if not params.get("premium_access") and (params.get("malicious_labels") or params.get("suspicious_labels")):
         raise DemistoException(
-            "The 'Determine IP score using Censys Labels' feature only works for Censys paid subscribers (v3 API). "
-            "If you have paid access select the 'Determine IP score using Censys Labels' option "
-            "to utilize this functionality, or deselect labels"
+            "Malicious or suspicious labels are selected but the 'Determine IP score using Censys Labels' option is not. "
+            "Please select the 'Determine IP score using Censys Labels' option to utilize this functionality, "
+            "or deselect labels."
         )
 
     fields = ["labels"] if params.get("premium_access") else None
@@ -1389,7 +1403,7 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
                 # Handle permission error for non-premium users attempting to access premium features
                 if "specific fields" in e.message:
                     raise DemistoException(
-                        "Your user does not have permission for premium features (v3 API). "
+                        "Your user does not have permission for premium features. "
                         "Please ensure that you deselect the 'Determine IP score using Censys Labels' option "
                         "for non-premium access."
                     )
@@ -2206,24 +2220,21 @@ def run_polling_command(
     if is_completed:
         return result
 
-    if not is_completed:
-        polling_args = {**args, "polling": True}
-        scan_id = outputs.get("scan_id")
-        job_id = outputs.get("job_id")
-        if scan_id:
-            polling_args["scan_id"] = scan_id
-        if job_id:
-            polling_args["job_id"] = job_id
-        scheduled_command = ScheduledCommand(
-            command=command_name,
-            next_run_in_seconds=DEFAULT_POLLING_INTERVAL,
-            args=polling_args,
-            timeout_in_seconds=DEFAULT_POLLING_TIMEOUT,
-        )
-        command_results = CommandResults(scheduled_command=scheduled_command)
-        return [result, command_results]
-
-    return result
+    polling_args = {**args, "polling": True}
+    scan_id = outputs.get("scan_id")
+    job_id = outputs.get("job_id")
+    if scan_id:
+        polling_args["scan_id"] = scan_id
+    if job_id:
+        polling_args["job_id"] = job_id
+    scheduled_command = ScheduledCommand(
+        command=command_name,
+        next_run_in_seconds=DEFAULT_POLLING_INTERVAL,
+        args=polling_args,
+        timeout_in_seconds=DEFAULT_POLLING_TIMEOUT,
+    )
+    command_results = CommandResults(scheduled_command=scheduled_command)
+    return [result, command_results]
 
 
 """ MAIN FUNCTION """

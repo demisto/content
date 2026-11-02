@@ -5,6 +5,8 @@ from CensysV2 import (
     CENSYS_API_URL,
     ENDPOINTS,
     ERRORS,
+    IP_REPUTATION_SEARCH_FIELDS,
+    IP_SEARCH_FIELDS,
     OUTPUT_PREFIX,
     VALID_RELATED_INFRA_IOC_TYPE,
     VALID_TRANSPORT_PROTOCOL,
@@ -219,6 +221,33 @@ def test_ip_command(client, requests_mock):
     assert result.indicator.dbot_score.malicious_description is not None
     assert "Matched malicious labels:" in result.indicator.dbot_score.malicious_description
     assert "malicious" in result.indicator.dbot_score.malicious_description
+
+
+@pytest.mark.parametrize(
+    "params,expected_fields",
+    [
+        ({}, None),
+        ({"host_reputation_score": True}, None),
+        ({"premium_access": True}, IP_SEARCH_FIELDS),
+        ({"premium_access": True, "host_reputation_score": True}, IP_SEARCH_FIELDS + IP_REPUTATION_SEARCH_FIELDS),
+    ],
+)
+def test_ip_command_search_fields(client, requests_mock, params, expected_fields):
+    """
+    Given:
+        - Different combinations of the "premium_access" and "host_reputation_score" parameters.
+    When:
+        - Running the ip command using the search API.
+    Then:
+        - Ensure the host reputation fields are requested only when both parameters are enabled.
+    """
+    search_mock = requests_mock.post(
+        "https://api.platform.censys.io/v3/global/search/query", json=util_load_json("ip_command_response.json")
+    )
+
+    ip_command(client, {"ip": "127.0.0.1"}, params)
+
+    assert search_mock.last_request.json().get("fields") == expected_fields
 
 
 def test_ip_command_with_service_labels(client, requests_mock):
@@ -703,16 +732,14 @@ def test_test_module_success(client, requests_mock):
 def test_test_module_premium_error(client):
     """
     Given:
-        - Premium labels selected without premium access.
+        - Malicious labels selected without the "premium_access" (label scoring) parameter.
     When:
         - Running test-module.
     Then:
         - Ensure DemistoException is raised.
     """
     params = {"premium_access": False, "malicious_labels": "bad"}
-    with pytest.raises(
-        DemistoException, match="The 'Determine IP score using Censys Labels' feature only works for Censys paid subscribers"
-    ):
+    with pytest.raises(DemistoException, match="Malicious or suspicious labels are selected"):
         censys_test_module(client, params)
 
 
@@ -2031,24 +2058,6 @@ def test_run_polling_command_initiate_scan(client, requests_mock):
     assert result[1].scheduled_command is not None
 
 
-def test_run_polling_command_fallback_return(client, mocker):
-    """
-    Given:
-        - A search function whose "is_completed" output is falsy on the first check and truthy on the second.
-    When:
-        - Running run_polling_command.
-    Then:
-        - Ensure the search result is returned without scheduling.
-    """
-    is_completed = mocker.MagicMock()
-    is_completed.__bool__.side_effect = [False, True]
-    search_result = mocker.MagicMock(outputs={"is_completed": is_completed})
-
-    result = run_polling_command(client, {}, "cen-rescan", mocker.MagicMock(return_value=search_result))
-
-    assert result is search_result
-
-
 def test_censys_related_infra_command_initiate_host(client, requests_mock):
     """
     Test Case : Initiate a related infrastructure job for Host type
@@ -2278,16 +2287,6 @@ def test_censys_related_infra_command_completed_no_pivot_data(client, requests_m
     assert "No pivot data found" in result.readable_output
 
 
-class UnsplittableValue(str):
-    """A string containing ":" that does not split into hostname and port."""
-
-    def strip(self, *args):
-        return self
-
-    def rsplit(self, *args, **kwargs):
-        return [str(self)]
-
-
 @pytest.mark.parametrize(
     "args,expected_error",
     [
@@ -2309,10 +2308,6 @@ class UnsplittableValue(str):
         ),
         (
             {"ioc_type": "Web Property", "ioc_value": "example.com"},
-            "For Web Property IOC type, ioc_value must include port in the format hostname:port",
-        ),
-        (
-            {"ioc_type": "Web Property", "ioc_value": UnsplittableValue("example.com:443")},
             "For Web Property IOC type, ioc_value must include port in the format hostname:port",
         ),
         (
@@ -2422,47 +2417,34 @@ def test_ip_command_host_enrichment_success(client, requests_mock):
     assert results[0].readable_output == hr_output
 
 
-def test_ip_command_host_enrichment_reputation_score(client, requests_mock):
+@pytest.mark.parametrize(
+    "reputation_label,expected_score",
+    [
+        ("MALICIOUS", Common.DBotScore.BAD),
+        ("SUSPICIOUS", Common.DBotScore.SUSPICIOUS),
+        ("BENIGN", Common.DBotScore.GOOD),
+    ],
+)
+def test_ip_command_host_enrichment_reputation_score(client, requests_mock, reputation_label, expected_score):
     """
     Given:
-        - An IP address with the MALICIOUS host reputation label.
+        - An IP address with the MALICIOUS, SUSPICIOUS or BENIGN host reputation label.
         - The "use_host_enrichment" and "host_reputation_score" parameters enabled.
     When:
         - Running the ip command.
     Then:
-        - Ensure the IP indicator is scored as BAD based on the host reputation label.
+        - Ensure the IP indicator is scored based on the host reputation label.
     """
     args = {"ip": "0.0.0.1"}
     params = {"use_host_enrichment": True, "host_reputation_score": True}
     enrichment_res = util_load_json("ip_enrichment_response.json")
-    enrichment_res["result"]["resource"]["reputation"]["label"] = "MALICIOUS"
+    enrichment_res["result"]["resource"]["reputation"]["label"] = reputation_label
     requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['HOST_ENRICHMENT'].format('0.0.0.1')}", json=enrichment_res)
 
     results = ip_command(client, args, params)
 
-    assert results[0].indicator.dbot_score.score == Common.DBotScore.BAD
-    assert results[0].indicator.dbot_score.malicious_description == "Censys host reputation label: MALICIOUS"
-
-
-def test_ip_command_host_enrichment_benign_reputation_score(client, requests_mock):
-    """
-    Given:
-        - An IP address with the BENIGN host reputation label.
-        - The "use_host_enrichment" and "host_reputation_score" parameters enabled.
-    When:
-        - Running the ip command.
-    Then:
-        - Ensure the IP indicator is scored as GOOD based on the host reputation label.
-    """
-    args = {"ip": "0.0.0.1"}
-    params = {"use_host_enrichment": True, "host_reputation_score": True}
-    enrichment_res = util_load_json("ip_enrichment_response.json")
-    enrichment_res["result"]["resource"]["reputation"]["label"] = "BENIGN"
-    requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['HOST_ENRICHMENT'].format('0.0.0.1')}", json=enrichment_res)
-
-    results = ip_command(client, args, params)
-
-    assert results[0].indicator.dbot_score.score == Common.DBotScore.GOOD
+    assert results[0].indicator.dbot_score.score == expected_score
+    assert results[0].indicator.dbot_score.malicious_description == f"Censys host reputation label: {reputation_label}"
 
 
 @pytest.mark.parametrize("failure_response", [{"status_code": 404, "json": {"error": "Not Found"}}, {"json": {"result": {}}}])
@@ -2582,27 +2564,6 @@ def test_ip_command_host_enrichment_all_ips_fail(client, requests_mock, capfd):
     assert search_mock.call_count == 1
     assert search_mock.last_request.json()["query"] == 'host.ip="0.0.0.1" or host.ip="0.0.0.2"'
     assert [result.outputs["ip"] for result in results if result.outputs_prefix == "Censys.IP"] == ["0.0.0.1", "0.0.0.2"]
-
-
-def test_ip_command_host_enrichment_suspicious_reputation_score(client, requests_mock):
-    """
-    Given:
-        - An IP address with the SUSPICIOUS host reputation label.
-        - The "use_host_enrichment" and "host_reputation_score" parameters enabled.
-    When:
-        - Running the ip command.
-    Then:
-        - Ensure the IP indicator is scored as SUSPICIOUS based on the host reputation label.
-    """
-    args = {"ip": "0.0.0.1"}
-    params = {"use_host_enrichment": True, "host_reputation_score": True}
-    enrichment_res = util_load_json("ip_enrichment_response.json")
-    enrichment_res["result"]["resource"]["reputation"]["label"] = "SUSPICIOUS"
-    requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['HOST_ENRICHMENT'].format('0.0.0.1')}", json=enrichment_res)
-
-    results = ip_command(client, args, params)
-
-    assert results[0].indicator.dbot_score.score == Common.DBotScore.SUSPICIOUS
 
 
 @pytest.mark.parametrize("response_type", ["content", "response", "text"])
