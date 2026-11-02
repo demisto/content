@@ -9,19 +9,25 @@ configuration:
 - defaultvalue: https://api.spycloud.io/enterprise-v2/
   display: API URL
   name: url
+  section: Connect
   required: true
   type: 0
 - display: API Key
   hidden: false
   name: apikey
+  section: Connect
   required: true
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
+  section: Connect
+  advanced: true
   required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
+  section: Connect
+  advanced: true
   required: false
   type: 8
 description: Integrate the SpyCloud Enterprise Protection API to use enrichment commands (along with sample Enrichment Playbooks) to look up your watchlists, domains, emails, IP addresses, usernames, and passwords. Data for malware-infected devices and exposed corporate applications are available for SpyCloud Compass users.
