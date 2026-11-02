@@ -843,13 +843,11 @@ TARGET_SA = "target-sa@my-project.iam.gserviceaccount.com"
 class TestAuthentication:
     @pytest.fixture
     def credential_mocks(self, mocker):
-        import GooglePubSub
-
         return {
-            "service_account": mocker.patch.object(GooglePubSub.service_account.Credentials, "from_service_account_info"),
-            "identity_pool": mocker.patch.object(GooglePubSub.identity_pool.Credentials, "from_info"),
-            "aws": mocker.patch.object(GooglePubSub.aws.Credentials, "from_info"),
-            "impersonated": mocker.patch.object(GooglePubSub.impersonated_credentials, "Credentials"),
+            "service_account": mocker.patch("GooglePubSub.service_account.Credentials.from_service_account_info"),
+            "identity_pool": mocker.patch("GooglePubSub.identity_pool.Credentials.from_info"),
+            "aws": mocker.patch("GooglePubSub.aws.Credentials.from_info"),
+            "impersonated": mocker.patch("GooglePubSub.impersonated_credentials.Credentials"),
         }
 
     def test_build_credentials_service_account_key(self, credential_mocks):
@@ -1012,10 +1010,10 @@ class TestAuthentication:
         When: init_google_client is called.
         Then: PubSubClient is created with the parsed base credential and the stripped impersonation target.
         """
-        import GooglePubSub
+        from GooglePubSub import init_google_client
 
-        client_mock = mocker.patch.object(GooglePubSub, "PubSubClient")
-        GooglePubSub.init_google_client(
+        client_mock = mocker.patch("GooglePubSub.PubSubClient")
+        init_google_client(
             default_subscription="sub", default_project="proj", default_max_msgs="50", insecure=False, proxy=False, **params
         )
 
@@ -1090,12 +1088,12 @@ class TestAuthentication:
         When: init_google_client is called.
         Then: A readable error is raised before the client is created.
         """
-        import GooglePubSub
         from CommonServerPython import DemistoException
+        from GooglePubSub import init_google_client
 
-        client_mock = mocker.patch.object(GooglePubSub, "PubSubClient")
+        client_mock = mocker.patch("GooglePubSub.PubSubClient")
         with pytest.raises(DemistoException, match="must be a service account email"):
-            GooglePubSub.init_google_client(
+            init_google_client(
                 default_subscription="sub",
                 default_project="proj",
                 default_max_msgs="50",
@@ -1119,16 +1117,16 @@ class TestAuthentication:
         When: init_google_client is called and the client creation raises RefreshError.
         Then: A readable error with the refresh reason is raised, including the Token Creator hint only when impersonating.
         """
-        import GooglePubSub
         from CommonServerPython import DemistoException
         from google.auth.exceptions import RefreshError
+        from GooglePubSub import init_google_client
 
-        mocker.patch.object(
-            GooglePubSub, "PubSubClient", side_effect=RefreshError("Permission 'iam.serviceAccounts.getAccessToken' denied")
+        mocker.patch(
+            "GooglePubSub.PubSubClient", side_effect=RefreshError("Permission 'iam.serviceAccounts.getAccessToken' denied")
         )
 
         with pytest.raises(DemistoException) as e:
-            GooglePubSub.init_google_client(
+            init_google_client(
                 default_subscription="sub", default_project="proj", default_max_msgs="50", insecure=False, proxy=False, **params
             )
 
