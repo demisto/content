@@ -741,6 +741,18 @@ class TestCategoryCommands:
             ".drive.google.com/uc?export=download&id=2",
         ]
 
+    def test_update_invalid_action_raises(self, mock_client):
+        """
+        Given: An unsupported action value.
+        When: zia_category_update_command is called.
+        Then: A DemistoException is raised indicating valid actions.
+        """
+        with pytest.raises(DemistoException, match="Invalid action"):
+            zia_category_update_command(
+                mock_client,
+                {"category_id": "CUSTOM_52", "url": "example.com", "action": "INVALID"},
+            )
+
 
 class TestUrlSanitization:
     @pytest.mark.parametrize(
