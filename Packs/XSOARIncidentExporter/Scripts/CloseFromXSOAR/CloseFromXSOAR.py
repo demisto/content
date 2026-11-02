@@ -28,9 +28,7 @@ def main() -> None:
         incident = demisto.incident()
         custom_fields = incident.get("CustomFields", {}) or {}
 
-        description = custom_fields.get("alertdescription", "") or custom_fields.get(
-            "alert_description", ""
-        )
+        description = custom_fields.get("alertdescription", "") or custom_fields.get("alert_description", "")
         if not description:
             labels = incident.get("labels", [])
             for label in labels:
