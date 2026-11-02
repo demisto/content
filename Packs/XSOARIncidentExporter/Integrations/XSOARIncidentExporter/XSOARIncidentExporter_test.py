@@ -214,30 +214,30 @@ class TestExtractAlertField:
 
 class TestMapXsiamResolution:
     def test_resolved(self):
-        assert map_xsiam_resolution("Resolved") == "STATUS_030_RESOLVED_THREAT_HANDLED"
+        assert map_xsiam_resolution("Resolved") == "resolved_true_positive"
 
     def test_false_positive(self):
-        assert map_xsiam_resolution("False Positive") == "STATUS_060_RESOLVED_FALSE_POSITIVE"
+        assert map_xsiam_resolution("False Positive") == "resolved_false_positive"
 
     def test_duplicate(self):
-        assert map_xsiam_resolution("Duplicate") == "STATUS_050_RESOLVED_DUPLICATE"
+        assert map_xsiam_resolution("Duplicate") == "resolved_duplicate_alert"
 
     def test_other(self):
-        assert map_xsiam_resolution("Other") == "STATUS_080_RESOLVED_OTHER"
+        assert map_xsiam_resolution("Other") == "resolved_other"
 
     def test_case_insensitive(self):
-        assert map_xsiam_resolution("RESOLVED") == "STATUS_030_RESOLVED_THREAT_HANDLED"
+        assert map_xsiam_resolution("RESOLVED") == "resolved_true_positive"
 
     def test_empty_maps_to_other(self):
-        assert map_xsiam_resolution("") == "STATUS_080_RESOLVED_OTHER"
+        assert map_xsiam_resolution("") == "resolved_other"
 
     def test_unknown_maps_to_other(self):
-        assert map_xsiam_resolution("Custom") == "STATUS_080_RESOLVED_OTHER"
+        assert map_xsiam_resolution("Custom") == "resolved_other"
 
 
-CLOSED_ALERT_DESC = "XSOAR Incident ID: 42\n" "Status: Done\n" "Close Reason: Resolved\n" "Close Notes: Fixed the issue"
+CLOSED_ALERT_DESC = "XSOAR Incident ID: 42\nStatus: Done\nClose Reason: Resolved\nClose Notes: Fixed the issue"
 
-OPEN_ALERT_DESC = "XSOAR Incident ID: 43\n" "Status: Active\n" "Close Reason: \n" "Close Notes: "
+OPEN_ALERT_DESC = "XSOAR Incident ID: 43\nStatus: Active\nClose Reason: \nClose Notes: "
 
 
 def _make_alert(alert_id, description, name="Test Alert"):
@@ -268,7 +268,7 @@ class TestSyncCloseStatusCommand:
         mock_xsiam.update_alerts.assert_called_once()
         call_args = mock_xsiam.update_alerts.call_args
         assert call_args[0][0] == [1001]
-        assert call_args[0][1] == "STATUS_030_RESOLVED_THREAT_HANDLED"
+        assert call_args[0][1] == "resolved_true_positive"
         assert result.outputs["ClosedCount"] == 1
 
     def test_skips_open_alerts(self, mocker):
