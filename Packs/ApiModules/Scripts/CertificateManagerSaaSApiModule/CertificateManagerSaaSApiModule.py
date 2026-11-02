@@ -37,6 +37,12 @@ CERTIFICATE_KEYSTORE_URL_TEMPLATE = "/outagedetection/v1/certificates/{certifica
 EDGE_ENCRYPTION_KEY_URL_TEMPLATE = "/v1/edgeencryptionkeys/{dek_hash}"
 
 HTTP_TIMEOUT = 30  # a hang is not an exception; without this one slow endpoint stalls the command
+# Reads only: one 429 or 5xx must not fail a fetch of up to 40 calls. The revoke mutation is never retried.
+READ_RETRIES = 3
+RETRY_STATUSES = [429, 500, 502, 503, 504]
+RETRY_BACKOFF_FACTOR = 2  # urllib3 waits 2, 4, 8 seconds
+# A certificate installed on many machines must not turn `certificate-get` into one call per machine.
+MAX_HOST_LOOKUPS = 20
 MAX_PAGE_SIZE = 100  # hard server cap - `first: 101` returns HTTP 200 with an `errors` array
 DEFAULT_LIMIT = 50
 DEFAULT_MAX_PAGES = 50  # safety bound on client-side paging (50 x 100 = 5,000 certificates)
@@ -99,14 +105,9 @@ REVOCATION_FAILED_INCIDENT_TYPE = "CertManagerSaaS Revocation Failed"
 ISSUE_TYPE_RAW_KEY = "IssueType"
 # last_run key: fingerprints whose failed key-compromise revocation already raised an incident.
 RAISED_REVOCATION_FAILURES_KEY = "raised_revocation_failures"
-# Fixed-width and UTC, so the look-back helpers can round-trip it and so lexicographic ordering of
-# two timestamps is also chronological ordering.
-FETCH_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-DEFAULT_FIRST_FETCH = "30 days"
+# last_run key: for each certificate in the expiry window, the most severe threshold already raised.
+RAISED_EXPIRY_THRESHOLDS_KEY = "raised_expiry_thresholds"
 DEFAULT_MAX_FETCH = 50
-# One day. The upstream expiry evaluation is daily, so a shorter window buys nothing and a longer
-# one only grows the deduplication bookkeeping.
-DEFAULT_LOOK_BACK_MINUTES = 1440
 FETCH_MAX_PAGES = 20  # 20 x 100 = 2,000 certificates inside the expiry window per fetch
 # The severity ladder, as expiry thresholds in days. Each threshold a certificate crosses is its own incident.
 CRITICAL_EXPIRY_DAYS = 7
@@ -432,6 +433,23 @@ def expiry_window_filter(days: int, include_expired: bool, now: datetime | None 
             {"status": {"eq": GraphQLEnum(CERTIFICATE_STATUS_ACTIVE)}},
         ]
     }
+
+
+def expires_before_filter(days: int, now: datetime | None = None) -> dict[str, Any]:
+    """Build a `filterOn` clause for certificates expiring within `days`, already expired ones included.
+
+    Unlike `expiry_window_filter` it keeps every version and status, as a search should. `between`
+    with only `lte` is accepted and leaves the range open at the bottom.
+
+    Args:
+        days: Days from now.
+        now: Reference time, defaulting to the current UTC time. Injected for testability.
+
+    Returns:
+        dict[str, Any]: One clause for the `and` list of a `filterOn`.
+    """
+    upper = (now or datetime.now(UTC)) + timedelta(days=days)
+    return {"validityTo": {"between": {"lte": to_iso_z(upper)}}}
 
 
 def to_iso_z(moment: datetime) -> str:
@@ -793,8 +811,8 @@ def certificate_to_indicator(
     attributed to a named vendor, which only a key-compromise revocation justifies.
 
     Note NONE is `0`, which the context standard glosses as "the vendor returns nothing on the
-    indicator". Here it means "resolved, deliberately not scored" - a different thing. An
-    unresolved fingerprint gets no DBotScore at all rather than a zero.
+    indicator". Here it means "resolved, deliberately not scored". A fingerprint the tenant does not
+    return also gets a zero, see `build_not_found_result`.
 
     Args:
         certificate: A raw `searchCertificates` node.
@@ -1222,12 +1240,21 @@ class CertificateManagerClient(BaseClient):
         default = f"Request to {self.product.name} failed with HTTP {response.status_code}: {response.text}"
         raise DemistoException(messages.get(response.status_code, default))
 
-    def graphql(self, query: str, variables: dict[str, Any]) -> dict[str, Any]:
+    def stop_retrying(self) -> None:
+        """Make the next requests single-shot, before a write that must never be sent twice.
+
+        BaseClient leaves a retrying adapter mounted on the session once any request asked for
+        retries, so an earlier read in the same run would otherwise make the write retry too.
+        """
+        self._implement_retry(retries=0)
+
+    def graphql(self, query: str, variables: dict[str, Any], retry: bool = True) -> dict[str, Any]:
         """Execute a GraphQL document and return its `data` block.
 
         Args:
             query: The GraphQL document.
             variables: The GraphQL variables.
+            retry: Retry on 429 and 5xx. Only for reads: a mutation must never be sent twice.
 
         Returns:
             dict: The `data` block.
@@ -1236,11 +1263,16 @@ class CertificateManagerClient(BaseClient):
             GraphQLQueryError: If the response carries a top-level `errors` array. The gateway
                 answers HTTP 200 in that case, so the status code alone is not a success signal.
         """
+        if not retry:
+            self.stop_retrying()
         response = self._http_request(
             "POST",
             url_suffix=GRAPHQL_URL_SUFFIX,
             json_data={"query": query, "variables": variables},
             error_handler=self.raise_http_error,
+            retries=READ_RETRIES if retry else 0,
+            status_list_to_retry=RETRY_STATUSES if retry else None,
+            backoff_factor=RETRY_BACKOFF_FACTOR,
         )
         if errors := (response or {}).get("errors"):
             details = "; ".join(str((error or {}).get("message", error)) for error in errors)
@@ -1279,7 +1311,7 @@ class CertificateManagerClient(BaseClient):
             dict | None: The revoked certificate, or None when nothing matched the fingerprint.
         """
         variables = {"fingerprint": fingerprint, "revocationReason": reason, "revocationComment": comment}
-        data = self.graphql(REVOKE_CERTIFICATE_MUTATION, variables)
+        data = self.graphql(REVOKE_CERTIFICATE_MUTATION, variables, retry=False)
         return data.get("revokeCertificate")
 
     def get_expiry_thresholds(self) -> list[int]:
@@ -1289,6 +1321,7 @@ class CertificateManagerClient(BaseClient):
 
     def create_certificate_request(self, body: dict[str, Any]) -> Any:
         """Submit a certificate request."""
+        self.stop_retrying()
         return self._http_request(
             "POST", url_suffix=CERTIFICATE_REQUESTS_URL_SUFFIX, json_data=body, error_handler=self.raise_http_error
         )
@@ -1510,14 +1543,15 @@ def certificate_command(
                 demisto.debug(f"Skipping a certificate with an unrecognized fingerprint shape: id={node.get('id')}")
 
     results = [
-        build_certificate_result(node, reliability, client.product, reported_key_compromise_score)
-        for node in (found[fp] for fp in fingerprints if fp in found)
+        build_certificate_result(found[fp], reliability, client.product, reported_key_compromise_score)
+        if fp in found
+        else build_not_found_result(fp, reliability, client.product)
+        for fp in fingerprints
     ]
 
-    # A certificate the tenant does not return is the weakest signal this API gives: an unknown
-    # fingerprint and a deleted certificate are both HTTP 200 with totalCount 0. Emitting
-    # DBotScore 0 here would present "we could not look this up" as "we looked it up and found
-    # nothing", so no DBotScore is produced for unresolved values at all.
+    # A valid fingerprint the tenant does not return gets DBotScore 0, per the reputation-command
+    # convention; a malformed one gets no score. Both stay in the table: the API answers an unknown
+    # fingerprint and a deleted certificate alike (HTTP 200, totalCount 0).
     missing_reason = "No certificate with this fingerprint was returned by the tenant."
     unresolved += [{"Fingerprint": fp, "Reason": missing_reason} for fp in fingerprints if fp not in found]
     if unresolved:
@@ -1591,6 +1625,37 @@ def build_certificate_result(
     )
 
 
+def build_not_found_result(fingerprint: str, reliability: str, product: ProductProfile) -> CommandResults:
+    """Build the DBotScore 0 result for a valid fingerprint the tenant did not return.
+
+    Built here rather than with `create_indicator_result_with_dbotscore_unknown`, which puts the
+    value into the subject DN and names the calling brand as the vendor. This keeps the vendor and
+    the digest field the same as for a certificate that was found.
+
+    Args:
+        fingerprint: The normalized fingerprint.
+        reliability: The configured source reliability.
+        product: The product profile: its name is the DBotScore vendor.
+
+    Returns:
+        CommandResults: The indicator with an unknown DBotScore.
+    """
+    digest_field = DIGEST_FIELD_BY_LENGTH.get(len(fingerprint))
+    digest: dict[str, Any] = {digest_field: fingerprint.lower()} if digest_field else {}
+    dbot_score = Common.DBotScore(
+        indicator=fingerprint,
+        indicator_type=DBotScoreType.CERTIFICATE,
+        integration_name=product.name,
+        score=Common.DBotScore.NONE,
+        reliability=reliability,
+        message="No results found.",
+    )
+    return CommandResults(
+        readable_output=f"### {product.name} - no results for certificate {fingerprint}",
+        indicator=Common.Certificate(subject_dn=fingerprint, dbot_score=dbot_score, **digest),
+    )
+
+
 def build_unresolved_result(unresolved: list[dict[str, str]]) -> CommandResults:
     """Build the CommandResults describing fingerprints that could not be enriched.
 
@@ -1598,11 +1663,11 @@ def build_unresolved_result(unresolved: list[dict[str, str]]) -> CommandResults:
         unresolved: Entries of ``{"Fingerprint": ..., "Reason": ...}``.
 
     Returns:
-        CommandResults: A warning table, with no DBotScore attached.
+        CommandResults: A warning table. The DBotScore of a fingerprint that was not found is its own result.
     """
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Unresolved certificates (no reputation was produced)",
+            "Unresolved certificates",
             unresolved,
             headers=["Fingerprint", "Reason"],
         )
@@ -1617,8 +1682,8 @@ def build_unresolved_result(unresolved: list[dict[str, str]]) -> CommandResults:
 def certificate_search_command(client: CertificateManagerClient, args: dict[str, Any]) -> CommandResults:
     """Search the certificate inventory.
 
-    Only `fingerprint` is filtered server-side; the other criteria weren't checked as
-    server-side filters here, and `id` is not filterable at all. The remaining criteria are applied
+    `fingerprint` and `expires_in_days` are filtered server-side; the API has no filter for common
+    name or issuer, and the status filter wasn't checked here. Those criteria are applied
     client-side over a bounded page walk, which is reported in the output.
 
     Args:
@@ -1631,12 +1696,19 @@ def certificate_search_command(client: CertificateManagerClient, args: dict[str,
     limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
     max_pages = arg_to_number(args.get("max_pages")) or DEFAULT_MAX_PAGES
     fingerprint = args.get("fingerprint")
-    filter_on = {"and": {"fingerprint": {"eq": normalize_fingerprint(fingerprint)}}} if fingerprint else None
+    expires_in_days = arg_to_number(args.get("expires_in_days"))
+    clauses: list[dict[str, Any]] = []
+    if fingerprint:
+        clauses.append({"fingerprint": {"eq": normalize_fingerprint(fingerprint)}})
+    if expires_in_days is not None:
+        clauses.append(expires_before_filter(expires_in_days))
+    filter_on = {"and": clauses} if clauses else None
+    # The predicate checks `expires_in_days` again, so a filter the server ignored can't widen the result.
     predicate = build_search_predicate(
         common_name=args.get("common_name"),
         issuer=args.get("issuer"),
         status=args.get("status"),
-        expires_in_days=arg_to_number(args.get("expires_in_days")),
+        expires_in_days=expires_in_days,
     )
 
     certificates, more_available = collect_certificates(
@@ -1744,7 +1816,9 @@ def enrich_installations_with_hosts(
     """Add the device host to each installation by reading the machine detail endpoint.
 
     Roughly half of machines carry no host at all - cloud connectors such as Azure Key Vault
-    expose a vault name instead. A missing host is a normal outcome, not an error.
+    expose a vault name instead. A missing host is a normal outcome, not an error, so a machine
+    that can't be read (deleted, or outside the credential's scope) only loses its `Host`. At most
+    `MAX_HOST_LOOKUPS` machines are read; installations on further machines get no `Host`.
 
     Args:
         client: The client.
@@ -1757,12 +1831,29 @@ def enrich_installations_with_hosts(
     enriched = []
     for installation in installations:
         machine_id = installation.get("MachineID")
-        if machine_id and machine_id not in hosts:
-            connection_details = (client.get_machine(machine_id) or {}).get("connectionDetails") or {}
-            raw_host, _ = connection_address(connection_details)
-            hosts[machine_id] = normalize_host(raw_host)
+        if machine_id and machine_id not in hosts and len(hosts) < MAX_HOST_LOOKUPS:
+            hosts[machine_id] = machine_host(client, machine_id)
         enriched.append(assign_params(Host=hosts.get(machine_id) if machine_id else None, **installation))
     return enriched
+
+
+def machine_host(client: CertificateManagerClient, machine_id: str) -> str | None:
+    """Read one machine's normalized host, or None when it has none or can't be read.
+
+    Args:
+        client: The client.
+        machine_id: The machine identifier.
+
+    Returns:
+        str | None: The host.
+    """
+    try:
+        machine = client.get_machine(machine_id) or {}
+    except DemistoException as error:
+        demisto.debug(f"Skipping the host of machine {machine_id}: {error}")
+        return None
+    raw_host, _ = connection_address(machine.get("connectionDetails") or {})
+    return normalize_host(raw_host)
 
 
 def certificate_list_expiring_command(client: CertificateManagerClient, args: dict[str, Any]) -> CommandResults:
@@ -1927,9 +2018,11 @@ def certificate_revoke_command(client: CertificateManagerClient, args: dict[str,
         raise DemistoException(f"The CA did not revoke certificate {fingerprint}: {ca_error}")
 
     context = certificate_to_context(certificate, client.product.brand)
+    # A policy that needs approval answers PENDING_APPROVAL: nothing is revoked yet, so the title says so.
+    status = revocation.get("status") or "status unknown"
     return CommandResults(
         readable_output=tableToMarkdown(
-            f"Revoked certificate {fingerprint}",
+            f"Revocation of certificate {fingerprint}: {status}",
             context,
             headers=["Fingerprint", "CommonName", "Status", "ValidTo", "Revocation"],
             removeNull=True,
@@ -2228,9 +2321,9 @@ def build_expiry_incident(
 ) -> dict[str, Any] | None:
     """Build the incident for one certificate crossing one expiry threshold.
 
-    `occurred` is the moment the certificate *crossed* the threshold, not the moment we noticed.
-    That is the timestamp the look-back mechanism needs: a crossing can happen well before the
-    fetch that first sees it. It can also lie in the future, for a threshold not yet reached.
+    `occurred` is the moment the certificate *crossed* the threshold, not the moment we noticed: a
+    certificate first seen inside the window crossed it days ago. The fetch raises the oldest
+    crossings first when `max_fetch` cuts a run short.
 
     Args:
         certificate: A raw `searchCertificates` node.
@@ -2259,61 +2352,89 @@ def build_expiry_incident(
         "type": incident_type,
         "severity": threshold_severity(threshold_days),
         "rawJSON": json.dumps(context),
-        # The deduplication key. `dbotMirrorId` is mirroring, not deduplication - the mechanism
-        # here is `last_run["found_incident_ids"]`, which is keyed on this field.
+        # `{fingerprint}:{threshold}`. `dbotMirrorId` is mirroring, not deduplication; the fetch
+        # records the raised threshold per fingerprint in last_run instead.
         DEDUP_ID_FIELD: f"{fingerprint}:{threshold_days}",
     }
 
 
-def most_severe_crossing(
-    certificate: dict[str, Any], thresholds: list[int], incident_type: str, source_brand: str, fetch_range: tuple[str, str]
-) -> dict[str, Any] | None:
-    """Return the incident for the most severe threshold the certificate crossed within the fetch range.
-
-    Only one per certificate: when several crossings fall in one range - the first-fetch backlog -
-    the less severe ones are already stale. A later range either repeats the same choice or starts
-    after them, so they are never raised.
+def crossed_threshold(certificate: dict[str, Any], thresholds: list[int], now: datetime) -> int | None:
+    """Return the most severe threshold the certificate has already crossed.
 
     Args:
         certificate: A raw `searchCertificates` node.
         thresholds: Thresholds in days, most severe first.
-        incident_type: The incident type to create.
-        source_brand: The brand of the integration that returned the certificate.
-        fetch_range: ``(start_time, end_time)`` of the fetch range, both in `FETCH_DATE_FORMAT`.
+        now: The reference time.
 
     Returns:
-        dict | None: The incident, or None when no threshold was crossed within the range.
+        int | None: The threshold in days, or None when none is crossed yet or the expiry is unusable.
     """
-    start_time, end_time = fetch_range
-    crossings = (build_expiry_incident(certificate, days, incident_type, source_brand) for days in thresholds)
-    # Both timestamps come from the same fixed-width UTC format, so a string comparison is a
-    # chronological comparison.
-    return next((incident for incident in crossings if incident and start_time <= incident["occurred"] <= end_time), None)
+    expiry = arg_to_datetime((certificate.get("validity") or {}).get("to"), required=False)
+    if not expiry:
+        return None
+    return next((days for days in thresholds if expiry - timedelta(days=days) <= now), None)
 
 
 def expiry_incidents(
-    certificates: list[dict[str, Any]], window_days: int, incident_type: str, source_brand: str, fetch_range: tuple[str, str]
+    certificates: list[dict[str, Any]],
+    window_days: int,
+    incident_type: str,
+    source_brand: str,
+    raised: dict[str, int],
+    now: datetime,
 ) -> list[dict[str, Any]]:
-    """Turn certificates into incidents, one per threshold crossed within the fetch range.
+    """Raise the most severe threshold each certificate has crossed, unless it was raised already.
 
-    Sorted oldest-first, because the caller keeps the first `fetch_limit` of them and records the
-    latest `occurred` as the next run's starting point.
+    Only one per certificate: a certificate first seen past several thresholds - on the first
+    fetch, or after entering the window late - gets only the most severe one, as the others are
+    stale. It gets another only when it crosses a more severe threshold later. Sorted oldest
+    crossing first, because the caller keeps only the first `max_fetch`.
 
     Args:
         certificates: Raw `searchCertificates` nodes.
         window_days: The expiry window being fetched, in days.
         incident_type: The incident type to create.
         source_brand: The brand of the integration that returned the certificates.
-        fetch_range: ``(start_time, end_time)`` of the fetch range, both in `FETCH_DATE_FORMAT`.
+        raised: The most severe threshold already raised per fingerprint, from the previous run.
+        now: The reference time.
 
     Returns:
         list: The incidents.
     """
     thresholds = expiry_thresholds(window_days)
-    incidents = [
-        most_severe_crossing(certificate, thresholds, incident_type, source_brand, fetch_range) for certificate in certificates
-    ]
-    return sorted((incident for incident in incidents if incident), key=lambda incident: incident["occurred"])
+    incidents = []
+    for certificate in certificates:
+        days = crossed_threshold(certificate, thresholds, now)
+        if days is None or days >= raised.get(certificate.get("fingerprint") or "", window_days + 1):
+            continue
+        if incident := build_expiry_incident(certificate, days, incident_type, source_brand, now=now):
+            incidents.append(incident)
+    return sorted(incidents, key=lambda incident: incident["occurred"])
+
+
+def updated_expiry_state(
+    raised: dict[str, int], certificates: list[dict[str, Any]], incidents: list[dict[str, Any]], truncated: bool
+) -> dict[str, int]:
+    """Record the thresholds raised in this run, and forget certificates that left the expiry window.
+
+    A certificate leaves the window when it is renewed, retired or expired. When the page walk was
+    cut short, a certificate missing from this run may still be in the window, so nothing is forgotten.
+
+    Args:
+        raised: The most severe threshold already raised per fingerprint, from the previous run.
+        certificates: The certificates in the expiry window in this run.
+        incidents: The expiry incidents raised in this run.
+        truncated: Whether the page walk stopped before the end of the window.
+
+    Returns:
+        dict: The state for the next run.
+    """
+    in_window = {certificate.get("fingerprint") for certificate in certificates}
+    state = dict(raised) if truncated else {fingerprint: days for fingerprint, days in raised.items() if fingerprint in in_window}
+    for incident in incidents:
+        fingerprint, days = incident[DEDUP_ID_FIELD].rsplit(":", 1)
+        state[fingerprint] = int(days)
+    return state
 
 
 def build_revocation_failed_incident(
@@ -2352,28 +2473,36 @@ def build_revocation_failed_incident(
 
 
 def revocation_failed_incidents(
-    client: CertificateManagerClient, raised_before: list[str]
+    client: CertificateManagerClient, raised_before: list[str], budget: int
 ) -> tuple[list[dict[str, Any]], list[str]]:
     """Raise one incident per certificate whose key-compromise revocation is FAILED.
 
     A failure stays FAILED until someone acts, so deduplication is by state, not by time: a
-    fingerprint is raised again only after it left the failed state and failed anew.
+    fingerprint is raised again only after it left the failed state and failed anew. Failures
+    beyond `budget` are left for the next run, and a failed query keeps the previous state, so the
+    expiry incidents of the same run are never lost to it.
 
     Args:
         client: The client.
         raised_before: Fingerprints already raised, from the previous run.
+        budget: How many incidents this run may still create.
 
     Returns:
-        tuple: ``(incidents, fingerprints_now_failed)``.
+        tuple: ``(incidents, fingerprints_raised)``, where ``fingerprints_raised`` covers the
+        certificates still failed that have now been raised.
     """
     # The API filters on revocation status but not on reason, so the reason is checked here. The
     # status is checked again too: a filter the server ignored must not raise every certificate.
-    certificates, _ = collect_certificates(
-        client,
-        limit=FETCH_MAX_PAGES * MAX_PAGE_SIZE,
-        filter_on={"and": {"revocationStatus": {"eq": GraphQLEnum(REVOCATION_FAILED)}}},
-        max_pages=FETCH_MAX_PAGES,
-    )
+    try:
+        certificates, _ = collect_certificates(
+            client,
+            limit=FETCH_MAX_PAGES * MAX_PAGE_SIZE,
+            filter_on={"and": {"revocationStatus": {"eq": GraphQLEnum(REVOCATION_FAILED)}}},
+            max_pages=FETCH_MAX_PAGES,
+        )
+    except DemistoException as error:
+        demisto.error(f"Could not check for failed key-compromise revocations; trying again next fetch: {error}")
+        return [], raised_before
     failed_key_compromise = {"status": REVOCATION_FAILED, "reason": KEY_COMPROMISE_REASON}
     failed = [
         cert
@@ -2381,68 +2510,54 @@ def revocation_failed_incidents(
         if cert.get("fingerprint")
         and {key: (cert.get("revocation") or {}).get(key) for key in failed_key_compromise} == failed_key_compromise
     ]
-    incidents = [
-        build_revocation_failed_incident(cert, client.product.brand)
-        for cert in failed
-        if cert["fingerprint"] not in raised_before
-    ]
-    return incidents, sorted(cert["fingerprint"] for cert in failed)
+    new = [cert for cert in failed if cert["fingerprint"] not in raised_before][: max(budget, 0)]
+    incidents = [build_revocation_failed_incident(cert, client.product.brand) for cert in new]
+    still_raised = {cert["fingerprint"] for cert in failed if cert["fingerprint"] in raised_before}
+    return incidents, sorted(still_raised | {cert["fingerprint"] for cert in new})
 
 
 def fetch_incidents(
-    client: CertificateManagerClient, params: dict[str, Any], last_run: dict[str, Any]
+    client: CertificateManagerClient, params: dict[str, Any], last_run: dict[str, Any], now: datetime | None = None
 ) -> tuple[list[dict[str, Any]], dict]:
     """Fetch expiring certificates, and failed key-compromise revocations, as incidents.
+
+    Both kinds are deduplicated by state rather than by time: a condition that stays true (a
+    certificate past a threshold, a revocation still failed) must be raised once, however long it
+    lasts, and a certificate first seen late must still be raised.
 
     Args:
         client: The client.
         params: `demisto.params()`.
         last_run: `demisto.getLastRun()`.
+        now: Reference time, defaulting to the current UTC time. Injected for testability.
 
     Returns:
         tuple: ``(incidents, last_run)``.
     """
-    # Read before the look-back helpers touch last_run, which they rebuild.
-    raised_before = list(last_run.get(RAISED_REVOCATION_FAILURES_KEY) or [])
-    look_back = arg_to_number(params.get("look_back"))
-    look_back = DEFAULT_LOOK_BACK_MINUTES if look_back is None else look_back
-    fetch_limit = arg_to_number(last_run.get("limit")) or arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+    now = now or datetime.now(UTC)
+    fetch_limit = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
     window_days = arg_to_number(params.get("fetch_expiry_days")) or DEFAULT_EXPIRY_DAYS
     incident_type = params.get("incidentType") or INCIDENT_TYPE
+    raised_thresholds = dict(last_run.get(RAISED_EXPIRY_THRESHOLDS_KEY) or {})
 
-    start_time, end_time = get_fetch_run_time_range(
-        last_run=last_run,
-        first_fetch=params.get("first_fetch") or DEFAULT_FIRST_FETCH,
-        look_back=look_back,
-        date_format=FETCH_DATE_FORMAT,
-    )
     # Server-side. A 30-day window is a small fraction of the inventory, so paging
     # the inventory and filtering locally is never the right shape here.
-    certificates, _ = collect_certificates(
+    certificates, truncated = collect_certificates(
         client,
         limit=FETCH_MAX_PAGES * MAX_PAGE_SIZE,
-        filter_on=expiry_window_filter(window_days, include_expired=False),
+        filter_on=expiry_window_filter(window_days, include_expired=False, now=now),
         max_pages=FETCH_MAX_PAGES,
     )
-    candidates = expiry_incidents(certificates, window_days, incident_type, client.product.brand, (start_time, end_time))
+    candidates = expiry_incidents(certificates, window_days, incident_type, client.product.brand, raised_thresholds, now)
+    incidents = candidates[:fetch_limit]
 
-    incidents = filter_incidents_by_duplicates_and_limit(
-        incidents_res=candidates, last_run=last_run, fetch_limit=fetch_limit, id_field=DEDUP_ID_FIELD
-    )
-    updated_last_run = update_last_run_object(
-        last_run=last_run,
-        incidents=incidents,
-        fetch_limit=fetch_limit,
-        start_fetch_time=start_time,
-        end_fetch_time=end_time,
-        look_back=look_back,
-        created_time_field="occurred",
-        id_field=DEDUP_ID_FIELD,
-        date_format=FETCH_DATE_FORMAT,
-    )
-    failure_incidents, now_failed = revocation_failed_incidents(client, raised_before)
-    updated_last_run[RAISED_REVOCATION_FAILURES_KEY] = now_failed
-    return incidents + failure_incidents, updated_last_run
+    raised_failures = list(last_run.get(RAISED_REVOCATION_FAILURES_KEY) or [])
+    failure_incidents, now_raised = revocation_failed_incidents(client, raised_failures, fetch_limit - len(incidents))
+    next_run = {
+        RAISED_EXPIRY_THRESHOLDS_KEY: updated_expiry_state(raised_thresholds, certificates, incidents, truncated),
+        RAISED_REVOCATION_FAILURES_KEY: now_raised,
+    }
+    return incidents + failure_incidents, next_run
 
 
 """ PARAMETERS """
