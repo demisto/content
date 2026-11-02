@@ -15408,7 +15408,7 @@ script:
         description: A dictionary of the display information of the Azure Resource Graph operation, including provider, resource, operation, and description.
         type: Unknown
   - name: azure-rg-operations-list
-    description: "Gets all Azure Resource Graph operations permissions and descriptions. Required permission: Microsoft.ResourceGraph/operations/read."
+    description: "Gets the permissions and descriptions of all Azure Resource Graph operations. Required permission: Microsoft.ResourceGraph/operations/read."
     arguments:
       - name: subscription_id
         description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.

@@ -4995,7 +4995,7 @@ Creates a shared access signature (SAS) token for a container.
 ### azure-rg-list-operations
 
 ***
-Gets all Azure Resource Graph operations permissions and descriptions. Deprecated. Use the azure-rg-operations-list command instead. Required permission: Microsoft.ResourceGraph/operations/read.
+Gets the permissions and descriptions of all Azure Resource Graph operations. Deprecated. Use the azure-rg-operations-list command instead. Required permission: Microsoft.ResourceGraph/operations/read.
 
 #### Base Command
 
@@ -5017,7 +5017,7 @@ Gets all Azure Resource Graph operations permissions and descriptions. Deprecate
 ### azure-rg-operations-list
 
 ***
-Gets all Azure Resource Graph operations permissions and descriptions. Required permission: Microsoft.ResourceGraph/operations/read.
+Gets the permissions and descriptions of all Azure Resource Graph operations. Required permission: Microsoft.ResourceGraph/operations/read.
 
 #### Base Command
 
