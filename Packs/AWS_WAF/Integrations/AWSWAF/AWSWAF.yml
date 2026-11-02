@@ -2011,6 +2011,20 @@ script:
       description: A JSON string representing the rules array for the web ACL. Replaces existing rules.
     - name: description
       description: The web ACL description.
+    - name: cloud_watch_metrics_enabled
+      description: Whether to enable CloudWatch metrics for the web ACL.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: sampled_requests_enabled
+      description: Whether to enable sampled requests for the web ACL.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: metric_name
+      description: The CloudWatch metric name for the web ACL.
     - name: region
       description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED

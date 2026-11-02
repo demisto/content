@@ -753,9 +753,9 @@ def create_rule_group_command(client: "WAFV2Client", args: dict) -> CommandResul
     tag_keys = argToList(args.get("tag_key")) or []
     tag_values = argToList(args.get("tag_value")) or []
     name = args.get("name", "")
-    cloud_watch_metrics_enabled = argToBoolean(args.get("cloud_watch_metrics_enabled", "")) or True
+    cloud_watch_metrics_enabled = argToBoolean(args.get("cloud_watch_metrics_enabled", "true"))
     metric_name = args.get("metric_name", "") or name
-    sampled_requests_enabled = argToBoolean(args.get("sampled_requests_enabled", "")) or True
+    sampled_requests_enabled = argToBoolean(args.get("sampled_requests_enabled", "true"))
 
     kwargs = {
         "Name": name,
@@ -1047,9 +1047,9 @@ def create_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
     tag_values = argToList(args.get("tag_value")) or []
     name = args.get("name", "")
     default_action = args.get("default_action", "Allow")
-    cloud_watch_metrics_enabled = argToBoolean(args.get("cloud_watch_metrics_enabled", "")) or True
+    cloud_watch_metrics_enabled = argToBoolean(args.get("cloud_watch_metrics_enabled", "true"))
     metric_name = args.get("metric_name", "") or name
-    sampled_requests_enabled = argToBoolean(args.get("sampled_requests_enabled", "")) or True
+    sampled_requests_enabled = argToBoolean(args.get("sampled_requests_enabled", "true"))
 
     kwargs: dict[str, Any] = {
         "Name": name,
@@ -1100,6 +1100,12 @@ def update_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
         current_default_action = {default_action: {}}
     if rules_json := args.get("rules_json"):
         current_rules = json.loads(rules_json)
+    if cloud_watch := args.get("cloud_watch_metrics_enabled"):
+        current_visibility_config["CloudWatchMetricsEnabled"] = argToBoolean(cloud_watch)
+    if sampled := args.get("sampled_requests_enabled"):
+        current_visibility_config["SampledRequestsEnabled"] = argToBoolean(sampled)
+    if metric_name := args.get("metric_name"):
+        current_visibility_config["MetricName"] = metric_name
 
     kwargs |= {
         "LockToken": lock_token,

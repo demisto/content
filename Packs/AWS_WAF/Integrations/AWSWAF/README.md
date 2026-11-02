@@ -852,6 +852,9 @@ Update a web ACL.
 | default_action | The default action for the web ACL. Possible values are: Allow, Block. | Optional |
 | rules_json | A JSON string representing the rules array for the web ACL. Replaces existing rules. | Optional |
 | description | The web ACL description. | Optional |
+| cloud_watch_metrics_enabled | Whether to enable CloudWatch metrics for the web ACL. Possible values are: true, false. | Optional |
+| sampled_requests_enabled | Whether to enable sampled requests for the web ACL. Possible values are: true, false. | Optional |
+| metric_name | The CloudWatch metric name for the web ACL. | Optional |
 | region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3, us-gov-east-1, us-gov-west-1, af-south-1, ap-east-1, ap-east-2, ap-northeast-3, ap-south-2, ap-southeast-3, ap-southeast-4, cn-north-1, cn-northwest-1, eu-central-2, eu-south-1, eu-south-2, me-south-1, me-central-1. | Optional |
 
 #### Context Output

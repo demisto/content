@@ -20,12 +20,12 @@
 !aws-waf-web-acl-resource-list web_acl_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678 resource_type=APPLICATION_LOAD_BALANCER
 !aws-waf-web-acl-for-resource-get resource_arn=arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890
 
-!aws-waf-logging-configuration-put resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678 log_destination_configs="arn:aws:firehose:us-east-1:123456789012:deliverystream/aws-waf-logs-stream"
+!aws-waf-logging-configuration-put resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678 log_destination="arn:aws:firehose:us-east-1:123456789012:deliverystream/aws-waf-logs-stream"
 !aws-waf-logging-configuration-get resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678
 !aws-waf-logging-configuration-delete resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678
 !aws-waf-logging-configuration-list scope=Regional
 
-!aws-waf-tag-resource resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678 tags="Environment:Production,Team:Security"
+!aws-waf-tag-resource resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678 tag_key="Environment,Team" tag_value="Production,Security"
 !aws-waf-untag-resource resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678 tag_keys="Environment,Team"
 !aws-waf-tag-list resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678
 
