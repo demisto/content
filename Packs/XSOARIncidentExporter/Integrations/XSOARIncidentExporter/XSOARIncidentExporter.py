@@ -42,11 +42,55 @@ class XSIAMClient(BaseClient):
         }
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
-    def _http_request(self, **kwargs) -> Any:
-        kwargs.setdefault("retries", MAX_RETRIES)
-        kwargs.setdefault("backoff_factor", BACKOFF_FACTOR)
-        kwargs.setdefault("status_list_to_retry", [429])
-        return super()._http_request(**kwargs)
+    def _http_request(
+        self,
+        method,
+        url_suffix="",
+        full_url=None,
+        headers=None,
+        auth=None,
+        json_data=None,
+        params=None,
+        data=None,
+        files=None,
+        timeout=None,
+        resp_type="json",
+        ok_codes=None,
+        return_empty_response=False,
+        retries=MAX_RETRIES,
+        status_list_to_retry=None,
+        backoff_factor=BACKOFF_FACTOR,
+        raise_on_redirect=True,
+        raise_on_status=True,
+        error_handler=None,
+        empty_valid_codes=None,
+        **kwargs,
+    ) -> Any:
+        if status_list_to_retry is None:
+            status_list_to_retry = [429]
+        return super()._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            full_url=full_url,
+            headers=headers,
+            auth=auth,
+            json_data=json_data,
+            params=params,
+            data=data,
+            files=files,
+            timeout=timeout,
+            resp_type=resp_type,
+            ok_codes=ok_codes,
+            return_empty_response=return_empty_response,
+            retries=retries,
+            status_list_to_retry=status_list_to_retry,
+            backoff_factor=backoff_factor,
+            raise_on_redirect=raise_on_redirect,
+            raise_on_status=raise_on_status,
+            error_handler=error_handler,
+            empty_valid_codes=empty_valid_codes,
+            **kwargs,
+        )
 
     def insert_parsed_alerts(self, alerts: list) -> dict:
         body = {"request_data": {"alerts": alerts}}
@@ -244,9 +288,9 @@ def build_description(incident: dict) -> str:
     lines.append(f"XSOAR Incident ID: {incident.get('id', '')}")
     lines.append(f"Name: {incident.get('name', '')}")
     lines.append(f"Type: {incident.get('type', '')}")
-    status_val = incident.get("status")
+    status_val: int = incident.get("status", 0)
     lines.append(f"Status: {status_names.get(status_val, str(status_val))}")
-    sev = incident.get("severity", 0)
+    sev: int = incident.get("severity", 0)
     lines.append(f"Severity: {severity_names.get(sev, str(sev))}")
     lines.append(f"Owner: {incident.get('owner', '')}")
     lines.append(f"Occurred: {incident.get('occurred', '')}")
@@ -719,8 +763,8 @@ def sync_close_status_command(xsiam_client: XSIAMClient, args: dict) -> CommandR
     )
 
 
-def sync_war_room_for_incident(xsiam_client: XSIAMClient, xsoar_client: XSOARClient, incident_id: str) -> dict:
-    result = {
+def sync_war_room_for_incident(xsiam_client: XSIAMClient, xsoar_client: XSOARClient, incident_id: str) -> dict[str, Any]:
+    result: dict[str, Any] = {
         "incident_id": incident_id,
         "synced": 0,
         "skipped": 0,
