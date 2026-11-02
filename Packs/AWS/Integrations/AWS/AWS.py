@@ -411,8 +411,10 @@ def parse_parameter_filters(filter_string: str | None) -> list[dict[str, Any]]:
         A list of dicts with the form {"Key": <key>, "Values": [<value>], "Option": <option>}
     """
     filters: list[dict[str, Any]] = []
+    # The key and values character sets follow the AWS tag key/value pattern (letters, digits, spaces, and _ . : / = + - @),
+    # plus * in values. The negative lookahead rejects an option pair placed after the values pair.
     regex = re.compile(
-        r"^key=(?P<key>[\w:.\-/]+),(?:option=(?P<option>\w+),)?values=(?P<values>[ \w@,.*\-/:]+)$",
+        r"^key=(?P<key>[\w :./=+@-]+),(?:option=(?P<option>\w+),)?values=(?!(?:[^,]*,)*\s*option=)(?P<values>[\w ,:./=+@*-]+)$",
         flags=re.I,
     )
     for parameter_filter in argToList(filter_string, separator=";"):
@@ -424,12 +426,15 @@ def parse_parameter_filters(filter_string: str | None) -> list[dict[str, Any]]:
                 f"Could not parse the filter: {parameter_filter}. Please make sure you provided "
                 "like so: key=<key>,values=<value1>,<value2>;key=<key>,option=<option>,values=<value>..."
             )
+        values = [value for value in argToList(match_filter["values"]) if value]
+        if not values:
+            raise ValueError(f"Could not parse the filter: {parameter_filter}. The values pair must contain at least one value.")
         filters.append(
             remove_empty_elements(
                 {
                     "Key": match_filter["key"],
                     "Option": match_filter["option"],
-                    "Values": argToList(match_filter["values"]),
+                    "Values": values,
                 }
             )
         )

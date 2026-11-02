@@ -16794,6 +16794,31 @@ SSM_DESCRIBE_PARAMETERS_RESPONSE = {
             [{"Key": "Tier", "Values": ["Standard"]}],
             id="trailing separator is ignored",
         ),
+        pytest.param(
+            "key=tag:Cost Center,values=123",
+            [{"Key": "tag:Cost Center", "Values": ["123"]}],
+            id="tag key with a space",
+        ),
+        pytest.param(
+            "key=tag:owner@corp,values=x",
+            [{"Key": "tag:owner@corp", "Values": ["x"]}],
+            id="tag key with an at sign",
+        ),
+        pytest.param(
+            "key=tag:Env,values=a=b",
+            [{"Key": "tag:Env", "Values": ["a=b"]}],
+            id="tag value with an equals sign",
+        ),
+        pytest.param(
+            "key=tag:Team,values=dev+ops",
+            [{"Key": "tag:Team", "Values": ["dev+ops"]}],
+            id="tag value with a plus sign",
+        ),
+        pytest.param(
+            "key=Name,values=a,,b",
+            [{"Key": "Name", "Values": ["a", "b"]}],
+            id="empty values between commas are dropped",
+        ),
     ],
 )
 def test_parse_parameter_filters(filter_string, expected):
@@ -16813,6 +16838,8 @@ def test_parse_parameter_filters(filter_string, expected):
         pytest.param("Name=test", id="missing the key= prefix"),
         pytest.param("key=Name", id="missing the values pair"),
         pytest.param("key=Name,values=test,option=Contains", id="option after values"),
+        pytest.param("key=Name,values=,,", id="values pair without any value"),
+        pytest.param('key=Name,values=a"}],"MaxResults":1', id="quotes and braces in values"),
     ],
 )
 def test_parse_parameter_filters_invalid_input(filter_string):
