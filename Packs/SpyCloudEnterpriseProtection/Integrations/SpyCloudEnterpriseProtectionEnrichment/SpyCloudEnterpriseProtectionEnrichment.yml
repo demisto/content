@@ -1,5 +1,7 @@
 category: Data Enrichment & Threat Intelligence
 provider: SpyCloud
+sectionorder:
+- Connect
 commonfields:
   id: SpyCloudEnterpriseProtectionEnrichment
   version: -1
@@ -1842,7 +1844,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.15.14069087
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
