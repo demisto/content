@@ -47,9 +47,7 @@ def was_label_ever_added(pr: PullRequest, label_name: str) -> bool:
     is never triggered twice.
     """
     try:
-        return any(
-            event.event == "labeled" and event.label and event.label.name == label_name for event in pr.get_issue_events()
-        )
+        return any(event.event == "labeled" and event.label and event.label.name == label_name for event in pr.get_issue_events())
     except Exception as e:
         print(f"Failed to fetch issue events for PR #{pr.number}: {e}, assuming label was added before.")
         return True
