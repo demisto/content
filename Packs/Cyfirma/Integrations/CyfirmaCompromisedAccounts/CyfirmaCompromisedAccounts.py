@@ -1,10 +1,12 @@
-"""CYFIRMA Compromised Accounts integration for Cortex XSOAR."""
+"""CYFIRMA Compromised Accounts integration for Cortex XSOAR.
+ 
+Fetches customer-account, compromised-employee and public-account leak as incidents.
+"""
 
 import json
 import uuid
 from datetime import datetime, UTC
 from typing import Any
-from urllib.parse import urljoin
 
 import dateparser
 import demistomock as demisto

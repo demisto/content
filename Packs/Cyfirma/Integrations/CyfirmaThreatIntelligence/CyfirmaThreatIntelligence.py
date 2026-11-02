@@ -1,8 +1,13 @@
+"""CYFIRMA Threat Intelligence feed integration for Cortex XSOAR.
+ 
+Fetches STIX 2.1 indicators, vulnerabilities, threat actors, malware and their relationships
+as XSOAR indicators and exposes search commands over the same data.
+"""
+
 import re
 import traceback
 import uuid
 from typing import Any
-from urllib.parse import urljoin
 
 import demistomock as demisto
 import urllib3
@@ -146,8 +151,7 @@ _HASH_PREFERENCE = ("sha256", "sha1", "md5", "sha512", "ssdeep")
 
 _STIX_RELATIONSHIP_ALIASES = {"indicates": "indicator-of"}
 
-# (table column label, extension key) pairs used by build_result
-_VUL_COLUMNS = [
+_VUL_COLUMNS: list[tuple[str, str, str | None | list[str]]] = [
     ("Attack Complexity", "attack_complexity", ""),
     ("Integrity Impact", "integrity_impact", ""),
     ("Impact Score", "impact_score", ""),
@@ -516,7 +520,12 @@ class Client(BaseClient):
                 ("technologies", "Technologies"),
             ):
                 if ext.get(key):
-                    metrics.append({"metrics": label, "value": ", ".join(str(v) for v in _as_list(ext[key]))})
+                    metrics.append(
+                        {
+                            "metrics": label,
+                            "value": ", ".join(str(v) for v in _as_list(ext[key])),
+                        }
+                    )
             fields["cvsstable"] = metrics
 
         elif obj_type == "location":
@@ -563,7 +572,7 @@ class Client(BaseClient):
             feeds: List that the additional STIX objects are appended to.
         """
         for start in range(0, len(ta_names), TA_SEARCH_CHUNK_SIZE):
-            chunk = ta_names[start : start + TA_SEARCH_CHUNK_SIZE]
+            chunk = ta_names[start: start + TA_SEARCH_CHUNK_SIZE]
             try:
                 ta_res_data = self.call_api(_TA_SEARCH_API_PATHS, params={"values": chunk})
             except Exception as e:
