@@ -10674,19 +10674,160 @@ def test_storage_fileshare_list_command_success(mocker, client, mock_params):
     }
     result = storage_fileshare_list_command(client, mock_params, args)
 
-    client.list_shares_request.assert_called_once_with("mock_subscription_id", "mock_resource_group", "mockaccount", "50")
+    client.list_shares_request.assert_called_once_with("mock_subscription_id", "mock_resource_group", "mockaccount", "50", "")
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Storage.FileShares"
-    assert len(result.outputs) == 2
+    shares = result.outputs["Azure.Storage.FileShares(val.id && val.id == obj.id)"]
+    assert len(shares) == 2
     # Full share objects are passed through as-is with native camelCase keys.
-    assert result.outputs[0].get("name") == "my-file-share"
-    assert result.outputs[1].get("name") == "my-share"
-    assert result.outputs[0].get("properties", {}).get("accessTier") == "TransactionOptimized"
-    assert result.outputs[0].get("properties", {}).get("shareQuota") == 100
-    assert result.outputs[1].get("etag") == '"0x8DFEDCBA"'
+    assert shares[0].get("name") == "my-file-share"
+    assert shares[1].get("name") == "my-share"
+    assert shares[0].get("properties", {}).get("accessTier") == "TransactionOptimized"
+    assert shares[0].get("properties", {}).get("shareQuota") == 100
+    assert shares[1].get("etag") == '"0x8DFEDCBA"'
+    # No nextLink in the response -> next token is None and no pagination hint.
+    assert result.outputs["Azure.Storage(true)"] == {"FileSharesNextToken": None}
+    assert "next_token" not in result.readable_output
     # Readable output only surfaces Name/Id/Type.
     assert "Access Tier" not in result.readable_output
     assert "my-file-share" in result.readable_output
+
+
+def test_storage_fileshare_list_command_with_next_link(mocker, client, mock_params):
+    """
+    Given: An Azure client whose list_shares_request returns a page of shares along with a nextLink.
+    When: The storage_fileshare_list_command function is called.
+    Then: The shares are returned under Azure.Storage.FileShares and the nextLink under Azure.Storage.FileSharesNextToken,
+          and the readable output instructs the user how to fetch the next page.
+    """
+    from Azure import storage_fileshare_list_command
+
+    next_link = (
+        "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/res9290/providers/"
+        "Microsoft.Storage/storageAccounts/sto1590/fileServices/default/shares?api-version=2022-09-01"
+        "&$maxpagesize=2&$skipToken=/sto1590/share5103"
+    )
+    share_id_prefix = (
+        "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/res9290/providers/"
+        "Microsoft.Storage/storageAccounts/sto1590/fileServices/default/shares/"
+    )
+    paid_bursting = {
+        "paidBurstingEnabled": True,
+        "paidBurstingMaxBandwidthMibps": 10340,
+        "paidBurstingMaxIops": 102400,
+    }
+    json_response = {
+        "nextLink": next_link,
+        "value": [
+            {
+                "name": "share1644",
+                "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+                "etag": '"0x8D589847D51C7DE"',
+                "id": f"{share_id_prefix}share1644",
+                "properties": {
+                    "fileSharePaidBursting": paid_bursting,
+                    "lastModifiedTime": "2019-05-14T08:20:47Z",
+                    "shareQuota": 1024,
+                },
+            },
+            {
+                "name": "share4052",
+                "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+                "etag": '"0x8D589847DAB5AF9"',
+                "id": f"{share_id_prefix}share4052",
+                "properties": {
+                    "fileSharePaidBursting": paid_bursting,
+                    "lastModifiedTime": "2019-05-14T08:20:47Z",
+                    "shareQuota": 1024,
+                },
+            },
+        ],
+    }
+    mocker.patch.object(client, "list_shares_request", return_value=json_response)
+
+    args = {
+        "subscription_id": "00000000-0000-0000-0000-000000000000",
+        "resource_group_name": "res9290",
+        "account_name": "sto1590",
+        "limit": "2",
+    }
+    result = storage_fileshare_list_command(client, mock_params, args)
+
+    client.list_shares_request.assert_called_once_with("00000000-0000-0000-0000-000000000000", "res9290", "sto1590", "2", "")
+    shares = result.outputs["Azure.Storage.FileShares(val.id && val.id == obj.id)"]
+    assert [share["name"] for share in shares] == ["share1644", "share4052"]
+    assert shares[0]["properties"]["fileSharePaidBursting"]["paidBurstingMaxIops"] == 102400
+    assert result.outputs["Azure.Storage(true)"] == {"FileSharesNextToken": next_link}
+    assert result.raw_response == json_response
+
+
+def test_storage_fileshare_list_command_forwards_next_token(mocker, client, mock_params):
+    """
+    Given: A next_token argument holding the nextLink of a previous page, and a response that is the last page.
+    When: The storage_fileshare_list_command function is called.
+    Then: The next_token is forwarded to list_shares_request, and the stale token is cleared from the context.
+    """
+    from Azure import storage_fileshare_list_command
+
+    next_link = "https://management.azure.com/subscriptions/sub/next?api-version=2022-09-01&$skipToken=/acc/share2"
+    share = {"id": "share-2-id", "name": "share2", "type": "Microsoft.Storage/storageAccounts/fileServices/shares"}
+    mocker.patch.object(client, "list_shares_request", return_value={"value": [share]})
+
+    args = {
+        "subscription_id": "sub",
+        "resource_group_name": "rg",
+        "account_name": "acc",
+        "next_token": next_link,
+    }
+    result = storage_fileshare_list_command(client, mock_params, args)
+
+    client.list_shares_request.assert_called_once_with("sub", "rg", "acc", "50", next_link)
+    assert result.outputs["Azure.Storage.FileShares(val.id && val.id == obj.id)"] == [share]
+    assert result.outputs["Azure.Storage(true)"] == {"FileSharesNextToken": None}
+
+
+def test_list_shares_request_uses_next_token(mocker, client):
+    """
+    Given: A next_token (nextLink URI) from a previous page.
+    When: list_shares_request is called with the next_token.
+    Then: The request is sent to the nextLink URI as-is, without adding api-version/$maxpagesize params.
+    """
+    next_link = "https://management.azure.com/next?api-version=2022-09-01&$maxpagesize=2&$skipToken=/sto1590/share5103"
+    http_mock = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.list_shares_request("sub", "rg", "account", "2", next_link)
+
+    http_mock.assert_called_once_with(method="GET", full_url=next_link, params={})
+
+
+def test_list_shares_request_rejects_foreign_next_token(mocker, client):
+    """
+    Given: A next_token pointing at a host other than the configured Azure management endpoint.
+    When: list_shares_request is called with the next_token.
+    Then: A DemistoException is raised and no HTTP request is sent.
+    """
+    http_mock = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.list_shares_request("sub", "rg", "account", "2", "https://attacker.example.com/next?$skipToken=abc")
+
+    http_mock.assert_not_called()
+
+
+def test_list_shares_request_without_next_token(mocker, client):
+    """
+    Given: No next_token.
+    When: list_shares_request is called.
+    Then: The request is sent to the ARM shares URL with api-version and $maxpagesize params.
+    """
+    from Azure import FILESHARE_ARM_API_VERSION
+
+    http_mock = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.list_shares_request("sub", "rg", "account", "2")
+
+    call_kwargs = http_mock.call_args.kwargs
+    assert call_kwargs["full_url"].endswith("/storageAccounts/account/fileServices/default/shares")
+    assert call_kwargs["params"] == {"api-version": FILESHARE_ARM_API_VERSION, "$maxpagesize": "2"}
 
 
 def test_storage_fileshare_content_list_command_success(mocker, client, mock_params):
@@ -10730,7 +10871,7 @@ def test_storage_fileshare_content_list_command_success(mocker, client, mock_par
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "Azure.Storage.FileShares"
-    assert result.outputs.get("Name") == "mock-share"
+    assert result.outputs.get("name") == "mock-share"
     assert result.outputs.get("Content").get("File")[0].get("Name") == "mock_file.png"
     assert result.outputs.get("Content").get("Directory")[0].get("Name") == "mock_directory"
 

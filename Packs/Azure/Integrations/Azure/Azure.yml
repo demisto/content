@@ -2187,10 +2187,12 @@ script:
       description: The storage account name.
     - name: limit
       defaultValue: '50'
-      description: The maximum number of shares to retrieve per page. Default is 50.
+      description: The maximum number of shares to retrieve per page.
+    - name: next_token
+      description: The nextLink URI returned by a previous run of this command (Azure.Storage.FileSharesNextToken), used to retrieve the next page of results.
     outputs:
     - contextPath: Azure.Storage.FileShares.id
-      description: Fully qualified resource ID for the file share.
+      description: The fully qualified resource ID for the file share.
       type: String
     - contextPath: Azure.Storage.FileShares.name
       description: The name of the file share.
@@ -2199,10 +2201,10 @@ script:
       description: The type of the resource.
       type: String
     - contextPath: Azure.Storage.FileShares.etag
-      description: Resource Etag.
+      description: The resource ETag.
       type: String
     - contextPath: Azure.Storage.FileShares.properties.accessTier
-      description: Access tier for the share (TransactionOptimized, Hot, Cool, or Premium).
+      description: The access tier for the share (TransactionOptimized, Hot, Cool, or Premium).
       type: String
     - contextPath: Azure.Storage.FileShares.properties.lastModifiedTime
       description: The date and time the share was last modified.
@@ -2217,7 +2219,7 @@ script:
       description: The authentication protocol used for the file share (SMB or NFS).
       type: String
     - contextPath: Azure.Storage.FileShares.properties.leaseState
-      description: Lease state of the share.
+      description: The lease state of the share.
       type: String
     - contextPath: Azure.Storage.FileShares.properties.leaseStatus
       description: The lease status of the share.
@@ -2227,6 +2229,18 @@ script:
       type: Boolean
     - contextPath: Azure.Storage.FileShares.properties.version
       description: The version of the share.
+      type: String
+    - contextPath: Azure.Storage.FileShares.properties.fileSharePaidBursting.paidBurstingEnabled
+      description: Indicates whether paid bursting is enabled for the share (premium file shares only).
+      type: Boolean
+    - contextPath: Azure.Storage.FileShares.properties.fileSharePaidBursting.paidBurstingMaxBandwidthMibps
+      description: The maximum paid bursting bandwidth for the share, in mebibytes per second.
+      type: Number
+    - contextPath: Azure.Storage.FileShares.properties.fileSharePaidBursting.paidBurstingMaxIops
+      description: The maximum paid bursting IOPS for the share.
+      type: Number
+    - contextPath: Azure.Storage.FileSharesNextToken
+      description: The URI to fetch the next page of file shares. Run the same command with the next_token argument to get the next page.
       type: String
 
   - name: azure-storage-fileshare-content-list
@@ -2246,30 +2260,30 @@ script:
       description: The path to the directory whose content to list. If not provided, the share root is listed.
     - name: limit
       defaultValue: '50'
-      description: The maximum number of entries to retrieve. Default is 50.
+      description: The maximum number of entries to retrieve.
     - name: prefix
       description: Filters the results to return only entries whose name begins with the specified prefix.
     outputs:
-    - contextPath: Azure.Storage.FileShares.Name
-      description: Share name.
+    - contextPath: Azure.Storage.FileShares.name
+      description: The share name.
       type: String
     - contextPath: Azure.Storage.FileShares.Content.Path
-      description: Directory path.
+      description: The directory path.
       type: String
     - contextPath: Azure.Storage.FileShares.Content.DirectoryId
-      description: Directory ID.
+      description: The directory ID.
       type: String
     - contextPath: Azure.Storage.FileShares.Content.File.FileId
-      description: File ID.
+      description: The file ID.
       type: String
     - contextPath: Azure.Storage.FileShares.Content.File.Name
-      description: File name.
+      description: The file name.
       type: String
     - contextPath: Azure.Storage.FileShares.Content.Directory.FileId
-      description: Directory ID.
+      description: The directory ID.
       type: String
     - contextPath: Azure.Storage.FileShares.Content.Directory.Name
-      description: Directory name.
+      description: The directory name.
       type: String
 
   - name: azure-storage-fileshare-directory-create
@@ -2353,7 +2367,7 @@ script:
     outputs:
     - contextPath: File.Size
       description: The size of the file.
-      type: String
+      type: Number
     - contextPath: File.SHA1
       description: The SHA1 hash of the file.
       type: String

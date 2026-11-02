@@ -34,13 +34,15 @@ TABLE_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 TABLE_MAX_PAGE_SIZE = 1000
 FILE_SERVICE_PREFIX = "file.core.windows.net"
 FILESHARE_GENERAL_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-FILESHARE_STORAGE_API_VERSION = "2023-11-03"
+FILESHARE_STORAGE_API_VERSION = "2025-05-05"
 # Azure Files data-plane requests authorized with an OAuth token must declare the request intent.
 FILESHARE_OAUTH_HEADERS = {"x-ms-file-request-intent": "backup"}
 # Microsoft.Storage resource provider (ARM control plane) API version used for share-level operations.
 FILESHARE_ARM_API_VERSION = "2026-06-01"
 
 DEFAULT_LIMIT = "50"
+MIN_LIMIT_VALUE = 1
+MAX_LIMIT_VALUE = 1000
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 STORAGE_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 API_VERSION = "2022-09-01"
@@ -1862,14 +1864,16 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def storage_container_set_headers(self, custom_headers: dict = {}):
+    def storage_container_set_headers(self, custom_headers: dict = {}, api_version: str = STORAGE_API_VERSION):
         """
         Set the headers for the storage container request.
         Args:
             custom_headers (dict, optional): Custom headers to be added to the request.
+            api_version (str, optional): The storage data-plane REST API version sent in the x-ms-version header.
+                Defaults to STORAGE_API_VERSION.
         """
         request_headers = {
-            "x-ms-version": STORAGE_API_VERSION,
+            "x-ms-version": api_version,
             "x-ms-date": dt.datetime.utcnow().strftime(STORAGE_DATE_FORMAT),
         }
         if self.headers:
@@ -5447,7 +5451,14 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def list_shares_request(self, subscription_id: str, resource_group_name: str, account_name: str, limit: str = None):
+    def list_shares_request(
+        self,
+        subscription_id: str,
+        resource_group_name: str,
+        account_name: str,
+        limit: str | None = None,
+        next_token: str | None = None,
+    ):
         """
         List Azure file shares via the Microsoft.Storage resource provider (ARM control plane).
 
@@ -5455,13 +5466,20 @@ class AzureClient:
             subscription_id (str): The Azure subscription ID.
             resource_group_name (str): The resource group name.
             account_name (str): Storage account name.
-            limit (str): Maximum number of shares to retrieve.
+            limit (str): Maximum number of shares to retrieve per page.
+            next_token (str): The nextLink URI returned by a previous page. When provided, it is requested as-is,
+                since it already carries the api-version, $maxpagesize and $skipToken query parameters.
 
         Returns:
             dict: API response from Azure.
         """
-        full_url = self._fileshare_arm_url(subscription_id, resource_group_name, account_name)
-        params = assign_params(**{"api-version": FILESHARE_ARM_API_VERSION, "$maxpagesize": limit})
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of file shares.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            params: dict = {}
+        else:
+            full_url = self._fileshare_arm_url(subscription_id, resource_group_name, account_name)
+            params = assign_params(**{"api-version": FILESHARE_ARM_API_VERSION, "$maxpagesize": limit})
         try:
             return self.http_request(method="GET", full_url=full_url, params=params)
         except Exception as e:
@@ -5502,7 +5520,7 @@ class AzureClient:
         params = assign_params(
             restype="directory", comp="list", include="Timestamps", prefix=prefix, maxresults=limit, marker=marker
         )
-        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS)
+        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS, FILESHARE_STORAGE_API_VERSION)
         try:
             return self.http_request(method="GET", full_url=full_url, params=params, resp_type="text")
         except Exception as e:
@@ -5538,7 +5556,7 @@ class AzureClient:
             "x-ms-file-last-write-time": "now",
             **FILESHARE_OAUTH_HEADERS,
         }
-        self.storage_container_set_headers(headers)
+        self.storage_container_set_headers(headers, FILESHARE_STORAGE_API_VERSION)
         try:
             return self.http_request(method="PUT", full_url=full_url, params=params, resp_type="response")
         except Exception as e:
@@ -5567,7 +5585,7 @@ class AzureClient:
         suffix = f"{share_name}/{directory_path}/{directory_name}" if directory_path else f"{share_name}/{directory_name}"
         full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
         params = assign_params(restype="directory")
-        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS)
+        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS, FILESHARE_STORAGE_API_VERSION)
         try:
             return self.http_request(method="DELETE", full_url=full_url, params=params, resp_type="response")
         except Exception as e:
@@ -5607,7 +5625,7 @@ class AzureClient:
             "x-ms-content-length": str(content_length),
             **FILESHARE_OAUTH_HEADERS,
         }
-        self.storage_container_set_headers(headers)
+        self.storage_container_set_headers(headers, FILESHARE_STORAGE_API_VERSION)
         try:
             return self.http_request(method="PUT", full_url=full_url, resp_type="response")
         except Exception as e:
@@ -5648,7 +5666,7 @@ class AzureClient:
             **FILESHARE_OAUTH_HEADERS,
         }
         params = {"comp": "range"}
-        self.storage_container_set_headers(headers)
+        self.storage_container_set_headers(headers, FILESHARE_STORAGE_API_VERSION)
         try:
             return self.http_request(method="PUT", full_url=full_url, params=params, data=file_data, resp_type="response")
         except Exception as e:
@@ -5676,7 +5694,7 @@ class AzureClient:
         """
         suffix = f"{share_name}/{directory_path}/{file_name}" if directory_path else f"{share_name}/{file_name}"
         full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
-        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS)
+        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS, FILESHARE_STORAGE_API_VERSION)
         try:
             return self.http_request(method="GET", full_url=full_url, resp_type="response")
         except Exception as e:
@@ -5704,7 +5722,7 @@ class AzureClient:
         """
         suffix = f"{share_name}/{directory_path}/{file_name}" if directory_path else f"{share_name}/{file_name}"
         full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
-        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS)
+        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS, FILESHARE_STORAGE_API_VERSION)
         try:
             return self.http_request(method="DELETE", full_url=full_url, resp_type="response")
         except Exception as e:
@@ -6705,7 +6723,7 @@ def fileshare_create_directory_content_output(share_name: str, raw_response: dic
         dict: XSOAR command context output.
     """
     outputs: dict = {
-        "Name": share_name,
+        "name": share_name,
         "Content": {"Path": directory_path, "DirectoryId": raw_response["DirectoryId"]},
     }
 
@@ -13172,34 +13190,33 @@ def storage_fileshare_list_command(client: AzureClient, params: dict, args: dict
     """
     account_name = args.get("account_name", "")
     limit = args.get("limit") or DEFAULT_LIMIT
+    next_token = args.get("next_token", "")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    validate_limit(arg_to_number(limit))
 
-    response = client.list_shares_request(subscription_id, resource_group_name, account_name, limit)
+    response = client.list_shares_request(subscription_id, resource_group_name, account_name, limit, next_token)
 
     shares = response.get("value", [])
+    next_link = response.get("nextLink")
+    demisto.debug(f"[Azure] Retrieved {len(shares)} file shares, {bool(next_link)=}")
 
-    readable_rows = [
-        {
-            "Name": share.get("name"),
-            "Id": share.get("id"),
-            "Type": share.get("type"),
-        }
-        for share in shares
-    ]
-
-    readable_output = tableToMarkdown(
-        f"Shares List (page size: {limit}):",
-        readable_rows,
-        headers=["Name", "Id", "Type"],
-        removeNull=True,
+    readable_output = (
+        "No Shares were found."
+        if not shares
+        else tableToMarkdown(
+            "Shares List", shares, headers=["name", "type", "etag"], headerTransform=pascalToSpace, removeNull=True
+        )
     )
+
+    outputs = {
+        "Azure.Storage.FileShares(val.id && val.id == obj.id)": shares,
+        "Azure.Storage(true)": {"FileSharesNextToken": next_link},
+    }
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Azure.Storage.FileShares",
-        outputs_key_field="name",
-        outputs=shares,
+        outputs=outputs,
         raw_response=response,
     )
 
@@ -13221,6 +13238,7 @@ def storage_fileshare_content_list_command(client: AzureClient, params: dict, ar
     directory_path = args.get("directory_path", "")
     prefix = args.get("prefix")
     limit = args.get("limit") or DEFAULT_LIMIT
+    validate_limit(arg_to_number(limit), max_limit=5000)
 
     response = client.list_directories_and_files_request(account_name, share_name, directory_path, prefix, limit)
 
@@ -13233,7 +13251,7 @@ def storage_fileshare_content_list_command(client: AzureClient, params: dict, ar
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="Azure.Storage.FileShares",
-        outputs_key_field="Name",
+        outputs_key_field="name",
         outputs=outputs,
         raw_response=raw_response,
     )
@@ -13305,16 +13323,21 @@ def storage_fileshare_file_create_command(client: AzureClient, params: dict, arg
     file_name = args.get("file_name")
 
     xsoar_file_data = demisto.getFilePath(file_entry_id)
+    if not xsoar_file_data:
+        raise ValueError(f"Could not find entry ID '{file_entry_id}' or it is not an uploaded file.")
     system_file_path = Path(xsoar_file_data["path"])
     new_file_name = file_name or xsoar_file_data["name"]
 
     content_length = system_file_path.stat().st_size
 
-    client.create_file_request(account_name, share_name, new_file_name, content_length, directory_path)
-    with system_file_path.open("rb") as file_data:
-        client.add_file_content_request(account_name, share_name, new_file_name, file_data, content_length, directory_path)
+    if content_length > 0:
+        client.create_file_request(account_name, share_name, new_file_name, content_length, directory_path)
+        with system_file_path.open("rb") as file_data:
+            client.add_file_content_request(account_name, share_name, new_file_name, file_data, content_length, directory_path)
 
-        return CommandResults(readable_output=f"File successfully created in {share_name}.")
+            return CommandResults(readable_output=f"File successfully created in {share_name}.")
+    else:
+        return CommandResults(readable_output=f"The file {file_entry_id} is empty.")
 
 
 def storage_fileshare_file_get_command(client: AzureClient, params: dict, args: dict) -> Any:
