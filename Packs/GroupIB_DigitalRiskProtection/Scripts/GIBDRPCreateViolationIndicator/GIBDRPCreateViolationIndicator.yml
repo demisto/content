@@ -1,0 +1,46 @@
+comment: |-
+  Creates the indicator of a Group-IB DRP violation from its incident, linked to the incident and with
+  Group-IB Digital Risk Protection as its source, first and last seen dates and a verdict that follows the
+  violation type. Only an http or https URL, a domain or an IPv4 address becomes an indicator; any other
+  violation URI is reported and skipped.
+
+  The Group-IB Digital Risk Protection - Violation Incident Postprocessing playbook runs it on new
+  incidents whose GIB DRP Indicator Wanted field is set.
+
+  This automation runs using the default Limited User role, unless you explicitly change the
+  permissions.
+commonfields:
+  id: GIBDRPCreateViolationIndicator
+  version: -1
+args:
+- name: value
+  required: false
+  description: The violation URI to create the indicator from. Defaults to the incident's GIB DRP Violation URI field.
+outputs:
+- contextPath: GIBDRP.ViolationIndicator.uri
+  description: The violation URI the automation was given.
+  type: String
+- contextPath: GIBDRP.ViolationIndicator.created
+  description: Whether an indicator was created.
+  type: Boolean
+- contextPath: GIBDRP.ViolationIndicator.value
+  description: The indicator value (the URI normalized to an http or https URL, a domain or an IP).
+  type: String
+- contextPath: GIBDRP.ViolationIndicator.type
+  description: The indicator type (URL, Domain or IP).
+  type: String
+- contextPath: GIBDRP.ViolationIndicator.verdict
+  description: The verdict the indicator was created with (Malicious, Suspicious or Benign).
+  type: String
+dockerimage: demisto/python3:3.12.14.12343672
+enabled: true
+name: GIBDRPCreateViolationIndicator
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- drp
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
