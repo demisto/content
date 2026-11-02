@@ -35,6 +35,7 @@ VALID_TAG_COLORS = ["blue", "green", "orange", "red", "purple", "default"]
 urllib3.disable_warnings()  # Disable insecure warnings
 
 DEFAULT_BATCH_SIZE = 3000
+DEFAULT_LOOKBACK_DAYS = 100  # Default fetch-assets lookback window (days) for asset scans and vulnerability findings.
 # Max number of concurrent send-to-XSIAM HTTP requests in flight at once (XSUP-69895).
 # Without this cap the integration fans out one asyncio task + one aiohttp.ClientSession per batch,
 # opening dozens of simultaneous connections to the ingestion endpoint on large reports, which causes
@@ -268,7 +269,7 @@ LEFT JOIN
     asset_service ase ON da.asset_id = ase.asset_id
 
 WHERE
-    als.last_scan_date >= CURRENT_DATE - INTERVAL '100 days'
+    als.last_scan_date >= CURRENT_DATE - INTERVAL '{lookback_days} days'
     AND als.last_scan_status_id = 'C'
 
 ORDER BY
@@ -324,9 +325,9 @@ aggregated_details AS (
         ON fasvi.asset_id = favf.asset_id
         AND fasvi.vulnerability_id = favf.vulnerability_id
         AND fasvi.scan_id = favf.scan_id
-    -- Filter before aggregating so only findings from the last 100 days are converted and aggregated.
+    -- Filter before aggregating so only findings within the lookback window are converted and aggregated.
     WHERE
-        fasvi.date >= CURRENT_DATE - INTERVAL '100 days'
+        fasvi.date >= CURRENT_DATE - INTERVAL '{lookback_days} days'
     GROUP BY
         fasvi.asset_id,
         fasvi.vulnerability_id,
@@ -373,6 +374,18 @@ ORDER BY
     ad.asset_id, ad.vulnerability_id, ad.scan_date DESC
 """
 BASE_QUERY = {"asset": BASE_QUERY_FOR_ASSETS, "vulnerability": BASE_QUERY_FOR_VULNERABILITIES}
+
+
+def get_lookback_days(params: dict) -> int:
+    """Returns the validated fetch-assets lookback (in days) from the integration parameters."""
+    lookback_days = arg_to_number(params.get("lookback_days"), arg_name="Lookback (days)")
+    if lookback_days is None:
+        return DEFAULT_LOOKBACK_DAYS
+    if lookback_days < 1:
+        raise DemistoException(f"Lookback (days) must be a positive integer. Got: {lookback_days}")
+    return lookback_days
+
+
 VENDOR = {"asset": "Rapid7", "vulnerability": "Rapid7"}
 PRODUCT = {"asset": "nexpose_assets", "vulnerability": "nexpose_vulnerabilities"}
 XSIAM_EVENT_CHUNK_SIZE = 2**20  # 1 Mib
@@ -6951,7 +6964,9 @@ def get_list_asset_group_command(
 ##############################################################################
 
 
-async def create_report_config_from_template(client: InsightVMClient, event_type: str) -> str:
+async def create_report_config_from_template(
+    client: InsightVMClient, event_type: str, lookback_days: int = DEFAULT_LOOKBACK_DAYS
+) -> str:
     """
     Creates a new report configuration asynchronously.
 
@@ -6964,7 +6979,7 @@ async def create_report_config_from_template(client: InsightVMClient, event_type
     payload = {
         "format": "sql-query",
         "name": f"PA_Asset_Collector_{int(time.time())}",
-        "query": BASE_QUERY.get(event_type),
+        "query": BASE_QUERY[event_type].format(lookback_days=int(lookback_days)),
         "version": "2.3.0",
     }
     log(event_type, "Creating report config.")
@@ -8079,7 +8094,9 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
     log(event_type, "--- Cleanup Phase Complete ---")
 
 
-async def ensure_report_config_exists(client: InsightVMClient, event_type: str, context: dict) -> None:
+async def ensure_report_config_exists(
+    client: InsightVMClient, event_type: str, context: dict, lookback_days: int = DEFAULT_LOOKBACK_DAYS
+) -> None:
     """
     Checks if a report configuration exists in the integration context.
     If not, it creates one sequentially and updates the context.
@@ -8093,7 +8110,7 @@ async def ensure_report_config_exists(client: InsightVMClient, event_type: str, 
     log(event_type, "No report config found. Creating new configuration.")
 
     # We await this call so it finishes completely before moving on
-    new_report_id = await create_report_config_from_template(client, event_type)
+    new_report_id = await create_report_config_from_template(client, event_type, lookback_days)
 
     update_integration_context_by_event_type(event_type, {"report_id": new_report_id})
     log(event_type, f"Context updated with new Report ID: {new_report_id}")
@@ -8102,6 +8119,7 @@ async def ensure_report_config_exists(client: InsightVMClient, event_type: str, 
 async def run_all_collectors(
     client: InsightVMClient,
     batch_size: int = DEFAULT_BATCH_SIZE,
+    lookback_days: int = DEFAULT_LOOKBACK_DAYS,
 ):
     """
     Runs the Asset and Vulnerability report collector workflows concurrently,
@@ -8110,8 +8128,8 @@ async def run_all_collectors(
 
     try:
         context = get_integration_context()
-        await ensure_report_config_exists(client, "asset", context)
-        await ensure_report_config_exists(client, "vulnerability", context)
+        await ensure_report_config_exists(client, "asset", context, lookback_days)
+        await ensure_report_config_exists(client, "vulnerability", context, lookback_days)
 
     except Exception as e:
         raise DemistoException(f"FATAL: Failed during report configuration setup. Aborting run. Error: {e}")
@@ -8149,7 +8167,8 @@ async def fetch_assets_command(params: dict, token: str) -> None:
     The platform's fetch-assets scheduler handles re-invocation at the configured interval.
     Each invocation runs the full collector pipeline once.
     """
-    demisto.debug("Starting fetch-assets execution")
+    lookback_days = get_lookback_days(params)
+    demisto.debug(f"Starting fetch-assets execution with a lookback of {lookback_days} days")
     async with InsightVMClient(
         base_url=params["server"],
         username=params["credentials"].get("identifier"),
@@ -8157,7 +8176,7 @@ async def fetch_assets_command(params: dict, token: str) -> None:
         token=token,
         verify=not params.get("unsecure"),
     ) as client:
-        await run_all_collectors(client, batch_size=DEFAULT_BATCH_SIZE)
+        await run_all_collectors(client, batch_size=DEFAULT_BATCH_SIZE, lookback_days=lookback_days)
     demisto.debug("Finished fetch-assets execution")
 
 
@@ -8192,6 +8211,7 @@ def main():  # pragma: no cover
         results: CommandResults | list[CommandResults] | dict | str
 
         if command == "test-module":
+            get_lookback_days(params)
             client.get_assets(page_size=1, limit=1)
             results = "ok"
         elif command == "fetch-assets":

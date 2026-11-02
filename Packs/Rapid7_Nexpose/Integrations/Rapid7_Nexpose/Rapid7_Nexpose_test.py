@@ -3695,7 +3695,7 @@ def test_vulnerability_query_filters_dates_before_aggregation():
     cte_start = BASE_QUERY_FOR_VULNERABILITIES.index("aggregated_details AS (")
     outer_select = BASE_QUERY_FOR_VULNERABILITIES.index("\nSELECT", cte_start)
     cte_body = BASE_QUERY_FOR_VULNERABILITIES[cte_start:outer_select]
-    date_filter = "fasvi.date >= CURRENT_DATE - INTERVAL '100 days'"
+    date_filter = "fasvi.date >= CURRENT_DATE - INTERVAL '{lookback_days} days'"
 
     assert date_filter in cte_body
     assert cte_body.index(date_filter) < cte_body.index("GROUP BY")
@@ -3717,3 +3717,84 @@ def test_asset_query_uses_latest_completed_scan():
 
     assert "ds.status_id = 'C'" in where_clause
     assert "ds.finished IS NOT NULL" in where_clause
+
+
+@pytest.mark.parametrize(
+    "params, expected",
+    [
+        ({}, DEFAULT_LOOKBACK_DAYS),
+        ({"lookback_days": ""}, DEFAULT_LOOKBACK_DAYS),
+        ({"lookback_days": "7"}, 7),
+        ({"lookback_days": 30}, 30),
+    ],
+)
+def test_get_lookback_days(params, expected):
+    """
+    Given:
+        - Integration parameters with a missing, empty or valid lookback.
+    When:
+        - Calling get_lookback_days.
+    Then:
+        - The configured value is returned, or the default (100) when not set.
+    """
+    assert get_lookback_days(params) == expected
+
+
+@pytest.mark.parametrize("lookback", ["0", "-5", "abc"])
+def test_get_lookback_days_invalid(lookback):
+    """
+    Given:
+        - A non-positive or non-numeric lookback.
+    When:
+        - Calling get_lookback_days.
+    Then:
+        - An error is raised.
+    """
+    with pytest.raises((DemistoException, ValueError)):
+        get_lookback_days({"lookback_days": lookback})
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("event_type, lookback", [("asset", 7), ("vulnerability", 30), ("asset", DEFAULT_LOOKBACK_DAYS)])
+async def test_create_report_config_uses_lookback(event_type, lookback):
+    """
+    Given:
+        - A lookback value and an event type.
+    When:
+        - Creating the report configuration.
+    Then:
+        - The submitted SQL query uses the lookback in its date filter and contains no unformatted placeholders.
+    """
+    response = AsyncMock()
+    response.headers = {"Location": "https://nexpose/api/3/reports/42"}
+    response.release = lambda: None
+    client = AsyncMock()
+    client.http_request.return_value = response
+
+    report_id = await create_report_config_from_template(client, event_type, lookback)
+
+    query = client.http_request.call_args.kwargs["payload"]["query"]
+    assert report_id == "42"
+    assert f"INTERVAL '{lookback} days'" in query
+    assert "{lookback_days}" not in query
+
+
+@pytest.mark.asyncio
+async def test_fetch_assets_command_passes_lookback(mocker):
+    """
+    Given:
+        - The lookback_days integration parameter is set.
+    When:
+        - Running fetch_assets_command.
+    Then:
+        - The configured lookback is passed to run_all_collectors.
+    """
+    mock_run_all = mocker.patch("Rapid7_Nexpose.run_all_collectors", new_callable=AsyncMock)
+    mock_client_cls = mocker.patch("Rapid7_Nexpose.InsightVMClient")
+    mock_client_cls.return_value.__aenter__ = AsyncMock(return_value=AsyncMock())
+    mock_client_cls.return_value.__aexit__ = AsyncMock(return_value=False)
+    params = {"server": "https://nexpose.example.com", "credentials": {"identifier": "u", "password": "p"}, "lookback_days": "7"}
+
+    await fetch_assets_command(params, "")
+
+    assert mock_run_all.call_args.kwargs["lookback_days"] == 7
