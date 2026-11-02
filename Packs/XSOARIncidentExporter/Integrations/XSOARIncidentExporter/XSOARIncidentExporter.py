@@ -34,7 +34,9 @@ ENTRY_TYPE_MAP = {1: "Standard", 4: "Error", 12: "Widget", 15: "Map"}
 
 
 class XSIAMClient(BaseClient):
-    def __init__(self, base_url: str, api_key: str, api_key_id: str, verify: bool, proxy: bool):
+    def __init__(
+        self, base_url: str, api_key: str, api_key_id: str, verify: bool, proxy: bool
+    ):
         headers = {
             "x-xdr-auth-id": api_key_id,
             "Authorization": api_key,
@@ -53,7 +55,9 @@ class XSIAMClient(BaseClient):
                 if res is not None and res.status_code == 429 and attempt < MAX_RETRIES:
                     retry_after = res.headers.get("Retry-After")
                     wait = float(retry_after) if retry_after else backoff
-                    demisto.info(f"XSIAM API rate limited (429), retrying in {wait:.1f}s (attempt {attempt + 1}/{MAX_RETRIES})")
+                    demisto.info(
+                        f"XSIAM API rate limited (429), retrying in {wait:.1f}s (attempt {attempt + 1}/{MAX_RETRIES})"
+                    )
                     time.sleep(wait)
                     backoff = min(backoff * 2, 60)
                     continue
@@ -146,7 +150,9 @@ class XSIAMClient(BaseClient):
             json_data=body,
         )
 
-    def update_alerts(self, alert_ids: list, resolution_status: str, comment: str = "") -> dict:
+    def update_alerts(
+        self, alert_ids: list, resolution_status: str, comment: str = ""
+    ) -> dict:
         update_data: dict[str, str] = {"status": resolution_status}
         if comment:
             update_data["comment"] = comment
@@ -164,7 +170,14 @@ class XSIAMClient(BaseClient):
 
 
 class XSOARClient(BaseClient):
-    def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool, api_key_id: str = ""):
+    def __init__(
+        self,
+        base_url: str,
+        api_key: str,
+        verify: bool,
+        proxy: bool,
+        api_key_id: str = "",
+    ):
         headers: dict[str, str] = {
             "Authorization": api_key,
             "Content-Type": "application/json",
@@ -192,7 +205,12 @@ class XSOARClient(BaseClient):
         return response.get("entries") or []
 
     def search_incidents(
-        self, query: str = "", size: int = 100, page: int = 0, from_date: str | None = None, to_date: str | None = None
+        self,
+        query: str = "",
+        size: int = 100,
+        page: int = 0,
+        from_date: str | None = None,
+        to_date: str | None = None,
     ) -> list:
         filter_body: dict[str, Any] = {}
         if query:
@@ -240,24 +258,24 @@ def build_description(incident: dict) -> str:
     severity_names = {0: "Unknown", 1: "Low", 2: "Medium", 3: "High", 4: "Critical"}
     lines: list[str] = []
 
-    lines.append(f'XSOAR Incident ID: {incident.get("id", "")}')
-    lines.append(f'Name: {incident.get("name", "")}')
-    lines.append(f'Type: {incident.get("type", "")}')
+    lines.append(f"XSOAR Incident ID: {incident.get('id', '')}")
+    lines.append(f"Name: {incident.get('name', '')}")
+    lines.append(f"Type: {incident.get('type', '')}")
     status_val = incident.get("status")
     lines.append(f"Status: {status_names.get(status_val, str(status_val))}")
     sev = incident.get("severity", 0)
     lines.append(f"Severity: {severity_names.get(sev, str(sev))}")
-    lines.append(f'Owner: {incident.get("owner", "")}')
-    lines.append(f'Occurred: {incident.get("occurred", "")}')
-    lines.append(f'Created: {incident.get("created", "")}')
-    lines.append(f'Modified: {incident.get("modified", "")}')
-    lines.append(f'Closed: {incident.get("closed", "")}')
-    lines.append(f'Close Reason: {incident.get("closeReason", "")}')
-    lines.append(f'Close Notes: {incident.get("closeNotes", "")}')
-    lines.append(f'Phase: {incident.get("phase", "")}')
-    lines.append(f'Playbook ID: {incident.get("playbookId", "")}')
-    lines.append(f'Source Brand: {incident.get("sourceBrand", "")}')
-    lines.append(f'Source Instance: {incident.get("sourceInstance", "")}')
+    lines.append(f"Owner: {incident.get('owner', '')}")
+    lines.append(f"Occurred: {incident.get('occurred', '')}")
+    lines.append(f"Created: {incident.get('created', '')}")
+    lines.append(f"Modified: {incident.get('modified', '')}")
+    lines.append(f"Closed: {incident.get('closed', '')}")
+    lines.append(f"Close Reason: {incident.get('closeReason', '')}")
+    lines.append(f"Close Notes: {incident.get('closeNotes', '')}")
+    lines.append(f"Phase: {incident.get('phase', '')}")
+    lines.append(f"Playbook ID: {incident.get('playbookId', '')}")
+    lines.append(f"Source Brand: {incident.get('sourceBrand', '')}")
+    lines.append(f"Source Instance: {incident.get('sourceInstance', '')}")
 
     details = incident.get("details", "")
     if details:
@@ -271,7 +289,7 @@ def build_description(incident: dict) -> str:
         lines.append("")
         lines.append("--- Labels ---")
         for label in labels:
-            lines.append(f'  {label.get("type", "")}: {label.get("value", "")}')
+            lines.append(f"  {label.get('type', '')}: {label.get('value', '')}")
 
     custom_fields = incident.get("CustomFields") or {}
     if custom_fields:
@@ -300,12 +318,20 @@ def build_raw_context(incident: dict) -> str:
         "isPlayground",
         "notifyTime",
     }
-    filtered = {k: v for k, v in incident.items() if k not in skip_keys and v is not None and v != "" and v != [] and v != {}}
+    filtered = {
+        k: v
+        for k, v in incident.items()
+        if k not in skip_keys and v is not None and v != "" and v != [] and v != {}
+    }
     return json.dumps(filtered, default=str)
 
 
-def map_incident_to_alert(incident: dict, elevate_low: bool = False, timestamp_offset: int = 0) -> dict:
-    event_timestamp = parse_date_to_epoch_ms(incident.get("occurred") or incident.get("created"))
+def map_incident_to_alert(
+    incident: dict, elevate_low: bool = False, timestamp_offset: int = 0
+) -> dict:
+    event_timestamp = parse_date_to_epoch_ms(
+        incident.get("occurred") or incident.get("created")
+    )
     if timestamp_offset:
         event_timestamp += timestamp_offset * 60 * 1000
     severity = map_severity(incident.get("severity", 0), elevate_low)
@@ -335,13 +361,19 @@ def map_incident_to_alert(incident: dict, elevate_low: bool = False, timestamp_o
 
 
 def search_incidents(
-    xsoar_client: XSOARClient, query: str | None, max_incidents: int, from_date: str | None = None, to_date: str | None = None
+    xsoar_client: XSOARClient,
+    query: str | None,
+    max_incidents: int,
+    from_date: str | None = None,
+    to_date: str | None = None,
 ) -> list[dict]:
     all_incidents: list[dict] = []
     page = 0
     while len(all_incidents) < max_incidents:
         batch_size = min(max_incidents - len(all_incidents), 100)
-        demisto.debug(f"Searching incidents: page={page}, size={batch_size}, query={query}")
+        demisto.debug(
+            f"Searching incidents: page={page}, size={batch_size}, query={query}"
+        )
         data = xsoar_client.search_incidents(
             query=query or "",
             size=batch_size,
@@ -381,15 +413,21 @@ def push_incidents_command(
             outputs={"PushedCount": 0, "Incidents": []},
         )
 
-    alerts = [map_incident_to_alert(inc, elevate_low, timestamp_offset) for inc in incidents]
+    alerts = [
+        map_incident_to_alert(inc, elevate_low, timestamp_offset) for inc in incidents
+    ]
     xsiam_client.insert_parsed_alerts(alerts)
 
-    pushed_summary = [{"ID": inc.get("id", ""), "Name": inc.get("name", "")} for inc in incidents]
-    parts = [tableToMarkdown(
-        f"Successfully pushed {len(alerts)} incident(s) to XSIAM",
-        pushed_summary,
-        headers=["ID", "Name"],
-    )]
+    pushed_summary = [
+        {"ID": inc.get("id", ""), "Name": inc.get("name", "")} for inc in incidents
+    ]
+    parts = [
+        tableToMarkdown(
+            f"Successfully pushed {len(alerts)} incident(s) to XSIAM",
+            pushed_summary,
+            headers=["ID", "Name"],
+        )
+    ]
 
     war_room_total = 0
     war_room_issues: list[dict] = []
@@ -399,26 +437,36 @@ def push_incidents_command(
             wr = sync_war_room_for_incident(xsiam_client, xsoar_client, inc_id)
             war_room_total += wr["synced"]
             if wr["status"] != "ok" or wr["errors"]:
-                war_room_issues.append({
-                    "IncidentID": inc_id,
-                    "Status": wr["status"],
-                    "Synced": wr["synced"],
-                    "Errors": wr["errors"],
-                })
+                war_room_issues.append(
+                    {
+                        "IncidentID": inc_id,
+                        "Status": wr["status"],
+                        "Synced": wr["synced"],
+                        "Errors": wr["errors"],
+                    }
+                )
         if war_room_total:
-            parts.append(f"\nSynced {war_room_total} War Room entries across {len(incidents)} incident(s).")
+            parts.append(
+                f"\nSynced {war_room_total} War Room entries across {len(incidents)} incident(s)."
+            )
         if war_room_issues:
-            parts.append(tableToMarkdown(
-                "Incidents with incomplete War Room sync",
-                war_room_issues,
-                headers=["IncidentID", "Status", "Synced", "Errors"],
-            ))
+            parts.append(
+                tableToMarkdown(
+                    "Incidents with incomplete War Room sync",
+                    war_room_issues,
+                    headers=["IncidentID", "Status", "Synced", "Errors"],
+                )
+            )
 
     return CommandResults(
         readable_output="\n".join(parts),
         outputs_prefix="XSOARExporter.Push",
-        outputs={"PushedCount": len(alerts), "Incidents": pushed_summary, "WarRoomSynced": war_room_total,
-                 "WarRoomIssues": war_room_issues},
+        outputs={
+            "PushedCount": len(alerts),
+            "Incidents": pushed_summary,
+            "WarRoomSynced": war_room_total,
+            "WarRoomIssues": war_room_issues,
+        },
     )
 
 
@@ -448,11 +496,13 @@ def push_single_incident_command(
         "Severity": alert["severity"],
         "AlertName": alert["alert_name"],
     }
-    parts = [tableToMarkdown(
-        f"Successfully pushed incident {incident_id} to XSIAM",
-        pushed_info,
-        headers=["ID", "Name", "Severity", "AlertName"],
-    )]
+    parts = [
+        tableToMarkdown(
+            f"Successfully pushed incident {incident_id} to XSIAM",
+            pushed_info,
+            headers=["ID", "Name", "Severity", "AlertName"],
+        )
+    ]
 
     war_room_synced = 0
     war_room_status = "ok"
@@ -465,11 +515,17 @@ def push_single_incident_command(
         if war_room_synced:
             parts.append(f"\nSynced {war_room_synced} War Room entries.")
         if war_room_status == "alert_not_found":
-            parts.append("\nWar Room sync incomplete: alert not yet available in XSIAM (ingestion delay).")
+            parts.append(
+                "\nWar Room sync incomplete: alert not yet available in XSIAM (ingestion delay)."
+            )
         elif war_room_status == "war_room_read_failed":
-            parts.append("\nWar Room sync incomplete: failed to read War Room entries from XSOAR.")
+            parts.append(
+                "\nWar Room sync incomplete: failed to read War Room entries from XSOAR."
+            )
         if war_room_errors:
-            parts.append(f"\nWar Room sync incomplete: {war_room_errors} entries failed to push.")
+            parts.append(
+                f"\nWar Room sync incomplete: {war_room_errors} entries failed to push."
+            )
 
     pushed_info["WarRoomSynced"] = war_room_synced
     pushed_info["WarRoomStatus"] = war_room_status
@@ -500,7 +556,9 @@ def sync_new_incidents_command(
 
     from_date = args.get("from_date") or last_time or None
 
-    incidents = search_incidents(xsoar_client, query, max_incidents, from_date=from_date)
+    incidents = search_incidents(
+        xsoar_client, query, max_incidents, from_date=from_date
+    )
     if not incidents:
         return CommandResults(
             readable_output=f"No new incidents found (last synced ID: {last_id}).",
@@ -517,7 +575,10 @@ def sync_new_incidents_command(
             outputs={"SyncedCount": 0, "Incidents": [], "LastSyncedID": last_id},
         )
 
-    alerts = [map_incident_to_alert(inc, elevate_low, timestamp_offset) for inc in new_incidents]
+    alerts = [
+        map_incident_to_alert(inc, elevate_low, timestamp_offset)
+        for inc in new_incidents
+    ]
     xsiam_client.insert_parsed_alerts(alerts)
 
     new_last_id = max(int(inc.get("id", 0)) for inc in new_incidents)
@@ -526,12 +587,16 @@ def sync_new_incidents_command(
     ctx["last_synced_time"] = new_last_time
     demisto.setIntegrationContext(ctx)
 
-    pushed_summary = [{"ID": inc.get("id", ""), "Name": inc.get("name", "")} for inc in new_incidents]
-    parts = [tableToMarkdown(
-        f"Synced {len(new_incidents)} new incident(s) to XSIAM (last ID: {new_last_id})",
-        pushed_summary,
-        headers=["ID", "Name"],
-    )]
+    pushed_summary = [
+        {"ID": inc.get("id", ""), "Name": inc.get("name", "")} for inc in new_incidents
+    ]
+    parts = [
+        tableToMarkdown(
+            f"Synced {len(new_incidents)} new incident(s) to XSIAM (last ID: {new_last_id})",
+            pushed_summary,
+            headers=["ID", "Name"],
+        )
+    ]
 
     war_room_total = 0
     war_room_issues: list[dict] = []
@@ -541,32 +606,45 @@ def sync_new_incidents_command(
             wr = sync_war_room_for_incident(xsiam_client, xsoar_client, inc_id)
             war_room_total += wr["synced"]
             if wr["status"] != "ok" or wr["errors"]:
-                war_room_issues.append({
-                    "IncidentID": inc_id,
-                    "Status": wr["status"],
-                    "Synced": wr["synced"],
-                    "Errors": wr["errors"],
-                })
+                war_room_issues.append(
+                    {
+                        "IncidentID": inc_id,
+                        "Status": wr["status"],
+                        "Synced": wr["synced"],
+                        "Errors": wr["errors"],
+                    }
+                )
         if war_room_total:
-            parts.append(f"\nSynced {war_room_total} War Room entries across {len(new_incidents)} incident(s).")
+            parts.append(
+                f"\nSynced {war_room_total} War Room entries across {len(new_incidents)} incident(s)."
+            )
         if war_room_issues:
-            parts.append(tableToMarkdown(
-                "Incidents with incomplete War Room sync",
-                war_room_issues,
-                headers=["IncidentID", "Status", "Synced", "Errors"],
-            ))
+            parts.append(
+                tableToMarkdown(
+                    "Incidents with incomplete War Room sync",
+                    war_room_issues,
+                    headers=["IncidentID", "Status", "Synced", "Errors"],
+                )
+            )
 
     return CommandResults(
         readable_output="\n".join(parts),
         outputs_prefix="XSOARExporter.Sync",
-        outputs={"SyncedCount": len(new_incidents), "Incidents": pushed_summary, "LastSyncedID": new_last_id,
-                 "WarRoomSynced": war_room_total, "WarRoomIssues": war_room_issues},
+        outputs={
+            "SyncedCount": len(new_incidents),
+            "Incidents": pushed_summary,
+            "LastSyncedID": new_last_id,
+            "WarRoomSynced": war_room_total,
+            "WarRoomIssues": war_room_issues,
+        },
     )
 
 
 def reset_sync_command() -> CommandResults:
     demisto.setIntegrationContext({})
-    return CommandResults(readable_output="Sync state has been reset. Next sync will send all incidents.")
+    return CommandResults(
+        readable_output="Sync state has been reset. Next sync will send all incidents."
+    )
 
 
 def extract_alert_field(description: str, field_name: str) -> str:
@@ -658,7 +736,14 @@ def sync_close_status_command(xsiam_client: XSIAMClient, args: dict) -> CommandR
         table = tableToMarkdown(
             f"Closed {len(closed_summary)} Cortex XSIAM Alert(s)",
             closed_summary,
-            headers=["alert_id", "alert_name", "xsoar_id", "close_reason", "close_notes", "result"],
+            headers=[
+                "alert_id",
+                "alert_name",
+                "xsoar_id",
+                "close_reason",
+                "close_notes",
+                "result",
+            ],
         )
         output_parts.append(table)
 
@@ -687,15 +772,26 @@ def sync_close_status_command(xsiam_client: XSIAMClient, args: dict) -> CommandR
 def sync_war_room_for_incident(
     xsiam_client: XSIAMClient, xsoar_client: XSOARClient, incident_id: str
 ) -> dict:
-    result = {"incident_id": incident_id, "synced": 0, "skipped": 0, "errors": 0, "error_details": [], "status": "ok"}
+    result = {
+        "incident_id": incident_id,
+        "synced": 0,
+        "skipped": 0,
+        "errors": 0,
+        "error_details": [],
+        "status": "ok",
+    }
 
     try:
         alert = xsiam_client.find_alert_by_xsoar_id(incident_id)
     except Exception as e:
-        demisto.debug(f"War Room sync: failed to find XSIAM alert for incident {incident_id}: {e}")
+        demisto.debug(
+            f"War Room sync: failed to find XSIAM alert for incident {incident_id}: {e}"
+        )
         alert = None
     if not alert:
-        demisto.info(f"War Room sync incomplete for incident {incident_id}: XSIAM alert not found (ingestion delay)")
+        demisto.info(
+            f"War Room sync incomplete for incident {incident_id}: XSIAM alert not found (ingestion delay)"
+        )
         result["status"] = "alert_not_found"
         return result
 
@@ -703,7 +799,9 @@ def sync_war_room_for_incident(
     try:
         entries = xsoar_client.get_war_room_entries(incident_id)
     except Exception as e:
-        demisto.info(f"War Room sync incomplete for incident {incident_id}: failed to read War Room entries: {e}")
+        demisto.info(
+            f"War Room sync incomplete for incident {incident_id}: failed to read War Room entries: {e}"
+        )
         result["status"] = "war_room_read_failed"
         return result
 
@@ -737,7 +835,9 @@ def sync_war_room_for_incident(
         except Exception as e:
             result["errors"] += 1
             result["error_details"].append({"entry_id": entry_id, "error": str(e)})
-            demisto.debug(f"War Room sync: failed to push entry {entry_id} for incident {incident_id}: {e}")
+            demisto.debug(
+                f"War Room sync: failed to push entry {entry_id} for incident {incident_id}: {e}"
+            )
 
     if result["errors"]:
         demisto.info(
@@ -810,12 +910,14 @@ def sync_war_room_command(
             content = str(ex.get("contents", ""))
             marker = "**[XSOAR War Room]** "
             if marker in content:
-                after_marker = content[content.index(marker) + len(marker):]
+                after_marker = content[content.index(marker) + len(marker) :]
                 entry_id_part = after_marker.split(" |")[0].strip()
                 if entry_id_part:
                     already_synced.add(entry_id_part)
     except Exception:
-        demisto.debug("Could not read existing XSIAM War Room entries for dedup, proceeding without dedup.")
+        demisto.debug(
+            "Could not read existing XSIAM War Room entries for dedup, proceeding without dedup."
+        )
 
     synced = 0
     skipped = 0
@@ -844,9 +946,13 @@ def sync_war_room_command(
 
     parts = []
     if skipped:
-        parts.append(f"### Synced {synced} War Room entries, skipped {skipped} already synced")
+        parts.append(
+            f"### Synced {synced} War Room entries, skipped {skipped} already synced"
+        )
     else:
-        parts.append(f"### Synced {synced} War Room entries from XSOAR incident {incident_id} to XSIAM alert {xsiam_alert_id}")
+        parts.append(
+            f"### Synced {synced} War Room entries from XSOAR incident {incident_id} to XSIAM alert {xsiam_alert_id}"
+        )
     if errors:
         parts.append(tableToMarkdown("Errors", errors, headers=["entry_id", "error"]))
 
@@ -905,17 +1011,36 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif command == "xsoar-exporter-push-incidents":
             result = push_incidents_command(
-                xsiam_client, xsoar_client, args, default_query, default_max, elevate_low, timestamp_offset, sync_war_room
+                xsiam_client,
+                xsoar_client,
+                args,
+                default_query,
+                default_max,
+                elevate_low,
+                timestamp_offset,
+                sync_war_room,
             )
             return_results(result)
         elif command == "xsoar-exporter-push-incident":
             result = push_single_incident_command(
-                xsiam_client, xsoar_client, args, elevate_low, timestamp_offset, sync_war_room
+                xsiam_client,
+                xsoar_client,
+                args,
+                elevate_low,
+                timestamp_offset,
+                sync_war_room,
             )
             return_results(result)
         elif command == "xsoar-exporter-sync-new-incidents":
             result = sync_new_incidents_command(
-                xsiam_client, xsoar_client, args, default_query, default_max, elevate_low, timestamp_offset, sync_war_room
+                xsiam_client,
+                xsoar_client,
+                args,
+                default_query,
+                default_max,
+                elevate_low,
+                timestamp_offset,
+                sync_war_room,
             )
             return_results(result)
         elif command == "xsoar-exporter-reset-sync":
