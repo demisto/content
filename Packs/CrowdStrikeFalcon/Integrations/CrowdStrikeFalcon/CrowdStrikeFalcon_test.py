@@ -14631,6 +14631,17 @@ class TestSpotlightFetchTuning:
 
         assert CrowdStrikeFalcon.get_spotlight_page_size() == CrowdStrikeFalcon.SPOTLIGHT_PAGE_SIZE_LONG_RUNNING
 
+    def test_spotlight_client_uses_the_longer_timeout(self, mocker):
+        """A request abandoned at the default 60s invalidates its cursor, so the retry gets a 404."""
+        import CrowdStrikeFalcon
+
+        mocker.patch.object(CrowdStrikeFalcon, "OAuth2ClientCredentialsHandler")
+        content_client = mocker.patch.object(CrowdStrikeFalcon, "ContentClient")
+
+        CrowdStrikeFalcon.create_spotlight_client(mocker.MagicMock())
+
+        assert content_client.call_args.kwargs["timeout"] == 120
+
     def test_scheduled_fetch_keeps_the_large_page(self, mocker):
         """The scheduled flow is bound by a 12h timeout, so extra round trips cost more there than
         the memory they save."""
