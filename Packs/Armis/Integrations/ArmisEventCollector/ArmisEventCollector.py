@@ -491,6 +491,9 @@ class Client(BaseClient):
         params: dict[str, Any] = {"aql": aql_query, "includeTotal": "false", "length": page_size, "orderBy": order_by}
         if from_param:
             params["from"] = from_param
+        # Start the pagination clock before the first request so the time cap covers the whole
+        # cycle (first page included).
+        start_time = time.monotonic()
         raw_response = self.perform_fetch(params)
         first_page = raw_response.get("data", {}).get("results", [])
         next = raw_response.get("data", {}).get("next") or 0
@@ -511,7 +514,6 @@ class Client(BaseClient):
         # (or stream them out, when on_page is provided).
         # The response's 'next' attribute carries the index to start the next request in the
         # pagination (using the 'from' request parameter), or null if there are no more pages left.
-        start_time = time.monotonic()
         try:
             while next and (total_fetched < max_fetch):
                 params["length"] = min(max_fetch - total_fetched, MAX_PAGE_SIZE)
