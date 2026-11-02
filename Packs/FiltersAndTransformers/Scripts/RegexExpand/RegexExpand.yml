@@ -44,7 +44,7 @@ args:
   defaultValue: "0"
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.13.10404775
+dockerimage: demisto/python3:3.12.14.13053055
 runas: DBotWeakRole
 fromversion: 6.5.0
 isllm: false

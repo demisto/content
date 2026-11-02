@@ -6320,7 +6320,7 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
-| target | Single serial number to target with this command | Optional |
+| target | The serial number of the firewall to target. Used only on a Panorama instance. To query Panorama itself (for example, to get the status of a job that was run on Panorama), set this argument to the host from the integration instance Server URL, exactly as written (for example, if the Server URL is "https://10.1.1.1/", use "10.1.1.1"). This queries only Panorama and skips the managed firewalls, which speeds up the command, especially when polling. | Optional |
 | status | Filter to return jobs by status. | Optional |
 | job_type | Filter to return jobs by type. | Optional |
 | id | Filter by ID. | Optional |

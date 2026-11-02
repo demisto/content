@@ -1307,6 +1307,8 @@ def fetch_events_concurrently(
             elapsed = (datetime.now() - start).total_seconds()
             return inc_id, [], elapsed, e
 
+    # The demisto server channel (stdin/stdout) is not thread-safe - lock it before worker threads start.
+    support_multithreading()
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = [executor.submit(_fetch_single, incident) for incident in formatted_incidents]
         for idx, future in enumerate(as_completed(futures), start=1):

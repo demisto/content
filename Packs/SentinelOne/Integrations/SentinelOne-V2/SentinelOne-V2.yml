@@ -376,6 +376,335 @@ script:
       description: 'A comma-separated list of modes by which to filter (path exclusions only), for example: "suppress".'
       type: string
   - arguments:
+    - description: 'A comma-separated list of exclusion IDs to filter by, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: ids
+    - description: 'A comma-separated list of Account IDs to filter by, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: account_ids
+    - description: 'A comma-separated list of Site IDs to filter by, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: site_ids
+    - auto: PREDEFINED
+      description: A comma-separated list of OS types to filter by.
+      isArray: true
+      name: os_types
+      predefined:
+      - windows
+      - windows_legacy
+      - macos
+      - linux
+    - auto: PREDEFINED
+      description: A comma-separated list of exclusion mode types to filter by.
+      isArray: true
+      name: mode_type
+      predefined:
+      - suppression
+      - agent_interoperability
+      - binary_vault
+      - endpoint
+      - all
+    - description: The free-text filter by exclusion value.
+      name: value_contains
+    - description: The free-text filter by exclusion name.
+      name: exclusion_name_contains
+    - defaultValue: "false"
+      description: Whether to return exclusions from children scope levels.
+      name: include_children
+    - defaultValue: "false"
+      description: Whether to return exclusions from parent scope levels.
+      name: include_parents
+    - description: Whether to filter for tenant scope only.
+      name: tenant
+    - defaultValue: "10"
+      description: The maximum number of items to return (1-1000).
+      name: limit
+    - description: The cursor position returned by the last request, used to paginate beyond 1000 items.
+      name: cursor
+    description: Lists all unified exclusions that match the specified input filter. Uses the v2.1 unified-exclusions endpoint.
+    name: sentinelone-get-unified-exclusions
+    outputs:
+    - contextPath: SentinelOne.UnifiedExclusions.ID
+      description: The exclusion item ID.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Name
+      description: The exclusion item name.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Type
+      description: The exclusion type.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Value
+      description: The value of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.OsType
+      description: The operating system type of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ModeType
+      description: The exclusion mode type.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Description
+      description: The description of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Source
+      description: The source of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.CreatedAt
+      description: The timestamp when the exclusion item was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.UnifiedExclusions.UpdatedAt
+      description: The timestamp when the exclusion item was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.UnifiedExclusions.UserName
+      description: The username of the user who created the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ThreatType
+      description: The threat type associated with the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Engines
+      description: The engines associated with the exclusion item.
+      type: string
+  - arguments:
+    - description: The name of the exclusion item.
+      name: exclusion_name
+      required: true
+    - auto: PREDEFINED
+      description: The operating system type.
+      name: os_type
+      predefined:
+      - windows
+      - windows_legacy
+      - macos
+      - linux
+      required: true
+    - auto: PREDEFINED
+      description: The exclusion mode type.
+      name: mode_type
+      predefined:
+      - suppression
+      - agent_interoperability
+      - binary_vault
+      - all
+      required: true
+    - auto: PREDEFINED
+      description: The exclusion type that determines how the value is interpreted.
+      name: exclusion_type
+      predefined:
+      - file_type
+      - path
+      - white_hash
+      - certificate
+      - browser
+      required: true
+    - description: The exclusion value, for example a file path or hash.
+      name: value
+    - auto: PREDEFINED
+      description: The scope level for the exclusion.
+      name: scope_level
+      predefined:
+      - group
+      - site
+      - account
+      - tenant
+      required: true
+    - description: The ID of the scope (group, site, or account). Not required when scope_level is tenant.
+      name: scope_level_id
+    - auto: PREDEFINED
+      description: The reason for creating the exclusion.
+      name: reason
+      predefined:
+      - performance_issue
+      - false_positive
+      - other
+      required: true
+    - description: The description of the exclusion item.
+      name: description
+    - description: The threat type associated with the exclusion, for example "EDR".
+      name: threat_type
+      required: true
+    - description: The engine associated with the exclusion, for example "suppress".
+      name: engines
+    - auto: PREDEFINED
+      description: The path exclusion type. Applies to path exclusions only.
+      name: path_exclusion_type
+      predefined:
+      - file
+      - folder
+      - subfolder
+    - description: The SHA-256 value associated with the exclusion.
+      name: sha256_value
+    - description: Whether the exclusion applies to child processes.
+      name: child_process
+    - description: 'The interaction between the exclusion and the Agent processes. Example: disable_in_process_monitor, disable_all_monitors, or identity_only.'
+      name: interaction_level
+    description: Creates a new unified exclusion using a type and value (e.g. path, hash, certificate). Uses the v2.1 unified-exclusions endpoint.
+    name: sentinelone-create-unified-exclusion
+    outputs:
+    - contextPath: SentinelOne.UnifiedExclusions.ID
+      description: The created exclusion item ID.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Name
+      description: The exclusion item name.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Type
+      description: The exclusion type (e.g. path, white_hash).
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Value
+      description: The exclusion value.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ModeType
+      description: The exclusion mode type (e.g. suppression).
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.OsType
+      description: The operating system type of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Description
+      description: The description of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ThreatType
+      description: The threat type associated with the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Engines
+      description: The engine associated with the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.PathExclusionType
+      description: The path exclusion type (e.g. file, folder).
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Sha256Value
+      description: The SHA-256 value associated with the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Source
+      description: The source of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ScopeName
+      description: The scope name of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ScopePath
+      description: The full scope path of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.CreatedAt
+      description: The timestamp when the exclusion item was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.UnifiedExclusions.UpdatedAt
+      description: The timestamp when the exclusion item was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.UnifiedExclusions.UserName
+      description: The username of the user who created the exclusion item.
+      type: string
+  - arguments:
+    - description: 'A comma-separated list of unified exclusion IDs to delete, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: ids
+      required: true
+    - auto: PREDEFINED
+      description: A comma-separated list of exclusion types corresponding to each ID (must match the order of ids).
+      isArray: true
+      name: exclusion_types
+      predefined:
+      - browser
+      - certificate
+      - commandline
+      - container_native
+      - file_type
+      - idr
+      - path
+      - white_hash
+      required: true
+    description: Deletes unified exclusion items by their IDs and types. Uses the v2.1 unified-exclusions endpoint.
+    execution: true
+    name: sentinelone-delete-unified-exclusions
+    outputs:
+    - contextPath: SentinelOne.UnifiedExclusions.Deleted.Affected
+      description: The number of exclusion items successfully deleted.
+      type: number
+  - arguments:
+    - description: The alert ID to retrieve raw indicators for.
+      name: alert_id
+      required: true
+    description: Retrieves a UAM alert enriched with raw SDL event indicators using the v2.1 unifiedalerts GraphQL endpoint.
+    name: sentinelone-get-alert-with-raw-indicators
+    outputs:
+    - contextPath: SentinelOne.AlertWithRawIndicators.ID
+      description: The alert ID.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Name
+      description: The alert name.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Severity
+      description: The alert severity.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Classification
+      description: The alert classification.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Description
+      description: The alert description.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Status
+      description: The alert status.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.AnalystVerdict
+      description: The analyst verdict for the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.ConfidenceLevel
+      description: The confidence level of the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.PrimaryIndicatorType
+      description: The primary indicator type of the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Result
+      description: The mitigation result of the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.StorylineId
+      description: The storyline ID associated with the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.AttackSurfaces
+      description: The attack surfaces of the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.CreatedAt
+      description: The timestamp when the alert was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.AlertWithRawIndicators.DetectedAt
+      description: The timestamp when the alert was detected, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.AlertWithRawIndicators.FirstSeenAt
+      description: The timestamp when the alert was first seen, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.AlertWithRawIndicators.LastSeenAt
+      description: The timestamp when the alert was last seen, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.AlertWithRawIndicators.UpdatedAt
+      description: The timestamp when the alert was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.AlertWithRawIndicators.ExternalId
+      description: The external ID of the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Indicators
+      description: List of structured indicators associated with the alert.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.RawIndicators
+      description: List of raw SDL telemetry events that triggered the alert indicators.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.RawData
+      description: Full OCSF-formatted raw data object for the alert.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.EventSearchParams
+      description: Pre-built Power Query search parameters for Deep Visibility investigation.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.Asset
+      description: Asset information for the endpoint associated with the alert.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.DetectionSource
+      description: Detection source product and vendor information.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.Process
+      description: Process information associated with the alert.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.Observables
+      description: Observable indicators such as process name or IP associated with the alert.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.DetectionTime
+      description: Scope information at the time of detection.
+      type: unknown
+  - arguments:
     - description: The content hash.
       name: hash
       required: true
@@ -3156,7 +3485,7 @@ script:
     - contextPath: SentinelOne.Export.Events.Filename
       description: The name of the file containing the Timeline.
       type: Boolean
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.13495286
   isfetch: true
   ismappable: true
   isremotesyncin: true

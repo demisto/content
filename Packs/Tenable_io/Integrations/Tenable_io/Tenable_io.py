@@ -136,6 +136,41 @@ XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10**6)  # 4 MB
 MAX_404_RETRIES = 3  # Maximum number of 404 retries before giving up on current export
 
 
+class XSIAMSendConfig:
+    """Retry policy for sending data into XSIAM.
+
+    The XSIAM ingestion gateway intermittently answers with transient errors (502 from nginx,
+    connection resets, read timeouts). Without a retry a single transient error fails the whole
+    fetch cycle.
+    """
+
+    MAX_ATTEMPTS: int = 3
+    BACKOFF_SECONDS: int = 5
+    RETRYABLE_STATUS_CODES: frozenset[int] = frozenset({408, 500, 502, 503, 504})
+
+
+class XSIAMSendError(DemistoException):
+    """A failed XSIAM ingestion request that carries the HTTP status code of the response."""
+
+    def __init__(self, message: str, status_code: int | None = None, exception: Exception | None = None):
+        super().__init__(message, exception)
+        self.status_code = status_code
+
+
+class XSIAMIngestionClient(BaseClient):
+    """Client passed to ``send_data_to_xsiam`` so a failed response keeps its HTTP status code.
+
+    ``send_data_to_xsiam`` raises a plain ``DemistoException`` whose message does not include the
+    status code, which makes transient errors indistinguishable from permanent ones.
+    """
+
+    def _handle_error(self, error_handler: Any, res: requests.Response, should_update_metrics: bool) -> None:
+        try:
+            super()._handle_error(error_handler, res, should_update_metrics)
+        except DemistoException as exc:
+            raise XSIAMSendError(str(exc.message), status_code=res.status_code, exception=exc) from exc
+
+
 class Client(BaseClient):
     def list_scan_filters(self):
         return self._http_request("GET", "filters/scans/reports")
@@ -638,7 +673,7 @@ def handle_assets_chunks(client: Client, assets_last_run):  # pylint: disable=W9
                 return [], assets_last_run
 
             demisto.info(
-                f"404 error received (retry {retry_count}/{MAX_404_RETRIES}). " "Generating new export uuid to start new fetch."
+                f"404 error received (retry {retry_count}/{MAX_404_RETRIES}). Generating new export uuid to start new fetch."
             )
             fetch_from = round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)))
             export_uuid = client.get_asset_export_uuid(fetch_from=fetch_from)
@@ -674,65 +709,34 @@ def handle_assets_chunks(client: Client, assets_last_run):  # pylint: disable=W9
     return assets, assets_last_run
 
 
-def handle_vulns_chunks(client: Client, assets_last_run):  # pragma: no cover   # pylint: disable=W9014
+def send_vulnerabilities_chunk(vulnerabilities: list) -> None:
     """
-    Handle vulns chunks stored in the last run object.
+    Send one chunk of vulnerabilities to XSIAM using the streaming send.
 
     Args:
-        client: Client class object.
-        assets_last_run: assets last run object.
-
+        vulnerabilities: The vulnerabilities of a single export chunk.
     """
-    demisto.debug("in handle vulns chunks")
-    stored_chunks = assets_last_run.get("vulns_available_chunks", [])
-    updated_stored_chunks = stored_chunks.copy()
-    export_uuid = assets_last_run.get("vuln_export_uuid")
-    vulnerabilities = []
-    for chunk_id in stored_chunks[:MAX_VULNS_CHUNKS_PER_FETCH]:
-        result = client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
-        if result == NOT_FOUND_ERROR:
-            # Track 404 retries to prevent infinite loop
-            retry_count = assets_last_run.get("vulns_404_retry_count", 0) + 1
-            if retry_count >= MAX_404_RETRIES:
-                demisto.error(
-                    f"Vulnerabilities export failed after {MAX_404_RETRIES} retries due to 404 errors. "
-                    "The export UUID may be expiring before all chunks can be downloaded. "
-                    "Consider increasing the fetch frequency or reducing the data volume. "
-                    "Clearing export state to start fresh on next fetch cycle."
-                )
-                # Clear all vuln export state to start fresh on next cycle
-                assets_last_run.pop("vuln_export_uuid", None)
-                assets_last_run.pop("vulns_available_chunks", None)
-                assets_last_run.pop("vulns_404_retry_count", None)
-                return [], assets_last_run
+    send_data_to_xsiam_with_retry(
+        data=vulnerabilities,
+        vendor=VENDOR,
+        product=f"{PRODUCT}_vulnerabilities",
+        # Module health is updated once per run with the total.
+        should_update_health_module=False,
+        use_streaming_send=True,
+    )
 
-            demisto.info(
-                f"404 error received (retry {retry_count}/{MAX_404_RETRIES}). " "Generating new export uuid to start new fetch."
-            )
-            export_uuid = client.get_vuln_export_uuid(
-                num_assets=ASSETS_NUMBER, last_found=round(get_timestamp(arg_to_datetime(VULNS_FETCH_FROM)))
-            )
-            # Note: snapshot_id and total_assets are managed by the assets flow, not vulnerabilities
-            # We only update the vuln_export_uuid and retry count here
-            assets_last_run.update(
-                {
-                    "vuln_export_uuid": export_uuid,
-                    "vulns_404_retry_count": retry_count,
-                }
-            )
-            assets_last_run.update({"nextTrigger": "30", "type": FETCH_COMMAND.get("assets")})
-            assets_last_run.pop("vulns_available_chunks", None)
-            demisto.debug(f"after resetting last run sending lastrun: {assets_last_run}")
-            return [], assets_last_run
-        vulnerabilities.extend(result)
-        updated_stored_chunks.remove(chunk_id)
-    # Reset retry count on successful chunk download
-    assets_last_run.pop("vulns_404_retry_count", None)
-    for vuln in vulnerabilities:
-        vuln["_time"] = vuln.get("received") or vuln.get("indexed")
-    if updated_stored_chunks:
+
+def persist_vulns_progress(assets_last_run: dict, remaining_chunks: list) -> None:
+    """
+    Save the vulns fetch progress after a chunk was sent, so an interrupted run resumes from the next chunk.
+
+    Args:
+        assets_last_run: The assets last run object.
+        remaining_chunks: The chunk IDs that were not sent yet.
+    """
+    if remaining_chunks:
         assets_last_run.update(
-            {"vulns_available_chunks": updated_stored_chunks, "nextTrigger": "30", "type": FETCH_COMMAND.get("assets")}
+            {"vulns_available_chunks": list(remaining_chunks), "nextTrigger": "30", "type": FETCH_COMMAND.get("assets")}
         )
     else:
         assets_last_run.pop("vulns_available_chunks", None)
@@ -743,7 +747,91 @@ def handle_vulns_chunks(client: Client, assets_last_run):  # pragma: no cover   
         # Cleaning them here was causing the snapshot to never be sealed because:
         # 1. snapshot_id would be regenerated (new ID with no matching data rows)
         # 2. total_assets would reset to 0 (sealing path skipped since cumulative_total=0)
-    return vulnerabilities, assets_last_run
+    demisto.setAssetsLastRun(assets_last_run)
+
+
+def handle_vulns_chunks(client: Client, assets_last_run: dict) -> tuple[int, dict]:  # pylint: disable=W9014
+    """
+    Download, send and persist the stored vulns chunks one at a time, so only one chunk is held in memory.
+
+    Args:
+        client: Client class object.
+        assets_last_run: assets last run object.
+
+    Returns:
+        tuple[int, dict]: The number of vulnerabilities sent in this run, and the updated last run.
+    """
+    demisto.debug("in handle vulns chunks")
+    stored_chunks = assets_last_run.get("vulns_available_chunks", [])
+    if not stored_chunks:
+        # A FINISHED export can have zero chunks; close it so the next cycle can fetch assets again.
+        demisto.debug("Vulnerabilities export finished with no chunks; closing the vulns export.")
+        assets_last_run.pop("vulns_404_retry_count", None)
+        persist_vulns_progress(assets_last_run, remaining_chunks=[])
+        return 0, assets_last_run
+
+    updated_stored_chunks = stored_chunks.copy()
+    export_uuid: str = assets_last_run.get("vuln_export_uuid") or ""
+    total_sent = 0
+    try:
+        for chunk_id in stored_chunks[:MAX_VULNS_CHUNKS_PER_FETCH]:
+            result = client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
+            if result == NOT_FOUND_ERROR:
+                # A new export job is started; chunks already sent from this export are sent again (at-least-once).
+                handle_vulns_chunk_not_found(client, assets_last_run)
+                return total_sent, assets_last_run
+
+            assets_last_run.pop("vulns_404_retry_count", None)
+            for vuln in result:
+                vuln["_time"] = vuln.get("received") or vuln.get("indexed")
+            chunk_vulnerabilities = parse_vulnerabilities(result)
+            chunk_count = len(chunk_vulnerabilities)
+            demisto.debug(f"sending vulns chunk {chunk_id} with {chunk_count} vulnerabilities to XSIAM.")
+            send_vulnerabilities_chunk(chunk_vulnerabilities)
+            total_sent += chunk_count
+            # Release the chunk before the next download.
+            result = chunk_vulnerabilities = None
+            updated_stored_chunks.remove(chunk_id)
+            persist_vulns_progress(assets_last_run, updated_stored_chunks)
+    finally:
+        if total_sent:
+            demisto.updateModuleHealth({"eventsPulled": total_sent})
+    return total_sent, assets_last_run
+
+
+def handle_vulns_chunk_not_found(client: Client, assets_last_run: dict) -> None:
+    """
+    Handle a 404 on a vulns chunk: start a new export, or give up after MAX_404_RETRIES consecutive 404s.
+
+    Args:
+        client: Client class object.
+        assets_last_run: assets last run object, updated in place.
+    """
+    # Track 404 retries to prevent infinite loop
+    retry_count = assets_last_run.get("vulns_404_retry_count", 0) + 1
+    if retry_count >= MAX_404_RETRIES:
+        demisto.error(
+            f"Vulnerabilities export failed after {MAX_404_RETRIES} retries due to 404 errors. "
+            "The export UUID may be expiring before all chunks can be downloaded. "
+            "Consider increasing the fetch frequency or reducing the data volume. "
+            "Clearing export state to start fresh on next fetch cycle."
+        )
+        # Clear all vuln export state to start fresh on next cycle
+        assets_last_run.pop("vuln_export_uuid", None)
+        assets_last_run.pop("vulns_available_chunks", None)
+        assets_last_run.pop("vulns_404_retry_count", None)
+        return
+
+    demisto.info(f"404 error received (retry {retry_count}/{MAX_404_RETRIES}). Generating new export uuid to start new fetch.")
+    export_uuid = client.get_vuln_export_uuid(
+        num_assets=ASSETS_NUMBER, last_found=round(get_timestamp(arg_to_datetime(VULNS_FETCH_FROM)))
+    )
+    # Note: snapshot_id and total_assets are managed by the assets flow, not vulnerabilities
+    # We only update the vuln_export_uuid and retry count here
+    assets_last_run.update({"vuln_export_uuid": export_uuid, "vulns_404_retry_count": retry_count})
+    assets_last_run.update({"nextTrigger": "30", "type": FETCH_COMMAND.get("assets")})
+    assets_last_run.pop("vulns_available_chunks", None)
+    demisto.debug(f"after resetting last run sending lastrun: {assets_last_run}")
 
 
 def get_asset_export_job_status(client: Client, assets_last_run):  # pylint: disable=W9014
@@ -1177,7 +1265,7 @@ def export_assets_build_command_result(chunks_details_list: list[dict]) -> Comma
         if fqdns := chunk_details.get("fqdns"):
             human_readable_to_append["DNS NAME (FQDN)"] = fqdns[0]
         if (tag := chunk_details.get("tags")) and (first_tag := tag[0]):
-            human_readable_to_append["TAGS"] = f'{first_tag.get("key")}:{first_tag.get("value")}'
+            human_readable_to_append["TAGS"] = f"{first_tag.get('key')}:{first_tag.get('value')}"
         if (sources := chunk_details.get("sources")) and (first_source := sources[0]):
             human_readable_to_append["SOURCE"] = first_source.get("name")
         if (network_interfaces := chunk_details.get("network_interfaces")) and (
@@ -1759,9 +1847,7 @@ def export_scan_command(args: dict[str, Any], client: Client) -> PollResult:
 
         case _:
             raise DemistoException(
-                "Tenable IO encountered an error while exporting the scan report file.\n"
-                f"Scan ID: {scan_id}\n"
-                f"File ID: {file_id}\n"
+                f"Tenable IO encountered an error while exporting the scan report file.\nScan ID: {scan_id}\nFile ID: {file_id}\n"
             )
 
 
@@ -1909,23 +1995,23 @@ def run_assets_fetch(client, last_run):  # pragma: no cover   # pylint: disable=
     return fetch_assets_command(client, last_run)
 
 
-def fetch_vulnerabilities(client: Client, assets_last_run: dict):  # pragma: no cover
+def fetch_vulnerabilities(client: Client, assets_last_run: dict) -> int:  # pragma: no cover
     """
-    Fetches vulnerabilities if job has succeeded.
+    Fetches vulnerabilities if job has succeeded, and sends them to XSIAM chunk by chunk.
     Args:
         last_run: last run object.
         client: Client class object.
 
     Returns:
-        Vulnerabilities fetched from the API.
+        int: The number of vulnerabilities sent to XSIAM in this run.
     """
-    vulnerabilities = []
+    vulnerabilities_sent = 0
     # if already in assets_last_run meaning its still polling chunks from api
     export_uuid = assets_last_run.get("vuln_export_uuid")
     # if exists, still downloading chunks from prev fetch call
     available_chunks = assets_last_run.get("vulns_available_chunks", [])
     if available_chunks:
-        vulnerabilities, assets_last_run = handle_vulns_chunks(client, assets_last_run)
+        vulnerabilities_sent, assets_last_run = handle_vulns_chunks(client, assets_last_run)
     elif export_uuid:
         status = get_vulnerabilities_export_status(client=client, assets_last_run=assets_last_run)
 
@@ -1933,7 +2019,7 @@ def fetch_vulnerabilities(client: Client, assets_last_run: dict):  # pragma: no 
             assets_last_run.update({"nextTrigger": "30", "type": FETCH_COMMAND.get("assets")})
         # set params for next run
         if status == "FINISHED":
-            vulnerabilities, assets_last_run = handle_vulns_chunks(client, assets_last_run)
+            vulnerabilities_sent, assets_last_run = handle_vulns_chunks(client, assets_last_run)
         elif status in ["CANCELLED", "ERROR"]:
             export_uuid = client.get_vuln_export_uuid(
                 num_assets=ASSETS_NUMBER, last_found=get_timestamp(arg_to_datetime(VULNS_FETCH_FROM))
@@ -1941,11 +2027,11 @@ def fetch_vulnerabilities(client: Client, assets_last_run: dict):  # pragma: no 
             assets_last_run.update({"vuln_export_uuid": export_uuid})
             assets_last_run.update({"nextTrigger": "30", "type": FETCH_COMMAND.get("assets")})
 
-    demisto.info(f"Done fetching {len(vulnerabilities)} vulnerabilities, {assets_last_run=}.")
-    return vulnerabilities
+    demisto.info(f"Done fetching and sending {vulnerabilities_sent} vulnerabilities, {assets_last_run=}.")
+    return vulnerabilities_sent
 
 
-def run_vulnerabilities_fetch(client, last_run):  # pylint: disable=W9014
+def run_vulnerabilities_fetch(client, last_run) -> int:  # pylint: disable=W9014
     demisto.info("fetch vulnerabilies from the API")
     if not last_run.get("vuln_export_uuid"):
         generate_export_uuid(client, last_run)
@@ -2024,6 +2110,93 @@ def should_seal_empty_assets_snapshot(assets: list, assets_fetch_in_progress: bo
     return assets_last_run.get("total_assets", 0) > 0
 
 
+def is_retryable_xsiam_error(error: BaseException) -> bool:
+    """Decide whether a failure while sending data into XSIAM is transient and worth retrying.
+
+    Args:
+        error: The exception raised by ``send_data_to_xsiam``.
+
+    Returns:
+        bool: True for retryable HTTP status codes, timeouts and dropped connections.
+    """
+    if isinstance(error, XSIAMSendError) and error.status_code is not None:
+        return error.status_code in XSIAMSendConfig.RETRYABLE_STATUS_CODES
+    # SSL and proxy errors are configuration problems; retrying them only delays the failure.
+    if isinstance(error, requests.exceptions.SSLError | requests.exceptions.ProxyError):
+        return False
+    if isinstance(
+        error,
+        requests.exceptions.Timeout | requests.exceptions.ConnectionError | requests.exceptions.ChunkedEncodingError,
+    ):
+        return True
+    # BaseClient wraps network errors in a DemistoException and keeps the original as `.exception`.
+    if isinstance(error, DemistoException) and isinstance(error.exception, BaseException):
+        return is_retryable_xsiam_error(error.exception)
+    return False
+
+
+def send_data_to_xsiam_with_retry(*args: Any, **kwargs: Any) -> None:
+    """Call ``send_data_to_xsiam`` with the exact same arguments, retrying transient ingestion errors.
+
+    The only differences from a direct ``send_data_to_xsiam`` call are:
+        - ``client_class=XSIAMIngestionClient``, so a failed response keeps its HTTP status code.
+        - On a retryable error (see ``XSIAMSendConfig.RETRYABLE_STATUS_CODES``, timeouts and dropped
+          connections) the same call is repeated, up to ``XSIAMSendConfig.MAX_ATTEMPTS`` times, with
+          exponential backoff. Any other error is raised immediately, exactly as before.
+
+    Only the product, the data type, the attempt number, the error class and the HTTP status code are
+    logged here - never the payload, the headers or the response body.
+
+    Delivery is at-least-once: a retry re-sends the whole data. With ``use_streaming_send`` each attempt gets a
+    shallow copy, because the streaming send empties the list it is given.
+
+    Args:
+        *args: Positional arguments forwarded to ``send_data_to_xsiam``.
+        **kwargs: Keyword arguments forwarded to ``send_data_to_xsiam``.
+
+    Raises:
+        Exception: The last error, when it is not retryable or all attempts are exhausted.
+    """
+    label = f"product={kwargs.get('product')} data_type={kwargs.get('data_type', EVENTS)}"
+    send_kwargs: dict[str, Any] = {**kwargs, "client_class": XSIAMIngestionClient}
+    data_is_positional = "data" not in kwargs and bool(args)
+    original_data = args[0] if data_is_positional else kwargs.get("data")
+    copy_data_per_attempt = bool(kwargs.get("use_streaming_send")) and isinstance(original_data, list)
+    send_args = args
+    max_attempts = XSIAMSendConfig.MAX_ATTEMPTS
+    for attempt in range(1, max_attempts + 1):
+        if copy_data_per_attempt:
+            data_copy = list(original_data)  # type: ignore[arg-type]
+            if data_is_positional:
+                send_args = (data_copy, *args[1:])
+            else:
+                send_kwargs["data"] = data_copy
+        try:
+            send_data_to_xsiam(*send_args, **send_kwargs)
+        except Exception as exc:
+            status_code = getattr(exc, "status_code", None)
+            error_name = type(exc).__name__
+            if not is_retryable_xsiam_error(exc):
+                demisto.debug(f"[XSIAM Send] {label} failed with a non-retryable error ({error_name}, {status_code=}).")
+                raise
+            if attempt == max_attempts:
+                demisto.error(
+                    f"[XSIAM Send] {label} failed after {max_attempts} attempts. Last error: {error_name}, {status_code=}."
+                )
+                raise
+            delay = XSIAMSendConfig.BACKOFF_SECONDS * 2 ** (attempt - 1)
+            demisto.debug(
+                f"[XSIAM Send] {label} attempt {attempt}/{max_attempts} failed with a retryable error "
+                f"({error_name}, {status_code=}). Retrying in {delay}s."
+            )
+            time.sleep(delay)  # pylint: disable=E9003  # intentional backoff before retrying a transient XSIAM error
+            continue
+
+        if attempt > 1:
+            demisto.info(f"[XSIAM Send] {label} succeeded on attempt {attempt}/{max_attempts}.")
+        return
+
+
 def parse_vulnerabilities(vulns):  # pylint: disable=W9014
     demisto.debug("Parse the vulnerabilities...")
     if not isinstance(vulns, list):
@@ -2095,7 +2268,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 vulnerabilities = results.raw_response  # type: ignore    # pylint: disable=E1101
             return_results(results)
             if argToBoolean(args.get("should_push_events", "false")) and (is_xsiam() or is_platform()):
-                send_data_to_xsiam(vulnerabilities, product=f"{PRODUCT}_vulnerabilities", vendor=VENDOR)
+                send_data_to_xsiam_with_retry(vulnerabilities, product=f"{PRODUCT}_vulnerabilities", vendor=VENDOR)
 
         elif command == "tenable-io-list-scan-filters":
             return_results(list_scan_filters_command(client))
@@ -2115,19 +2288,18 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             return_results(results)
 
             if argToBoolean(args.get("should_push_events", "false")) and (is_xsiam() or is_platform()):
-                send_data_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                send_data_to_xsiam_with_retry(events, vendor=VENDOR, product=PRODUCT)
         # Fetch Commands
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
             demisto.debug(f"saved lastrun events: {last_run}")
             events, new_last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
-            send_data_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            send_data_to_xsiam_with_retry(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f"new lastrun events: {last_run}")
             demisto.setLastRun(new_last_run)
 
         elif command == "fetch-assets":
             assets = []
-            vulnerabilities = []
             assets_last_run = demisto.getAssetsLastRun()
             demisto.debug(f"saved lastrun assets: {assets_last_run}")
             assets_last_run_copy = assets_last_run.copy()
@@ -2189,7 +2361,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                     f"items_count={items_count}, cumulative_total={cumulative_total}, "
                     f"assets_fetch_in_progress={assets_fetch_in_progress}"
                 )
-                send_data_to_xsiam(
+                send_data_to_xsiam_with_retry(
                     data=assets,
                     vendor=VENDOR,
                     product=f"{PRODUCT}_assets",
@@ -2220,7 +2392,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                     f"[Fetch] Asset fetch completed with empty assets list. Sealing snapshot with "
                     f"snapshot_id={snapshot_id}, items_count={cumulative_total}"
                 )
-                send_data_to_xsiam(
+                send_data_to_xsiam_with_retry(
                     data=[],
                     vendor=VENDOR,
                     product=f"{PRODUCT}_assets",
@@ -2256,20 +2428,12 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             gc.collect()
 
             # Fetch Vulnerabilities: Run if there's an ongoing vulns export OR if assets fetch is complete.
-            # Executed only after assets have been sent and freed above.
+            # Executed only after assets have been sent and freed above. Vulnerabilities are sent chunk by chunk.
             if should_fetch_vulns:
-                vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
-                demisto.info(f"Received {len(vulnerabilities)} vulnerabilities.")
+                vulnerabilities_sent = run_vulnerabilities_fetch(client, last_run=assets_last_run)
+                demisto.info(f"Sent {vulnerabilities_sent} vulnerabilities.")
                 demisto.debug(f"new lastrun assets after vulns fetch: {assets_last_run}")
                 demisto.setAssetsLastRun(assets_last_run)
-
-            if vulnerabilities:
-                vulnerabilities = parse_vulnerabilities(vulnerabilities)
-                demisto.debug(f"sending {len(vulnerabilities)} vulnerabilities to XSIAM.")
-                send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f"{PRODUCT}_vulnerabilities")
-                # Release the vulnerabilities from memory once sent, mirroring the assets handling above.
-                del vulnerabilities
-                gc.collect()
 
             # Update module health separately to show the number of assets pulled.
             # Uses fetched_assets_this_run (captured before the assets list was freed above)
@@ -2284,7 +2448,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             vulns_fetch_in_progress = is_vulns_fetch_in_progress(assets_last_run)
             if not assets_fetch_in_progress and not vulns_fetch_in_progress:
                 demisto.debug(
-                    "Entire fetch cycle complete (assets + vulns). " "Cleaning up snapshot_id and total_assets for next cycle."
+                    "Entire fetch cycle complete (assets + vulns). Cleaning up snapshot_id and total_assets for next cycle."
                 )
                 assets_last_run.pop("snapshot_id", None)
                 assets_last_run.pop("total_assets", None)
