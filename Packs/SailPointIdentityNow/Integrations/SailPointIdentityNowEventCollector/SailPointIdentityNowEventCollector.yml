@@ -18,6 +18,18 @@ configuration:
   required: true
   displaypassword: Client Secret
   section: Connect
+- display: Fetch Events
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+  section: Collect
+  advanced: true
 - defaultvalue: 50000
   section: Collect
   display: Max number of events per fetch
@@ -71,7 +83,7 @@ script:
     description: Gets events from SailPoint IdentityNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding API request limitations.
 
     name: identitynow-get-events
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.15.14069087
   isfetchevents: true
   runonce: false
   script: '-'

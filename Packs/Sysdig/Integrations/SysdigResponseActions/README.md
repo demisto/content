@@ -1,8 +1,6 @@
 This is an integration that will use Sysdig agent to respond to malicious activity by triggering different actions at the host or container level like killing a container, quarantine a file or perform a system capture
 This integration was integrated and tested with Host shield `13.9.1` of the Sysdig Agent and ResponseActions version `0.1.0`
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 ## Configure Sysdig Response Actions in Cortex
 
 | **Parameter** | **Required** |

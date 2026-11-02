@@ -43,6 +43,13 @@ def load_xml_mock_response(file_name: str) -> str:
     return ET.tostring(top.getroot(), encoding="utf8").decode("utf-8")
 
 
+@pytest.fixture(autouse=True)
+def mock_support_multithreading():
+    """demistomock has no `_Demisto__do`, so the real support_multithreading cannot run in unit tests."""
+    with patch("FortiSIEMV2.support_multithreading") as mocked:
+        yield mocked
+
+
 def mock_client():
     from FortiSIEMV2 import FortiSIEMClient
 
@@ -1117,6 +1124,42 @@ def test_fetch_events_concurrently_time_buffer(mock_get_events):
     call_kwargs = mock_get_events.call_args[1]
     assert call_kwargs["time_from"] == 700000  # 1000000 - 300000
     assert call_kwargs["time_to"] == 2300000  # 2000000 + 300000
+
+
+@patch("FortiSIEMV2.support_multithreading")
+@patch("FortiSIEMV2.get_related_events_for_fetch_command")
+def test_fetch_events_concurrently_enables_multithreading_support(mock_get_events, mock_support_multithreading):
+    """
+    Testing that the demisto server channel is locked before worker threads start (XSUP-78294).
+    Given:
+        - 2 formatted incidents.
+    When:
+        - fetch_events_concurrently is called.
+    Then:
+        - support_multithreading is called exactly once.
+        - support_multithreading is called before any worker thread fetches events.
+    """
+    from FortiSIEMV2 import fetch_events_concurrently
+
+    client = mock_client()
+    call_order: list[str] = []
+    mock_support_multithreading.side_effect = lambda: call_order.append("support_multithreading")
+
+    def side_effect(incident_id, max_events, cli, time_from=None, time_to=None):
+        call_order.append(f"fetch_{incident_id}")
+        return []
+
+    mock_get_events.side_effect = side_effect
+    sample_incidents = [
+        {"incidentId": 401, "incidentFirstSeen": 1000000, "incidentLastSeen": 2000000},
+        {"incidentId": 402, "incidentFirstSeen": 3000000, "incidentLastSeen": 4000000},
+    ]
+
+    fetch_events_concurrently(sample_incidents, 20, client)
+
+    mock_support_multithreading.assert_called_once()
+    assert call_order[0] == "support_multithreading"
+    assert sorted(call_order[1:]) == ["fetch_401", "fetch_402"]
 
 
 @pytest.mark.commands
