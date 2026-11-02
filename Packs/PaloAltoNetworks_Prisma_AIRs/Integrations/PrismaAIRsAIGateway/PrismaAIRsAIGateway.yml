@@ -124,7 +124,7 @@ script:
       description: The workspace ID.
       type: String
     - contextPath: PrismaAIRs.AIGatewayGuardrail.created_at
-      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time when the guardrail was created, in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-aigateway-guardrails-update
     description: Updates a guardrail on the AI Gateway control plane.
