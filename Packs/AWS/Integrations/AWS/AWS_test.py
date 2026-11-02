@@ -6555,6 +6555,575 @@ def test_acm_update_certificate_options_non_ok_calls_handler(mocker):
     handle_resp.assert_called_once_with(resp)
 
 
+ROUTE53_HOSTED_ZONE = {
+    "Id": "/hostedzone/Z111111QQQQQQQ",
+    "Name": "example.com.",
+    "CallerReference": "ref-1",
+    "Config": {"Comment": "test zone", "PrivateZone": False},
+    "ResourceRecordSetCount": 3,
+}
+
+
+def test_route53_hosted_zones_list_command_success(mocker):
+    """
+    Given: A mocked Route53 client returning one hosted zone and a NextMarker.
+    When: hosted_zones_list_command is called with limit, next_marker, delegation_set_id and hosted_zone_type.
+    Then: It calls list_hosted_zones with MaxItems as a string and Marker, and outputs the zones and the next token.
+    """
+    from AWS import Route53
+
+    mock_client = mocker.Mock()
+    mock_client.list_hosted_zones.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "HostedZones": [ROUTE53_HOSTED_ZONE],
+        "NextMarker": "Z222222",
+        "IsTruncated": True,
+    }
+    args = {
+        "limit": "10",
+        "next_marker": "Z000000",
+        "delegation_set_id": "N123",
+        "hosted_zone_type": "PrivateHostedZone",
+    }
+
+    result = Route53.hosted_zones_list_command(mock_client, args)
+
+    mock_client.list_hosted_zones.assert_called_once_with(
+        Marker="Z000000", DelegationSetId="N123", HostedZoneType="PrivateHostedZone", MaxItems="10"
+    )
+    assert result.outputs["AWS.Route53.HostedZones(val.Id && val.Id == obj.Id)"] == [ROUTE53_HOSTED_ZONE]
+    assert result.outputs["AWS.Route53(true)"] == {"HostedZonesNextToken": "Z222222"}
+    assert "example.com." in result.readable_output
+    assert "test zone" in result.readable_output
+
+
+def test_route53_hosted_zones_list_command_default_and_max_limit(mocker):
+    """
+    Given: A mocked Route53 client and a limit above the Route53 maximum of 100.
+    When: hosted_zones_list_command is called.
+    Then: MaxItems is capped at "100" and no Marker is sent.
+    """
+    from AWS import Route53
+
+    mock_client = mocker.Mock()
+    mock_client.list_hosted_zones.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "HostedZones": [ROUTE53_HOSTED_ZONE],
+    }
+
+    result = Route53.hosted_zones_list_command(mock_client, {"limit": "500"})
+
+    mock_client.list_hosted_zones.assert_called_once_with(MaxItems="100")
+    assert "AWS.Route53(true)" not in result.outputs
+
+
+def test_route53_hosted_zones_list_command_empty(mocker):
+    """
+    Given: A mocked Route53 client returning no hosted zones.
+    When: hosted_zones_list_command is called.
+    Then: It returns a readable message without outputs.
+    """
+    from AWS import Route53
+
+    mock_client = mocker.Mock()
+    mock_client.list_hosted_zones.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "HostedZones": []}
+
+    result = Route53.hosted_zones_list_command(mock_client, {})
+
+    assert result.readable_output == "No Route53 hosted zones found."
+    assert result.outputs is None
+
+
+def test_route53_hosted_zones_list_command_error_response(mocker):
+    """
+    Given: A mocked Route53 client returning a non-OK HTTP status.
+    When: hosted_zones_list_command is called.
+    Then: AWSErrorHandler.handle_response_error is called with the response and the account ID.
+    """
+    from AWS import Route53, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    response = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.list_hosted_zones.return_value = response
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+
+    Route53.hosted_zones_list_command(mock_client, {"account_id": "123456789012"})
+
+    mock_handle_error.assert_called_once_with(response, "123456789012")
+
+
+def test_route53_hosted_zones_by_name_list_command_success(mocker):
+    """
+    Given: A mocked Route53 client returning one hosted zone and next-page values.
+    When: hosted_zones_by_name_list_command is called with dns_name, hosted_zone_id and limit.
+    Then: It calls list_hosted_zones_by_name with the right kwargs and outputs the NextDNSName and NextHostedZoneId.
+    """
+    from AWS import Route53
+
+    mock_client = mocker.Mock()
+    mock_client.list_hosted_zones_by_name.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "HostedZones": [ROUTE53_HOSTED_ZONE],
+        "NextDNSName": "next.example.com.",
+        "NextHostedZoneId": "Z333333",
+        "IsTruncated": True,
+    }
+    args = {"dns_name": "example.com", "hosted_zone_id": "Z111111QQQQQQQ", "limit": "1"}
+
+    result = Route53.hosted_zones_by_name_list_command(mock_client, args)
+
+    mock_client.list_hosted_zones_by_name.assert_called_once_with(
+        DNSName="example.com", HostedZoneId="Z111111QQQQQQQ", MaxItems="1"
+    )
+    assert result.outputs["AWS.Route53.HostedZones(val.Id && val.Id == obj.Id)"] == [ROUTE53_HOSTED_ZONE]
+    assert result.outputs["AWS.Route53(true)"] == {
+        "HostedZonesNextDNSName": "next.example.com.",
+        "HostedZonesNextHostedZoneId": "Z333333",
+    }
+    assert "AWS Route53 Hosted Zones By Name" in result.readable_output
+
+
+def test_route53_hosted_zones_by_name_list_command_hosted_zone_id_without_dns_name():
+    """
+    Given: A hosted_zone_id argument without a dns_name argument.
+    When: hosted_zones_by_name_list_command is called.
+    Then: A ValueError is raised before calling the API.
+    """
+    from AWS import Route53
+    from unittest.mock import Mock
+
+    mock_client = Mock()
+    with pytest.raises(ValueError, match="dns_name argument is required"):
+        Route53.hosted_zones_by_name_list_command(mock_client, {"hosted_zone_id": "Z1"})
+    mock_client.list_hosted_zones_by_name.assert_not_called()
+
+
+def test_route53_hosted_zones_by_name_list_command_empty(mocker):
+    """
+    Given: A mocked Route53 client returning no hosted zones.
+    When: hosted_zones_by_name_list_command is called without arguments.
+    Then: It sends only the default MaxItems and returns a readable message.
+    """
+    from AWS import Route53
+
+    mock_client = mocker.Mock()
+    mock_client.list_hosted_zones_by_name.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "HostedZones": [],
+    }
+
+    result = Route53.hosted_zones_by_name_list_command(mock_client, {})
+
+    mock_client.list_hosted_zones_by_name.assert_called_once_with(MaxItems="50")
+    assert result.readable_output == "No Route53 hosted zones found."
+
+
+def test_route53_hosted_zones_by_name_list_command_error_response(mocker):
+    """
+    Given: A mocked Route53 client returning a non-OK HTTP status.
+    When: hosted_zones_by_name_list_command is called.
+    Then: AWSErrorHandler.handle_response_error is called.
+    """
+    from AWS import Route53, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    mock_client.list_hosted_zones_by_name.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.FORBIDDEN}}
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+
+    Route53.hosted_zones_by_name_list_command(mock_client, {"dns_name": "example.com"})
+
+    mock_handle_error.assert_called_once()
+
+
+def test_route53_resource_record_sets_list_command_success(mocker):
+    """
+    Given: A mocked Route53 client returning a standard record with multiple values and an alias record.
+    When: resource_record_sets_list_command is called with start record arguments and a limit.
+    Then: It sends the right kwargs, outputs the record sets with the hosted zone ID and the pagination values,
+          and the readable output joins the values and shows the alias DNS name.
+    """
+    from AWS import Route53
+
+    mock_client = mocker.Mock()
+    mock_client.list_resource_record_sets.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ResourceRecordSets": [
+            {
+                "Name": "www.example.com.",
+                "Type": "A",
+                "TTL": 300,
+                "SetIdentifier": "weighted-1",
+                "Weight": 10,
+                "ResourceRecords": [{"Value": "1.1.1.1"}, {"Value": "2.2.2.2"}],
+            },
+            {
+                "Name": "app.example.com.",
+                "Type": "CNAME",
+                "AliasTarget": {
+                    "HostedZoneId": "Z3AQBSTGFYJSTF",
+                    "DNSName": "mybucket.s3-website-us-east-1.amazonaws.com.",
+                    "EvaluateTargetHealth": False,
+                },
+            },
+        ],
+        "IsTruncated": True,
+        "NextRecordName": "z.example.com.",
+        "NextRecordType": "TXT",
+        "NextRecordIdentifier": "weighted-2",
+    }
+    args = {
+        "hosted_zone_id": "Z111111QQQQQQQ",
+        "start_record_name": "a.example.com",
+        "start_record_type": "A",
+        "start_record_identifier": "weighted-0",
+        "limit": "2",
+    }
+
+    result = Route53.resource_record_sets_list_command(mock_client, args)
+
+    mock_client.list_resource_record_sets.assert_called_once_with(
+        HostedZoneId="Z111111QQQQQQQ",
+        StartRecordName="a.example.com",
+        StartRecordType="A",
+        StartRecordIdentifier="weighted-0",
+        MaxItems="2",
+    )
+    record_sets_key = next(key for key in result.outputs if key.startswith("AWS.Route53.RecordSets("))
+    record_sets = result.outputs[record_sets_key]
+    assert len(record_sets) == 2
+    assert all(record["HostedZoneId"] == "Z111111QQQQQQQ" for record in record_sets)
+    assert result.outputs["AWS.Route53(true)"] == {
+        "RecordSetsNextRecordName": "z.example.com.",
+        "RecordSetsNextRecordType": "TXT",
+        "RecordSetsNextRecordIdentifier": "weighted-2",
+        "RecordSetsIsTruncated": True,
+    }
+    assert "1.1.1.1, 2.2.2.2" in result.readable_output
+    assert "mybucket.s3-website-us-east-1.amazonaws.com." in result.readable_output
+    assert "weighted-1" in result.readable_output
+
+
+def test_route53_resource_record_sets_list_command_last_page(mocker):
+    """
+    Given: A mocked Route53 client returning a non-truncated page.
+    When: resource_record_sets_list_command is called with only hosted_zone_id.
+    Then: Only the default MaxItems is sent, and RecordSetsIsTruncated is False without next-record values.
+    """
+    from AWS import Route53
+
+    mock_client = mocker.Mock()
+    mock_client.list_resource_record_sets.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ResourceRecordSets": [{"Name": "example.com.", "Type": "NS", "TTL": 172800, "ResourceRecords": [{"Value": "ns-1."}]}],
+        "IsTruncated": False,
+    }
+
+    result = Route53.resource_record_sets_list_command(mock_client, {"hosted_zone_id": "Z1", "limit": "1000"})
+
+    mock_client.list_resource_record_sets.assert_called_once_with(HostedZoneId="Z1", MaxItems="300")
+    assert result.outputs["AWS.Route53(true)"] == {"RecordSetsIsTruncated": False}
+
+
+def test_route53_resource_record_sets_list_command_empty(mocker):
+    """
+    Given: A mocked Route53 client returning no record sets.
+    When: resource_record_sets_list_command is called.
+    Then: It returns a readable message that names the hosted zone.
+    """
+    from AWS import Route53
+
+    mock_client = mocker.Mock()
+    mock_client.list_resource_record_sets.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ResourceRecordSets": [],
+        "IsTruncated": False,
+    }
+
+    result = Route53.resource_record_sets_list_command(mock_client, {"hosted_zone_id": "Z1"})
+
+    assert result.readable_output == "No resource record sets found in hosted zone Z1."
+
+
+@pytest.mark.parametrize(
+    "args, error",
+    [
+        ({"hosted_zone_id": "Z1", "start_record_type": "A"}, "start_record_name argument is required"),
+        (
+            {"hosted_zone_id": "Z1", "start_record_name": "a.example.com", "start_record_identifier": "id"},
+            "start_record_name and start_record_type arguments are required",
+        ),
+    ],
+)
+def test_route53_resource_record_sets_list_command_invalid_start_args(args, error):
+    """
+    Given: start record arguments without the arguments they depend on.
+    When: resource_record_sets_list_command is called.
+    Then: A ValueError is raised and the API is not called.
+    """
+    from AWS import Route53
+    from unittest.mock import Mock
+
+    mock_client = Mock()
+    with pytest.raises(ValueError, match=error):
+        Route53.resource_record_sets_list_command(mock_client, args)
+    mock_client.list_resource_record_sets.assert_not_called()
+
+
+def test_route53_resource_record_sets_list_command_error_response(mocker):
+    """
+    Given: A mocked Route53 client returning a non-OK HTTP status.
+    When: resource_record_sets_list_command is called.
+    Then: AWSErrorHandler.handle_response_error is called.
+    """
+    from AWS import Route53, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    mock_client.list_resource_record_sets.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+
+    Route53.resource_record_sets_list_command(mock_client, {"hosted_zone_id": "Z1", "account_id": "123456789012"})
+
+    mock_handle_error.assert_called_once()
+
+
+def _route53_change_response() -> dict:
+    return {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ChangeInfo": {
+            "Id": "/change/C123",
+            "Status": "PENDING",
+            "SubmittedAt": datetime(2026, 1, 1, 12, 0, 0),
+            "Comment": "remove dangling record",
+        },
+    }
+
+
+def test_route53_resource_record_sets_change_command_delete_values(mocker):
+    """
+    Given: A DELETE action with multiple values, a TTL, a set identifier and a comment.
+    When: resource_record_sets_change_command is called.
+    Then: It sends one change with all the ResourceRecords, and outputs the ChangeInfo with SubmittedAt as a string.
+    """
+    from AWS import Route53
+
+    mock_client = mocker.Mock()
+    mock_client.change_resource_record_sets.return_value = _route53_change_response()
+    args = {
+        "hosted_zone_id": "Z1",
+        "action": "DELETE",
+        "name": "app.example.com",
+        "type": "CNAME",
+        "ttl": "300",
+        "values": "old-bucket.s3.amazonaws.com,other.example.com",
+        "set_identifier": "weighted-1",
+        "comment": "remove dangling record",
+    }
+
+    result = Route53.resource_record_sets_change_command(mock_client, args)
+
+    mock_client.change_resource_record_sets.assert_called_once_with(
+        HostedZoneId="Z1",
+        ChangeBatch={
+            "Comment": "remove dangling record",
+            "Changes": [
+                {
+                    "Action": "DELETE",
+                    "ResourceRecordSet": {
+                        "Name": "app.example.com",
+                        "Type": "CNAME",
+                        "SetIdentifier": "weighted-1",
+                        "TTL": 300,
+                        "ResourceRecords": [{"Value": "old-bucket.s3.amazonaws.com"}, {"Value": "other.example.com"}],
+                    },
+                }
+            ],
+        },
+    )
+    assert result.outputs_prefix == "AWS.Route53.RecordSetsChange"
+    assert result.outputs_key_field == "Id"
+    assert result.outputs == {
+        "Id": "/change/C123",
+        "Status": "PENDING",
+        "SubmittedAt": "2026-01-01T12:00:00",
+        "Comment": "remove dangling record",
+    }
+    assert "DELETE" in result.readable_output
+    assert "PENDING" in result.readable_output
+
+
+def test_route53_resource_record_sets_change_command_upsert_alias(mocker):
+    """
+    Given: An UPSERT action with alias target arguments and no comment.
+    When: resource_record_sets_change_command is called.
+    Then: It sends an AliasTarget without TTL or ResourceRecords, and without a Comment.
+    """
+    from AWS import Route53
+
+    mock_client = mocker.Mock()
+    mock_client.change_resource_record_sets.return_value = _route53_change_response()
+    args = {
+        "hosted_zone_id": "Z1",
+        "action": "UPSERT",
+        "name": "example.com",
+        "type": "A",
+        "alias_target_hosted_zone_id": "Z35SXDOTRQ7X7K",
+        "alias_target_dns_name": "my-lb.us-east-1.elb.amazonaws.com",
+        "alias_target_evaluate_target_health": "true",
+    }
+
+    Route53.resource_record_sets_change_command(mock_client, args)
+
+    change_batch = mock_client.change_resource_record_sets.call_args[1]["ChangeBatch"]
+    assert "Comment" not in change_batch
+    assert change_batch["Changes"] == [
+        {
+            "Action": "UPSERT",
+            "ResourceRecordSet": {
+                "Name": "example.com",
+                "Type": "A",
+                "AliasTarget": {
+                    "HostedZoneId": "Z35SXDOTRQ7X7K",
+                    "DNSName": "my-lb.us-east-1.elb.amazonaws.com",
+                    "EvaluateTargetHealth": True,
+                },
+            },
+        }
+    ]
+
+
+def test_route53_resource_record_sets_change_command_alias_default_evaluate_target_health(mocker):
+    """
+    Given: A CREATE action with alias target arguments but no alias_target_evaluate_target_health.
+    When: resource_record_sets_change_command is called.
+    Then: EvaluateTargetHealth, which the API requires, is sent as False.
+    """
+    from AWS import Route53
+
+    mock_client = mocker.Mock()
+    mock_client.change_resource_record_sets.return_value = _route53_change_response()
+    args = {
+        "hosted_zone_id": "Z1",
+        "action": "CREATE",
+        "name": "example.com",
+        "type": "A",
+        "alias_target_hosted_zone_id": "Z35SXDOTRQ7X7K",
+        "alias_target_dns_name": "my-lb.us-east-1.elb.amazonaws.com",
+    }
+
+    Route53.resource_record_sets_change_command(mock_client, args)
+
+    record_set = mock_client.change_resource_record_sets.call_args[1]["ChangeBatch"]["Changes"][0]["ResourceRecordSet"]
+    assert record_set["AliasTarget"]["EvaluateTargetHealth"] is False
+
+
+@pytest.mark.parametrize(
+    "extra_args, error",
+    [
+        ({}, "Provide either the values and ttl arguments"),
+        (
+            {"values": "1.1.1.1", "ttl": "300", "alias_target_hosted_zone_id": "Z2", "alias_target_dns_name": "a.b"},
+            "not both",
+        ),
+        ({"values": "1.1.1.1"}, "ttl argument is required"),
+        ({"alias_target_dns_name": "a.b"}, "Both alias_target_hosted_zone_id and alias_target_dns_name are required"),
+        ({"alias_target_evaluate_target_health": "true"}, "Both alias_target_hosted_zone_id and alias_target_dns_name"),
+        (
+            {"alias_target_hosted_zone_id": "Z2", "alias_target_dns_name": "a.b", "ttl": "60"},
+            "ttl argument cannot be used with an alias record",
+        ),
+    ],
+)
+def test_route53_resource_record_sets_change_command_validation_errors(extra_args, error):
+    """
+    Given: Invalid combinations of the values, ttl and alias target arguments.
+    When: resource_record_sets_change_command is called.
+    Then: A ValueError with a clear message is raised and the API is not called.
+    """
+    from AWS import Route53
+    from unittest.mock import Mock
+
+    mock_client = Mock()
+    args = {"hosted_zone_id": "Z1", "action": "CREATE", "name": "www.example.com", "type": "A", **extra_args}
+    with pytest.raises(ValueError, match=error):
+        Route53.resource_record_sets_change_command(mock_client, args)
+    mock_client.change_resource_record_sets.assert_not_called()
+
+
+def test_route53_resource_record_sets_change_command_error_response(mocker):
+    """
+    Given: A mocked Route53 client returning a non-OK HTTP status.
+    When: resource_record_sets_change_command is called with valid arguments.
+    Then: AWSErrorHandler.handle_response_error is called with the response and the account ID.
+    """
+    from AWS import Route53, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    response = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.change_resource_record_sets.return_value = response
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+    args = {
+        "account_id": "123456789012",
+        "hosted_zone_id": "Z1",
+        "action": "CREATE",
+        "name": "www.example.com",
+        "type": "A",
+        "ttl": "300",
+        "values": "1.1.1.1",
+    }
+
+    Route53.resource_record_sets_change_command(mock_client, args)
+
+    mock_handle_error.assert_called_once_with(response, "123456789012")
+
+
+def test_route53_client_error_propagates(mocker):
+    """
+    Given: A mocked Route53 client raising a botocore ClientError (for example, a record that does not exist on DELETE).
+    When: resource_record_sets_change_command is called.
+    Then: The ClientError propagates so that main() can handle it with AWSErrorHandler.handle_client_error.
+    """
+    from AWS import Route53
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    mock_client.change_resource_record_sets.side_effect = ClientError(
+        {"Error": {"Code": "InvalidChangeBatch", "Message": "record not found"}}, "ChangeResourceRecordSets"
+    )
+    args = {
+        "hosted_zone_id": "Z1",
+        "action": "DELETE",
+        "name": "www.example.com",
+        "type": "A",
+        "ttl": "300",
+        "values": "1.1.1.1",
+    }
+
+    with pytest.raises(ClientError):
+        Route53.resource_record_sets_change_command(mock_client, args)
+
+
+def test_route53_commands_registered():
+    """
+    Given: The AWS integration module.
+    When: Inspecting COMMANDS_MAPPING, REQUIRED_ACTIONS and AWSServices.
+    Then: The Route53 commands, IAM actions and service are registered.
+    """
+    from AWS import COMMANDS_MAPPING, REQUIRED_ACTIONS, AWSServices, Route53
+
+    assert AWSServices("route53") == AWSServices.ROUTE53
+    assert COMMANDS_MAPPING["aws-route53-hosted-zones-list"] == Route53.hosted_zones_list_command
+    assert COMMANDS_MAPPING["aws-route53-hosted-zones-by-name-list"] == Route53.hosted_zones_by_name_list_command
+    assert COMMANDS_MAPPING["aws-route53-resource-record-sets-list"] == Route53.resource_record_sets_list_command
+    assert COMMANDS_MAPPING["aws-route53-resource-record-sets-change"] == Route53.resource_record_sets_change_command
+    for action in (
+        "route53:ListHostedZones",
+        "route53:ListHostedZonesByName",
+        "route53:ListResourceRecordSets",
+        "route53:ChangeResourceRecordSets",
+    ):
+        assert action in REQUIRED_ACTIONS
+
+
 def test_ec2_create_security_group_command_success(mocker):
     """
     Given: A mocked boto3 EC2 client and valid security group creation arguments.
