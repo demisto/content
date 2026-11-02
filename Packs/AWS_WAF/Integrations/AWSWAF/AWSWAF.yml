@@ -2574,7 +2574,7 @@ script:
       - me-south-1
       - me-central-1
     description: Tag a resource.
-    name: aws-waf-tag-resource
+    name: aws-waf-resource-tag
   - arguments:
     - name: resource_arn
       description: The ARN of the resource to remove tags from.
@@ -2620,7 +2620,7 @@ script:
       - me-south-1
       - me-central-1
     description: Remove tags from a resource.
-    name: aws-waf-untag-resource
+    name: aws-waf-resource-untag
   - arguments:
     - name: resource_arn
       description: The ARN of the resource.

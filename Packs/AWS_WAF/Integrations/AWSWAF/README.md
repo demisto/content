@@ -1256,14 +1256,14 @@ Lists logging configurations.
 >|---|---|
 >| arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4 | arn:aws:firehose:us-east-1:123456789012:deliverystream/aws-waf-logs-stream |
 
-### aws-waf-tag-resource
+### aws-waf-resource-tag
 
 ***
 Tag a resource.
 
 #### Base Command
 
-`aws-waf-tag-resource`
+`aws-waf-resource-tag`
 
 #### Input
 
@@ -1280,20 +1280,20 @@ There is no context output for this command.
 
 #### Command example
 
-```!aws-waf-tag-resource resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4 tag_key=Environment,Team tag_value=Production,Security```
+```!aws-waf-resource-tag resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4 tag_key=Environment,Team tag_value=Production,Security```
 
 #### Human Readable Output
 
 >AWS Waf resource arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4 was tagged successfully.
 
-### aws-waf-untag-resource
+### aws-waf-resource-untag
 
 ***
 Remove tags from a resource.
 
 #### Base Command
 
-`aws-waf-untag-resource`
+`aws-waf-resource-untag`
 
 #### Input
 
@@ -1309,7 +1309,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!aws-waf-untag-resource resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4 tag_keys=Environment,Team```
+```!aws-waf-resource-untag resource_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4 tag_keys=Environment,Team```
 
 #### Human Readable Output
 

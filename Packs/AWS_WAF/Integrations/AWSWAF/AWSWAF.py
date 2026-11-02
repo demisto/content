@@ -1570,9 +1570,9 @@ def main() -> None:  # pragma: no cover
         elif command == "aws-waf-logging-configuration-list":
             result = list_logging_configurations_command(client, args)
 
-        elif command == "aws-waf-tag-resource":
+        elif command == "aws-waf-resource-tag":
             result = tag_resource_command(client, args)
-        elif command == "aws-waf-untag-resource":
+        elif command == "aws-waf-resource-untag":
             result = untag_resource_command(client, args)
         elif command == "aws-waf-tag-list":
             result = list_tags_for_resource_command(client, args)
