@@ -5,7 +5,7 @@
     "ownerOnly": false,
     "description": "Unmodified Vega incident timeline events, stored as JSON.",
     "cliName": "vegatimelineeventssource",
-    "type": "longText",
+    "type": "grid",
     "closeForm": false,
     "editForm": false,
     "required": false,

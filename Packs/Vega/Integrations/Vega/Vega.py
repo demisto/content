@@ -3129,11 +3129,15 @@ def _apply_vega_entity_link(raw: dict, integration_url: str | None = None) -> No
         raw["link"] = _api_to_app_url(str(api_link))
         return
 
-    entity_type = raw.get("vegaEntityType")
-    entity_id = raw.get("id", "")
-    if entity_type == "Vega Alert" and entity_id and integration_url:
-        platform_base = _platform_ui_base_url(integration_url)
-        raw["link"] = f"{platform_base.rstrip('/')}/incidents/alerts/investigation/{entity_id}"
+    href = str(raw.get("href") or "").strip()
+    if not href:
+        return
+    if href.startswith(("http://", "https://")):
+        raw["link"] = _api_to_app_url(href)
+        return
+    if integration_url:
+        path = href if href.startswith("/") else f"/{href}"
+        raw["link"] = f"{_platform_ui_base_url(integration_url).rstrip('/')}{path}"
 
 
 def _format_raw_entity_for_xsoar(raw: dict) -> None:
@@ -4983,6 +4987,23 @@ def _build_mirror_entity_custom_fields(entity: dict[str, Any], entity_type_suffi
     return custom_fields
 
 
+def _mirror_content_custom_fields(raw: dict[str, Any]) -> dict[str, Any]:
+    """Map formatted Assets, Observables, Key Findings, and Recommended Actions onto incident fields."""
+    custom_fields: dict[str, Any] = {}
+    if "typedAssets" in raw:
+        custom_fields["vegaassets"] = raw.get("typedAssets") if isinstance(raw.get("typedAssets"), list) else []
+    if "assets" in raw:
+        custom_fields["vegaassetsvalue"] = raw.get("assets") if isinstance(raw.get("assets"), list) else []
+    if "observables" in raw:
+        custom_fields["vegaobservables"] = raw.get("observables") if isinstance(raw.get("observables"), list) else []
+    findings = raw.get("vegaIncidentFindings")
+    if findings:
+        custom_fields["vegaincidentfindings"] = str(findings)
+    if "recommendedActions" in raw:
+        custom_fields["vegarecommendedactions"] = raw.get("recommendedActions")
+    return custom_fields
+
+
 def _build_mirror_sync_object(
     entity: dict[str, Any],
     entity_type_suffix: str,
@@ -5008,6 +5029,8 @@ def _build_mirror_sync_object(
     _format_raw_entity_for_xsoar(raw)
 
     custom_fields = _build_mirror_entity_custom_fields(entity, entity_type_suffix)
+    if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
+        custom_fields.update(_mirror_content_custom_fields(raw))
     prefixed_mirror_id = _format_dbot_mirror_id(entity_type_suffix, bare_entity_id) if bare_entity_id else ""
     sync_object: dict[str, Any] = {
         "id": bare_entity_id or effective_remote_id,
@@ -5150,11 +5173,42 @@ def _poll_modified_mirror_page(
     return len(entities), True
 
 
+def _append_alert_related_incident_ids(
+    alerts: list[Any],
+    modified_ids: list[str],
+    incident_bare_ids: set[str],
+) -> None:
+    """Queue parent incidents when an updated alert changes their alert metadata.
+
+    An alert update does not change the incident lastUpdated time.
+    """
+    for alert in alerts:
+        if not isinstance(alert, dict):
+            continue
+        related = alert.get("relatedIncidents")
+        if not isinstance(related, list):
+            continue
+        for item in related:
+            if not isinstance(item, dict):
+                continue
+            incident_id = str(item.get("incidentId") or "").strip()
+            if not incident_id:
+                continue
+            bare_id = _append_modified_remote_entity_id(
+                modified_ids,
+                {"id": incident_id},
+                poll_source=MIRROR_ENTITY_SUFFIX_INCIDENT,
+            )
+            if bare_id:
+                incident_bare_ids.add(bare_id)
+
+
 def _poll_modified_alerts_for_mirror(
     client: Client,
     updated_from: str,
     modified_ids: list[str],
     alert_bare_ids: set[str],
+    incident_bare_ids: set[str] | None = None,
 ) -> None:
     """Poll updated alerts and collect modified mirror IDs."""
     offset = 0
@@ -5171,6 +5225,9 @@ def _poll_modified_alerts_for_mirror(
             api_error = response.get("error")
             if isinstance(api_error, dict) and api_error.get("message"):
                 demisto.info(f"Alert poll API error: error={str(api_error.get('message'))}")
+
+            if incident_bare_ids is not None:
+                _append_alert_related_incident_ids(response.get("alerts") or [], modified_ids, incident_bare_ids)
 
             page_count, should_continue = _poll_modified_mirror_page(
                 response,
@@ -5262,6 +5319,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
             _resolve_mirror_updated_from(remote_args.last_update),
             modified_ids,
             alert_bare_ids,
+            incident_bare_ids if fetch_incidents else None,
         )
 
     if fetch_incidents:
@@ -5383,6 +5441,12 @@ def _enrich_mirror_incident_entity(
             "severity",
             "lastUpdated",
             "userVerdict",
+            "assets",
+            "typedAssets",
+            "observables",
+            "incidentFindings",
+            "keyFindings",
+            "recommendedActions",
         ):
             if key in details and details[key] is not None:
                 entity[key] = details[key]
