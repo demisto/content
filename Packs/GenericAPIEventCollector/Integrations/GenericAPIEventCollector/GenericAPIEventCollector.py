@@ -276,10 +276,13 @@ def fetch_events(
         all_events_list.extend(events_list)
         demisto.debug(f"{len(all_events_list)} events fetched")
         pagination_needed, next_page_value = is_pagination_needed(raw_events, pagination_logic)
-        # Stop on an empty page or a cursor that did not advance, otherwise APIs that always return
+        # Stop on an empty page or an empty/unchanged cursor, otherwise APIs that always return
         # the pagination flag (e.g. a sequence cursor) would loop forever.
         if pagination_needed and (
-            not events_list or next_page_value in (None, previous_page_value) or len(all_events_list) >= fetch_limit
+            not events_list
+            or not next_page_value
+            or next_page_value == previous_page_value
+            or len(all_events_list) >= fetch_limit
         ):
             demisto.debug(f"Stopping pagination: page size {len(events_list)}, next page value {next_page_value}")
             pagination_needed = False
@@ -322,8 +325,9 @@ def fetch_events(
             continue
 
         # An integer ID above the last fetched ID is new even if its timestamp is older, e.g. feeds
-        # ordered by an update sequence where the timestamp is the original content date.
-        is_new_by_id = current_id_int is not None and previous_id_int is not None and current_id_int > previous_id_int
+        # ordered by an update sequence where the timestamp is the original content date. With no stored ID
+        # yet (first fetch), every event with an ID is new, otherwise the first batch is dropped by the time filter.
+        is_new_by_id = current_id_int is not None and (previous_id_int is None or current_id_int > previous_id_int)
 
         # to prevent duplicates, we are only adding events with creation_time > last fetched incident
         if incident_created_dt > last_fetched_datetime or is_new_by_id:
@@ -333,8 +337,8 @@ def fetch_events(
         else:
             demisto.debug(f"This event is to old to pull, creation time: {incident_created_dt}")
 
-        # Handle the last event id.
-        if id_keys:
+        # Handle the last event id. An event without an ID must not wipe the stored cursor.
+        if id_keys and current_id is not None:
             demisto.debug(f"Current event id: {current_id}")
             if current_id_int is not None and last_fetched_id is not None:
                 last_fetched_id = str(max(int(last_fetched_id), current_id_int))

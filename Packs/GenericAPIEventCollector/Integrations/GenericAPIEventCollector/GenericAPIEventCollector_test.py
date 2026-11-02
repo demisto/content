@@ -1021,6 +1021,54 @@ def test_fetch_events_pagination_stops_when_cursor_does_not_advance():
     assert client.requests[1].request_json == {"next": "abc"}
 
 
+@pytest.mark.parametrize("empty_cursor", ["", 0])
+def test_fetch_events_pagination_stops_on_empty_cursor(empty_cursor):
+    """
+    Given: an API that returns the pagination flag with an empty cursor ("" or 0) on the first page.
+    When: fetch_events paginates.
+    Then: no extra request is sent with the empty cursor.
+    """
+    client = RecordingClient([{"items": [{"datetime": "2026-10-12T00:00:00"}], "more": True, "next": empty_cursor}])
+    params = {"pagination_needed": "true", "pagination_field_name": "next", "pagination_flag": "more"}
+
+    run_fetch(client, params, {"@first_fetch_datetime": "2026-10-11T00:00:00"})
+
+    assert len(client.requests) == 1
+
+
+def test_fetch_events_integer_id_first_fetch_accepts_events_with_old_timestamps():
+    """
+    Given: ID type "integer" and no stored ID yet (first fetch).
+    When: the API returns events whose timestamps are older than the first fetch time.
+    Then: they are collected and the cursor is set to the highest ID.
+    """
+    client = RecordingClient(
+        [{"items": [{"datetime": "2014-06-04T01:28:00", "seq": 7}, {"datetime": "2020-01-01T00:00:00", "seq": 9}]}]
+    )
+    params = {"id_keys": "seq", "id_type": "integer"}
+
+    next_run, events = run_fetch(client, params, {"@first_fetch_datetime": "2026-10-11T00:00:00"})
+
+    assert [event["seq"] for event in events] == [7, 9]
+    assert next_run["@last_fetched_id"] == "9"
+
+
+@pytest.mark.parametrize("id_type", ["integer", "string"])
+def test_fetch_events_event_without_id_keeps_cursor(id_type):
+    """
+    Given: a stored cursor and a batch whose last event has no ID.
+    When: fetch_events runs.
+    Then: the stored cursor is kept instead of being wiped.
+    """
+    client = RecordingClient([{"items": [{"datetime": "2026-10-12T00:00:00", "seq": 5}, {"datetime": "2026-10-12T00:00:01"}]}])
+    params = {"id_keys": "seq", "id_type": id_type}
+    last_run = {"@first_fetch_datetime": "2026-10-11T00:00:00", "@last_fetched_id": "3"}
+
+    next_run, _ = run_fetch(client, params, last_run)
+
+    assert next_run["@last_fetched_id"] == "5"
+
+
 def test_fetch_events_pagination_stops_at_configured_limit():
     """
     Given: a limit of 2 and an API that keeps returning pages with an advancing cursor.
