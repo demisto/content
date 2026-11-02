@@ -1,0 +1,32 @@
+{
+    "autorun": true,
+    "color": "#5C6BC0",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "All"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Health Check and BPA",
+    "layout": "HealthCheckIssueLayout",
+    "locked": false,
+    "name": "Health Check and BPA",
+    "onChangeRepAlg": 1,
+    "playbookId": "HealthCheck-xsiam",
+    "readonly": false,
+    "reputationCalc": 1,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "8.10.0",
+    "marketplaces": [
+        "platform",
+        "marketplacev2"
+    ]
+}

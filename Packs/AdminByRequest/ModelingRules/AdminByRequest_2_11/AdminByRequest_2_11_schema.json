@@ -1,0 +1,80 @@
+{
+    "admin_by_request_raw": {
+      "application": {
+        "type": "string",
+        "is_array": false
+      },
+      "computer": {
+        "type": "string",
+        "is_array": false
+      },
+      "auditLogURL": {
+        "type": "string",
+        "is_array": false
+      },
+      "source_log_type": {
+        "type": "string",
+        "is_array": false
+      },
+      "type": {
+        "type": "string",
+        "is_array": false
+      },
+      "user": {
+        "type": "string",
+        "is_array": false
+      },
+      "computerName": {
+        "type": "string",
+        "is_array": false
+      },
+      "eventLevel": {
+        "type": "string",
+        "is_array": false
+      },
+      "additionalData": {
+        "type": "string",
+        "is_array": false
+      },
+      "userAccount": {
+        "type": "string",
+        "is_array": false
+      },
+      "userName": {
+        "type": "string",
+        "is_array": false
+      },
+      "reason": {
+        "type": "string",
+        "is_array": false
+      },
+      "eventText": {
+        "type": "string",
+        "is_array": false
+      },
+      "auditlogLink": {
+        "type": "string",
+        "is_array": false
+      },
+      "approvedBy": {
+        "type": "string",
+        "is_array": false
+      },
+      "approvedByEmail": {
+        "type": "string",
+        "is_array": false
+      },
+      "deniedBy": {
+        "type": "string",
+        "is_array": false
+      },
+      "deniedByEmail": {
+        "type": "string",
+        "is_array": false
+      },
+      "deniedReason": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+}    

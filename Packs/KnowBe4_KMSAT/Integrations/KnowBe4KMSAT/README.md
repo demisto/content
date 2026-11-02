@@ -1,4 +1,6 @@
-**KnowBe4's KMSAT Console** is a security awareness training and simulated phishing console that you can use to improve your organization's overall security. This integration pack allows you to push and pull your external data to and from your KMSAT console.
+**KnowBe4's KSAT Console** is a security awareness training and simulated phishing console that you can use to improve your organization's overall security. This integration pack allows you to push and pull your external data to and from your KSAT console.
+
+For KnowBe4 subscription levels and pricing, see the [KnowBe4 Security Awareness Training pricing page](https://www.knowbe4.com/products/security-awareness-training/pricing).
 
 | What Does This Pack Do?                                                 |
 | ----------------------------------------------------------------------- |
@@ -10,17 +12,17 @@
 | 6. Pull statuses of your training campaigns                             |
 | 7. Pull a list of your users’ training campaign enrollments             |
 | 8. Pull your users’ event data                                          |
-| 9. Add events to User Timelines in KMSAT                                |
-| 10. Delete events from User Timelines in KMSAT                          |
+| 9. Add events to User Timelines in KSAT                                 |
+| 10. Delete events from User Timelines in KSAT                           |
 
 ## Configuration
 
 | Parameter                   | Description | Requirement  |
 | --------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Instance Name               | Enter a name for your KMSAT instance.                                                                                                                                                              | Required    |
-| Your Reporting  Server URL  | Enter the Reporting Server URL for your KMSAT instance, which you can find in KnowBe4’s [Reporting API](https://developer.knowbe4.com/rest/reporting#tag/Base-URL) documentation.                  | Required    |
+| Instance Name               | Enter a name for your KSAT instance.                                                                                                                                                               | Required    |
+| Your Reporting  Server URL  | Enter the Reporting Server URL for your KSAT instance, which you can find in KnowBe4’s [Reporting API](https://developer.knowbe4.com/rest/reporting#tag/Base-URL) documentation.                   | Required    |
 | Reporting API Key           | Enter the Reporting API key to use for the connection. To generate this key, see KnowBe4’s [Account Settings: API](https://support.knowbe4.com/hc/en-us/articles/12769050560403#API) documentation.| Required    |
-| Your User Events Server URL | Enter the User Event URL for your KMSAT instance, which you can find in KnowBe4’s [User Event API](https://developer.knowbe4.com/rest/userEvents#tag/Base-URL) documentation.                      | Required    |
+| Your User Events Server URL | Enter the User Event URL for your KSAT instance, which you can find in KnowBe4’s [User Event API](https://developer.knowbe4.com/rest/userEvents#tag/Base-URL) documentation.                       | Required    |
 | User Events API Key         | Enter the User Event API key to use for the connection. To generate this key, see KnowBe4’s [User Event API](https://support.knowbe4.com/hc/en-us/articles/360024863474) documentation.            | Required    |
 
 ## Commands

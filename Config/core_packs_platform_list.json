@@ -12,21 +12,6 @@
             ]
         },
         {
-            "id": "AIAgents",
-            "supportedModules": [
-                "agentix",
-                "asm",
-                "cloud",
-                "cloud_appsec",
-                "cloud_posture",
-                "cloud_runtime_security",
-                "edr",
-                "email_security",
-                "exposure_management",
-                "xsiam"
-            ]
-        },
-        {
             "id": "AutoFocus",
             "supportedModules": [
                 "agentix",
@@ -105,8 +90,7 @@
                 "agentix",
                 "cloud_posture",
                 "xsiam",
-                "edr",
-                "agentix_xsiam"
+                "edr"
             ]
         },
         {

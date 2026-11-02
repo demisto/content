@@ -952,7 +952,8 @@ def test_initialize_edl_context():
         "mwg_type": "string",
         "bc_category": "bc_category",
         "category_attribute": ["test1", "test2"],
-        "fields_to_present": "name,type",
+        # The raw user input is persisted; it is resolved ("value" -> "name") on from_context_json.
+        "fields_to_present": "value,type",
         "csv_text": True,
         "url_protocol_stripping": True,
         "url_truncate": False,
@@ -1487,8 +1488,8 @@ def test_store_log_data(mocker, wip_exist):
         pytest.param(FORMAT_PROXYSG, "", RequestArguments.FILTER_FIELDS_ON_FORMAT_PROXYSG, id="proxysg_default_fields"),
         # Case 6: Unknown format fallback to FILTER_FIELDS_ON_FORMAT_TEXT
         pytest.param("unknown_format", "", RequestArguments.FILTER_FIELDS_ON_FORMAT_TEXT, id="unknown_format_fallback"),
-        # Case 7: Empty string returns "" (fix for XSUP-67083 - legacy mode preservation)
-        pytest.param(FORMAT_TEXT, "", "", id="empty_string_returns_empty"),
+        # Case 7: Empty string on text format filters on name,type (XSUP-77883 - avoid loading full indicators)
+        pytest.param(FORMAT_TEXT, "", RequestArguments.FILTER_FIELDS_ON_FORMAT_TEXT, id="text_empty_string_default_fields"),
     ],
 )
 def test_get_fields_to_present(out_format, fields_to_present, expected):
@@ -1499,10 +1500,41 @@ def test_get_fields_to_present(out_format, fields_to_present, expected):
         - Creating RequestArguments with different field configurations
     Then:
         - Ensure get_fields_to_present returns the correct field list
-        - Ensure empty string is treated as legacy query mode (returns "")
+        - Ensure an empty value on text format falls back to "name,type" (not a full-document query)
     """
     args = RequestArguments(out_format=out_format, fields_to_present=fields_to_present)
     assert args.fields_to_present == expected
+
+
+@pytest.mark.parametrize(
+    "out_format, raw_fields_to_present, expected_fields_to_present",
+    [
+        pytest.param(FORMAT_TEXT, "use_legacy_query", "", id="text_legacy_query_mode"),
+        pytest.param(FORMAT_TEXT, "", RequestArguments.FILTER_FIELDS_ON_FORMAT_TEXT, id="text_default_fields"),
+        pytest.param(FORMAT_CSV, "all", "", id="csv_all_fields"),
+        pytest.param(FORMAT_CSV, "value,type,score", "name,type,score", id="csv_custom_fields"),
+    ],
+)
+def test_fields_to_present_survives_context_round_trip(
+    out_format: str, raw_fields_to_present: str, expected_fields_to_present: str
+) -> None:
+    """
+    Given:
+        - RequestArguments created with a raw fields_to_present value (legacy mode, text default, CSV "all", CSV custom)
+    When:
+        - Serializing with to_context_json and restoring with from_context_json (as done on every EDL refresh)
+    Then:
+        - The raw value is what is stored in the integration context
+        - The restored instance resolves to the same fields_to_present as the original
+    """
+    original_args = RequestArguments(out_format=out_format, fields_to_present=raw_fields_to_present)
+    context_json = original_args.to_context_json()
+
+    restored_args = RequestArguments.from_context_json(context_json)
+
+    assert context_json[RequestArguments.CTX_FIELDS_TO_PRESENT] == raw_fields_to_present
+    assert original_args.fields_to_present == expected_fields_to_present
+    assert restored_args.fields_to_present == expected_fields_to_present
 
 
 @pytest.mark.parametrize(
@@ -1641,28 +1673,49 @@ def test_get_indicators_to_format_noop_when_stdout_lock_timeout_absent(mocker):
     assert not hasattr(demisto, "_stdout_lock_timeout")
 
 
+def _patch_long_running_check_names(mocker, port_in_use: bool, healthy: bool | None = None) -> dict:
+    """Patch the names used by test_long_running_with_running_instance_check in the namespace
+    they are resolved from at runtime.
+
+    In production NGINXApiModule is unified into EDL.py (so the namespace is EDL's globals); in unit
+    tests it is imported as a sibling module. Patching the delegate's __globals__ covers both layouts.
+
+    Returns:
+        dict: The created mocks keyed by name.
+    """
+    runtime_globals = edl.test_long_running_with_running_instance_check.__globals__
+    mocks = {
+        "get_params_port": mocker.MagicMock(return_value=1000),
+        "is_port_in_use": mocker.MagicMock(return_value=port_in_use),
+        "is_long_running_instance_healthy": mocker.MagicMock(return_value=healthy),
+        "run_long_running": mocker.MagicMock(return_value=None),
+    }
+    mocker.patch.dict(runtime_globals, mocks)
+    return mocks
+
+
 def test_test_module_ports_free_returns_ok(mocker):
     """
     Given:
-      - Both EDL ports are free.
+      - All required EDL ports (Listen Port, Listen Port + 1, Listen Port + 2) are free.
     When:
       - test_module runs.
     Then:
       - The standard nginx/WSGI test runs and the result is exactly "ok"
         (the string the platform requires to mark the test as passed).
+      - The health check is not invoked.
     """
 
     mocker.patch.object(edl, "validate_test_module_params", return_value=None)
-    mocker.patch.object(edl, "get_params_port", return_value=1000)
-    mocker.patch.object(edl, "is_port_in_use", return_value=False)
-    run_long_running_mock = mocker.patch.object(edl, "run_long_running", return_value=None)
+    mocks = _patch_long_running_check_names(mocker, port_in_use=False)
 
     readable_output, outputs, raw = edl.test_module({}, {"longRunningPort": "1000"})
 
     assert readable_output == "ok"
     assert outputs == {}
     assert raw == {}
-    run_long_running_mock.assert_called_once()
+    mocks["run_long_running"].assert_called_once_with({"longRunningPort": "1000"}, is_test=True)
+    mocks["is_long_running_instance_healthy"].assert_not_called()
 
 
 def test_test_module_existing_healthy_instance_returns_ok(mocker):
@@ -1678,18 +1731,16 @@ def test_test_module_existing_healthy_instance_returns_ok(mocker):
     """
 
     mocker.patch.object(edl, "validate_test_module_params", return_value=None)
-    mocker.patch.object(edl, "get_params_port", return_value=1000)
-    mocker.patch.object(edl, "is_port_in_use", return_value=True)
-    mocker.patch.object(edl, "is_our_edl_instance_running", return_value=True)
-    run_long_running_mock = mocker.patch.object(edl, "run_long_running", return_value=None)
+    mocks = _patch_long_running_check_names(mocker, port_in_use=True, healthy=True)
 
     readable_output, outputs, raw = edl.test_module({}, {"longRunningPort": "1000"})
 
     assert readable_output == "ok"
     assert outputs == {}
     assert raw == {}
+    mocks["is_long_running_instance_healthy"].assert_called_once_with(1000, {"longRunningPort": "1000"}, "/")
     # We must not re-bind the ports of a live instance.
-    run_long_running_mock.assert_not_called()
+    mocks["run_long_running"].assert_not_called()
 
 
 def test_test_module_ports_taken_by_foreign_process_raises(mocker):
@@ -1707,12 +1758,134 @@ def test_test_module_ports_taken_by_foreign_process_raises(mocker):
     from CommonServerPython import DemistoException
 
     mocker.patch.object(edl, "validate_test_module_params", return_value=None)
-    mocker.patch.object(edl, "get_params_port", return_value=1000)
-    mocker.patch.object(edl, "is_port_in_use", return_value=True)
-    mocker.patch.object(edl, "is_our_edl_instance_running", return_value=False)
-    run_long_running_mock = mocker.patch.object(edl, "run_long_running", return_value=None)
+    mocks = _patch_long_running_check_names(mocker, port_in_use=True, healthy=False)
 
-    with pytest.raises(DemistoException):
+    with pytest.raises(DemistoException, match="already in use"):
         edl.test_module({}, {"longRunningPort": "1000"})
 
-    run_long_running_mock.assert_not_called()
+    mocks["run_long_running"].assert_not_called()
+
+
+def _patch_running_instance_end_to_end(mocker, nginx_test_side_effect: Exception | None = None) -> dict:
+    """Patch only the port check, the nginx/WSGI test and /nginx-test, keeping is_long_running_instance_healthy
+    and the app route probe real (the app route is served by requests_mock).
+
+    Patches the delegate's __globals__ so it works whether NGINXApiModule is unified into EDL.py or imported.
+
+    Args:
+        nginx_test_side_effect: An exception raised by test_nginx_web_server, or None for a healthy
+            /nginx-test response without an X-Instance-Name header (identity check is skipped).
+
+    Returns:
+        dict: The created mocks keyed by name.
+    """
+    import requests
+
+    nginx_test_response = requests.Response()
+    nginx_test_response.status_code = 200
+    nginx_test_response._content = b"Welcome to nginx"
+    runtime_globals = edl.test_long_running_with_running_instance_check.__globals__
+    mocks = {
+        "get_params_port": mocker.MagicMock(return_value=1000),
+        "is_port_in_use": mocker.MagicMock(return_value=True),
+        "run_long_running": mocker.MagicMock(return_value=None),
+        "test_nginx_web_server": mocker.MagicMock(return_value=nginx_test_response, side_effect=nginx_test_side_effect),
+    }
+    mocker.patch.dict(runtime_globals, mocks)
+    mocker.patch.object(edl, "validate_test_module_params", return_value=None)
+    return mocks
+
+
+def test_test_module_existing_instance_slow_list_returns_ok(mocker, requests_mock):
+    """
+    Given:
+      - The EDL ports are in use and nginx answers /nginx-test.
+      - The app route accepts the connection but does not answer in time (the list is still being generated).
+    When:
+      - test_module runs end to end.
+    Then:
+      - The result is exactly "ok" and the ports are not re-bound.
+    """
+    import requests
+
+    mocks = _patch_running_instance_end_to_end(mocker)
+    requests_mock.get("http://localhost:1000/", exc=requests.exceptions.ReadTimeout("read timed out"))
+
+    assert edl.test_module({}, {"longRunningPort": "1000"}) == ("ok", {}, {})
+    mocks["run_long_running"].assert_not_called()
+
+
+@pytest.mark.parametrize("status_code", [401, 429])
+def test_test_module_existing_instance_any_status_returns_ok(mocker, requests_mock, status_code):
+    """
+    Given:
+      - The EDL ports are in use and nginx answers /nginx-test.
+      - The app route answers with an HTTP status (401 when credentials are set, 429 from the connection limit).
+    When:
+      - test_module runs end to end.
+    Then:
+      - The result is exactly "ok".
+    """
+    mocks = _patch_running_instance_end_to_end(mocker)
+    requests_mock.get("http://localhost:1000/", status_code=status_code)
+
+    assert edl.test_module({}, {"longRunningPort": "1000"}) == ("ok", {}, {})
+    mocks["run_long_running"].assert_not_called()
+
+
+def test_test_module_existing_instance_connection_error_raises(mocker, requests_mock):
+    """
+    Given:
+      - The EDL ports are in use and nginx answers /nginx-test, but the app route refuses the connection.
+    When:
+      - test_module runs end to end.
+    Then:
+      - A DemistoException matching "already in use" is raised.
+    """
+    import requests
+    from CommonServerPython import DemistoException
+
+    mocks = _patch_running_instance_end_to_end(mocker)
+    requests_mock.get("http://localhost:1000/", exc=requests.exceptions.ConnectionError("refused"))
+
+    with pytest.raises(DemistoException, match="already in use"):
+        edl.test_module({}, {"longRunningPort": "1000"})
+    mocks["run_long_running"].assert_not_called()
+
+
+def test_test_module_nginx_test_fails_raises(mocker, requests_mock):
+    """
+    Given:
+      - The EDL ports are in use, but the /nginx-test check fails.
+    When:
+      - test_module runs end to end.
+    Then:
+      - A DemistoException is raised and the app route is never probed.
+    """
+    from CommonServerPython import DemistoException
+
+    mocks = _patch_running_instance_end_to_end(mocker, nginx_test_side_effect=DemistoException("Testing nginx server: boom"))
+    requests_mock.get("http://localhost:1000/", status_code=200)
+
+    with pytest.raises(DemistoException, match="already in use"):
+        edl.test_module({}, {"longRunningPort": "1000"})
+    assert not requests_mock.called
+    mocks["run_long_running"].assert_not_called()
+
+
+def test_test_module_validation_runs_before_port_check(mocker):
+    """
+    Given:
+      - Invalid configuration params (validate_test_module_params raises).
+    When:
+      - test_module runs.
+    Then:
+      - The validation error propagates and the long-running port/health check is never reached.
+    """
+    mocker.patch.object(edl, "validate_test_module_params", side_effect=ValueError("bad params"))
+    check_mock = mocker.patch.object(edl, "test_long_running_with_running_instance_check")
+
+    with pytest.raises(ValueError, match="bad params"):
+        edl.test_module({}, {"longRunningPort": "1000"})
+
+    check_mock.assert_not_called()

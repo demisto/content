@@ -564,24 +564,82 @@ class Client(BaseClient):
         offset: int,
         details_level: str | None = None,
         show_hits: bool | None = None,
+        filter_str: str | None = None,
+        order: list | None = None,
+        package: str | None = None,
+        show_as_ranges: bool | None = None,
+        show_expiration_settings: bool | None = None,
+        use_object_dictionary: bool | None = None,
+        hits_settings: dict | None = None,
+        dereference_group_members: bool | None = None,
+        show_membership: bool | None = None,
     ):
         body: dict = {"name": identifier, "limit": limit, "offset": offset}
         if details_level:
             body["details-level"] = details_level
         if show_hits is not None:
             body["show-hits"] = show_hits
+        if filter_str:
+            body["filter"] = filter_str
+        if order:
+            body["order"] = order
+        if package:
+            body["package"] = package
+        if show_as_ranges is not None:
+            body["show-as-ranges"] = show_as_ranges
+        if show_expiration_settings is not None:
+            body["show-expiration-settings"] = show_expiration_settings
+        if use_object_dictionary is not None:
+            body["use-object-dictionary"] = use_object_dictionary
+        if hits_settings:
+            body["hits-settings"] = hits_settings
+        if dereference_group_members is not None:
+            body["dereference-group-members"] = dereference_group_members
+        if show_membership is not None:
+            body["show-membership"] = show_membership
         demisto.debug(
             f"{demisto.command()}: endpoint='show-access-rulebase', "
             f"args=({identifier=}, {limit=}, {offset=}, "
-            f"{details_level=}, {show_hits=}), body={body}"
+            f"{details_level=}, {show_hits=}, {filter_str=}, {order=}, {package=}, "
+            f"{show_as_ranges=}, {show_expiration_settings=}, {use_object_dictionary=}, "
+            f"{hits_settings=}, {dereference_group_members=}, {show_membership=}), body={body}"
         )
         return self._http_request(method="POST", url_suffix="show-access-rulebase", headers=self.headers, json_data=body)
 
+    def get_access_rule(
+        self,
+        identifier: str,
+        layer: str,
+        package: str | None = None,
+        show_as_ranges: bool | None = None,
+        show_expiration_settings: bool | None = None,
+        show_hits: bool | None = None,
+        hits_settings: dict | None = None,
+    ):
+        identifier_key = "rule-number" if str(identifier).isdigit() else "name"
+        body: dict = {identifier_key: identifier, "layer": layer}
+        if package:
+            body["package"] = package
+        if show_as_ranges is not None:
+            body["show-as-ranges"] = show_as_ranges
+        if show_expiration_settings is not None:
+            body["show-expiration-settings"] = show_expiration_settings
+        if show_hits is not None:
+            body["show-hits"] = show_hits
+        if hits_settings:
+            body["hits-settings"] = hits_settings
+        demisto.debug(
+            f"{demisto.command()}: endpoint='show-access-rule', "
+            f"args=({identifier=}, {layer=}, {package=}, {show_as_ranges=}, "
+            f"{show_expiration_settings=}, {show_hits=}, {hits_settings=}), body={body}"
+        )
+        return self._http_request(method="POST", url_suffix="show-access-rule", headers=self.headers, json_data=body)
+
     def add_rule(
         self,
-        layer: str,
-        position,
-        action: str,
+        layer: str | None = None,
+        position: str | int | dict | None = None,
+        action: str | None = None,
         name: Optional[str] = None,
         vpn: Optional[str] = None,
         destination=None,
@@ -591,7 +649,13 @@ class Client(BaseClient):
         install_on: list | None = None,
         enabled: bool | None = None,
         track: dict | None = None,
+        tags: list | None = None,
+        request_body: dict | None = None,
     ):
+        # When a full request body is provided (e.g. from entry_id), send it and ignore the other arguments.
+        if request_body is not None:
+            demisto.debug(f"{demisto.command()}: endpoint='add-access-rule', using provided request_body={request_body}")
+            return self._http_request(method="POST", url_suffix="add-access-rule", headers=self.headers, json_data=request_body)
         body: dict = {
             "layer": layer,
             "position": position,
@@ -615,11 +679,13 @@ class Client(BaseClient):
             body["enabled"] = enabled
         if track:
             body["track"] = track
+        if tags:
+            body["tags"] = tags
         demisto.debug(
             f"{demisto.command()}: endpoint='add-access-rule', "
             f"args=({layer=}, {position=}, {action=}, {name=}, {vpn=}, "
             f"{destination=}, {service=}, {source=}, {comments=}, "
-            f"{install_on=}, {enabled=}, {track=}), body={body}"
+            f"{install_on=}, {enabled=}, {track=}, {tags=}), body={body}"
         )
         return self._http_request(method="POST", url_suffix="add-access-rule", headers=self.headers, json_data=body)
 
@@ -895,6 +961,9 @@ class Client(BaseClient):
         session_timeout: Optional[int] = None,
         aggressive_aging: Optional[dict] = None,
         tags: Optional[list] = None,
+        ignore_warnings: Optional[bool] = None,
+        ignore_errors: Optional[bool] = None,
+        use_default_session_timeout: Optional[bool] = None,
     ):
         body: dict = {"name": identifier}
         if port:
@@ -906,10 +975,16 @@ class Client(BaseClient):
         if session_timeout is not None:
             body["session-timeout"] = session_timeout
             body["use-default-session-timeout"] = False
+        if use_default_session_timeout is not None:
+            body["use-default-session-timeout"] = use_default_session_timeout
         if aggressive_aging:
             body["aggressive-aging"] = aggressive_aging
         if tags:
             body["tags"] = tags
+        if ignore_warnings is not None:
+            body["ignore-warnings"] = ignore_warnings
+        if ignore_errors is not None:
+            body["ignore-errors"] = ignore_errors
         demisto.debug(f"add-service-tcp request body: {body}")
         return self._http_request(method="POST", url_suffix="add-service-tcp", headers=self.headers, json_data=body)
 
@@ -922,6 +997,9 @@ class Client(BaseClient):
         session_timeout: Optional[int] = None,
         aggressive_aging: Optional[dict] = None,
         tags: Optional[list] = None,
+        ignore_warnings: Optional[bool] = None,
+        ignore_errors: Optional[bool] = None,
+        use_default_session_timeout: Optional[bool] = None,
     ):
         body: dict = {"name": identifier}
         if port:
@@ -933,10 +1011,16 @@ class Client(BaseClient):
         if session_timeout is not None:
             body["session-timeout"] = session_timeout
             body["use-default-session-timeout"] = False
+        if use_default_session_timeout is not None:
+            body["use-default-session-timeout"] = use_default_session_timeout
         if aggressive_aging:
             body["aggressive-aging"] = aggressive_aging
         if tags:
             body["tags"] = tags
+        if ignore_warnings is not None:
+            body["ignore-warnings"] = ignore_warnings
+        if ignore_errors is not None:
+            body["ignore-errors"] = ignore_errors
         demisto.debug(f"add-service-udp request body: {body}")
         return self._http_request(method="POST", url_suffix="add-service-udp", headers=self.headers, json_data=body)
 
@@ -973,6 +1057,9 @@ class Client(BaseClient):
         session_timeout: Optional[int] = None,
         aggressive_aging: Optional[dict] = None,
         tags: Optional[list] = None,
+        ignore_warnings: Optional[bool] = None,
+        ignore_errors: Optional[bool] = None,
+        use_default_session_timeout: Optional[bool] = None,
     ):
         body: dict = {"name": identifier}
         if new_identifier:
@@ -986,10 +1073,16 @@ class Client(BaseClient):
         if session_timeout is not None:
             body["session-timeout"] = session_timeout
             body["use-default-session-timeout"] = False
+        if use_default_session_timeout is not None:
+            body["use-default-session-timeout"] = use_default_session_timeout
         if aggressive_aging:
             body["aggressive-aging"] = aggressive_aging
         if tags:
             body["tags"] = tags
+        if ignore_warnings is not None:
+            body["ignore-warnings"] = ignore_warnings
+        if ignore_errors is not None:
+            body["ignore-errors"] = ignore_errors
         demisto.debug(f"set-service-tcp request body: {body}")
         return self._http_request(method="POST", url_suffix="set-service-tcp", headers=self.headers, json_data=body)
 
@@ -1003,6 +1096,9 @@ class Client(BaseClient):
         session_timeout: Optional[int] = None,
         aggressive_aging: Optional[dict] = None,
         tags: Optional[list] = None,
+        ignore_warnings: Optional[bool] = None,
+        ignore_errors: Optional[bool] = None,
+        use_default_session_timeout: Optional[bool] = None,
     ):
         body: dict = {"name": identifier}
         if new_identifier:
@@ -1016,10 +1112,16 @@ class Client(BaseClient):
         if session_timeout is not None:
             body["session-timeout"] = session_timeout
             body["use-default-session-timeout"] = False
+        if use_default_session_timeout is not None:
+            body["use-default-session-timeout"] = use_default_session_timeout
         if aggressive_aging:
             body["aggressive-aging"] = aggressive_aging
         if tags:
             body["tags"] = tags
+        if ignore_warnings is not None:
+            body["ignore-warnings"] = ignore_warnings
+        if ignore_errors is not None:
+            body["ignore-errors"] = ignore_errors
         demisto.debug(f"set-service-udp request body: {body}")
         return self._http_request(method="POST", url_suffix="set-service-udp", headers=self.headers, json_data=body)
 
@@ -1136,9 +1238,12 @@ class Client(BaseClient):
         method: Optional[str] = None,
         tags: Optional[list] = None,
         new_position: str | int | dict | None = None,
+        install_on: Optional[dict] = None,
     ):
         identifier_key = "rule-number" if str(identifier).isdigit() else "name"
         body: dict = {identifier_key: identifier, "package": package}
+        if install_on:
+            body["install-on"] = install_on
         if original_source:
             body["original-source"] = original_source
         if original_destination:
@@ -1170,8 +1275,20 @@ class Client(BaseClient):
         demisto.debug(f"delete-nat-rule request body: {body}")
         return self._http_request(method="POST", url_suffix="delete-nat-rule", headers=self.headers, json_data=body)
 
-    def show_task(self, task_id):
-        return self._http_request(method="POST", url_suffix="show-task", headers=self.headers, json_data={"task-id": task_id})
+    def show_task(self, task_id, details_level: str | None = None):
+        body: dict = {"task-id": task_id}
+        if details_level:
+            body["details-level"] = details_level
+        demisto.debug(f"show-task request body: {body}")
+        # Accept the documented failure codes so their body (message/warnings/errors/
+        # blocking-errors/code) can be surfaced to the context instead of raising.
+        return self._http_request(
+            method="POST",
+            url_suffix="show-task",
+            headers=self.headers,
+            json_data=body,
+            ok_codes=(200, 400, 401, 403, 404, 409, 429, 500, 501),
+        )
 
     def list_objects(self, limit: int, offset: int, filter_search: str, ip_only: bool, object_type: str):
         body = {"limit": limit, "offset": offset, "filter": filter_search, "ip-only": ip_only, "type": object_type}
@@ -1489,6 +1606,123 @@ class Client(BaseClient):
             body["details-level"] = details_level
         demisto.debug(f"delete-access-section request body: {body}")
         return self._http_request(method="POST", url_suffix="delete-access-section", headers=self.headers, json_data=body)
+
+    def discard(self, uid: str | None = None) -> dict:
+        body: dict = {}
+        if uid:
+            body["uid"] = uid
+        demisto.debug(f"discard request body: {body}")
+        return self._http_request(method="POST", url_suffix="discard", headers=self.headers, json_data=body)
+
+    def list_dns_domains(
+        self,
+        limit: int | None,
+        offset: int | None,
+        filter_str: str | None = None,
+        order: list | None = None,
+        show_membership: bool | None = None,
+        details_level: str | None = None,
+        domains_to_process: list | None = None,
+        show_only_local_domain: bool | None = None,
+    ) -> dict:
+        body: dict = {"limit": limit, "offset": offset}
+        if filter_str:
+            body["filter"] = filter_str
+        if order:
+            body["order"] = order
+        if show_membership is not None:
+            body["show-membership"] = show_membership
+        if details_level:
+            body["details-level"] = details_level
+        if domains_to_process:
+            body["domains-to-process"] = domains_to_process
+        if show_only_local_domain is not None:
+            body["show-only-local-domain"] = show_only_local_domain
+        demisto.debug(f"show-dns-domains request body: {body}")
+        return self._http_request(method="POST", url_suffix="show-dns-domains", headers=self.headers, json_data=body)
+
+    def get_dns_domain(self, identifier: str, details_level: str | None = None) -> dict:
+        body: dict = {"name": identifier}
+        if details_level:
+            body["details-level"] = details_level
+        demisto.debug(f"show-dns-domain request body: {body}")
+        return self._http_request(method="POST", url_suffix="show-dns-domain", headers=self.headers, json_data=body)
+
+    def add_dns_domain(
+        self,
+        name: str,
+        is_sub_domain: bool,
+        details_level: str | None = None,
+        tags: list | None = None,
+        color: str | None = None,
+        comments: str | None = None,
+        ignore_warnings: bool | None = None,
+        ignore_errors: bool | None = None,
+    ) -> dict:
+        body: dict = {"name": name, "is-sub-domain": is_sub_domain}
+        if details_level:
+            body["details-level"] = details_level
+        if tags:
+            body["tags"] = tags
+        if color:
+            body["color"] = color
+        if comments:
+            body["comments"] = comments
+        if ignore_warnings is not None:
+            body["ignore-warnings"] = ignore_warnings
+        if ignore_errors is not None:
+            body["ignore-errors"] = ignore_errors
+        demisto.debug(f"add-dns-domain request body: {body}")
+        return self._http_request(method="POST", url_suffix="add-dns-domain", headers=self.headers, json_data=body)
+
+    def update_dns_domain(
+        self,
+        identifier: str,
+        new_name: str | None = None,
+        is_sub_domain: bool | None = None,
+        details_level: str | None = None,
+        tags: list | dict | None = None,
+        color: str | None = None,
+        comments: str | None = None,
+        ignore_warnings: bool | None = None,
+        ignore_errors: bool | None = None,
+    ) -> dict:
+        body: dict = {"name": identifier}
+        if new_name:
+            body["new-name"] = new_name
+        if is_sub_domain is not None:
+            body["is-sub-domain"] = is_sub_domain
+        if details_level:
+            body["details-level"] = details_level
+        if tags:
+            body["tags"] = tags
+        if color:
+            body["color"] = color
+        if comments:
+            body["comments"] = comments
+        if ignore_warnings is not None:
+            body["ignore-warnings"] = ignore_warnings
+        if ignore_errors is not None:
+            body["ignore-errors"] = ignore_errors
+        demisto.debug(f"set-dns-domain request body: {body}")
+        return self._http_request(method="POST", url_suffix="set-dns-domain", headers=self.headers, json_data=body)
+
+    def delete_dns_domain(
+        self,
+        identifier: str,
+        ignore_warnings: bool | None = None,
+        ignore_errors: bool | None = None,
+        details_level: str | None = None,
+    ) -> dict:
+        body: dict = {"name": identifier}
+        if ignore_warnings is not None:
+            body["ignore-warnings"] = ignore_warnings
+        if ignore_errors is not None:
+            body["ignore-errors"] = ignore_errors
+        if details_level:
+            body["details-level"] = details_level
+        demisto.debug(f"delete-dns-domain request body: {body}")
+        return self._http_request(method="POST", url_suffix="delete-dns-domain", headers=self.headers, json_data=body)
 
 
 def validate_domains_to_process(domains_to_process: str | None, details_level: str | None) -> None:
@@ -2637,6 +2871,42 @@ def checkpoint_delete_threat_indicator_command(client: Client, identifier) -> Co
     return command_results
 
 
+def build_hits_settings(
+    from_date: str | None = None,
+    to_date: str | None = None,
+    target: str | None = None,
+) -> dict | None:
+    """Build the hits-settings dict for the Check Point API from individual arguments.
+
+    Returns None if no hits arguments are provided.
+    """
+    hits_settings: dict = {}
+    if from_date:
+        hits_settings["from-date"] = from_date
+    if to_date:
+        hits_settings["to-date"] = to_date
+    if target:
+        hits_settings["target"] = target
+    return hits_settings or None
+
+
+def build_access_rule_hr(rule: dict) -> dict:
+    """Build a human-readable summary row for a single access rule."""
+    action = rule.get("action") or {}
+    action_name = action.get("name") if isinstance(action, dict) else action
+    return {
+        "Name": rule.get("name"),
+        "UID": rule.get("uid"),
+        "Rule Number": rule.get("rule-number"),
+        "Action": action_name,
+        "Source": [item.get("name") for item in rule.get("source", []) if isinstance(item, dict)],
+        "Destination": [item.get("name") for item in rule.get("destination", []) if isinstance(item, dict)],
+        "Service": [item.get("name") for item in rule.get("service", []) if isinstance(item, dict)],
+        "Enabled": rule.get("enabled"),
+        "Layer": rule.get("layer"),
+    }
+
+
 def checkpoint_list_access_rule_command(
     client: Client,
     identifier: str,
@@ -2644,9 +2914,20 @@ def checkpoint_list_access_rule_command(
     offset: int,
     details_level: str = None,
     show_hits: str = None,
+    filter: str = None,
+    order: str = None,
+    package: str = None,
+    show_as_ranges: str = None,
+    show_expiration_settings: str = None,
+    use_object_dictionary: str = None,
+    hits_settings_from_date: str = None,
+    hits_settings_target: str = None,
+    hits_settings_to_date: str = None,
+    dereference_group_members: str = None,
+    show_membership: str = None,
 ) -> CommandResults:
     """
-    Show existing access rule base objects using object name or uid.
+    Show existing access rulebase and return the full rule objects.
 
     Args:
         client (Client): CheckPoint client.
@@ -2655,16 +2936,46 @@ def checkpoint_list_access_rule_command(
         offset (int): Number of the results to initially skip.
         details_level (str): The level of detail for returned objects.
         show_hits (str): Whether to include hit count data in the output.
+        filter (str): Search expression to filter the rulebase.
+        order (str): Comma-separated direction:field pairs to sort results (e.g. "ASC:name").
+        package (str): Policy package name or uid.
+        show_as_ranges (str): Show source/destination/service as ranges.
+        show_expiration_settings (str): Show the "expiration date settings" field in reply.
+        use_object_dictionary (str): Use an object dictionary in the reply.
+        hits_settings_from_date (str): Hits from-date (YYYY-MM-DD or YYYY-mm-ddThh:mm:ss).
+        hits_settings_target (str): Target gateway name or UID.
+        hits_settings_to_date (str): Hits to-date (YYYY-MM-DD or YYYY-mm-ddThh:mm:ss).
+        dereference_group_members (str): Dereference "members" field for every object in reply.
+        show_membership (str): Calculate and show a "groups" field for every object in reply.
     """
-    printable_result = []
-    readable_output = ""
     show_hits_bool = argToBoolean(show_hits) if show_hits is not None else None
 
-    result = client.list_access_rule(identifier, limit, offset, details_level=details_level, show_hits=show_hits_bool)
-    result = result.get("rulebase")
+    order_list = parse_order_argument(order) if order else None
 
-    if result:
-        for element in result:
+    hits_settings = build_hits_settings(hits_settings_from_date, hits_settings_to_date, hits_settings_target)
+
+    result = client.list_access_rule(
+        identifier,
+        limit,
+        offset,
+        details_level=details_level,
+        show_hits=show_hits_bool,
+        filter_str=filter,
+        order=order_list,
+        package=package,
+        show_as_ranges=argToBoolean(show_as_ranges) if show_as_ranges is not None else None,
+        show_expiration_settings=argToBoolean(show_expiration_settings) if show_expiration_settings is not None else None,
+        use_object_dictionary=argToBoolean(use_object_dictionary) if use_object_dictionary is not None else None,
+        hits_settings=hits_settings,
+        dereference_group_members=argToBoolean(dereference_group_members) if dereference_group_members is not None else None,
+        show_membership=argToBoolean(show_membership) if show_membership is not None else None,
+    )
+
+    printable_result = []
+    readable_output = ""
+    rulebase = result.get("rulebase")
+    if rulebase:
+        for element in rulebase:
             current_printable_result = {}
             for endpoint in DEFAULT_LIST_FIELD:
                 current_printable_result[endpoint] = element.get(endpoint)
@@ -2673,11 +2984,71 @@ def checkpoint_list_access_rule_command(
         readable_output = tableToMarkdown(
             "CheckPoint data for all access rule bases:", printable_result, DEFAULT_LIST_FIELD, removeNull=True
         )
+    else:
+        readable_output = "No access rules were found."
+
     command_results = CommandResults(
         outputs_prefix="CheckPoint.AccessRule",
         outputs_key_field="uid",
         readable_output=readable_output,
-        outputs=printable_result,
+        outputs=result,
+        raw_response=result,
+    )
+    return command_results
+
+
+def checkpoint_get_access_rule_command(
+    client: Client,
+    identifier: str,
+    layer: str,
+    package: str = None,
+    show_as_ranges: str = None,
+    show_expiration_settings: str = None,
+    show_hits: str = None,
+    hits_settings_from_date: str = None,
+    hits_settings_target: str = None,
+    hits_settings_to_date: str = None,
+) -> CommandResults:
+    """
+    Show a single access rule by name, UID, or rule-number.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): The rule name or rule number.
+        layer (str): Layer (name or UID).
+        package (str): Policy package name or uid.
+        show_as_ranges (str): Show source/destination/service as ranges.
+        show_expiration_settings (str): Show the "expiration date settings" field in reply.
+        show_hits (str): Show hitcount data.
+        hits_settings_from_date (str): Hits from-date (YYYY-MM-DD or YYYY-mm-ddThh:mm:ss).
+        hits_settings_target (str): Target gateway name or UID.
+        hits_settings_to_date (str): Hits to-date (YYYY-MM-DD or YYYY-mm-ddThh:mm:ss).
+    """
+    hits_settings = build_hits_settings(hits_settings_from_date, hits_settings_to_date, hits_settings_target)
+
+    result = client.get_access_rule(
+        identifier,
+        layer,
+        package=package,
+        show_as_ranges=argToBoolean(show_as_ranges) if show_as_ranges is not None else None,
+        show_expiration_settings=argToBoolean(show_expiration_settings) if show_expiration_settings is not None else None,
+        show_hits=argToBoolean(show_hits) if show_hits is not None else None,
+        hits_settings=hits_settings,
+    )
+
+    hr_row = build_access_rule_hr(result)
+    readable_output = tableToMarkdown(
+        f"CheckPoint data for access rule {identifier}:",
+        hr_row,
+        ["Name", "UID", "Action", "Source", "Destination", "Service", "Enabled", "Layer"],
+        removeNull=True,
+    )
+
+    command_results = CommandResults(
+        outputs_prefix="CheckPoint.AccessRule",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=result,
         raw_response=result,
     )
     return command_results
@@ -2685,8 +3056,8 @@ def checkpoint_list_access_rule_command(
 
 def checkpoint_add_access_rule_command(
     client: Client,
-    layer: str,
-    position: str,
+    layer: str = None,
+    position: str = None,
     position_rule: str = None,
     action: str = "Drop",
     name: str = None,
@@ -2700,6 +3071,8 @@ def checkpoint_add_access_rule_command(
     track_type: str = None,
     track_accounting: str = None,
     track_per_session: str = None,
+    tags=None,
+    entry_id: str = None,
 ) -> CommandResults:
     """
     Add new access rule object.
@@ -2723,7 +3096,37 @@ def checkpoint_add_access_rule_command(
         track_type (str): Track settings (Log, Extended Log, Detailed Log, None).
         track_accounting (str): Turns accounting for track on and off.
         track_per_session (str): Determines whether to perform the log per session.
+        tags (str or list): Collection of tag identifiers.
+        entry_id (str): Entry ID of a file containing the request JSON. If provided,
+            other arguments are ignored and the file content is sent as-is to the API.
     """
+    headers = ["name", "uid", "type", "domain-name", "domain-type", "domain-uid", "enabled", "layer", "creator", "last-modifier"]
+
+    # If an entry_id is provided, load the request body from the file and ignore other args.
+    if entry_id:
+        try:
+            file_path = demisto.getFilePath(entry_id).get("path")
+            with open(file_path) as f:
+                request_body = json.load(f)
+        except Exception as e:
+            raise DemistoException(f"Failed to load request body from entry ID {entry_id}: {str(e)}")
+        result = client.add_rule(request_body=request_body)
+        printable_result = build_printable_result(headers, result)
+        readable_output = tableToMarkdown(
+            "CheckPoint data for adding access rule:", printable_result, headers=headers, removeNull=True
+        )
+        readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+        return CommandResults(
+            outputs_prefix="CheckPoint.AccessRule",
+            outputs_key_field="uid",
+            readable_output=readable_output,
+            outputs=printable_result,
+            raw_response=result,
+        )
+
+    if not layer or not position:
+        raise DemistoException("The 'layer' and 'position' arguments are required when 'entry_id' is not provided.")
+
     """
     According to API docs:
     - "above"/"below" require position_rule (reference rule/section name)
@@ -2744,6 +3147,10 @@ def checkpoint_add_access_rule_command(
 
     install_on_list = argToList(install_on) if install_on else None
     enabled_bool = argToBoolean(enabled) if enabled is not None else None
+    source_list = argToList(source) if source else None
+    destination_list = argToList(destination) if destination else None
+    service_list = argToList(service) if service else None
+    tags_list = argToList(tags) if tags else None
 
     # Build track settings dict
     track = None
@@ -2756,21 +3163,20 @@ def checkpoint_add_access_rule_command(
         if track_per_session is not None:
             track["per-session"] = argToBoolean(track_per_session)
 
-    headers = ["name", "uid", "type", "domain-name", "domain-type", "domain-uid", "enabled", "layer", "creator", "last-modifier"]
-
     result = client.add_rule(
         layer,
         position_obj,
         action,
         name=name,
         vpn=vpn,
-        destination=destination,
-        service=service,
-        source=source,
+        destination=destination_list,
+        service=service_list,
+        source=source_list,
         comments=comments,
         install_on=install_on_list,
         enabled=enabled_bool,
         track=track,
+        tags=tags_list,
     )
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown(
@@ -2946,6 +3352,277 @@ def checkpoint_update_access_rule_command(
         raw_response=result,
     )
     return command_results
+
+
+def checkpoint_session_discard_command(client: Client, target_session_id: str = None) -> CommandResults:
+    """
+    Discard uncommitted session changes (inverse of publish).
+
+    Args:
+        client (Client): CheckPoint client.
+        target_session_id (str): The session UID to discard (sent as 'uid').
+            If omitted, discards the current session.
+    """
+    result = client.discard(uid=target_session_id)
+    number_of_discarded_changes = result.get("number-of-discarded-changes")
+    message = result.get("message", "")
+    readable_output = f"Session discarded {number_of_discarded_changes} change(s). {message}".strip()
+    return CommandResults(
+        outputs_prefix="CheckPoint.SessionDiscard",
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def build_dns_domain_hr(result: dict) -> dict:
+    """Build a human-readable summary row for a DNS domain object."""
+    domain_name = (result.get("domain") or {}).get("name")
+    hr = {
+        "Name": result.get("name"),
+        "UID": result.get("uid"),
+        "Type": result.get("type"),
+        "Domain Name": domain_name,
+    }
+
+    is_sub_domain = result.get("is-sub-domain")
+    if is_sub_domain is not None:
+        hr["Is Sub Domain"] = is_sub_domain
+
+    return hr
+
+
+def checkpoint_dns_domain_list_command(
+    client: Client,
+    limit: str = "50",
+    offset: str = "0",
+    filter: str = None,
+    order: str = None,
+    show_membership: str = None,
+    details_level: str = None,
+    domains_to_process: str = None,
+    show_only_local_domain: str = None,
+) -> CommandResults:
+    """
+    List DNS domain objects.
+
+    Args:
+        client (Client): CheckPoint client.
+        limit (str): The maximum number of results (1-500). Default 50.
+        offset (str): Number of results to skip. Default 0.
+        filter (str): Search expression to filter objects by.
+        order (str): Comma-separated direction:field pairs to sort results (e.g. "ASC:name").
+        show_membership (str): Show a "groups" field for every object in reply.
+        details_level (str): The level of detail for results.
+        domains_to_process (str): Indicates which domains to process the commands on.
+        show_only_local_domain (str): Return only objects from the current local domain.
+    """
+    order_list = parse_order_argument(order) if order else None
+
+    domains_list = argToList(domains_to_process) if domains_to_process else None
+
+    # domains_to_process cannot be used with details-level full
+    if domains_list is not None and details_level == "full":
+        raise DemistoException("The 'domains_to_process' argument cannot be used with details_level set to 'full'.")
+
+    result = client.list_dns_domains(
+        limit=arg_to_number(limit),
+        offset=arg_to_number(offset),
+        filter_str=filter,
+        order=order_list,
+        show_membership=argToBoolean(show_membership) if show_membership is not None else None,
+        details_level=details_level,
+        domains_to_process=domains_list,
+        show_only_local_domain=argToBoolean(show_only_local_domain) if show_only_local_domain is not None else None,
+    )
+
+    objects = result.get("objects", [])
+    if objects:
+        hr_rows = [build_dns_domain_hr(obj) for obj in objects]
+        readable_output = tableToMarkdown(
+            "CheckPoint DNS domains:",
+            hr_rows,
+            ["Name", "UID", "Type", "Domain Name"],
+            removeNull=True,
+        )
+    else:
+        readable_output = "No DNS domain objects were found."
+
+    return CommandResults(
+        outputs_prefix="CheckPoint.DNSDomain",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=objects,
+        raw_response=result,
+    )
+
+
+def checkpoint_dns_domain_get_command(client: Client, identifier: str, details_level: str = None) -> CommandResults:
+    """
+    Show a single DNS domain object.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): Object name or UID.
+        details_level (str): The level of detail for results.
+    """
+    result = client.get_dns_domain(identifier, details_level=details_level)
+    hr_row = build_dns_domain_hr(result)
+    readable_output = tableToMarkdown(
+        f"CheckPoint DNS domain {identifier}:",
+        hr_row,
+        ["Name", "UID", "Type", "Is Sub Domain", "Domain Name"],
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_prefix="CheckPoint.DNSDomain",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def checkpoint_dns_domain_add_command(
+    client: Client,
+    name: str,
+    is_sub_domain: str,
+    details_level: str = None,
+    tags: str = None,
+    color: str = None,
+    comments: str = None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+) -> CommandResults:
+    """
+    Create a DNS domain object.
+
+    Args:
+        client (Client): CheckPoint client.
+        name (str): Must begin with a dot, e.g. .example.com.
+        is_sub_domain (str): Match sub-domains too.
+        details_level (str): The level of detail for results.
+        tags (str): Collection of tag identifiers.
+        color (str): Object color. Default black.
+        comments (str): Comments string.
+        ignore_warnings (str): Default false.
+        ignore_errors (str): Default false.
+    """
+    if not name.startswith("."):
+        raise DemistoException(f"The DNS domain name must begin with a dot (e.g. '.example.com'). Got: '{name}'.")
+    tags_list = argToList(tags) if tags else None
+    result = client.add_dns_domain(
+        name=name,
+        is_sub_domain=argToBoolean(is_sub_domain),
+        details_level=details_level,
+        tags=tags_list,
+        color=color,
+        comments=comments,
+        ignore_warnings=argToBoolean(ignore_warnings) if ignore_warnings is not None else None,
+        ignore_errors=argToBoolean(ignore_errors) if ignore_errors is not None else None,
+    )
+    hr_row = build_dns_domain_hr(result)
+    readable_output = tableToMarkdown(
+        f"CheckPoint data for adding DNS domain {name}:",
+        hr_row,
+        ["Name", "UID", "Type", "Is Sub Domain", "Domain Name"],
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_prefix="CheckPoint.DNSDomain",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def checkpoint_dns_domain_update_command(
+    client: Client,
+    identifier: str,
+    new_name: str = None,
+    is_sub_domain: str = None,
+    details_level: str = None,
+    tags_action: str = None,
+    tags: str = None,
+    color: str = None,
+    comments: str = None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+) -> CommandResults:
+    """
+    Modify a DNS domain object.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): Object name or UID (mapped to API name).
+        new_name (str): New name.
+        is_sub_domain (str): Match sub-domains too.
+        details_level (str): The level of detail for results.
+        tags_action (str): The action to perform on the tags list ("add" or "remove").
+        tags (str): Collection of tag identifiers.
+        color (str): Object color.
+        comments (str): Comments string.
+        ignore_warnings (str): Default false.
+        ignore_errors (str): Default false.
+    """
+    tags_raw = argToList(tags) or None
+    tags_parsed = {tags_action: tags_raw} if tags_raw and tags_action else tags_raw
+    result = client.update_dns_domain(
+        identifier=identifier,
+        new_name=new_name,
+        is_sub_domain=argToBoolean(is_sub_domain) if is_sub_domain is not None else None,
+        details_level=details_level,
+        tags=tags_parsed,
+        color=color,
+        comments=comments,
+        ignore_warnings=argToBoolean(ignore_warnings) if ignore_warnings is not None else None,
+        ignore_errors=argToBoolean(ignore_errors) if ignore_errors is not None else None,
+    )
+    hr_row = build_dns_domain_hr(result)
+    readable_output = tableToMarkdown(
+        f"CheckPoint data for updating DNS domain {identifier}:",
+        hr_row,
+        ["Name", "UID", "Type", "Is Sub Domain", "Domain Name"],
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_prefix="CheckPoint.DNSDomain",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def checkpoint_dns_domain_delete_command(
+    client: Client,
+    identifier: str,
+    ignore_warnings: str = "false",
+    ignore_errors: str = "false",
+    details_level: str = None,
+) -> CommandResults:
+    """
+    Delete a DNS domain object.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): Object name or UID.
+        ignore_warnings (str): Default false.
+        ignore_errors (str): Default false.
+        details_level (str): The level of detail for results.
+    """
+    result = client.delete_dns_domain(
+        identifier=identifier,
+        ignore_warnings=argToBoolean(ignore_warnings) if ignore_warnings is not None else None,
+        ignore_errors=argToBoolean(ignore_errors) if ignore_errors is not None else None,
+        details_level=details_level,
+    )
+
+    return CommandResults(
+        readable_output=f"DNS domain object {identifier} was successfully deleted.",
+        raw_response=result,
+    )
 
 
 def checkpoint_delete_access_rule_command(client: Client, identifier, layer: str) -> CommandResults:
@@ -3487,39 +4164,59 @@ def checkpoint_publish_command(client: Client) -> CommandResults:
     return command_results
 
 
-def checkpoint_show_task_command(client: Client, task_id: str) -> CommandResults:
+def checkpoint_show_task_command(client: Client, task_id: str, details_level: str = None) -> CommandResults:
     """
     Show task status with the given task id
 
     Args:
         client (Client): CheckPoint client.
         task_id (str): task id.
+        details_level (str): The level of detail for some of the fields in the response.
     """
-    printable_result = []
-    result = client.show_task(task_id)
+    result = client.show_task(task_id, details_level=details_level)
     task_list = result.get("tasks")
-    if task_list:
-        for task in task_list:
-            current_object_data = {
-                "task-id": task.get("task-id"),
-                "task-name": task.get("task-name"),
-                "status": task.get("status"),
-                "suppressed": task.get("suppressed"),
-                "progress-percentage": task.get("progress-percentage"),
-            }
-            printable_result.append(current_object_data)
+
+    # On failure, the API returns an error body (codes: 400,401,403,404,409,429,500,501) without a "tasks" field.
+    # Surface the failure fields to the context.
+    if not task_list:
+        error_fields = ("message", "warnings", "errors", "blocking-errors", "code")
+        error_output = {field: result.get(field) for field in error_fields if result.get(field) is not None}
+        readable_output = tableToMarkdown(
+            "CheckPoint show-task failed:",
+            error_output,
+            list(error_fields),
+            removeNull=True,
+        )
+        return CommandResults(
+            outputs_prefix="CheckPoint.ShowTask",
+            readable_output=readable_output,
+            outputs=error_output or result,
+            raw_response=result,
+        )
+    # On success,the API returns a "tasks" field, surface the task fields to the context.
+    printable_result = []
+    for task in task_list:
+        current_object_data = {
+            "task-id": task.get("task-id"),
+            "task-name": task.get("task-name"),
+            "status": task.get("status"),
+            "suppressed": task.get("suppressed"),
+            "progress-percentage": task.get("progress-percentage"),
+            "uid": task.get("uid"),
+        }
+        printable_result.append(current_object_data)
 
     readable_output = tableToMarkdown(
         "CheckPoint data for tasks:",
         printable_result,
-        ["task-name", "task-id", "status", "suppressed", "progress-percentage"],
+        ["task-name", "task-id", "status", "suppressed", "progress-percentage", "uid"],
         removeNull=True,
     )
     command_results = CommandResults(
         outputs_prefix="CheckPoint.ShowTask",
         outputs_key_field="uid",
         readable_output=readable_output,
-        outputs=printable_result,
+        outputs=task_list,
         raw_response=result,
     )
     return command_results
@@ -4160,6 +4857,9 @@ def checkpoint_tcp_service_add_command(
     session_timeout: str = None,
     aggressive_aging: str = None,
     tags=None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+    use_default_session_timeout: str = None,
 ) -> CommandResults:
     """
     Create a new TCP service object.
@@ -4174,6 +4874,9 @@ def checkpoint_tcp_service_add_command(
         aggressive_aging (str): JSON object for aggressive aging settings.
             Example: {"enable": true, "timeout": 360, "use-default-timeout": false}.
         tags: Collection of tag identifiers.
+        ignore_warnings (str): Whether to ignore warnings. Default false.
+        ignore_errors (str): Whether to ignore errors. Default false.
+        use_default_session_timeout (str): Use default virtual session timeout.
     """
     demisto.debug(f"checkpoint-tcp-service-add command called with args: {demisto.args()}")
     tags = argToList(tags)
@@ -4187,6 +4890,11 @@ def checkpoint_tcp_service_add_command(
         session_timeout=arg_to_number(session_timeout),
         aggressive_aging=aggressive_aging_obj,
         tags=tags or None,
+        ignore_warnings=argToBoolean(ignore_warnings) if ignore_warnings is not None else None,
+        ignore_errors=argToBoolean(ignore_errors) if ignore_errors is not None else None,
+        use_default_session_timeout=argToBoolean(use_default_session_timeout)
+        if use_default_session_timeout is not None
+        else None,
     )
 
     headers = [
@@ -4226,6 +4934,9 @@ def checkpoint_udp_service_add_command(
     session_timeout: str = None,
     aggressive_aging: str = None,
     tags=None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+    use_default_session_timeout: str = None,
 ) -> CommandResults:
     """
     Create a new UDP service object.
@@ -4240,6 +4951,9 @@ def checkpoint_udp_service_add_command(
         aggressive_aging (str): JSON object for aggressive aging settings.
             Example: {"enable": true, "timeout": 360, "use-default-timeout": false}.
         tags: Collection of tag identifiers.
+        ignore_warnings (str): Whether to ignore warnings. Default false.
+        ignore_errors (str): Whether to ignore errors. Default false.
+        use_default_session_timeout (str): Use default virtual session timeout.
     """
     demisto.debug(f"checkpoint-udp-service-add command called with args: {demisto.args()}")
     tags = argToList(tags)
@@ -4253,6 +4967,11 @@ def checkpoint_udp_service_add_command(
         session_timeout=arg_to_number(session_timeout),
         aggressive_aging=aggressive_aging_obj,
         tags=tags or None,
+        ignore_warnings=argToBoolean(ignore_warnings) if ignore_warnings is not None else None,
+        ignore_errors=argToBoolean(ignore_errors) if ignore_errors is not None else None,
+        use_default_session_timeout=argToBoolean(use_default_session_timeout)
+        if use_default_session_timeout is not None
+        else None,
     )
 
     headers = [
@@ -4354,6 +5073,9 @@ def checkpoint_tcp_service_update_command(
     session_timeout: str = None,
     aggressive_aging: str = None,
     tags=None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+    use_default_session_timeout: str = None,
 ) -> CommandResults:
     """
     Update an existing TCP service object.
@@ -4369,6 +5091,9 @@ def checkpoint_tcp_service_update_command(
         aggressive_aging (str): JSON object for aggressive aging settings.
             Example: {"enable": true, "timeout": 360, "use-default-timeout": false}.
         tags: Collection of tag identifiers.
+        ignore_warnings (str): Whether to ignore warnings. Default false.
+        ignore_errors (str): Whether to ignore errors. Default false.
+        use_default_session_timeout (str): Use default virtual session timeout.
     """
     demisto.debug(f"checkpoint-tcp-service-update command called with args: {demisto.args()}")
     tags = argToList(tags)
@@ -4383,6 +5108,11 @@ def checkpoint_tcp_service_update_command(
         session_timeout=arg_to_number(session_timeout),
         aggressive_aging=aggressive_aging_obj,
         tags=tags or None,
+        ignore_warnings=argToBoolean(ignore_warnings) if ignore_warnings is not None else None,
+        ignore_errors=argToBoolean(ignore_errors) if ignore_errors is not None else None,
+        use_default_session_timeout=argToBoolean(use_default_session_timeout)
+        if use_default_session_timeout is not None
+        else None,
     )
 
     headers = [
@@ -4423,6 +5153,9 @@ def checkpoint_udp_service_update_command(
     session_timeout: str = None,
     aggressive_aging: str = None,
     tags=None,
+    ignore_warnings: str = None,
+    ignore_errors: str = None,
+    use_default_session_timeout: str = None,
 ) -> CommandResults:
     """
     Update an existing UDP service object.
@@ -4438,6 +5171,9 @@ def checkpoint_udp_service_update_command(
         aggressive_aging (str): JSON object for aggressive aging settings.
             Example: {"enable": true, "timeout": 360, "use-default-timeout": false}.
         tags: Collection of tag identifiers.
+        ignore_warnings (str): Whether to ignore warnings. Default false.
+        ignore_errors (str): Whether to ignore errors. Default false.
+        use_default_session_timeout (str): Use default virtual session timeout.
     """
     demisto.debug(f"checkpoint-udp-service-update command called with args: {demisto.args()}")
     tags = argToList(tags)
@@ -4452,6 +5188,11 @@ def checkpoint_udp_service_update_command(
         session_timeout=arg_to_number(session_timeout),
         aggressive_aging=aggressive_aging_obj,
         tags=tags or None,
+        ignore_warnings=argToBoolean(ignore_warnings) if ignore_warnings is not None else None,
+        ignore_errors=argToBoolean(ignore_errors) if ignore_errors is not None else None,
+        use_default_session_timeout=argToBoolean(use_default_session_timeout)
+        if use_default_session_timeout is not None
+        else None,
     )
 
     headers = [
@@ -4754,6 +5495,8 @@ def checkpoint_nat_rule_update_command(
     new_position: str = None,
     new_position_rule: str = None,
     tags=None,
+    install_on_add: str = None,
+    install_on_remove: str = None,
 ) -> CommandResults:
     """
     Update an existing NAT rule.
@@ -4776,6 +5519,8 @@ def checkpoint_nat_rule_update_command(
             Required when new_position is "above" or "below".
             Optional when new_position is "top" or "bottom" (used as a reference section name).
         tags: Collection of tag identifiers.
+        install_on_add (str or list): Gateways (name or UID) to add to the install-on collection.
+        install_on_remove (str or list): Gateways (name or UID) to remove from the install-on collection.
     """
     demisto.debug(f"checkpoint-nat-rule-update command called with args: {demisto.args()}")
 
@@ -4796,6 +5541,15 @@ def checkpoint_nat_rule_update_command(
 
     tags = argToList(tags)
 
+    # Build incremental install-on dict.
+    install_on_obj: dict | None = None
+    if install_on_add or install_on_remove:
+        install_on_obj = {}
+        if install_on_add:
+            install_on_obj["add"] = argToList(install_on_add)
+        if install_on_remove:
+            install_on_obj["remove"] = argToList(install_on_remove)
+
     result = client.update_nat_rule(
         identifier=identifier,
         package=package,
@@ -4810,6 +5564,7 @@ def checkpoint_nat_rule_update_command(
         method=nat_method,
         tags=tags or None,
         new_position=new_position_obj,
+        install_on=install_on_obj,
     )
 
     readable_output = tableToMarkdown("CheckPoint data for updating a NAT rule:", result, removeNull=True)
@@ -5755,6 +6510,9 @@ def main():  # pragma: no cover
         elif command == "checkpoint-access-rule-list":
             return_results(checkpoint_list_access_rule_command(client, **args))
 
+        elif command == "checkpoint-access-rule-get":
+            return_results(checkpoint_get_access_rule_command(client, **args))
+
         elif command == "checkpoint-access-rule-add":
             return_results(checkpoint_add_access_rule_command(client, **args))
 
@@ -5915,6 +6673,24 @@ def main():  # pragma: no cover
 
         elif command == "checkpoint-nat-rule-delete":
             return_results(checkpoint_nat_rule_delete_command(client, **args))
+
+        elif command == "checkpoint-session-discard":
+            return_results(checkpoint_session_discard_command(client, **args))
+
+        elif command == "checkpoint-dns-domain-list":
+            return_results(checkpoint_dns_domain_list_command(client, **args))
+
+        elif command == "checkpoint-dns-domain-get":
+            return_results(checkpoint_dns_domain_get_command(client, **args))
+
+        elif command == "checkpoint-dns-domain-add":
+            return_results(checkpoint_dns_domain_add_command(client, **args))
+
+        elif command == "checkpoint-dns-domain-update":
+            return_results(checkpoint_dns_domain_update_command(client, **args))
+
+        elif command == "checkpoint-dns-domain-delete":
+            return_results(checkpoint_dns_domain_delete_command(client, **args))
         else:
             raise NotImplementedError(f"Unknown command {command}.")
 

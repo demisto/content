@@ -324,7 +324,7 @@ alter
   xdm.auth.mfa.client_details = authenticationRequirement,
   xdm.auth.is_mfa_needed = if(authenticationRequirement = "multiFactorAuthentication", to_boolean("true"), to_boolean("false")),
   xdm.event.original_event_type = to_string(signInEventTypes),
-  xdm.auth.privilege_level = if(userType = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, userType = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, userType = null, null, to_string(userType)),
+  xdm.auth.privilege_level = if(to_string(userType) = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, to_string(userType) = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, to_string(userType) = "0", XDM_CONST.PRIVILEGE_LEVEL_USER, to_string(userType) = "2", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, to_string(userType) = "3", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, to_string(userType) = "4", XDM_CONST.PRIVILEGE_LEVEL_SYSTEM, to_string(userType) = "10", XDM_CONST.PRIVILEGE_LEVEL_GUEST, userType = null, null, to_string(userType)),
   xdm.source.asn.as_number = to_integer(autonomousSystemNumber),
   xdm.source.host.os = check_os_field,
   xdm.source.host.os_family = if(check_os_field ~= "win|ms|microsoft", XDM_CONST.OS_FAMILY_WINDOWS,

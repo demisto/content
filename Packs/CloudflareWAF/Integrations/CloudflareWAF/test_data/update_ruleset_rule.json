@@ -1,0 +1,25 @@
+{
+    "result": {
+        "id": "ruleset_id_1",
+        "name": "Cloudflare Managed Ruleset",
+        "kind": "custom",
+        "phase": "http_request_firewall_custom",
+        "description": "Custom ruleset created by Cloudflare",
+        "version": "3",
+        "last_updated": "2023-01-17T10:00:00Z",
+        "rules": [
+            {
+                "id": "rule_id_1",
+                "action": "log",
+                "expression": "(ip.src eq 192.0.2.1)",
+                "description": "Log bad IP instead of block",
+                "enabled": true,
+                "version": "2",
+                "ref": "ref_1"
+            }
+        ]
+    },
+    "success": true,
+    "errors": [],
+    "messages": []
+}

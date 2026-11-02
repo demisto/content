@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: Watchguard_Firebox_Private_Access_ModelingRule
+name: Watchguard Firebox Private Access Modeling Rule
+rules: ''
+schema: ''
+tags: Watchguard Firebox
+supportedModules:
+- xsiam

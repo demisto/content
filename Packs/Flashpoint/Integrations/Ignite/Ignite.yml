@@ -4845,9 +4845,41 @@ script:
       description: List of versions associated with the product.
       type: List
     description: List products using provided filters.
+  - name: flashpoint-ignite-source-media-download
+    arguments:
+    - name: asset_id
+      required: true
+      description: The URL-encoded URI for the source media. The asset ID can be retrieved from the output context path (Ignite.Alert.resource.media_v2.storage_uri) of the flashpoint-ignite-alert-list command, the output context path (Ignite.IP.media.storage_uri) of the ip command, or some other investigation.
+    - name: cdn
+      auto: PREDEFINED
+      description: "Whether to route the request for the media through the Content Delivery Network (CDN).\n\nNote: Set this to false if your network blocks access to the CDN location."
+      defaultValue: 'True'
+      predefined:
+      - 'True'
+      - 'False'
+    outputs:
+    - contextPath: InfoFile.Name
+      description: The name of the downloaded media file.
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the downloaded media file.
+      type: String
+    - contextPath: InfoFile.Size
+      description: The size of the downloaded media file in bytes.
+      type: Number
+    - contextPath: InfoFile.Type
+      description: The type of the downloaded media file.
+      type: String
+    - contextPath: InfoFile.Extension
+      description: The extension of the downloaded media file.
+      type: String
+    - contextPath: InfoFile.Info
+      description: The info of the downloaded media file.
+      type: String
+    description: Retrieves the source media file for the provided asset ID.
   script: ''
   type: python
-  dockerimage: demisto/python3:3.12.13.11879924
+  dockerimage: demisto/python3:3.12.14.13053055
   isfetch: true
   runonce: false
   subtype: python3

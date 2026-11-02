@@ -1,10 +1,11 @@
 import json
+from copy import deepcopy
 from unittest.mock import MagicMock
 
 import pytest
 import demistomock as demisto
 
-from NetskopeEventCollector_v2 import ALL_SUPPORTED_EVENT_TYPES, Client
+from NetskopeEventCollector_v2 import ALL_SUPPORTED_EVENT_TYPES, Client, handle_fetch_and_send_all_events
 
 # Individual async tests are marked with @pytest.mark.asyncio decorator
 
@@ -163,49 +164,106 @@ async def test_fetch_path_send_and_flush(mocker):
     assert sent == total_count, f"Events sent ({sent}) should equal total_count ({total_count})"
 
 
-@pytest.mark.asyncio
-async def test_fetch_path_partial_failure(mocker):
-    """
-    Given:
-        - The fetch-events path where ONE event type's page fetch raises an error, while the others succeed.
-    When:
-        - Running handle_fetch_and_send_all_events with send_to_xsiam=True.
-    Then:
-        - The cycle does NOT crash because of one type's failure (it is isolated via return_exceptions),
-          the failing type does not advance its cursor (so it is retried next cycle), and
-          total_events_count still reflects the events from the types/pages that DID succeed (partial accounting).
-    """
-    from NetskopeEventCollector_v2 import handle_fetch_and_send_all_events
+PARTIAL_FAILURE_LAST_RUN: dict[str, dict] = {
+    event_type: {"next_fetch_start_time": "1789984585", "failures": []} for event_type in ALL_SUPPORTED_EVENT_TYPES
+}
 
-    mocker.patch("NetskopeEventCollector_v2.support_multithreading")
-    mocker.patch("NetskopeEventCollector_v2.send_events_to_xsiam")
-    # The failing type intentionally logs errors; silence them so the no-stdout test fixture is satisfied.
-    mocker.patch.object(demisto, "error")
-    failing_type = "audit"
-    client = Client(BASE_URL, "netskope_token", proxy=False, verify=False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
 
+def _mock_events_data_failing_for(failing_type: str):
     def mock_get_events_data_async(event_type, params):
         if event_type == failing_type:
-            raise Exception("boom: simulated page fetch failure")
+            raise Exception("boom: simulated page failure")
         if event_type in EVENTS_PAGE_RAW:
             return EVENTS_PAGE_RAW[event_type]
         return {"result": EVENTS_RAW["result"], "wait_time": 0}
 
-    mocker.patch.object(client, "get_events_data_async", side_effect=mock_get_events_data_async)
+    return mock_get_events_data_async
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("failing_type", ["alert", "audit"], ids=["count_paging_type", "sequential_paging_type"])
+async def test_fetch_path_partial_failure_keeps_failed_type_cursor(mocker, failing_type):
+    """
+    Given:
+        - The fetch-events path with a stored cursor for every type, where ONE type's task raises
+          (e.g. an XSIAM 502 on a page send) while the other types succeed.
+    When:
+        - Running handle_fetch_and_send_all_events with send_to_xsiam=True.
+    Then:
+        - The cycle does not crash, the other types still send their events,
+          and the failing type keeps its previous cursor unchanged in the new last_run,
+          so the next cycle retries from the same point instead of re-fetching the last 24 hours (XSUP-76593).
+    """
+    mocker.patch("NetskopeEventCollector_v2.support_multithreading")
+    mocker.patch("NetskopeEventCollector_v2.send_events_to_xsiam")
+    # The failing type intentionally logs errors; silence them so the no-stdout test fixture is satisfied.
+    mocker.patch.object(demisto, "error")
+    client = Client(BASE_URL, "netskope_token", proxy=False, verify=False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
+    mocker.patch.object(client, "get_events_data_async", side_effect=_mock_events_data_failing_for(failing_type))
     mocker.patch.object(client, "get_events_count", return_value=50)
+    previous_cursor = PARTIAL_FAILURE_LAST_RUN[failing_type]["next_fetch_start_time"]
 
     events, total_count, new_last_run = await handle_fetch_and_send_all_events(
-        client, FIRST_LAST_RUN, limit=100, send_to_xsiam=True
+        client, deepcopy(PARTIAL_FAILURE_LAST_RUN), limit=100, send_to_xsiam=True
     )
 
-    # The whole cycle survives a single type's failure (other types are unaffected).
     assert events == [], "Fetch path should not accumulate events"
-    # The other types still contributed their events to the total (partial-failure accounting).
     assert total_count > 0, f"total_events_count should reflect the types that DID send, got {total_count}"
-    # The failing type's cursor is not advanced, so it will be retried next cycle.
-    assert "next_fetch_start_time" not in new_last_run.get(
-        failing_type, {}
-    ), "Failing type must NOT advance its cursor (so it retries next cycle)"
+    assert failing_type in new_last_run, f"Failed type '{failing_type}' was dropped from last_run: {new_last_run}"
+    assert new_last_run[failing_type]["next_fetch_start_time"] == previous_cursor
+    assert "next_fetch_end_time" not in new_last_run[failing_type]
+    assert "next_fetch_offset" not in new_last_run[failing_type]
+
+
+@pytest.mark.asyncio
+async def test_fetch_path_partial_failure_keeps_mid_window_offset(mocker):
+    """
+    Given:
+        - The alert type is mid-way through paging a window (start, end and offset stored), and its task raises.
+    When:
+        - Running handle_fetch_and_send_all_events with send_to_xsiam=True.
+    Then:
+        - The stored window and offset are kept exactly, so the next cycle resumes the same window at the same offset.
+    """
+    mocker.patch("NetskopeEventCollector_v2.support_multithreading")
+    mocker.patch("NetskopeEventCollector_v2.send_events_to_xsiam")
+    mocker.patch.object(demisto, "error")
+    client = Client(BASE_URL, "netskope_token", proxy=False, verify=False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
+    mocker.patch.object(client, "get_events_data_async", side_effect=_mock_events_data_failing_for("alert"))
+    # The window holds more events than the stored offset, so the alert task really pages (and fails).
+    mocker.patch.object(client, "get_events_count", return_value=5_035_885)
+    last_run = deepcopy(PARTIAL_FAILURE_LAST_RUN)
+    mid_window = {"next_fetch_start_time": "1789898305", "next_fetch_end_time": "1789984705", "next_fetch_offset": 4700000}
+    last_run["alert"] = {**mid_window, "failures": []}
+
+    _, _, new_last_run = await handle_fetch_and_send_all_events(client, last_run, limit=100, send_to_xsiam=True)
+
+    assert {key: new_last_run["alert"].get(key) for key in mid_window} == mid_window
+
+
+@pytest.mark.asyncio
+async def test_fetch_path_does_not_mutate_input_last_run(mocker):
+    """
+    Given:
+        - A stored last_run for every type, and one type whose task raises.
+    When:
+        - Running handle_fetch_and_send_all_events with send_to_xsiam=True.
+    Then:
+        - The caller's last_run dict is left unchanged (the new last_run is built from copies).
+    """
+    mocker.patch("NetskopeEventCollector_v2.support_multithreading")
+    mocker.patch("NetskopeEventCollector_v2.send_events_to_xsiam")
+    mocker.patch.object(demisto, "error")
+    client = Client(BASE_URL, "netskope_token", proxy=False, verify=False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
+    mocker.patch.object(client, "get_events_data_async", side_effect=_mock_events_data_failing_for("alert"))
+    mocker.patch.object(client, "get_events_count", return_value=50)
+    last_run = deepcopy(PARTIAL_FAILURE_LAST_RUN)
+    last_run["alert"]["failures"] = [{"start_time": "1", "end_time": "2", "offset": 0, "limit": 100}]
+    original = deepcopy(last_run)
+
+    await handle_fetch_and_send_all_events(client, last_run, limit=100, send_to_xsiam=True)
+
+    assert last_run == original
 
 
 @pytest.mark.asyncio
@@ -880,3 +938,93 @@ def test_get_time_window_params(mocker, mock_config, start_time, end_time, expec
 
     # Verify the key mapping worked correctly
     assert params == expected_params, f"Expected {expected_params}, got {params}"
+
+
+@pytest.mark.asyncio
+async def test_fetch_and_send_events_async_retries_on_payload_error(mocker):
+    """
+    Given:
+        - The Netskope API returns an incomplete/truncated response payload (ClientPayloadError,
+          e.g. TransferEncodingError) on the first attempt and then succeeds.
+    When:
+        - Fetching a page of events via fetch_and_send_events_async.
+    Then:
+        - The page fetch is retried instead of failing.
+        - The page size (limit) is reduced on the retry to lower the chance of truncation.
+        - The events from the successful retry are returned with no failures.
+    """
+    from aiohttp import ClientPayloadError
+    from NetskopeEventCollector_v2 import fetch_and_send_events_async, MAX_EVENTS_PAGE_SIZE
+
+    mocker.patch("NetskopeEventCollector_v2.asyncio.sleep", return_value=None)
+
+    client = Client(BASE_URL, "token", False, False, ["alert"])
+    # count call (used by _handle_all_pages) returns a small number so a single page is scheduled
+    mocker.patch.object(client, "get_events_count", return_value=1)
+
+    observed_limits = []
+
+    async def get_events_data_async(event_type, params):
+        observed_limits.append(params.get("limit"))
+        if len(observed_limits) == 1:
+            raise ClientPayloadError("Not enough data to satisfy transfer length header.")
+        return {"result": [{"_id": "1", "timestamp": 1680000000}]}
+
+    mocker.patch.object(client, "get_events_data_async", side_effect=get_events_data_async)
+
+    request_params = {"limit": MAX_EVENTS_PAGE_SIZE, "offset": 0}
+    success, failures = await fetch_and_send_events_async(
+        client, "alert", request_params, limit=MAX_EVENTS_PAGE_SIZE, send_to_xsiam=False
+    )
+
+    assert failures == [], f"Expected no failures after a successful retry, got {failures}"
+    assert len(success) == 1, f"Expected one successful page, got {success}"
+    # first attempt used the full page size, retry used a reduced (halved) page size
+    assert observed_limits[0] == MAX_EVENTS_PAGE_SIZE
+    assert observed_limits[1] == MAX_EVENTS_PAGE_SIZE // 2
+    # exactly two attempts were made: the initial one plus a single retry
+    assert len(observed_limits) == 2
+
+
+@pytest.mark.asyncio
+async def test_fetch_and_send_events_async_payload_error_persists(mocker):
+    """
+    Given:
+        - The Netskope API persistently returns an incomplete/truncated response payload
+          (ClientPayloadError) on every attempt.
+    When:
+        - Fetching a page of events via fetch_and_send_events_async.
+    Then:
+        - After exhausting the retries the error is surfaced as a failure (recorded for
+          the next-fetch failure-replay mechanism) rather than crashing the fetch.
+        - The page size was shrunk on each retry but never below the configured floor.
+    """
+    from aiohttp import ClientPayloadError
+    from NetskopeEventCollector_v2 import fetch_and_send_events_async, MAX_EVENTS_PAGE_SIZE, MIN_EVENTS_PAGE_SIZE, MAX_RETRY
+
+    mocker.patch("NetskopeEventCollector_v2.asyncio.sleep", return_value=None)
+    # The failure path logs via demisto.error; mock it so it doesn't write to stdout (conftest forbids it).
+    mocker.patch.object(demisto, "error")
+
+    client = Client(BASE_URL, "token", False, False, ["alert"])
+    mocker.patch.object(client, "get_events_count", return_value=1)
+
+    observed_limits = []
+
+    async def get_events_data_async(event_type, params):
+        observed_limits.append(params.get("limit"))
+        raise ClientPayloadError("Not enough data to satisfy transfer length header.")
+
+    mocker.patch.object(client, "get_events_data_async", side_effect=get_events_data_async)
+
+    request_params = {"limit": MAX_EVENTS_PAGE_SIZE, "offset": 0}
+    success, failures = await fetch_and_send_events_async(
+        client, "alert", request_params, limit=MAX_EVENTS_PAGE_SIZE, send_to_xsiam=False
+    )
+
+    assert success == [], f"Expected no successful pages, got {success}"
+    assert len(failures) == 1, f"Expected a single recorded failure, got {failures}"
+    # page size was shrunk on each retry but never below the configured floor
+    assert min(observed_limits) >= MIN_EVENTS_PAGE_SIZE
+    # the request was attempted exactly MAX_RETRY + 1 times before giving up (1 initial attempt + 3 retries)
+    assert len(observed_limits) == MAX_RETRY + 1
