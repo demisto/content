@@ -1534,7 +1534,8 @@ def push_pentest(
     """Send a pentest page by page from the cursor (next page, events earlier runs sent), committing after each page.
 
     finish applies the caller's bookkeeping to the state that records the pentest as sent, and keep receives each sent
-    page's events. Returns True when the pentest is fully sent, or False when the run deadline or the lease stopped it.
+    page's events. Returns True when the pentest is fully sent, or False when the run deadline stopped it. A lost lease
+    raises LeaseLost.
     """
     page_num, sent = cursor
     seen: set[str] = set()
@@ -1567,7 +1568,8 @@ def resume_in_progress(client: Client, holder: Holder, run: RunState) -> bool:
 def fetch_events(client: Client, holder: Holder, max_events: int, run: RunState) -> None:
     """One fetch: finish a half-sent pentest, then send newly finished pentests, oldest first.
 
-    max_events and the time budget are checked only before a new pentest starts, so a pentest is never split by them.
+    max_events is checked only before a new pentest starts, so it never splits a pentest. The time budget is checked
+    before each page too: a pentest it stops partway keeps a cursor, and the next run resumes that pentest first.
     """
     if not resume_in_progress(client, holder, run):
         return
@@ -1807,10 +1809,11 @@ def push_scope(
     events: list[dict[str, Any]],
     limit: int,
 ) -> None:
-    """Send the pentests that weren't sent yet, each in full, oldest first; show the events of the others.
+    """Send the pentests that weren't sent yet, oldest first; show the events of the others.
 
-    Up to `limit` events are shown. Once this run sent `limit` events in the scope, no new pentest starts; a pentest is
-    never split by it, so a single pentest (pentest_id) is always sent in full.
+    Up to `limit` events are shown. No new pentest starts once this run sent `limit` events in the scope, or with less
+    than MIN_SECONDS_FOR_NEW_PENTEST left. The limit never splits a pentest, so a single pentest (pentest_id) is sent in
+    full unless the time budget keeps it from starting or stops it partway; a later run resumes a pentest stopped partway.
     """
 
     def keep(page_events: list[dict[str, Any]]) -> None:
