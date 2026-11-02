@@ -28,7 +28,9 @@ def main() -> None:
         incident = demisto.incident()
         custom_fields = incident.get("CustomFields", {}) or {}
 
-        description = custom_fields.get("alertdescription", "") or custom_fields.get("alert_description", "")
+        description = custom_fields.get("alertdescription", "") or custom_fields.get(
+            "alert_description", ""
+        )
         if not description:
             labels = incident.get("labels", [])
             for label in labels:
@@ -75,11 +77,11 @@ def main() -> None:
         return_results(
             CommandResults(
                 readable_output=(
-                    f'### Closed XSIAM Case\n'
-                    f'- **XSOAR Incident ID:** {xsoar_id}\n'
-                    f'- **XSOAR Close Reason:** {close_reason}\n'
-                    f'- **XSIAM Close Reason:** {xsiam_reason}\n'
-                    f'- **Close Notes:** {close_notes or "(none)"}\n'
+                    f"### Closed XSIAM Case\n"
+                    f"- **XSOAR Incident ID:** {xsoar_id}\n"
+                    f"- **XSOAR Close Reason:** {close_reason}\n"
+                    f"- **XSIAM Close Reason:** {xsiam_reason}\n"
+                    f"- **Close Notes:** {close_notes or '(none)'}\n"
                 ),
                 outputs_prefix="XSOARExporter.Close",
                 outputs={
