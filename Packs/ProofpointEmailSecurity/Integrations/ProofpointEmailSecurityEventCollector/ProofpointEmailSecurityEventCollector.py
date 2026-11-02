@@ -24,6 +24,7 @@ SERVER_IDLE_TIMEOUT = 300
 MAX_RECONNECT_ATTEMPTS = 5
 MAX_BACKOFF_SECONDS = 60
 BASE_BACKOFF_SECONDS = 2
+MAX_BACKOFF_EXPONENT = 10
 
 
 EVENT_TYPES = ["message", "maillog", "audit"]
@@ -36,6 +37,11 @@ CLOSE_TIMEOUT = 60  # Timeout for closing the connection in seconds
 MAX_MESSAGE_SIZE: int | None = None  # Disable the 1 MiB default size limit on incoming messages
 RECEIVE_TIMEOUT = 1  # Timeout for receiving events in seconds
 WEBSOCKETS_LOGGER_NAME = "websockets"
+
+
+def calculate_backoff_delay(attempt: int) -> int:
+    """Exponential backoff in seconds for a 1-based attempt number, capped at MAX_BACKOFF_SECONDS."""
+    return min(MAX_BACKOFF_SECONDS, BASE_BACKOFF_SECONDS * 2 ** min(attempt - 1, MAX_BACKOFF_EXPONENT))
 
 
 def route_websockets_logs_to_debug() -> None:
@@ -111,38 +117,47 @@ class EventConnection:
         """
         return bool("sinceTime" in self.url and "toTime" in self.url)
 
-    def reconnect(self):
+    def reconnect(self) -> None:
         """
         Reconnect logic for the WebSocket connection using an exponential backoff strategy.
         This handles the HTTP 409 error by delaying the retry to allow the Proofpoint server to clear the session.
+        Aborts once close() was requested, and never leaves a connection opened after shutdown unclosed.
         """
-        attempt = 0
-        while attempt < MAX_RECONNECT_ATTEMPTS:
-            attempt += 1
+        for attempt in range(1, MAX_RECONNECT_ATTEMPTS + 1):
+            if self.stop_event.is_set():
+                demisto.debug(f"[{self.event_type}] Connection is closing. Skipping reconnection attempt #{attempt}.")
+                return
             demisto.info(f"[{self.event_type}] Going to attempt reconnection #{attempt} / {MAX_RECONNECT_ATTEMPTS}.")
             try:
-                self.connection = self.connect()
-                demisto.info(f"[{self.event_type}] Successfully reconnected to WebSocket after {attempt} attempt(s).")
-                return
+                new_connection = self.connect()
 
             except exceptions.InvalidStatus as e:
                 # Need to wait if HTTP 409 (Conflict) error was raised because the failed session
                 # has not been fully terminated or released by the Proofpoint server
-                if e.response.status_code == HTTPStatus.CONFLICT:
-                    delay = min(MAX_BACKOFF_SECONDS, BASE_BACKOFF_SECONDS * (2 ** (attempt - 1)))
-                    demisto.error(
-                        f"[{self.event_type}] Reconnection failed due to session conflict. "
-                        f"Waiting {delay} seconds before retrying (Attempt {attempt})."
-                    )
-                    time.sleep(delay)
-
-                else:
+                if e.response.status_code != HTTPStatus.CONFLICT:
                     demisto.error(f"[{self.event_type}] Connection status error: {e!s}.")
                     raise
+                delay = calculate_backoff_delay(attempt)
+                demisto.error(
+                    f"[{self.event_type}] Reconnection failed due to session conflict. "
+                    f"Waiting {delay} seconds before retrying (Attempt {attempt})."
+                )
+                self.stop_event.wait(delay)  # Interruptible by close(), unlike time.sleep
+                continue
 
             except Exception as e:
                 demisto.error(f"[{self.event_type}] General reconnection failure: {e!s}.")
                 raise
+
+            # Assign before checking stop_event: close() sets stop_event before closing self.connection,
+            # so either close() closes the new connection, or this check does
+            self.connection = new_connection
+            if self.stop_event.is_set():
+                demisto.debug(f"[{self.event_type}] Closed during reconnect. Releasing the new session.")
+                new_connection.close()
+                return
+            demisto.info(f"[{self.event_type}] Successfully reconnected to WebSocket after {attempt} attempt(s).")
+            return
 
     def close(self) -> None:
         """
@@ -572,7 +587,7 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
             demisto.updateModuleHealth(err, is_error=True)
             demisto.error(err)
             # Exponential backoff to avoid hammering the server and to let it release stale sessions (HTTP 409)
-            delay = min(MAX_BACKOFF_SECONDS, BASE_BACKOFF_SECONDS * (2 ** min(consecutive_failures - 1, 10)))
+            delay = calculate_backoff_delay(consecutive_failures)
             demisto.info(f"Waiting {delay} seconds before reconnecting (consecutive failure #{consecutive_failures}).")
             time.sleep(delay)
 
