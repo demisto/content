@@ -42,6 +42,10 @@ from Azure import (
     CommandResults,
     DemistoException,
     API_VERSION,
+    NSG_API_VERSION,
+    PUBLIC_IP_API_VERSION,
+    BLOB_SERVICE_API_VERSION,
+    RESOURCE_GROUPS_API_VERSION,
     SCOPE_BY_CONNECTION,
     PREFIX_URL_AZURE,
     storage_container_property_get_command,
@@ -2065,8 +2069,72 @@ def test_azure_client_get_rule(mocker, client):
         f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
         "securityRules/test-rule"
     )
-    client.http_request.assert_called_once_with("GET", full_url=expected_url)
+    client.http_request.assert_called_once_with("GET", full_url=expected_url, params={"api-version": NSG_API_VERSION})
     assert result == mock_response
+
+
+@pytest.mark.parametrize(
+    "method_name, kwargs, expected_api_version",
+    [
+        (
+            "create_or_update_rule",
+            {"security_group": "sg", "rule_name": "r", "properties": {}, "subscription_id": "s", "resource_group_name": "rg"},
+            NSG_API_VERSION,
+        ),
+        (
+            "get_rule",
+            {"security_group": "sg", "rule_name": "r", "subscription_id": "s", "resource_group_name": "rg"},
+            NSG_API_VERSION,
+        ),
+        (
+            "list_security_rules",
+            {"subscription_id": "s", "resource_group_name": "rg", "network_security_group_name": "sg"},
+            NSG_API_VERSION,
+        ),
+        ("list_network_security_groups", {"subscription_id": "s", "resource_group_name": "rg"}, NSG_API_VERSION),
+        (
+            "delete_rule",
+            {"security_group_name": "sg", "security_rule_name": "r", "subscription_id": "s", "resource_group_name": "rg"},
+            NSG_API_VERSION,
+        ),
+        ("list_public_ip_addresses_request", {"subscription_id": "s", "resource_group_name": "rg"}, PUBLIC_IP_API_VERSION),
+        ("get_all_public_ip_details_request", {"subscription_id": "s"}, PUBLIC_IP_API_VERSION),
+        (
+            "storage_blob_service_properties_get_request",
+            {"account_name": "acc", "resource_group_name": "rg", "subscription_id": "s"},
+            BLOB_SERVICE_API_VERSION,
+        ),
+        (
+            "storage_blob_containers_create_update_request",
+            {
+                "subscription_id": "s",
+                "resource_group_name": "rg",
+                "args": {"account_name": "acc", "container_name": "c"},
+                "method": "PUT",
+            },
+            BLOB_SERVICE_API_VERSION,
+        ),
+        (
+            "list_resource_groups_request",
+            {"subscription_id": "s", "filter_by_tag": "", "limit": "1"},
+            RESOURCE_GROUPS_API_VERSION,
+        ),
+    ],
+)
+def test_azure_client_requests_pin_explicit_api_version(mocker, client, method_name, kwargs, expected_api_version):
+    """
+    Given: An Azure client and an ARM request method that previously relied on the implicit default api-version.
+    When: The request method is called.
+    Then: The api-version is passed explicitly in params and is never embedded in, or left dangling on, the URL.
+    """
+    mock_response = mocker.Mock(status_code=200)
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    getattr(client, method_name)(**kwargs)
+
+    call_kwargs = client.http_request.call_args.kwargs
+    assert call_kwargs["params"]["api-version"] == expected_api_version
+    assert "?" not in call_kwargs["full_url"]
 
 
 def test_azure_client_create_policy_assignment(mocker, client):
@@ -2160,9 +2228,11 @@ def test_azure_client_create_rule_success(mocker, client):
     # Verify correct API call was made
     expected_url = (
         f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
-        "securityRules/test-rule?"
+        "securityRules/test-rule"
     )
-    client.http_request.assert_called_once_with("PUT", full_url=expected_url, json_data={"properties": properties})
+    client.http_request.assert_called_once_with(
+        "PUT", full_url=expected_url, params={"api-version": NSG_API_VERSION}, json_data={"properties": properties}
+    )
 
     # Verify response
     assert result == mock_response
@@ -2223,9 +2293,11 @@ def test_azure_client_create_rule_with_complex_properties(mocker, client):
     # Verify correct API call was made
     expected_url = (
         f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
-        "securityRules/complex-rule?"
+        "securityRules/complex-rule"
     )
-    client.http_request.assert_called_once_with("PUT", full_url=expected_url, json_data={"properties": properties})
+    client.http_request.assert_called_once_with(
+        "PUT", full_url=expected_url, params={"api-version": NSG_API_VERSION}, json_data={"properties": properties}
+    )
 
     # Verify response contains complex properties
     assert result == mock_response
@@ -5665,7 +5737,7 @@ def test_create_network_security_group(mocker, client):
     client.http_request.assert_called_once_with(
         method="PUT",
         full_url="https://management.azure.com/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-nsg",
-        params={"api-version": "2025-05-01"},
+        params={"api-version": NSG_API_VERSION},
         json_data={"location": "eastus"},
     )
 
