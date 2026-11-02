@@ -18,12 +18,17 @@ from CommonServerUserPython import *  # noqa
 
 import base64
 import io
+import struct
 import zipfile
 import requests
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from typing import Any
+from cryptography.hazmat.primitives import hashes, hmac, serialization
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.kdf.hkdf import HKDFExpand
 from nacl.public import PublicKey, SealedBox
 
 """ CONSTANTS """
@@ -86,9 +91,13 @@ FILE_EXTENSION_BY_FORMAT = {"PEM": "pem", "DER": "der"}
 
 KEYSTORE_FORMATS = ("PEM", "PKCS12")
 DEFAULT_KEYSTORE_FORMAT = "PEM"
-# The passphrase is sealed (libsodium sealed box) to the VSatellite's key, used raw. Only ED25519 keys are
-# known to work this way; VSAT_HPKE and RSA keys need another scheme.
-SUPPORTED_EDGE_KEY_ALGORITHM = "ED25519"
+# The passphrase is sealed to the VSatellite's key: a libsodium sealed box for an ED25519 key (used raw), HPKE
+# for a VSAT_HPKE key, which current VSatellites have.
+EDGE_KEY_ED25519 = "ED25519"
+EDGE_KEY_HPKE = "VSAT_HPKE"
+SUPPORTED_EDGE_KEY_ALGORITHMS = (EDGE_KEY_ED25519, EDGE_KEY_HPKE)
+# The VSatellite's HPKE suite (RFC 9180 base mode): DHKEM(P-384, HKDF-SHA384), HKDF-SHA512, AES-256-GCM.
+HPKE_KEM_ID, HPKE_KDF_ID, HPKE_AEAD_ID = 0x0011, 0x0003, 0x0002
 # With `Accept: application/octet-stream`, every keystore error is an empty, generic HTTP 400.
 KEYSTORE_ACCEPT = "*/*"
 # "Issuer certificates not available": the issuing CA returned only the leaf, and the export needs the chain.
@@ -1110,21 +1119,84 @@ def api_errors(response: requests.Response) -> list[dict[str, Any]]:
     return [error for error in errors if isinstance(error, dict)] if isinstance(errors, list) else []
 
 
-def seal_passphrase(passphrase: str, public_key: str) -> str:
+def seal_passphrase(passphrase: str, edge_key: dict[str, Any]) -> str:
     """Encrypt a passphrase for the VSatellite that holds a private key.
 
-    The service never sees the passphrase in clear: it travels as a libsodium sealed box to the VSatellite's
-    edge encryption key. The key is labelled ED25519 but is used raw, with no conversion to X25519.
+    The service never sees the passphrase in clear. For an ED25519 key it travels as a libsodium sealed box,
+    with the key used raw (no conversion to X25519). For a VSAT_HPKE key it is HPKE-sealed, with the company
+    ID as both the HPKE info and the AEAD associated data, as the VSatellite expects.
 
     Args:
         passphrase: The passphrase that protects the exported private key.
-        public_key: The base64 `key` of `GET /v1/edgeencryptionkeys/{dekHash}`.
+        edge_key: `GET /v1/edgeencryptionkeys/{dekHash}`: `keyAlgorithm`, the base64 `key` and `companyId`.
 
     Returns:
         str: The sealed passphrase, base64-encoded.
     """
-    sealed = SealedBox(PublicKey(base64.b64decode(public_key))).encrypt(passphrase.encode("utf-8"))
+    public_key = base64.b64decode(edge_key["key"])
+    plaintext = passphrase.encode("utf-8")
+    if edge_key.get("keyAlgorithm") == EDGE_KEY_HPKE:
+        company_id = str(edge_key["companyId"]).encode("utf-8")
+        sealed = hpke_seal(public_key, info=company_id, aad=company_id, plaintext=plaintext)
+    else:
+        sealed = SealedBox(PublicKey(public_key)).encrypt(plaintext)
     return base64.b64encode(sealed).decode("ascii")
+
+
+def hpke_seal(public_key: bytes, info: bytes, aad: bytes, plaintext: bytes) -> bytes:
+    """HPKE-seal a message to a VSatellite's P-384 key (RFC 9180 base mode, single shot).
+
+    Built from primitives because `cryptography`'s `hpke.Suite.encrypt` takes no associated data.
+
+    Args:
+        public_key: The recipient key, an uncompressed P-384 point.
+        info: The HPKE context info.
+        aad: The AEAD associated data.
+        plaintext: The message.
+
+    Returns:
+        bytes: The encapsulated key followed by the ciphertext.
+    """
+    recipient = ec.EllipticCurvePublicKey.from_encoded_point(ec.SECP384R1(), public_key)
+    ephemeral = ec.generate_private_key(ec.SECP384R1())
+    enc = ephemeral.public_key().public_bytes(serialization.Encoding.X962, serialization.PublicFormat.UncompressedPoint)
+    shared_secret = hpke_shared_secret(ephemeral.exchange(ec.ECDH(), recipient), enc + public_key)
+    key, nonce = hpke_key_schedule(shared_secret, info)
+    return enc + AESGCM(key).encrypt(nonce, plaintext, aad)
+
+
+def hpke_shared_secret(dh: bytes, kem_context: bytes) -> bytes:
+    """Derive the DHKEM(P-384, HKDF-SHA384) shared secret from the ECDH output and `enc || pkR`."""
+    suite_id = b"KEM" + struct.pack(">H", HPKE_KEM_ID)
+    eae_prk = hpke_labeled_extract(hashes.SHA384(), suite_id, b"", b"eae_prk", dh)
+    return hpke_labeled_expand(hashes.SHA384(), suite_id, eae_prk, b"shared_secret", kem_context, 48)
+
+
+def hpke_key_schedule(shared_secret: bytes, info: bytes) -> tuple[bytes, bytes]:
+    """Derive the AES-256-GCM key and base nonce for base mode with HKDF-SHA512."""
+    suite_id = b"HPKE" + struct.pack(">HHH", HPKE_KEM_ID, HPKE_KDF_ID, HPKE_AEAD_ID)
+    sha512 = hashes.SHA512()
+    psk_id_hash = hpke_labeled_extract(sha512, suite_id, b"", b"psk_id_hash", b"")
+    info_hash = hpke_labeled_extract(sha512, suite_id, b"", b"info_hash", info)
+    context = b"\x00" + psk_id_hash + info_hash
+    secret = hpke_labeled_extract(sha512, suite_id, shared_secret, b"secret", b"")
+    key = hpke_labeled_expand(sha512, suite_id, secret, b"key", context, 32)
+    return key, hpke_labeled_expand(sha512, suite_id, secret, b"base_nonce", context, 12)
+
+
+def hpke_labeled_extract(algorithm: hashes.HashAlgorithm, suite_id: bytes, salt: bytes, label: bytes, ikm: bytes) -> bytes:
+    """RFC 9180 LabeledExtract: HKDF-Extract over `"HPKE-v1" || suite_id || label || ikm`."""
+    mac = hmac.HMAC(salt or b"\x00" * algorithm.digest_size, algorithm)
+    mac.update(b"HPKE-v1" + suite_id + label + ikm)
+    return mac.finalize()
+
+
+def hpke_labeled_expand(
+    algorithm: hashes.HashAlgorithm, suite_id: bytes, prk: bytes, label: bytes, info: bytes, length: int
+) -> bytes:
+    """RFC 9180 LabeledExpand: HKDF-Expand with `I2OSP(length, 2) || "HPKE-v1" || suite_id || label || info`."""
+    labeled_info = struct.pack(">H", length) + b"HPKE-v1" + suite_id + label + info
+    return HKDFExpand(algorithm, length, labeled_info).derive(prk)
 
 
 def build_keystore_request_body(export_format: str, sealed_passphrase: str) -> dict[str, str]:
@@ -2142,7 +2214,7 @@ def build_certificate_contents_result(certificate_id: str, file_name: str, conte
     )
 
 
-def edge_public_key(client: CertificateManagerClient, certificate_id: str, dek_hash: str | None) -> str:
+def edge_encryption_key(client: CertificateManagerClient, certificate_id: str, dek_hash: str | None) -> dict[str, Any]:
     """Find the VSatellite key to seal the passphrase for, and check that the export can work.
 
     Args:
@@ -2151,7 +2223,7 @@ def edge_public_key(client: CertificateManagerClient, certificate_id: str, dek_h
         dek_hash: The certificate's `dekHash`: set only when a VSatellite generated and stores the private key.
 
     Returns:
-        str: The base64 public key.
+        dict: The edge encryption key: `keyAlgorithm`, the base64 `key` and `companyId`.
 
     Raises:
         DemistoException: If the key wasn't generated by a VSatellite, or the VSatellite's key type is not supported.
@@ -2163,12 +2235,12 @@ def edge_public_key(client: CertificateManagerClient, certificate_id: str, dek_h
         )
     edge_key = client.get_edge_encryption_key(dek_hash)
     algorithm = edge_key.get("keyAlgorithm")
-    if algorithm != SUPPORTED_EDGE_KEY_ALGORITHM:
+    if algorithm not in SUPPORTED_EDGE_KEY_ALGORITHMS:
         raise DemistoException(
             f"The private key of certificate {certificate_id} is protected by a VSatellite key of type {algorithm}. "
-            f"Downloading it is not supported yet; only {SUPPORTED_EDGE_KEY_ALGORITHM} keys are."
+            f"Downloading it is not supported yet; only {' and '.join(SUPPORTED_EDGE_KEY_ALGORITHMS)} keys are."
         )
-    return edge_key["key"]
+    return edge_key
 
 
 def build_keystore_results(
@@ -2250,8 +2322,8 @@ def certificate_keystore_download_command(
         )
 
     certificate = client.get_certificate_by_id(certificate_id)
-    public_key = edge_public_key(client, certificate_id, certificate.get("dekHash"))
-    body = build_keystore_request_body(export_format, seal_passphrase(passphrase, public_key))
+    edge_key = edge_encryption_key(client, certificate_id, certificate.get("dekHash"))
+    body = build_keystore_request_body(export_format, seal_passphrase(passphrase, edge_key))
     content = client.export_keystore(certificate_id, body)
     files = keystore_files(content, export_format, keystore_base_name(certificate, certificate_id))
     return build_keystore_results(certificate_id, export_format, files, from_setting=not args.get("passphrase"))

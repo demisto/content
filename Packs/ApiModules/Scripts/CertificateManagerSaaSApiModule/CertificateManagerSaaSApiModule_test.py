@@ -13,6 +13,9 @@ from typing import Any
 
 import demistomock as demisto
 import pytest
+from cryptography.exceptions import InvalidTag
+from cryptography.hazmat.primitives import hpke, serialization
+from cryptography.hazmat.primitives.asymmetric import ec
 from freezegun import freeze_time
 from nacl.public import PrivateKey, SealedBox
 
@@ -41,11 +44,13 @@ from CertificateManagerSaaSApiModule import (
     collection_nodes,
     connection_address,
     days_until_expiry,
+    edge_encryption_key,
     enrich_installations_with_hosts,
     expiry_thresholds,
     extract_list,
     extract_subject_alternative_names,
     fetch_incidents,
+    hpke_seal,
     first_common_name,
     installation_locations,
     normalize_fingerprint,
@@ -344,12 +349,81 @@ def test_client_raise_keystore_error(
 def test_seal_passphrase_round_trip():
     # arrange
     private_key = PrivateKey.generate()
+    edge_key = {"keyAlgorithm": "ED25519", "key": base64.b64encode(bytes(private_key.public_key)).decode()}
 
     # act
-    sealed = seal_passphrase("dummy-passphrase", base64.b64encode(bytes(private_key.public_key)).decode())
+    sealed = seal_passphrase("dummy-passphrase", edge_key)
 
     # assert
     assert SealedBox(private_key).decrypt(base64.b64decode(sealed)) == b"dummy-passphrase"
+
+
+def p384_key_pair() -> tuple[ec.EllipticCurvePrivateKey, bytes]:
+    private_key = ec.generate_private_key(ec.SECP384R1())
+    public = private_key.public_key().public_bytes(serialization.Encoding.X962, serialization.PublicFormat.UncompressedPoint)
+    return private_key, public
+
+
+HPKE_SUITE = hpke.Suite(hpke.KEM.P384, hpke.KDF.HKDF_SHA512, hpke.AEAD.AES_256_GCM)
+
+
+def test_hpke_seal_matches_an_independent_hpke_implementation():
+    # arrange
+    private_key, public = p384_key_pair()
+
+    # act
+    sealed = hpke_seal(public, info=b"company-1", aad=b"", plaintext=b"dummy-passphrase")
+
+    # assert
+    # cryptography's HPKE takes no associated data, so it can check the key exchange and key schedule only with an empty one.
+    assert HPKE_SUITE.decrypt(sealed, private_key, info=b"company-1") == b"dummy-passphrase"
+    assert len(sealed) == 97 + len(b"dummy-passphrase") + 16, "enc, then the ciphertext and its tag"
+
+
+def test_hpke_seal_binds_the_associated_data():
+    # arrange
+    private_key, public = p384_key_pair()
+
+    # act
+    sealed = hpke_seal(public, info=b"company-1", aad=b"company-1", plaintext=b"dummy-passphrase")
+
+    # assert
+    with pytest.raises(InvalidTag):
+        HPKE_SUITE.decrypt(sealed, private_key, info=b"company-1")
+
+
+def test_seal_passphrase_uses_hpke_with_the_company_id_for_a_vsat_hpke_key(mocker):
+    # arrange
+    _, public = p384_key_pair()
+    edge_key = {"keyAlgorithm": "VSAT_HPKE", "key": base64.b64encode(public).decode(), "companyId": "company-1"}
+    seal = mocker.patch("CertificateManagerSaaSApiModule.hpke_seal", return_value=b"sealed")
+
+    # act
+    sealed = seal_passphrase("dummy-passphrase", edge_key)
+
+    # assert
+    seal.assert_called_once_with(public, info=b"company-1", aad=b"company-1", plaintext=b"dummy-passphrase")
+    assert sealed == base64.b64encode(b"sealed").decode()
+
+
+@pytest.mark.parametrize(
+    "case, algorithm, supported",
+    [
+        ("accepts an ED25519 key", "ED25519", True),
+        ("accepts the VSAT_HPKE key of a current VSatellite", "VSAT_HPKE", True),
+        ("rejects another key type", "RSA", False),
+    ],
+)
+def test_edge_encryption_key(case: str, algorithm: str, supported: bool, client: CertificateManagerClient, mocker):
+    # arrange
+    mocker.patch.object(client, "get_edge_encryption_key", return_value={"keyAlgorithm": algorithm, "key": "a2V5"})
+
+    # act / assert
+    if supported:
+        assert edge_encryption_key(client, "cert-1", "dek-1")["keyAlgorithm"] == algorithm, case
+    else:
+        with pytest.raises(DemistoException, match="only ED25519 and VSAT_HPKE keys are"):
+            edge_encryption_key(client, "cert-1", "dek-1")
 
 
 def test_graphql_read_asks_for_retries_on_throttling_and_server_errors(client: CertificateManagerClient, mocker):
