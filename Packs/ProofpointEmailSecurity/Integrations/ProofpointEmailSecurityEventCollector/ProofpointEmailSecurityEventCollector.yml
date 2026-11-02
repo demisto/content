@@ -63,6 +63,17 @@ configuration:
   section: Collect
   required: false
   defaultvalue: "true"
+- display: Events Fetch Interval
+  defaultvalue: '1'
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
 script:
   script: ""
   type: python
@@ -102,7 +113,7 @@ script:
       - "true"
       - "false"
       defaultValue: "false"
-  dockerimage: demisto/netutils:1.0.0.10187688
+  dockerimage: demisto/netutils:1.0.0.14169403
   longRunning: true
   isfetchevents: true
   subtype: python3
