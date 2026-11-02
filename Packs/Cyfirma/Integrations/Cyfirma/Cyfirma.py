@@ -300,6 +300,7 @@ class Client(BaseClient):
             "subcategory": event.get("subCategory", ""),
             "dbotMirrorId": str(event.get("alertId") or alert_details.get("uid") or ""),
             "sourceBrand": "CYFIRMA",
+            "labels": [],
             "CustomFields": self._populate_custom_fields(data=event),
         }
 
@@ -308,7 +309,7 @@ class Client(BaseClient):
 
         Args:
             params: Base query parameters (size, after, includeThirdParty, ...).
-            alerts_to_fetch: Mapping of alert-type code (AS, BI, DW, SP, CUS, EMP, PUB) to
+            alerts_to_fetch: Mapping of alert-type code (AS, BI, DW, SP) to
                 a boolean indicating whether that type should be fetched.
 
         Returns:

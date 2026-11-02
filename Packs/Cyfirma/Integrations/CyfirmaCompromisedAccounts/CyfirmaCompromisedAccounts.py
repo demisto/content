@@ -147,6 +147,7 @@ class Client(BaseClient):
             "subcategory": event.get("subCategory", ""),
             "dbotMirrorId": event.get("uid", ""),
             "sourceBrand": "CYFIRMA",
+            "labels": [],
             "CustomFields": self._populate_custom_fields(data=event),
         }
 

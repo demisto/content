@@ -277,8 +277,8 @@ def parse_pattern(pattern: str) -> tuple[str, str, dict[str, str]]:
                 break
 
     if not value:
-        match = _PATTERN_VALUE.search(pattern)
-        value = match.group(1) if match else ""
+        value_match = _PATTERN_VALUE.search(pattern)
+        value = value_match.group(1) if value_match else ""
 
     value = value.replace("\\'", "'").replace("\\\\", "\\")
 
@@ -465,6 +465,7 @@ class Client(BaseClient):
             "stixid": obj.get("id"),
             "description": obj.get("description", ""),
             "tags": tags,
+            "labels": [],
             "trafficlightprotocol": tlp_color or "",
             "aliases": _as_list(obj.get("aliases")),
         }
