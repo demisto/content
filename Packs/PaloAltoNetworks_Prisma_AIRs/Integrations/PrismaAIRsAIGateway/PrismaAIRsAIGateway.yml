@@ -1431,7 +1431,7 @@ script:
     description: Lists AI Gateway workspaces and their IDs. Use this to discover the workspace_id values required by the data-plane list commands.
     arguments:
     - name: plane
-      description: Which plane to read from. 'data' (default) returns only active workspaces the service account is scoped to; 'admin' enumerates the whole tenant.
+      description: The plane to read from. Possible values are data or admin. The default is data, which returns only active workspaces the service account is scoped to. The admin value enumerates the entire tenant.
       auto: PREDEFINED
       predefined:
       - data
