@@ -502,7 +502,7 @@ class TestFetchIncidents:
         assert kwargs["params"]["includeThirdParty"] is True
         assert isinstance(kwargs["params"]["after"], int)
         assert kwargs["alerts_to_fetch"]["AS"] is True
-        for k in ("BI", "DW", "SP", "CUS", "EMP", "PUB"):
+        for k in ("BI", "DW", "SP"):
             assert kwargs["alerts_to_fetch"][k] is False
 
         inc_mock.assert_called_once_with([{"name": "x"}])

@@ -82,11 +82,7 @@ def _kv_fields(data: dict, skip: frozenset | set = frozenset()) -> list[dict]:
     Returns:
         A list of ``{"fields": <Capitalized key>, "values": <value>}`` rows.
     """
-    return [
-        {"fields": key.capitalize(), "values": value}
-        for key, value in data.items()
-        if key not in skip
-    ]
+    return [{"fields": key.capitalize(), "values": value} for key, value in data.items() if key not in skip]
 
 
 def _safe_join(value: Any, sep: str = ",") -> str:
@@ -196,12 +192,8 @@ class Client(BaseClient):
                 {"fields": "Objectid", "values": event_details.get("uid", "")},
             ]
             + generic,
-            "cyfirmanetworkattributes": _kv_fields(
-                event_details.get("networkAttributes", {})
-            ),
-            "cyfirmadigitalfootprints": self._build_sub_category_data_fields(
-                event_details, sub_category
-            ),
+            "cyfirmanetworkattributes": _kv_fields(event_details.get("networkAttributes", {})),
+            "cyfirmadigitalfootprints": self._build_sub_category_data_fields(event_details, sub_category),
         }
 
         deep_fake_details = event_details.get("deepFakeDetails")
@@ -209,14 +201,10 @@ class Client(BaseClient):
             result["cyfirmadeepfakedetails"] = _kv_fields(deep_fake_details)
 
         if sub_category == "DOMAIN_IP_VULNERABILITY":
-            result["cyfirmavulnerabilities"] = self._vulnerability_fields(
-                event_details.get("vulnerabilities", [])
-            )
+            result["cyfirmavulnerabilities"] = self._vulnerability_fields(event_details.get("vulnerabilities", []))
         return result
 
-    def _build_sub_category_data_fields(
-        self, alert_details: dict, sub_category: str
-    ) -> list:
+    def _build_sub_category_data_fields(self, alert_details: dict, sub_category: str) -> list:
         """Build the 'digital footprints' grid based on the alert's sub-category.
 
         Args:
@@ -228,17 +216,11 @@ class Client(BaseClient):
             A list of ``{"fields": ..., "values": ...}`` rows.
         """
         if sub_category == "OPEN_PORTS":
-            ports = [
-                str(p["port"])
-                for p in alert_details.get("portDetails", [])
-                if "port" in p
-            ]
+            ports = [str(p["port"]) for p in alert_details.get("portDetails", []) if "port" in p]
             return [{"fields": "Open Ports", "values": ",".join(ports)}]
 
         if sub_category == "CERTIFICATES":
-            return self._details_fields(
-                alert_details.get("certificateDetails", {}), join_keys={"issuer"}
-            )
+            return self._details_fields(alert_details.get("certificateDetails", {}), join_keys={"issuer"})
 
         if sub_category == "CONFIGURATION":
             return self._details_fields(
@@ -276,9 +258,7 @@ class Client(BaseClient):
         ]
 
     @staticmethod
-    def _details_fields(
-        details: dict, join_keys: set, only_keys: set | None = None
-    ) -> list:
+    def _details_fields(details: dict, join_keys: set, only_keys: set | None = None) -> list:
         """Convert a details dict into grid rows, optionally filtering and joining list values.
 
         Args:
@@ -307,9 +287,7 @@ class Client(BaseClient):
         Returns:
             The incident dict (type, name, occurred, severity, rawJSON, custom fields, etc.).
         """
-        occurred_date = _parse_date(
-            event.get("alertCreatedDate") or event.get("lastModifiedDate")
-        )
+        occurred_date = _parse_date(event.get("alertCreatedDate") or event.get("lastModifiedDate"))
         alert_details = event.get("alertDetails", event)
 
         return {
@@ -345,10 +323,7 @@ class Client(BaseClient):
 
             while True:
                 response = self.call_api(end_point=end_point, params=request_params)
-                incidents.extend(
-                    self._build_incident_json(event)
-                    for event in response.get("data", [])
-                )
+                incidents.extend(self._build_incident_json(event) for event in response.get("data", []))
                 if response.get("metaData", {}).get("isLast", True):
                     break
                 request_params["page"] += 1
@@ -575,9 +550,7 @@ def fetch_incidents(client: Client, first_fetch: str, max_fetch: int) -> None:
         "after": int(start_fetch.timestamp() * 1000),
         "includeThirdParty": argToBoolean(params.get("includeThirdParty", False)),
     }
-    incidents = client.get_incidents(
-        params=request_params, alerts_to_fetch=alerts_to_fetch
-    )
+    incidents = client.get_incidents(params=request_params, alerts_to_fetch=alerts_to_fetch)
 
     demisto.incidents(incidents)
     demisto.setLastRun({"last_fetch": fetch_started.strftime(DATE_FORMAT)})
@@ -589,9 +562,7 @@ def command_alertdetailextraction() -> None:
     Reads the ``cyfirmaalertdetails`` custom field of the current incident and writes it
     to ``Cyfirma.Alert`` as a ``{field: value}`` dict. Exits with an error if the grid is empty.
     """
-    rows = (demisto.incident().get("CustomFields") or {}).get(
-        "cyfirmaalertdetails"
-    ) or []
+    rows = (demisto.incident().get("CustomFields") or {}).get("cyfirmaalertdetails") or []
     if not rows:
         return_error("cyfirmaalertdetails is empty on this incident")
 

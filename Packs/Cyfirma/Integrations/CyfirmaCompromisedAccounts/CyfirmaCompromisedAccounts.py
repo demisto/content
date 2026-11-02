@@ -1,5 +1,5 @@
 """CYFIRMA Compromised Accounts integration for Cortex XSOAR.
- 
+
 Fetches customer-account, compromised-employee and public-account leak as incidents.
 """
 
