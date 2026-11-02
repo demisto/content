@@ -1,6 +1,6 @@
 {
-    "name": "Azure Storage Table",
-    "description": "Create and Manage Azure Storage Tables and Entities.",
+    "name": "Azure Storage Table (Deprecated)",
+    "description": "Deprecated. Use Azure instead.",
     "support": "xsoar",
     "currentVersion": "1.0.29",
     "author": "Cortex XSOAR",
