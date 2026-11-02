@@ -1466,7 +1466,7 @@ script:
       required: true
       description: The workspace UUID or slug.
     - name: plane
-      description: Which plane to read from. 'data' (default) reads workspaces the service account is scoped to; 'admin' reads a workspace outside your workspace scope.
+      description: The plane to read from. Possible values are data or admin. The default is data, which reads workspaces the service account is scoped to. The admin value reads a workspace outside your workspace scope.
       auto: PREDEFINED
       predefined:
       - data
