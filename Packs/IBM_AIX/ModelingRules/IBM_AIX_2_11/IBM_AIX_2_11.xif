@@ -1,5 +1,4 @@
 [MODEL: dataset="ibm_aix_raw"]
-/* Each filter matches both headers: 'Message forwarded from <host>: <process>' and '<host> <process>' */
 /* syslog daemon messages */
 filter _raw_log ~= "\d{2}:\d{2}:\d{2}\s+(?:Message\s+forwarded\s+from\s+)?[^\s:]+\:?\s+syslog:"
 | alter
