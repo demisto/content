@@ -185,8 +185,8 @@ def test_client_incidents_list_maps_params(requests_mock):
     Given: a client and a mocked GET incidents endpoint.
     When: incidents_list is called with every filter.
     Then: monitor_id goes in the path, the filters go in the query string with the documented names, and the token
-          travels only in the apiToken header (A5b-MON-02: header option documented by the KELA Monitor API; the B0
-          assertion that the token is in the query string was replaced because that behaviour was removed on purpose).
+          travels in the apiToken query parameter, not in a header (the KELA Monitor API rejects an apiToken header
+          with HTTP 401; verified live on 2026-11-03).
     """
     requests_mock.get(f"{BASE_URL}/monitor_id/{MON}/incidents", json={"data": {"incidents": [], "scrollId": None}})
     make_client().incidents_list(
@@ -201,22 +201,22 @@ def test_client_incidents_list_maps_params(requests_mock):
         "to_date": ["200"],
         "severities": ["3,4"],
         "first_appearance": ["true"],
+        "apiToken": [TOKEN],
     }
-    assert requests_mock.last_request.headers["apiToken"] == TOKEN
-    assert TOKEN not in requests_mock.last_request.url
+    assert "apiToken" not in requests_mock.last_request.headers
 
 
 def test_client_scroll_encodes_scroll_id_in_path(requests_mock):
     """
     Given: a scroll ID with characters that are special in a URL path (base64 style, ending in '=').
     When: incidents_scroll runs.
-    Then: the scroll ID is percent-encoded in the path and the token is sent in the apiToken header, not in the URL.
+    Then: the scroll ID is percent-encoded in the path and the token is sent in the apiToken query parameter.
     """
     requests_mock.get(f"{BASE_URL}/monitor_id/{MON}/incidents/scroll/AbC%2B%2F%3D", json={"data": {"incidents": []}})
     result = make_client().incidents_scroll(MON, "AbC+/=")
     assert result == {"incidents": []}
-    assert parse_qs(urlparse(requests_mock.last_request.url).query) == {}
-    assert requests_mock.last_request.headers["apiToken"] == TOKEN
+    assert parse_qs(urlparse(requests_mock.last_request.url).query) == {"apiToken": [TOKEN]}
+    assert "apiToken" not in requests_mock.last_request.headers
 
 
 @pytest.mark.parametrize(
@@ -1449,12 +1449,12 @@ def test_stage10_yaml_documents_every_connection_parameter():
     A3-MON-11, A7-MON-01.
     Given: the integration YAML.
     When: its parameters are read.
-    Then: every parameter has a tooltip, and the token tooltip names the header, the dedicated user and API access.
+    Then: every parameter has a tooltip, and the token tooltip names the query parameter, the dedicated user and API access.
     """
     yml = _yaml()
     assert [p["name"] for p in yml["configuration"] if not p.get("additionalinfo")] == []
     token = next(p for p in yml["configuration"] if p["name"] == "credentials")["additionalinfo"]
-    assert "header" in token
+    assert "query parameter" in token
     assert "dedicated" in token
     assert "API access" in token
 

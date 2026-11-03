@@ -20,7 +20,7 @@ configuration:
   hiddenusername: true
   required: true
   section: Connect
-  additionalinfo: API token of a dedicated KELA platform user, generated under Settings (bottom-left) > API access. The token is per user and can be rotated. It is sent in the apiToken HTTP header (not in the URL) and is masked in the integration's logs and error messages.
+  additionalinfo: API token of a dedicated KELA platform user, generated under Settings (bottom-left) > API access. The token is per user and can be rotated. It is sent as the apiToken query parameter of each request and is masked in the integration's logs and error messages.
 - display: Monitor ID
   name: monitor_id
   type: 0

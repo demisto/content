@@ -4,7 +4,7 @@ Fetches the incidents of your KELA Monitor into Cortex and lets you list them by
 
 ### Configuration steps
 
-1. **API Token**: use a dedicated KELA platform user for the integration. The token is per user and can be rotated. Generate it in the KELA platform under **Settings** (bottom-left) > **API access** (also available from the user menu as **Generate API Key**). It is sent in the `apiToken` HTTP header, not in the URL, and the integration masks it in its logs and error messages.
+1. **API Token**: use a dedicated KELA platform user for the integration. The token is per user and can be rotated. Generate it in the KELA platform under **Settings** (bottom-left) > **API access** (also available from the user menu as **Generate API Key**). It is sent as the `apiToken` query parameter of each request, and the integration masks it in its logs and error messages.
 2. **Monitor ID**: open your Monitor in the KELA platform and copy the `monitorId` value from the page URL. One instance connects to one Monitor.
 3. Select **Fetch incidents** and leave **Incident type** empty: the KELA Monitor classifier and incoming mapper set one incident type per KELA incident type and fill the KELA Monitor incident fields.
 4. **Incident types to fetch** (required when **Fetch incidents** is selected): choose the types your Monitor license includes. `botnets` is the Compromised Accounts type of the KELA platform. Intelligence Report and Data-Loss Detection are not fetched. Each type is fetched with its own position, so adding a type later does not fetch the others again.

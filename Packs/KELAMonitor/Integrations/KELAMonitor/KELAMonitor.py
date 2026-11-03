@@ -9,9 +9,9 @@ from urllib.parse import quote, quote_plus
 """ KELA Monitor integration for Cortex.
 
 Reads incidents of a KELA Monitor through the KELA Monitor API (https://platform.ke-la.com/api/monitor).
-The API token is sent in the `apiToken` HTTP header, which the KELA Monitor API accepts as an alternative to the
-`apiToken` query parameter, so it is not part of the request URL. It is also registered for log masking and removed
-from the error messages this integration reports.
+The API token is sent as the `apiToken` query parameter, the authentication the KELA Monitor API accepts (an
+`apiToken` HTTP header is rejected with HTTP 401). Because the token is part of the request URL, it is registered for
+log masking and removed, raw and URL-encoded, from every error message and traceback this integration reports.
 """
 
 # region Constants
@@ -19,7 +19,7 @@ VENDOR = "KELA"
 PRODUCT = "Monitor"
 CONTEXT_PREFIX = "KELA.Monitor"
 DEFAULT_BASE_URL = "https://platform.ke-la.com/api/monitor"
-API_TOKEN_HEADER = "apiToken"
+API_TOKEN_PARAM = "apiToken"
 
 # Values of the incident_type query parameter that this integration fetches.
 # "reports" (Intelligence Report) and "dld_source_codes" (Data-Loss Detection) are not fetched yet.
@@ -293,10 +293,11 @@ class ForbiddenError(DemistoException):
 
 
 class Client(BaseClient):
-    """All HTTP traffic goes through BaseClient._http_request. The token travels in the apiToken header only."""
+    """All HTTP traffic goes through BaseClient._http_request. The token travels in the apiToken query parameter."""
 
     def __init__(self, base_url: str, api_token: str, verify: bool, proxy: bool):
-        super().__init__(base_url=base_url.rstrip("/"), verify=verify, proxy=proxy, headers={API_TOKEN_HEADER: api_token})
+        super().__init__(base_url=base_url.rstrip("/"), verify=verify, proxy=proxy)
+        self._api_token = api_token
         add_sensitive_log_strs(api_token)
 
     @staticmethod
@@ -328,7 +329,7 @@ class Client(BaseClient):
         response = self._http_request(
             method="GET",
             url_suffix=url_suffix,
-            params=params,
+            params={**params, API_TOKEN_PARAM: self._api_token},
             retries=HTTP_RETRIES,
             status_list_to_retry=[429],
             backoff_factor=HTTP_BACKOFF_FACTOR,
@@ -371,7 +372,7 @@ class Client(BaseClient):
 
 # region Commands
 def validate_server_url(url: str) -> str:
-    """The token travels in a header, so only https is accepted."""
+    """The token travels in the request URL, so only https is accepted."""
     if not url.strip().lower().startswith("https://"):
         raise DemistoException("Server URL must start with https://.")
     return url.strip()

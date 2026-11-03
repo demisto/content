@@ -36,7 +36,7 @@ The KELA Monitor API uses three terms:
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | Base URL of the KELA Monitor API. | True |
-| API Token | API token of a dedicated KELA platform user, generated under Settings (bottom-left) > API access. The token is per user and can be rotated. It is sent in the apiToken HTTP header (not in the URL) and is masked in the integration's logs and error messages. | True |
+| API Token | API token of a dedicated KELA platform user, generated under Settings (bottom-left) > API access. The token is per user and can be rotated. It is sent as the apiToken query parameter of each request and is masked in the integration's logs and error messages. | True |
 | Monitor ID | Numeric ID of the monitor to connect to. It appears in the Monitor module URL, under the monitorId parameter. Create one instance per monitor. | True |
 | Trust any certificate (not secure) | When selected, certificates are not checked (not secure). Use it only for testing. | False |
 | Use system proxy settings | When selected, requests go through the proxy configured on the server or engine. | False |
@@ -89,7 +89,7 @@ With **Mask sensitive data** selected (default), passwords, cookies, tokens, ses
 - `kela-monitor-incident-list` prints every returned incident in the War Room: keep `limit` at 100 or less when you run it manually.
 - The `monitor_id` argument can query any monitor the token's user can access, not only the instance's monitor. Use a dedicated user that only has the monitors this instance needs.
 - `source_url` (hacking discussions, instant messaging) points to the original post and may be an .onion address. Do not open it from the corporate network. The `image`, `preview`, `pdf` and `media.url` links are signed and expire.
-- The Server URL must use https. The token is sent in the `apiToken` header, registered for log masking and removed from the error messages of the integration.
+- The Server URL must use https. The token is sent as the `apiToken` query parameter, which is the only form the KELA Monitor API accepts, so it is part of each request URL. The integration registers it for log masking and removes it, raw and URL-encoded, from its error messages and tracebacks.
 
 ## Known limitations
 
