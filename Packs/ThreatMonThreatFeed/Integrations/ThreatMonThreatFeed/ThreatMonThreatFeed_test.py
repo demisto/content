@@ -433,10 +433,13 @@ def test_seen_cache_round_trip_and_prune():
     cache.add("bbbbbbbbbbbb", 7200 + 20)
     cache.add("cccccccccccc", 10800 + 5)
     restored = feed.SeenCache(json.loads(json.dumps(cache.to_state())))
-    assert len(restored) == 3 and "bbbbbbbbbbbb" in restored
+    assert len(restored) == 3
+    assert "bbbbbbbbbbbb" in restored
 
     restored.prune(10800)  # drops the bucket [7200, 10800) only
-    assert len(restored) == 1 and "cccccccccccc" in restored and "aaaaaaaaaaaa" not in restored
+    assert len(restored) == 1
+    assert "cccccccccccc" in restored
+    assert "aaaaaaaaaaaa" not in restored
 
 
 def test_dedup_key_is_compact_and_distinguishes_republication():
@@ -513,7 +516,8 @@ def test_get_indicators_command(context):
 
     result = feed.get_indicators_command(server, {"feedTags": "x"}, {"limit": "3", "collection": "IP Address Indicators"})
 
-    assert "1.1.1.0" in result.readable_output and "1.1.1.3" not in result.readable_output
+    assert "1.1.1.0" in result.readable_output
+    assert "1.1.1.3" not in result.readable_output
     assert len(result.raw_response) == 3
     assert "ctx" not in context  # does not touch the fetch state
 
