@@ -1409,6 +1409,7 @@ def test_format_raw_entity_for_xsoar_incident():
         "assets": ["i-12345"],
         "typedAssets": [{"value": "i-12345", "type": "HOST"}],
         "observables": ["10.0.0.1"],
+        "typedObservables": [{"value": "10.0.0.1", "type": "IP"}],
         "incidentFindings": ["Instance i-12345 connected to 10.0.0.1"],
     }
     _format_raw_entity_for_xsoar(incident)
@@ -1417,6 +1418,7 @@ def test_format_raw_entity_for_xsoar_incident():
     assert incident["assets"] == ["i-12345"]
     assert incident["typedAssets"] == [{"type": "HOST", "value": "i-12345"}]
     assert incident["observables"] == [{"value": "10.0.0.1"}]
+    assert incident["typedObservables"] == [{"type": "IP", "value": "10.0.0.1"}]
     assert "vegaIncidentFindings" in incident
     assert "background:#000000" in incident["vegaIncidentFindings"]
     assert "i-12345" in incident["vegaIncidentFindings"]

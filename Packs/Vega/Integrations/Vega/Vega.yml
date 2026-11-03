@@ -211,7 +211,7 @@ configuration:
   - INVESTIGATING
   - COMPLETED
   - FAILED
-  defaultvalue: NEW,INVESTIGATING,COMPLETED,FAILED
+  defaultvalue: COMPLETED,FAILED
 - display: Incident Verdicts to fetch
   name: incident_verdicts
   type: 16

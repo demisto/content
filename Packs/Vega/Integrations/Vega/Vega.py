@@ -48,6 +48,7 @@ def _suppress_noisy_http_integration_logs() -> None:
 
 
 # ? ------------------------------------CONSTANTS --------------------------------------
+USER_AGENT = "Cortex_Xsoar/1.1.0"
 VEGA_SEVERITY_TO_XSOAR = {
     "LOW": IncidentSeverity.LOW,
     "MEDIUM": IncidentSeverity.MEDIUM,
@@ -318,16 +319,19 @@ TEST_CONNECTION_ACCESS_KEY_ID_ERROR = "Incorrect Access Key ID. Please check you
 GET_ALERTS_QUERY = (
     "query GetAlerts($alertNames: [String!], $alertIds: [ID!], $vegaAlertIds: [String!], "
     "$alertSeverities: [AlertSeverity!], $statuses: [AlertStatus!], $detectionIds: [ID!], "
+    "$detectionVersionIds: [ID!], $detectionModes: [DetectionMode!], "
     "$dataSourceNames: [String!], $alertVerdicts: [AlertVerdict!], $hasRelatedIncidents: Boolean, "
     "$from: Time, $to: Time, $updatedFrom: Time, $updatedTo: Time, $originType: AlertOriginType, "
     "$sortBy: AlertSortFieldPublic, $sortOrder: SortOrderPublic, $limit: Int, $offset: Int) { "
     " getAlerts(alertNames: $alertNames, alertIds: $alertIds, vegaAlertIds: $vegaAlertIds, "
     "alertSeverities: $alertSeverities, statuses: $statuses, detectionIds: $detectionIds, "
+    "detectionVersionIds: $detectionVersionIds, detectionModes: $detectionModes, "
     "dataSourceNames: $dataSourceNames, alertVerdicts: $alertVerdicts, "
     "hasRelatedIncidents: $hasRelatedIncidents, from: $from, to: $to, updatedFrom: $updatedFrom, "
     "updatedTo: $updatedTo, originType: $originType, sortBy: $sortBy, sortOrder: $sortOrder, "
     "limit: $limit, offset: $offset) { "
-    "  alerts { id vegaAlertId detectionId name description severity status "
+    "  alerts { id vegaAlertId detectionId detectionVersionId detectionMode name description "
+    "   severity status "
     "   assignee { userId displayName email } "
     "   assignees { userId displayName email } "
     "   dataSources createdAt updatedAt "
@@ -377,12 +381,13 @@ GET_INCIDENTS_QUERY = (
     "userStatuses: $userStatuses, verdicts: $verdicts, assets: $assets, from: $from, to: $to, "
     "updatedFrom: $updatedFrom, updatedTo: $updatedTo, sortBy: $sortBy, sortOrder: $sortOrder, "
     "limit: $limit, offset: $offset) { "
-    "  incidents { id vegaUniqueIncidentId name createdBy createdAt lastUpdated severity "
-    "   investigationStatus userStatus dataSources verdict verdictReasoning "
+    "  incidents { id vegaUniqueIncidentId name createdBy createdAt lastUpdated resolvedAt severity "
+    "   investigationStatus userStatus dataSources verdict verdictReasoning verdictAgreement "
     "   assignee { userId displayName email } "
     "   assignees { userId displayName email } "
     "   comments { text addedBy addedAt } "
-    "   incidentSummary incidentFindings assets typedAssets { value type } observables alertsCount "
+    "   incidentSummary incidentFindings assets typedAssets { value type } "
+    "   observables typedObservables { value type } alertsCount "
     "   alerts { alertId name createdAt } "
     "   recommendedActions { name description actionKey targetParams } "
     "   investigationPlan { stepName stepConclusion cells { cellName query queryId } } "
@@ -877,7 +882,12 @@ class Client(BaseClient):
                 base_url = f"{base_url}/api/v1"
             base_url = f"{base_url}/"
 
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        super().__init__(
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            headers={"User-Agent": USER_AGENT},
+        )
         _suppress_noisy_http_integration_logs()
         self.access_key = access_key
         self.access_key_id = access_key_id
@@ -3172,6 +3182,8 @@ def _format_raw_entity_for_xsoar(raw: dict) -> None:
     observables = raw.get("observables")
     if "typedAssets" in raw:
         raw["typedAssets"] = _format_typed_assets_for_grid(raw.get("typedAssets"))
+    if "typedObservables" in raw:
+        raw["typedObservables"] = _format_typed_assets_for_grid(raw.get("typedObservables"))
     if "dataSources" in raw:
         raw["dataSources"] = _format_string_list_for_grid(raw.get("dataSources"))
     if "observables" in raw:
