@@ -28,8 +28,9 @@ configuration:
   name: insecure
   type: 8
   required: false
-description: Create and Manage Azure Storage Tables and Entities.
-display: Azure Storage Table
+deprecated: true
+description: Deprecated. Use the Azure integration instead.
+display: Azure Storage Table (Deprecated)
 name: Azure Storage Table
 script:
   commands:

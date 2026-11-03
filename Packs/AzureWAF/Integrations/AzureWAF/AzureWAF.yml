@@ -93,11 +93,9 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: |-
-  The Azure WAF (Web Application Firewall) integration provides centralized protection of your web applications from common exploits and vulnerabilities.
-  It enables you to control policies that are configured in the Azure Firewall management platform, and allows you to add, delete, or update policies,
-  and also to get details of a specific policy or a list of policies.
-display: Azure Web Application Firewall
+deprecated: true
+description: Deprecated. Use the Azure integration instead.
+display: Azure Web Application Firewall (Deprecated)
 name: AzureWAF
 script:
   commands:

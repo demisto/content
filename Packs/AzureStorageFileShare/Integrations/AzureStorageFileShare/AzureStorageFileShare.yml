@@ -23,8 +23,9 @@ configuration:
   type: 8
   required: false
   section: Connect
-description: Create and Manage Azure FileShare Files and Directories.
-display: Azure Storage FileShare
+deprecated: true
+description: Deprecated. Use the Azure integration instead.
+display: Azure Storage FileShare (Deprecated)
 name: Azure Storage FileShare
 script:
   commands:

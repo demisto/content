@@ -75,8 +75,9 @@ configuration:
   required: false
   section: Connect
   advanced: true
-description: Azure Firewall is a cloud-native and intelligent network firewall security service that provides breed threat protection for cloud workloads running in Azure. It's a fully stateful, firewall as a service, with built-in high availability and unrestricted cloud scalability.
-display: Azure Firewall
+deprecated: true
+description: Deprecated. Use the Azure integration instead.
+display: Azure Firewall (Deprecated)
 name: Azure Firewall
 script:
   commands:

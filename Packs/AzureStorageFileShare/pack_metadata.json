@@ -1,8 +1,8 @@
 {
-    "name": "Azure Storage FileShare",
-    "description": "Create and Manage Azure FileShare Files and Directories.",
+    "name": "Azure Storage FileShare (Deprecated)",
+    "description": "Deprecated. Use Azure instead.",
     "support": "xsoar",
-    "currentVersion": "1.0.35",
+    "currentVersion": "1.0.36",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

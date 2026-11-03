@@ -322,13 +322,6 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "AzureWAF",
-            "instance_names": "azure_waf_prod",
-            "playbookID": "Azure WAF - Test",
-            "fromversion": "5.0.0",
-            "memory_threshold": 300
-        },
-        {
             "integrations": [
                 "Azure Active Directory Identity Protection",
                 "Core REST API"
@@ -429,18 +422,8 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "Azure Storage FileShare",
-            "playbookID": "playbook-AzureStorageFileShare-Test",
-            "fromversion": "6.0.0"
-        },
-        {
             "integrations": "Azure Storage Queue",
             "playbookID": "playbook-AzureStorageQueue-Test",
-            "fromversion": "6.0.0"
-        },
-        {
-            "integrations": "Azure Storage Table",
-            "playbookID": "playbook-AzureStorageTable-Test",
             "fromversion": "6.0.0"
         },
         {
@@ -5545,11 +5528,6 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "Azure Firewall",
-            "playbookID": "playbook-AzureFirewall_Test",
-            "fromversion": "6.2.0"
-        },
-        {
             "playbookID": "HttpV2-test",
             "fromversion": "6.5.0",
             "scripts": [
@@ -6183,7 +6161,6 @@
         "checkpointdome9": "No instance - No license",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "FortiSIEMV2": "No instance",
-        "Azure Firewall": "No instance",
         "Vertica": "No instance issue 45719",
         "Ipstack": "No instance - Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447 - CRTX-43182",
@@ -6204,9 +6181,7 @@
         "SOCRadarThreatFusion": "No instance - developed by partner",
         "NetskopeAPIv1": "No instance - developed by Qmasters",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
-        "Azure Storage Table": "No instance - developed by Qmasters",
         "Azure Storage Queue": "No instance - developed by Qmasters",
-        "Azure Storage FileShare": "No instance - developed by Qmasters",
         "Azure Storage Container": "No instance - developed by Qmasters",
         "VMware Workspace ONE UEM (AirWatch MDM)": "No instance - developed by crest",
         "ServiceDeskPlus (On-Premise)": "No instance",
