@@ -32,6 +32,16 @@
         "marketplacev2",
         "platform"
     ],
+    "supportedModules": [
+        "asm",
+        "exposure_management",
+        "agentix",
+        "cloud",
+        "cloud_runtime_security",
+        "cloud_posture",
+        "xsiam",
+        "edr"
+    ],
     "dependencies": {
         "CommonPlaybooks": {
             "mandatory": true

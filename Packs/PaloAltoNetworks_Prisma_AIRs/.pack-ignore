@@ -9,3 +9,6 @@ ignore=PB106
 
 [file:playbook-PaloAltoNetworks_Prisma_AIRs_Runtime_API_Key_Expiration_Check.yml]
 ignore=PB106
+
+[file:PrismaAIRsAIGateway.yml]
+ignore=BA129

@@ -129,7 +129,7 @@ Retrieves a guardrail by ID from the AI Gateway control plane.
 | PrismaAIRs.AIGatewayGuardrail.target | String | The guardrail target. |
 | PrismaAIRs.AIGatewayGuardrail.status | String | The guardrail status. |
 | PrismaAIRs.AIGatewayGuardrail.workspace_id | String | The workspace ID. |
-| PrismaAIRs.AIGatewayGuardrail.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.AIGatewayGuardrail.created_at | Date | The date and time when the guardrail was created, in ISO 8601 format (for example, 2024-01-15T12:34:56Z). |
 
 ### prisma-airs-aigateway-guardrails-update
 
@@ -557,6 +557,7 @@ Lists deployments on the AI Gateway admin plane.
 | PrismaAIRs.AIGatewayDeployment.slug | String | The deployment slug. |
 | PrismaAIRs.AIGatewayDeployment.type | String | The deployment type. |
 | PrismaAIRs.AIGatewayDeployment.status | String | The deployment status. |
+| PrismaAIRs.AIGatewayDeployment.connection_status | String | The deployment connection health (for example, healthy or unknown). |
 
 ### prisma-airs-aigateway-deployments-create
 
@@ -1862,7 +1863,7 @@ Bulk-sets which workspaces may use an MCP integration (AI Gateway admin plane). 
 | --- | --- | --- |
 | mcp_integration_id | The MCP integration ID. | Required |
 | workspaces | A JSON array of workspace bindings, each: {"id": ..., "enabled": true\|false}. | Optional |
-| global_workspace_access | A JSON object toggling global workspace access, e.g. {"enabled": false}. | Optional |
+| global_workspace_access | A JSON object that toggles global workspace access, for example, {"enabled": false}. | Optional |
 | override_existing_workspace_access | Whether to replace existing workspace access rather than merge. Possible values are: true, false. | Optional |
 
 #### Context Output
@@ -1882,7 +1883,7 @@ Lists AI Gateway workspaces and their IDs. Use this to discover the workspace_id
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| plane | Which plane to read from. 'data' (default) returns only active workspaces the service account is scoped to; 'admin' enumerates the whole tenant. Possible values are: data, admin. Default is data. | Optional |
+| plane | The plane to read from. Possible values are data or admin. The default is data, which returns only active workspaces the service account is scoped to. The admin value enumerates the entire tenant. Possible values are: data, admin. Default is data. | Optional |
 | status | Filter by lifecycle state. Omitting this returns active workspaces only; archived workspaces are invisible unless requested explicitly. Possible values are: active, archived. | Optional |
 
 #### Context Output
@@ -1975,7 +1976,7 @@ Gets one AI Gateway workspace by UUID or slug, including its settings blocks.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | workspace_ref | The workspace UUID or slug. | Required |
-| plane | Which plane to read from. 'data' (default) reads workspaces the service account is scoped to; 'admin' reads a workspace outside your workspace scope. Possible values are: data, admin. Default is data. | Optional |
+| plane | The plane to read from. Possible values are data or admin. The default is data, which reads workspaces the service account is scoped to. The admin value reads a workspace outside your workspace scope. Possible values are: data, admin. Default is data. | Optional |
 
 #### Context Output
 
@@ -2002,7 +2003,7 @@ Creates an AI Gateway workspace (admin plane). scope_name must name an IAM scope
 | scope_name | The name of an existing SCM IAM scope that grants access to this workspace. Must already exist (see prisma-airs-aigateway-scopes-create). | Required |
 | description | The workspace description. | Optional |
 | icon | The workspace icon identifier. | Optional |
-| defaults | Default settings for the workspace as a JSON object (e.g. {"config_id": "...", "allow_config_override": true, "metadata": {}}). | Optional |
+| defaults | The default settings for the workspace as a JSON object (for example, {"config_id": "...", "allow_config_override": true, "metadata": {}}). | Optional |
 | users | Comma-separated list of user IDs to seed as workspace members. | Optional |
 | usage_limits | Usage-limit definitions as a JSON array. | Optional |
 | rate_limits | Rate-limit definitions as a JSON array. | Optional |
