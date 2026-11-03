@@ -26,6 +26,7 @@ Use OpenLDAP or Active Directory user authentication groups to set user roles in
     * **Group Membership Identifier Attribute**
     * **User Object Class**
     * **User Unique Identifier Attribute**
+    * **User Matching Attributes** (for Active Directory authentication)
     * **Page size**
     * **Connection Type (None, SSL or Start TLS)**
     * **SSL Version (None, TLS, TLSv1, TLSv1_1, TLSv1_2, TLS_CLIENT)**
@@ -33,6 +34,11 @@ Use OpenLDAP or Active Directory user authentication groups to set user roles in
     * **Trust any certificate (not secure)**
     * **Use system proxy settings**
 4. Click **Test** to validate the URLs, token, and connection.
+
+For Active Directory authentication, **User Matching Attributes** selects the directory attributes
+used to find the login account. The default (`sAMAccountName,userPrincipalName`) preserves the
+previous behavior. Choose attributes that are unique per user; for OpenLDAP authentication, continue
+to configure **User Unique Identifier Attribute**.
 
 ## Additional Information
 

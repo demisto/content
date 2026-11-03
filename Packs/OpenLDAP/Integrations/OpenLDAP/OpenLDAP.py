@@ -25,11 +25,72 @@ from ldap3.core.exceptions import (
     LDAPSocketReceiveError,
     LDAPStartTLSError,
 )
+from ldap3.utils.conv import escape_filter_chars
 from ldap3.utils.dn import parse_dn
 
 """CONSTANTS"""
 
 MAX_PAGE_SIZE = 2000
+DEFAULT_USER_MATCH_ATTRIBUTES = ["sAMAccountName", "userPrincipalName"]
+ALLOWED_USER_MATCH_ATTRIBUTES = {
+    "sAMAccountName",
+    "userPrincipalName",
+    "mail",
+    "uid",
+    "cn",
+    "employeeID",
+    "employeeNumber",
+}
+FULL_LOGIN_USER_MATCH_ATTRIBUTES = {"userPrincipalName", "mail"}
+
+
+def parse_match_attributes(attributes: str | list[str] | None = None) -> list[str]:
+    """Parse and validate the configured AD user matching attributes."""
+    if attributes is None or attributes == "" or attributes == []:
+        parsed_attributes = DEFAULT_USER_MATCH_ATTRIBUTES.copy()
+    elif isinstance(attributes, str):
+        parsed_attributes = [attribute.strip() for attribute in argToList(attributes) if attribute.strip()]
+    else:
+        parsed_attributes = [attribute.strip() for attribute in attributes if attribute.strip()]
+
+    if not parsed_attributes:
+        parsed_attributes = DEFAULT_USER_MATCH_ATTRIBUTES.copy()
+
+    invalid_attributes = set(parsed_attributes) - ALLOWED_USER_MATCH_ATTRIBUTES
+    if invalid_attributes:
+        invalid_values = ", ".join(sorted(invalid_attributes))
+        allowed_values = ", ".join(sorted(ALLOWED_USER_MATCH_ATTRIBUTES))
+        raise ValueError(
+            "Invalid User Matching Attributes configuration: " f"{invalid_values}. Supported attributes: {allowed_values}."
+        )
+
+    return parsed_attributes
+
+
+def _get_bare_username(logon_name: str) -> str:
+    """Return the short username used by AD attributes other than UPN and mail."""
+    logon_name = logon_name.strip()
+    if "\\" in logon_name:
+        return logon_name.split("\\")[1]
+    if "@" in logon_name:
+        return logon_name.split("@")[0]
+    return logon_name
+
+
+def build_user_search_filter(logon_name: str, match_attributes: str | list[str] | None = None) -> str:
+    """Build an escaped AD user filter from the configured matching attributes."""
+    attributes = parse_match_attributes(match_attributes)
+    bare_username = _get_bare_username(logon_name)
+    filters = []
+
+    for attribute in attributes:
+        value = logon_name if attribute in FULL_LOGIN_USER_MATCH_ATTRIBUTES else bare_username
+        filters.append(f"({attribute}={escape_filter_chars(value)})")
+
+    if len(filters) == 1:
+        return filters[0]
+    return f"(|{''.join(filters)})"
+
 
 """ LDAP Authentication CLIENT """
 
@@ -141,6 +202,7 @@ class LdapClient:
         self._username = kwargs.get("credentials", {}).get("identifier", "")
         self._password = kwargs.get("credentials", {}).get("password", "")
         self._base_dn = kwargs.get("base_dn", "").strip()
+        self._user_match_attributes = parse_match_attributes(kwargs.get("user_match_attributes"))
         self._connection_type = kwargs.get("connection_type", "none").lower()
         self._ssl_version = kwargs.get("ssl_version", "None")
         self._fetch_groups = kwargs.get("fetch_groups", True)
@@ -524,14 +586,7 @@ class LdapClient:
         Surrounding whitespace is stripped to avoid creating duplicate users when a username is
         entered with a leading/trailing space.
         """
-        logon_name = logon_name.strip()
-        ad_username = logon_name
-        if "\\" in logon_name:
-            ad_username = logon_name.split("\\")[1]
-        elif "@" in logon_name:
-            ad_username = logon_name.split("@")[0]
-
-        return ad_username
+        return _get_bare_username(logon_name)
 
     @staticmethod
     def _has_wildcards_in_user_logon(logon_name: str):
@@ -630,7 +685,7 @@ class LdapClient:
                 custom_attributes = self._get_formatted_custom_attributes()
                 search_filter = (
                     f"(&(objectClass={self.USER_OBJECT_CLASS})"
-                    f"({self.USER_IDENTIFIER_ATTRIBUTE}={username}){custom_attributes})"
+                    f"({self.USER_IDENTIFIER_ATTRIBUTE}={escape_filter_chars(username)}){custom_attributes})"
                 )
                 ldap_conn.search(search_base=self._base_dn, search_filter=search_filter, size_limit=1, attributes=attributes)
 
@@ -762,7 +817,6 @@ class LdapClient:
         """
         Implements authenticate and roles command for Active Directory.
         """
-        ad_username = self._get_ad_username(username)
         auto_bind = self._get_auto_bind_value()
 
         with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
@@ -776,7 +830,7 @@ class LdapClient:
             if pull_phone:
                 attributes.append(phone_attribute)
 
-            search_filter = f"(|(sAMAccountName={ad_username})(userPrincipalName={username}))"
+            search_filter = build_user_search_filter(username, self._user_match_attributes)
             ldap_conn_entries = ldap_conn.extend.standard.paged_search(
                 search_base=self._base_dn,
                 search_filter=search_filter,

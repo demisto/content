@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 import pytest
-from OpenLDAP import LdapClient, entries_paged_search
+from OpenLDAP import LdapClient, build_user_search_filter, entries_paged_search, parse_match_attributes
 
 
 class Entry:
@@ -35,6 +35,59 @@ class Connection:
 
 OPENLDAP = "OpenLDAP"
 ACTIVE_DIRECTORY = "Active Directory"
+
+
+class TestUserSearchFilter:
+    @pytest.mark.parametrize(
+        "attributes",
+        [None, "", []],
+    )
+    def test_parse_match_attributes_uses_compatibility_default(self, attributes):
+        assert parse_match_attributes(attributes) == ["sAMAccountName", "userPrincipalName"]
+
+    @pytest.mark.parametrize(
+        ("attributes", "expected"),
+        [
+            ("uid", ["uid"]),
+            ("uid,mail", ["uid", "mail"]),
+            (["cn", "employeeID"], ["cn", "employeeID"]),
+            ([" uid ", " mail "], ["uid", "mail"]),
+        ],
+    )
+    def test_parse_match_attributes(self, attributes, expected):
+        assert parse_match_attributes(attributes) == expected
+
+    def test_parse_match_attributes_rejects_unknown_attributes(self):
+        with pytest.raises(ValueError, match="Invalid User Matching Attributes configuration: unknown"):
+            parse_match_attributes("uid,unknown")
+
+    def test_build_user_search_filter_uses_compatibility_default(self):
+        assert build_user_search_filter("alice@example.com") == ("(|(sAMAccountName=alice)(userPrincipalName=alice@example.com))")
+
+    def test_build_user_search_filter_uses_plain_equality_for_single_attribute(self):
+        assert build_user_search_filter("DOMAIN\\alice@example.com", "uid") == "(uid=alice@example.com)"
+
+    def test_build_user_search_filter_escapes_login_name(self):
+        assert build_user_search_filter("alice*)(mail=\\)", "mail") == r"(mail=alice\2a\29\28mail=\5c\29)"
+
+    def test_build_user_search_filter_uses_full_login_for_mail(self):
+        assert build_user_search_filter("alice@example.com", "uid,mail") == ("(|(uid=alice)(mail=alice@example.com))")
+
+    @patch("OpenLDAP.Connection")
+    def test_openldap_user_filter_escapes_login_name(self, mock_connection):
+        client = LdapClient({"ldap_server_vendor": "OpenLDAP", "host": "server_ip", "base_dn": "dc=example,dc=com"})
+        client._get_auto_bind_value = MagicMock(return_value=True)
+        mock_ldap_connection = mock_connection.return_value.__enter__.return_value
+        mock_ldap_connection.entries = [{"gidNumber": Entry()}]
+
+        client.search_user_data("alice)(uid=*)", ["gidNumber"])
+
+        mock_ldap_connection.search.assert_called_once_with(
+            search_base="dc=example,dc=com",
+            search_filter="(&(objectClass=posixAccount)(uid=alice\\29\\28uid=\\2a\\29))",
+            size_limit=1,
+            attributes=["gidNumber"],
+        )
 
 
 class TestLDAPClient:

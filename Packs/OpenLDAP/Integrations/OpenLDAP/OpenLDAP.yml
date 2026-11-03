@@ -93,6 +93,25 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- additionalinfo: >-
+    Attributes must be unique per user. sAMAccountName, userPrincipalName, and employeeID are
+    common in Active Directory; mail, uid, cn, and employeeNumber depend on your directory schema.
+    Applies to Active Directory authentication; OpenLDAP authentication uses User Unique Identifier
+    Attribute.
+  defaultvalue: sAMAccountName,userPrincipalName
+  display: User Matching Attributes
+  name: user_match_attributes
+  options:
+  - sAMAccountName
+  - userPrincipalName
+  - mail
+  - uid
+  - cn
+  - employeeID
+  - employeeNumber
+  required: false
+  type: 16
+  section: Connect
 - defaultvalue: '500'
   display: Page size
   name: page_size
