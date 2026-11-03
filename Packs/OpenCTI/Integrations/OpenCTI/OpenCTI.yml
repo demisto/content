@@ -831,7 +831,7 @@ script:
     - description: Incident Response name.
       name: name
       required: true
-    - description: Incident Response type name. Use opencti-incident-types-list to find all incident types in OpenCTI.
+    - description: Incident Response type name. Use opencti-incident-response-types-list to find all incident response types in OpenCTI.
       name: incident_response_type
     - auto: PREDEFINED
       description: Incident Response severity.
@@ -866,6 +866,19 @@ script:
     outputs:
     - contextPath: OpenCTI.IncidentResponse.id
       description: New incident response ID.
+      type: String
+  - arguments: []
+    description: Get a list of all incident response types.
+    name: opencti-incident-response-types-list
+    outputs:
+    - contextPath: OpenCTI.IncidentResponseTypes.IncidentResponseTypesList.id
+      description: Incident response type ID.
+      type: String
+    - contextPath: OpenCTI.IncidentResponseTypes.IncidentResponseTypesList.name
+      description: Incident response type name.
+      type: String
+    - contextPath: OpenCTI.IncidentResponseTypes.IncidentResponseTypesList.description
+      description: Incident response type description.
       type: String
   - arguments:
     - description: Name of the malware.

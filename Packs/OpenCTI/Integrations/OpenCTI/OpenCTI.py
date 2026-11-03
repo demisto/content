@@ -511,6 +511,51 @@ def incident_types_list_command(client: OpenCTIApiClient, args: Dict[str, str]) 
         return CommandResults(readable_output="No incident types")
 
 
+def incident_response_types_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Get the incident response types (incident_response_types_ov vocabulary) from opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    query = """
+        query OpenVocabFieldQuery($category: VocabularyCategory!, $orderBy: VocabularyOrdering, $orderMode: OrderingMode) {
+        vocabularies(category: $category, orderBy: $orderBy, orderMode: $orderMode) {
+            edges {
+            node {
+                id
+                name
+                description
+            }
+            }
+        }
+        }
+    """
+    try:
+        result = client.query(query=query, variables={"category": "incident_response_types_ov"})
+        edges = result["data"]["vocabularies"]["edges"]
+    except Exception as e:
+        demisto.error(traceback.format_exc())
+        raise DemistoException(f"Can't list incident response types. {e}")
+
+    if not edges:
+        return CommandResults(readable_output="No incident response types")
+    incident_response_types = [edge["node"] for edge in edges]
+    return CommandResults(
+        outputs={"OpenCTI.IncidentResponseTypes.IncidentResponseTypesList(val.id === obj.id)": incident_response_types},
+        readable_output=tableToMarkdown(
+            "Incident Response Types",
+            incident_response_types,
+            headers=["id", "name", "description"],
+            headerTransform=pascalToSpace,
+        ),
+        raw_response=result,
+    )
+
+
 def get_incidents_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> CommandResults:
     """List incidents in OpenCTI with optional filters and pagination.
 
@@ -2512,6 +2557,9 @@ def main():
 
         elif command == "opencti-incident-types-list":
             return_results(incident_types_list_command(client, args))
+
+        elif command == "opencti-incident-response-types-list":
+            return_results(incident_response_types_list_command(client, args))
 
         elif command == "opencti-relationship-create":
             return_results(relationship_create_command(client, args))

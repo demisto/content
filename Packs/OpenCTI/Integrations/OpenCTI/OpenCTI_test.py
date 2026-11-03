@@ -2130,3 +2130,59 @@ def test_reputation_command_good(mocker):
         "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
     ]
     assert dbot[0]["Score"] == 1
+
+
+def test_incident_response_types_list_command(mocker):
+    """Tests incident_response_types_list_command function
+    Given
+        the incident_response_types_ov vocabulary of OpenCTI
+    When
+        - Calling `incident_response_types_list_command`
+    Then
+        - Ensure the incident response types vocabulary is queried and returned in the context.
+    """
+    client = Client
+    query_mock = mocker.patch.object(
+        client,
+        "query",
+        return_value={
+            "data": {"vocabularies": {"edges": [{"node": {"id": "1", "name": "ransomware", "description": "A ransomware"}}]}}
+        },
+    )
+    results: CommandResults = incident_response_types_list_command(client, {})
+    assert query_mock.call_args.kwargs["variables"] == {"category": "incident_response_types_ov"}
+    assert "Incident Response Types" in results.readable_output
+    assert results.outputs.get("OpenCTI.IncidentResponseTypes.IncidentResponseTypesList(val.id === obj.id)") == [
+        {"id": "1", "name": "ransomware", "description": "A ransomware"}
+    ]
+
+
+def test_incident_response_types_list_command_with_no_data_to_return(mocker):
+    """Tests incident_response_types_list_command function
+    Given
+        an empty incident_response_types_ov vocabulary
+    When
+        - Calling `incident_response_types_list_command`
+    Then
+        - Ensure the readable output says there is no incident response type.
+    """
+    client = Client
+    mocker.patch.object(client, "query", return_value={"data": {"vocabularies": {"edges": []}}})
+    results: CommandResults = incident_response_types_list_command(client, {})
+    assert results.readable_output == "No incident response types"
+
+
+def test_incident_response_types_list_command_exception(mocker, capfd):
+    """Tests incident_response_types_list_command function
+    Given
+        an OpenCTI error
+    When
+        - Calling `incident_response_types_list_command`
+    Then
+        - Ensure a DemistoException is raised with the correct error message.
+    """
+    client = Client
+    mocker.patch.object(client, "query", side_effect=Exception("Test exception"))
+    with pytest.raises(DemistoException, match="Can't list incident response types. Test exception"):
+        incident_response_types_list_command(client, {})
+    assert "Exception: Test exception" in capfd.readouterr().out

@@ -889,7 +889,7 @@ Create a new incident response.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Incident Response name. | Required |
-| incident_response_type | Incident Response type name. Use opencti-incident-types-list to find all incident types in OpenCTI. | Optional |
+| incident_response_type | Incident Response type name. Use opencti-incident-response-types-list to find all incident response types in OpenCTI. | Optional |
 | severity | Incident Response severity. Possible values are: low, medium, high, critical. | Optional |
 | priority | Incident Response priority. Possible values are: P1, P2, P3, P4. | Optional |
 | description | Incident Response description. | Optional |
@@ -924,6 +924,64 @@ Create a new incident response.
 #### Human Readable Output
 
 >Incident response created successfully. New Incident Response id: 1dd4400b-baa9-4c26-a623-063402c62ec5.
+
+### opencti-incident-response-types-list
+
+***
+Get a list of all incident response types.
+
+#### Base Command
+
+`opencti-incident-response-types-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenCTI.IncidentResponseTypes.IncidentResponseTypesList.id | String | Incident response type ID. |
+| OpenCTI.IncidentResponseTypes.IncidentResponseTypesList.name | String | Incident response type name. |
+| OpenCTI.IncidentResponseTypes.IncidentResponseTypesList.description | String | Incident response type description. |
+
+#### Command Example
+
+```!opencti-incident-response-types-list```
+
+#### Context Example
+
+```json
+{
+    "OpenCTI": {
+        "IncidentResponseTypes": {
+            "IncidentResponseTypesList": [
+                {
+                    "id": "08ed071c-6979-4bbe-ac86-00d3bca8be09",
+                    "name": "data-leak",
+                    "description": "A data-leak"
+                },
+                {
+                    "id": "ae39ed0f-ffdc-416a-a525-d60684177e8a",
+                    "name": "ransomware",
+                    "description": "A ransomware"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Incident Response Types
+>
+>|Id|Name|Description|
+>|---|---|---|
+>| 08ed071c-6979-4bbe-ac86-00d3bca8be09 | data-leak | A data-leak |
+>| ae39ed0f-ffdc-416a-a525-d60684177e8a | ransomware | A ransomware |
 
 ### opencti-malware-create
 

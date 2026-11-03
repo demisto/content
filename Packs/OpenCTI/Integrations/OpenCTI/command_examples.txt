@@ -26,6 +26,7 @@
 !opencti-indicator-types-list
 !opencti-get-incidents additional_filters=`[{"key": "description","operator": "eq","values": ["test"],"mode": "and"}]`
 !opencti-incident-response-create name="Example Incident Response" severity=high priority=P2 description="Incident response created from Cortex XSOAR." incident_response_date=2025-01-15T09:30:00.000Z
+!opencti-incident-response-types-list
 !opencti-malware-create name="Example Malware" malware_types=ransomware,worm is_family=true
 !opencti-vulnerability-create name=CVE-2025-0001 description="Vulnerability created from Cortex XSOAR."
 !opencti-intrusion-set-create name="Example Intrusion Set"
