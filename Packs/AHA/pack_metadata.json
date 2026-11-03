@@ -20,8 +20,5 @@
     "supportedModules": [
         "agentix",
         "xsiam"
-    ],
-    "managed": true,
-    "source": "agentix",
-    "internal": true
+    ]
 }
