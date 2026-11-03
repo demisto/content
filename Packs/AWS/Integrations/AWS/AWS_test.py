@@ -6567,7 +6567,7 @@ ROUTE53_HOSTED_ZONE = {
 def test_route53_hosted_zones_list_command_success(mocker):
     """
     Given: A mocked Route53 client returning one hosted zone and a NextMarker.
-    When: hosted_zones_list_command is called with limit, next_marker, delegation_set_id and hosted_zone_type.
+    When: hosted_zones_list_command is called with limit, next_token, delegation_set_id and hosted_zone_type.
     Then: It calls list_hosted_zones with MaxItems as a string and Marker, and outputs the zones and the next token.
     """
     from AWS import Route53
@@ -6581,7 +6581,7 @@ def test_route53_hosted_zones_list_command_success(mocker):
     }
     args = {
         "limit": "10",
-        "next_marker": "Z000000",
+        "next_token": "Z000000",
         "delegation_set_id": "N123",
         "hosted_zone_type": "PrivateHostedZone",
     }
@@ -6597,11 +6597,11 @@ def test_route53_hosted_zones_list_command_success(mocker):
     assert "test zone" in result.readable_output
 
 
-def test_route53_hosted_zones_list_command_default_and_max_limit(mocker):
+def test_route53_hosted_zones_list_command_max_limit_last_page(mocker):
     """
-    Given: A mocked Route53 client and a limit above the Route53 maximum of 100.
+    Given: A mocked Route53 client returning the last page, and a limit above the Route53 maximum of 100.
     When: hosted_zones_list_command is called.
-    Then: MaxItems is capped at "100" and no Marker is sent.
+    Then: MaxItems is capped at "100", no Marker is sent, and HostedZonesNextToken is written as None to clear a stale token.
     """
     from AWS import Route53
 
@@ -6614,14 +6614,14 @@ def test_route53_hosted_zones_list_command_default_and_max_limit(mocker):
     result = Route53.hosted_zones_list_command(mock_client, {"limit": "500"})
 
     mock_client.list_hosted_zones.assert_called_once_with(MaxItems="100")
-    assert "AWS.Route53(true)" not in result.outputs
+    assert result.outputs["AWS.Route53(true)"] == {"HostedZonesNextToken": None}
 
 
 def test_route53_hosted_zones_list_command_empty(mocker):
     """
     Given: A mocked Route53 client returning no hosted zones.
-    When: hosted_zones_list_command is called.
-    Then: It returns a readable message without outputs.
+    When: hosted_zones_list_command is called without arguments.
+    Then: The default MaxItems of "100" is sent, and it returns a readable message without outputs or a raw response.
     """
     from AWS import Route53
 
@@ -6630,8 +6630,10 @@ def test_route53_hosted_zones_list_command_empty(mocker):
 
     result = Route53.hosted_zones_list_command(mock_client, {})
 
-    assert result.readable_output == "No Route53 hosted zones found."
+    mock_client.list_hosted_zones.assert_called_once_with(MaxItems="100")
+    assert result.readable_output == "No Route53 hosted zones were found."
     assert result.outputs is None
+    assert result.raw_response is None
 
 
 def test_route53_hosted_zones_list_command_error_response(mocker):
@@ -6668,7 +6670,7 @@ def test_route53_hosted_zones_by_name_list_command_success(mocker):
         "NextHostedZoneId": "Z333333",
         "IsTruncated": True,
     }
-    args = {"dns_name": "example.com", "hosted_zone_id": "Z111111QQQQQQQ", "limit": "1"}
+    args = {"dns_name": "example.com", "hosted_zone_id": "/hostedzone/Z111111QQQQQQQ", "limit": "1"}
 
     result = Route53.hosted_zones_by_name_list_command(mock_client, args)
 
@@ -6702,7 +6704,7 @@ def test_route53_hosted_zones_by_name_list_command_empty(mocker):
     """
     Given: A mocked Route53 client returning no hosted zones.
     When: hosted_zones_by_name_list_command is called without arguments.
-    Then: It sends only the default MaxItems and returns a readable message.
+    Then: It sends only the default MaxItems of "100" and returns a readable message without a raw response.
     """
     from AWS import Route53
 
@@ -6714,8 +6716,9 @@ def test_route53_hosted_zones_by_name_list_command_empty(mocker):
 
     result = Route53.hosted_zones_by_name_list_command(mock_client, {})
 
-    mock_client.list_hosted_zones_by_name.assert_called_once_with(MaxItems="50")
-    assert result.readable_output == "No Route53 hosted zones found."
+    mock_client.list_hosted_zones_by_name.assert_called_once_with(MaxItems="100")
+    assert result.readable_output == "No Route53 hosted zones were found."
+    assert result.raw_response is None
 
 
 def test_route53_hosted_zones_by_name_list_command_error_response(mocker):
@@ -6772,7 +6775,7 @@ def test_route53_resource_record_sets_list_command_success(mocker):
         "NextRecordIdentifier": "weighted-2",
     }
     args = {
-        "hosted_zone_id": "Z111111QQQQQQQ",
+        "hosted_zone_id": "/hostedzone/Z111111QQQQQQQ",
         "start_record_name": "a.example.com",
         "start_record_type": "A",
         "start_record_identifier": "weighted-0",
@@ -6805,9 +6808,9 @@ def test_route53_resource_record_sets_list_command_success(mocker):
 
 def test_route53_resource_record_sets_list_command_last_page(mocker):
     """
-    Given: A mocked Route53 client returning a non-truncated page.
-    When: resource_record_sets_list_command is called with only hosted_zone_id.
-    Then: Only the default MaxItems is sent, and RecordSetsIsTruncated is False without next-record values.
+    Given: A mocked Route53 client returning a non-truncated page, and a limit above the Route53 maximum of 300.
+    When: resource_record_sets_list_command is called.
+    Then: MaxItems is capped at "300", and the next-record values are written as None to clear stale values.
     """
     from AWS import Route53
 
@@ -6821,14 +6824,20 @@ def test_route53_resource_record_sets_list_command_last_page(mocker):
     result = Route53.resource_record_sets_list_command(mock_client, {"hosted_zone_id": "Z1", "limit": "1000"})
 
     mock_client.list_resource_record_sets.assert_called_once_with(HostedZoneId="Z1", MaxItems="300")
-    assert result.outputs["AWS.Route53(true)"] == {"RecordSetsIsTruncated": False}
+    assert result.outputs["AWS.Route53(true)"] == {
+        "RecordSetsNextRecordName": None,
+        "RecordSetsNextRecordType": None,
+        "RecordSetsNextRecordIdentifier": None,
+        "RecordSetsIsTruncated": False,
+    }
 
 
 def test_route53_resource_record_sets_list_command_empty(mocker):
     """
     Given: A mocked Route53 client returning no record sets.
-    When: resource_record_sets_list_command is called.
-    Then: It returns a readable message that names the hosted zone.
+    When: resource_record_sets_list_command is called without a limit.
+    Then: The default MaxItems of "300" is sent, and it returns a readable message that names the hosted zone,
+          without a raw response.
     """
     from AWS import Route53
 
@@ -6841,7 +6850,9 @@ def test_route53_resource_record_sets_list_command_empty(mocker):
 
     result = Route53.resource_record_sets_list_command(mock_client, {"hosted_zone_id": "Z1"})
 
-    assert result.readable_output == "No resource record sets found in hosted zone Z1."
+    mock_client.list_resource_record_sets.assert_called_once_with(HostedZoneId="Z1", MaxItems="300")
+    assert result.readable_output == "No resource record sets were found in hosted zone Z1."
+    assert result.raw_response is None
 
 
 @pytest.mark.parametrize(
@@ -6909,7 +6920,7 @@ def test_route53_resource_record_sets_change_command_delete_values(mocker):
     mock_client = mocker.Mock()
     mock_client.change_resource_record_sets.return_value = _route53_change_response()
     args = {
-        "hosted_zone_id": "Z1",
+        "hosted_zone_id": "/hostedzone/Z1",
         "action": "DELETE",
         "name": "app.example.com",
         "type": "CNAME",
@@ -7100,6 +7111,112 @@ def test_route53_client_error_propagates(mocker):
 
     with pytest.raises(ClientError):
         Route53.resource_record_sets_change_command(mock_client, args)
+
+
+@pytest.mark.parametrize(
+    "args, max_limit, expected",
+    [
+        ({}, 100, {"MaxItems": "100"}),
+        ({"limit": "10"}, 100, {"MaxItems": "10"}),
+        ({"limit": "1000"}, 300, {"MaxItems": "300"}),
+        ({"limit": "5", "next_token": "Z000000"}, 100, {"MaxItems": "5", "Marker": "Z000000"}),
+    ],
+)
+def test_route53_pagination_kwargs(args, max_limit, expected):
+    """
+    Given: Different limit and next_token arguments and a Route53 maximum page size.
+    When: Route53._pagination_kwargs is called.
+    Then: MaxItems is a string that defaults to and is capped at the maximum, and next_token is sent as Marker.
+    """
+    from AWS import Route53
+
+    assert Route53._pagination_kwargs(args, max_limit) == expected
+
+
+def test_route53_pagination_kwargs_invalid_limit():
+    """
+    Given: A limit of 0, which Route53 does not accept.
+    When: Route53._pagination_kwargs is called.
+    Then: A ValueError is raised.
+    """
+    from AWS import Route53
+
+    with pytest.raises(ValueError, match="Limit must be at least 1"):
+        Route53._pagination_kwargs({"limit": "0"}, 100)
+
+
+@pytest.mark.parametrize(
+    "hosted_zone_id, expected",
+    [
+        ("/hostedzone/Z111111QQQQQQQ", "Z111111QQQQQQQ"),
+        ("Z111111QQQQQQQ", "Z111111QQQQQQQ"),
+        (None, None),
+        ("", ""),
+    ],
+)
+def test_route53_normalize_hosted_zone_id(hosted_zone_id, expected):
+    """
+    Given: Hosted zone IDs with and without the /hostedzone/ prefix, and empty values.
+    When: Route53._normalize_hosted_zone_id is called.
+    Then: The prefix is removed and empty values are returned unchanged.
+    """
+    from AWS import Route53
+
+    assert Route53._normalize_hosted_zone_id(hosted_zone_id) == expected
+
+
+@pytest.mark.parametrize(
+    "record_set, expected",
+    [
+        ({"ResourceRecords": [{"Value": "1.1.1.1"}, {"Value": "2.2.2.2"}]}, "1.1.1.1, 2.2.2.2"),
+        ({"AliasTarget": {"DNSName": "my-lb.us-east-1.elb.amazonaws.com."}}, "my-lb.us-east-1.elb.amazonaws.com."),
+        ({}, None),
+    ],
+)
+def test_route53_record_set_values(record_set, expected):
+    """
+    Given: A standard record set with multiple values, an alias record set, and a record set with neither.
+    When: Route53._record_set_values is called.
+    Then: The values are joined, the alias DNS name is returned, or None is returned.
+    """
+    from AWS import Route53
+
+    assert Route53._record_set_values(record_set) == expected
+
+
+def test_route53_hosted_zones_readable():
+    """
+    Given: A hosted zone with a nested Config.
+    When: Route53._hosted_zones_readable is called.
+    Then: The table includes the title, the zone fields and the flattened Config fields.
+    """
+    from AWS import Route53
+
+    readable_output = Route53._hosted_zones_readable("My Title", [ROUTE53_HOSTED_ZONE])
+
+    assert "My Title" in readable_output
+    assert "/hostedzone/Z111111QQQQQQQ" in readable_output
+    assert "Private Zone" in readable_output
+    assert "test zone" in readable_output
+
+
+def test_route53_build_resource_record_set_values():
+    """
+    Given: Record arguments with values, a TTL and a set identifier.
+    When: Route53._build_resource_record_set is called.
+    Then: It returns a ResourceRecordSet with ResourceRecords and TTL, and without an AliasTarget.
+    """
+    from AWS import Route53
+
+    args = {"name": "www.example.com", "type": "A", "ttl": "60", "values": "1.1.1.1,2.2.2.2", "set_identifier": "id-1"}
+
+    assert Route53._build_resource_record_set(args) == {
+        "Name": "www.example.com",
+        "Type": "A",
+        "SetIdentifier": "id-1",
+        "TTL": 60,
+        "ResourceRecords": [{"Value": "1.1.1.1"}, {"Value": "2.2.2.2"}],
+    }
 
 
 def test_route53_commands_registered():

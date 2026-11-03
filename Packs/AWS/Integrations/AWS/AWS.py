@@ -11305,22 +11305,40 @@ class Route53:
 
     HOSTED_ZONES_MAX_ITEMS = 100
     RECORD_SETS_MAX_ITEMS = 300
+    HOSTED_ZONE_ID_PREFIX = "/hostedzone/"
     HOSTED_ZONES_HEADERS = ["Id", "Name", "ResourceRecordSetCount", "PrivateZone", "Comment"]
 
     @staticmethod
-    def _max_items(args: Dict[str, Any], max_limit: int) -> str:
+    def _pagination_kwargs(args: Dict[str, Any], max_limit: int) -> Dict[str, Any]:
         """
-        Builds the Route53 MaxItems value, which the Route53 API expects as a string.
+        Builds the Route53 MaxItems and Marker pagination parameters. Route53 expects MaxItems as a string.
 
         Args:
-            args (Dict[str, Any]): Command arguments containing the optional limit.
-            max_limit (int): The maximum number of items the API returns per request.
+            args (Dict[str, Any]): Command arguments containing the optional limit and next_token.
+            max_limit (int): The maximum number of items the API returns per request, also used as the default limit.
 
         Returns:
-            str: The validated limit as a string.
+            Dict[str, Any]: The validated MaxItems, and the Marker when next_token is provided.
         """
-        pagination = build_pagination_kwargs({"limit": args.get("limit")}, max_limit=max_limit, limit_name="MaxItems")
-        return str(pagination["MaxItems"])
+        pagination_args = {"limit": args.get("limit") or max_limit, "next_token": args.get("next_token")}
+        kwargs = build_pagination_kwargs(pagination_args, max_limit=max_limit, next_token_name="Marker", limit_name="MaxItems")
+        kwargs["MaxItems"] = str(kwargs["MaxItems"])
+        return kwargs
+
+    @staticmethod
+    def _normalize_hosted_zone_id(hosted_zone_id: str | None) -> str | None:
+        """
+        Removes the /hostedzone/ prefix from a hosted zone ID, so that the same zone is always stored with the same ID.
+
+        Args:
+            hosted_zone_id (str | None): The hosted zone ID, with or without the /hostedzone/ prefix.
+
+        Returns:
+            str | None: The hosted zone ID without the prefix, or None if no ID was provided.
+        """
+        if not hosted_zone_id:
+            return hosted_zone_id
+        return hosted_zone_id.removeprefix(Route53.HOSTED_ZONE_ID_PREFIX)
 
     @staticmethod
     def _hosted_zones_readable(title: str, hosted_zones: list[Dict[str, Any]]) -> str:
@@ -11353,20 +11371,19 @@ class Route53:
 
         Args:
             client (BotoClient): The boto3 client for Route53.
-            args (Dict[str, Any]): Command arguments including limit, next_marker, delegation_set_id and hosted_zone_type.
+            args (Dict[str, Any]): Command arguments including limit, next_token, delegation_set_id and hosted_zone_type.
 
         Returns:
             CommandResults: The hosted zones and the marker for the next page.
         """
         kwargs = remove_empty_elements(
             {
-                "Marker": args.get("next_marker"),
                 "DelegationSetId": args.get("delegation_set_id"),
                 "HostedZoneType": args.get("hosted_zone_type"),
-                "MaxItems": Route53._max_items(args, Route53.HOSTED_ZONES_MAX_ITEMS),
             }
         )
-        print_debug_logs(client, f"Listing hosted zones with parameters: {kwargs}")
+        kwargs.update(Route53._pagination_kwargs(args, Route53.HOSTED_ZONES_MAX_ITEMS))
+        print_debug_logs(client, f"Listing hosted zones with parameter keys: {list(kwargs.keys())} and {kwargs.get('MaxItems')=}")
         response = client.list_hosted_zones(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -11374,15 +11391,17 @@ class Route53:
 
         response = serialize_response_with_datetime_encoding(response)
         hosted_zones = response.get("HostedZones", [])
+        next_marker = response.get("NextMarker")
+        print_debug_logs(client, f"{len(hosted_zones)=}, {bool(next_marker)=}")
         if not hosted_zones:
-            return CommandResults(readable_output="No Route53 hosted zones found.", raw_response=response)
+            return CommandResults(readable_output="No Route53 hosted zones were found.")
 
         outputs = {
             "AWS.Route53.HostedZones(val.Id && val.Id == obj.Id)": hosted_zones,
-            "AWS.Route53(true)": {"HostedZonesNextToken": response.get("NextMarker")},
+            "AWS.Route53(true)": {"HostedZonesNextToken": next_marker},
         }
         return CommandResults(
-            outputs=remove_empty_elements(outputs),
+            outputs=outputs,
             readable_output=Route53._hosted_zones_readable("AWS Route53 Hosted Zones", hosted_zones),
             raw_response=response,
         )
@@ -11400,18 +11419,15 @@ class Route53:
             CommandResults: The hosted zones and the DNS name and hosted zone ID of the next page.
         """
         dns_name = args.get("dns_name")
-        hosted_zone_id = args.get("hosted_zone_id")
+        hosted_zone_id = Route53._normalize_hosted_zone_id(args.get("hosted_zone_id"))
         if hosted_zone_id and not dns_name:
             raise ValueError("The dns_name argument is required when hosted_zone_id is provided.")
 
-        kwargs = remove_empty_elements(
-            {
-                "DNSName": dns_name,
-                "HostedZoneId": hosted_zone_id,
-                "MaxItems": Route53._max_items(args, Route53.HOSTED_ZONES_MAX_ITEMS),
-            }
+        kwargs = remove_empty_elements({"DNSName": dns_name, "HostedZoneId": hosted_zone_id})
+        kwargs.update(Route53._pagination_kwargs({"limit": args.get("limit")}, Route53.HOSTED_ZONES_MAX_ITEMS))
+        print_debug_logs(
+            client, f"Listing hosted zones by name with parameter keys: {list(kwargs.keys())} and {kwargs.get('MaxItems')=}"
         )
-        print_debug_logs(client, f"Listing hosted zones by name with parameters: {kwargs}")
         response = client.list_hosted_zones_by_name(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -11419,8 +11435,9 @@ class Route53:
 
         response = serialize_response_with_datetime_encoding(response)
         hosted_zones = response.get("HostedZones", [])
+        print_debug_logs(client, f"{len(hosted_zones)=}, {response.get('IsTruncated')=}")
         if not hosted_zones:
-            return CommandResults(readable_output="No Route53 hosted zones found.", raw_response=response)
+            return CommandResults(readable_output="No Route53 hosted zones were found.")
 
         outputs = {
             "AWS.Route53.HostedZones(val.Id && val.Id == obj.Id)": hosted_zones,
@@ -11430,7 +11447,7 @@ class Route53:
             },
         }
         return CommandResults(
-            outputs=remove_empty_elements(outputs),
+            outputs=outputs,
             readable_output=Route53._hosted_zones_readable("AWS Route53 Hosted Zones By Name", hosted_zones),
             raw_response=response,
         )
@@ -11462,7 +11479,7 @@ class Route53:
         Returns:
             CommandResults: The resource record sets and the values for retrieving the next page.
         """
-        hosted_zone_id = args.get("hosted_zone_id")
+        hosted_zone_id = Route53._normalize_hosted_zone_id(args.get("hosted_zone_id"))
         start_record_name = args.get("start_record_name")
         start_record_type = args.get("start_record_type")
         start_record_identifier = args.get("start_record_identifier")
@@ -11479,10 +11496,13 @@ class Route53:
                 "StartRecordName": start_record_name,
                 "StartRecordType": start_record_type,
                 "StartRecordIdentifier": start_record_identifier,
-                "MaxItems": Route53._max_items(args, Route53.RECORD_SETS_MAX_ITEMS),
             }
         )
-        print_debug_logs(client, f"Listing resource record sets with parameters: {kwargs}")
+        kwargs.update(Route53._pagination_kwargs({"limit": args.get("limit")}, Route53.RECORD_SETS_MAX_ITEMS))
+        print_debug_logs(
+            client,
+            f"Listing resource record sets with parameter keys: {list(kwargs.keys())} and {kwargs.get('MaxItems')=}",
+        )
         response = client.list_resource_record_sets(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -11490,10 +11510,9 @@ class Route53:
 
         response = serialize_response_with_datetime_encoding(response)
         record_sets = response.get("ResourceRecordSets", [])
+        print_debug_logs(client, f"{len(record_sets)=}, {response.get('IsTruncated')=}")
         if not record_sets:
-            return CommandResults(
-                readable_output=f"No resource record sets found in hosted zone {hosted_zone_id}.", raw_response=response
-            )
+            return CommandResults(readable_output=f"No resource record sets were found in hosted zone {hosted_zone_id}.")
 
         for record_set in record_sets:
             record_set["HostedZoneId"] = hosted_zone_id
@@ -11519,7 +11538,7 @@ class Route53:
             },
         }
         return CommandResults(
-            outputs=remove_empty_elements(outputs),
+            outputs=outputs,
             readable_output=tableToMarkdown(
                 f"AWS Route53 Record Sets in hosted zone {hosted_zone_id}",
                 readable_rows,
@@ -11595,9 +11614,10 @@ class Route53:
             CommandResults: The change information returned by Route53.
         """
         action = args.get("action")
+        hosted_zone_id = Route53._normalize_hosted_zone_id(args.get("hosted_zone_id"))
         record_set = Route53._build_resource_record_set(args)
         kwargs = {
-            "HostedZoneId": args.get("hosted_zone_id"),
+            "HostedZoneId": hosted_zone_id,
             "ChangeBatch": remove_empty_elements(
                 {
                     "Comment": args.get("comment"),
@@ -11605,7 +11625,12 @@ class Route53:
                 }
             ),
         }
-        print_debug_logs(client, f"Changing resource record sets with parameters: {kwargs}")
+        # Log only non-sensitive fields: record names and values can reveal customer domains and infrastructure.
+        print_debug_logs(
+            client,
+            f"Changing a resource record set with record keys: {list(record_set.keys())} and {action=}, "
+            f"{record_set.get('Type')=}, {len(record_set.get('ResourceRecords', []))=}",
+        )
         response = client.change_resource_record_sets(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
