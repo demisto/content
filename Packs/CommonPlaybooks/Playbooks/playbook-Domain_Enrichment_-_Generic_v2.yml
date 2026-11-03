@@ -387,6 +387,7 @@ tasks:
                 iscontext: true
           transformers:
           - operator: RemoveNullBytes
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
