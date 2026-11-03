@@ -2245,3 +2245,49 @@ def test_grouping_context_list_command_exception(mocker, capfd):
     with pytest.raises(DemistoException, match="Can't list grouping contexts. Test exception"):
         grouping_context_list_command(client, {})
     assert "Exception: Test exception" in capfd.readouterr().out
+
+
+@pytest.mark.parametrize(
+    "value, indicator_type, expected",
+    [
+        (
+            "  E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855 ",
+            "file",
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        ),
+        ("CaseTest.Example.COM", "domain", "casetest.example.com"),
+        (" 1.2.3.4 ", "ip", "1.2.3.4"),
+        ("https://Example.com/Path", "url", "https://Example.com/Path"),
+        (" User@Example.com ", "email", "User@Example.com"),
+    ],
+)
+def test_normalize_reputation_value(value, indicator_type, expected):
+    """Tests normalize_reputation_value function
+    Given
+        a value given to a reputation command
+    When
+        - Calling `normalize_reputation_value`
+    Then
+        - Ensure the value is stripped, and lowercased for file hashes and domains only.
+    """
+    assert normalize_reputation_value(value, indicator_type) == expected
+
+
+def test_reputation_command_uppercase_hash(mocker):
+    """Tests reputation_command function
+    Given
+        a SHA-256 hash in uppercase
+    When
+        - Calling `reputation_command` for the file command
+    Then
+        - Ensure OpenCTI is queried with the lowercase hash and the lowercase STIX pattern.
+    """
+    sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    client, observable_list, indicator_list, _ = mock_reputation_lookups(mocker, [], [[], []])
+    results = reputation_command(client, {"file": sha256.upper()}, "file")
+    assert {"key": "hashes.SHA-256", "values": [sha256], "operator": "eq"} in observable_list.call_args.kwargs["filters"][
+        "filters"
+    ]
+    exact_indicator_filters = indicator_list.call_args_list[0].kwargs["filters"]["filters"]
+    assert {"key": "pattern", "values": [f"[file:hashes.'SHA-256' = '{sha256}']"], "operator": "eq"} in exact_indicator_filters
+    assert f"OpenCTI reputation for file {sha256}" in results[0].readable_output

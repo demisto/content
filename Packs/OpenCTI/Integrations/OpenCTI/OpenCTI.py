@@ -2068,6 +2068,12 @@ def is_valid_ip(value: str) -> bool:
     return True
 
 
+def normalize_reputation_value(value: str, indicator_type: str) -> str:
+    """Strip the value, and lowercase file hashes and domains, which are case-insensitive."""
+    value = (value or "").strip()
+    return value.lower() if indicator_type in ("file", "domain") else value
+
+
 def get_file_hash_type(value: str) -> tuple[str, str] | None:
     """Return the (OpenCTI hash name, XSOAR File field) of an MD5, SHA-1 or SHA-256 hash, None otherwise."""
     value = (value or "").strip()
@@ -2468,6 +2474,7 @@ def reputation_command(
 
     results = []
     for value in values:
+        value = normalize_reputation_value(value, indicator_type)
         if indicator_type == "ip" and not is_valid_ip(value):
             results.append(CommandResults(readable_output=f"{value} is not a valid IP address."))
             continue
