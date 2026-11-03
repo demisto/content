@@ -897,7 +897,7 @@ Create a new incident response.
 | incident_response_date | Incident Response date (ISO 8601 format, e.g., 2020-01-01T00:11:22.000Z). | Optional |
 | label_id | Incident Response label ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. | Optional |
 | marking_id | Incident Response marking definition ID. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Optional |
-| external_references_id | External references URL. Use opencti-external-reference-create to create a new external reference. | Optional |
+| external_references_id | External reference ID. Use opencti-external-reference-create to create a new external reference. | Optional |
 
 #### Context Output
 

@@ -859,7 +859,7 @@ script:
       name: label_id
     - description: Incident Response marking definition ID. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI.
       name: marking_id
-    - description: External references URL. Use opencti-external-reference-create to create a new external reference.
+    - description: External reference ID. Use opencti-external-reference-create to create a new external reference.
       name: external_references_id
     description: Create a new incident response.
     name: opencti-incident-response-create
