@@ -33,6 +33,7 @@
 !opencti-threat-actor-group-create name="Example Threat Actor Group"
 !opencti-campaign-create name="Example Campaign" first_seen=2025-01-01T00:00:00Z last_seen=2025-06-30T00:00:00Z
 !opencti-grouping-create name="Example Grouping" context=suspicious-activity
+!opencti-grouping-context-list
 !opencti-report-create name="Example Report" published=2025-01-15T00:00:00.000Z
 !opencti-add-object-to-container container_type=report container_id=253e4a59-6e61-4409-a2cb-ecefd5105383 object_id=0e6fcea0-670c-473e-ad53-cf3f80dd7764
 !ip ip=203.0.113.42

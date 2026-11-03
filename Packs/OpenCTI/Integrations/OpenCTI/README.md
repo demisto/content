@@ -1212,7 +1212,7 @@ Create a new grouping.
 | --- | --- | --- |
 | name | Name of the grouping. | Required |
 | description | Description of the grouping. | Optional |
-| context | Context of the grouping. | Required |
+| context | Context of the grouping. Use opencti-grouping-context-list to find all grouping contexts in OpenCTI. | Required |
 
 #### Context Output
 
@@ -1239,6 +1239,70 @@ Create a new grouping.
 #### Human Readable Output
 
 >Grouping created successfully. New Grouping id: 3dd62358-879d-470f-bb34-b8eb76cd3eac.
+
+### opencti-grouping-context-list
+
+***
+Get a list of all grouping contexts.
+
+#### Base Command
+
+`opencti-grouping-context-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenCTI.GroupingContexts.GroupingContextsList.id | String | Grouping context ID. |
+| OpenCTI.GroupingContexts.GroupingContextsList.name | String | Grouping context name. |
+| OpenCTI.GroupingContexts.GroupingContextsList.description | String | Grouping context description. |
+
+#### Command Example
+
+```!opencti-grouping-context-list```
+
+#### Context Example
+
+```json
+{
+    "OpenCTI": {
+        "GroupingContexts": {
+            "GroupingContextsList": [
+                {
+                    "id": "6072c826-4a34-454f-9041-2ef42e35ca8f",
+                    "name": "malware-analysis",
+                    "description": "A set of STIX content related to a particular malware instance or family."
+                },
+                {
+                    "id": "91cd223e-9027-4a24-b628-268620171d26",
+                    "name": "suspicious-activity",
+                    "description": "A set of STIX content related to a particular suspicious activity event."
+                },
+                {
+                    "id": "e5497677-244c-406a-8288-20cfb2b6ed40",
+                    "name": "unspecified",
+                    "description": "A set of STIX content contextually related but without any precise characterization of the contextual relationship between the objects."
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Grouping Contexts
+>
+>|Id|Name|Description|
+>|---|---|---|
+>| 6072c826-4a34-454f-9041-2ef42e35ca8f | malware-analysis | A set of STIX content related to a particular malware instance or family. |
+>| 91cd223e-9027-4a24-b628-268620171d26 | suspicious-activity | A set of STIX content related to a particular suspicious activity event. |
+>| e5497677-244c-406a-8288-20cfb2b6ed40 | unspecified | A set of STIX content contextually related but without any precise characterization of the contextual relationship between the objects. |
 
 ### opencti-report-create
 

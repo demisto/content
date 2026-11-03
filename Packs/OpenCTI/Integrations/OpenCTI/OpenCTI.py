@@ -511,49 +511,60 @@ def incident_types_list_command(client: OpenCTIApiClient, args: Dict[str, str]) 
         return CommandResults(readable_output="No incident types")
 
 
-def incident_response_types_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
-    """Get the incident response types (incident_response_types_ov vocabulary) from opencti
+VOCABULARY_QUERY = """
+    query OpenVocabFieldQuery($category: VocabularyCategory!, $orderBy: VocabularyOrdering, $orderMode: OrderingMode) {
+    vocabularies(category: $category, orderBy: $orderBy, orderMode: $orderMode) {
+        edges {
+        node {
+            id
+            name
+            description
+        }
+        }
+    }
+    }
+"""
+
+
+def vocabulary_list_command(client: OpenCTIApiClient, category: str, label: str, outputs_key: str) -> CommandResults:
+    """List the values of an OpenCTI vocabulary.
 
     Args:
         client: OpenCTI Client object
-        args: demisto.args()
+        category: the OpenCTI vocabulary category, for example incident_response_types_ov
+        label: the plural label of the values, for example "incident response types"
+        outputs_key: the context key, for example IncidentResponseTypes
 
     Returns:
         readable_output, raw_response
     """
-    query = """
-        query OpenVocabFieldQuery($category: VocabularyCategory!, $orderBy: VocabularyOrdering, $orderMode: OrderingMode) {
-        vocabularies(category: $category, orderBy: $orderBy, orderMode: $orderMode) {
-            edges {
-            node {
-                id
-                name
-                description
-            }
-            }
-        }
-        }
-    """
     try:
-        result = client.query(query=query, variables={"category": "incident_response_types_ov"})
+        result = client.query(query=VOCABULARY_QUERY, variables={"category": category})
         edges = result["data"]["vocabularies"]["edges"]
     except Exception as e:
         demisto.error(traceback.format_exc())
-        raise DemistoException(f"Can't list incident response types. {e}")
+        raise DemistoException(f"Can't list {label}. {e}")
 
     if not edges:
-        return CommandResults(readable_output="No incident response types")
-    incident_response_types = [edge["node"] for edge in edges]
+        return CommandResults(readable_output=f"No {label}")
+    values = [edge["node"] for edge in edges]
     return CommandResults(
-        outputs={"OpenCTI.IncidentResponseTypes.IncidentResponseTypesList(val.id === obj.id)": incident_response_types},
+        outputs={f"OpenCTI.{outputs_key}.{outputs_key}List(val.id === obj.id)": values},
         readable_output=tableToMarkdown(
-            "Incident Response Types",
-            incident_response_types,
-            headers=["id", "name", "description"],
-            headerTransform=pascalToSpace,
+            label.title(), values, headers=["id", "name", "description"], headerTransform=pascalToSpace
         ),
         raw_response=result,
     )
+
+
+def incident_response_types_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Get the incident response types (incident_response_types_ov vocabulary) from opencti"""
+    return vocabulary_list_command(client, "incident_response_types_ov", "incident response types", "IncidentResponseTypes")
+
+
+def grouping_context_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Get the grouping contexts (grouping_context_ov vocabulary) from opencti"""
+    return vocabulary_list_command(client, "grouping_context_ov", "grouping contexts", "GroupingContexts")
 
 
 def get_incidents_command(client: OpenCTIApiClient, args: Dict[str, Any]) -> CommandResults:
@@ -2560,6 +2571,9 @@ def main():
 
         elif command == "opencti-incident-response-types-list":
             return_results(incident_response_types_list_command(client, args))
+
+        elif command == "opencti-grouping-context-list":
+            return_results(grouping_context_list_command(client, args))
 
         elif command == "opencti-relationship-create":
             return_results(relationship_create_command(client, args))

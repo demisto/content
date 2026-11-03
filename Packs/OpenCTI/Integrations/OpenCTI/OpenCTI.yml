@@ -969,7 +969,7 @@ script:
     - description: Description of the grouping.
       name: description
       required: false
-    - description: Context of the grouping.
+    - description: Context of the grouping. Use opencti-grouping-context-list to find all grouping contexts in OpenCTI.
       name: context
       required: true
     description: Create a new grouping.
@@ -977,6 +977,19 @@ script:
     outputs:
     - contextPath: OpenCTI.Grouping.id
       description: New grouping ID.
+      type: String
+  - arguments: []
+    description: Get a list of all grouping contexts.
+    name: opencti-grouping-context-list
+    outputs:
+    - contextPath: OpenCTI.GroupingContexts.GroupingContextsList.id
+      description: Grouping context ID.
+      type: String
+    - contextPath: OpenCTI.GroupingContexts.GroupingContextsList.name
+      description: Grouping context name.
+      type: String
+    - contextPath: OpenCTI.GroupingContexts.GroupingContextsList.description
+      description: Grouping context description.
       type: String
   - arguments:
     - description: Name of the report.

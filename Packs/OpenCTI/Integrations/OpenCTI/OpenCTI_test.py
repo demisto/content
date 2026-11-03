@@ -2186,3 +2186,62 @@ def test_incident_response_types_list_command_exception(mocker, capfd):
     with pytest.raises(DemistoException, match="Can't list incident response types. Test exception"):
         incident_response_types_list_command(client, {})
     assert "Exception: Test exception" in capfd.readouterr().out
+
+
+def test_grouping_context_list_command(mocker):
+    """Tests grouping_context_list_command function
+    Given
+        the grouping_context_ov vocabulary of OpenCTI
+    When
+        - Calling `grouping_context_list_command`
+    Then
+        - Ensure the grouping context vocabulary is queried and returned in the context.
+    """
+    client = Client
+    query_mock = mocker.patch.object(
+        client,
+        "query",
+        return_value={
+            "data": {
+                "vocabularies": {
+                    "edges": [{"node": {"id": "1", "name": "suspicious-activity", "description": "Suspicious activity"}}]
+                }
+            }
+        },
+    )
+    results: CommandResults = grouping_context_list_command(client, {})
+    assert query_mock.call_args.kwargs["variables"] == {"category": "grouping_context_ov"}
+    assert "Grouping Contexts" in results.readable_output
+    assert results.outputs.get("OpenCTI.GroupingContexts.GroupingContextsList(val.id === obj.id)") == [
+        {"id": "1", "name": "suspicious-activity", "description": "Suspicious activity"}
+    ]
+
+
+def test_grouping_context_list_command_with_no_data_to_return(mocker):
+    """Tests grouping_context_list_command function
+    Given
+        an empty grouping_context_ov vocabulary
+    When
+        - Calling `grouping_context_list_command`
+    Then
+        - Ensure the readable output says there is no grouping context.
+    """
+    client = Client
+    mocker.patch.object(client, "query", return_value={"data": {"vocabularies": {"edges": []}}})
+    assert grouping_context_list_command(client, {}).readable_output == "No grouping contexts"
+
+
+def test_grouping_context_list_command_exception(mocker, capfd):
+    """Tests grouping_context_list_command function
+    Given
+        an OpenCTI error
+    When
+        - Calling `grouping_context_list_command`
+    Then
+        - Ensure a DemistoException is raised with the correct error message.
+    """
+    client = Client
+    mocker.patch.object(client, "query", side_effect=Exception("Test exception"))
+    with pytest.raises(DemistoException, match="Can't list grouping contexts. Test exception"):
+        grouping_context_list_command(client, {})
+    assert "Exception: Test exception" in capfd.readouterr().out
