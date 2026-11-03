@@ -723,6 +723,34 @@ def test_get_events_command_with_push(client: Client, mocker):
     assert send_events.call_args.kwargs == {"vendor": "gitguardian", "product": "saas"}
 
 
+def test_get_events_command_uses_end_date(client: Client, mocker):
+    """
+    Given: start_date and end_date arguments.
+    When: Running gitguardian-saas-get-events.
+    Then: The fetch window is bounded by end_date instead of the current time.
+    """
+    fetch_for_type = mocker.patch("GitGuardianSaaS.fetch_events_for_type", return_value=([], {}))
+
+    get_events_command(client, {"start_date": WINDOW_START, "end_date": WINDOW_END}, [AUDIT_LOGS])
+
+    assert fetch_for_type.call_args.args[2]["last_date"] == WINDOW_START
+    assert fetch_for_type.call_args.args[3] == WINDOW_END
+
+
+def test_get_events_command_start_after_end(client: Client, mocker):
+    """
+    Given: start_date later than end_date.
+    When: Running gitguardian-saas-get-events.
+    Then: An error is raised before any API call.
+    """
+    fetch_for_type = mocker.patch("GitGuardianSaaS.fetch_events_for_type")
+
+    with pytest.raises(Exception, match="start_date must be earlier than end_date"):
+        get_events_command(client, {"start_date": WINDOW_END, "end_date": WINDOW_START}, [AUDIT_LOGS])
+
+    fetch_for_type.assert_not_called()
+
+
 @pytest.mark.parametrize("limit", ["0", "-5"])
 def test_get_events_command_invalid_limit(client: Client, mocker, limit: str):
     """

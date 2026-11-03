@@ -1,5 +1,6 @@
 import math
 import re
+import traceback
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -128,6 +129,16 @@ def build_base_url(server_url: str | None) -> str:
     if url.lower().endswith(API_VERSION_PATH):
         url = url[: -len(API_VERSION_PATH)]
     return f"{url}{API_VERSION_PATH}"
+
+
+def parse_date_arg(value: str, arg_name: str) -> datetime:
+    """Parses an absolute or relative date argument into an aware UTC datetime."""
+    parsed = arg_to_datetime(
+        value, arg_name=arg_name, required=True, settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True}
+    )
+    if parsed.tzinfo is None:  # type: ignore[union-attr]
+        parsed = parsed.replace(tzinfo=timezone.utc)  # type: ignore[union-attr]  # noqa: UP017
+    return parsed  # type: ignore[return-value]
 
 
 def parse_positive_int(value: Any, arg_name: str, default: int) -> int:
@@ -353,13 +364,16 @@ def get_events_command(client: Client, args: dict[str, Any], default_event_types
     """
     should_push_events = argToBoolean(args.get("should_push_events", False))
     limit = parse_positive_int(args.get("limit"), "limit", DEFAULT_GET_EVENTS_LIMIT)
-    start_date = arg_to_datetime(args.get("start_date") or DEFAULT_FIRST_FETCH, arg_name="start_date", required=True)
+    start_date = parse_date_arg(args.get("start_date") or DEFAULT_FIRST_FETCH, "start_date")
+    end_date = parse_date_arg(args.get("end_date") or "now", "end_date")
+    if start_date >= end_date:
+        raise DemistoException("start_date must be earlier than end_date.")
     event_types = parse_event_types(argToList(args.get("event_types"))) if args.get("event_types") else default_event_types
-    window_end = format_api_date(datetime.now(timezone.utc))  # noqa: UP017
-    type_state = {"last_date": format_api_date(start_date), "last_ids": []}  # type: ignore[arg-type]
+    window_end = format_api_date(end_date)
+    type_state = {"last_date": format_api_date(start_date), "last_ids": []}
     demisto.debug(
         f"[Get Events] Event types: {[event_type.name for event_type in event_types]}, limit: {limit}, "
-        f"start date: {type_state['last_date']}, push events: {should_push_events}"
+        f"window: {type_state['last_date']} - {window_end}, push events: {should_push_events}"
     )
 
     all_events: list[dict[str, Any]] = []
@@ -418,7 +432,10 @@ def fetch_events(
             try:
                 events, type_state = future.result()
             except Exception as error:
-                demisto.error(f"[Fetch][{event_type.key}] Failed, keeping the previous state to retry next cycle: {error}")
+                demisto.error(
+                    f"[Fetch][{event_type.key}] Failed, keeping the previous state to retry next cycle: {error}\n"
+                    f"{traceback.format_exc()}"
+                )
                 errors.append(f"{event_type.name}: {error}")
                 continue
             all_events.extend(enrich_events(events, event_type))
@@ -477,9 +494,11 @@ def main() -> None:  # pragma: no cover
             raise NotImplementedError(f"Command {command} is not implemented.")
 
     except ContentClientAuthenticationError as error:
-        return_error(f"Failed to execute {command} command.\n{AUTH_ERROR_MESSAGE}\nError: {error}")
+        demisto.debug(traceback.format_exc())
+        return_error(f"Failed to execute {command} command.\n{AUTH_ERROR_MESSAGE}\nError: {error}", error=error)
     except Exception as error:
-        return_error(f"Failed to execute {command} command.\nError:\n{error}")
+        demisto.debug(traceback.format_exc())
+        return_error(f"Failed to execute {command} command.\nError:\n{error}", error=error)
 
 
 """ ENTRY POINT """
