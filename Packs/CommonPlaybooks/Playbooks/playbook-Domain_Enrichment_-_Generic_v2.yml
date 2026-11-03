@@ -562,7 +562,7 @@ outputSections:
   - Domain.UpdatedDate
   - Domain.ExpirationDate
   - Domain.Umbrella.RiskScore
-  - Domain.Umbrella.SecureRank 
+  - Domain.Umbrella.SecureRank
   - Domain.Umbrella.FirstQueriedTime
   - Domain.Umbrella.ContentCategories
   - Domain.Umbrella.MalwareCategories
@@ -578,4 +578,7 @@ outputSections:
   - Domain.Registrar.Name
   name: General (Outputs group)
   description: Generic group for outputs
-adopted: true
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
