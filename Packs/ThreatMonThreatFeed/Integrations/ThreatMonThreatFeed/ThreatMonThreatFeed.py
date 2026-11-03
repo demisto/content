@@ -291,8 +291,8 @@ def dedup_key(indicator: dict) -> str:
     gets a new key, so it is sent again and its "last seen" is refreshed in Cortex.
     """
     raw = f"{indicator['type']}|{indicator['value']}|{indicator['fields'].get('firstseenbysource')}"
-    # 72-bit digest, base64 encoded to 12 characters, to keep the integration context small.
-    return base64.urlsafe_b64encode(hashlib.sha1(raw.encode()).digest()[:9]).decode()  # noqa: S324 - not security
+    # 72 bits of a SHA-256 digest, base64 encoded to 12 characters, to keep the integration context small.
+    return base64.urlsafe_b64encode(hashlib.sha256(raw.encode()).digest()[:9]).decode()
 
 
 """ STATE """
