@@ -120,10 +120,10 @@ tasks:
       version: -1
       name: Get domain category
       description: Gets the category of the domain as found in Cisco Umbrella Investigation records.
-      script: 'Cisco Umbrella Investigate|||umbrella-domain-categorization'
+      script: '|||umbrella-domain-categorization'
       type: regular
       iscommand: true
-      brand: "Cisco Umbrella Investigate"
+      brand: ""
     nexttasks:
       '#none#':
       - "24"
