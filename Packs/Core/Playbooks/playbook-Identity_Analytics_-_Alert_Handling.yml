@@ -971,22 +971,20 @@ tasks:
       version: -1
       name: Fetch alert extra data
       description: Returns information about each alert ID.
-      script: '|||core-get-cloud-original-alerts'
+      script: 'Builtin|||getRawAlerts'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "Builtin"
     nexttasks:
       '#none#':
       - "4"
     scriptarguments:
-      alert_ids:
+      issue_ids:
         complex:
           root: alert
           accessor: id
           transformers:
           - operator: uniq
-      filter_alert_fields:
-        simple: "false"
     separatecontext: false
     continueonerrortype: ""
     view: |-

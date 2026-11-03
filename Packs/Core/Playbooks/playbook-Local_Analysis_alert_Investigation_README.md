@@ -62,11 +62,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * core-report-incorrect-wildfire
-* core-retrieve-file-details
 * internal-wildfire-get-report
 * closeInvestigation
 * setParentIncidentFields
-* core-retrieve-files
+* retrieveFiles
 
 ## Playbook Inputs
 

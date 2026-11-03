@@ -41,7 +41,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * closeInvestigation
-* core-get-cloud-original-alerts
+* getRawAlerts
 * extractIndicators
 
 ## Playbook Inputs

@@ -27,7 +27,7 @@ This playbook does not use any scripts.
 ### Commands
 
 * closeInvestigation
-* core-get-cloud-original-alerts
+* getRawAlerts
 
 ## Playbook Inputs
 

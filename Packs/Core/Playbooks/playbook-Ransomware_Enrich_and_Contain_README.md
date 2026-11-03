@@ -30,15 +30,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * extractIndicators
-* core-isolate-endpoint
-* core-retrieve-file-details
+* isolateEndpoint
 * domain
 * file
 * ip
-* core-retrieve-files
+* retrieveFiles
 * url
 * wildfire-report
-* core-get-endpoints
+* getEndpoints
 
 ## Playbook Inputs
 

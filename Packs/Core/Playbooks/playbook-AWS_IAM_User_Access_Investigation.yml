@@ -415,15 +415,15 @@ tasks:
       version: -1
       name: Get cloud original alert
       description: Returns information about each alert ID.
-      script: '|||core-get-cloud-original-alerts'
+      script: 'Builtin|||getRawAlerts'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "Builtin"
     nexttasks:
       '#none#':
       - "60"
     scriptarguments:
-      alert_ids:
+      issue_ids:
         complex:
           root: alert
           accessor: id

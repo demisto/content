@@ -41,9 +41,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * setAlertStatus
-* core-isolate-endpoint
+* isolateEndpoint
 * setAlert
-* core-get-cloud-original-alerts
+* getRawAlerts
 
 ## Playbook Inputs
 

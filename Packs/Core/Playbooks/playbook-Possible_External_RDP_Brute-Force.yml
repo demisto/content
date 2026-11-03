@@ -1974,10 +1974,10 @@ tasks:
       version: -1
       name: Isolate Endpoint
       description: Isolates the specified endpoint.
-      script: '|||core-isolate-endpoint'
+      script: 'Builtin|||isolateEndpoint'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "Builtin"
     nexttasks:
       '#none#':
       - "136"
