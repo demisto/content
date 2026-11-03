@@ -1,4 +1,4 @@
-Provides shared CyberArk Certificate Manager SaaS code (parsing, GraphQL queries, paging, commands, and the expiry fetch) that the Certificate Manager SaaS and Next-Gen Trust Security integrations reuse.
+Provides shared CyberArk Certificate Manager SaaS code, which the Certificate Manager SaaS and Next-Gen Trust Security integrations reuse. The code includes parsing, GraphQL queries, paging, commands, and the expiry fetch.
 
 ## Script Data
 
