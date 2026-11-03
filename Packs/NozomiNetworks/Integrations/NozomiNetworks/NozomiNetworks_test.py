@@ -101,7 +101,7 @@ def test_parse_incidents():
 
     assert i == {
         "name": "Link RST sent by Slave_1af93f46-65c1-4f52-a46a-2a181597fb0c",
-        "severity": 2,
+        "severity": 1,
         "rawJSON": '{"id": "1af93f46-65c1-4f52-a46a-2a181597fb0c", '
         '"type_id": "NET:RST-FROM-SLAVE", "name": "Link RST sent by Slave", '
         '"description": "The slave 10.197.23.139 sent a RST of the connection to the master.", '
@@ -113,9 +113,30 @@ def test_parse_incidents():
     }
 
 
-@pytest.mark.parametrize("obj, expected", [(10, 4), (9.0, 4), (8.5, 4), (2.3, 1), (1.6, 1)])
+@pytest.mark.parametrize(
+    "obj, expected",
+    [
+        (0, 1),
+        (1, 1),
+        (1.6, 1),
+        (2.3, 1),
+        (5, 1),
+        (5.9, 1),
+        ("6", 2),
+        (6, 2),
+        (7, 2),
+        (7.9, 2),
+        (8, 3),
+        (8.5, 3),
+        ("9.0", 3),
+        (9, 3),
+        (9.9, 3),
+        (10, 4),
+        ("10.0", 4),
+    ],
+)
 def test_parse_severity(obj, expected):
-    assert parse_severity({"risk": obj}) is expected
+    assert parse_severity({"risk": obj}) == expected
 
 
 def test_http_incident_request(requests_mock):
@@ -161,8 +182,8 @@ def test_incidents_filtered(requests_mock):
 
     assert lr == 1392048082242
     assert [{"name": f"{i['name'].partition('_')[0]}", "severity": i["severity"]} for i in fi] == [
-        {"name": "Link RST sent by Slave", "severity": 2},
-        {"name": "New Node", "severity": 4},
+        {"name": "Link RST sent by Slave", "severity": 1},
+        {"name": "New Node", "severity": 3},
     ]
 
 
@@ -253,6 +274,102 @@ def test_ids_from_incidents():
 @pytest.mark.parametrize("obj, expected", [("8", " | where risk >= 8"), ("", ""), (None, "")])
 def test_risk_filter(obj, expected):
     assert risk_filter(obj) == expected
+
+
+@pytest.mark.parametrize(
+    "obj, expected",
+    [
+        (None, ""),
+        ("", ""),
+        ("   ", ""),
+        ("where risk >= 8", " | where risk >= 8"),
+        ("  where risk >= 8  ", " | where risk >= 8"),
+        ("| where risk >= 8", " | where risk >= 8"),
+        ("|where risk >= 8", " |where risk >= 8"),
+        ("where risk >= 8 | where is_security == true", " | where risk >= 8 | where is_security == true"),
+    ],
+)
+def test_custom_alert_filter(obj, expected):
+    assert custom_alert_filter(obj) == expected
+
+
+def test_incidents_with_custom_alert_filter(requests_mock):
+    with patch.object(demisto, "params", return_value={"customAlertFilter": "where type_id == SIGN:MALWARE-DETECTED"}):
+        fi, _ = incidents(
+            "1392048082000",
+            {},
+            "4",
+            False,
+            __get_client(
+                [
+                    {
+                        "json": __load_test_data("./test_data/incidents_better_than_time.json"),
+                        "path": "/api/open/query/do?query=alerts | sort record_created_at asc "
+                        "| where record_created_at > 1392048082000 | where risk >= 4 | where is_incident == false "
+                        "| where type_id == SIGN:MALWARE-DETECTED&page=1&count=100",
+                    }
+                ],
+                requests_mock,
+            ),
+        )
+
+    assert len(fi) == 2
+
+
+@pytest.mark.parametrize(
+    "demisto_params, expected",
+    [
+        ({}, []),
+        ({"defaultIncidentRole": ""}, []),
+        ({"defaultIncidentRole": "Administrator"}, ["Administrator"]),
+        ({"defaultIncidentRole": "Analyst_L2"}, ["Analyst_L2"]),
+        ({"defaultIncidentRole": "Analyst_L2, Administrator"}, ["Analyst_L2", "Administrator"]),
+    ],
+)
+def test_default_incident_roles(demisto_params, expected):
+    with patch.object(demisto, "params", return_value=demisto_params):
+        assert default_incident_roles() == expected
+
+
+def test_parse_incident_with_roles():
+    alert = {"id": "1", "name": "New Node", "record_created_at": 1392048082242, "risk": "9.0"}
+
+    assert parse_incident(alert, ["Analyst_L2"])["roles"] == ["Analyst_L2"]
+    assert "roles" not in parse_incident(alert)
+    assert "roles" not in parse_incident(alert, [])
+
+
+def test_fetch_incidents_assigns_default_role():
+    alerts = [
+        {"id": "1", "name": "New Node", "record_created_at": 1392048082242, "risk": "9.0"},
+        {"id": "2", "name": "Link RST sent by Slave", "record_created_at": 1392048082242, "risk": "4.5"},
+    ]
+    client = MagicMock()
+    client.http_get_request.return_value = {"result": alerts}
+
+    with (
+        patch.object(demisto, "params", return_value={"defaultIncidentRole": "Analyst_L2"}),
+        patch.object(demisto, "incidents") as mock_incidents,
+        patch.object(demisto, "setLastRun"),
+    ):
+        fetch_incidents(client, st="1392048082000", last_run={"page": 1}, risk="1", fetch_also_n2os_incidents=True)
+
+    created_incidents = mock_incidents.call_args[0][0]
+    assert len(created_incidents) == 2
+    assert all(incident["roles"] == ["Analyst_L2"] for incident in created_incidents)
+
+
+def test_fetch_incidents_without_default_role():
+    alerts = [{"id": "1", "name": "New Node", "record_created_at": 1392048082242, "risk": "9.0"}]
+    client = MagicMock()
+    client.http_get_request.return_value = {"result": alerts}
+
+    with patch.object(demisto, "params", return_value={}):
+        fetched, _ = fetch_incidents(
+            client, st="1392048082000", last_run={"page": 1}, risk="1", fetch_also_n2os_incidents=True, test_mode=True
+        )
+
+    assert "roles" not in fetched[0]
 
 
 @pytest.mark.parametrize("obj, expected", [(True, ""), (False, " | where is_incident == false")])
@@ -640,3 +757,98 @@ def __run_request_test(status_code, expected_exception_message):
 def __load_test_data(json_path):
     with open(json_path) as f:
         return json.load(f)
+
+
+CUSTOM_NAME_ALERT = {
+    "id": "1af93f46-65c1-4f52-a46a-2a181597fb0c",
+    "type_id": "NET:RST-FROM-SLAVE",
+    "name": "Link RST sent by Slave",
+    "description": "The slave 10.197.23.139 sent a RST of the connection to the master.",
+    "risk": "4.5",
+    "record_created_at": 1392048082242,
+}
+DEFAULT_NAME = "Link RST sent by Slave_1af93f46-65c1-4f52-a46a-2a181597fb0c"
+
+
+def test_incident_name_default_without_pattern():
+    assert incident_name(CUSTOM_NAME_ALERT) == DEFAULT_NAME
+    assert incident_name(CUSTOM_NAME_ALERT, "") == DEFAULT_NAME
+
+
+def test_incident_name_custom_pattern():
+    assert incident_name(CUSTOM_NAME_ALERT, "{type_id}_{id}") == "NET:RST-FROM-SLAVE_1af93f46-65c1-4f52-a46a-2a181597fb0c"
+    assert incident_name(CUSTOM_NAME_ALERT, "{name} - {ip_src}") == "Link RST sent by Slave -"
+
+
+def test_incident_name_missing_and_empty_fields():
+    alert = {**CUSTOM_NAME_ALERT, "description": ""}
+    assert incident_name(alert, "{type_id} - {description}") == "NET:RST-FROM-SLAVE -"
+    assert incident_name(alert, "{missing}|{type_id}") == "|NET:RST-FROM-SLAVE"
+    assert incident_name(alert, "{missing}") == DEFAULT_NAME
+
+
+@pytest.mark.parametrize("pattern", ["   ", "\t\n ", "{missing}", " {missing} \t{description} "])
+def test_incident_name_blank_result_falls_back_to_default(pattern):
+    alert = {**CUSTOM_NAME_ALERT, "description": ""}
+    assert incident_name(alert, pattern) == DEFAULT_NAME
+
+
+def test_incident_name_is_deterministic_and_sanitized():
+    alert = {**CUSTOM_NAME_ALERT, "description": "a\nb\t\tc"}
+    pattern = "{{literal}} {type_id} {description}"
+    assert incident_name(alert, pattern) == incident_name(alert, pattern) == "{literal} NET:RST-FROM-SLAVE a b c"
+
+
+def test_incident_name_values_are_not_reinterpolated_or_html():
+    alert = {**CUSTOM_NAME_ALERT, "description": "<script>{type_id}</script>"}
+    assert incident_name(alert, "{description}") == "script{type_id}/script"
+
+
+def test_incident_name_max_length():
+    assert MAX_INCIDENT_NAME_LENGTH == 76
+    name = incident_name({**CUSTOM_NAME_ALERT, "description": "x" * 1000}, "{description}")
+    assert len(name) == MAX_INCIDENT_NAME_LENGTH
+    assert name.endswith("...")
+    exact = incident_name({**CUSTOM_NAME_ALERT, "description": "x" * 76}, "{description}")
+    assert exact == "x" * 76
+
+
+def test_incident_name_long_example_is_truncated():
+    name = incident_name(CUSTOM_NAME_ALERT, "{type_id}_{id} - {description}")
+    assert name == "NET:RST-FROM-SLAVE_1af93f46-65c1-4f52-a46a-2a181597fb0c - The slave 10.19..."
+
+
+def test_parse_incident_uses_name_pattern():
+    assert parse_incident(CUSTOM_NAME_ALERT, name_pattern="{type_id}_{id}")["name"] == (
+        "NET:RST-FROM-SLAVE_1af93f46-65c1-4f52-a46a-2a181597fb0c"
+    )
+    assert parse_incident(CUSTOM_NAME_ALERT, name_pattern="  ")["name"] == DEFAULT_NAME
+    assert parse_incident(CUSTOM_NAME_ALERT)["name"] == DEFAULT_NAME
+
+
+def test_custom_incident_name_pattern_from_params():
+    assert custom_incident_name_pattern({"customIncidentNamePattern": "  {type_id}_{id} "}) == "{type_id}_{id}"
+    assert custom_incident_name_pattern({"customIncidentNamePattern": "   "}) == ""
+    assert custom_incident_name_pattern({"customIncidentNamePattern": None}) == ""
+    assert custom_incident_name_pattern({}) == ""
+
+
+def test_incidents_apply_custom_name_pattern():
+    alerts = [{**CUSTOM_NAME_ALERT, "id": f"id-{n}"} for n in range(3)]
+    with patch("NozomiNetworks.incidents_better_than_time", return_value=alerts):
+        parsed, _ = incidents(0, {}, None, False, MagicMock(), "{type_id}_{id}")
+        default_named, _ = incidents(0, {}, None, False, MagicMock())
+    assert [i["name"] for i in parsed] == [f"NET:RST-FROM-SLAVE_id-{n}" for n in range(3)]
+    assert [i["name"] for i in default_named] == [f"Link RST sent by Slave_id-{n}" for n in range(3)]
+
+
+def test_fetch_incidents_reads_name_pattern_from_params():
+    alerts = [CUSTOM_NAME_ALERT]
+    params = {"customIncidentNamePattern": "{type_id}_{id}", "fetchTime": "7 days"}
+    with (
+        patch.object(demisto, "params", return_value=params),
+        patch.object(demisto, "getLastRun", return_value={}),
+        patch("NozomiNetworks.incidents_better_than_time", return_value=alerts),
+    ):
+        parsed, _ = fetch_incidents(MagicMock(), st="0", last_run={}, test_mode=True)
+    assert parsed[0]["name"] == "NET:RST-FROM-SLAVE_1af93f46-65c1-4f52-a46a-2a181597fb0c"

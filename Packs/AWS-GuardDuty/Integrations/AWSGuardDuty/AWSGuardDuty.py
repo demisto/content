@@ -577,13 +577,15 @@ def severity_mapping(severity: Optional[float]) -> Optional[int]:
     demisto_severity = None
     if severity:
         if severity <= 3.9:
-            demisto_severity = 1
+            demisto_severity = IncidentSeverity.LOW
         elif 4 <= severity <= 6.9:
-            demisto_severity = 2
+            demisto_severity = IncidentSeverity.MEDIUM
         elif 7 <= severity <= 8.9:
-            demisto_severity = 3
+            demisto_severity = IncidentSeverity.HIGH
+        elif 9 <= severity <= 10:
+            demisto_severity = IncidentSeverity.CRITICAL
         else:
-            demisto_severity = 0
+            demisto_severity = IncidentSeverity.UNKNOWN
     return demisto_severity
 
 

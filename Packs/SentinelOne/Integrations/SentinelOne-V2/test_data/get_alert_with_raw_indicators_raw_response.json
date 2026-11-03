@@ -1,0 +1,241 @@
+{
+    "data": {
+        "alertWithRawIndicators": {
+            "hasNextPage": false,
+            "rawIndicators": [
+                {
+                    "event.category": "indicators",
+                    "event.id": "01AAAAAAAAAAAAAAAAAAAAAAAA_001",
+                    "event.time": 1700000000000,
+                    "event.type": "Behavioral Indicators",
+                    "indicator.category": "Persistence",
+                    "indicator.name": "TrustedBinaryUtilityModified",
+                    "indicator.identifier": "utility_replacement",
+                    "indicator.metadata": "detected replacement of utility /usr/bin/top with non-ELF type",
+                    "src.process.name": "testd",
+                    "src.process.cmdline": "testd --host=unix:///var/run/test.sock",
+                    "src.process.pid": 1234,
+                    "src.process.uid": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+                    "src.process.eUserName": "root",
+                    "src.process.signedStatus": "unsigned",
+                    "src.process.image.sha1": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                    "src.process.image.sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                    "src.process.image.path": "/usr/local/bin/testd",
+                    "agent.uuid": "cccccccc-dddd-eeee-ffff-aaaaaaaaaaaa",
+                    "agent.version": "25.4.1.24",
+                    "endpoint.name": "test-node.ec2.internal",
+                    "endpoint.os": "linux",
+                    "site.id": "1111111111111111111",
+                    "site.name": "Test Site",
+                    "account.id": "2222222222222222222",
+                    "account.name": "Test Account",
+                    "trace.id": "01AAAAAAAAAAAAAAAAAAAAAAAA"
+                },
+                {
+                    "event.category": "indicators",
+                    "event.id": "01AAAAAAAAAAAAAAAAAAAAAAAB_002",
+                    "event.time": 1700000001000,
+                    "event.type": "Behavioral Indicators",
+                    "indicator.category": "General",
+                    "indicator.name": "ContainerMountedExec",
+                    "indicator.identifier": "container_mounted_exec",
+                    "indicator.metadata": "File /tmp/test/check was executed in a container from a mounted volume.",
+                    "src.process.name": "check",
+                    "src.process.cmdline": "/tmp/test/check --verify",
+                    "src.process.pid": 5678,
+                    "src.process.uid": "ffffffff-aaaa-bbbb-cccc-dddddddddddd",
+                    "src.process.eUserName": "root",
+                    "src.process.signedStatus": "unsigned",
+                    "src.process.image.sha1": "cccccccccccccccccccccccccccccccccccccccc",
+                    "src.process.image.sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+                    "src.process.image.path": "/tmp/test/check",
+                    "agent.uuid": "cccccccc-dddd-eeee-ffff-aaaaaaaaaaaa",
+                    "agent.version": "25.4.1.24",
+                    "endpoint.name": "test-node.ec2.internal",
+                    "endpoint.os": "linux",
+                    "site.id": "1111111111111111111",
+                    "site.name": "Test Site",
+                    "account.id": "2222222222222222222",
+                    "account.name": "Test Account",
+                    "trace.id": "01AAAAAAAAAAAAAAAAAAAAAAAB"
+                }
+            ],
+            "eventSearchParams": {
+                "accountId": "2222222222222222222",
+                "startTime": "2024-01-01T00:00:00.000Z",
+                "endTime": "2024-01-01T00:10:00.000Z",
+                "filter": "indicator.description contains \"test\" agent.uuid = \"cccccccc-dddd-eeee-ffff-aaaaaaaaaaaa\"",
+                "type": "LOG"
+            },
+            "alert": {
+                "id": "aaaaaaaa-bbbb-cccc-dddd-ffffffffffff",
+                "name": "testd - Execution of a mounted binary in a container detected",
+                "severity": "CRITICAL",
+                "classification": "MALWARE",
+                "description": "Test process events analysis detected execution of a binary in a mounted directory inside a container",
+                "status": "NEW",
+                "analystVerdict": "UNDEFINED",
+                "confidenceLevel": "SUSPICIOUS",
+                "primaryIndicatorType": "Detects execution of a mounted binary in a container",
+                "rawData": {
+                    "activity_id": 2,
+                    "activity_name": "Update",
+                    "finding_info": {
+                        "title": "testd - Execution of a mounted binary in a container detected",
+                        "uid": "3333333333333333333",
+                        "created_time": "1700000000000",
+                        "desc": "Test process events analysis detected execution of a binary"
+                    },
+                    "metadata": {
+                        "product": {
+                            "name": "CWS",
+                            "vendor_name": "SentinelOne"
+                        },
+                        "version": "1.1.0"
+                    },
+                    "related_events": [
+                        {
+                            "product_uid": "aaaaaaaa-bbbb-cccc-dddd-111111111111",
+                            "type_uid": 100701,
+                            "type_name": "Process Activity: Launch",
+                            "time": 1700000000000,
+                            "severity_id": 3,
+                            "severity": "Medium",
+                            "actor": {
+                                "process": {
+                                    "name": "testd",
+                                    "cmd_line": "testd --host=unix:///var/run/test.sock",
+                                    "pid": 1234,
+                                    "uid": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+                                    "file": {
+                                        "name": "testd",
+                                        "path": "/usr/local/bin/testd",
+                                        "hashes": [
+                                            {"algorithm": "SHA-1", "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+                                            {"algorithm": "SHA-256", "value": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}
+                                        ]
+                                    }
+                                }
+                            },
+                            "device": {
+                                "uid": "cccccccc-dddd-eeee-ffff-aaaaaaaaaaaa",
+                                "name": "test-node.ec2.internal",
+                                "os": {"type": "Linux", "name": "Linux Test 1.0"}
+                            }
+                        },
+                        {
+                            "product_uid": "aaaaaaaa-bbbb-cccc-dddd-111111111111",
+                            "type_uid": 100701,
+                            "type_name": "Process Activity: Launch",
+                            "time": 1700000001000,
+                            "severity_id": 2,
+                            "severity": "Low",
+                            "actor": {
+                                "process": {
+                                    "name": "check",
+                                    "cmd_line": "/tmp/test/check --verify",
+                                    "pid": 5678,
+                                    "uid": "ffffffff-aaaa-bbbb-cccc-dddddddddddd",
+                                    "file": {
+                                        "name": "check",
+                                        "path": "/tmp/test/check",
+                                        "hashes": [
+                                            {"algorithm": "SHA-1", "value": "cccccccccccccccccccccccccccccccccccccccc"},
+                                            {"algorithm": "SHA-256", "value": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}
+                                        ]
+                                    }
+                                }
+                            },
+                            "device": {
+                                "uid": "cccccccc-dddd-eeee-ffff-aaaaaaaaaaaa",
+                                "name": "test-node.ec2.internal",
+                                "os": {"type": "Linux", "name": "Linux Test 1.0"}
+                            }
+                        }
+                    ]
+                },
+                "result": "UNMITIGATED",
+                "storylineId": "aaaaaaaa-bbbb-cccc-dddd-111111111111",
+                "attackSurfaces": [
+                    "ENDPOINT"
+                ],
+                "createdAt": "2024-01-01T00:01:00.000Z",
+                "detectedAt": "2024-01-01T00:01:00.000Z",
+                "firstSeenAt": "2024-01-01T00:01:00.000Z",
+                "lastSeenAt": "2024-01-01T00:01:00.100Z",
+                "updatedAt": "2024-01-01T00:01:00.100Z",
+                "externalId": "3333333333333333333",
+                "indicators": [
+                    {
+                        "id": "2370",
+                        "type": "Detects execution of a mounted binary in a container",
+                        "severity": "MEDIUM",
+                        "primary": false,
+                        "eventTime": "2024-01-01T00:01:00.000Z",
+                        "attacks": null
+                    },
+                    {
+                        "id": "584",
+                        "type": "Detects setgid bit set on files",
+                        "severity": "LOW",
+                        "primary": false,
+                        "eventTime": "2024-01-01T00:01:00.000Z",
+                        "attacks": [
+                            {
+                                "tactic": {
+                                    "name": "Privilege Escalation",
+                                    "uid": "TA0004"
+                                },
+                                "technique": {
+                                    "name": "Setuid and Setgid",
+                                    "uid": "T1548.001"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "asset": {
+                    "id": "aaaaaaaa-bbbb-1111-2222-cccccccccccc",
+                    "name": "test-node.ec2.internal",
+                    "osType": "LINUX",
+                    "osVersion": "Linux Test 1.0",
+                    "agentUuid": "cccccccc-dddd-eeee-ffff-aaaaaaaaaaaa",
+                    "agentVersion": "25.4.1.24",
+                    "lastLoggedInUser": "testuser",
+                    "status": "ACTIVE"
+                },
+                "detectionSource": {
+                    "product": "CWS",
+                    "vendor": "SentinelOne"
+                },
+                "process": {
+                    "cmdLine": "testd --host=unix:///var/run/test.sock",
+                    "username": "root",
+                    "file": {
+                        "name": "testd",
+                        "path": "/usr/local/bin/testd",
+                        "sha1": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                    }
+                },
+                "observables": [
+                    {
+                        "name": "process.name",
+                        "type": "PROCESS",
+                        "value": "testd"
+                    }
+                ],
+                "detectionTime": {
+                    "scope": {
+                        "accountId": "2222222222222222222",
+                        "accountName": "Test Account",
+                        "siteId": "1111111111111111111",
+                        "siteName": "Test Site",
+                        "groupId": "4444444444444444444",
+                        "groupName": "Default Group"
+                    }
+                }
+            }
+        }
+    }
+}

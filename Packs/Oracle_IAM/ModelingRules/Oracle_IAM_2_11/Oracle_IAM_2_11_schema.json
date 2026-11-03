@@ -1,0 +1,188 @@
+{
+    "oracle_oam_raw": {
+        "IAU_APPLICATIONNAME": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_COMPONENTTYPE": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_DOMAINNAME": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_ECID": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_EVENTCATEGORY": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_EVENTTYPE": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_HOSTID": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_HOSTNWADDR": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_SERVERNAME": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_TSTZORIGINATING": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "IAU_REMOTEIP": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_INITIATOR": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_RESOURCE": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_AUDITUSER": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_MESSAGETEXT": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_AUTHENTICATIONMETHOD": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_FAILURECODE": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_COMPONENTDATA": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_COMPONENTID": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_COMPONENTNAME": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_CONTEXTFIELDS": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_HOMEINSTANCE": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_ORACLEHOME": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_PROCESSID": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_ROLES": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_SESSIONID": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_TARGET": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_TARGETCOMPONENTTYPE": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_TENANTID": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_APPLICATIONDOMAINNAME": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_AUTHENTICATIONSCHEMEID": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_AGENTID": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_ADDITIONALINFO": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_USERID": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_RESOURCEHOST": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_REQUESTID": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_OLDATTRIBUTES": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_NEWATTRIBUTES": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_RESOURCEURI": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_OLDSETTINGS": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_NEWSETTINGS": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_SERVICEURI": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_CLIENTIPADDRESS": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_IDENTITYDOMAIN": {
+            "type": "string",
+            "is_array": false
+        },
+        "IAU_EVENTSTATUS": {
+            "type": "int",
+            "is_array": false
+        },
+        "IAU_THREADID": {
+            "type": "int",
+            "is_array": false
+        }                
+    }
+}

@@ -1,0 +1,136 @@
+{
+    "cyber_ark_vault_raw": {
+      "act": {
+        "type": "string",
+        "is_array": false
+      },
+      "app": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefDeviceEventClassId": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefDeviceProduct": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefDeviceVendor": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefDeviceVersion": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefName": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefSeverity": {
+        "type": "string",
+        "is_array": false
+      },
+      "cn1": {
+        "type": "string",
+        "is_array": false
+      },
+      "cn1Label": {
+        "type": "string",
+        "is_array": false
+      },
+      "cn2": {
+        "type": "string",
+        "is_array": false
+      },
+      "cn2Label": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs1": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs1Label": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs2": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs2Label": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs3": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs3Label": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs4": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs4Label": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs5": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs5Label": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs6": {
+        "type": "datetime",
+        "is_array": false
+      },
+      "cs6Label": {
+        "type": "string",
+        "is_array": false
+      },
+      "dhost": {
+        "type": "string",
+        "is_array": false
+      },
+      "duser": {
+        "type": "string",
+        "is_array": false
+      },
+      "dvc": {
+        "type": "string",
+        "is_array": false
+      },
+      "externalID": {
+        "type": "string",
+        "is_array": false
+      },
+      "fname": {
+        "type": "string",
+        "is_array": false
+      },
+      "msg": {
+        "type": "string",
+        "is_array": false
+      },
+      "reason": {
+        "type": "string",
+        "is_array": false
+      },
+      "shost": {
+        "type": "string",
+        "is_array": false
+      },
+      "suser": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

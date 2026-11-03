@@ -1,14 +1,14 @@
 from datetime import datetime
 
+from anyrun import RunTimeException
+from anyrun.connectors import FeedsConnector
+from anyrun.iterators import FeedsIterator
+
 import demistomock as demisto
 from CommonServerPython import *
 
-from anyrun.connectors import FeedsConnector
-from anyrun.iterators import FeedsIterator
-from anyrun import RunTimeException
-
 DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
-VERSION = "PA-XSOAR:2.4.0"
+VERSION = "PA-XSOAR:2.5.0"
 
 
 def test_module(params: dict) -> str:  # pragma: no cover

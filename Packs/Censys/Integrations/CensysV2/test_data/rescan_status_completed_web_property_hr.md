@@ -1,4 +1,5 @@
 ### Scan completed successfully for example.com:443.
+
 ### Enriched Web Property Data
 |Hostname|Port|Scan Time|Endpoint Types|Endpoint Paths|Labels|Threat Names|Vulns Names|Vendors|Products|Versions|sha256|Subject DN|Issuer DN|Common Names|Not Before|Not After|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|

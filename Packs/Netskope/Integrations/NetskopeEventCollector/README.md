@@ -1,5 +1,3 @@
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 ## Configure Netskope Event Collector in Cortex
 
 | **Parameter** | **Description** | **Required** |

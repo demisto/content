@@ -6174,3 +6174,242 @@ Synchronously invokes a deployed Google Cloud (1st Gen) function and returns its
 | GCP.CloudFunctions.Execution.executionId | String | The execution ID of the function invocation. |
 | GCP.CloudFunctions.Execution.result | String | The result of the function invocation, returned as a string. |
 | GCP.CloudFunctions.Execution.error | String | The error message if the function execution resulted in an error. |
+
+### gcp-resource-manager-project-create
+
+***
+Creates a new GCP project under the specified parent (organization or folder). Required Permission: resourcemanager.projects.create.
+
+#### Base Command
+
+`gcp-resource-manager-project-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions &lt; 3.0. | Optional |
+| project_id | The unique, user-assigned ID of the project to create. Must be 6 to 30 lowercase letters, digits, or hyphens, and must start with a letter. Trailing hyphens are prohibited (for example, tokyo-rain-123). | Required |
+| parent | The resource name of the parent under which to create the project, in the form "organizations/[organization_id]" or "folders/[folder_id]". | Required |
+| display_name | The user-assigned display name of the project. Must be 4 to 30 characters. | Optional |
+| labels | An object containing a list of "key": value pairs to associate with the project, without spaces. Example: key=abc,value=123;key=ABC,value=321. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.ResourceManager.Operations.name | String | The server-assigned name of the long-running operation tracking the request \(for example, operations/cp.1234567890\). |
+| GCP.ResourceManager.Operations.done | Boolean | Whether the operation has completed. If false, the operation is still in progress. |
+| GCP.ResourceManager.Operations.metadata | Object | Service-specific metadata associated with the operation. |
+| GCP.ResourceManager.Operations.response | Object | The normal response of the operation on success. Present only when the operation has completed. |
+| GCP.ResourceManager.Operations.error | Object | The error result of the operation in case of failure or cancellation. |
+
+### gcp-resource-manager-project-get
+
+***
+Retrieves a GCP project by its project ID. Required Permission: resourcemanager.projects.get.
+
+#### Base Command
+
+`gcp-resource-manager-project-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions &lt; 3.0. | Optional |
+| project_id | The unique ID of the project to fetch (for example, tokyo-rain-123). | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.ResourceManager.Projects.name | String | The resource name of the project \(for example, projects/415104041262\). |
+| GCP.ResourceManager.Projects.projectId | String | The unique, user-assigned ID of the project. |
+| GCP.ResourceManager.Projects.displayName | String | The user-assigned display name of the project. |
+| GCP.ResourceManager.Projects.state | String | The project lifecycle state. |
+| GCP.ResourceManager.Projects.createTime | String | The time the project was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
+| GCP.ResourceManager.Projects.parent | String | The resource name of the project's parent. |
+| GCP.ResourceManager.Projects.labels | Object | The labels associated with the project. |
+| GCP.ResourceManager.Projects.updateTime | String | The time the project was last modified, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
+| GCP.ResourceManager.Projects.deleteTime | String | The time the project was marked for deletion, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). Present only when the project is in the DELETE_REQUESTED state. |
+| GCP.ResourceManager.Projects.etag | String | A checksum computed by the server, used for optimistic concurrency control. |
+| GCP.ResourceManager.Projects.tags | Object | The tags bound to the project, in the format \{tag_key: tag_value\}. |
+| GCP.ResourceManager.Projects.configuredCapabilities | Unknown | The capabilities configured on the project. |
+
+### gcp-resource-manager-project-search
+
+***
+Searches for GCP projects that are visible to the caller and match an optional query. Required Permission: resourcemanager.projects.get.
+
+#### Base Command
+
+`gcp-resource-manager-project-search`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 , Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions &lt; 3.0. | Optional |
+| query | The optional query string to filter the projects. Supported fields include displayName, parent, id, state, and labels.[KEY] (for example, "state:ACTIVE" or "displayName:how*"). | Optional |
+| limit | The maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| next_token | The pagination token returned from a previous call, indicating where the listing should continue. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.ResourceManager.Projects.name | String | The resource name of the project \(for example, projects/415104041262\). |
+| GCP.ResourceManager.Projects.projectId | String | The unique, user-assigned ID of the project. |
+| GCP.ResourceManager.Projects.displayName | String | The user-assigned display name of the project. |
+| GCP.ResourceManager.Projects.state | String | The project lifecycle state. |
+| GCP.ResourceManager.Projects.createTime | String | The time the project was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
+| GCP.ResourceManager.Projects.parent | String | The resource name of the project's parent. |
+| GCP.ResourceManager.Projects.labels | Object | The labels associated with the project. |
+| GCP.ResourceManager.Projects.updateTime | String | The time the project was last modified, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
+| GCP.ResourceManager.Projects.deleteTime | String | The time the project was marked for deletion, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). Present only when the project is in the DELETE_REQUESTED state. |
+| GCP.ResourceManager.Projects.etag | String | A checksum computed by the server, used for optimistic concurrency control. |
+| GCP.ResourceManager.Projects.tags | Object | The tags bound to the project, in the format \{tag_key: tag_value\}. |
+| GCP.ResourceManager.Projects.configuredCapabilities | Unknown | The capabilities configured on the project. |
+| GCP.ResourceManager.ProjectsNextToken | String | The token to use to retrieve the next batch of projects. |
+
+### gcp-resource-manager-project-update
+
+***
+Updates the display name and/or labels of an existing GCP project. Required Permission: resourcemanager.projects.update.
+
+#### Base Command
+
+`gcp-resource-manager-project-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions &lt; 3.0. | Optional |
+| project_id | The unique ID of the project to update (for example, tokyo-rain-123). | Required |
+| display_name | The new display name for the project. Must be 4 to 30 characters. | Optional |
+| labels | An object containing a list of "key": value pairs to associate with the project, without spaces. Example: key=abc,value=123;key=ABC,value=321. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.ResourceManager.Operations.name | String | The server-assigned name of the long-running operation tracking the request \(for example, operations/cp.1234567890\). |
+| GCP.ResourceManager.Operations.done | Boolean | Whether the operation has completed. If false, the operation is still in progress. |
+| GCP.ResourceManager.Operations.metadata | Object | Service-specific metadata associated with the operation. |
+| GCP.ResourceManager.Operations.response | Object | The normal response of the operation on success. Present only when the operation has completed. |
+| GCP.ResourceManager.Operations.error | Object | The error result of the operation in case of failure or cancellation. |
+
+### gcp-resource-manager-project-delete
+
+***
+Marks a GCP project for deletion (sets its state to DELETE_REQUESTED). Required Permission: resourcemanager.projects.delete.
+
+#### Base Command
+
+`gcp-resource-manager-project-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions &lt; 3.0. | Optional |
+| project_id | The unique ID of the project to delete (for example, tokyo-rain-123). | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.ResourceManager.Operations.name | String | The server-assigned name of the long-running operation tracking the request \(for example, operations/cp.1234567890\). |
+| GCP.ResourceManager.Operations.done | Boolean | Whether the operation has completed. If false, the operation is still in progress. |
+| GCP.ResourceManager.Operations.metadata | Object | Service-specific metadata associated with the operation. |
+| GCP.ResourceManager.Operations.response | Object | The normal response of the operation on success. Present only when the operation has completed. |
+| GCP.ResourceManager.Operations.error | Object | The error result of the operation in case of failure or cancellation. |
+
+### gcp-resource-manager-project-undelete
+
+***
+Restores a GCP project that was previously marked for deletion. Required Permission: resourcemanager.projects.undelete.
+
+#### Base Command
+
+`gcp-resource-manager-project-undelete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions &lt; 3.0. | Optional |
+| project_id | The unique ID of the project to restore (for example, tokyo-rain-123). | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.ResourceManager.Operations.name | String | The server-assigned name of the long-running operation tracking the request \(for example, operations/cp.1234567890\). |
+| GCP.ResourceManager.Operations.done | Boolean | Whether the operation has completed. If false, the operation is still in progress. |
+| GCP.ResourceManager.Operations.metadata | Object | Service-specific metadata associated with the operation. |
+| GCP.ResourceManager.Operations.response | Object | The normal response of the operation on success. Present only when the operation has completed. |
+| GCP.ResourceManager.Operations.error | Object | The error result of the operation in case of failure or cancellation. |
+
+### gcp-resource-manager-organization-search
+
+***
+Searches for GCP organizations that are visible to the caller and match an optional query. Required Permission: resourcemanager.organizations.get.
+
+#### Base Command
+
+`gcp-resource-manager-organization-search`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions &lt; 3.0. | Optional |
+| query | The optional query string to filter the organizations. Organizations may be filtered by owner.directoryCustomerId or by domain (for example, "domain:google.com"). | Optional |
+| limit | The maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| next_token | The pagination token returned from a previous call, indicating where the listing should continue. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.ResourceManager.Organizations.name | String | The resource name of the organization, in the form "organizations/\[organization_id\]". |
+| GCP.ResourceManager.Organizations.displayName | String | The organization's display name. |
+| GCP.ResourceManager.Organizations.state | String | The organization's current lifecycle state. |
+| GCP.ResourceManager.Organizations.directoryCustomerId | String | The G Suite / Cloud Identity customer ID used in the Directory API. |
+| GCP.ResourceManager.Organizations.createTime | String | The time the organization was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
+| GCP.ResourceManager.Organizations.updateTime | String | The time the organization was last modified, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
+| GCP.ResourceManager.Organizations.deleteTime | String | The time the organization was marked for deletion, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). Present only when the organization is in the DELETE_REQUESTED state. |
+| GCP.ResourceManager.Organizations.etag | String | A checksum computed by the server, used for optimistic concurrency control. |
+| GCP.ResourceManager.OrganizationsNextToken | String | The token to use to retrieve the next batch of organizations. |
+
+### gcp-resource-manager-organization-get
+
+***
+Retrieves a GCP organization by its resource name. Required Permission: resourcemanager.organizations.get.
+
+#### Base Command
+
+`gcp-resource-manager-organization-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions &lt; 3.0. | Optional |
+| name | The resource name of the organization to fetch, in the form "organizations/[organization_id]" (e.g. organizations/1234). | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.ResourceManager.Organizations.name | String | The resource name of the organization, in the form "organizations/\[organization_id\]". |
+| GCP.ResourceManager.Organizations.displayName | String | The organization's display name. |
+| GCP.ResourceManager.Organizations.state | String | The organization's current lifecycle state. |
+| GCP.ResourceManager.Organizations.directoryCustomerId | String | The G Suite / Cloud Identity customer ID used in the Directory API. |
+| GCP.ResourceManager.Organizations.createTime | String | The time the organization was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
+| GCP.ResourceManager.Organizations.updateTime | String | The time the organization was last modified, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
+| GCP.ResourceManager.Organizations.deleteTime | String | The time the organization was marked for deletion, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). Present only when the organization is in the DELETE_REQUESTED state. |
+| GCP.ResourceManager.Organizations.etag | String | A checksum computed by the server, used for optimistic concurrency control. |
