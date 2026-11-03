@@ -1,4 +1,3 @@
-import copy
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
@@ -345,12 +344,11 @@ PERMISSIONS_TO_COMMANDS = {
     ],
     "Microsoft.Sql/servers/databases/read": [
         "azure-sqldb-databases-list",
-        "azure-sqldb-audit-policy-list",
+        "azure-sqldb-server-auditing-settings-list",
         "azure-sqldb-security-alert-policy-create",
     ],
     "Microsoft.Sql/servers/databases/auditingSettings/read": [
         "azure-sqldb-server-auditing-settings-list",
-        "azure-sqldb-audit-policy-list",
         "azure-sqldb-audit-policy-create-update",
     ],
     "Microsoft.Sql/servers/databases/auditingSettings/write": [
@@ -363,7 +361,7 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-sqldb-security-alert-policy-update",
     ],
     "Microsoft.Sql/servers/firewallRules/read": [
-        "azure-sqldb-firewall-rule-list",
+        "azure-sqldb-firewall-rules-list",
     ],
     "Microsoft.Sql/servers/firewallRules/write": [
         "azure-sqldb-firewall-rule-create-update",
@@ -566,7 +564,7 @@ API_FUNCTION_TO_PERMISSIONS = {
         "Microsoft.Sql/servers/databases/auditingSettings/read",
         "Microsoft.Sql/servers/databases/auditingSettings/write",
     ],
-    "sql_firewall_rule_list": ["Microsoft.Sql/servers/firewallRules/read"],
+    "sql_firewall_rules_list": ["Microsoft.Sql/servers/firewallRules/read"],
     "sql_firewall_rule_create_update": ["Microsoft.Sql/servers/firewallRules/write"],
     "sql_firewall_rule_delete": ["Microsoft.Sql/servers/firewallRules/delete"],
     "sql_firewall_rule_replace": ["Microsoft.Sql/servers/firewallRules/write"],
@@ -805,6 +803,13 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.OperationalInsights/workspaces/tables/write",
     "Microsoft.OperationalInsights/workspaces/tables/delete",
     "Microsoft.OperationalInsights/workspaces/searchJobs/write",
+    "Microsoft.Sql/servers/read",
+    "Microsoft.Sql/servers/databases/read",
+    "Microsoft.Sql/servers/databases/auditingSettings/read",
+    "Microsoft.Sql/servers/databases/auditingSettings/write",
+    "Microsoft.Sql/servers/firewallRules/read",
+    "Microsoft.Sql/servers/firewallRules/write",
+    "Microsoft.Sql/servers/firewallRules/delete",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -820,7 +825,6 @@ DISKS_API_VERSION = "2024-03-02"
 ACR_API_VERSION = "2023-07-01"
 KEY_VAULT_API_VERSION = "2022-07-01"
 SQL_DB_API_VERSION = "2025-01-01"
-SQL_FIREWALL_API_VERSION = "2023-08-01"
 COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
@@ -3153,10 +3157,11 @@ class AzureClient:
             ValueError: If the resource group is not found.
             DemistoException: If there are permission or other API errors.
         """
-        params = {"api-version": SQL_DB_API_VERSION}
+        params: dict = {"api-version": SQL_DB_API_VERSION}
         if next_link:
             demisto.debug("Listing SQL servers (next page).")
             full_url = validate_next_link(next_link, urlparse(PREFIX_URL_AZURE).hostname or "")
+            params = {}
         else:
             if resource_group_name:
                 full_url = (
@@ -3195,10 +3200,11 @@ class AzureClient:
             ValueError: If the server is not found.
             DemistoException: If there are permission or other API errors.
         """
-        params = {"api-version": SQL_DB_API_VERSION}
+        params: dict = {"api-version": SQL_DB_API_VERSION}
         if next_link:
             demisto.debug(f"Listing SQL databases for server {server_name} (next page).")
-            full_url = next_link
+            full_url = validate_next_link(next_link, urlparse(PREFIX_URL_AZURE).hostname or "")
+            params = {}
         else:
             full_url = (
                 f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -3237,10 +3243,11 @@ class AzureClient:
             ValueError: If the database or server is not found.
             DemistoException: If there are permission or other API errors.
         """
-        params = {"api-version": SQL_DB_API_VERSION}
+        params: dict = {"api-version": SQL_DB_API_VERSION}
         if next_link:
             demisto.debug(f"Listing SQL DB audit policies for {server_name}/{db_name} (next page).")
-            full_url = next_link
+            full_url = validate_next_link(next_link, urlparse(PREFIX_URL_AZURE).hostname or "")
+            params = {}
         else:
             full_url = (
                 f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -3333,7 +3340,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def sql_firewall_rule_list(
+    def sql_firewall_rules_list(
         self,
         server_name: str,
         subscription_id: str,
@@ -3358,10 +3365,11 @@ class AzureClient:
             ValueError: If the server or rule is not found.
             DemistoException: If there are permission or other API errors.
         """
-        params = {"api-version": SQL_FIREWALL_API_VERSION}
+        params: dict = {"api-version": SQL_DB_API_VERSION}
         if next_link:
             demisto.debug(f"Listing SQL firewall rules for server {server_name} (next page).")
-            full_url = next_link
+            full_url = validate_next_link(next_link, urlparse(PREFIX_URL_AZURE).hostname or "")
+            params = {}
         else:
             full_url = (
                 f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -3377,7 +3385,7 @@ class AzureClient:
                 e=e,
                 resource_name=server_name,
                 resource_type="SQL Firewall Rule",
-                api_function_name="sql_firewall_rule_list",
+                api_function_name="sql_firewall_rules_list",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -3410,7 +3418,7 @@ class AzureClient:
             DemistoException: If there are permission or other API errors.
         """
         data = {"properties": {"startIpAddress": start_ip_address, "endIpAddress": end_ip_address}}
-        params = {"api-version": SQL_FIREWALL_API_VERSION}
+        params = {"api-version": SQL_DB_API_VERSION}
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Sql/servers/{server_name}/firewallRules/{firewall_rule_name}"
@@ -3444,7 +3452,7 @@ class AzureClient:
             ValueError: If the server or rule is not found.
             DemistoException: If there are permission or other API errors.
         """
-        params = {"api-version": SQL_FIREWALL_API_VERSION}
+        params = {"api-version": SQL_DB_API_VERSION}
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Sql/servers/{server_name}/firewallRules/{firewall_rule_name}"
@@ -3497,7 +3505,7 @@ class AzureClient:
             if properties:
                 rule["properties"] = properties
             request_body = {"values": [rule]}
-        params = {"api-version": SQL_FIREWALL_API_VERSION}
+        params = {"api-version": SQL_DB_API_VERSION}
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Sql/servers/{server_name}/firewallRules"
@@ -11424,11 +11432,7 @@ def sql_servers_list_command(client: AzureClient, params: dict, args: Dict[str, 
         subscription_id=subscription_id, resource_group_name=resource_group_name, next_link=next_token
     )
 
-    servers = copy.deepcopy(response.get("value", []))
-    for server in servers:
-        if properties := server.get("properties", {}):
-            server.update(properties)
-            del server["properties"]
+    servers = response.get("value", [])
 
     name = f"SQL Servers in resource group: {resource_group_name}" if resource_group_name else "SQL Servers List"
     if not servers:
@@ -11469,11 +11473,7 @@ def sql_db_list_command(client: AzureClient, params: dict, args: Dict[str, Any])
         server_name=server_name, subscription_id=subscription_id, resource_group_name=resource_group_name, next_link=next_token
     )
 
-    databases = copy.deepcopy(response.get("value", []))
-    for db in databases:
-        if properties := db.get("properties", {}):
-            db.update(properties)
-            del db["properties"]
+    databases = response.get("value", [])
 
     if not databases:
         return CommandResults(readable_output=f"No databases found for server {server_name}.")
@@ -11487,7 +11487,7 @@ def sql_db_list_command(client: AzureClient, params: dict, args: Dict[str, Any])
     readable_output = tableToMarkdown(
         f"Databases for server {server_name}",
         databases,
-        headers=["name", "location", "status", "managedBy"],
+        headers=["name", "location", "kind", "type"],
         headerTransform=pascalToSpace,
         removeNull=True,
     )
@@ -11652,7 +11652,7 @@ def sql_db_threat_policy_create_update_command(client: AzureClient, params: dict
     )
 
 
-def sql_firewall_rule_list_command(client: AzureClient, params: dict, args: Dict[str, Any]) -> CommandResults:
+def sql_firewall_rules_list_command(client: AzureClient, params: dict, args: Dict[str, Any]) -> CommandResults:
     """
     Lists firewall rules for a SQL server, or retrieves a specific rule.
 
@@ -11670,7 +11670,7 @@ def sql_firewall_rule_list_command(client: AzureClient, params: dict, args: Dict
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     next_token = args.get("next_token")
 
-    response = client.sql_firewall_rule_list(
+    response = client.sql_firewall_rules_list(
         server_name=server_name,
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
@@ -13849,7 +13849,7 @@ def main():  # pragma: no cover
             "azure-sqldb-server-auditing-settings-list": sql_db_server_auditing_settings_list_command,
             "azure-sqldb-audit-policy-create-update": sql_db_audit_policy_create_update_command,
             "azure-sqldb-security-alert-policy-create": sql_db_threat_policy_create_update_command,
-            "azure-sqldb-firewall-rules-list": sql_firewall_rule_list_command,
+            "azure-sqldb-firewall-rules-list": sql_firewall_rules_list_command,
             "azure-sqldb-firewall-rule-create-update": sql_firewall_rule_create_update_command,
             "azure-sqldb-firewall-rule-delete": sql_firewall_rule_delete_command,
             "azure-sqldb-firewall-rule-replace": sql_firewall_rule_replace_command,

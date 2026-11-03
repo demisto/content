@@ -72,7 +72,7 @@ from Azure import (
     sql_db_server_auditing_settings_list_command,
     sql_db_audit_policy_create_update_command,
     sql_db_threat_policy_create_update_command,
-    sql_firewall_rule_list_command,
+    sql_firewall_rules_list_command,
     sql_firewall_rule_create_update_command,
     sql_firewall_rule_delete_command,
     sql_firewall_rule_replace_command,
@@ -1135,8 +1135,8 @@ def test_sql_db_threat_policy_create_update_command_none_alerts(mocker, client, 
 
 def test_sql_firewall_rule_list_command(mocker, client, mock_params):
     """
-    Given: An AzureClient whose sql_firewall_rule_list returns a list of firewall rules with a nextLink.
-    When: sql_firewall_rule_list_command is called without a specific rule name.
+    Given: An AzureClient whose sql_firewall_rules_list returns a list of firewall rules with a nextLink.
+    When: sql_firewall_rules_list_command is called without a specific rule name.
     Then: It returns CommandResults with all rules and the nextLink in outputs.
     """
     raw = {
@@ -1156,9 +1156,9 @@ def test_sql_firewall_rule_list_command(mocker, client, mock_params):
         ],
         "nextLink": "https://management.azure.com/next-fw-page",
     }
-    mocker.patch.object(client, "sql_firewall_rule_list", return_value=raw)
+    mocker.patch.object(client, "sql_firewall_rules_list", return_value=raw)
 
-    result = sql_firewall_rule_list_command(client=client, params=mock_params, args={"server_name": "integration"})
+    result = sql_firewall_rules_list_command(client=client, params=mock_params, args={"server_name": "integration"})
 
     fw_key = next(k for k in result.outputs if "FirewallRule" in k and "NextLink" not in k)
     assert len(result.outputs[fw_key]) == 2
@@ -1166,15 +1166,15 @@ def test_sql_firewall_rule_list_command(mocker, client, mock_params):
     assert "Firewall Rules" in result.readable_output
     next_link_key = next(k for k in result.outputs if "true" in k)
     assert result.outputs[next_link_key].get("FirewallRulesNextToken") == "https://management.azure.com/next-fw-page"
-    call_kwargs = client.sql_firewall_rule_list.call_args[1]
+    call_kwargs = client.sql_firewall_rules_list.call_args[1]
     assert call_kwargs.get("firewall_rule_name") is None
     assert call_kwargs.get("next_link") is None
 
 
 def test_sql_firewall_rule_list_command_single_rule(mocker, client, mock_params):
     """
-    Given: An AzureClient whose sql_firewall_rule_list returns a single firewall rule object.
-    When: sql_firewall_rule_list_command is called with a specific firewall_rule_name.
+    Given: An AzureClient whose sql_firewall_rules_list returns a single firewall rule object.
+    When: sql_firewall_rules_list_command is called with a specific firewall_rule_name.
     Then: It returns CommandResults with exactly one rule (no nextLink in outputs).
     """
     raw = {
@@ -1183,29 +1183,29 @@ def test_sql_firewall_rule_list_command_single_rule(mocker, client, mock_params)
         "type": "Microsoft.Sql/servers/firewallRules",
         "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"},
     }
-    mocker.patch.object(client, "sql_firewall_rule_list", return_value=raw)
+    mocker.patch.object(client, "sql_firewall_rules_list", return_value=raw)
 
     args = {"server_name": "integration", "firewall_rule_name": "test-rule"}
-    result = sql_firewall_rule_list_command(client=client, params=mock_params, args=args)
+    result = sql_firewall_rules_list_command(client=client, params=mock_params, args=args)
 
     # Single-rule path: uses outputs_prefix + outputs_key_field; outputs is the single rule dict
     assert result.outputs_prefix == "Azure.SqlDB.FirewallRules"
     assert result.outputs_key_field == "id"
     assert isinstance(result.outputs, dict)
     assert result.outputs.get("name") == "test-rule"
-    call_kwargs = client.sql_firewall_rule_list.call_args[1]
+    call_kwargs = client.sql_firewall_rules_list.call_args[1]
     assert call_kwargs.get("firewall_rule_name") == "test-rule"
 
 
 def test_sql_firewall_rule_list_command_empty(mocker, client, mock_params):
     """
-    Given: An AzureClient whose sql_firewall_rule_list returns an empty value list.
-    When: sql_firewall_rule_list_command is called.
+    Given: An AzureClient whose sql_firewall_rules_list returns an empty value list.
+    When: sql_firewall_rules_list_command is called.
     Then: It returns a no-results readable output.
     """
-    mocker.patch.object(client, "sql_firewall_rule_list", return_value={"value": []})
+    mocker.patch.object(client, "sql_firewall_rules_list", return_value={"value": []})
 
-    result = sql_firewall_rule_list_command(client=client, params=mock_params, args={"server_name": "srv"})
+    result = sql_firewall_rules_list_command(client=client, params=mock_params, args={"server_name": "srv"})
 
     assert "No firewall rules were found" in result.readable_output
     assert not result.outputs
@@ -1295,24 +1295,21 @@ def test_sql_firewall_rule_replace_command(mocker, client, mock_params):
     assert call_kwargs["request_body"] is None
 
 
-def test_sql_firewall_rule_replace_command_with_entry_id(mocker, client, mock_params):
+def test_sql_firewall_rule_replace_command_with_entry_id(mocker, client, mock_params, tmp_path):
     """
     Given: An AzureClient and an entry_id pointing to a JSON file.
     When: sql_firewall_rule_replace_command is called with entry_id.
     Then: The request body is taken from the file and passed to the client.
     """
-    import tempfile
-
     fw_rules_content = json.dumps(
         {"values": [{"name": "test-rule", "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"}}]}
     )
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
-        f.write(fw_rules_content)
-        tmp_file_path = f.name
+    tmp_file = tmp_path / "fw_rules.json"
+    tmp_file.write_text(fw_rules_content, encoding="utf-8")
 
     raw = {"values": [{"id": "/sub/rg/srv/fw/test-rule", "name": "test-rule"}]}
     mocker.patch.object(client, "sql_firewall_rule_replace", return_value=raw)
-    mocker.patch("Azure.demisto.getFilePath", return_value={"path": tmp_file_path})
+    mocker.patch("Azure.demisto.getFilePath", return_value={"path": str(tmp_file)})
 
     args = {"server_name": "integration", "entry_id": "123@456"}
     result = sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)

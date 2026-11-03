@@ -4266,19 +4266,19 @@ script:
     - contextPath: Azure.SqlDB.Servers.type
       description: The server resource type.
       type: String
-    - contextPath: Azure.SqlDB.Servers.administratorLogin
+    - contextPath: Azure.SqlDB.Servers.properties.administratorLogin
       description: The username of the server administrator.
       type: String
-    - contextPath: Azure.SqlDB.Servers.version
+    - contextPath: Azure.SqlDB.Servers.properties.version
       description: The server version.
       type: String
-    - contextPath: Azure.SqlDB.Servers.state
+    - contextPath: Azure.SqlDB.Servers.properties.state
       description: The server state.
       type: String
-    - contextPath: Azure.SqlDB.Servers.fullyQualifiedDomainName
+    - contextPath: Azure.SqlDB.Servers.properties.fullyQualifiedDomainName
       description: The fully qualified domain name of the server.
       type: String
-    - contextPath: Azure.SqlDB.Servers.publicNetworkAccess
+    - contextPath: Azure.SqlDB.Servers.properties.publicNetworkAccess
       description: Whether public endpoint access is enabled.
       type: String
     - contextPath: Azure.SqlDB.ServersNextToken
@@ -4320,22 +4320,22 @@ script:
     - contextPath: Azure.SqlDB.Databases.type
       description: The database resource type.
       type: String
-    - contextPath: Azure.SqlDB.Databases.status
+    - contextPath: Azure.SqlDB.Databases.properties.status
       description: The database status.
       type: String
     - contextPath: Azure.SqlDB.Databases.managedBy
       description: The resource that manages the database.
       type: String
-    - contextPath: Azure.SqlDB.Databases.sku
+    - contextPath: Azure.SqlDB.Databases.properties.sku
       description: The database SKU details.
       type: Unknown
-    - contextPath: Azure.SqlDB.Databases.collation
+    - contextPath: Azure.SqlDB.Databases.properties.collation
       description: The database collation.
       type: String
-    - contextPath: Azure.SqlDB.Databases.maxSizeBytes
+    - contextPath: Azure.SqlDB.Databases.properties.maxSizeBytes
       description: The maximum size of the database in bytes.
       type: Number
-    - contextPath: Azure.SqlDB.Databases.zoneRedundant
+    - contextPath: Azure.SqlDB.Databases.properties.zoneRedundant
       description: Whether the database is zone redundant.
       type: Boolean
     - contextPath: Azure.SqlDB.DatabasesNextToken
@@ -4393,7 +4393,7 @@ script:
       description: The URL to the next page of database audit policies. Pass this value as next_token to retrieve the next page.
       type: String
   - name: azure-sqldb-audit-policy-create-update
-    description: "Creates or updates the auditing policy for a SQL database. Required Permissions: Microsoft.Sql/servers/databases/auditingSettings/read, Microsoft.Sql/servers/databases/auditingSettings/write."
+    description: "Creates or fully replaces the auditing settings of a SQL database. Warning: this is a full replacement and not a partial update. Any property that is not provided as an argument (for example, audit_actions_groups, retention_days, or storage_endpoint) is removed or reset to its default. Required Permissions: Microsoft.Sql/servers/databases/auditingSettings/read, Microsoft.Sql/servers/databases/auditingSettings/write."
     arguments:
     - name: server_name
       description: The name of the SQL server.
@@ -4494,7 +4494,7 @@ script:
       description: Whether managed identity is used to access blob storage.
       type: Boolean
   - name: azure-sqldb-security-alert-policy-create
-    description: "Creates a database's security alert policy. Required Permissions: Microsoft.Sql/servers/databases/read, Microsoft.Sql/servers/databases/securityAlertPolicies/write."
+    description: "Creates a database's security alert policy. Required Permissions: Microsoft.Sql/servers/databases/securityAlertPolicies/write."
     arguments:
     - name: server_name
       description: The name of the SQL server.
