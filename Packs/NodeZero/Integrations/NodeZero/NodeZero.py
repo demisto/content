@@ -30,7 +30,7 @@ GRAPHQL_ENDPOINT = "v1/graphql"
 # Client identity sent on every request so NodeZero can attribute Cortex pull traffic.
 USER_AGENT_PRODUCT = "NodeZero-Cortex"
 INTEGRATION_NAME = "NodeZero"
-UNKNOWN_VERSION = "unknown"
+VERSION = "1"
 # A version goes into a header, so only plain version strings are accepted.
 HEADER_SAFE_VERSION = re.compile(r"[A-Za-z0-9][A-Za-z0-9._+-]{0,63}")
 
@@ -185,16 +185,16 @@ class ParametersValidationError(Exception):
 
 
 def _header_safe_version(raw_version: Any) -> str:
-    """Return the version when it is a plain version string, otherwise "unknown"."""
+    """Return the version when it is a plain version string, otherwise "1"."""
     if not isinstance(raw_version, str):
-        return UNKNOWN_VERSION
+        return VERSION
     match = HEADER_SAFE_VERSION.fullmatch(raw_version.strip())
     # group(0) is always a plain str, so a str subclass returned by a lookup cannot run code when formatted.
-    return match.group(0) if match else UNKNOWN_VERSION
+    return match.group(0) if match else VERSION
 
 
 def _pack_version() -> str:
-    """The pack version, or "unknown" when it is not available (for example in unit tests).
+    """The pack version, or "1" when it is not available (for example in unit tests).
 
     The content build writes CONSTANT_PACK_VERSION into this script. Reading it first skips get_pack_version(),
     which on Base packs older than 1.41.4 makes internal API calls on every run.
@@ -202,21 +202,21 @@ def _pack_version() -> str:
     try:
         return _header_safe_version(globals().get("CONSTANT_PACK_VERSION") or get_pack_version())
     except Exception:
-        return UNKNOWN_VERSION
+        return VERSION
 
 
 def _platform_version() -> str:
-    """The Cortex platform version, or "unknown" when it is not available."""
+    """The Cortex platform version, or "1" when it is not available."""
     try:
         return _header_safe_version(demisto.demistoVersion().get("version"))
     except Exception:
-        return UNKNOWN_VERSION
+        return VERSION
 
 
 def build_user_agent() -> str:
     """Build the User-Agent, e.g. "NodeZero-Cortex/1.1.0 (NodeZero; Cortex 8.7.0)".
 
-    Never raises an Exception: a failed or unusable version lookup gives "unknown". SystemExit and
+    Never raises an Exception: a failed or unusable version lookup gives "1". SystemExit and
     KeyboardInterrupt raised by a lookup are not caught.
     """
     return f"{USER_AGENT_PRODUCT}/{_pack_version()} ({INTEGRATION_NAME}; Cortex {_platform_version()})"

@@ -739,10 +739,10 @@ class TestUserAgent:
         ):
             assert build_user_agent() == "NodeZero-Cortex/2.0.0 (NodeZero; Cortex 8.7.0)"
 
-    def test_user_agent_in_unit_tests_has_unknown_pack_version(self):
+    def test_user_agent_in_unit_tests_falls_back_for_the_pack_version(self):
         """get_pack_version() returns '' when the integration is not unified."""
         with patch("NodeZero.demisto.demistoVersion", return_value={"version": "8.7.0"}):
-            assert build_user_agent() == "NodeZero-Cortex/unknown (NodeZero; Cortex 8.7.0)"
+            assert build_user_agent() == "NodeZero-Cortex/1 (NodeZero; Cortex 8.7.0)"
 
     @pytest.mark.parametrize(
         "pack_version_patch",
@@ -750,17 +750,17 @@ class TestUserAgent:
             {"return_value": ""},
             {"return_value": None},
             {"return_value": "   "},
-            {"return_value": "2.0.0\r\nX-Injected: 1"},
+            {"return_value": "2.0.0\r\nX-Injected: x"},
             {"return_value": "2.0.0 beta"},
             {"side_effect": RuntimeError("boom")},
         ],
     )
-    def test_pack_version_falls_back_to_unknown(self, pack_version_patch):
+    def test_pack_version_falls_back_to_1(self, pack_version_patch):
         with (
             patch("NodeZero.get_pack_version", **pack_version_patch),
             patch("NodeZero.demisto.demistoVersion", return_value={"version": "8.7.0"}),
         ):
-            assert build_user_agent() == "NodeZero-Cortex/unknown (NodeZero; Cortex 8.7.0)"
+            assert build_user_agent() == "NodeZero-Cortex/1 (NodeZero; Cortex 8.7.0)"
 
     @pytest.mark.parametrize(
         "platform_version_patch",
@@ -769,25 +769,25 @@ class TestUserAgent:
             {"return_value": {"version": ""}},
             {"return_value": {"version": None}},
             {"return_value": {"version": 8}},
-            {"return_value": {"version": "8.7.0\nX-Injected: 1"}},
+            {"return_value": {"version": "8.7.0\nX-Injected: x"}},
             {"return_value": None},
             {"return_value": "8.7.0"},
             {"side_effect": KeyError("version")},
         ],
     )
-    def test_platform_version_falls_back_to_unknown(self, platform_version_patch):
+    def test_platform_version_falls_back_to_1(self, platform_version_patch):
         with (
             patch("NodeZero.get_pack_version", return_value="2.0.0"),
             patch("NodeZero.demisto.demistoVersion", **platform_version_patch),
         ):
-            assert build_user_agent() == "NodeZero-Cortex/2.0.0 (NodeZero; Cortex unknown)"
+            assert build_user_agent() == "NodeZero-Cortex/2.0.0 (NodeZero; Cortex 1)"
 
     def test_both_versions_missing(self):
         with (
             patch("NodeZero.get_pack_version", side_effect=Exception("no pack")),
             patch("NodeZero.demisto.demistoVersion", side_effect=Exception("no platform")),
         ):
-            assert build_user_agent() == "NodeZero-Cortex/unknown (NodeZero; Cortex unknown)"
+            assert build_user_agent() == "NodeZero-Cortex/1 (NodeZero; Cortex 1)"
 
     def test_version_is_stripped(self):
         with (
@@ -1085,7 +1085,7 @@ class TestPinnedConstants:
         assert NodeZero.GRAPHQL_ENDPOINT == "v1/graphql"
         assert NodeZero.USER_AGENT_PRODUCT == "NodeZero-Cortex"
         assert NodeZero.INTEGRATION_NAME == "NodeZero"
-        assert NodeZero.UNKNOWN_VERSION == "unknown"
+        assert NodeZero.VERSION == "1"
 
     def test_params_defaults_are_literal(self):
         params = Params.model_validate({"url": TEST_URL, "credentials": {"password": API_KEY}})
@@ -1227,21 +1227,21 @@ class TestUserAgentNeverRaises:
     @pytest.mark.parametrize(
         ("pack_version", "expected"),
         [
-            (7, "unknown"),
-            (2.0, "unknown"),
-            (b"2.0.0", "unknown"),
-            (["2.0.0"], "unknown"),
-            ({"version": "2.0.0"}, "unknown"),
-            (object(), "unknown"),
-            (ExplodingStrip("2.0.0"), "unknown"),
-            (StripsToVersion(), "unknown"),
-            (".2.0", "unknown"),
-            ("8.7.0 (beta)", "unknown"),
-            ("2.0.0;", "unknown"),
+            (7, "1"),
+            (2.0, "1"),
+            (b"2.0.0", "1"),
+            (["2.0.0"], "1"),
+            ({"version": "2.0.0"}, "1"),
+            (object(), "1"),
+            (ExplodingStrip("2.0.0"), "1"),
+            (StripsToVersion(), "1"),
+            (".2.0", "1"),
+            ("8.7.0 (beta)", "1"),
+            ("2.0.0;", "1"),
             ("2.0.0+build.1", "2.0.0+build.1"),
             ("v2.0.0-rc_1", "v2.0.0-rc_1"),
             ("9" * 64, "9" * 64),
-            ("9" * 65, "unknown"),
+            ("9" * 65, "1"),
         ],
     )
     def test_pack_version_values(self, pack_version, expected):
@@ -1254,12 +1254,12 @@ class TestUserAgentNeverRaises:
     @pytest.mark.parametrize(
         ("platform_patch", "expected"),
         [
-            ({"return_value": ExplodingGet()}, "unknown"),
-            ({"return_value": {"version": ["8.7.0"]}}, "unknown"),
-            ({"return_value": {"version": "8.7.0 (beta)"}}, "unknown"),
+            ({"return_value": ExplodingGet()}, "1"),
+            ({"return_value": {"version": ["8.7.0"]}}, "1"),
+            ({"return_value": {"version": "8.7.0 (beta)"}}, "1"),
             ({"return_value": {"version": "8" * 64}}, "8" * 64),
-            ({"return_value": {"version": "8" * 65}}, "unknown"),
-            ({"side_effect": ValueError("no server")}, "unknown"),
+            ({"return_value": {"version": "8" * 65}}, "1"),
+            ({"side_effect": ValueError("no server")}, "1"),
         ],
     )
     def test_platform_version_values(self, platform_patch, expected):
@@ -1280,7 +1280,7 @@ class TestUserAgentNeverRaises:
         client.hello_world()
 
         headers = requests_mock.last_request.headers
-        assert headers["User-Agent"] == "NodeZero-Cortex/unknown (NodeZero; Cortex unknown)"
+        assert headers["User-Agent"] == "NodeZero-Cortex/1 (NodeZero; Cortex 1)"
         assert headers["X-Request-ID"] == f"{client.run_id}-1"
 
 
@@ -1591,21 +1591,21 @@ class TestUnifiedPackVersionConstant:
         assert unexpected_get_pack_version.call_count == 1
 
     @pytest.mark.parametrize("get_pack_version_patch", [{"return_value": ""}, {"side_effect": RuntimeError("no pack")}])
-    def test_no_constant_and_no_pack_version_gives_unknown(self, platform_870, get_pack_version_patch):
+    def test_no_constant_and_no_pack_version_gives_1(self, platform_870, get_pack_version_patch):
         with patch("NodeZero.get_pack_version", **get_pack_version_patch) as mock_get_pack_version:
-            assert build_user_agent() == "NodeZero-Cortex/unknown (NodeZero; Cortex 8.7.0)"
+            assert build_user_agent() == "NodeZero-Cortex/1 (NodeZero; Cortex 8.7.0)"
         assert mock_get_pack_version.call_count == 1
 
     @pytest.mark.parametrize(
-        "unusable_constant", ["   ", "2.0.0 beta", "2.0.0\r\nX-Injected: 1", 2], ids=["blank", "space", "crlf", "int"]
+        "unusable_constant", ["   ", "2.0.0 beta", "2.0.0\r\nX-Injected: x", 2], ids=["blank", "space", "crlf", "int"]
     )
-    def test_set_but_unusable_constant_gives_unknown_without_fallback(
+    def test_set_but_unusable_constant_gives_1_without_calling_get_pack_version(
         self, monkeypatch, unexpected_get_pack_version, platform_870, unusable_constant
     ):
         """A non-empty constant is the build's answer: it is filtered like any version, not replaced by the lookup."""
         monkeypatch.setattr(NodeZero, "CONSTANT_PACK_VERSION", unusable_constant, raising=False)
 
-        assert build_user_agent() == "NodeZero-Cortex/unknown (NodeZero; Cortex 8.7.0)"
+        assert build_user_agent() == "NodeZero-Cortex/1 (NodeZero; Cortex 8.7.0)"
         assert unexpected_get_pack_version.call_count == 0
 
     def test_constant_is_stripped(self, monkeypatch, unexpected_get_pack_version, platform_870):
@@ -1615,15 +1615,15 @@ class TestUnifiedPackVersionConstant:
 
 
 class TestStrSubclassVersions:
-    """A str subclass from either lookup gives "unknown" or the plain version, never an exception."""
+    """A str subclass from either lookup gives "1" or the plain version, never an exception."""
 
     @pytest.mark.parametrize(
         ("version", "expected"),
         [
-            (ExplodingStrip("2.0.0"), "unknown"),
+            (ExplodingStrip("2.0.0"), "1"),
             (FormatBomb("2.0.0"), "2.0.0"),
             (StripToFormatBomb("2.0.0"), "2.0.0"),
-            (BoolBomb("2.0.0"), "unknown"),
+            (BoolBomb("2.0.0"), "1"),
         ],
         ids=["exploding_strip", "format_bomb", "strip_to_format_bomb", "bool_bomb"],
     )
@@ -1639,7 +1639,7 @@ class TestStrSubclassVersions:
     @pytest.mark.parametrize(
         ("version", "expected"),
         [
-            (ExplodingStrip("2.0.0"), "unknown"),
+            (ExplodingStrip("2.0.0"), "1"),
             (FormatBomb("2.0.0"), "2.0.0"),
             (StripToFormatBomb("2.0.0"), "2.0.0"),
             (BoolBomb("2.0.0"), "2.0.0"),  # only the constant is truth-tested
@@ -1656,7 +1656,7 @@ class TestStrSubclassVersions:
     @pytest.mark.parametrize(
         ("version", "expected"),
         [
-            (ExplodingStrip("8.7.0"), "unknown"),
+            (ExplodingStrip("8.7.0"), "1"),
             (FormatBomb("8.7.0"), "8.7.0"),
             (StripToFormatBomb("8.7.0"), "8.7.0"),
         ],

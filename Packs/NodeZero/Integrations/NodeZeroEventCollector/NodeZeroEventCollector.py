@@ -72,7 +72,7 @@ MAX_ERROR_DETAIL_LENGTH = 500
 # Every request identifies the collector. The headers carry no key, token, tenant URL, instance name or license ID.
 INTEGRATION_NAME = "NodeZeroEventCollector"
 USER_AGENT_PRODUCT = "NodeZero-Cortex"
-UNKNOWN_VERSION = "unknown"
+VERSION = "1"
 VERSION_PATTERN = re.compile(r"[0-9A-Za-z][0-9A-Za-z.+_-]{0,63}")  # a version that is safe in a header, used with fullmatch
 REQUEST_ID_HEADER = "X-Request-ID"
 
@@ -507,13 +507,13 @@ def graphql_error_text(errors: Any) -> str:
 
 
 def version_text(read: Callable[[], Any]) -> str:
-    """The version that read() returns, or UNKNOWN_VERSION when it raises, is empty, or isn't safe in a header."""
+    """The version that read() returns, or VERSION when it raises, is empty, or isn't safe in a header."""
     try:
         value = read()
         text = str.strip(value) if isinstance(value, str) else ""  # str.strip gives a plain str, even for a subclass
     except Exception:
-        return UNKNOWN_VERSION
-    return text if VERSION_PATTERN.fullmatch(text) else UNKNOWN_VERSION
+        return VERSION
+    return text if VERSION_PATTERN.fullmatch(text) else VERSION
 
 
 def read_pack_version() -> Any:
@@ -528,7 +528,7 @@ def read_platform_version() -> Any:
 
 def build_user_agent() -> str:
     """NodeZero-Cortex/<pack version> (NodeZeroEventCollector; Cortex <platform version>). Raises no Exception: a
-    version that can't be read is "unknown"."""
+    version that can't be read is "1"."""
     pack_version = version_text(read_pack_version)  # '' until demisto-sdk unifies the integration, as in unit tests
     platform_version = version_text(read_platform_version)
     return f"{USER_AGENT_PRODUCT}/{pack_version} ({INTEGRATION_NAME}; Cortex {platform_version})"

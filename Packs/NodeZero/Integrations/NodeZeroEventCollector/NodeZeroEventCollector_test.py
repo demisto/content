@@ -3588,10 +3588,10 @@ def test_checkpoint_mirror_never_records_a_pentest_whose_final_commit_failed(har
 
 # ----- request identity: User-Agent, X-Request-ID, operation names and the run ID -----
 
-UNIT_TEST_USER_AGENT = "NodeZero-Cortex/unknown (NodeZeroEventCollector; Cortex 5.5.0)"  # demistomock's platform version
+UNIT_TEST_USER_AGENT = "NodeZero-Cortex/1 (NodeZeroEventCollector; Cortex 5.5.0)"  # demistomock's platform version
 RUN_ID_PATTERN = r"[0-9a-f]{32}"
 KNOWN_USER_AGENT = "NodeZero-Cortex/2.0.0 (NodeZeroEventCollector; Cortex 8.9.0)"
-UNKNOWN_USER_AGENT = "NodeZero-Cortex/unknown (NodeZeroEventCollector; Cortex unknown)"
+FALLBACK_USER_AGENT = "NodeZero-Cortex/1 (NodeZeroEventCollector; Cortex 1)"
 
 
 def sent_headers(harness: Harness) -> list[tuple[str, dict[str, str]]]:
@@ -3619,9 +3619,10 @@ def test_operation_names() -> None:
     assert lookup_body == NodeZeroEventCollector.FINISHED_PENTESTS_QUERY
 
 
-def test_user_agent_in_unit_tests_falls_back_for_the_pack_version() -> None:
+def test_user_agent_in_unit_tests_falls_back_for_the_pack_version(monkeypatch: pytest.MonkeyPatch) -> None:
     assert NodeZeroEventCollector.get_pack_version() == ""  # not unified, so there is no CONSTANT_PACK_VERSION
-    assert NodeZeroEventCollector.build_user_agent() == UNIT_TEST_USER_AGENT
+    monkeypatch.setattr(NodeZeroEventCollector, "VERSION", "fallback")  # no lookup returns this, only the fallback
+    assert NodeZeroEventCollector.build_user_agent() == "NodeZero-Cortex/fallback (NodeZeroEventCollector; Cortex 5.5.0)"
 
 
 def raise_error() -> Any:
@@ -3633,17 +3634,17 @@ def raise_error() -> Any:
     [
         (lambda: "2.0.0", lambda: {"version": "8.9.0", "buildNumber": "1"}, KNOWN_USER_AGENT),
         (lambda: " 2.0.0 ", lambda: {"version": "8.9.0"}, KNOWN_USER_AGENT),
-        (raise_error, raise_error, UNKNOWN_USER_AGENT),
-        (lambda: None, lambda: None, UNKNOWN_USER_AGENT),
-        (lambda: "", dict, UNKNOWN_USER_AGENT),
-        (lambda: "   ", lambda: {"version": ""}, UNKNOWN_USER_AGENT),
-        (lambda: 2, lambda: {"version": 8.9}, UNKNOWN_USER_AGENT),
-        (lambda: "2.0.0\r\nX-Injected: 1", lambda: "8.9.0", UNKNOWN_USER_AGENT),
-        (lambda: "2.0.0 (beta)", lambda: {"version": "8.9.0;x"}, UNKNOWN_USER_AGENT),
+        (raise_error, raise_error, FALLBACK_USER_AGENT),
+        (lambda: None, lambda: None, FALLBACK_USER_AGENT),
+        (lambda: "", dict, FALLBACK_USER_AGENT),
+        (lambda: "   ", lambda: {"version": ""}, FALLBACK_USER_AGENT),
+        (lambda: 2, lambda: {"version": 8.9}, FALLBACK_USER_AGENT),
+        (lambda: "2.0.0\r\nX-Injected: x", lambda: "8.9.0", FALLBACK_USER_AGENT),
+        (lambda: "2.0.0 (beta)", lambda: {"version": "8.9.0;x"}, FALLBACK_USER_AGENT),
         (
-            lambda: "1" * 65,  # longer than any real version
+            lambda: "2" * 65,  # longer than any real version
             lambda: {"version": "8.10.0-rc1"},
-            "NodeZero-Cortex/unknown (NodeZeroEventCollector; Cortex 8.10.0-rc1)",
+            "NodeZero-Cortex/1 (NodeZeroEventCollector; Cortex 8.10.0-rc1)",
         ),
     ],
 )
@@ -3659,7 +3660,7 @@ def test_client_builds_its_user_agent_once(monkeypatch: pytest.MonkeyPatch) -> N
     monkeypatch.setattr(NodeZeroEventCollector, "get_pack_version", raise_error)
     monkeypatch.setattr(demisto, "demistoVersion", raise_error)
     client = make_client()  # a failing version lookup never stops the client from being built
-    assert client.identity_headers()["User-Agent"] == UNKNOWN_USER_AGENT
+    assert client.identity_headers()["User-Agent"] == FALLBACK_USER_AGENT
 
 
 def test_each_client_has_its_own_run_id() -> None:
@@ -3802,7 +3803,7 @@ QUERY_DIGESTS = {
 def test_identity_constants() -> None:
     assert NodeZeroEventCollector.INTEGRATION_NAME == "NodeZeroEventCollector"
     assert NodeZeroEventCollector.USER_AGENT_PRODUCT == "NodeZero-Cortex"
-    assert NodeZeroEventCollector.UNKNOWN_VERSION == "unknown"
+    assert NodeZeroEventCollector.VERSION == "1"
     assert NodeZeroEventCollector.REQUEST_ID_HEADER == "X-Request-ID"
     assert NodeZeroEventCollector.VERSION_PATTERN.pattern == r"[0-9A-Za-z][0-9A-Za-z.+_-]{0,63}"
 
@@ -3826,10 +3827,10 @@ class BrokenVersionInfo(dict):
     [
         ("1" * 64, {"version": "8.9.0"}, "1" * 64, "8.9.0"),  # the longest version kept: 64 characters
         ("2.0.0+build_7", {"version": "8.9.0-rc.1"}, "2.0.0+build_7", "8.9.0-rc.1"),  # every punctuation mark allowed
-        (".2.0.0", {"version": "-8.9.0"}, "unknown", "unknown"),  # a version starts with a letter or a digit
-        (b"2.0.0", ["8.9.0"], "unknown", "unknown"),  # bytes, and a platform answer that isn't a dict
+        (".2.0.0", {"version": "-8.9.0"}, "1", "1"),  # a version starts with a letter or a digit
+        (b"2.0.0", ["8.9.0"], "1", "1"),  # bytes, and a platform answer that isn't a dict
         ("2.0.0\n", {"version": "\t8.9.0 "}, "2.0.0", "8.9.0"),  # surrounding whitespace is trimmed, never sent
-        ("2.0.0", BrokenVersionInfo(), "2.0.0", "unknown"),
+        ("2.0.0", BrokenVersionInfo(), "2.0.0", "1"),
     ],
     ids=["64-characters-kept", "allowed-punctuation", "leading-punctuation", "bytes-and-a-list", "trimmed", "lookup-raises"],
 )
@@ -4387,7 +4388,7 @@ def test_user_agent_survives_any_reader_exception(monkeypatch: pytest.MonkeyPatc
 
     monkeypatch.setattr(NodeZeroEventCollector, "get_pack_version", fail)
     monkeypatch.setattr(demisto, "demistoVersion", fail)
-    assert NodeZeroEventCollector.build_user_agent() == UNKNOWN_USER_AGENT
+    assert NodeZeroEventCollector.build_user_agent() == FALLBACK_USER_AGENT
 
 
 @pytest.mark.parametrize("error", [KeyboardInterrupt, SystemExit], ids=["KeyboardInterrupt", "SystemExit"])
@@ -4396,7 +4397,7 @@ def test_version_text_lets_interrupts_through(error: type[BaseException]) -> Non
         raise error
 
     with pytest.raises(error):
-        NodeZeroEventCollector.version_text(interrupted)  # on purpose: only Exception means "unknown"
+        NodeZeroEventCollector.version_text(interrupted)  # on purpose: only an Exception falls back to "1"
 
 
 class FailingStrip(str):
