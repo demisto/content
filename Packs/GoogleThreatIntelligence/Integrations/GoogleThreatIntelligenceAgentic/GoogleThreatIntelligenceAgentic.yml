@@ -1,0 +1,1617 @@
+commonfields:
+  id: GoogleThreatIntelligenceAgentic
+  version: -1
+name: GoogleThreatIntelligenceAgentic
+display: Google Threat Intelligence - Agentic
+fromversion: 6.10.0
+category: Data Enrichment & Threat Intelligence
+provider: Google
+sectionorder:
+- Connect
+description: This integration allows the security teams to automate and interact with the Google Threat Intelligence Agentic capabilities from Cortex XSOAR. It provides the ability to manage the GTI Agentic Flows and their executions, and to run investigations through the GTI Agentic Sessions.
+configuration:
+- displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+  additionalinfo: Provide the API key of the Google Threat Intelligence platform for the authentication. Leave the username field empty and fill in the API key in the password field.
+  section: Connect
+- display: Group ID
+  name: group_id
+  type: 0
+  required: false
+  additionalinfo: Specify the ID of the group to which the API quota of the requests should be charged. If not provided, the quota is charged to the user that owns the API key.
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: gti-agentic-flow-list
+    description: Retrieves a list of the GTI Agentic Flows that are accessible to the configured API key, based on the provided filter arguments.
+    arguments:
+    - name: name
+      description: The name of the Flow. The value supports a partial match.
+      required: false
+    - name: enabled
+      description: Whether the Flow is enabled.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - name: filter
+      description: "The filter search modifier expression.\n\nExample: 'enabled:true name:digest'.\n\nNote: The 'name' and the 'enabled' arguments are combined with an OR operator, and this argument is combined with that group using an AND operator."
+      required: false
+    - name: sort_field
+      description: The sort field.
+      auto: PREDEFINED
+      predefined:
+      - Name
+      - Creation Date
+      - Last Modification Date
+      - Last Run At
+      defaultValue: Last Run At
+      required: false
+    - name: sort_order
+      description: The sort order.
+      auto: PREDEFINED
+      predefined:
+      - Asc
+      - Desc
+      defaultValue: Desc
+      required: false
+    - name: limit
+      description: The maximum number of Flows to return in a single command run. The maximum allowed value is 40.
+      defaultValue: '10'
+      required: false
+    - name: cursor
+      description: "The cursor of the page of results to retrieve.\n\nNote: Use the cursor returned by the previous run of the 'gti-agentic-flow-list' command to retrieve the next page."
+      required: false
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.id
+      description: The unique identifier of the Flow.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.type
+      description: The type of the object. The value is always 'flow'.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.name
+      description: The name of the Flow.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.enabled
+      description: Whether the Flow is enabled and eligible to be triggered by its schedule.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.private
+      description: Whether the Flow is private to the user that owns it.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.id
+      description: The unique identifier of the node inside the Flow graph.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.type
+      description: 'The type of the node. Possible values are: NODE_TYPE_SCHEDULE_TIME, NODE_TYPE_RUN_PROMPT, NODE_TYPE_SEND_EMAIL.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.name
+      description: The display name of the node.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.schedule_node.cron_expression
+      description: The cron expression that defines when the Flow is triggered.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.schedule_node.timezone
+      description: The timezone in which the cron expression is evaluated.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.run_prompt_node.prompt
+      description: The prompt that is sent to the Google Threat Intelligence agent when the node runs.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.run_prompt_node.reuse_session
+      description: Whether the node reuses the existing agentic session instead of creating a new one.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.send_email_node.notification_emails
+      description: The list of the email addresses that receive the notification.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.send_email_node.email_subject
+      description: The subject of the notification email.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.send_email_node.message
+      description: The body of the notification email.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.connections.source_node_id
+      description: The unique identifier of the node the connection starts from.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.connections.target_node_id
+      description: The unique identifier of the node the connection points to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.connections.source_handle
+      description: The handle of the source node the connection is attached to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.trigger_state.last_run_at
+      description: The date and time (UTC) when the Flow was last triggered.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.creation_date
+      description: The date and time (UTC) when the Flow was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.last_modification_date
+      description: The date and time (UTC) when the Flow was last modified.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.links.self
+      description: The link of the Flow object on the Google Threat Intelligence platform.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.relationships.group.data.type
+      description: The type of the group object that is related to the Flow.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.relationships.group.data.id
+      description: The unique identifier of the group that owns the Flow.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.PageToken.Flow.next_cursor
+      description: The cursor to be used in the 'cursor' argument of the next command runs to retrieve the next page of results.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.PageToken.Flow.total_count
+      description: The total number of the records that match the given argument(s).
+      type: Number
+  - name: gti-agentic-flow-get
+    description: Retrieves the details of a specific GTI Agentic Flow by its ID.
+    arguments:
+    - name: flow_id
+      description: "The ID of the Flow.\n\nNote: Use the 'gti-agentic-flow-list' command to retrieve the Flow ID."
+      required: true
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.id
+      description: The unique identifier of the Flow.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.type
+      description: The type of the object. The value is always 'flow'.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.name
+      description: The name of the Flow.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.enabled
+      description: Whether the Flow is enabled and eligible to be triggered by its schedule.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.private
+      description: Whether the Flow is private to the user that owns it.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.id
+      description: The unique identifier of the node inside the Flow graph.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.type
+      description: 'The type of the node. Possible values are: NODE_TYPE_SCHEDULE_TIME, NODE_TYPE_RUN_PROMPT, NODE_TYPE_SEND_EMAIL.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.name
+      description: The display name of the node.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.schedule_node.cron_expression
+      description: The cron expression that defines when the Flow is triggered.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.schedule_node.timezone
+      description: The timezone in which the cron expression is evaluated.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.run_prompt_node.prompt
+      description: The prompt that is sent to the Google Threat Intelligence agent when the node runs.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.run_prompt_node.reuse_session
+      description: Whether the node reuses the existing agentic session instead of creating a new one.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.send_email_node.notification_emails
+      description: The list of the email addresses that receive the notification.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.send_email_node.email_subject
+      description: The subject of the notification email.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.send_email_node.message
+      description: The body of the notification email.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.connections.source_node_id
+      description: The unique identifier of the node the connection starts from.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.connections.target_node_id
+      description: The unique identifier of the node the connection points to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.connections.source_handle
+      description: The handle of the source node the connection is attached to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.trigger_state.last_run_at
+      description: The date and time (UTC) when the Flow was last triggered.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.creation_date
+      description: The date and time (UTC) when the Flow was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.last_modification_date
+      description: The date and time (UTC) when the Flow was last modified.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.links.self
+      description: The link of the Flow object on the Google Threat Intelligence platform.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.relationships.group.data.type
+      description: The type of the group object that is related to the Flow.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.relationships.group.data.id
+      description: The unique identifier of the group that owns the Flow.
+      type: String
+  - name: gti-agentic-flow-create
+    description: Creates a new GTI Agentic Flow with the provided node and connection graph.
+    arguments:
+    - name: name
+      description: "The name of the Flow to create."
+      required: true
+    - name: enabled
+      description: "Whether the Flow should be enabled on creation."
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'True'
+      required: false
+    - name: nodes
+      description: "The nodes of the Flow graph as a JSON formatted list.\n\nExample: [{\"id\": \"n1\", \"type\": \"NODE_TYPE_SCHEDULE_TIME\", \"name\": \"Every morning\", \"schedule_node\": {\"cron_expression\": \"0 9 * * *\", \"timezone\": \"UTC\"}}, {\"id\": \"n2\", \"type\": \"NODE_TYPE_RUN_PROMPT\", \"name\": \"Summarise new detections\", \"run_prompt_node\": {\"prompt\": \"Summarise URLs first seen in the last 24h that are flagged malicious by 5+ engines.\", \"reuse_session\": false}}, {\"id\": \"n3\", \"type\": \"NODE_TYPE_SEND_EMAIL\", \"name\": \"Email the SOC\", \"send_email_node\": {\"notification_emails\": [\"soc@example.com\"], \"email_subject\": \"Daily malicious-URL digest\", \"message\": \"See attached summary.\"}}].\n\nNote: The graph requires a node of the 'NODE_TYPE_SCHEDULE_TIME' type and a node of the 'NODE_TYPE_RUN_PROMPT' type, and every node requires the 'id', the 'type' and the field that its type requires, which is the 'cron_expression', the 'prompt' and the 'notification_emails' field respectively.\n\nNote: When this argument is provided, the 'schedule_time', the 'schedule_frequency', the 'prompt', the 'reuse_session', the 'notification_emails', the 'email_subject' and the 'email_message' arguments are ignored.\n\nFor more information about the node types and their fields, see https://gtidocs.virustotal.com/reference/create-flow."
+      required: false
+    - name: connections
+      description: "The connections between the Flow nodes as a JSON formatted list.\n\nExample: [{\"source_node_id\": \"n1\", \"target_node_id\": \"n2\", \"source_handle\": \"\"}, {\"source_node_id\": \"n2\", \"target_node_id\": \"n3\", \"source_handle\": \"\"}].\n\nNote: Every connection requires the 'source_node_id' and the 'target_node_id' fields, and both of them are required to refer to a node of the 'nodes' argument.\n\nNote: The connections are required to connect the node of the 'NODE_TYPE_SCHEDULE_TIME' type to a node of the 'NODE_TYPE_RUN_PROMPT' type, directly or through other nodes.\n\nNote: This argument is required when the 'nodes' argument is provided, and it is ignored otherwise.\n\nFor more information about the connection fields, see https://gtidocs.virustotal.com/reference/create-flow."
+      required: false
+    - name: schedule_time
+      description: "The date or the time at which the Flow runs, which builds the cron expression of the schedule node along with the 'schedule_frequency' argument.\n\nFormat: An ISO 8601 date and time (YYYY-MM-DDTHH:MM:SSZ or YYYY-MM-DDTHH:MM:SS+HH:MM), a date and time (YYYY-MM-DD HH:MM), a time (HH:MM or H:MMam/pm), a relative time (tomorrow 9am) or an epoch timestamp in seconds.\n\nExample: '2026-09-25T09:00:00Z', '2026-09-25T14:30:00+05:30', '2026-09-25 09:00', '09:00', '9:30pm', 'tomorrow 9am', '1789026769'.\n\nNote: The value is converted into UTC, a value without a timezone is considered to be in UTC, and the seconds are ignored.\n\nNote: A time without a date is considered to be of today, hence the 'Weekly' and the 'Monthly' frequencies run on the weekday and the day of today.\n\nNote: This argument is required when the 'nodes' argument is not provided, and it is ignored otherwise."
+      required: false
+    - name: schedule_frequency
+      description: "How often the Flow runs at the 'schedule_time' argument. 'Daily' runs at its time every day, 'Weekdays' every weekday from Monday to Friday, 'Weekends' every Saturday and Sunday, 'Weekly' on its weekday every week and 'Monthly' on its day every month.\n\nNote: A 'Monthly' Flow on the 29th, the 30th or the 31st day does not run in the months without that day.\n\nNote: This argument is only used along with the 'schedule_time' argument."
+      auto: PREDEFINED
+      predefined:
+      - Daily
+      - Weekdays
+      - Weekends
+      - Weekly
+      - Monthly
+      defaultValue: Daily
+      required: false
+    - name: prompt
+      description: "The prompt that the Flow sends to the Google Threat Intelligence agent.\n\nNote: This argument is required when the 'nodes' argument is not provided, and it is ignored otherwise."
+      required: false
+    - name: reuse_session
+      description: "Whether the prompt node reuses the existing agentic session instead of creating a new one.\n\nNote: This argument is only used when the 'nodes' argument is not provided."
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
+      required: false
+    - name: notification_emails
+      description: "A comma-separated list of the email addresses that receive the result of the Flow.\n\nNote: This argument is only used when the 'nodes' argument is not provided."
+      isArray: true
+      required: false
+    - name: email_subject
+      description: "The subject of the notification email.\n\nNote: This argument is only used when the 'nodes' argument is not provided, and it requires the 'notification_emails' argument."
+      required: false
+    - name: email_message
+      description: "The body of the notification email.\n\nNote: When this argument is not provided, the body of the email is the content that the GTI agent generates for the prompt.\n\nNote: This argument is only used when the 'nodes' argument is not provided, and it requires the 'notification_emails' argument."
+      required: false
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.id
+      description: The unique identifier of the Flow.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.type
+      description: The type of the object. The value is always 'flow'.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.name
+      description: The name of the Flow.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.enabled
+      description: Whether the Flow is enabled and eligible to be triggered by its schedule.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.private
+      description: Whether the Flow is private to the user that owns it.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.id
+      description: The unique identifier of the node inside the Flow graph.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.type
+      description: 'The type of the node. Possible values are: NODE_TYPE_SCHEDULE_TIME, NODE_TYPE_RUN_PROMPT, NODE_TYPE_SEND_EMAIL.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.name
+      description: The display name of the node.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.schedule_node.cron_expression
+      description: The cron expression that defines when the Flow is triggered.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.schedule_node.timezone
+      description: The timezone in which the cron expression is evaluated.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.run_prompt_node.prompt
+      description: The prompt that is sent to the Google Threat Intelligence agent when the node runs.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.run_prompt_node.reuse_session
+      description: Whether the node reuses the existing agentic session instead of creating a new one.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.send_email_node.notification_emails
+      description: The list of the email addresses that receive the notification.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.send_email_node.email_subject
+      description: The subject of the notification email.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.send_email_node.message
+      description: The body of the notification email.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.connections.source_node_id
+      description: The unique identifier of the node the connection starts from.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.connections.target_node_id
+      description: The unique identifier of the node the connection points to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.connections.source_handle
+      description: The handle of the source node the connection is attached to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.trigger_state.last_run_at
+      description: The date and time (UTC) when the Flow was last triggered.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.creation_date
+      description: The date and time (UTC) when the Flow was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.last_modification_date
+      description: The date and time (UTC) when the Flow was last modified.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.links.self
+      description: The link of the Flow object on the Google Threat Intelligence platform.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.relationships.group.data.type
+      description: The type of the group object that is related to the Flow.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.relationships.group.data.id
+      description: The unique identifier of the group that owns the Flow.
+      type: String
+  - name: gti-agentic-flow-update
+    description: "Partially updates the name, the enabled state, the nodes or the connections of a GTI Agentic Flow. The 'nodes' and the 'connections' arguments replace the graph of the Flow, while the schedule, the prompt and the email arguments only change the provided fields of its existing nodes. Note: The schedule, the prompt and the email arguments retrieve the Flow first and send its complete list of nodes, hence the changes made to the Flow in the meantime are overwritten."
+    execution: true
+    arguments:
+    - name: flow_id
+      description: "The ID of the Flow.\n\nNote: Use the 'gti-agentic-flow-list' command to retrieve the Flow ID."
+      required: true
+    - name: name
+      description: "The new name of the Flow."
+      required: false
+    - name: enabled
+      description: "Whether the Flow should be enabled."
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - name: nodes
+      description: "The new nodes of the Flow graph as a JSON formatted list.\n\nExample: [{\"id\": \"n1\", \"type\": \"NODE_TYPE_SCHEDULE_TIME\", \"name\": \"Every morning\", \"schedule_node\": {\"cron_expression\": \"0 9 * * *\", \"timezone\": \"UTC\"}}, {\"id\": \"n2\", \"type\": \"NODE_TYPE_RUN_PROMPT\", \"name\": \"Summarise new detections\", \"run_prompt_node\": {\"prompt\": \"Summarise URLs first seen in the last 24h that are flagged malicious by 5+ engines.\", \"reuse_session\": false}}, {\"id\": \"n3\", \"type\": \"NODE_TYPE_SEND_EMAIL\", \"name\": \"Email the SOC\", \"send_email_node\": {\"notification_emails\": [\"soc@example.com\"], \"email_subject\": \"Daily malicious-URL digest\", \"message\": \"See attached summary.\"}}].\n\nNote: The provided list replaces the existing nodes of the Flow, hence it requires a node of the 'NODE_TYPE_SCHEDULE_TIME' type and a node of the 'NODE_TYPE_RUN_PROMPT' type, and every node requires the 'id', the 'type' and the field that its type requires, which is the 'cron_expression', the 'prompt' and the 'notification_emails' field respectively.\n\nNote: When this argument is provided without the 'connections' argument, the existing connections of the Flow are kept, hence they are required to refer to the provided nodes.\n\nNote: When this argument is provided, the 'schedule_time', the 'schedule_frequency', the 'prompt', the 'reuse_session', the 'notification_emails', the 'email_subject' and the 'email_message' arguments are ignored.\n\nFor more information about the node types and their fields, see https://gtidocs.virustotal.com/reference/update-flow."
+      required: false
+    - name: connections
+      description: "The new connections between the Flow nodes as a JSON formatted list.\n\nExample: [{\"source_node_id\": \"n1\", \"target_node_id\": \"n2\", \"source_handle\": \"\"}, {\"source_node_id\": \"n2\", \"target_node_id\": \"n3\", \"source_handle\": \"\"}].\n\nNote: The provided list replaces the existing connections of the Flow. Every connection requires the 'source_node_id' and the 'target_node_id' fields, and both of them are required to refer to a node of the 'nodes' argument when it is provided, or to an existing node of the Flow otherwise.\n\nNote: The connections are required to connect the node of the 'NODE_TYPE_SCHEDULE_TIME' type to a node of the 'NODE_TYPE_RUN_PROMPT' type, directly or through other nodes.\n\nFor more information about the connection fields, see https://gtidocs.virustotal.com/reference/update-flow."
+      required: false
+    - name: schedule_time
+      description: "The new date or time at which the Flow runs, which builds the cron expression of the schedule node along with the 'schedule_frequency' argument.\n\nFormat: An ISO 8601 date and time (YYYY-MM-DDTHH:MM:SSZ or YYYY-MM-DDTHH:MM:SS+HH:MM), a date and time (YYYY-MM-DD HH:MM), a time (HH:MM or H:MMam/pm), a relative time (tomorrow 9am) or an epoch timestamp in seconds.\n\nExample: '2026-09-25T09:00:00Z', '2026-09-25T14:30:00+05:30', '2026-09-25 09:00', '09:00', '9:30pm', 'tomorrow 9am', '1789026769'.\n\nNote: The value is converted into UTC, a value without a timezone is considered to be in UTC, and the seconds are ignored.\n\nNote: A time without a date is considered to be of today, hence the 'Weekly' and the 'Monthly' frequencies run on the weekday and the day of today.\n\nNote: This argument requires the 'schedule_frequency' argument, as the cron expression is built from both of them.\n\nNote: This argument is only used when the 'nodes' argument is not provided. The Flow is retrieved first, and only the cron expression of its existing schedule node is changed, along with its timezone, which is set to UTC."
+      required: false
+    - name: schedule_frequency
+      description: "How often the Flow runs at the 'schedule_time' argument. 'Daily' runs at its time every day, 'Weekdays' every weekday from Monday to Friday, 'Weekends' every Saturday and Sunday, 'Weekly' on its weekday every week and 'Monthly' on its day every month.\n\nNote: A 'Monthly' Flow on the 29th, the 30th or the 31st day does not run in the months without that day.\n\nNote: This argument requires the 'schedule_time' argument, as the cron expression is built from both of them."
+      auto: PREDEFINED
+      predefined:
+      - Daily
+      - Weekdays
+      - Weekends
+      - Weekly
+      - Monthly
+      required: false
+    - name: prompt
+      description: "The new prompt that the Flow sends to the Google Threat Intelligence agent.\n\nNote: This argument is only used when the 'nodes' argument is not provided. The Flow is retrieved first, and only this field of its existing prompt node is changed."
+      required: false
+    - name: reuse_session
+      description: "Whether the prompt node reuses the existing agentic session instead of creating a new one.\n\nNote: This argument is only used when the 'nodes' argument is not provided. The Flow is retrieved first, and only this field of its existing prompt node is changed."
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - name: notification_emails
+      description: "A comma-separated list of the email addresses that receive the result of the Flow.\n\nNote: This argument is only used when the 'nodes' argument is not provided. The Flow is retrieved first, and only this field of its existing email node is changed. When the Flow has no email node, a new one is added after the prompt node."
+      isArray: true
+      required: false
+    - name: email_subject
+      description: "The new subject of the notification email.\n\nNote: This argument is only used when the 'nodes' argument is not provided. The Flow is retrieved first, and only this field of its existing email node is changed. When the Flow has no email node, the 'notification_emails' argument is required."
+      required: false
+    - name: email_message
+      description: "The new body of the notification email.\n\nNote: This argument is only used when the 'nodes' argument is not provided. The Flow is retrieved first, and only this field of its existing email node is changed. When the Flow has no email node, the 'notification_emails' argument is required."
+      required: false
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.id
+      description: The unique identifier of the Flow.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.type
+      description: The type of the object. The value is always 'flow'.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.name
+      description: The name of the Flow.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.enabled
+      description: Whether the Flow is enabled and eligible to be triggered by its schedule.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.private
+      description: Whether the Flow is private to the user that owns it.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.id
+      description: The unique identifier of the node inside the Flow graph.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.type
+      description: 'The type of the node. Possible values are: NODE_TYPE_SCHEDULE_TIME, NODE_TYPE_RUN_PROMPT, NODE_TYPE_SEND_EMAIL.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.name
+      description: The display name of the node.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.schedule_node.cron_expression
+      description: The cron expression that defines when the Flow is triggered.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.schedule_node.timezone
+      description: The timezone in which the cron expression is evaluated.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.run_prompt_node.prompt
+      description: The prompt that is sent to the Google Threat Intelligence agent when the node runs.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.run_prompt_node.reuse_session
+      description: Whether the node reuses the existing agentic session instead of creating a new one.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.send_email_node.notification_emails
+      description: The list of the email addresses that receive the notification.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.send_email_node.email_subject
+      description: The subject of the notification email.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.nodes.send_email_node.message
+      description: The body of the notification email.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.connections.source_node_id
+      description: The unique identifier of the node the connection starts from.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.connections.target_node_id
+      description: The unique identifier of the node the connection points to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.connections.source_handle
+      description: The handle of the source node the connection is attached to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.trigger_state.last_run_at
+      description: The date and time (UTC) when the Flow was last triggered.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.creation_date
+      description: The date and time (UTC) when the Flow was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.last_modification_date
+      description: The date and time (UTC) when the Flow was last modified.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.links.self
+      description: The link of the Flow object on the Google Threat Intelligence platform.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.relationships.group.data.type
+      description: The type of the group object that is related to the Flow.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Flow.relationships.group.data.id
+      description: The unique identifier of the group that owns the Flow.
+      type: String
+  - name: gti-agentic-flow-delete
+    description: "Permanently deletes a GTI Agentic Flow. Note: The deletion cannot be undone."
+    execution: true
+    arguments:
+    - name: flow_id
+      description: "The ID of the Flow.\n\nNote: Use the 'gti-agentic-flow-list' command to retrieve the Flow ID."
+      required: true
+  - name: gti-agentic-flow-execute
+    description: Manually triggers an immediate run of a GTI Agentic Flow, bypassing the schedule of the Flow.
+    execution: true
+    arguments:
+    - name: flow_id
+      description: "The ID of the Flow.\n\nNote: Use the 'gti-agentic-flow-list' command to retrieve the Flow ID."
+      required: true
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.id
+      description: The unique identifier of the Flow Execution.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.type
+      description: The type of the object. The value is always 'flow_execution'.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.flow_id
+      description: The unique identifier of the Flow that the execution belongs to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.status
+      description: 'The status of the Flow Execution. Possible values are: EXECUTION_STATUS_PENDING, EXECUTION_STATUS_RUNNING, EXECUTION_STATUS_COMPLETED, EXECUTION_STATUS_FAILED, EXECUTION_STATUS_CANCELLED.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.duration_seconds
+      description: The total duration of the Flow Execution, in seconds.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.step_id
+      description: The unique identifier of the step inside the Flow Execution.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.node_id
+      description: The unique identifier of the Flow node that the step executed.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.node_type
+      description: The type of the Flow node that the step executed.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.status
+      description: 'The status of the step. Possible values are: STEP_STATUS_PENDING, STEP_STATUS_RUNNING, STEP_STATUS_SUCCESS, STEP_STATUS_FAILED, STEP_STATUS_SKIPPED.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.started_at
+      description: The date and time (UTC) when the step started.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.ended_at
+      description: The date and time (UTC) when the step ended.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.duration_seconds
+      description: The duration of the step, in seconds.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.run_prompt_output.session_id
+      description: The unique identifier of the agentic session that the prompt step created or reused.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.run_prompt_output.gti_agentic_response
+      description: The response returned by the Google Threat Intelligence agent for the prompt step.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.send_email_output.dispatched
+      description: Whether the notification email of the step was dispatched.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.creation_date
+      description: The date and time (UTC) when the Flow Execution was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.last_modification_date
+      description: The date and time (UTC) when the Flow Execution was last modified.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.links.self
+      description: The link of the Flow Execution object on the Google Threat Intelligence platform.
+      type: String
+  - name: gti-agentic-flow-object-list
+    description: Retrieves the full objects that are related to a GTI Agentic Flow, for the supported relationships.
+    arguments:
+    - name: flow_id
+      description: "The ID of the Flow.\n\nNote: Use the 'gti-agentic-flow-list' command to retrieve the Flow ID."
+      required: true
+    - name: relationship
+      description: The relationship of the objects to retrieve.
+      auto: PREDEFINED
+      predefined:
+      - Group
+      - Flow Executions
+      required: true
+    - name: limit
+      description: The maximum number of related objects to return in a single command run. The maximum allowed value is 40.
+      defaultValue: '10'
+      required: false
+    - name: cursor
+      description: "The cursor of the page of results to retrieve.\n\nNote: Use the cursor returned by the previous run of the 'gti-agentic-flow-object-list' command to retrieve the next page."
+      required: false
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.flow_id
+      description: The unique identifier of the Flow whose related objects were retrieved.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.type
+      description: 'The type of the related objects that were retrieved. Possible values are: flow_execution, group.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.id
+      description: The unique identifier of the related object.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.type
+      description: 'The type of the related object. Possible values are: flow_execution, group.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.links.self
+      description: The link of the related object on the Google Threat Intelligence platform.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.status
+      description: 'The status of the Flow Execution. Possible values are: EXECUTION_STATUS_PENDING, EXECUTION_STATUS_RUNNING, EXECUTION_STATUS_COMPLETED, EXECUTION_STATUS_FAILED, EXECUTION_STATUS_CANCELLED.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.flow_id
+      description: The unique identifier of the Flow that the execution belongs to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.steps.step_id
+      description: The unique identifier of the step inside the Flow Execution.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.steps.execution_id
+      description: The unique identifier of the Flow Execution that the step belongs to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.steps.node_id
+      description: The unique identifier of the Flow node that the step executed.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.steps.node_type
+      description: 'The type of the Flow node that the step executed. Possible values are: NODE_TYPE_SCHEDULE_TIME, NODE_TYPE_RUN_PROMPT, NODE_TYPE_SEND_EMAIL.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.steps.status
+      description: 'The status of the step. Possible values are: STEP_STATUS_PENDING, STEP_STATUS_RUNNING, STEP_STATUS_SUCCESS, STEP_STATUS_FAILED, STEP_STATUS_SKIPPED.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.steps.input_json
+      description: The input of the step, as a JSON formatted string.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.steps.output_json
+      description: The output of the step, as a JSON formatted string.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.steps.enqueued_at
+      description: The date and time (UTC) when the step was enqueued.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.steps.started_at
+      description: The date and time (UTC) when the step started.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.steps.ended_at
+      description: The date and time (UTC) when the step ended.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.steps.expires_at
+      description: The date and time (UTC) when the step expires.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.steps.duration_seconds
+      description: The duration of the step, in seconds.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.steps.run_prompt_output.session_id
+      description: The unique identifier of the agentic session that the prompt step created or reused.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.steps.run_prompt_output.gti_agentic_response
+      description: The response returned by the Google Threat Intelligence agent for the prompt step.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.steps.send_email_output.dispatched
+      description: Whether the notification email of the step was dispatched.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.creation_date
+      description: The date and time when the Flow Execution was created, as an epoch timestamp in seconds.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.last_modification_date
+      description: The date and time when the Flow Execution was last modified, as an epoch timestamp in seconds.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.duration_seconds
+      description: The total duration of the Flow Execution, in seconds.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.country_iso
+      description: The ISO 3166-1 alpha-2 code of the country of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.default_roles
+      description: The roles that are assigned by default to the users of the group.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.display_flat_rate_message
+      description: Whether the flat rate message is displayed to the group.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.gti_gcp_project
+      description: The Google Cloud project that is linked to the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.notify_admin_on_autoadd_users_to_group
+      description: Whether the administrators of the group are notified when the users are automatically added to the group.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.legal_name
+      description: The legal name of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.uuid
+      description: The universally unique identifier of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.auto_add_users
+      description: The users that are automatically added to the group.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.country
+      description: The country of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.experiments
+      description: The experimental features that are enabled for the group.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.invoice_emails
+      description: The email addresses that receive the invoices of the group.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.workforce_identity_pool_name
+      description: The name of the workforce identity pool of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.contact_emails
+      description: The contact email addresses of the group.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.organization
+      description: The organization of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.workforce_identity_pool_provider_name
+      description: The name of the workforce identity pool provider of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.domain_name
+      description: The domain name of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.force_users_saml_login
+      description: Whether the users of the group are forced to log in with SAML.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.billing_emails
+      description: The email addresses that receive the billing notifications of the group.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.force_users_oidc_login
+      description: Whether the users of the group are forced to log in with OIDC.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.lock_users_api_quota_group
+      description: Whether the API quota of the users is locked to the group.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.privileges
+      description: The privileges that are granted to the group.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.preferences
+      description: The preferences of the group.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.organization_legal_name
+      description: The legal name of the organization of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.industry
+      description: The industry of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.attributes.quotas
+      description: The quotas of the group, along with their allowed and used values.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationship.data.context_attributes.role
+      description: The role of the user of the configured API key in the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.PageToken.FlowRelationship.next_cursor
+      description: The cursor to be used in the 'cursor' argument of the next command runs to retrieve the next page of results.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.PageToken.FlowRelationship.total_count
+      description: The total number of the records that match the given argument(s).
+      type: Number
+  - name: gti-agentic-flow-object-descriptor-list
+    description: Retrieves the descriptors, which contain the type and the ID only, of the objects that are related to a GTI Agentic Flow.
+    arguments:
+    - name: flow_id
+      description: "The ID of the Flow.\n\nNote: Use the 'gti-agentic-flow-list' command to retrieve the Flow ID."
+      required: true
+    - name: relationship
+      description: The relationship of the object descriptors to retrieve.
+      auto: PREDEFINED
+      predefined:
+      - Group
+      - Flow Executions
+      required: true
+    - name: limit
+      description: The maximum number of related object descriptors to return in a single command run. The maximum allowed value is 40.
+      defaultValue: '10'
+      required: false
+    - name: cursor
+      description: "The cursor of the page of results to retrieve.\n\nNote: Use the cursor returned by the previous run of the 'gti-agentic-flow-object-descriptor-list' command to retrieve the next page."
+      required: false
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationshipDescriptor.flow_id
+      description: The unique identifier of the Flow whose related object descriptors were retrieved.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationshipDescriptor.type
+      description: 'The type of the related objects whose descriptors were retrieved. Possible values are: flow_execution, group.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationshipDescriptor.data.type
+      description: 'The type of the related object. Possible values are: flow_execution, group.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowRelationshipDescriptor.data.id
+      description: The unique identifier of the related object.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.PageToken.FlowRelationshipDescriptor.next_cursor
+      description: The cursor to be used in the 'cursor' argument of the next command runs to retrieve the next page of results.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.PageToken.FlowRelationshipDescriptor.total_count
+      description: The total number of the records that match the given argument(s).
+      type: Number
+  - name: gti-agentic-flow-execution-list
+    description: Retrieves a list of the GTI Agentic Flow Executions that are owned by the configured API key, based on the provided filter arguments.
+    arguments:
+    - name: flow_id
+      description: "Filter the Flow Executions by the ID of the Flow they belong to.\n\nNote: Use the 'gti-agentic-flow-list' command to retrieve the Flow ID."
+      required: false
+    - name: status
+      description: Filter the Flow Executions by the status of the execution.
+      auto: PREDEFINED
+      predefined:
+      - Running
+      - Completed
+      - Failed
+      - Cancelled
+      required: false
+    - name: filter
+      description: "Filter the Flow Executions by the provided search modifier expression, for example 'status:completed duration:10+'.\n\nNote: When this argument is provided along with the 'flow_id' or the 'status' argument, the expression is wrapped in parentheses and combined with them using an AND operator. Hence, a 'flow_id' or a 'status' modifier in the expression that conflicts with the argument returns no results."
+      required: false
+    - name: sort_field
+      description: The field to sort the Flow Executions by.
+      auto: PREDEFINED
+      predefined:
+      - Creation Date
+      - Last Modification Date
+      defaultValue: Creation Date
+      required: false
+    - name: sort_order
+      description: The sort order.
+      auto: PREDEFINED
+      predefined:
+      - Asc
+      - Desc
+      defaultValue: Desc
+      required: false
+    - name: limit
+      description: The maximum number of Flow Executions to return in a single command run. The maximum allowed value is 40.
+      defaultValue: '10'
+      required: false
+    - name: cursor
+      description: "The cursor of the page of results to retrieve.\n\nNote: Use the cursor returned by the previous run of the 'gti-agentic-flow-execution-list' command to retrieve the next page."
+      required: false
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.id
+      description: The unique identifier of the Flow Execution.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.type
+      description: The type of the object. The value is always 'flow_execution'.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.links.self
+      description: The link of the Flow Execution object on the Google Threat Intelligence platform.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.flow_id
+      description: The unique identifier of the Flow that the execution belongs to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.status
+      description: 'The status of the Flow Execution. Possible values are: EXECUTION_STATUS_PENDING, EXECUTION_STATUS_RUNNING, EXECUTION_STATUS_COMPLETED, EXECUTION_STATUS_FAILED, EXECUTION_STATUS_CANCELLED.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.duration_seconds
+      description: The total duration of the Flow Execution, in seconds.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.step_id
+      description: The unique identifier of the step inside the Flow Execution.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.execution_id
+      description: The unique identifier of the Flow Execution that the step belongs to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.node_id
+      description: The unique identifier of the Flow node that the step executed.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.node_type
+      description: 'The type of the Flow node that the step executed. Possible values are: NODE_TYPE_SCHEDULE_TIME, NODE_TYPE_RUN_PROMPT, NODE_TYPE_SEND_EMAIL.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.status
+      description: 'The status of the step. Possible values are: STEP_STATUS_PENDING, STEP_STATUS_RUNNING, STEP_STATUS_SUCCESS, STEP_STATUS_FAILED, STEP_STATUS_SKIPPED.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.input_json
+      description: The input of the step, as a JSON formatted string.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.output_json
+      description: The output of the step, as a JSON formatted string.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.enqueued_at
+      description: The date and time (UTC) when the step was enqueued.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.started_at
+      description: The date and time (UTC) when the step started.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.ended_at
+      description: The date and time (UTC) when the step ended.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.expires_at
+      description: The date and time (UTC) when the step expires.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.duration_seconds
+      description: The duration of the step, in seconds.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.run_prompt_output.session_id
+      description: The unique identifier of the agentic session that the prompt step created or reused.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.run_prompt_output.gti_agentic_response
+      description: The response returned by the Google Threat Intelligence agent for the prompt step.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.send_email_output.dispatched
+      description: Whether the notification email of the step was dispatched.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.creation_date
+      description: The date and time (UTC) when the Flow Execution was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.last_modification_date
+      description: The date and time (UTC) when the Flow Execution was last modified.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.PageToken.FlowExecution.next_cursor
+      description: The cursor to be used in the 'cursor' argument of the next command runs to retrieve the next page of results.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.PageToken.FlowExecution.total_count
+      description: The total number of the records that match the given argument(s).
+      type: Number
+  - name: gti-agentic-flow-execution-get
+    description: Retrieves the details of a specific GTI Agentic Flow Execution by its ID.
+    arguments:
+    - name: execution_id
+      description: "The ID of the Flow Execution.\n\nNote: Use the 'gti-agentic-flow-execution-list' command to retrieve the Flow Execution ID."
+      required: true
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.id
+      description: The unique identifier of the Flow Execution.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.type
+      description: The type of the object. The value is always 'flow_execution'.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.links.self
+      description: The link of the Flow Execution object on the Google Threat Intelligence platform.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.flow_id
+      description: The unique identifier of the Flow that the execution belongs to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.status
+      description: 'The status of the Flow Execution. Possible values are: EXECUTION_STATUS_PENDING, EXECUTION_STATUS_RUNNING, EXECUTION_STATUS_COMPLETED, EXECUTION_STATUS_FAILED, EXECUTION_STATUS_CANCELLED.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.duration_seconds
+      description: The total duration of the Flow Execution, in seconds.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.step_id
+      description: The unique identifier of the step inside the Flow Execution.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.execution_id
+      description: The unique identifier of the Flow Execution that the step belongs to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.node_id
+      description: The unique identifier of the Flow node that the step executed.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.node_type
+      description: 'The type of the Flow node that the step executed. Possible values are: NODE_TYPE_SCHEDULE_TIME, NODE_TYPE_RUN_PROMPT, NODE_TYPE_SEND_EMAIL.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.status
+      description: 'The status of the step. Possible values are: STEP_STATUS_PENDING, STEP_STATUS_RUNNING, STEP_STATUS_SUCCESS, STEP_STATUS_FAILED, STEP_STATUS_SKIPPED.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.input_json
+      description: The input of the step, as a JSON formatted string.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.output_json
+      description: The output of the step, as a JSON formatted string.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.enqueued_at
+      description: The date and time (UTC) when the step was enqueued.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.started_at
+      description: The date and time (UTC) when the step started.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.ended_at
+      description: The date and time (UTC) when the step ended.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.expires_at
+      description: The date and time (UTC) when the step expires.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.duration_seconds
+      description: The duration of the step, in seconds.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.run_prompt_output.session_id
+      description: The unique identifier of the agentic session that the prompt step created or reused.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.run_prompt_output.gti_agentic_response
+      description: The response returned by the Google Threat Intelligence agent for the prompt step.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.send_email_output.dispatched
+      description: Whether the notification email of the step was dispatched.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.creation_date
+      description: The date and time (UTC) when the Flow Execution was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.last_modification_date
+      description: The date and time (UTC) when the Flow Execution was last modified.
+      type: Date
+  - name: gti-agentic-flow-execution-object-list
+    description: Retrieves the full objects that are related to a GTI Agentic Flow Execution, for the supported relationships.
+    arguments:
+    - name: execution_id
+      description: "The ID of the Flow Execution.\n\nNote: Use the 'gti-agentic-flow-execution-list' command to retrieve the Flow Execution ID."
+      required: true
+    - name: relationship
+      description: The relationship of the objects to retrieve.
+      auto: PREDEFINED
+      predefined:
+      - Flow
+      - Flow Snapshot
+      - Owner
+      - Group
+      required: true
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.execution_id
+      description: The unique identifier of the Flow Execution whose related object was retrieved.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.relationship
+      description: 'The name of the relationship that was retrieved. Possible values are: flow, flow_snapshot, owner, group.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.type
+      description: 'The type of the related object that was retrieved, for example flow or group.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.id
+      description: The unique identifier of the related object.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.type
+      description: 'The type of the related object, for example flow or group.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.links.self
+      description: The link of the related object on the Google Threat Intelligence platform.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.name
+      description: The name of the Flow.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.enabled
+      description: Whether the Flow is enabled and eligible to be triggered by its schedule.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.private
+      description: Whether the Flow or the user is private.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.nodes.id
+      description: The unique identifier of the node inside the Flow graph.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.nodes.type
+      description: 'The type of the node. Possible values are: NODE_TYPE_SCHEDULE_TIME, NODE_TYPE_RUN_PROMPT, NODE_TYPE_SEND_EMAIL.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.nodes.name
+      description: The display name of the node.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.nodes.schedule_node.cron_expression
+      description: The cron expression that defines when the Flow is triggered.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.nodes.schedule_node.timezone
+      description: The timezone in which the cron expression is evaluated.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.nodes.run_prompt_node.prompt
+      description: The prompt that is sent to the Google Threat Intelligence agent when the node runs.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.nodes.run_prompt_node.reuse_session
+      description: Whether the node reuses the existing agentic session instead of creating a new one.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.nodes.send_email_node.notification_emails
+      description: The list of the email addresses that receive the notification.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.nodes.send_email_node.email_subject
+      description: The subject of the notification email.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.nodes.send_email_node.message
+      description: The body of the notification email.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.connections.source_node_id
+      description: The unique identifier of the node the connection starts from.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.connections.target_node_id
+      description: The unique identifier of the node the connection points to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.connections.source_handle
+      description: The handle of the source node the connection is attached to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.trigger_state.last_run_at
+      description: The date and time when the Flow was last triggered, as an epoch timestamp in seconds.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.creation_date
+      description: The date and time when the Flow was created, as an epoch timestamp in seconds.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.last_modification_date
+      description: The date and time when the Flow was last modified, as an epoch timestamp in seconds.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.country_iso
+      description: The ISO 3166-1 alpha-2 code of the country of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.default_roles
+      description: The roles that are assigned by default to the users of the group.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.display_flat_rate_message
+      description: Whether the flat rate message is displayed to the group.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.gti_gcp_project
+      description: The Google Cloud project that is linked to the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.notify_admin_on_autoadd_users_to_group
+      description: Whether the administrators of the group are notified when the users are automatically added to the group.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.legal_name
+      description: The legal name of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.uuid
+      description: The universally unique identifier of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.auto_add_users
+      description: The users that are automatically added to the group.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.country
+      description: The country of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.experiments
+      description: The experimental features that are enabled for the group.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.invoice_emails
+      description: The email addresses that receive the invoices of the group.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.workforce_identity_pool_name
+      description: The name of the workforce identity pool of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.contact_emails
+      description: The contact email addresses of the group.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.organization
+      description: The organization of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.workforce_identity_pool_provider_name
+      description: The name of the workforce identity pool provider of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.domain_name
+      description: The domain name of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.force_users_saml_login
+      description: Whether the users of the group are forced to log in with SAML.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.billing_emails
+      description: The email addresses that receive the billing notifications of the group.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.force_users_oidc_login
+      description: Whether the users of the group are forced to log in with OIDC.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.lock_users_api_quota_group
+      description: Whether the API quota of the users is locked to the group.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.privileges
+      description: The privileges that are granted to the group or to the user.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.preferences
+      description: The preferences of the group or of the user.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.organization_legal_name
+      description: The legal name of the organization of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.industry
+      description: The industry of the group.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.quotas
+      description: The quotas of the group or of the user, along with their allowed and used values.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.is_service_account
+      description: Whether the user is a service account.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.reputation
+      description: The reputation of the user.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.certified
+      description: Whether the user is certified.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.first_name
+      description: The first name of the user.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.last_name
+      description: The last name of the user.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.email
+      description: The email address of the user.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.status
+      description: The status of the user.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.user_since
+      description: The date and time when the user was created, as an epoch timestamp in seconds.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.last_login
+      description: The date and time when the user last logged in, as an epoch timestamp in seconds.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.use_cases
+      description: The use cases that the user selected.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.roles
+      description: The roles that the user selected.
+      type: Unknown
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.has_2fa
+      description: Whether the user has the two-factor authentication enabled.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.has_offline_2fa_codes
+      description: Whether the user has offline two-factor authentication codes.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.offline_2fa_codes_count
+      description: The number of the offline two-factor authentication codes of the user.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.sso_enforced
+      description: Whether the single sign-on is enforced for the user.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.collections_count
+      description: The number of the collections of the user.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.attributes.mandiant_uuid
+      description: The Mandiant identifier of the user.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.context_attributes.shared_with_me
+      description: Whether the related Flow is shared with the user of the configured API key.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationship.data.context_attributes.role
+      description: 'The role of the user of the configured API key in the related object, for example owner or admin.'
+      type: String
+  - name: gti-agentic-flow-execution-object-descriptor-list
+    description: Retrieves the descriptors, which contain the type and the ID only, of the objects that are related to a GTI Agentic Flow Execution.
+    arguments:
+    - name: execution_id
+      description: "The ID of the Flow Execution.\n\nNote: Use the 'gti-agentic-flow-execution-list' command to retrieve the Flow Execution ID."
+      required: true
+    - name: relationship
+      description: The relationship of the object descriptors to retrieve.
+      auto: PREDEFINED
+      predefined:
+      - Flow
+      - Flow Snapshot
+      - Owner
+      - Group
+      required: true
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationshipDescriptor.execution_id
+      description: The unique identifier of the Flow Execution whose related object descriptors were retrieved.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationshipDescriptor.relationship
+      description: 'The name of the relationship that was retrieved. Possible values are: flow, flow_snapshot, owner, group.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationshipDescriptor.type
+      description: 'The type of the related objects whose descriptors were retrieved, for example flow, user or group.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationshipDescriptor.data.type
+      description: 'The type of the related object, for example flow, user or group.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationshipDescriptor.data.id
+      description: The unique identifier of the related object.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationshipDescriptor.data.context_attributes.role
+      description: 'The role of the user of the configured API key in the related Flow, for example owner.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecutionRelationshipDescriptor.data.context_attributes.shared_with_me
+      description: Whether the related Flow is shared with the user of the configured API key.
+      type: Boolean
+  - name: gti-agentic-flow-execution-cancel
+    description: Cancels a GTI Agentic Flow Execution that is in progress. Requires owner or editor access on the parent Flow.
+    execution: true
+    arguments:
+    - name: execution_id
+      description: "The ID of the Flow Execution.\n\nNote: Use the 'gti-agentic-flow-execution-list' command to retrieve the Flow Execution ID."
+      required: true
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.id
+      description: The unique identifier of the Flow Execution.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.type
+      description: The type of the object. The value is always 'flow_execution'.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.links.self
+      description: The link of the Flow Execution object on the Google Threat Intelligence platform.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.flow_id
+      description: The unique identifier of the Flow that the execution belongs to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.status
+      description: 'The status of the Flow Execution. Possible values are: EXECUTION_STATUS_PENDING, EXECUTION_STATUS_RUNNING, EXECUTION_STATUS_COMPLETED, EXECUTION_STATUS_FAILED, EXECUTION_STATUS_CANCELLED.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.duration_seconds
+      description: The total duration of the Flow Execution, in seconds.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.step_id
+      description: The unique identifier of the step inside the Flow Execution.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.execution_id
+      description: The unique identifier of the Flow Execution that the step belongs to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.node_id
+      description: The unique identifier of the Flow node that the step executed.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.node_type
+      description: 'The type of the Flow node that the step executed. Possible values are: NODE_TYPE_SCHEDULE_TIME, NODE_TYPE_RUN_PROMPT, NODE_TYPE_SEND_EMAIL.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.status
+      description: 'The status of the step. Possible values are: STEP_STATUS_PENDING, STEP_STATUS_RUNNING, STEP_STATUS_SUCCESS, STEP_STATUS_FAILED, STEP_STATUS_SKIPPED.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.input_json
+      description: The input of the step, as a JSON formatted string.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.output_json
+      description: The output of the step, as a JSON formatted string.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.enqueued_at
+      description: The date and time (UTC) when the step was enqueued.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.started_at
+      description: The date and time (UTC) when the step started.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.ended_at
+      description: The date and time (UTC) when the step ended.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.expires_at
+      description: The date and time (UTC) when the step expires.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.duration_seconds
+      description: The duration of the step, in seconds.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.run_prompt_output.session_id
+      description: The unique identifier of the agentic session that the prompt step created or reused.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.run_prompt_output.gti_agentic_response
+      description: The response returned by the Google Threat Intelligence agent for the prompt step.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.steps.send_email_output.dispatched
+      description: Whether the notification email of the step was dispatched.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.creation_date
+      description: The date and time (UTC) when the Flow Execution was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.FlowExecution.last_modification_date
+      description: The date and time (UTC) when the Flow Execution was last modified.
+      type: Date
+  - name: gti-agentic-session-list
+    description: Retrieves a list of the GTI Agentic Sessions of the user that owns the configured API key, with cursor based pagination.
+    arguments:
+    - name: limit
+      description: The maximum number of agentic sessions to return in a single command run. The maximum allowed value is 50.
+      defaultValue: '5'
+      required: false
+    - name: cursor
+      description: "The cursor of the page of results to retrieve.\n\nNote: Use the cursor returned by the previous run of the 'gti-agentic-session-list' command to retrieve the next page."
+      required: false
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.id
+      description: The unique identifier of the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.type
+      description: The type of the object. The value is always 'agentic_session'.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.title
+      description: The title of the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.last_modification_date
+      description: The date and time (UTC) when the agentic session was last modified.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.PageToken.Session.next_cursor
+      description: The cursor to be used in the 'cursor' argument of the next command runs to retrieve the next page of results.
+      type: String
+  - name: gti-agentic-session-create
+    description: "Creates a new GTI Agentic Session by sending the first message to the Google Threat Intelligence agent, and returns the answer of the agent synchronously.\n\nNote: The agent can take several minutes to answer, hence the timeout of the command is set to 10 minutes. When the agent takes longer than 10 minutes to answer, the command returns a timeout error."
+    timeout: 600
+    arguments:
+    - name: message
+      description: The message to send to the Google Threat Intelligence agent.
+      required: true
+    - name: entry_id
+      description: "A comma-separated list of the War Room entry IDs of the files to attach to the message as artifacts.\n\nNote: The maximum allowed size of a file is 32 MB."
+      required: false
+      isArray: true
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.id
+      description: The unique identifier of the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.type
+      description: The type of the object. The value is always 'agentic_session'.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.title
+      description: The title of the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.creation_date
+      description: The date and time (UTC) when the agentic session was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.last_modification_date
+      description: The date and time (UTC) when the agentic session was last modified.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.id
+      description: The unique identifier of the event inside the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.message_type
+      description: 'The type of the event message, for example USER_MESSAGE, AGENT_THOUGHT or AGENT_FINAL_RESPONSE.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.user_message.timestamp_seconds
+      description: The epoch timestamp (in seconds, UTC) when the user message was sent.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.user_message.widgets.widget_type
+      description: 'The type of the widget that renders the user message. Possible values are: MARKDOWN_TEXT.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.user_message.widgets.markdown_text_widget.text
+      description: The text content of the user message widget.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.agent_final_response.agent_id
+      description: The unique identifier of the Google Threat Intelligence agent that produced the response.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.agent_final_response.widgets.widget_type
+      description: 'The type of the widget that renders the agent response. Possible values are: MARKDOWN_TEXT.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.agent_final_response.widgets.markdown_text_widget.text
+      description: The text content of the agent response widget.
+      type: String
+  - name: gti-agentic-session-get
+    description: Retrieves the details of a specific GTI Agentic Session, along with its complete conversation, by its ID.
+    arguments:
+    - name: session_id
+      description: "The ID of the agentic session.\n\nNote: Use the 'gti-agentic-session-list' command to retrieve the session ID."
+      required: true
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.id
+      description: The unique identifier of the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.type
+      description: The type of the object. The value is always 'agentic_session'.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.title
+      description: The title of the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.creation_date
+      description: The date and time (UTC) when the agentic session was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.last_modification_date
+      description: The date and time (UTC) when the agentic session was last modified.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.id
+      description: The unique identifier of the event inside the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.message_type
+      description: 'The type of the event message, for example USER_MESSAGE, AGENT_THOUGHT or AGENT_FINAL_RESPONSE.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.user_message.timestamp_seconds
+      description: The epoch timestamp (in seconds, UTC) when the user message was sent.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.user_message.widgets.widget_type
+      description: 'The type of the widget that renders the user message. Possible values are: MARKDOWN_TEXT.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.user_message.widgets.markdown_text_widget.text
+      description: The text content of the user message widget.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.agent_final_response.agent_id
+      description: The unique identifier of the Google Threat Intelligence agent that produced the response.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.agent_final_response.widgets.widget_type
+      description: 'The type of the widget that renders the agent response. Possible values are: MARKDOWN_TEXT.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.agent_final_response.widgets.markdown_text_widget.text
+      description: The text content of the agent response widget.
+      type: String
+  - name: gti-agentic-session-message-post
+    description: "Continues the conversation with the Google Threat Intelligence agent in an existing GTI Agentic Session, and returns the updated state of the session synchronously.\n\nNote: The agent can take several minutes to answer, hence the timeout of the command is set to 10 minutes. When the agent takes longer than 10 minutes to answer, the command returns a timeout error."
+    timeout: 600
+    arguments:
+    - name: session_id
+      description: "The ID of the agentic session.\n\nNote: Use the 'gti-agentic-session-list' command to retrieve the session ID."
+      required: true
+    - name: message
+      description: The message to send to the Google Threat Intelligence agent.
+      required: true
+    - name: entry_id
+      description: "A comma-separated list of the War Room entry IDs of the files to attach to the message as artifacts.\n\nNote: The maximum allowed size of a file is 32 MB."
+      required: false
+      isArray: true
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.id
+      description: The unique identifier of the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.type
+      description: The type of the object. The value is always 'agentic_session'.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.title
+      description: The title of the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.creation_date
+      description: The date and time (UTC) when the agentic session was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.last_modification_date
+      description: The date and time (UTC) when the agentic session was last modified.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.id
+      description: The unique identifier of the event inside the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.message_type
+      description: 'The type of the event message, for example USER_MESSAGE, AGENT_THOUGHT or AGENT_FINAL_RESPONSE.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.user_message.timestamp_seconds
+      description: The epoch timestamp (in seconds, UTC) when the user message was sent.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.user_message.widgets.widget_type
+      description: 'The type of the widget that renders the user message. Possible values are: MARKDOWN_TEXT.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.user_message.widgets.markdown_text_widget.text
+      description: The text content of the user message widget.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.agent_final_response.agent_id
+      description: The unique identifier of the Google Threat Intelligence agent that produced the response.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.agent_final_response.widgets.widget_type
+      description: 'The type of the widget that renders the agent response. Possible values are: MARKDOWN_TEXT.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.agent_final_response.widgets.markdown_text_widget.text
+      description: The text content of the agent response widget.
+      type: String
+  - name: gti-agentic-session-update
+    description: Updates the properties of a GTI Agentic Session.
+    arguments:
+    - name: session_id
+      description: "The ID of the agentic session.\n\nNote: Use the 'gti-agentic-session-list' command to retrieve the session ID."
+      required: true
+    - name: seen
+      description: Whether the agentic session should be marked as seen.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.id
+      description: The unique identifier of the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.type
+      description: The type of the object. The value is always 'agentic_session'.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.title
+      description: The title of the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.creation_date
+      description: The date and time (UTC) when the agentic session was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.last_modification_date
+      description: The date and time (UTC) when the agentic session was last modified.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.id
+      description: The unique identifier of the event inside the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.message_type
+      description: 'The type of the event message, for example USER_MESSAGE, AGENT_THOUGHT or AGENT_FINAL_RESPONSE.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.user_message.timestamp_seconds
+      description: The epoch timestamp (in seconds, UTC) when the user message was sent.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.user_message.widgets.widget_type
+      description: 'The type of the widget that renders the user message. Possible values are: MARKDOWN_TEXT.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.user_message.widgets.markdown_text_widget.text
+      description: The text content of the user message widget.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.agent_final_response.agent_id
+      description: The unique identifier of the Google Threat Intelligence agent that produced the response.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.agent_final_response.widgets.widget_type
+      description: 'The type of the widget that renders the agent response. Possible values are: MARKDOWN_TEXT.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.agent_final_response.widgets.markdown_text_widget.text
+      description: The text content of the agent response widget.
+      type: String
+  - name: gti-agentic-session-delete
+    description: "Permanently deletes a GTI Agentic Session. Note: The deletion cannot be undone."
+    execution: true
+    arguments:
+    - name: session_id
+      description: "The ID of the agentic session.\n\nNote: Use the 'gti-agentic-session-list' command to retrieve the session ID."
+      required: true
+  - name: gti-agentic-session-token-get
+    description: "Retrieves a share token of a GTI Agentic Session, which allows the session to be imported by another user.\n\nNote: Anyone who has the share token can import the session along with its conversation, hence share the token only with trusted users."
+    arguments:
+    - name: session_id
+      description: "The ID of the agentic session.\n\nNote: Use the 'gti-agentic-session-list' command to retrieve the session ID."
+      required: true
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.SessionToken.id
+      description: The unique identifier of the agentic session that the share token belongs to.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.SessionToken.token
+      description: The share token of the agentic session.
+      type: String
+  - name: gti-agentic-session-from-token-create
+    description: "Creates a new GTI Agentic Session by copying the content of the source session that is identified in the provided share token.\n\nNote: Each execution creates a new session, hence re-running the command creates a duplicate. The source session is not changed."
+    arguments:
+    - name: token
+      description: "The share token of the source agentic session.\n\nNote: Use the 'gti-agentic-session-token-get' command to retrieve the share token."
+      required: true
+      secret: true
+    outputs:
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.id
+      description: The unique identifier of the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.type
+      description: The type of the object. The value is always 'agentic_session'.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.title
+      description: The title of the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.creation_date
+      description: The date and time (UTC) when the agentic session was created.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.last_modification_date
+      description: The date and time (UTC) when the agentic session was last modified.
+      type: Date
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.id
+      description: The unique identifier of the event inside the agentic session.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.message_type
+      description: 'The type of the event message, for example USER_MESSAGE, AGENT_THOUGHT or AGENT_FINAL_RESPONSE.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.user_message.timestamp_seconds
+      description: The epoch timestamp (in seconds, UTC) when the user message was sent.
+      type: Number
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.user_message.widgets.widget_type
+      description: 'The type of the widget that renders the user message. Possible values are: MARKDOWN_TEXT.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.user_message.widgets.markdown_text_widget.text
+      description: The text content of the user message widget.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.agent_final_response.agent_id
+      description: The unique identifier of the Google Threat Intelligence agent that produced the response.
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.agent_final_response.widgets.widget_type
+      description: 'The type of the widget that renders the agent response. Possible values are: MARKDOWN_TEXT.'
+      type: String
+    - contextPath: GoogleThreatIntelligenceAgentic.Session.events.agent_final_response.widgets.markdown_text_widget.text
+      description: The text content of the agent response widget.
+      type: String
+  dockerimage: demisto/python3:3.12.15.14069087
+  runonce: false
+tests:
+- No tests (auto formatted)
