@@ -206,3 +206,44 @@ class TestMain:
         error_message = mock_return_error.call_args[0][0]
         assert "Failed to execute list-tools command" in error_message
         assert "Connection failed" in error_message
+        assert str(mock_return_error.call_args.kwargs["error"]) == "Connection failed"
+
+    @pytest.mark.asyncio
+    async def test_none_api_key(self, mocker: MockerFixture):
+        """Given: The API key parameter is present but None.
+        When: Main function processes a command.
+        Then: The 'API key is required' error is returned instead of an AttributeError, and no client is created.
+        """
+        client_class = mock_client(mocker)
+        mock_command(mocker, "test-module", params={"region": "North America", "api_key": None})
+        mock_return_error = mocker.patch("CommandZeroMCP.return_error")
+
+        await main()
+
+        assert "An API key is required" in mock_return_error.call_args[0][0]
+        client_class.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_client_closed_on_exception(self, mocker: MockerFixture):
+        """Given: An exception occurs during command processing.
+        When: Main function processes the command.
+        Then: The client's close method is still called in the finally block.
+        """
+        close_called = []
+
+        async def mock_close():
+            close_called.append(True)
+
+        async def mock_list_tools_with_error(server_name):
+            raise Exception("Connection failed")
+
+        client = mocker.MagicMock()
+        client.list_tools = mock_list_tools_with_error
+        client.close = mock_close
+        mocker.patch("CommandZeroMCP.Client", return_value=client)
+        mock_command(mocker, "list-tools")
+        mocker.patch("CommandZeroMCP.return_error")
+
+        await main()
+
+        assert close_called, "client.close() was not called in the finally block"

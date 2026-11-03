@@ -3,6 +3,7 @@ from CommonServerPython import *
 from MCPApiModule import *
 
 import asyncio
+import traceback
 
 
 REGION_URLS = {
@@ -42,7 +43,7 @@ async def main() -> None:  # pragma: no cover
 
     client = None
     try:
-        api_key = params.get("api_key", {}).get("password") or ""
+        api_key = (params.get("api_key") or {}).get("password") or ""
         if not api_key:
             raise DemistoException("An API key is required. Enter your Command Zero API key in the instance configuration.")
 
@@ -70,9 +71,10 @@ async def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
-    except BaseException as eg:
+    except Exception as eg:
+        demisto.debug(traceback.format_exc())
         root_msg = extract_root_error_message(eg)
-        return_error(f"Failed to execute {command} command.\nError:\n{root_msg}")
+        return_error(f"Failed to execute {command} command.\nError:\n{root_msg}", error=eg)
 
     finally:
         if client:
