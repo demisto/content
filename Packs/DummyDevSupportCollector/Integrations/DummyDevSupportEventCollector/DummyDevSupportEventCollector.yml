@@ -1,0 +1,45 @@
+category: Analytics & SIEM
+sectionOrder:
+- Collect
+commonfields:
+  id: Dummy Dev Support Event Collector
+  version: -1
+configuration:
+- defaultvalue: '2'
+  display: The maximum number of events per fetch
+  name: max_fetch
+  type: 0
+  section: Collect
+  required: false
+description: DUMMY TEST event collector that sends a couple of fake events to Cortex XSIAM. Used to check how developer support is displayed.
+display: Dummy Dev Support Event Collector (Preview)
+name: Dummy Dev Support Event Collector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: Maximum number of results to return.
+      name: limit
+    description: Returns fake dummy events.
+    name: dummy-dev-support-get-events
+  dockerimage: demisto/python3:3.12.13.10116658
+  isfetchevents: true
+  script: ''
+  subtype: python3
+  type: python
+  ismappable: false
+  isremotesyncin: false
+  isremotesyncout: false
+marketplaces:
+- marketplacev2
+- platform
+fromversion: 6.8.0
+tests:
+- No tests
