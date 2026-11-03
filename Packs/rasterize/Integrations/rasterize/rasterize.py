@@ -1685,6 +1685,28 @@ def setup_tab_event(
     return tab_event_handler, tab_ready_event
 
 
+def warn_unless_test_module(message: str) -> None:
+    """Emits a war-room warning entry, unless the running command is ``test-module``.
+
+    ``test-module`` must produce exactly one entry (the ``"ok"`` result, or an error). Any extra
+    entry emitted by :func:`return_warning` breaks that contract: the UI then surfaces the warning
+    as the test outcome, and "Run Test & Download Debug Log" fails with
+    "could not find expected debug file entry" because the entry layout is not the expected one.
+
+    The conditions reported through this helper (memory pressure, navigation timeout) are
+    transient and non-fatal - the rasterization still produces an image - so while testing the
+    instance they are logged to the debug log instead of being returned as an entry.
+
+    Args:
+        message: The warning message to return (or log, during ``test-module``).
+    """
+    if demisto.command() == "test-module":
+        demisto.debug(f"test-module: suppressing war-room warning entry - {message}")
+        return
+
+    return_warning(message)
+
+
 def navigate_to_path(
     browser, tab: pychrome.Tab, path, wait_time, navigation_timeout, freeze_on_load: bool = True
 ) -> PychromeEventHandler:  # pragma: no cover
@@ -1731,18 +1753,18 @@ def navigate_to_path(
                 freeze_on_load=freeze_on_load,
             )
             if not page_loaded_normally:
-                return_warning(
+                warn_unless_test_module(
                     f"Warning: Rasterize aborted page-load wait due to memory pressure. "
                     f"A partial screenshot will be captured for {path}"
                 )
             elif not tab_ready_event.is_set():
-                return_warning(
+                warn_unless_test_module(
                     f"Warning: Rasterize failed to navigate to the specified path due to a timeout "
                     f"of {navigation_timeout} seconds, some content might be missing .\n{path=}"
                 )
         else:
             if not tab_ready_event.wait(navigation_timeout):
-                return_warning(
+                warn_unless_test_module(
                     f"Warning: Rasterize failed to navigate to the specified path due to a timeout "
                     f"of {navigation_timeout} seconds, some content might be missing .\n{path=}"
                 )
