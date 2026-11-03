@@ -1,9 +1,10 @@
 import json
+import threading
 from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
-from ContentClientApiModule import ContentClientAuthenticationError
+from ContentClientApiModule import ContentClientAuthenticationError, ContentClientRetryError
 from GitGuardianSaaS import (
     AUDIT_LOGS,
     AUTH_ERROR_MESSAGE,
@@ -397,6 +398,56 @@ def test_fetch_events_sets_next_trigger_when_paginating(client: Client, mocker):
     assert next_run["nextTrigger"] == "0"
 
 
+def test_fetch_events_threads_one_type_fails_other_continues(client: Client, mocker):
+    """
+    Given: Real worker threads (fetch_events_for_type is not mocked), where every audit-log API call
+           raises an error and the secret-incident calls succeed.
+    When: Running fetch-events.
+    Then: The secret incidents are still returned, enriched and their state advances,
+          while the audit-log state stays unchanged so the failed window is retried next cycle.
+    """
+    mocker.patch("GitGuardianSaaS.demisto.error")
+    previous_audit_state = {"last_date": WINDOW_START, "last_ids": ["999|x"]}
+
+    def get_page(endpoint, params=None, next_url=None):
+        if endpoint == AUDIT_LOGS.endpoint:
+            raise ContentClientRetryError("Exceeded retry attempts: 503")
+        return load_test_data("secret_incidents.json"), None
+
+    mocker.patch.object(client, "get_page", side_effect=get_page)
+
+    events, next_run, errors = fetch_events(
+        client, {"audit_logs": previous_audit_state}, [SECRET_INCIDENTS, AUDIT_LOGS], 1000, WINDOW_START
+    )
+
+    assert [event["id"] for event in events] == [3759, 3760]
+    assert {event["_source_log_type"] for event in events} == {"incident_secret"}
+    assert next_run["audit_logs"] == previous_audit_state
+    assert next_run["secret_incidents"]["last_date"] != WINDOW_START
+    assert len(errors) == 1
+    assert errors[0].startswith("Audit Logs: Exceeded retry attempts")
+
+
+def test_fetch_events_runs_event_types_in_parallel(client: Client, mocker):
+    """
+    Given: Two event types, where each API call waits until both calls have started.
+    When: Running fetch-events.
+    Then: Both calls complete, which is only possible when the event types run in separate threads at the same time.
+    """
+    both_started = threading.Barrier(2, timeout=5)
+
+    def get_page(endpoint, params=None, next_url=None):
+        both_started.wait()  # Raises BrokenBarrierError after 5 seconds if the calls run one after the other.
+        return [], None
+
+    mocker.patch.object(client, "get_page", side_effect=get_page)
+
+    _, next_run, errors = fetch_events(client, {}, [SECRET_INCIDENTS, AUDIT_LOGS], 1000, WINDOW_START)
+
+    assert errors == []
+    assert set(next_run) == {"secret_incidents", "audit_logs"}
+
+
 def test_fetch_events_clears_next_trigger_when_done(client: Client, mocker):
     """
     Given: A previous cycle that set nextTrigger, and no more pages now.
@@ -413,24 +464,49 @@ def test_fetch_events_clears_next_trigger_when_done(client: Client, mocker):
 # get_events_command
 
 
-def test_get_events_command(client: Client, mocker):
+def test_get_events_command_without_push(client: Client, mocker):
     """
-    Given: limit=1 and a single event type.
+    Given: limit=1, a single event type and should_push_events=false.
     When: Running gitguardian-saas-get-events.
-    Then: Only the requested type is fetched, the result is limited and enriched, and a table is returned.
+    Then: Only the requested type is fetched and limited, the events are not enriched and nothing is sent to XSIAM.
     """
     fetch_for_type = mocker.patch("GitGuardianSaaS.fetch_events_for_type", return_value=(load_test_data("audit_logs.json"), {}))
+    send_events = mocker.patch("GitGuardianSaaS.send_events_to_xsiam")
 
-    events, results = get_events_command(
-        client, {"limit": "1", "event_types": "Audit Logs", "start_date": WINDOW_START}, [SECRET_INCIDENTS, AUDIT_LOGS]
+    results = get_events_command(
+        client,
+        {"limit": "1", "event_types": "Audit Logs", "start_date": WINDOW_START, "should_push_events": "false"},
+        [SECRET_INCIDENTS, AUDIT_LOGS],
     )
 
     assert fetch_for_type.call_count == 1
     assert fetch_for_type.call_args.args[1] == AUDIT_LOGS
     assert fetch_for_type.call_args.args[2]["last_date"] == WINDOW_START
-    assert len(events) == 1
-    assert events[0]["_source_log_type"] == "audit_log"
+    assert len(results.raw_response) == 1
+    assert not {"_time", "_source_log_type", "_ENTRY_STATUS"} & set(results.raw_response[0])
     assert "GitGuardian SaaS Audit Logs" in results.readable_output
+    send_events.assert_not_called()
+
+
+def test_get_events_command_with_push(client: Client, mocker):
+    """
+    Given: Both event types and should_push_events=true.
+    When: Running gitguardian-saas-get-events.
+    Then: The events are enriched and sent to XSIAM once, with the GitGuardian SaaS vendor and product.
+    """
+    mocker.patch(
+        "GitGuardianSaaS.fetch_events_for_type",
+        side_effect=[(load_test_data("secret_incidents.json"), {}), (load_test_data("audit_logs.json"), {})],
+    )
+    send_events = mocker.patch("GitGuardianSaaS.send_events_to_xsiam")
+
+    get_events_command(client, {"limit": "10", "should_push_events": "true"}, [SECRET_INCIDENTS, AUDIT_LOGS])
+
+    send_events.assert_called_once()
+    sent_events = send_events.call_args.args[0]
+    assert len(sent_events) == 4
+    assert all({"_time", "_source_log_type", "_ENTRY_STATUS"} <= set(event) for event in sent_events)
+    assert send_events.call_args.kwargs == {"vendor": "gitguardian", "product": "saas"}
 
 
 # test_module

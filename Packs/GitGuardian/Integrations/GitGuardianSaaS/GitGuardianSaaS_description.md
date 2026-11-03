@@ -1,5 +1,4 @@
 Use this integration to collect secret incidents and audit logs from the GitGuardian SaaS platform.
-You can also use the ***gitguardian-saas-get-events*** command to manually collect events.
 
 ## Server URL
 

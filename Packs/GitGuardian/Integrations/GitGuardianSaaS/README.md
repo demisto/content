@@ -12,7 +12,7 @@ This integration uses the GitGuardian v1.1 API. For GitGuardian Enterprise (`ent
 | Use system proxy settings | | False |
 | Fetch events | | False |
 | Event types | The event types to collect: Secret Incidents, Audit Logs. Default is both. | False |
-| The maximum number of events per fetch per type | Events are fetched in pages of 100. Default is 1000 (up to 10 API calls per event type per fetch cycle). | False |
+| The maximum number of events per fetch per type |  Default is 1000. | False |
 
 ## Fetch Events
 
@@ -29,7 +29,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### gitguardian-saas-get-events
 
 ***
-Gets events from GitGuardian SaaS. This command is used for developing and debugging and should be used with caution, as it can create duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism.
+Retrieves GitGuardian SaaS secret incidents and audit logs. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
 
 #### Base Command
 

@@ -84,11 +84,15 @@ class Client(ContentClient):
             The events in the page and the next page URL (None when this is the last page).
         """
         if next_url:
+            demisto.debug(f"[Client] GET next page: {next_url}")
             response = self._http_request(method="GET", full_url=next_url, resp_type="response")
         else:
+            demisto.debug(f"[Client] GET {endpoint} with params: {params}")
             response = self._http_request(method="GET", url_suffix=endpoint, params=params, resp_type="response")
         events = response.json() or []
-        return events, parse_next_link(response.headers.get("Link", ""))
+        next_page_url = parse_next_link(response.headers.get("Link", ""))
+        demisto.debug(f"[Client] Received {len(events)} events, has next page: {bool(next_page_url)}")
+        return events, next_page_url
 
 
 """ HELPER FUNCTIONS """
@@ -133,12 +137,28 @@ def get_entry_status(event: dict[str, Any]) -> str:
 
 
 def enrich_events(events: list[dict[str, Any]], event_type: EventType) -> list[dict[str, Any]]:
-    """Adds the _time, _source_log_type and _ENTRY_STATUS fields to the events in place."""
+    """Adds the _time, _source_log_type and _ENTRY_STATUS fields to the events in place.
+
+    Call this only right before sending the events to XSIAM.
+    """
     for event in events:
         event["_time"] = event.get("date")
         event["_source_log_type"] = event_type.source_log_type
         event["_ENTRY_STATUS"] = get_entry_status(event)
+    updated_count = sum(1 for event in events if event["_ENTRY_STATUS"] == "updated")
+    demisto.debug(
+        f"[Enrich][{event_type.key}] Enriched {len(events)} events: {len(events) - updated_count} new, {updated_count} updated"
+    )
     return events
+
+
+def deduplicate_events(events: list[dict[str, Any]], seen_keys: set[str], event_type: EventType) -> list[dict[str, Any]]:
+    """Removes events that were already collected at the boundary of the previous fetch window."""
+    new_events = [event for event in events if get_dedup_key(event) not in seen_keys]
+    skipped_count = len(events) - len(new_events)
+    if skipped_count:
+        demisto.debug(f"[Dedup][{event_type.key}] Skipped {skipped_count} duplicate events out of {len(events)}")
+    return new_events
 
 
 def get_boundary_keys(events: list[dict[str, Any]], window_end: str) -> list[str]:
@@ -185,25 +205,38 @@ def fetch_events_for_type(
     Returns:
         The new events and the next state of this type.
     """
+    prefix = f"[Fetch][{event_type.key}]"
     next_url = type_state.get("next_url")
     if next_url:
         window_end = type_state["window_end"]
     params = {"per_page": PAGE_SIZE, "date_after": type_state["last_date"], "date_before": window_end}
     seen_keys = set(type_state.get("last_ids") or [])
-    demisto.debug(f"[{event_type.key}] Fetching window {params['date_after']} - {window_end}, resuming: {bool(next_url)}")
+    demisto.debug(
+        f"{prefix} Starting. Window: {params['date_after']} - {window_end}, resuming pagination: {bool(next_url)}, "
+        f"max events: {max_events}, boundary keys from last run: {len(seen_keys)}"
+    )
 
     events: list[dict[str, Any]] = []
+    page_number = 0
     while len(events) < max_events:
+        page_number += 1
         page, next_url = client.get_page(event_type.endpoint, params=params, next_url=next_url)
-        events.extend(event for event in page if get_dedup_key(event) not in seen_keys)
+        events.extend(deduplicate_events(page, seen_keys, event_type))
+        demisto.debug(f"[Pagination][{event_type.key}] Page {page_number}: {len(page)} events, total so far: {len(events)}")
         if not next_url:
+            demisto.debug(f"[Pagination][{event_type.key}] No next link, reached the last page")
             break
+    else:
+        demisto.debug(f"[Pagination][{event_type.key}] Reached the max events limit ({max_events}), saving the next page link")
 
-    demisto.debug(f"[{event_type.key}] Fetched {len(events)} events, pagination in progress: {bool(next_url)}")
     if next_url:
         next_state = {**type_state, "window_end": window_end, "next_url": next_url}
     else:
         next_state = {"last_date": window_end, "last_ids": get_boundary_keys(events, window_end)}
+    demisto.debug(
+        f"{prefix} Done. Fetched {len(events)} events in {page_number} pages. Next state: last_date="
+        f"{next_state['last_date']}, boundary keys: {len(next_state['last_ids'])}, pagination in progress: {bool(next_url)}"
+    )
     return events, next_state
 
 
@@ -214,33 +247,52 @@ def test_module(client: Client, event_types: list[EventType]) -> str:
     """Tests connectivity and authorization by requesting a single event of each configured type."""
     try:
         for event_type in event_types:
+            demisto.debug(f"[Test Module] Checking access to {event_type.name}")
             client.get_page(event_type.endpoint, params={"per_page": 1})
     except ContentClientAuthenticationError as error:
-        demisto.debug(f"Authentication failed: {error}")
+        demisto.debug(f"[Test Module] Authentication failed: {error}")
         return AUTH_ERROR_MESSAGE
+    demisto.debug("[Test Module] Success")
     return "ok"
 
 
-def get_events_command(
-    client: Client, args: dict[str, Any], default_event_types: list[EventType]
-) -> tuple[list[dict[str, Any]], CommandResults]:
-    """Manually fetches events, for development and debugging."""
+def send_events(events: list[dict[str, Any]]) -> None:
+    demisto.debug(f"[Send] Sending {len(events)} events to XSIAM")
+    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+    demisto.debug("[Send] Done")
+
+
+def get_events_command(client: Client, args: dict[str, Any], default_event_types: list[EventType]) -> CommandResults:
+    """Manually fetches events, for development and debugging.
+
+    The events are enriched and sent to XSIAM only when should_push_events is true.
+    """
+    should_push_events = argToBoolean(args.get("should_push_events", False))
     limit = arg_to_number(args.get("limit")) or DEFAULT_GET_EVENTS_LIMIT
     start_date = arg_to_datetime(args.get("start_date") or DEFAULT_FIRST_FETCH, arg_name="start_date", required=True)
     event_types = parse_event_types(argToList(args.get("event_types"))) if args.get("event_types") else default_event_types
     window_end = format_api_date(datetime.now(timezone.utc))  # noqa: UP017
     type_state = {"last_date": format_api_date(start_date), "last_ids": []}  # type: ignore[arg-type]
+    demisto.debug(
+        f"[Get Events] Event types: {[event_type.name for event_type in event_types]}, limit: {limit}, "
+        f"start date: {type_state['last_date']}, push events: {should_push_events}"
+    )
 
     all_events: list[dict[str, Any]] = []
     readable_output = ""
     for event_type in event_types:
         events, _ = fetch_events_for_type(client, event_type, type_state, window_end, limit)
-        events = enrich_events(events[:limit], event_type)
-        all_events.extend(events)
+        events = events[:limit]
         readable_output += tableToMarkdown(
             f"GitGuardian SaaS {event_type.name}", events, headers=list(event_type.table_headers), removeNull=True
         )
-    return all_events, CommandResults(readable_output=readable_output, raw_response=all_events)
+        if should_push_events:
+            enrich_events(events, event_type)
+        all_events.extend(events)
+
+    if should_push_events:
+        send_events(all_events)
+    return CommandResults(readable_output=readable_output, raw_response=all_events)
 
 
 def fetch_events(
@@ -257,6 +309,10 @@ def fetch_events(
     next_run = {key: value for key, value in last_run.items() if key != "nextTrigger"}
     all_events: list[dict[str, Any]] = []
     errors: list[str] = []
+    demisto.debug(
+        f"[Fetch] Starting {len(event_types)} event types in parallel: {[event_type.key for event_type in event_types]}. "
+        f"Window end: {window_end}"
+    )
 
     with ThreadPoolExecutor(max_workers=len(event_types)) as executor:
         futures = {
@@ -274,7 +330,7 @@ def fetch_events(
             try:
                 events, type_state = future.result()
             except Exception as error:
-                demisto.error(f"[{event_type.key}] Fetch failed: {error}")
+                demisto.error(f"[Fetch][{event_type.key}] Failed, keeping the previous state to retry next cycle: {error}")
                 errors.append(f"{event_type.name}: {error}")
                 continue
             all_events.extend(enrich_events(events, event_type))
@@ -282,6 +338,8 @@ def fetch_events(
 
     if any(next_run.get(event_type.key, {}).get("next_url") for event_type in event_types):
         next_run["nextTrigger"] = "0"
+        demisto.debug("[Last Run] Pagination in progress, setting nextTrigger=0 to continue immediately")
+    demisto.debug(f"[Fetch] Done. Total events: {len(all_events)}, failed event types: {len(errors)}")
     return all_events, next_run, errors
 
 
@@ -309,16 +367,16 @@ def main() -> None:  # pragma: no cover
             return_results(test_module(client, event_types))
 
         elif command == "gitguardian-saas-get-events":
-            events, results = get_events_command(client, args, event_types)
-            if argToBoolean(args.get("should_push_events", False)):
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            return_results(results)
+            return_results(get_events_command(client, args, event_types))
 
         elif command == "fetch-events":
             first_fetch = format_api_date(arg_to_datetime(DEFAULT_FIRST_FETCH))  # type: ignore[arg-type]
-            events, next_run, errors = fetch_events(client, demisto.getLastRun(), event_types, max_events, first_fetch)
-            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            last_run = demisto.getLastRun()
+            demisto.debug(f"[Last Run] Loaded: {last_run}")
+            events, next_run, errors = fetch_events(client, last_run, event_types, max_events, first_fetch)
+            send_events(events)
             demisto.setLastRun(next_run)
+            demisto.debug(f"[Last Run] Saved: {next_run}")
             if errors:
                 raise DemistoException(f"Failed to fetch some event types: {'; '.join(errors)}")
 

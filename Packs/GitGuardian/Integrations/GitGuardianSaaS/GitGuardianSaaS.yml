@@ -64,7 +64,7 @@ script:
   subtype: python3
   commands:
     - name: gitguardian-saas-get-events
-      description: Gets events from GitGuardian SaaS. This command is used for developing and debugging and should be used with caution, as it can create duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism.
+      description: Retrieves GitGuardian SaaS secret incidents and audit logs. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
       arguments:
         - name: should_push_events
           description: If true, the command creates events. Otherwise, it only displays them.
