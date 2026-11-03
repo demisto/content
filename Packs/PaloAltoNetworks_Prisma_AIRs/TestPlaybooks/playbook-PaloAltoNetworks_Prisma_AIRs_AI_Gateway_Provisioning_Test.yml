@@ -1,0 +1,899 @@
+description: Comprehensive test playbook for the Prisma AIRS AI Gateway integration - a linear provisioning + lifecycle flow. Each run generates a 6-char RandomString suffix appended to the scope, workspace, and config names, so every run creates brand-new, uniquely named objects that never collide with soft-archived leftovers (no find-or-create needed). Flow - list workspaces (baseline), create an IAM scope, create a workspace bound to it, list workspaces again to confirm the new one appears, get the created workspace by id, create then delete a config inside it, archive the workspace (soft delete), and finally delete the IAM scope. Exercises the data/admin-plane workspace reads, admin-plane workspace writes, control-plane config writes, and IAM-plane scope writes.
+id: PaloAltoNetworks_Prisma_AIRs_AI_Gateway_Provisioning_Test
+inputs:
+- key: Plane
+  value:
+    simple: admin
+  required: false
+  description: The AI Gateway plane to read workspaces on (data or admin). Workspace writes are always admin-plane regardless of this input.
+  playbookInputQuery:
+- key: ScopeName
+  value:
+    simple: ws_xsoar_test
+  required: false
+  description: Base name of the IAM scope to create. The playbook appends "_<RandomString>" to make a per-run-unique name (EffectiveScopeName). Scope names must be lowercase alphanumerics/underscores (SCM ws_<name>_<suffix> convention), so keep this base to that charset.
+  playbookInputQuery:
+- key: WorkspaceName
+  value:
+    simple: xsoar-aigw-test-workspace
+  required: false
+  description: Base display name of the workspace to create. The playbook appends "-<RandomString>" to make a per-run-unique name (EffectiveWorkspaceName).
+  playbookInputQuery:
+- key: ConfigName
+  value:
+    simple: xsoar-aigw-test-config
+  required: false
+  description: Base name of the gateway config to create inside the new workspace. The playbook appends "-<RandomString>" to make a per-run-unique name (EffectiveConfigName).
+  playbookInputQuery:
+- key: ConfigDefinition
+  value:
+    simple: '{"retry":{"attempts":1},"cache":{"mode":"simple"}}'
+  required: false
+  description: The gateway config definition (JSON) to use when creating the config.
+  playbookInputQuery:
+name: PaloAltoNetworks_Prisma_AIRs_AI_Gateway_Provisioning_Test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c1a2b3d4-0001-4e5f-9a0b-1c2d3e4f5001
+    type: start
+    task:
+      id: c1a2b3d4-0001-4e5f-9a0b-1c2d3e4f5001
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c1a2b3d4-0002-4e5f-9a0b-1c2d3e4f5002
+    type: regular
+    task:
+      id: c1a2b3d4-0002-4e5f-9a0b-1c2d3e4f5002
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c1a2b3d4-0003-4e5f-9a0b-1c2d3e4f5003
+    type: regular
+    task:
+      id: c1a2b3d4-0003-4e5f-9a0b-1c2d3e4f5003
+      version: -1
+      name: GenerateRandomString
+      description: Generate a 6-char run token (RandomString) appended to every created object so each run is globally unique and never collides with archived objects.
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Length:
+        simple: "6"
+      Lowercase:
+        simple: "true"
+      Digits:
+        simple: "true"
+      Uppercase:
+        simple: "false"
+      Punctuation:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c1a2b3d4-0004-4e5f-9a0b-1c2d3e4f5004
+    type: regular
+    task:
+      id: c1a2b3d4-0004-4e5f-9a0b-1c2d3e4f5004
+      version: -1
+      name: Set EffectiveScopeName
+      description: Per-run-unique scope name (underscore separator to stay within the scope name charset).
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: EffectiveScopeName
+      value:
+        simple: ${inputs.ScopeName}_${RandomString}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: c1a2b3d4-0005-4e5f-9a0b-1c2d3e4f5005
+    type: regular
+    task:
+      id: c1a2b3d4-0005-4e5f-9a0b-1c2d3e4f5005
+      version: -1
+      name: Set EffectiveWorkspaceName
+      description: Per-run-unique workspace display name.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: EffectiveWorkspaceName
+      value:
+        simple: ${inputs.WorkspaceName}-${RandomString}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: c1a2b3d4-0006-4e5f-9a0b-1c2d3e4f5006
+    type: regular
+    task:
+      id: c1a2b3d4-0006-4e5f-9a0b-1c2d3e4f5006
+      version: -1
+      name: Set EffectiveConfigName
+      description: Per-run-unique config name.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: EffectiveConfigName
+      value:
+        simple: ${inputs.ConfigName}-${RandomString}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c1a2b3d4-0007-4e5f-9a0b-1c2d3e4f5007
+    type: title
+    task:
+      id: c1a2b3d4-0007-4e5f-9a0b-1c2d3e4f5007
+      version: -1
+      name: AI Gateway - Provision & Lifecycle
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: c1a2b3d4-0008-4e5f-9a0b-1c2d3e4f5008
+    type: regular
+    task:
+      id: c1a2b3d4-0008-4e5f-9a0b-1c2d3e4f5008
+      version: -1
+      name: prisma-airs-aigateway-workspaces-list
+      description: Baseline list of AI Gateway workspaces before creating the new one.
+      script: '|||prisma-airs-aigateway-workspaces-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      plane:
+        complex:
+          root: inputs.Plane
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c1a2b3d4-0009-4e5f-9a0b-1c2d3e4f5009
+    type: regular
+    task:
+      id: c1a2b3d4-0009-4e5f-9a0b-1c2d3e4f5009
+      version: -1
+      name: Clear baseline workspaces from context
+      description: Delete only the AIGatewayWorkspace key so the create output is isolated from the baseline list (lets the id capture below be a single value).
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.AIGatewayWorkspace
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: c1a2b3d4-0010-4e5f-9a0b-1c2d3e4f5010
+    type: regular
+    task:
+      id: c1a2b3d4-0010-4e5f-9a0b-1c2d3e4f5010
+      version: -1
+      name: prisma-airs-aigateway-scopes-create
+      description: Create the IAM scope (unique name) the workspace will be bound to.
+      script: '|||prisma-airs-aigateway-scopes-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      name:
+        simple: ${EffectiveScopeName}
+      description:
+        simple: XSOAR AI Gateway provisioning test scope.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: c1a2b3d4-0011-4e5f-9a0b-1c2d3e4f5011
+    type: regular
+    task:
+      id: c1a2b3d4-0011-4e5f-9a0b-1c2d3e4f5011
+      version: -1
+      name: prisma-airs-aigateway-workspaces-create
+      description: Create a workspace (unique name) bound to the scope created in the previous step.
+      script: '|||prisma-airs-aigateway-workspaces-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      name:
+        simple: ${EffectiveWorkspaceName}
+      scope_name:
+        simple: ${EffectiveScopeName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: c1a2b3d4-0012-4e5f-9a0b-1c2d3e4f5012
+    type: regular
+    task:
+      id: c1a2b3d4-0012-4e5f-9a0b-1c2d3e4f5012
+      version: -1
+      name: Set CreatedWorkspaceId
+      description: Capture the created workspace UUID before the second list re-populates the context array, so later get/config/archive steps reference exactly this workspace.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      key:
+        simple: CreatedWorkspaceId
+      value:
+        simple: ${PrismaAIRs.AIGatewayWorkspace.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: c1a2b3d4-0013-4e5f-9a0b-1c2d3e4f5013
+    type: regular
+    task:
+      id: c1a2b3d4-0013-4e5f-9a0b-1c2d3e4f5013
+      version: -1
+      name: prisma-airs-aigateway-workspaces-list
+      description: List workspaces again to confirm the newly created workspace now appears.
+      script: '|||prisma-airs-aigateway-workspaces-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      plane:
+        complex:
+          root: inputs.Plane
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: c1a2b3d4-0014-4e5f-9a0b-1c2d3e4f5014
+    type: regular
+    task:
+      id: c1a2b3d4-0014-4e5f-9a0b-1c2d3e4f5014
+      version: -1
+      name: prisma-airs-aigateway-workspaces-get
+      description: Get the workspace that was just created, by its captured UUID.
+      script: '|||prisma-airs-aigateway-workspaces-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      workspace_ref:
+        simple: ${CreatedWorkspaceId}
+      plane:
+        complex:
+          root: inputs.Plane
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: c1a2b3d4-0015-4e5f-9a0b-1c2d3e4f5015
+    type: title
+    task:
+      id: c1a2b3d4-0015-4e5f-9a0b-1c2d3e4f5015
+      version: -1
+      name: AI Gateway - Config Cycle
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: c1a2b3d4-0016-4e5f-9a0b-1c2d3e4f5016
+    type: regular
+    task:
+      id: c1a2b3d4-0016-4e5f-9a0b-1c2d3e4f5016
+      version: -1
+      name: Clear configs from context
+      description: Delete only the AIGatewayConfig key so the create output is isolated for the get/delete steps.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.AIGatewayConfig
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: c1a2b3d4-0017-4e5f-9a0b-1c2d3e4f5017
+    type: regular
+    task:
+      id: c1a2b3d4-0017-4e5f-9a0b-1c2d3e4f5017
+      version: -1
+      name: prisma-airs-aigateway-configs-create
+      description: Create a gateway config (unique name) inside the newly created workspace.
+      script: '|||prisma-airs-aigateway-configs-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      name:
+        simple: ${EffectiveConfigName}
+      config:
+        complex:
+          root: inputs.ConfigDefinition
+      workspace_id:
+        simple: ${CreatedWorkspaceId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: c1a2b3d4-0018-4e5f-9a0b-1c2d3e4f5018
+    type: regular
+    task:
+      id: c1a2b3d4-0018-4e5f-9a0b-1c2d3e4f5018
+      version: -1
+      name: prisma-airs-aigateway-configs-delete
+      description: Delete the config that was just created (in the workspace created by this playbook), to clean up.
+      script: '|||prisma-airs-aigateway-configs-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      config_id:
+        simple: ${CreatedConfigId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: c1a2b3d4-0023-4e5f-9a0b-1c2d3e4f5023
+    type: regular
+    task:
+      id: c1a2b3d4-0023-4e5f-9a0b-1c2d3e4f5023
+      version: -1
+      name: Set CreatedConfigId
+      description: Capture the created config UUID so the get/delete below act only on this config (created in the workspace this playbook created).
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      key:
+        simple: CreatedConfigId
+      value:
+        simple: ${PrismaAIRs.AIGatewayConfig.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: c1a2b3d4-0024-4e5f-9a0b-1c2d3e4f5024
+    type: regular
+    task:
+      id: c1a2b3d4-0024-4e5f-9a0b-1c2d3e4f5024
+      version: -1
+      name: prisma-airs-aigateway-configs-get
+      description: Retrieve the config that was just created in the new workspace, by its captured UUID.
+      script: '|||prisma-airs-aigateway-configs-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      config_id:
+        simple: ${CreatedConfigId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c1a2b3d4-0019-4e5f-9a0b-1c2d3e4f5019
+    type: title
+    task:
+      id: c1a2b3d4-0019-4e5f-9a0b-1c2d3e4f5019
+      version: -1
+      name: AI Gateway - Teardown
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: c1a2b3d4-0020-4e5f-9a0b-1c2d3e4f5020
+    type: regular
+    task:
+      id: c1a2b3d4-0020-4e5f-9a0b-1c2d3e4f5020
+      version: -1
+      name: prisma-airs-aigateway-workspaces-archive
+      description: Archive (soft-delete) the created workspace, by its captured UUID.
+      script: '|||prisma-airs-aigateway-workspaces-archive'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      workspace_ref:
+        simple: ${CreatedWorkspaceId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: c1a2b3d4-0021-4e5f-9a0b-1c2d3e4f5021
+    type: regular
+    task:
+      id: c1a2b3d4-0021-4e5f-9a0b-1c2d3e4f5021
+      version: -1
+      name: prisma-airs-aigateway-scopes-delete
+      description: Delete the IAM scope to clean up (after the workspace using it is archived).
+      script: '|||prisma-airs-aigateway-scopes-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      name:
+        simple: ${EffectiveScopeName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c1a2b3d4-0022-4e5f-9a0b-1c2d3e4f5022
+    type: title
+    task:
+      id: c1a2b3d4-0022-4e5f-9a0b-1c2d3e4f5022
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4095,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.10.0
