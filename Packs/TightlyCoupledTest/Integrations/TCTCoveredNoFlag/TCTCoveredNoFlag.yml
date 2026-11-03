@@ -1,0 +1,24 @@
+category: Utilities
+commonfields:
+  id: TCTCoveredNoFlag
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+description: Test integration referenced by a connector without the opt-out flag (CIAC-18570).
+display: TCT Covered No Flag
+name: TCTCoveredNoFlag
+script:
+  commands:
+  - name: tct-covered-no-flag-ping
+    description: Returns pong.
+    arguments: []
+  script: ''
+  subtype: python3
+  type: python
+  dockerimage: demisto/python3:3.12.13.10404775
+fromversion: 6.10.0
+tests:
+- No tests
