@@ -12,6 +12,7 @@ EXPORTED_FUNCTIONS = (
     "dependencyGroups",
     "determine",
     "inventory",
+    "installUpdates",
     "maintenanceOnly",
     "normalizeAnalysis",
     "parse",
@@ -21,7 +22,7 @@ EXPORTED_FUNCTIONS = (
 )
 
 
-def run_javascript(test_body: str) -> None:
+def run_javascript(test_body: str, command_mock: str = "function () { throw new Error('Unexpected executeCommand call'); }") -> None:
     """Run a focused unit test against the native JavaScript automation."""
     source = SCRIPT_PATH.read_text(encoding="utf-8")
     source = re.sub(r"\nreturn main\(args\);\s*$", "", source)
@@ -36,7 +37,7 @@ const factory = new Function(
   source + '\\nreturn {{{exports}}};'
 );
 const api = factory(
-  function () {{ throw new Error('Unexpected executeCommand call'); }},
+  {command_mock},
   function () {{}},
   {{}}
 );
@@ -230,4 +231,47 @@ assert.strictEqual(summary.includes('>'), false);
 assert.strictEqual(summary.includes('&lt;script&gt;'), true);
 assert.strictEqual(summary.includes('safe'), true);
 """
+    )
+
+
+@pytest.mark.parametrize(
+    ("error", "observed", "bucket"),
+    [
+        ("polling timed out for task ID [12345]", "3.3.16", "held"),
+        ("polling timed out for task ID [12345]", "3.3.17", "installed"),
+        ("installation rejected", "3.3.16", "failed"),
+    ],
+)
+def test_install_reconciles_marketplace_polling_timeout(error: str, observed: str, bucket: str) -> None:
+    run_javascript(
+        f"""
+const stamp = new Date().toISOString();
+const snapshot = {{collected_at: stamp, core_instance: 'test', packs: [{{
+  id: 'Example', installed_version: '3.3.16', target_version: '3.3.17',
+  update_available: true, releases: [{{version: '3.3.17'}}]
+}}]}};
+const report = {{assessed_at: stamp, core_instance: 'test', analysis_provider: 'TypeSafe Jev',
+  ai_decision_count: 1, expected_ai_decision_count: 1,
+  findings: [{{pack_id: 'Example', release_version: '3.3.17', status: 'not_flagged', release_notes: 'Maintenance'}}]
+}};
+const result = api.installUpdates(snapshot, report, 'test', false);
+assert.strictEqual(result[{json.dumps(bucket)}].length, 1);
+assert.strictEqual(result.installed.length + result.held.length + result.failed.length, 1);
+if (result.held.length) assert.match(result.held[0].reason, /12345/);
+assert.strictEqual(globalThis.installRequests, 1);
+""",
+        f"""function (command, args) {{
+  let response;
+  if (args.uri === '/contentpacks/metadata/installed') {{
+    response = [{{id: 'Example', currentVersion: globalThis.installRequests ? {json.dumps(observed)} : '3.3.16'}}];
+  }} else if (args.uri === '/contentpacks/marketplace/search/dependencies') {{
+    response = {{packs: [{{extras: {{pack: {{id: 'Example', currentVersion: '3.3.17', dependencies: {{}}}}}}}}]}};
+  }} else if (args.uri === '/contentpacks/marketplace/install') {{
+    globalThis.installRequests = (globalThis.installRequests || 0) + 1;
+    return [{{Type: 4, Contents: {json.dumps(error)}}}];
+  }} else {{
+    throw new Error('Unexpected command: ' + command + ' ' + args.uri);
+  }}
+  return [{{Type: 1, Contents: {{response: response}}}}];
+}}""",
     )

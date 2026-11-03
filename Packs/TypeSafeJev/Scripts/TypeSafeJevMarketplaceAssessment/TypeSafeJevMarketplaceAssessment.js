@@ -529,10 +529,13 @@ function installUpdates(snapshot,report,instance,dryRun) {
                 // Cyclic dependency components are submitted together for platform validation.
                 core('post','/contentpacks/marketplace/install',instance,{packs:group.map(function(c){return {id:c.id,version:c.version};}),ignoreWarnings:false});
             }catch(e){installError=String(e.message||e);}
+            // Cortex can stop polling an accepted install before the backend task finishes.
+            var pendingTask=installError && /polling timed out for task ID \[(\d+)\]/i.exec(installError);
             try {
                 var observed=installedVersions(instance,group.map(function(c){return c.id;}));
                 group.forEach(function(c){
                     if(observed[c.id]===c.version){current[c.id]=c.version;result.installed.push({pack_id:c.id,previous_version:c.from,version:c.version,dependency_install:c.dependency_install});}
+                    else if(pendingTask)held[c.id]='Marketplace stopped polling task '+pendingTask[1]+' before the target version could be verified. Check the task and installed version before retrying.';
                     else result.failed.push({pack_id:c.id,target_version:c.version,reason:installError||'Target version not present after native Marketplace installation'});
                 });
             }catch(e){group.forEach(function(c){result.failed.push({pack_id:c.id,target_version:c.version,reason:String(e.message||e)});});}

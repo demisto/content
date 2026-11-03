@@ -100,5 +100,8 @@ Inspect one pack without changing the tenant:
 
 1. This automation is supported only on Cortex XSIAM.
 2. The automation requires the Core REST API integration.
-3. A tenant administrator must verify the minimum Core REST API permissions in
+3. If Cortex stops polling a Marketplace installation and the target version
+   cannot be verified, the update is held for review with its installer task ID.
+   Check the task and installed version before retrying.
+4. A tenant administrator must verify the minimum Core REST API permissions in
    their environment before enabling non-dry-run operation.
