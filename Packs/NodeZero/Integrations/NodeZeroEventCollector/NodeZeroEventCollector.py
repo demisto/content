@@ -749,6 +749,8 @@ class Client(BaseClient):
         if token is None:
             return self.authenticate()
         add_sensitive_log_strs(token)
+        # Keep the loaded token on the client, so the run's later requests skip the integration-context read.
+        self._token, self._token_expires_at = token, read_token_expiry(token, int(now))
         return token
 
     def _post_graphql(self, query: str, variables: dict[str, Any], token: str) -> requests.Response:
@@ -838,6 +840,20 @@ def event_time(weakness: dict[str, Any], pentest: Pentest) -> tuple[str | None, 
     return to_iso_utc(pentest["completed_at"]) or to_iso_utc(pentest["etl_completed_at"]), True
 
 
+def weakness_key(weakness: dict[str, Any]) -> str:
+    """The weakness uuid, or a digest of the whole row for a row without one.
+
+    The digest keeps uuid-less rows apart: with one shared key their events would share one event_id, and the documented
+    `dedup event_id` would collapse them to a single event. It is deterministic, so a page replayed after an interrupted
+    run still produces the same event_id and the replay still deduplicates.
+    """
+    uuid_text = as_text(weakness.get("uuid"))
+    if uuid_text is not None:
+        return uuid_text
+    digest = hashlib.sha256(json.dumps(weakness, sort_keys=True, default=str).encode()).hexdigest()
+    return f"row-{digest[:24]}"
+
+
 def event_identity_fields(weakness: dict[str, Any], pentest: Pentest) -> dict[str, Any]:
     time_value, used_fallback = event_time(weakness, pentest)
     fields: dict[str, Any] = {"_time": time_value}
@@ -845,7 +861,7 @@ def event_identity_fields(weakness: dict[str, Any], pentest: Pentest) -> dict[st
         fields["time_fallback"] = True
     op_id = as_text(weakness.get("op_id")) or pentest["op_id"]
     fields["source_log_type"] = SOURCE_LOG_TYPE
-    fields["event_id"] = f"{op_id}:{as_text(weakness.get('uuid')) or ''}"
+    fields["event_id"] = f"{op_id}:{weakness_key(weakness)}"
     return fields
 
 
@@ -1029,15 +1045,14 @@ def cap_event_size(event: dict[str, Any]) -> dict[str, Any]:
 
 
 def build_page_events(rows: list[dict[str, Any]], pentest: Pentest, seen: set[str]) -> list[dict[str, Any]]:
-    """The events of one page. A uuid already seen during this pull is skipped."""
+    """The events of one page. A weakness key (uuid, or the row digest) already seen during this pull is skipped."""
     events: list[dict[str, Any]] = []
     for row in rows:
-        uuid = as_text(row.get("uuid"))
-        if uuid is not None and uuid in seen:
-            demisto.debug(f"Pentest {pentest['op_id']}: skipped a repeated weakness {uuid}.")
+        key = weakness_key(row)
+        if key in seen:
+            demisto.debug(f"Pentest {pentest['op_id']}: skipped a repeated weakness {key}.")
             continue
-        if uuid is not None:
-            seen.add(uuid)
+        seen.add(key)
         events.append(cap_event_size(build_event(row, pentest)))
     return events
 
@@ -1451,37 +1466,33 @@ def pending_pentests(state: LastRun, swept: list[Pentest]) -> list[Pentest]:
     return [pentest for pentest in swept if pentest["op_id"] != cursor_op_id and not is_sent(state, pentest)]
 
 
-def is_last_weakness_page(row_count: int, new_events: int, pentest_events: int, expected: int | None) -> bool:
+def is_last_weakness_page(row_count: int, new_events: int) -> bool:
     """Whether a page of weaknesses ends its pentest.
 
-    row_count is the number of rows the page returned and new_events the number of events it added. pentest_events counts
-    the pentest's events so far, this page and pages that earlier runs sent included; expected is its weaknesses_count.
-    An empty page ends the pentest and a full page never does. A short page ends it when the count is unknown or has been
-    reached, or when the page added no new events; otherwise the next page is read, which is normally empty.
+    row_count is the number of rows the page returned and new_events the number of events it added. An empty page ends
+    the pentest and a full page never does. A short page ends it only when it added nothing new; otherwise the next page
+    is read, which is normally empty. The pentest's weaknesses_count is never trusted to end a pentest: if it ever
+    undercounts while the server also serves fewer rows than asked (it already caps page_size silently), stopping at the
+    count would silently drop the weaknesses after it. The count is only compared with what was sent, and logged, when
+    the pentest finishes (note_finished).
     """
     if row_count == 0:
         return True
     if row_count >= PAGE_SIZE:
         return False
-    # A short page alone isn't trusted: if the server ever serves fewer rows than asked (it already caps page_size
-    # silently), the pentest would end early and its later pages would be dropped without an error. A page that adds
-    # nothing new still ends it, so a server that repeats a page can't keep the loop going.
-    return expected is None or pentest_events >= expected or new_events == 0
+    # A page that adds nothing new ends the pentest, so a server that repeats a page can't keep the loop going.
+    return new_events == 0
 
 
-def pull_weakness_page(
-    client: Client, pentest: Pentest, page_num: int, seen: set[str], earlier_events: int
-) -> tuple[list[dict[str, Any]], bool]:
+def pull_weakness_page(client: Client, pentest: Pentest, page_num: int, seen: set[str]) -> tuple[list[dict[str, Any]], bool]:
     """Read one page of a pentest's weaknesses and build its events.
 
-    earlier_events is the number of the pentest's events from earlier pages, including pages that earlier runs sent.
     Returns the page's events and whether the page ends the pentest (is_last_weakness_page).
     """
     rows = client.get_weaknesses_page(pentest["op_id"], page_num)
     demisto.debug(f"Pentest {pentest['op_id']}: page {page_num} returned {len(rows)} weaknesses.")
     events = build_page_events(rows, pentest, seen)
-    is_last = is_last_weakness_page(len(rows), len(events), earlier_events + len(events), pentest["weaknesses_count"])
-    return events, is_last
+    return events, is_last_weakness_page(len(rows), len(events))
 
 
 def event_batches(events: list[dict[str, Any]]) -> Iterator[list[dict[str, Any]]]:
@@ -1540,7 +1551,7 @@ def push_pentest(
     page_num, sent = cursor
     seen: set[str] = set()
     while run.deadline.seconds_left() > 0:
-        events, is_last_page = pull_weakness_page(client, pentest, page_num, seen, sent)
+        events, is_last_page = pull_weakness_page(client, pentest, page_num, seen)
         sent += send_page(holder, events)
         record_sent(run, pentest["op_id"], len(events))
         if keep is not None:
@@ -1686,13 +1697,11 @@ def iter_weakness_pages(client: Client, pentest: Pentest) -> Iterator[list[dict[
     """The events of a pentest, one page at a time. The pentest ends by the same rule as in a fetch."""
     seen: set[str] = set()
     page_num = 1
-    collected = 0
     while True:
-        events, is_last_page = pull_weakness_page(client, pentest, page_num, seen, collected)
+        events, is_last_page = pull_weakness_page(client, pentest, page_num, seen)
         yield events
         if is_last_page:
             return
-        collected += len(events)
         page_num += 1
 
 
@@ -1809,30 +1818,34 @@ def push_scope(
     events: list[dict[str, Any]],
     limit: int,
 ) -> None:
-    """Send the pentests that weren't sent yet, oldest first; show the events of the others.
+    """Send the pentests that weren't sent yet, oldest first; then show the events of the others.
 
     Up to `limit` events are shown. No new pentest starts once this run sent `limit` events in the scope, or with less
     than MIN_SECONDS_FOR_NEW_PENTEST left. The limit never splits a pentest, so a single pentest (pentest_id) is sent in
     full unless the time budget keeps it from starting or stops it partway; a later run resumes a pentest stopped partway.
+    Already-sent pentests are read again only for display, so their events come last: reading them first could spend the
+    run budget before an unsent pentest, the command's purpose, got its chance to send.
     """
 
     def keep(page_events: list[dict[str, Any]]) -> None:
         events.extend(page_events[: max(0, limit - len(events))])
 
+    shown: list[Pentest] = []
     for index, pentest in enumerate(pentests):
         if is_sent(holder.state, pentest):
             report.already_sent.append(pentest["op_id"])
-            if run.deadline.seconds_left() > 0:
-                read_events(client, [pentest], limit, events)
+            shown.append(pentest)
             continue
         in_scope_sent = run.events_sent - report.resumed_events
         if in_scope_sent >= limit or run.deadline.seconds_left() < MIN_SECONDS_FOR_NEW_PENTEST:
             report.left.extend(item["op_id"] for item in pentests[index:] if not is_sent(holder.state, item))
-            return
+            break
         if not push_pentest(client, holder, run, pentest, (1, 0), unchanged, keep):
             report.stopped_in = pentest["op_id"]
-            return
+            break
         report.pushed.append(pentest["op_id"])
+    if shown and run.deadline.seconds_left() > 0:
+        read_events(client, shown, limit, events)
 
 
 def push_lines(run: RunState, report: PushReport) -> list[str]:

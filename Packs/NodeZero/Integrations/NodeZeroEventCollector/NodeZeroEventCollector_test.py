@@ -1115,7 +1115,7 @@ def test_http_retry_settings(harness: Harness, monkeypatch: pytest.MonkeyPatch) 
 
     monkeypatch.setattr(NodeZeroEventCollector.Client, "_http_request", spy)
     run_fetch()
-    assert len(calls) == 7  # auth, two sweep pages, and four weakness pages
+    assert len(calls) == 8  # auth, two sweep pages, and five weakness pages
     for kwargs in calls:
         assert kwargs["method"] == "POST"
         assert kwargs["retries"] == 4
@@ -1230,7 +1230,7 @@ def test_weaknesses_page_always_scoped_to_op_id(harness: Harness) -> None:
     run_fetch()
     event_list({"should_push_events": "false", "limit": "100"})
     weakness_requests = [body for body in fake.graphql_requests if "weaknesses_page" in body["query"]]
-    assert len(weakness_requests) == 8  # four pages for the fetch and four for nodezero-fetch-events
+    assert len(weakness_requests) == 10  # five pages for the fetch and five for nodezero-fetch-events
     for body in weakness_requests:
         assert "weaknesses_page(input: {op_id: $op_id}" in body["query"]
         assert body["variables"]["op_id"] in {"op-a", "op-b"}
@@ -1492,7 +1492,7 @@ def test_fetch_rechecks_sent_ops_before_each_pentest(harness: Harness, monkeypat
     pentest = NodeZeroEventCollector.to_pentest(OP_A)
     monkeypatch.setattr(NodeZeroEventCollector, "pending_pentests", lambda *args: [pentest, pentest])
     run_fetch()
-    assert fake.weakness_page_calls == [("op-a", 1), ("op-a", 2)]
+    assert fake.weakness_page_calls == [("op-a", 1), ("op-a", 2), ("op-a", 3)]
     assert len(harness.sent_events()) == 3
 
 
@@ -1588,11 +1588,11 @@ def test_sweep_deduplicates_pentests_across_pages(harness: Harness) -> None:
     )
     fake.register(harness.requests_mock)  # op-b comes back on both sweep pages
     run_fetch()
-    assert fake.weakness_page_calls == [("op-a", 1), ("op-a", 2), ("op-b", 1), ("op-b", 2)]
+    assert fake.weakness_page_calls == [("op-a", 1), ("op-a", 2), ("op-a", 3), ("op-b", 1), ("op-b", 2)]
     fake.weakness_page_calls.clear()
     result = event_list({"should_push_events": "false", "limit": "100"})  # nodezero-fetch-events has no sent_ops to lean on
     assert uuids(result.raw_response) == uuids(ALL_ROWS)
-    assert fake.weakness_page_calls == [("op-a", 1), ("op-a", 2), ("op-b", 1), ("op-b", 2)]
+    assert fake.weakness_page_calls == [("op-a", 1), ("op-a", 2), ("op-a", 3), ("op-b", 1), ("op-b", 2)]
 
 
 def test_pentest_collected_on_first_run_after_completion(harness: Harness) -> None:
@@ -1673,29 +1673,23 @@ def test_drain_sends_every_weakness_across_pages(harness: Harness) -> None:
 def test_short_and_empty_last_page_end_drain(harness: Harness) -> None:
     fake = standard_api(harness)
     run_fetch()
-    # op-a ends on its short page 2, which brings it to its weaknesses_count of 3; op-b fills page 1, so page 2 is
-    # read and is empty
-    assert fake.weakness_page_calls == [("op-a", 1), ("op-a", 2), ("op-b", 1), ("op-b", 2)]
+    # op-a's short page 2 is confirmed by its empty page 3; op-b fills page 1, so page 2 is read and is empty
+    assert fake.weakness_page_calls == [("op-a", 1), ("op-a", 2), ("op-a", 3), ("op-b", 1), ("op-b", 2)]
 
 
 @pytest.mark.parametrize(
-    ("row_count", "new_events", "pentest_events", "expected", "is_last"),
+    ("row_count", "new_events", "is_last"),
     [
-        (0, 0, 3, 5, True),  # an empty page ends the pentest
-        (2, 2, 5, 5, False),  # a full page never does, even once the count is reached
-        (2, 0, 5, 5, False),  # nor does a full page of repeats
-        (1, 1, 5, 5, True),  # a short page ends it once the count is reached
-        (1, 1, 6, 5, True),  # or passed
-        (1, 1, 1, None, True),  # or when the count is unknown
-        (1, 0, 3, 5, True),  # or when every row on it was already seen
-        (1, 1, 4, 5, False),  # otherwise the next page is read
+        (0, 0, True),  # an empty page ends the pentest
+        (2, 2, False),  # a full page never does
+        (2, 0, False),  # nor does a full page of repeats
+        (1, 0, True),  # a short page ends it when every row on it was already seen
+        (1, 1, False),  # a short page with new events reads the next page, which is normally empty
     ],
 )
-def test_end_of_pentest_rule(
-    monkeypatch: pytest.MonkeyPatch, row_count: int, new_events: int, pentest_events: int, expected: int | None, is_last: bool
-) -> None:
+def test_end_of_pentest_rule(monkeypatch: pytest.MonkeyPatch, row_count: int, new_events: int, is_last: bool) -> None:
     monkeypatch.setattr(NodeZeroEventCollector, "PAGE_SIZE", 2)
-    assert NodeZeroEventCollector.is_last_weakness_page(row_count, new_events, pentest_events, expected) is is_last
+    assert NodeZeroEventCollector.is_last_weakness_page(row_count, new_events) is is_last
 
 
 @freeze_time(NOW)
@@ -1704,23 +1698,24 @@ def test_short_page_mid_pentest_is_read_past(harness: Harness) -> None:
     pages = [weaknesses_body(rows[:2]), weaknesses_body(rows[2:3]), weaknesses_body(rows[3:])]  # page 2 comes back short
     fake = FakeNodeZero(pentests=[pentest_row("op-x", 4)], weakness_pages={"op-x": pages}).register(harness.requests_mock)
     run_fetch()
-    assert fake.weakness_page_calls == [("op-x", 1), ("op-x", 2), ("op-x", 3)]  # page 3 reaches the count of 4
+    assert fake.weakness_page_calls == [("op-x", 1), ("op-x", 2), ("op-x", 3), ("op-x", 4)]  # page 4 confirms the end
     assert uuids(harness.sent_events()) == uuids(rows)
     cursors = [(saved["in_progress"] or {}).get("next_page") for saved in harness.saved_last_runs]
-    # the seed and the sweep's bookkeeping commits, a cursor after pages 1 and 2, the finish, then the final checkpoint;
-    # the short page 2 saved a cursor, like a full page
-    assert cursors == [None, None, 2, 3, None, None]
-    assert committed_cursors(harness) == [None, None, 2, 3, None]  # the seed, the bookkeeping, then each page
+    # the seed and the sweep's bookkeeping commits, a cursor after pages 1 to 3, the finish, then the final checkpoint;
+    # the short pages 2 and 3 saved a cursor, like a full page
+    assert cursors == [None, None, 2, 3, 4, None, None]
+    assert committed_cursors(harness) == [None, None, 2, 3, 4, None]  # the seed, the bookkeeping, then each page
     assert list(harness.last_run["sent_ops"]) == ["op-x"]
     assert "count mismatches (sent, expected) {}" in harness.summary()
 
 
 @freeze_time(NOW)
-def test_short_last_page_that_reaches_the_count_needs_no_extra_request(harness: Harness) -> None:
+def test_short_last_page_is_confirmed_by_one_empty_page(harness: Harness) -> None:
     rows = weakness_rows("op-x", 5)  # pages of 2, 2 and 1
     fake = FakeNodeZero(pentests=[pentest_row("op-x", 5)], weaknesses={"op-x": rows}).register(harness.requests_mock)
     run_fetch()
-    assert fake.weakness_page_calls == [("op-x", 1), ("op-x", 2), ("op-x", 3)]  # no 4th, empty page
+    # reaching the count doesn't end the pentest: if the count undercounted, stopping there would drop the rest
+    assert fake.weakness_page_calls == [("op-x", 1), ("op-x", 2), ("op-x", 3), ("op-x", 4)]
     assert uuids(harness.sent_events()) == uuids(rows)
     assert list(harness.last_run["sent_ops"]) == ["op-x"]
     assert "count mismatches (sent, expected) {}" in harness.summary()
@@ -1732,11 +1727,11 @@ def test_page_cursor_saved_after_every_page(harness: Harness) -> None:
     run_fetch()
     cursors = [(saved["in_progress"] or {}).get("next_page") for saved in harness.saved_last_runs]
     sent_ops = [sorted(saved["sent_ops"]) for saved in harness.saved_last_runs]
-    # seed, bookkeeping, then after each page: op-a page 1, op-a done, op-b page 1, op-b done; then the final checkpoint
-    assert cursors == [None, None, 2, None, 2, None, None]
-    assert sent_ops == [[], [], [], ["op-a"], ["op-a"], ["op-a", "op-b"], ["op-a", "op-b"]]
+    # seed, bookkeeping, then after each page: op-a pages 1 and 2, op-a done, op-b page 1, op-b done; the final checkpoint
+    assert cursors == [None, None, 2, 3, None, 2, None, None]
+    assert sent_ops == [[], [], [], [], ["op-a"], ["op-a"], ["op-a", "op-b"], ["op-a", "op-b"]]
     assert all("nextTrigger" not in saved for saved in harness.saved_last_runs)
-    assert committed_cursors(harness) == [None, None, 2, None, 2, None]  # each page was committed to the shared state first
+    assert committed_cursors(harness) == [None, None, 2, 3, None, 2, None]  # each page committed to the shared state first
 
 
 @freeze_time(NOW)
@@ -1780,11 +1775,11 @@ def test_null_weakness_count_skips_mismatch_check(harness: Harness) -> None:
 
 
 @freeze_time(NOW)
-def test_unknown_count_ends_on_the_short_page(harness: Harness) -> None:
+def test_unknown_count_is_confirmed_by_one_empty_page(harness: Harness) -> None:
     unknown = {**OP_A, "weaknesses_count": None}
     fake = FakeNodeZero(pentests=[unknown], weakness_pages={"op-a": OP_A_PAGES}).register(harness.requests_mock)
     run_fetch()
-    assert fake.weakness_page_calls == [("op-a", 1), ("op-a", 2)]  # no count to check, so no extra request
+    assert fake.weakness_page_calls == [("op-a", 1), ("op-a", 2), ("op-a", 3)]  # the count plays no part in the end rule
     assert list(harness.last_run["sent_ops"]) == ["op-a"]
 
 
@@ -1795,6 +1790,35 @@ def test_in_run_duplicate_uuid_dropped(harness: Harness) -> None:
     run_fetch()
     assert uuids(harness.sent_events()) == uuids([A1, A2, A3])
     assert "count mismatches (sent, expected) {}" in harness.summary()
+
+
+def test_weakness_key_is_the_uuid_or_a_deterministic_row_digest() -> None:
+    row = {**A1, "uuid": None}
+    assert NodeZeroEventCollector.weakness_key(A1) == A1["uuid"]
+    # the digest depends only on the row's content, so a page replayed by a later run produces the same event_id
+    assert NodeZeroEventCollector.weakness_key(row) == NodeZeroEventCollector.weakness_key(json.loads(json.dumps(row)))
+    assert NodeZeroEventCollector.weakness_key(row) != NodeZeroEventCollector.weakness_key({**A2, "uuid": None})
+
+
+@freeze_time(NOW)
+def test_rows_without_a_uuid_get_distinct_event_ids(harness: Harness) -> None:
+    pages = [weaknesses_body([{**A1, "uuid": None}, {**A2, "uuid": None}])]
+    FakeNodeZero(pentests=[pentest_row("op-a", 2)], weakness_pages={"op-a": pages}).register(harness.requests_mock)
+    run_fetch()
+    events = harness.sent_events()
+    assert len(events) == 2  # both rows are real weaknesses, not repeats of each other
+    event_ids = {event["event_id"] for event in events}
+    assert len(event_ids) == 2  # distinct event_ids, so `dedup event_id` can't collapse them into one
+    assert all(event_id.startswith("op-a:row-") for event_id in event_ids)
+
+
+@freeze_time(NOW)
+def test_repeated_row_without_a_uuid_is_dropped_like_a_repeated_uuid(harness: Harness) -> None:
+    row = {**A1, "uuid": None}
+    pages = [weaknesses_body([row, row])]  # the page repeats one identical row
+    FakeNodeZero(pentests=[pentest_row("op-a", 1)], weakness_pages={"op-a": pages}).register(harness.requests_mock)
+    run_fetch()
+    assert len(harness.sent_events()) == 1
 
 
 @freeze_time(NOW)
@@ -1882,7 +1906,7 @@ def test_resume_from_cursor_sends_no_duplicates(harness: Harness) -> None:
     fake.weakness_page_calls.clear()
     harness.logs.clear()
     run_fetch()
-    assert fake.weakness_page_calls == [("op-x", 4)]  # resumed at the cursor; pages 1 to 3 are not read again
+    assert fake.weakness_page_calls == [("op-x", 4), ("op-x", 5)]  # resumed at the cursor; page 5 confirms the end
     assert sorted(uuids(harness.sent_events())) == uuids(rows)
     assert harness.last_run["in_progress"] is None
     assert harness.last_run["sent_ops"] == {"op-x": "2025-03-14T10:00:00.250000"}
@@ -1903,8 +1927,8 @@ def test_resume_counts_the_events_earlier_runs_sent(harness: Harness) -> None:
         "in_progress": {"pentest": pentest_row("op-x", 4), "next_page": 2, "sent": 2},  # an earlier run sent page 1
     }
     run_fetch()
-    # page 2 is short at 3 of 4 events, so page 3 is read; with the 2 carried over it reaches 4, so page 4 is not read
-    assert fake.weakness_page_calls == [("op-x", 2), ("op-x", 3)]
+    # pages 2 and 3 are short with new events, so each is read past; the empty page 4 ends the pentest
+    assert fake.weakness_page_calls == [("op-x", 2), ("op-x", 3), ("op-x", 4)]
     assert uuids(harness.sent_events()) == uuids(rows[2:])
     assert list(harness.last_run["sent_ops"]) == ["op-x"]
     assert "count mismatches (sent, expected) {}" in harness.summary()
@@ -1942,9 +1966,9 @@ def test_resume_that_finishes_near_the_deadline_skips_the_sweep(harness: Harness
         "in_progress": {"pentest": OP_A, "next_page": 2, "sent": 2},
     }
     clock = FakeClock()
-    fake.charge_weakness_pages(clock, 160)  # op-a's last page leaves 20 s, under the 30 s needed to start a pentest
+    fake.charge_weakness_pages(clock, 160)  # op-a's pages use the whole budget, leaving nothing to start a pentest
     run_fetch(clock=clock)
-    assert fake.weakness_page_calls == [("op-a", 2)]
+    assert fake.weakness_page_calls == [("op-a", 2), ("op-a", 3)]  # the empty page 3 confirms the end
     assert fake.requests_for("CortexXsiamFinishedPentests") == []  # no sweep request that would have no retries left
     assert list(harness.last_run["sent_ops"]) == ["op-a"]
     assert harness.last_run["nextTrigger"] == "0"  # the next run sweeps with a full budget
@@ -2222,7 +2246,7 @@ def test_event_list_limit(harness: Harness) -> None:
     fake.weakness_page_calls.clear()
     result = view({"limit": "4"})
     assert uuids(result.raw_response) == uuids([A1, A2, A3, B1])
-    assert fake.weakness_page_calls == [("op-a", 1), ("op-a", 2), ("op-b", 1)]
+    assert fake.weakness_page_calls == [("op-a", 1), ("op-a", 2), ("op-a", 3), ("op-b", 1)]
     assert harness.sends == []
     for bad_limit in ("0", "-2"):
         with pytest.raises(DemistoException, match="limit must be a positive integer"):
@@ -2235,10 +2259,10 @@ def test_event_list_limit(harness: Harness) -> None:
 @pytest.mark.parametrize(
     ("weaknesses_count", "pages", "pages_read", "events_read"),
     [
-        (4, [[0, 1], [2], [3]], 3, 4),  # a short page mid-pentest is read past
-        (5, [[0, 1], [2], [3]], 4, 4),  # a stale, larger count costs one extra, empty page
-        (3, [[0, 1], [2]], 2, 3),  # the short last page reaches the count
-        (None, [[0, 1], [2], [3]], 2, 3),  # with no count to check, the short page ends the pentest
+        (4, [[0, 1], [2], [3]], 4, 4),  # a short page mid-pentest is read past
+        (5, [[0, 1], [2], [3]], 4, 4),  # a stale, larger count changes nothing: the count never ends a pentest
+        (3, [[0, 1], [2]], 3, 3),  # a short last page is confirmed by one empty page, even at the count
+        (None, [[0, 1], [2], [3]], 4, 4),  # an unknown count hides nothing: the page after a short page is still read
         (5, [[0, 1], [2], [2], [2]], 3, 3),  # a repeated short page adds nothing new
     ],
 )
@@ -2641,7 +2665,7 @@ def test_shared_state_is_authoritative_over_a_stale_checkpoint(harness: Harness)
     )
     harness.last_run = state_payload(in_progress={"pentest": op_x, "next_page": 2, "sent": 2})  # an older mirror
     run_fetch()
-    assert fake.weakness_page_calls == [("op-x", 3)]  # the cursor comes from the context, not the checkpoint
+    assert fake.weakness_page_calls == [("op-x", 3), ("op-x", 4)]  # the cursor comes from the context, not the checkpoint
     assert harness.sent_ids() == ids_of(fake, "op-x")[4:]
     assert set(harness.store.state()["sent_ops"]) == {"op-a", "op-x"}
     assert harness.last_run == harness.store.state()
@@ -2779,11 +2803,34 @@ def test_push_skips_sent_and_pruned_pentests_but_displays_them(harness: Harness)
     assert sorted(harness.sent_ids()) == sorted(ids_of(fake, "op-before-floor", "op-at-pruned-before"))
     assert "Not sent again, because they were already sent: op-at-floor, op-recorded." in result.readable_output
     assert "Sent 2 events to Cortex XSIAM from 2 pentests." in result.readable_output
-    assert [event["op_id"] for event in result.raw_response] == [row["op_id"] for row in rows]  # all four are displayed
+    # all four are displayed: the pushed pentests as they were sent, then the already-sent ones, read after the push
+    assert [event["op_id"] for event in result.raw_response] == [
+        "op-before-floor",
+        "op-at-pruned-before",
+        "op-at-floor",
+        "op-recorded",
+    ]
     state = harness.store.state()
     assert state["watermark"] == "2025-03-14T00:00:00"  # a push never moves the watermark
     assert state["pruned_before"] == "2025-03-14T00:00:00.000000"  # and never prunes
     assert set(state["sent_ops"]) == {"op-recorded", "op-before-floor", "op-at-pruned-before"}
+
+
+@freeze_time(NOW)
+def test_push_reads_sent_pentests_for_display_only_after_the_push(harness: Harness) -> None:
+    rows = [
+        pentest_row("op-sent", 2, etl_completed_at="2025-03-13T12:00:00"),
+        pentest_row("op-unsent", 2, etl_completed_at="2025-03-13T13:00:00"),
+    ]
+    fake = generated_api(harness, rows)
+    harness.context[STATE_KEY] = state_payload(sent_ops={"op-sent": "2025-03-13T12:00:00"})
+    result = push()
+    ops_read = [op_id for op_id, _ in fake.weakness_page_calls]
+    # op-sent is older, but reading it again is display only, so the unsent pentest sends first: reading the sent one
+    # first could spend the run budget before the unsent one, the command's purpose, got its chance to send
+    assert ops_read.index("op-unsent") < ops_read.index("op-sent")
+    assert sorted(harness.sent_ids()) == sorted(ids_of(fake, "op-unsent"))
+    assert "Not sent again, because they were already sent: op-sent." in result.readable_output
 
 
 @freeze_time(NOW)
@@ -2845,7 +2892,7 @@ def test_push_stopped_by_the_deadline_leaves_the_cursor_for_the_fetch(harness: H
     assert harness.store.lease() is None
     fake.page_cost = None
     run_fetch()  # the fetch finishes the pentest the push left half sent
-    assert fake.weakness_page_calls[3:] == [("op-x", 4)]
+    assert fake.weakness_page_calls[3:] == [("op-x", 4), ("op-x", 5)]
     assert sorted(harness.sent_ids()) == sorted(ids_of(fake, "op-x"))
     assert harness.duplicate_ids() == []
 
@@ -3516,6 +3563,24 @@ def test_token_cache_belongs_to_one_url_and_api_key(harness: Harness) -> None:
 
 
 @freeze_time(NOW)
+def test_cached_token_is_read_from_the_context_once_per_run(harness: Harness, monkeypatch: pytest.MonkeyPatch) -> None:
+    standard_api(harness)
+    harness.context.update(cached_token("cached-token", NOW_EPOCH + 3600))
+    reads = 0
+    original = NodeZeroEventCollector.load_cached_token
+
+    def counting(now: float, owner: str) -> str | None:
+        nonlocal reads
+        reads += 1
+        return original(now, owner)
+
+    monkeypatch.setattr(NodeZeroEventCollector, "load_cached_token", counting)
+    run_fetch()
+    assert reads == 1  # the loaded token is kept on the client, so the run's later requests skip the context read
+    assert len(harness.sent_events()) == 5  # and the whole fetch ran on the cached token
+
+
+@freeze_time(NOW)
 def test_new_api_key_after_test_module_makes_the_fetch_use_a_new_token(harness: Harness) -> None:
     fake = standard_api(harness)
     run_fetch()  # caches a token for the first key
@@ -3677,7 +3742,7 @@ def test_every_fetch_request_carries_the_identity_headers(harness: Harness) -> N
     client = make_client()
     NodeZeroEventCollector.fetch_events_command(client, FETCH_PARAMS)
     paths = assert_identity_headers(harness, client.run_id)
-    assert paths == ["/v1/auth"] + ["/v1/graphql"] * 6  # the key exchange, two sweep pages and four weakness pages
+    assert paths == ["/v1/auth"] + ["/v1/graphql"] * 7  # the key exchange, two sweep pages and five weakness pages
     for path, headers in sent_headers(harness):
         assert headers["Content-Type"] == "application/json"  # the per-call headers didn't replace it
         if path == "/v1/graphql":
@@ -4341,7 +4406,7 @@ def test_client_logs_its_run_id_and_user_agent_once(harness: Harness) -> None:
     expected = f"NodeZero run ID {client.run_id}, User-Agent {UNIT_TEST_USER_AGENT}."
     assert harness.messages("debug") == [expected]  # the client logs nothing else when it is built
     NodeZeroEventCollector.fetch_events_command(client, FETCH_PARAMS)
-    assert len(harness.requests_mock.request_history) == 7
+    assert len(harness.requests_mock.request_history) == 8
     assert [message for message in harness.messages("debug") if client.run_id in message] == [expected]  # not per request
 
 

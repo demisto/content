@@ -76,7 +76,7 @@ Gets weakness events from done NodeZero pentests, for one pentest or for the pen
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NodeZero.Event.event_id | String | The unique ID of the event: the pentest op_id and the weakness UUID, separated by a colon. |
+| NodeZero.Event.event_id | String | The unique ID of the event: the pentest op_id and the weakness UUID (or, for a weakness without a UUID, a digest of the weakness), separated by a colon. |
 | NodeZero.Event._time | Date | The time NodeZero discovered the weakness during the pentest. |
 | NodeZero.Event.op_id | String | The ID of the pentest. |
 | NodeZero.Event.uuid | String | The ID of the weakness in the pentest. |

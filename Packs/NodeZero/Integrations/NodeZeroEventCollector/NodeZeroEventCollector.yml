@@ -90,7 +90,7 @@ script:
       defaultValue: 7 days
     outputs:
     - contextPath: NodeZero.Event.event_id
-      description: 'The unique ID of the event: the pentest op_id and the weakness UUID, separated by a colon.'
+      description: 'The unique ID of the event: the pentest op_id and the weakness UUID (or, for a weakness without a UUID, a digest of the weakness), separated by a colon.'
       type: String
     - contextPath: NodeZero.Event._time
       description: The time NodeZero discovered the weakness during the pentest.
