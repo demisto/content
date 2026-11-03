@@ -1,0 +1,377 @@
+{
+  "description": "Host-name validation vectors for the shared layer. Each case is one affected_host.host_name value with no other candidates. valid_hostname and ip_literal are the results of is_valid_hostname and is_ip_literal; the target_* keys are the fields build_host_fields emits for that value.",
+  "cases": [
+    {
+      "value": "6.7.0",
+      "reason": "Version-like: the last label is all digits.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "1234",
+      "reason": "A single all-digit label.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "6.7.0-beta",
+      "reason": "More than one label and every label starts with a digit.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "1.2.3",
+      "reason": "Version-like: the last label is all digits.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "10.0.0.256",
+      "reason": "Not an IP literal (bad octet) and the last label is all digits.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "1abc.2def",
+      "reason": "More than one label and every label starts with a digit.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "10.0.0.4",
+      "reason": "IPv4 literal: routed to the address field.",
+      "valid_hostname": false,
+      "ip_literal": true,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [
+        "10.0.0.4"
+      ],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": " 10.0.0.4 ",
+      "reason": "IPv4 literal after trimming whitespace.",
+      "valid_hostname": false,
+      "ip_literal": true,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [
+        "10.0.0.4"
+      ],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "10.0.0.4.",
+      "reason": "IPv4 literal after removing one trailing dot.",
+      "valid_hostname": false,
+      "ip_literal": true,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [
+        "10.0.0.4"
+      ],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "2001:db8::100f",
+      "reason": "IPv6 literal: routed to the IPv6 address field.",
+      "valid_hostname": false,
+      "ip_literal": true,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": [
+        "2001:db8::100f"
+      ]
+    },
+    {
+      "value": "[2001:db8::100f]",
+      "reason": "Bracketed IPv6 literal: brackets removed.",
+      "valid_hostname": false,
+      "ip_literal": true,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": [
+        "2001:db8::100f"
+      ]
+    },
+    {
+      "value": "2001:DB8::100F",
+      "reason": "IPv6 literal written in canonical (lowercase) form.",
+      "valid_hostname": false,
+      "ip_literal": true,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": [
+        "2001:db8::100f"
+      ]
+    },
+    {
+      "value": "dc01.corp.example.com",
+      "reason": "Valid FQDN: used as both host name and FQDN.",
+      "valid_hostname": true,
+      "ip_literal": false,
+      "target_hostname": "dc01.corp.example.com",
+      "target_fqdn": "dc01.corp.example.com",
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "dc01",
+      "reason": "Valid single-label host name; no FQDN.",
+      "valid_hostname": true,
+      "ip_literal": false,
+      "target_hostname": "dc01",
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "3par01",
+      "reason": "A single label may start with a digit.",
+      "valid_hostname": true,
+      "ip_literal": false,
+      "target_hostname": "3par01",
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "3par01.corp.example.com",
+      "reason": "Not every label starts with a digit.",
+      "valid_hostname": true,
+      "ip_literal": false,
+      "target_hostname": "3par01.corp.example.com",
+      "target_fqdn": "3par01.corp.example.com",
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "DC01.Corp.Example.com",
+      "reason": "Valid; case is kept.",
+      "valid_hostname": true,
+      "ip_literal": false,
+      "target_hostname": "DC01.Corp.Example.com",
+      "target_fqdn": "DC01.Corp.Example.com",
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "xn--bcher-kva.example.com",
+      "reason": "Valid punycode label.",
+      "valid_hostname": true,
+      "ip_literal": false,
+      "target_hostname": "xn--bcher-kva.example.com",
+      "target_fqdn": "xn--bcher-kva.example.com",
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "dc01.corp.example.com.",
+      "reason": "Valid after removing one trailing dot.",
+      "valid_hostname": true,
+      "ip_literal": false,
+      "target_hostname": "dc01.corp.example.com",
+      "target_fqdn": "dc01.corp.example.com",
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "  dc01.corp.example.com  ",
+      "reason": "Valid after trimming whitespace.",
+      "valid_hostname": true,
+      "ip_literal": false,
+      "target_hostname": "dc01.corp.example.com",
+      "target_fqdn": "dc01.corp.example.com",
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "-bad.example.com",
+      "reason": "A label starts with a hyphen.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "bad-.example.com",
+      "reason": "A label ends with a hyphen.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "under_score.example.com",
+      "reason": "Underscores are not allowed.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "dc01..example.com",
+      "reason": "Empty label.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "dc01.example.com..",
+      "reason": "Only one trailing dot is removed, which leaves an empty label.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": ".",
+      "reason": "Nothing is left after removing the trailing dot.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "dc01\n.example.com",
+      "reason": "A newline inside a label.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "dc01.corp.example.com:443",
+      "reason": "A port is not part of a host name.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.example.com",
+      "reason": "A 64-character label.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.example.com",
+      "reason": "A 63-character label is the longest allowed.",
+      "valid_hostname": true,
+      "ip_literal": false,
+      "target_hostname": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.example.com",
+      "target_fqdn": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.example.com",
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "reason": "A 254-character name.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "reason": "A 253-character name is the longest allowed.",
+      "valid_hostname": true,
+      "ip_literal": false,
+      "target_hostname": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "target_fqdn": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.",
+      "reason": "253 characters after removing one trailing dot.",
+      "valid_hostname": true,
+      "ip_literal": false,
+      "target_hostname": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "target_fqdn": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "",
+      "reason": "Empty string: no value.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": "   ",
+      "reason": "Whitespace only: no value.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    },
+    {
+      "value": null,
+      "reason": "Null: no value.",
+      "valid_hostname": false,
+      "ip_literal": false,
+      "target_hostname": null,
+      "target_fqdn": null,
+      "target_ipv4_addresses": [],
+      "target_ipv6_addresses": []
+    }
+  ]
+}

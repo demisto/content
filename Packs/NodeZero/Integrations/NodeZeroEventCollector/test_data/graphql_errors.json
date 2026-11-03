@@ -1,0 +1,17 @@
+{
+  "errors": [
+    {
+      "message": "Cannot query field \"nope\" on type \"Pentest\".",
+      "locations": [
+        {
+          "line": 3,
+          "column": 5
+        }
+      ]
+    },
+    {
+      "message": "Variable \"$page_input\" got an invalid value."
+    }
+  ],
+  "data": null
+}

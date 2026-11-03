@@ -1,0 +1,191 @@
+{
+  "description": "The raw-schema example: one API pentest row, one API weakness row, and the exact event built from them.",
+  "pentest": {
+    "op_id": "11111111-1111-1111-1111-111111111111",
+    "name": "Example internal pentest",
+    "op_type": "NodeZero",
+    "state": "done",
+    "client_name": "Example Client",
+    "completed_at": "2025-03-14T23:10:00",
+    "etl_completed_at": "2025-03-14T23:19:30",
+    "weaknesses_count": 3
+  },
+  "weakness": {
+    "uuid": "22222222-2222-2222-2222-222222222222",
+    "op_id": "11111111-1111-1111-1111-111111111111",
+    "created_at": "2025-03-14T22:34:51",
+    "vuln_id": "CVE-2021-44228",
+    "vuln_name": "Apache Log4j2 Remote Code Execution (Log4Shell)",
+    "vuln_short_name": "Log4Shell RCE",
+    "vuln_category": "VULNERABILITY",
+    "vuln_cisa_kev": true,
+    "vuln_known_ransomware_campaign_use": true,
+    "severity": "CRITICAL",
+    "score": 10,
+    "base_severity": "CRITICAL",
+    "base_score": 10,
+    "context_severity": null,
+    "context_score": null,
+    "context_score_description": null,
+    "has_proof": true,
+    "proofs": [
+      {
+        "proof_type": "CommandOutputProofResource"
+      }
+    ],
+    "proof_failure_code": null,
+    "proof_failure_reason": null,
+    "ip": "192.0.2.8",
+    "affected_asset_uuid": "44444444-4444-4444-4444-444444444444",
+    "affected_asset_display_name": "app-server-01 on 192.0.2.8 Port 8443",
+    "affected_asset_short_name": "192.0.2.8 : 8443",
+    "attack_paths_count": 1,
+    "affected_credentials_count": 0,
+    "impacts": [
+      {
+        "impact_type": "HostCompromise",
+        "score": 9.3,
+        "severity": "CRITICAL",
+        "impact_paths_count": 1
+      }
+    ],
+    "downstream_impact_types": [
+      "HostCompromise"
+    ],
+    "mitre_mappings": [
+      {
+        "mitre_tactic_id": "TA0001",
+        "mitre_technique_id": "T1190",
+        "mitre_subtechnique_id": null
+      }
+    ],
+    "time_to_finding_s": 842,
+    "time_to_finding_hms": "00:14:02",
+    "weakness_ref": "<opaque>",
+    "portal_url": "https://portal.horizon3ai.com/pentests/11111111-1111-1111-1111-111111111111/weaknesses/22222222-2222-2222-2222-222222222222",
+    "affected_host": {
+      "uuid": "33333333-3333-3333-3333-333333333333",
+      "host_name": "app-server-01.corp.example",
+      "host_names": [
+        "app-server-01.corp.example"
+      ],
+      "ip": "192.0.2.8",
+      "mac": null,
+      "os_names": [
+        "Linux"
+      ],
+      "is_in_scope": true
+    },
+    "vuln": {
+      "description": "Apache Log4j2 JNDI lookup feature allows remote code execution via a crafted log message.",
+      "mitigations": [
+        {
+          "description": "Upgrade to Log4j 2.17.1 or later."
+        }
+      ],
+      "references": [
+        {
+          "name": "NVD: CVE-2021-44228",
+          "url": "https://www.example.com/vulnerabilities/CVE-2021-44228"
+        }
+      ]
+    }
+  },
+  "event": {
+    "_time": "2025-03-14T22:34:51.000Z",
+    "source_log_type": "weakness",
+    "event_id": "11111111-1111-1111-1111-111111111111:22222222-2222-2222-2222-222222222222",
+    "pentest_name": "Example internal pentest",
+    "pentest_type": "NodeZero",
+    "pentest_state": "done",
+    "pentest_client_name": "Example Client",
+    "pentest_completed_at": "2025-03-14T23:10:00.000Z",
+    "pentest_etl_completed_at": "2025-03-14T23:19:30.000Z",
+    "pentest_weaknesses_count": 3,
+    "uuid": "22222222-2222-2222-2222-222222222222",
+    "op_id": "11111111-1111-1111-1111-111111111111",
+    "created_at": "2025-03-14T22:34:51",
+    "vuln_id": "CVE-2021-44228",
+    "vuln_name": "Apache Log4j2 Remote Code Execution (Log4Shell)",
+    "vuln_short_name": "Log4Shell RCE",
+    "vuln_category": "VULNERABILITY",
+    "vuln_cisa_kev": true,
+    "vuln_known_ransomware_campaign_use": true,
+    "severity": "CRITICAL",
+    "score": 10.0,
+    "base_severity": "CRITICAL",
+    "base_score": 10.0,
+    "context_severity": null,
+    "context_score": null,
+    "context_score_description": null,
+    "has_proof": true,
+    "proof_types": [
+      "CommandOutputProofResource"
+    ],
+    "proof_failure_code": null,
+    "proof_failure_reason": null,
+    "ip": "192.0.2.8",
+    "affected_asset_uuid": "44444444-4444-4444-4444-444444444444",
+    "affected_asset_display_name": "app-server-01 on 192.0.2.8 Port 8443",
+    "affected_asset_short_name": "192.0.2.8 : 8443",
+    "attack_paths_count": 1,
+    "affected_credentials_count": 0,
+    "impacts": [
+      {
+        "impact_type": "HostCompromise",
+        "score": 9.3,
+        "severity": "CRITICAL",
+        "impact_paths_count": 1
+      }
+    ],
+    "downstream_impact_types": [
+      "HostCompromise"
+    ],
+    "mitre_mappings": [
+      {
+        "mitre_tactic_id": "TA0001",
+        "mitre_technique_id": "T1190",
+        "mitre_subtechnique_id": null
+      }
+    ],
+    "mitre_tactic_ids": [
+      "TA0001"
+    ],
+    "mitre_technique_ids": [
+      "T1190"
+    ],
+    "time_to_finding_s": 842,
+    "time_to_finding_hms": "00:14:02",
+    "weakness_ref": "<opaque>",
+    "portal_url": "https://portal.horizon3ai.com/pentests/11111111-1111-1111-1111-111111111111/weaknesses/22222222-2222-2222-2222-222222222222",
+    "affected_host_uuid": "33333333-3333-3333-3333-333333333333",
+    "affected_host_name": "app-server-01.corp.example",
+    "affected_host_names": [
+      "app-server-01.corp.example"
+    ],
+    "affected_host_ip": "192.0.2.8",
+    "affected_host_mac": null,
+    "affected_host_os_names": [
+      "Linux"
+    ],
+    "affected_host_is_in_scope": true,
+    "target_hostname": "app-server-01.corp.example",
+    "target_fqdn": "app-server-01.corp.example",
+    "target_ipv4_addresses": [
+      "192.0.2.8"
+    ],
+    "target_ipv6_addresses": [],
+    "target_mac_addresses": [],
+    "target_os": "Linux",
+    "vuln_description": "Apache Log4j2 JNDI lookup feature allows remote code execution via a crafted log message.",
+    "vuln_mitigations": [
+      "Upgrade to Log4j 2.17.1 or later."
+    ],
+    "vuln_references": [
+      {
+        "name": "NVD: CVE-2021-44228",
+        "url": "https://www.example.com/vulnerabilities/CVE-2021-44228"
+      }
+    ]
+  }
+}

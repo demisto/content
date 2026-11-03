@@ -1,0 +1,1799 @@
+{
+    "dashboards_data": [
+        {
+            "id": "5d0c2f6e8b7a4b1f9e3c6a2d4f8b0e17",
+            "name": "NodeZero Overview",
+            "description": "Shows NodeZero weakness events from completed pentests, for all pentests or the ones picked in the Pentest filter: key weakness counts, ingestion health, weaknesses by severity, impact, category and proof, the most common weaknesses, the top hosts by severity, and a fix-first list of the highest-priority weaknesses.",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-1793307083913",
+                    "data": [
+                        {
+                            "key": "xql_1793307083912",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 20,
+                                "height": 200,
+                                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | filter severity = \"CRITICAL\" | comp count() as Critical | view graph type = single subtype = standard yaxis = Critical seriestitle(\"Critical\",\"Critical weaknesses\")",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "standard"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Critical"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "Critical",
+                                                    "Critical weaknesses"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "params": [
+                                    {
+                                        "name": "pentests",
+                                        "value": "*"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "key": "xql_1793307083913",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 20,
+                                "height": 200,
+                                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | filter vuln_cisa_kev = true | comp count() as KEV | view graph type = single subtype = standard yaxis = KEV seriestitle(\"KEV\",\"CISA KEV weaknesses\")",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "standard"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "KEV"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "KEV",
+                                                    "CISA KEV weaknesses"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "params": [
+                                    {
+                                        "name": "pentests",
+                                        "value": "*"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "key": "xql_1793307083914",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 20,
+                                "height": 200,
+                                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | filter vuln_known_ransomware_campaign_use = true | comp count() as Ransomware | view graph type = single subtype = standard yaxis = Ransomware seriestitle(\"Ransomware\",\"Known ransomware weaknesses\")",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "standard"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Ransomware"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "Ransomware",
+                                                    "Known ransomware weaknesses"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "params": [
+                                    {
+                                        "name": "pentests",
+                                        "value": "*"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "key": "xql_1793307083915",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 20,
+                                "height": 200,
+                                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | filter has_proof = true | comp count() as Proven | view graph type = single subtype = standard yaxis = Proven seriestitle(\"Proven\",\"Weaknesses with proof\")",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "standard"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Proven"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "Proven",
+                                                    "Weaknesses with proof"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "params": [
+                                    {
+                                        "name": "pentests",
+                                        "value": "*"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "key": "xql_1793307083916",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 20,
+                                "height": 200,
+                                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | filter downstream_impact_types contains \"Compromise\" | comp count() as Compromise | view graph type = single subtype = standard yaxis = Compromise seriestitle(\"Compromise\",\"Weaknesses that lead to a compromise\")",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "standard"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Compromise"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "Compromise",
+                                                    "Weaknesses that lead to a compromise"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "params": [
+                                    {
+                                        "name": "pentests",
+                                        "value": "*"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-1793307083914",
+                    "data": [
+                        {
+                            "key": "xql_1793307083917",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 360,
+                                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | alter day = format_timestamp(\"%Y-%m-%d\", _insert_time) | comp count() as Events by day | sort asc day | view graph type = column subtype = grouped header = \"Events ingested per day\" xaxis = day yaxis = Events",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Events ingested per day\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "day"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Events"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "params": [
+                                    {
+                                        "name": "pentests",
+                                        "value": "*"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "key": "xql_1793307083918",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 25,
+                                "height": 360,
+                                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | comp count_distinct(op_id) as Pentests | view graph type = single subtype = standard yaxis = Pentests seriestitle(\"Pentests\",\"Pentests ingested\")",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "standard"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Pentests"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "Pentests",
+                                                    "Pentests ingested"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "params": [
+                                    {
+                                        "name": "pentests",
+                                        "value": "*"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "key": "xql_1793307083919",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 25,
+                                "height": 360,
+                                "phrase": "dataset = horizon3_nodezero_raw | comp max(_insert_time) as last_insert | alter Hours = timestamp_diff(current_time(), last_insert, \"HOUR\") | fields Hours | view graph type = single subtype = standard yaxis = Hours scale_threshold(\"#25cf68\",\"#eac016\",\"24\",\"#f11126\",\"72\") seriestitle(\"Hours\",\"Hours since last ingest\")",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "single",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "standard"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Hours"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#25cf68",
+                                                    "#eac016",
+                                                    24,
+                                                    "#f11126",
+                                                    72
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "Hours",
+                                                    "Hours since last ingest"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-1793307083915",
+                    "data": [
+                        {
+                            "key": "xql_1793307083920",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 330,
+                                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | comp count() as Events, max(pentest_weaknesses_count) as Expected, max(_insert_time) as Last_ingested by Pentest, pentest_etl_completed_at | alter Match = if(Events = Expected, \"yes\", \"no\") | sort desc pentest_etl_completed_at",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "params": [
+                                    {
+                                        "name": "pentests",
+                                        "value": "*"
+                                    }
+                                ],
+                                "drilldown_config": {
+                                    "actionType": "in_dashboard_drilldown",
+                                    "actionData": [
+                                        {
+                                            "param": "pentests",
+                                            "value": "$row.Pentest"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-1793307083916",
+                    "data": [
+                        {
+                            "key": "xql_1793307083921",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 40,
+                                "height": 400,
+                                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | comp count() as Weaknesses by severity | view graph type = pie header = \"Weaknesses by severity\" xaxis = severity yaxis = Weaknesses",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Weaknesses by severity\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "severity"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Weaknesses"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "params": [
+                                    {
+                                        "name": "pentests",
+                                        "value": "*"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "key": "xql_1793307083922",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 60,
+                                "height": 400,
+                                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | alter day = format_timestamp(\"%Y-%m-%d\", _time) | comp count() as Weaknesses by day, severity | sort asc day | view graph type = column subtype = stacked header = \"Weaknesses by severity over time\" xaxis = day yaxis = Weaknesses series = severity",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "stacked"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Weaknesses by severity over time\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "day"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Weaknesses"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "series",
+                                                "value": "severity"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "params": [
+                                    {
+                                        "name": "pentests",
+                                        "value": "*"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-1793307083917",
+                    "data": [
+                        {
+                            "key": "xql_1793307083923",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33,
+                                "height": 400,
+                                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | alter Impact = json_extract_scalar_array(downstream_impact_types, \"$\") | arrayexpand Impact | filter Impact != null | comp count() as Weaknesses by Impact | sort desc Weaknesses | view graph type = column subtype = grouped layout = horizontal header = \"Weaknesses by downstream impact\" xaxis = Impact yaxis = Weaknesses",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "layout",
+                                                "value": "horizontal"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Weaknesses by downstream impact\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "Impact"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Weaknesses"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "params": [
+                                    {
+                                        "name": "pentests",
+                                        "value": "*"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "key": "xql_1793307083924",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33,
+                                "height": 400,
+                                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | comp count() as Weaknesses by vuln_category | sort desc Weaknesses | view graph type = pie header = \"Weaknesses by category\" xaxis = vuln_category yaxis = Weaknesses",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Weaknesses by category\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "vuln_category"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Weaknesses"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "params": [
+                                    {
+                                        "name": "pentests",
+                                        "value": "*"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "key": "xql_1793307083925",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 34,
+                                "height": 400,
+                                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | filter has_proof = false or has_proof = null | alter Reason = coalesce(replace(proof_failure_code, \"_\", \" \"), \"no reason reported\") | comp count() as Weaknesses by Reason | sort desc Weaknesses | view graph type = column subtype = grouped layout = horizontal header = \"Unproven weaknesses by reason\" xaxis = Reason yaxis = Weaknesses",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "layout",
+                                                "value": "horizontal"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Unproven weaknesses by reason\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "Reason"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Weaknesses"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "params": [
+                                    {
+                                        "name": "pentests",
+                                        "value": "*"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-1793307083918",
+                    "data": [
+                        {
+                            "key": "xql_1793307083926",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 420,
+                                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | alter Weakness = coalesce(vuln_short_name, vuln_name, vuln_id), Host = coalesce(target_hostname, arrayindex(json_extract_scalar_array(target_ipv4_addresses, \"$\"), 0), arrayindex(json_extract_scalar_array(target_ipv6_addresses, \"$\"), 0)), Rank = if(severity = \"CRITICAL\", 5, if(severity = \"HIGH\", 4, if(severity = \"MEDIUM\", 3, if(severity = \"LOW\", 2, if(severity = \"INFO\", 1, 0))))) | comp count() as Occurrences, count_distinct(op_id) as Pentests, count_distinct(Host) as Hosts, max(Rank) as Worst by Weakness, vuln_id | alter Highest_severity = if(Worst = 5, \"CRITICAL\", if(Worst = 4, \"HIGH\", if(Worst = 3, \"MEDIUM\", if(Worst = 2, \"LOW\", if(Worst = 1, \"INFO\", null))))) | sort desc Occurrences, asc Weakness | limit 25 | sort desc Occurrences, asc Weakness | fields Weakness, vuln_id as ID, Highest_severity, Occurrences, Pentests, Hosts",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "params": [
+                                    {
+                                        "name": "pentests",
+                                        "value": "*"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "key": "xql_1793307083927",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 420,
+                                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | alter Host = coalesce(target_hostname, arrayindex(json_extract_scalar_array(target_ipv4_addresses, \"$\"), 0), arrayindex(json_extract_scalar_array(target_ipv6_addresses, \"$\"), 0)), c = if(severity = \"CRITICAL\", 1, 0), h = if(severity = \"HIGH\", 1, 0), m = if(severity = \"MEDIUM\", 1, 0), l = if(severity = \"LOW\", 1, 0), i = if(severity = \"INFO\", 1, 0) | filter Host != null | comp sum(c) as CRITICAL, sum(h) as HIGH, sum(m) as MEDIUM, sum(l) as LOW, sum(i) as INFO by Host | alter Total = add(add(add(add(CRITICAL, HIGH), MEDIUM), LOW), INFO) | sort desc Total, asc Host | limit 15 | sort desc Total, asc Host | fields Host, CRITICAL, HIGH, MEDIUM, LOW, INFO | view graph type = column subtype = stacked layout = horizontal header = \"Top hosts by severity\" xaxis = Host yaxis = CRITICAL,HIGH,MEDIUM,LOW,INFO seriescolor(\"CRITICAL\",\"#D10000\") seriescolor(\"HIGH\",\"#FF8F2E\") seriescolor(\"MEDIUM\",\"#eac016\") seriescolor(\"LOW\",\"#2292e2\") seriescolor(\"INFO\",\"#9aa0a6\")",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "stacked"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "layout",
+                                                "value": "horizontal"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Top hosts by severity\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "Host"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "CRITICAL,HIGH,MEDIUM,LOW,INFO"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "CRITICAL",
+                                                    "#D10000"
+                                                ],
+                                                "name": "seriescolor"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "HIGH",
+                                                    "#FF8F2E"
+                                                ],
+                                                "name": "seriescolor"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "MEDIUM",
+                                                    "#eac016"
+                                                ],
+                                                "name": "seriescolor"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "LOW",
+                                                    "#2292e2"
+                                                ],
+                                                "name": "seriescolor"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "INFO",
+                                                    "#9aa0a6"
+                                                ],
+                                                "name": "seriescolor"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "params": [
+                                    {
+                                        "name": "pentests",
+                                        "value": "*"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-1793307083919",
+                    "data": [
+                        {
+                            "key": "xql_1793307083928",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 420,
+                                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | alter Weakness = coalesce(vuln_short_name, vuln_name, vuln_id), Host = coalesce(target_hostname, arrayindex(json_extract_scalar_array(target_ipv4_addresses, \"$\"), 0), arrayindex(json_extract_scalar_array(target_ipv6_addresses, \"$\"), 0)), Rank = if(severity = \"CRITICAL\", 5, if(severity = \"HIGH\", 4, if(severity = \"MEDIUM\", 3, if(severity = \"LOW\", 2, if(severity = \"INFO\", 1, 0))))), Attack_paths = coalesce(attack_paths_count, 0), ID = vuln_id, Severity = severity, Asset = affected_asset_short_name, Proven = has_proof, KEV = vuln_cisa_kev, Ransomware = vuln_known_ransomware_campaign_use, Portal_link = portal_url | comp max(score) as Score by event_id, Rank, Weakness, ID, Severity, Host, Asset, Attack_paths, Proven, KEV, Ransomware, Pentest, Portal_link | sort desc Rank, desc Attack_paths, desc Score, asc Weakness | limit 100 | sort desc Rank, desc Attack_paths, desc Score, asc Weakness | fields Weakness, ID, Severity, Score, Host, Asset, Attack_paths, Proven, KEV, Ransomware, Pentest, Portal_link",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "params": [
+                                    {
+                                        "name": "pentests",
+                                        "value": "*"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "5d0c2f6e8b7a4b1f9e3c6a2d4f8b0e17",
+            "metadata": {
+                "params": [
+                    {
+                        "name": "pentests",
+                        "type": "DYNAMIC",
+                        "title": "Pentest",
+                        "value": [],
+                        "valueOptions": [],
+                        "investigation": {
+                            "ttl": "0",
+                            "source": "investigation",
+                            "timeframe": {
+                                "relativeTime": 2592000000
+                            },
+                            "input_dict": {
+                                "xql": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | dedup Pentest | sort desc pentest_etl_completed_at | fields Pentest",
+                                "tenants": [],
+                                "schedule": null,
+                                "query_editor": "xql",
+                                "notification_link": "xql/xql-search/_EXECUTION_ID_",
+                                "run_in_background": false
+                            },
+                            "dashboard_id": null
+                        },
+                        "investigationError": null,
+                        "filterComponentType": "MULTI_SELECT",
+                        "investigationColumn": "Pentest"
+                    }
+                ]
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1793307083912",
+            "title": "Critical weaknesses",
+            "creation_time": 1793307083912,
+            "description": "Weaknesses NodeZero rated critical.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | filter severity = \"CRITICAL\" | comp count() as Critical | view graph type = single subtype = standard yaxis = Critical seriestitle(\"Critical\",\"Critical weaknesses\")",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "single",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "standard"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Critical"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "Critical",
+                                    "Critical weaknesses"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                },
+                "params": [
+                    {
+                        "name": "pentests",
+                        "value": "*"
+                    }
+                ]
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1793307083913",
+            "title": "CISA KEV weaknesses",
+            "creation_time": 1793307083913,
+            "description": "Weaknesses in the CISA Known Exploited Vulnerabilities catalog.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | filter vuln_cisa_kev = true | comp count() as KEV | view graph type = single subtype = standard yaxis = KEV seriestitle(\"KEV\",\"CISA KEV weaknesses\")",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "single",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "standard"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "KEV"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "KEV",
+                                    "CISA KEV weaknesses"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                },
+                "params": [
+                    {
+                        "name": "pentests",
+                        "value": "*"
+                    }
+                ]
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1793307083914",
+            "title": "Known ransomware weaknesses",
+            "creation_time": 1793307083914,
+            "description": "Weaknesses known to be used in ransomware campaigns.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | filter vuln_known_ransomware_campaign_use = true | comp count() as Ransomware | view graph type = single subtype = standard yaxis = Ransomware seriestitle(\"Ransomware\",\"Known ransomware weaknesses\")",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "single",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "standard"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Ransomware"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "Ransomware",
+                                    "Known ransomware weaknesses"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                },
+                "params": [
+                    {
+                        "name": "pentests",
+                        "value": "*"
+                    }
+                ]
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1793307083915",
+            "title": "Weaknesses with proof",
+            "creation_time": 1793307083915,
+            "description": "Weaknesses NodeZero proved by exploiting them.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | filter has_proof = true | comp count() as Proven | view graph type = single subtype = standard yaxis = Proven seriestitle(\"Proven\",\"Weaknesses with proof\")",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "single",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "standard"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Proven"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "Proven",
+                                    "Weaknesses with proof"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                },
+                "params": [
+                    {
+                        "name": "pentests",
+                        "value": "*"
+                    }
+                ]
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1793307083916",
+            "title": "Weaknesses that lead to a compromise",
+            "creation_time": 1793307083916,
+            "description": "Weaknesses with at least one downstream impact that is a compromise, such as host, domain or cloud account compromise. Exposure and perimeter breach impacts don't count.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | filter downstream_impact_types contains \"Compromise\" | comp count() as Compromise | view graph type = single subtype = standard yaxis = Compromise seriestitle(\"Compromise\",\"Weaknesses that lead to a compromise\")",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "single",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "standard"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Compromise"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "Compromise",
+                                    "Weaknesses that lead to a compromise"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                },
+                "params": [
+                    {
+                        "name": "pentests",
+                        "value": "*"
+                    }
+                ]
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1793307083917",
+            "title": "Events ingested per day",
+            "creation_time": 1793307083917,
+            "description": "NodeZero weakness events ingested per day, by insert time.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | alter day = format_timestamp(\"%Y-%m-%d\", _insert_time) | comp count() as Events by day | sort asc day | view graph type = column subtype = grouped header = \"Events ingested per day\" xaxis = day yaxis = Events",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Events ingested per day\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "day"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Events"
+                            }
+                        }
+                    ]
+                },
+                "params": [
+                    {
+                        "name": "pentests",
+                        "value": "*"
+                    }
+                ]
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1793307083918",
+            "title": "Pentests ingested",
+            "creation_time": 1793307083918,
+            "description": "Distinct NodeZero pentests with events in the time range.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | comp count_distinct(op_id) as Pentests | view graph type = single subtype = standard yaxis = Pentests seriestitle(\"Pentests\",\"Pentests ingested\")",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "single",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "standard"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Pentests"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "Pentests",
+                                    "Pentests ingested"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                },
+                "params": [
+                    {
+                        "name": "pentests",
+                        "value": "*"
+                    }
+                ]
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1793307083919",
+            "title": "Hours since last ingest",
+            "creation_time": 1793307083919,
+            "description": "Hours since the most recent NodeZero event was ingested, for all pentests.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | comp max(_insert_time) as last_insert | alter Hours = timestamp_diff(current_time(), last_insert, \"HOUR\") | fields Hours | view graph type = single subtype = standard yaxis = Hours scale_threshold(\"#25cf68\",\"#eac016\",\"24\",\"#f11126\",\"72\") seriestitle(\"Hours\",\"Hours since last ingest\")",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "single",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "standard"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Hours"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#25cf68",
+                                    "#eac016",
+                                    24,
+                                    "#f11126",
+                                    72
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "Hours",
+                                    "Hours since last ingest"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1793307083920",
+            "title": "Events per pentest",
+            "creation_time": 1793307083920,
+            "description": "Ingested events per pentest compared with the weakness count NodeZero reported.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | comp count() as Events, max(pentest_weaknesses_count) as Expected, max(_insert_time) as Last_ingested by Pentest, pentest_etl_completed_at | alter Match = if(Events = Expected, \"yes\", \"no\") | sort desc pentest_etl_completed_at",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "params": [
+                    {
+                        "name": "pentests",
+                        "value": "*"
+                    }
+                ]
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1793307083921",
+            "title": "Weaknesses by severity",
+            "creation_time": 1793307083921,
+            "description": "Weaknesses by NodeZero severity.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | comp count() as Weaknesses by severity | view graph type = pie header = \"Weaknesses by severity\" xaxis = severity yaxis = Weaknesses",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Weaknesses by severity\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "severity"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Weaknesses"
+                            }
+                        }
+                    ]
+                },
+                "params": [
+                    {
+                        "name": "pentests",
+                        "value": "*"
+                    }
+                ]
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1793307083922",
+            "title": "Weaknesses by severity over time",
+            "creation_time": 1793307083922,
+            "description": "Weaknesses found per day by severity, by NodeZero discovery time.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | alter day = format_timestamp(\"%Y-%m-%d\", _time) | comp count() as Weaknesses by day, severity | sort asc day | view graph type = column subtype = stacked header = \"Weaknesses by severity over time\" xaxis = day yaxis = Weaknesses series = severity",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "stacked"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Weaknesses by severity over time\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "day"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Weaknesses"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "series",
+                                "value": "severity"
+                            }
+                        }
+                    ]
+                },
+                "params": [
+                    {
+                        "name": "pentests",
+                        "value": "*"
+                    }
+                ]
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1793307083923",
+            "title": "Weaknesses by downstream impact",
+            "creation_time": 1793307083923,
+            "description": "Weaknesses by the impacts they lead to, such as host or domain compromise. A weakness with several impacts counts once for each.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | alter Impact = json_extract_scalar_array(downstream_impact_types, \"$\") | arrayexpand Impact | filter Impact != null | comp count() as Weaknesses by Impact | sort desc Weaknesses | view graph type = column subtype = grouped layout = horizontal header = \"Weaknesses by downstream impact\" xaxis = Impact yaxis = Weaknesses",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "layout",
+                                "value": "horizontal"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Weaknesses by downstream impact\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "Impact"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Weaknesses"
+                            }
+                        }
+                    ]
+                },
+                "params": [
+                    {
+                        "name": "pentests",
+                        "value": "*"
+                    }
+                ]
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1793307083924",
+            "title": "Weaknesses by category",
+            "creation_time": 1793307083924,
+            "description": "Weaknesses by NodeZero category, such as vulnerability, misconfiguration or credentials.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | comp count() as Weaknesses by vuln_category | sort desc Weaknesses | view graph type = pie header = \"Weaknesses by category\" xaxis = vuln_category yaxis = Weaknesses",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Weaknesses by category\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "vuln_category"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Weaknesses"
+                            }
+                        }
+                    ]
+                },
+                "params": [
+                    {
+                        "name": "pentests",
+                        "value": "*"
+                    }
+                ]
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1793307083925",
+            "title": "Unproven weaknesses by reason",
+            "creation_time": 1793307083925,
+            "description": "Weaknesses NodeZero did not prove, by the reason it reported. Weaknesses without a reason show as no reason reported.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | filter has_proof = false or has_proof = null | alter Reason = coalesce(replace(proof_failure_code, \"_\", \" \"), \"no reason reported\") | comp count() as Weaknesses by Reason | sort desc Weaknesses | view graph type = column subtype = grouped layout = horizontal header = \"Unproven weaknesses by reason\" xaxis = Reason yaxis = Weaknesses",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "layout",
+                                "value": "horizontal"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Unproven weaknesses by reason\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "Reason"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Weaknesses"
+                            }
+                        }
+                    ]
+                },
+                "params": [
+                    {
+                        "name": "pentests",
+                        "value": "*"
+                    }
+                ]
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1793307083926",
+            "title": "Top weaknesses",
+            "creation_time": 1793307083926,
+            "description": "Most common weaknesses, with their highest severity and the number of pentests and hosts they appear in.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | alter Weakness = coalesce(vuln_short_name, vuln_name, vuln_id), Host = coalesce(target_hostname, arrayindex(json_extract_scalar_array(target_ipv4_addresses, \"$\"), 0), arrayindex(json_extract_scalar_array(target_ipv6_addresses, \"$\"), 0)), Rank = if(severity = \"CRITICAL\", 5, if(severity = \"HIGH\", 4, if(severity = \"MEDIUM\", 3, if(severity = \"LOW\", 2, if(severity = \"INFO\", 1, 0))))) | comp count() as Occurrences, count_distinct(op_id) as Pentests, count_distinct(Host) as Hosts, max(Rank) as Worst by Weakness, vuln_id | alter Highest_severity = if(Worst = 5, \"CRITICAL\", if(Worst = 4, \"HIGH\", if(Worst = 3, \"MEDIUM\", if(Worst = 2, \"LOW\", if(Worst = 1, \"INFO\", null))))) | sort desc Occurrences, asc Weakness | limit 25 | sort desc Occurrences, asc Weakness | fields Weakness, vuln_id as ID, Highest_severity, Occurrences, Pentests, Hosts",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "params": [
+                    {
+                        "name": "pentests",
+                        "value": "*"
+                    }
+                ]
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1793307083927",
+            "title": "Top hosts by severity",
+            "creation_time": 1793307083927,
+            "description": "The 15 hosts with the most weaknesses, split by severity. Weaknesses with no host are left out. With several pentests picked, a weakness counts once per pentest, and a host name or address found in several pentests is one bar.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | alter Host = coalesce(target_hostname, arrayindex(json_extract_scalar_array(target_ipv4_addresses, \"$\"), 0), arrayindex(json_extract_scalar_array(target_ipv6_addresses, \"$\"), 0)), c = if(severity = \"CRITICAL\", 1, 0), h = if(severity = \"HIGH\", 1, 0), m = if(severity = \"MEDIUM\", 1, 0), l = if(severity = \"LOW\", 1, 0), i = if(severity = \"INFO\", 1, 0) | filter Host != null | comp sum(c) as CRITICAL, sum(h) as HIGH, sum(m) as MEDIUM, sum(l) as LOW, sum(i) as INFO by Host | alter Total = add(add(add(add(CRITICAL, HIGH), MEDIUM), LOW), INFO) | sort desc Total, asc Host | limit 15 | sort desc Total, asc Host | fields Host, CRITICAL, HIGH, MEDIUM, LOW, INFO | view graph type = column subtype = stacked layout = horizontal header = \"Top hosts by severity\" xaxis = Host yaxis = CRITICAL,HIGH,MEDIUM,LOW,INFO seriescolor(\"CRITICAL\",\"#D10000\") seriescolor(\"HIGH\",\"#FF8F2E\") seriescolor(\"MEDIUM\",\"#eac016\") seriescolor(\"LOW\",\"#2292e2\") seriescolor(\"INFO\",\"#9aa0a6\")",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "stacked"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "layout",
+                                "value": "horizontal"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Top hosts by severity\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "Host"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "CRITICAL,HIGH,MEDIUM,LOW,INFO"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "CRITICAL",
+                                    "#D10000"
+                                ],
+                                "name": "seriescolor"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "HIGH",
+                                    "#FF8F2E"
+                                ],
+                                "name": "seriescolor"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "MEDIUM",
+                                    "#eac016"
+                                ],
+                                "name": "seriescolor"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "LOW",
+                                    "#2292e2"
+                                ],
+                                "name": "seriescolor"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "INFO",
+                                    "#9aa0a6"
+                                ],
+                                "name": "seriescolor"
+                            }
+                        }
+                    ]
+                },
+                "params": [
+                    {
+                        "name": "pentests",
+                        "value": "*"
+                    }
+                ]
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1793307083928",
+            "title": "Fix first",
+            "creation_time": 1793307083928,
+            "description": "The 100 highest-priority weaknesses: by severity, then attack paths, then score, with the NodeZero portal URL of each. A weakness found in several of the picked pentests appears once for each.",
+            "data": {
+                "phrase": "dataset = horizon3_nodezero_raw | alter Pentest = concat(replace(coalesce(pentest_name, \"Unnamed pentest\"), \"\\\"\", \"'\"), \" (\", format_timestamp(\"%Y-%m-%d\", pentest_etl_completed_at), \") · \", op_id) | filter Pentest in ($pentests) | dedup event_id by desc _insert_time | alter Weakness = coalesce(vuln_short_name, vuln_name, vuln_id), Host = coalesce(target_hostname, arrayindex(json_extract_scalar_array(target_ipv4_addresses, \"$\"), 0), arrayindex(json_extract_scalar_array(target_ipv6_addresses, \"$\"), 0)), Rank = if(severity = \"CRITICAL\", 5, if(severity = \"HIGH\", 4, if(severity = \"MEDIUM\", 3, if(severity = \"LOW\", 2, if(severity = \"INFO\", 1, 0))))), Attack_paths = coalesce(attack_paths_count, 0), ID = vuln_id, Severity = severity, Asset = affected_asset_short_name, Proven = has_proof, KEV = vuln_cisa_kev, Ransomware = vuln_known_ransomware_campaign_use, Portal_link = portal_url | comp max(score) as Score by event_id, Rank, Weakness, ID, Severity, Host, Asset, Attack_paths, Proven, KEV, Ransomware, Pentest, Portal_link | sort desc Rank, desc Attack_paths, desc Score, asc Weakness | limit 100 | sort desc Rank, desc Attack_paths, desc Score, asc Weakness | fields Weakness, ID, Severity, Score, Host, Asset, Attack_paths, Proven, KEV, Ransomware, Pentest, Portal_link",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "params": [
+                    {
+                        "name": "pentests",
+                        "value": "*"
+                    }
+                ]
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "8.15.0",
+    "supportedModules": [
+        "xsiam"
+    ]
+}

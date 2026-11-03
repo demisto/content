@@ -1,0 +1,59 @@
+{
+  "data": {
+    "weaknesses_page": {
+      "weaknesses": [
+        {
+          "uuid": "a3000000-0000-4000-8000-000000000003/H3-2022-0086/HasWeakness",
+          "op_id": "op-a",
+          "created_at": "2025-03-14T09:31:47",
+          "vuln_id": "H3-2022-0086",
+          "vuln_name": "Example SMB signing not required",
+          "vuln_short_name": null,
+          "vuln_category": "MISCONFIGURATION",
+          "vuln_cisa_kev": null,
+          "vuln_known_ransomware_campaign_use": null,
+          "severity": "MEDIUM",
+          "score": 5.5,
+          "base_severity": "MEDIUM",
+          "base_score": 5,
+          "context_severity": null,
+          "context_score": null,
+          "context_score_description": null,
+          "has_proof": false,
+          "proofs": [],
+          "proof_failure_code": "exploit_failed",
+          "proof_failure_reason": "Synthetic failure reason.",
+          "ip": "10.0.0.6",
+          "affected_asset_uuid": "a5000000-0000-4000-8000-000000000003",
+          "affected_asset_display_name": "10.0.0.6 Port 445",
+          "affected_asset_short_name": "10.0.0.6 : 445",
+          "attack_paths_count": 0,
+          "affected_credentials_count": 0,
+          "impacts": [],
+          "downstream_impact_types": null,
+          "mitre_mappings": null,
+          "time_to_finding_s": null,
+          "time_to_finding_hms": null,
+          "weakness_ref": null,
+          "portal_url": "https://portal.horizon3ai.com/pentests/op-a/weaknesses/a3000000-0000-4000-8000-000000000003/H3-2022-0086/HasWeakness",
+          "affected_host": {
+            "uuid": "a4000000-0000-4000-8000-000000000003",
+            "host_name": null,
+            "host_names": null,
+            "ip": "10.0.0.6",
+            "mac": null,
+            "os_names": [
+              "Windows"
+            ],
+            "is_in_scope": false
+          },
+          "vuln": {
+            "description": "SMB message signing is not required.",
+            "mitigations": [],
+            "references": []
+          }
+        }
+      ]
+    }
+  }
+}
