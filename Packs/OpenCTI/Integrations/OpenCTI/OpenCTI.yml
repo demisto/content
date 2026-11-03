@@ -203,7 +203,7 @@ script:
       name: marking_id
     - description: Observable label ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label.
       name: label_id
-    - description: External references URL. Use opencti-external-reference-create to create a new external reference.
+    - description: External reference ID. Use opencti-external-reference-create to create a new external reference.
       name: external_references_id
     - description: Observable description.
       name: description
@@ -393,7 +393,7 @@ script:
       name: label_id
     - description: Observable marking definition ID. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI.
       name: marking_id
-    - description: External references URL. Use opencti-external-reference-create to create a new external reference.
+    - description: External reference ID. Use opencti-external-reference-create to create a new external reference.
       name: external_references_id
     description: Create new incident.
     name: opencti-incident-create

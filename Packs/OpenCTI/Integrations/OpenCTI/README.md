@@ -525,7 +525,7 @@ Create new incident.
 | last_seen | Incident Last seen. YYYY-MM-DDThh:mm:ss.sssZ. | Optional |
 | label_id | Incident label ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. | Optional |
 | marking_id | Observable marking definition ID. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Optional |
-| external_references_id | External references URL. Use opencti-external-reference-create to create a new external reference. | Optional |
+| external_references_id | External reference ID. Use opencti-external-reference-create to create a new external reference. | Optional |
 
 #### Context Output
 
@@ -633,7 +633,7 @@ Create new observable.
 | created_by | Organization ID. Use opencti-organization-list to find all organization IDs in OpenCTI, or use opencti-organization-create to create a new organization ID. | Optional |
 | marking_id | Observable marking definition ID. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Optional |
 | label_id | Observable label ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. | Optional |
-| external_references_id | External references URL. Use opencti-external-reference-create to create a new external reference. | Optional |
+| external_references_id | External reference ID. Use opencti-external-reference-create to create a new external reference. | Optional |
 | description | Observable description. | Optional |
 | score | Observable score. Values range is 0 - 100. Default value is 50. | Optional |
 | value | Observable value. | Optional |
