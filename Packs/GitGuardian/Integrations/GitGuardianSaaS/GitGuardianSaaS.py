@@ -1,7 +1,10 @@
+import math
 import re
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from typing import Any
+from urllib.parse import urlparse
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -11,14 +14,17 @@ from ContentClientApiModule import *
 
 VENDOR = "gitguardian"
 PRODUCT = "saas"
+DEFAULT_SERVER_URL = "https://api.gitguardian.com"
 API_VERSION_PATH = "/v1"
 PAGE_SIZE = 100
 DEFAULT_MAX_EVENTS_PER_TYPE = 1000
 DEFAULT_FIRST_FETCH = "1 hour"
 DEFAULT_GET_EVENTS_LIMIT = 10
 MAX_RETRIES = 3
+FETCH_LAG_SECONDS = 60  # The fetch window ends this many seconds before now, so late-indexed events are not missed.
 API_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 NEXT_LINK_REGEX = re.compile(r'<([^>]+)>\s*;\s*rel="?next"?')
+NON_STALE_CURSOR_STATUS_CODES = (401, 403, 429)  # 4xx codes that do not mean the saved cursor is invalid.
 AUTH_ERROR_MESSAGE = "Authorization Error: verify the API key is valid and has the incidents:read and audit_logs:read scopes."
 
 
@@ -30,6 +36,7 @@ class EventType:
     key: str  # Key used in the last run object.
     endpoint: str  # API endpoint path relative to /v1.
     source_log_type: str  # Value of the _source_log_type field.
+    required_scope: str  # API key scope required to read this event type.
     table_headers: tuple[str, ...]
 
 
@@ -38,6 +45,7 @@ SECRET_INCIDENTS = EventType(
     key="secret_incidents",
     endpoint="/incidents/secrets",
     source_log_type="incident_secret",
+    required_scope="incidents:read",
     table_headers=("id", "date", "status", "severity", "validity", "gitguardian_url"),
 )
 AUDIT_LOGS = EventType(
@@ -45,9 +53,15 @@ AUDIT_LOGS = EventType(
     key="audit_logs",
     endpoint="/audit_logs",
     source_log_type="audit_log",
+    required_scope="audit_logs:read",
     table_headers=("id", "date", "event_name", "action_type", "member_email", "ip_address"),
 )
 EVENT_TYPES_BY_NAME: dict[str, EventType] = {event_type.name: event_type for event_type in (SECRET_INCIDENTS, AUDIT_LOGS)}
+
+
+class UntrustedNextUrlError(DemistoException):
+    """Raised when a pagination URL points to a different host than the configured server URL."""
+
 
 """ CLIENT CLASS """
 
@@ -70,6 +84,11 @@ class Client(ContentClient):
             client_name="GitGuardianSaaS",
         )
 
+    def is_trusted_url(self, url: str) -> bool:
+        """Returns True when the URL has the same scheme and host as the configured server URL."""
+        parsed_url, parsed_base_url = urlparse(url), urlparse(self._base_url)
+        return (parsed_url.scheme, parsed_url.netloc.lower()) == (parsed_base_url.scheme, parsed_base_url.netloc.lower())
+
     def get_page(
         self, endpoint: str, params: dict[str, Any] | None = None, next_url: str | None = None
     ) -> tuple[list[dict[str, Any]], str | None]:
@@ -82,8 +101,13 @@ class Client(ContentClient):
 
         Returns:
             The events in the page and the next page URL (None when this is the last page).
+
+        Raises:
+            UntrustedNextUrlError: The next URL points to a different host, so the API key is not sent to it.
         """
         if next_url:
+            if not self.is_trusted_url(next_url):
+                raise UntrustedNextUrlError(f"The next page URL host does not match the server URL {self._base_url}.")
             demisto.debug(f"[Client] GET next page: {next_url}")
             response = self._http_request(method="GET", full_url=next_url, resp_type="response")
         else:
@@ -96,6 +120,24 @@ class Client(ContentClient):
 
 
 """ HELPER FUNCTIONS """
+
+
+def build_base_url(server_url: str | None) -> str:
+    """Builds the API base URL. Accepts a server URL with or without a trailing slash or /v1 suffix."""
+    url = (server_url or DEFAULT_SERVER_URL).strip().rstrip("/")
+    if url.lower().endswith(API_VERSION_PATH):
+        url = url[: -len(API_VERSION_PATH)]
+    return f"{url}{API_VERSION_PATH}"
+
+
+def parse_positive_int(value: Any, arg_name: str, default: int) -> int:
+    """Parses a positive integer argument, returning the default when the value is empty."""
+    number = arg_to_number(value, arg_name=arg_name)
+    if number is None:
+        return default
+    if number <= 0:
+        raise DemistoException(f"{arg_name} must be a positive integer. Got: {number}.")
+    return number
 
 
 def parse_next_link(link_header: str) -> str | None:
@@ -120,8 +162,14 @@ def format_api_date(value: datetime) -> str:
 
 
 def get_dedup_key(event: dict[str, Any]) -> str:
-    """Builds the deduplication key. Includes the date so a re-triggered incident is collected again as an update."""
-    return f"{event.get('id')}|{event.get('date')}"
+    """Builds the deduplication key. Includes the date so a re-triggered incident is collected again as an update.
+
+    The date is normalized, so the same timestamp in a different ISO-8601 format produces the same key.
+    """
+    raw_date = event.get("date")
+    parsed_date = parse_iso_datetime(raw_date)
+    normalized_date = parsed_date.astimezone(timezone.utc).isoformat() if parsed_date else raw_date  # noqa: UP017
+    return f"{event.get('id')}|{normalized_date}"
 
 
 def get_entry_status(event: dict[str, Any]) -> str:
@@ -190,6 +238,42 @@ def get_type_state(last_run: dict[str, Any], event_type: EventType, first_fetch:
     return last_run.get(event_type.key) or {"last_date": first_fetch, "last_ids": []}
 
 
+def is_stale_cursor_error(error: Exception) -> bool:
+    """Returns True when a request failed with a 4xx status that means the cursor is invalid (not auth or rate limit)."""
+    status_code = getattr(getattr(error, "response", None), "status_code", None)
+    return isinstance(status_code, int) and 400 <= status_code < 500 and status_code not in NON_STALE_CURSOR_STATUS_CODES
+
+
+def get_first_page(
+    client: Client, event_type: EventType, type_state: dict[str, Any], window_end: str
+) -> tuple[list[dict[str, Any]], str | None, str]:
+    """Gets the first page of a fetch: resumes the saved cursor, or starts a new window from last_date.
+
+    When the saved cursor points to a different host or is rejected with a 4xx error (for example, an expired cursor),
+    it is dropped and the window is restarted from last_date. Some events may be collected again in this case.
+
+    Returns:
+        The events in the page, the next page URL and the window end the fetch applies to.
+    """
+    prefix = f"[Pagination][{event_type.key}]"
+    saved_next_url = type_state.get("next_url")
+    if saved_next_url and not client.is_trusted_url(saved_next_url):
+        demisto.info(f"{prefix} The saved cursor host does not match the server URL. Restarting from {type_state['last_date']}")
+    elif saved_next_url:
+        try:
+            demisto.debug(f"{prefix} Resuming the saved cursor")
+            page, next_url = client.get_page(event_type.endpoint, next_url=saved_next_url)
+            return page, next_url, type_state["window_end"]
+        except ContentClientError as error:
+            if not is_stale_cursor_error(error):
+                raise
+            demisto.info(f"{prefix} The saved cursor was rejected ({error}). Restarting from {type_state['last_date']}")
+
+    params = {"per_page": PAGE_SIZE, "date_after": type_state["last_date"], "date_before": window_end}
+    page, next_url = client.get_page(event_type.endpoint, params=params)
+    return page, next_url, window_end
+
+
 def fetch_events_for_type(
     client: Client, event_type: EventType, type_state: dict[str, Any], window_end: str, max_events: int
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -200,38 +284,35 @@ def fetch_events_for_type(
         event_type: The event type to fetch.
         type_state: The saved state of this type (last_date, last_ids, and window_end / next_url during pagination).
         window_end: The upper bound of a new fetch window. Ignored while resuming pagination.
-        max_events: Maximum number of events to fetch (rounded up to a whole page).
+        max_events: Maximum number of events to fetch (rounded up to a whole page). Also caps the number of pages.
 
     Returns:
         The new events and the next state of this type.
     """
     prefix = f"[Fetch][{event_type.key}]"
-    next_url = type_state.get("next_url")
-    if next_url:
-        window_end = type_state["window_end"]
-    params = {"per_page": PAGE_SIZE, "date_after": type_state["last_date"], "date_before": window_end}
     seen_keys = set(type_state.get("last_ids") or [])
+    max_pages = math.ceil(max_events / PAGE_SIZE)
     demisto.debug(
-        f"{prefix} Starting. Window: {params['date_after']} - {window_end}, resuming pagination: {bool(next_url)}, "
-        f"max events: {max_events}, boundary keys from last run: {len(seen_keys)}"
+        f"{prefix} Starting. last_date: {type_state['last_date']}, new window end: {window_end}, "
+        f"saved cursor: {bool(type_state.get('next_url'))}, max events: {max_events}, max pages: {max_pages}, "
+        f"boundary keys from last run: {len(seen_keys)}"
     )
 
-    events: list[dict[str, Any]] = []
-    page_number = 0
-    while len(events) < max_events:
+    page, next_url, window_end = get_first_page(client, event_type, type_state, window_end)
+    events = deduplicate_events(page, seen_keys, event_type)
+    page_number = 1
+    demisto.debug(f"[Pagination][{event_type.key}] Page 1: {len(page)} events, total so far: {len(events)}")
+    while next_url and len(events) < max_events and page_number < max_pages:
         page_number += 1
-        page, next_url = client.get_page(event_type.endpoint, params=params, next_url=next_url)
+        page, next_url = client.get_page(event_type.endpoint, next_url=next_url)
         events.extend(deduplicate_events(page, seen_keys, event_type))
         demisto.debug(f"[Pagination][{event_type.key}] Page {page_number}: {len(page)} events, total so far: {len(events)}")
-        if not next_url:
-            demisto.debug(f"[Pagination][{event_type.key}] No next link, reached the last page")
-            break
-    else:
-        demisto.debug(f"[Pagination][{event_type.key}] Reached the max events limit ({max_events}), saving the next page link")
 
     if next_url:
+        demisto.debug(f"[Pagination][{event_type.key}] Reached the max events or pages limit, saving the next page link")
         next_state = {**type_state, "window_end": window_end, "next_url": next_url}
     else:
+        demisto.debug(f"[Pagination][{event_type.key}] No next link, reached the last page")
         next_state = {"last_date": window_end, "last_ids": get_boundary_keys(events, window_end)}
     demisto.debug(
         f"{prefix} Done. Fetched {len(events)} events in {page_number} pages. Next state: last_date="
@@ -245,13 +326,16 @@ def fetch_events_for_type(
 
 def test_module(client: Client, event_types: list[EventType]) -> str:
     """Tests connectivity and authorization by requesting a single event of each configured type."""
-    try:
-        for event_type in event_types:
-            demisto.debug(f"[Test Module] Checking access to {event_type.name}")
+    for event_type in event_types:
+        demisto.debug(f"[Test Module] Checking access to {event_type.name}")
+        try:
             client.get_page(event_type.endpoint, params={"per_page": 1})
-    except ContentClientAuthenticationError as error:
-        demisto.debug(f"[Test Module] Authentication failed: {error}")
-        return AUTH_ERROR_MESSAGE
+        except ContentClientAuthenticationError as error:
+            demisto.debug(f"[Test Module] Authentication failed for {event_type.name}: {error}")
+            return (
+                f"Authorization Error: the API key cannot access {event_type.name}. "
+                f"Verify the API key is valid and has the {event_type.required_scope} scope."
+            )
     demisto.debug("[Test Module] Success")
     return "ok"
 
@@ -268,7 +352,7 @@ def get_events_command(client: Client, args: dict[str, Any], default_event_types
     The events are enriched and sent to XSIAM only when should_push_events is true.
     """
     should_push_events = argToBoolean(args.get("should_push_events", False))
-    limit = arg_to_number(args.get("limit")) or DEFAULT_GET_EVENTS_LIMIT
+    limit = parse_positive_int(args.get("limit"), "limit", DEFAULT_GET_EVENTS_LIMIT)
     start_date = arg_to_datetime(args.get("start_date") or DEFAULT_FIRST_FETCH, arg_name="start_date", required=True)
     event_types = parse_event_types(argToList(args.get("event_types"))) if args.get("event_types") else default_event_types
     window_end = format_api_date(datetime.now(timezone.utc))  # noqa: UP017
@@ -296,29 +380,33 @@ def get_events_command(client: Client, args: dict[str, Any], default_event_types
 
 
 def fetch_events(
-    client: Client, last_run: dict[str, Any], event_types: list[EventType], max_events: int, first_fetch: str
+    clients: dict[str, Client], last_run: dict[str, Any], event_types: list[EventType], max_events: int, first_fetch: str
 ) -> tuple[list[dict[str, Any]], dict[str, Any], list[str]]:
     """Fetches all configured event types concurrently.
 
+    Each event type uses its own client, so failures of one type do not open the circuit breaker of another.
     A failing event type does not block the others: its state is kept so it is retried in the next cycle.
+
+    Args:
+        clients: A client per event type key.
 
     Returns:
         The enriched events, the next run object and the error messages of the failed event types.
     """
-    window_end = format_api_date(datetime.now(timezone.utc))  # noqa: UP017
+    window_end = format_api_date(datetime.now(timezone.utc) - timedelta(seconds=FETCH_LAG_SECONDS))  # noqa: UP017
     next_run = {key: value for key, value in last_run.items() if key != "nextTrigger"}
     all_events: list[dict[str, Any]] = []
     errors: list[str] = []
     demisto.debug(
         f"[Fetch] Starting {len(event_types)} event types in parallel: {[event_type.key for event_type in event_types]}. "
-        f"Window end: {window_end}"
+        f"Window end: {window_end} ({FETCH_LAG_SECONDS} seconds before now)"
     )
 
     with ThreadPoolExecutor(max_workers=len(event_types)) as executor:
         futures = {
             event_type: executor.submit(
                 fetch_events_for_type,
-                client,
+                clients[event_type.key],
                 event_type,
                 get_type_state(last_run, event_type, first_fetch),
                 window_end,
@@ -346,6 +434,15 @@ def fetch_events(
 """ MAIN FUNCTION """
 
 
+def create_client(params: dict[str, Any]) -> Client:
+    return Client(
+        base_url=build_base_url(params.get("url")),
+        api_key=params.get("api_key", {}).get("password", ""),
+        verify=not argToBoolean(params.get("insecure", False)),
+        proxy=argToBoolean(params.get("proxy", False)),
+    )
+
+
 def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
@@ -353,27 +450,23 @@ def main() -> None:  # pragma: no cover
     demisto.debug(f"Command being called is {command}")
 
     try:
-        base_url = urljoin(params.get("url") or "https://api.gitguardian.com", API_VERSION_PATH)
         event_types = parse_event_types(argToList(params.get("event_types")) or list(EVENT_TYPES_BY_NAME))
-        max_events = arg_to_number(params.get("max_events_per_fetch")) or DEFAULT_MAX_EVENTS_PER_TYPE
-        client = Client(
-            base_url=base_url,
-            api_key=params.get("api_key", {}).get("password", ""),
-            verify=not argToBoolean(params.get("insecure", False)),
-            proxy=argToBoolean(params.get("proxy", False)),
-        )
 
         if command == "test-module":
-            return_results(test_module(client, event_types))
+            return_results(test_module(create_client(params), event_types))
 
         elif command == "gitguardian-saas-get-events":
-            return_results(get_events_command(client, args, event_types))
+            return_results(get_events_command(create_client(params), args, event_types))
 
         elif command == "fetch-events":
+            max_events = parse_positive_int(
+                params.get("max_events_per_fetch"), "The maximum number of events per fetch", DEFAULT_MAX_EVENTS_PER_TYPE
+            )
             first_fetch = format_api_date(arg_to_datetime(DEFAULT_FIRST_FETCH))  # type: ignore[arg-type]
+            clients = {event_type.key: create_client(params) for event_type in event_types}
             last_run = demisto.getLastRun()
             demisto.debug(f"[Last Run] Loaded: {last_run}")
-            events, next_run, errors = fetch_events(client, last_run, event_types, max_events, first_fetch)
+            events, next_run, errors = fetch_events(clients, last_run, event_types, max_events, first_fetch)
             send_events(events)
             demisto.setLastRun(next_run)
             demisto.debug(f"[Last Run] Saved: {next_run}")

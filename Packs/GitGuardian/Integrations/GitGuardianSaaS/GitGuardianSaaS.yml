@@ -57,7 +57,7 @@ configuration:
     required: false
     section: Collect
     advanced: true
-    additionalinfo: Events are fetched in pages of 100. The default (1000) means up to 10 API calls per event type per fetch cycle.
+    additionalinfo: Must be a positive number. Events are fetched in pages of 100. The default (1000) means up to 10 API calls per event type per fetch cycle.
 script:
   script: "-"
   type: python

@@ -6,7 +6,7 @@ This integration uses the GitGuardian v1.1 API. For GitGuardian Enterprise (`ent
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | US region: `https://api.gitguardian.com`. EU region: `https://api.eu1.gitguardian.com`. | False |
+| Server URL | US region: `https://api.gitguardian.com`. EU region: `https://api.eu1.gitguardian.com`. A trailing `/v1` is optional. | False |
 | API Key | Service Account token (recommended) or Personal Access Token with the `incidents:read` and `audit_logs:read` scopes. | True |
 | Trust any certificate (not secure) | | False |
 | Use system proxy settings | | False |
@@ -16,10 +16,11 @@ This integration uses the GitGuardian v1.1 API. For GitGuardian Enterprise (`ent
 
 ## Fetch Events
 
-- The event types are collected concurrently.
+- The event types are collected concurrently. A failure in one event type does not stop the others.
 - The first fetch collects events from the last hour.
-- Secret incidents are filtered by their `date` field (last trigger date). An incident that is re-triggered is collected again with `_ENTRY_STATUS` set to `updated`.
-- Events are written to the `gitguardian_saas_raw` dataset.
+- Each fetch collects events up to 1 minute before the current time, so events that the API indexes with a short delay are not missed.
+- Events are filtered by the API `date` field (`date_after` / `date_before`). For secret incidents, `_ENTRY_STATUS` is `new` when `date` equals `triggered_at`, and `updated` otherwise. Audit logs are always `new`.
+- If a saved pagination cursor is rejected by the API, the fetch restarts from the start of the current window. Some events may be collected again in this case.
 
 ## Commands
 
