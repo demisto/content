@@ -11453,21 +11453,6 @@ class Route53:
         )
 
     @staticmethod
-    def _record_set_values(record_set: Dict[str, Any]) -> str | None:
-        """
-        Returns the values of a resource record set as a single string.
-
-        Args:
-            record_set (Dict[str, Any]): A resource record set returned by the API.
-
-        Returns:
-            str | None: All the record values joined by a comma, or the alias target DNS name for alias records.
-        """
-        if values := [record.get("Value") for record in record_set.get("ResourceRecords", [])]:
-            return ", ".join(values)
-        return record_set.get("AliasTarget", {}).get("DNSName")
-
-    @staticmethod
     def resource_record_sets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Lists the resource record sets in a specified hosted zone.
@@ -11522,7 +11507,9 @@ class Route53:
                 "Name": record_set.get("Name"),
                 "Type": record_set.get("Type"),
                 "TTL": record_set.get("TTL"),
-                "Values": Route53._record_set_values(record_set),
+                # Standard records show all their values; alias records show the alias target DNS name instead.
+                "Values": ", ".join(record.get("Value") for record in record_set.get("ResourceRecords", []))
+                or record_set.get("AliasTarget", {}).get("DNSName"),
                 "SetIdentifier": record_set.get("SetIdentifier"),
             }
             for record_set in record_sets

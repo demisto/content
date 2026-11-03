@@ -7165,25 +7165,6 @@ def test_route53_normalize_hosted_zone_id(hosted_zone_id, expected):
     assert Route53._normalize_hosted_zone_id(hosted_zone_id) == expected
 
 
-@pytest.mark.parametrize(
-    "record_set, expected",
-    [
-        ({"ResourceRecords": [{"Value": "1.1.1.1"}, {"Value": "2.2.2.2"}]}, "1.1.1.1, 2.2.2.2"),
-        ({"AliasTarget": {"DNSName": "my-lb.us-east-1.elb.amazonaws.com."}}, "my-lb.us-east-1.elb.amazonaws.com."),
-        ({}, None),
-    ],
-)
-def test_route53_record_set_values(record_set, expected):
-    """
-    Given: A standard record set with multiple values, an alias record set, and a record set with neither.
-    When: Route53._record_set_values is called.
-    Then: The values are joined, the alias DNS name is returned, or None is returned.
-    """
-    from AWS import Route53
-
-    assert Route53._record_set_values(record_set) == expected
-
-
 def test_route53_hosted_zones_readable():
     """
     Given: A hosted zone with a nested Config.
