@@ -284,11 +284,11 @@ class TestGetFetchStartTime:
         assert "T" in result
 
     def test_default_first_fetch(self):
-        """Test default first_fetch is 3 days back, floored to midnight UTC."""
+        """Test default first_fetch is 1 day back, floored to midnight UTC."""
         params = {}
         last_run = {}
         result = get_fetch_start_time(params, last_run)
-        expected_date = (datetime.now(timezone.utc) - timedelta(days=3)).strftime("%Y-%m-%d")  # noqa: UP017
+        expected_date = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")  # noqa: UP017
         assert result == f"{expected_date}T00:00:00.000000Z"
 
     def test_first_run_floors_to_midnight_utc(self):

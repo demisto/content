@@ -47,8 +47,8 @@ configuration:
   required: false
   type: 0
   section: Collect
-  defaultvalue: 3 days
-  additionalinfo: 'How far back to fetch events on the first run (e.g., 3 days, 7 days). History events are dated at midnight UTC, so use at least 1 day.'
+  defaultvalue: 1 day
+  additionalinfo: 'How far back to fetch events on the first run (e.g., 1 day, 3 days, 7 days). The start time is rounded down to midnight UTC, since history events are dated at midnight UTC.'
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
