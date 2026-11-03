@@ -1,0 +1,1201 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Health Check - Agent and Asset",
+            "description": "Health Check Dashboard",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-9125",
+                    "data": [
+                        {
+                            "key": "xql_1773148595080",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "config timeframe = 30d | dataset = endpoints | filter endpoint_status in (ENUM.CONNECTED, ENUM.DISCONNECTED) | filter is_edr_enabled = ENUM.NO and platform != ENUM.ANDROID | fields endpoint_name as name, endpoint_type as type, assigned_prevention_policy as Policy //Healthcheck",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "entityType": "xql-widget-table-d865c6cc-0d5e-410a-8291-18c9bb764149",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "drilldown_config": {
+                                    "actionData": {
+                                        "url": "https://cs-xsiam.xdr.us.paloaltonetworks.com/endpoints/policies",
+                                        "openInNewTab": true
+                                    },
+                                    "actionType": "open_custom_url"
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": "\"stretch\""
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1773148157696",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "config timeframe = 30d |dataset = endpoints | filter content_auto_update = ENUM.DISABLED   | comp count() as total by assigned_prevention_policy\n\n| view graph type = pie xaxis = assigned_prevention_policy yaxis = total default_limit = `false` legend = `false` //Healthcheck",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "assigned_prevention_policy"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "total"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend",
+                                                "value": "false"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8293",
+                    "data": [
+                        {
+                            "key": "lastAgentUpgradesByFailureReasons",
+                            "data": {
+                                "type": "Table",
+                                "width": 50,
+                                "height": 400,
+                                "agent_groups": [],
+                                "agent_statuses": [
+                                    "STATUS_010_CONNECTED",
+                                    "STATUS_040_DISCONNECTED"
+                                ]
+                            }
+                        },
+                        {
+                            "key": "xql_1773147948011",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "config timeframe = 30d| dataset = endpoints | fields endpoint_id, operational_status, platform | filter operational_status != ENUM.PROTECTED | comp count() as total by operational_status, platform\n\n| view graph type = column subtype = grouped layout = horizontal show_callouts = `true` xaxis = platform yaxis = total series = operational_status default_limit = `false` seriescolor(\"UNPROTECTED\",\"#cb3614\") seriescolor(\"PARTIALLY_PROTECTED\",\"#ded6af\") //Healthcheck",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "layout",
+                                                "value": "horizontal"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "platform"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "total"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "series",
+                                                "value": "operational_status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "UNPROTECTED",
+                                                    "#cb3614"
+                                                ],
+                                                "name": "seriescolor"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "PARTIALLY_PROTECTED",
+                                                    "#ded6af"
+                                                ],
+                                                "name": "seriescolor"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "drilldown_config": {
+                                    "actionData": {
+                                        "timeRange": "dashboard_timeframe",
+                                        "xqlPhrase": "config case_sensitive = false\n| dataset = endpoints\n| fields operational_status_description as osd, endpoint_name, group_names, operational_status, operating_system, agent_version, last_seen, content_version, endpoint_status, last_content_update_time, manual_protection_pause, linux_operation_mode, endpoint_type, kernel_version, platform, tags \n| filter operational_status != PROTECTED \n| filter endpoint_status in (ENUM.CONNECTED, ENUM.DISCONNECTED) and platform != $x_axis.value and operational_status = $y_axis.name \n| alter OSD_reason = arraymap(json_extract_array(to_json_string(osd),\"$.\"),json_extract_scalar(\"@element\", \"$.reason\")) \n| arrayexpand OSD_reason \n| dedup endpoint_name, OSD_reason \n| fields endpoint_name, OSD_reason ,operational_status, agent_version, last_seen, content_version, endpoint_status, last_content_update_time, manual_protection_pause, linux_operation_mode, endpoint_type, kernel_version",
+                                        "timePicker": [],
+                                        "openInNewTab": true
+                                    },
+                                    "actionType": "open_xql_search"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-2712",
+                    "data": [
+                        {
+                            "key": "xql_1773148018250",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "phrase": "config timeframe =30d |dataset = endpoints | filter endpoint_status in (ENUM.DISCONNECTED) and endpoint_type in (ENUM.TYPE_SERVER) | filter timestamp_diff(current_time(), last_seen, \"DAY\") >= 20 | alter daysNotSeen = timestamp_diff(current_time(), last_seen, \"DAY\") | fields endpoint_name as name, endpoint_type as type, daysNotSeen, last_seen\n\n| view graph type = column subtype = grouped xaxis = name yaxis = daysNotSeen default_limit = `false` //Healthcheck",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "entityType": "xql-widget-table-9a0d62b4-8d97-469f-88be-fd02ca6c3748",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "name"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "daysNotSeen"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "agentsByStatus",
+                            "data": {
+                                "type": "Pie",
+                                "width": 50,
+                                "height": 400,
+                                "agent_groups": [],
+                                "agent_statuses": [
+                                    "STATUS_010_CONNECTED",
+                                    "STATUS_040_DISCONNECTED"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-4641",
+                    "data": [
+                        {
+                            "key": "agentsByEOL",
+                            "data": {
+                                "type": "Pie",
+                                "width": 50,
+                                "height": 400,
+                                "agent_groups": [],
+                                "agent_statuses": [
+                                    "STATUS_010_CONNECTED",
+                                    "STATUS_040_DISCONNECTED"
+                                ]
+                            }
+                        },
+                        {
+                            "key": "agentsContentRolloutConfiguration",
+                            "data": {
+                                "type": "Pie",
+                                "width": 50,
+                                "height": 400,
+                                "agent_groups": [],
+                                "agent_statuses": [
+                                    "STATUS_010_CONNECTED",
+                                    "STATUS_040_DISCONNECTED"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-9363",
+                    "data": [
+                        {
+                            "key": "asmCommonVulnerabilities",
+                            "data": {
+                                "type": "Table",
+                                "width": 50,
+                                "height": 250,
+                                "time_frame": {
+                                    "relativeTime": 604800000
+                                }
+                            }
+                        },
+                        {
+                            "key": "websitesByFailedSecurityAssessments",
+                            "data": {
+                                "type": "Bar",
+                                "width": 50,
+                                "height": 250
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8836",
+                    "data": [
+                        {
+                            "key": "topVulnerableHosts",
+                            "data": {
+                                "type": "Pie",
+                                "width": 50,
+                                "height": 258
+                            }
+                        },
+                        {
+                            "key": "unmanagedVsManagedCloudServices",
+                            "data": {
+                                "type": "Pie",
+                                "width": 50,
+                                "height": 258,
+                                "time_frame": {
+                                    "relativeTime": 604800000
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-4441",
+                    "data": [
+                        {
+                            "key": "vulnerabilitiesOverTime",
+                            "data": {
+                                "type": "Timeline",
+                                "width": 100,
+                                "height": 258,
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-3527",
+                    "data": [
+                        {
+                            "key": "topHostsAtRisk",
+                            "data": {
+                                "type": "Table",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "selectedMode": [
+                                    "total"
+                                ],
+                                "selectedRole": {
+                                    "value": "allRoles",
+                                    "originalEvent": {
+                                        "isTrusted": true,
+                                        "_pendo_MtgYEuvE": {
+                                            "counted": true,
+                                            "handled": {
+                                                "1": true
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "key": "topDataAssetsAtRisk",
+                            "data": {
+                                "width": 33.333333333333336,
+                                "height": 400
+                            }
+                        },
+                        {
+                            "key": "topUsersAtRisk",
+                            "data": {
+                                "type": "Table",
+                                "width": 33.333333333333336,
+                                "height": 400,
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "selectedMode": [
+                                    "total"
+                                ],
+                                "selectedRole": {
+                                    "value": "allRoles",
+                                    "originalEvent": {
+                                        "isTrusted": true,
+                                        "_pendo_eVxH5H4H": {
+                                            "counted": true,
+                                            "handled": {
+                                                "1": true
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-7570",
+                    "data": [
+                        {
+                            "key": "xql_1773742279543",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "params": [],
+                                "phrase": "dataset = endpoints | comp count() as policy_count by assigned_prevention_policy | sort desc policy_count\n\n| view graph type = pie subtype = full show_callouts = `true` show_callouts_names = `true` xaxis = assigned_prevention_policy yaxis = policy_count default_limit = `false` legend = `false` //Healthcheck",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts_names",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "assigned_prevention_policy"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "policy_count"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend",
+                                                "value": "false"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "drilldown_config": {
+                                    "actionData": {
+                                        "url": "https://e010525.xdr.za.paloaltonetworks.com/endpoints/policies",
+                                        "openInNewTab": true
+                                    },
+                                    "actionType": "open_custom_url"
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1773741704945",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 400,
+                                "params": [],
+                                "phrase": "dataset = endpoints | fields auto_upgrade_status  , endpoint_name \n| filter (`auto_upgrade_status` != STATUS_NOT_SUPPORTED) | comp count() as upgradestatuscount by auto_upgrade_status\n\n| view graph type = pie subtype = full show_callouts = `true` show_callouts_names = `true` xaxis = auto_upgrade_status yaxis = upgradestatuscount default_limit = `false` valuecolor(\"STATUS_NOT_CONFIGURED\",\"#ea1313\") legend = `false` //Healthcheck",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts_names",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "auto_upgrade_status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "upgradestatuscount"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "STATUS_NOT_CONFIGURED",
+                                                    "#ea1313"
+                                                ],
+                                                "name": "valuecolor"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend",
+                                                "value": "false"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-5836",
+                    "data": [
+                        {
+                            "key": "xql_1773743335910",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "phrase": "config timeframe = 7d | dataset = endpoints | comp count() as scancount by scan_status\n| view graph type = pie subtype = full show_callouts = `true` show_callouts_names = `true` xaxis = scan_status yaxis = scancount default_limit = `false` legend = `false` //Healthcheck",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "7d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts_names",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "scan_status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "scancount"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend",
+                                                "value": "false"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 2,
+            "global_id": "c0e8f6672e924bb08b3d29986f0dbb3f",
+            "metadata": {
+                "params": []
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1773148157696",
+            "title": "Content Auto Update Disabled Endpoints",
+            "creation_time": 1773921178653,
+            "description": "",
+            "data": {
+                "phrase": "config timeframe = 30d |dataset = endpoints | filter content_auto_update = ENUM.DISABLED   | comp count() as total by assigned_prevention_policy\n\n| view graph type = pie xaxis = assigned_prevention_policy yaxis = total default_limit = `false` legend = `false` //Healthcheck",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "assigned_prevention_policy"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "total"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend",
+                                "value": "false"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "gyldz@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1773741704945",
+            "title": "Auto Agent Upgrade Status",
+            "creation_time": 1773921178451,
+            "description": null,
+            "data": {
+                "params": [],
+                "phrase": "dataset = endpoints | fields auto_upgrade_status  , endpoint_name \n| filter (`auto_upgrade_status` != STATUS_NOT_SUPPORTED) | comp count() as upgradestatuscount by auto_upgrade_status\n\n| view graph type = pie subtype = full show_callouts = `true` show_callouts_names = `true` xaxis = auto_upgrade_status yaxis = upgradestatuscount default_limit = `false` valuecolor(\"STATUS_NOT_CONFIGURED\",\"#ea1313\") legend = `false` //Healthcheck",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "7d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts_names",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "auto_upgrade_status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "upgradestatuscount"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "STATUS_NOT_CONFIGURED",
+                                    "#ea1313"
+                                ],
+                                "name": "valuecolor"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend",
+                                "value": "false"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "gyldz@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1773147948011",
+            "title": "Unprotected & Partially Protected Endpoints",
+            "creation_time": 1773921179018,
+            "description": "",
+            "data": {
+                "phrase": "config timeframe = 30d| dataset = endpoints | fields endpoint_id, operational_status, platform | filter operational_status != ENUM.PROTECTED | comp count() as total by operational_status, platform\n\n| view graph type = column subtype = grouped layout = horizontal show_callouts = `true` xaxis = platform yaxis = total series = operational_status default_limit = `false` seriescolor(\"UNPROTECTED\",\"#cb3614\") seriescolor(\"PARTIALLY_PROTECTED\",\"#ded6af\") //Healthcheck",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "layout",
+                                "value": "horizontal"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "platform"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "total"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "series",
+                                "value": "operational_status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "UNPROTECTED",
+                                    "#cb3614"
+                                ],
+                                "name": "seriescolor"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "PARTIALLY_PROTECTED",
+                                    "#ded6af"
+                                ],
+                                "name": "seriescolor"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "gyldz@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1773148018250",
+            "title": "Disconnected Servers > 20Days",
+            "creation_time": 1773921178903,
+            "description": "",
+            "data": {
+                "phrase": "config timeframe =30d |dataset = endpoints | filter endpoint_status in (ENUM.DISCONNECTED) and endpoint_type in (ENUM.TYPE_SERVER) | filter timestamp_diff(current_time(), last_seen, \"DAY\") >= 20 | alter daysNotSeen = timestamp_diff(current_time(), last_seen, \"DAY\") | fields endpoint_name as name, endpoint_type as type, daysNotSeen, last_seen\n\n| view graph type = column subtype = grouped xaxis = name yaxis = daysNotSeen default_limit = `false` //Healthcheck",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "name"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "daysNotSeen"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        }
+                    ]
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "gyldz@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1773743335910",
+            "title": "Agent Scan Status",
+            "creation_time": 1773921178553,
+            "description": null,
+            "data": {
+                "phrase": "config timeframe = 7d | dataset = endpoints | comp count() as scancount by scan_status\n| view graph type = pie subtype = full show_callouts = `true` show_callouts_names = `true` xaxis = scan_status yaxis = scancount default_limit = `false` legend = `false` //Healthcheck",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "7d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts_names",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "scan_status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "scancount"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend",
+                                "value": "false"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "gyldz@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1773148595080",
+            "title": "EDR Disabled Endpoints",
+            "creation_time": 1773921178753,
+            "description": "",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = endpoints | filter endpoint_status in (ENUM.CONNECTED, ENUM.DISCONNECTED) | filter is_edr_enabled = ENUM.NO and platform != ENUM.ANDROID | fields endpoint_name as name, endpoint_type as type, assigned_prevention_policy as Policy //Healthcheck",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "gyldz@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1773742279543",
+            "title": "Agent Policy Assignment",
+            "creation_time": 1773921179138,
+            "description": null,
+            "data": {
+                "params": [],
+                "phrase": "dataset = endpoints | comp count() as policy_count by assigned_prevention_policy | sort desc policy_count\n\n| view graph type = pie subtype = full show_callouts = `true` show_callouts_names = `true` xaxis = assigned_prevention_policy yaxis = policy_count default_limit = `false` legend = `false` //Healthcheck",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts_names",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "assigned_prevention_policy"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "policy_count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend",
+                                "value": "false"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "pkohli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        }
+    ],
+    "fromVersion": "6.10.0"
+}
