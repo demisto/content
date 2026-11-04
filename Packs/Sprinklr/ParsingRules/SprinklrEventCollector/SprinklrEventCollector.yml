@@ -1,0 +1,8 @@
+name: SprinklrEventCollector Parsing Rule
+id: Sprinklr_EventCollector_ParsingRule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''
+supportedModules:
+- xsiam

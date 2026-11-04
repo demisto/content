@@ -1,0 +1,44 @@
+{
+  "name": "Sprinklr",
+  "description": "Sprinklr integration for Cortex XSIAM with OAuth event collection, parsing, XDM normalization, dashboarding, investigation commands, and guarded response automation.",
+  "support": "community",
+  "currentVersion": "1.0.0",
+  "author": "Abdellatif BELKHIRI",
+  "url": "https://github.com/abdellatif-belkhiri",
+  "email": "",
+  "created": "2026-09-21T00:00:00Z",
+  "categories": [
+    "Cloud Services"
+  ],
+  "tags": [
+    "Data Source",
+    "Incident Response"
+  ],
+  "useCases": [
+    "Hunting",
+    "Incident Response"
+  ],
+  "keywords": [
+    "Sprinklr",
+    "OAuth2",
+    "Client Credentials",
+    "Reporting API",
+    "Event Collector",
+    "XSIAM",
+    "XDM",
+    "SCIM",
+    "Governance",
+    "Response Automation"
+  ],
+  "marketplaces": [
+    "marketplacev2",
+    "platform"
+  ],
+  "defaultDataSource": "Sprinklr Event Collector",
+  "supportedModules": [
+    "xsiam"
+  ],
+  "githubUser": [
+    "abdellatif-belkhiri"
+  ]
+}
