@@ -1,4 +1,6 @@
-Use the Stairwell Inception integration to enrich data in XSOAR using Stairwell's knowledge and perform automated variant discovery.
+Deprecated. Use the Stairwell integration instead.
+
+Use the Stairwell Inception integration to enrich data in Cortex XSOAR using Stairwell's knowledge and perform automated variant discovery.
 
 Not a customer and interested in signing up? You can request access [here](https://stairwell.com/contact/).
 

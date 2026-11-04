@@ -20,27 +20,30 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-description: Stairwell Inception is a security intelligence engine that automates the continuous capture, storage, and of executable files and other primary security artifacts to improve detection and response against advanced attacks that evade traditional security tools.
-display: 'Stairwell Inception'
+description: Deprecated. Use the Stairwell integration instead.
+display: 'Stairwell Inception (Deprecated)'
 name: Inception
+deprecated: true
 script:
   commands:
   - name: inception-variant-discovery
+    deprecated: true
     arguments:
     - name: sha256
       required: true
       description: File hash (SHA256).
-    description: Discover variants using a file hash (SHA256).
+    description: Deprecated. Use the stairwell-variant-discovery command instead.
     outputs:
     - contextPath: Inception.Variants
       type: Dictionary
       description: Variants discovered.
   - name: inception-file-enrichment
+    deprecated: true
     arguments:
     - name: fileHash
       required: true
       description: File hash (MD5, SHA1, or SHA256).
-    description: Enrich files using file hash (MD5, SHA1, SHA256).
+    description: Deprecated. Use the stairwell-file-enrichment command instead.
     outputs:
     - contextPath: Inception.File_Details
       type: Dictionary

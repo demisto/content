@@ -1,4 +1,7 @@
-## Stairwell Inception
+## Stairwell Inception (Deprecated)
+
+Deprecated. Use the Stairwell integration instead; its ***stairwell-file-enrichment*** and ***stairwell-variant-discovery*** commands replace the ***inception-*** commands.
+
 Inception's APIs leverage auth tokens via the web interface. Directions for generating these tokens, along with API documentation, are available within your Inception tenant.
 
 Not a customer and interested in signing up? You can request access [here](https://stairwell.com/contact/).

@@ -1,0 +1,62 @@
+{
+	"type": "file",
+	"id": "f89d3d2177a4ad5a4995fd2bedaf13c6de2726e14f1367c21cdbb5c776aa1cdd",
+	"links": {
+		"self": "/api/v3/files/f89d3d2177a4ad5a4995fd2bedaf13c6de2726e14f1367c21cdbb5c776aa1cdd"
+	},
+	"data": {
+		"attributes": {
+			"md5": "68927422419023003c40ecd438981af1",
+			"sha1": "6303420a19756a69b436fd1e2902437ff0734613",
+			"sha256": "f89d3d2177a4ad5a4995fd2bedaf13c6de2726e14f1367c21cdbb5c776aa1cdd",
+			"size": 6113792,
+			"creation_date": 1646274587,
+			"names": [
+				"C:\\Users\\ida\\go\\hello\\/hello.exe"
+			],
+			"meaningful_name": "C:\\Users\\ida\\go\\hello\\/hello.exe",
+			"times_submitted": 1,
+			"type_description": "EXE",
+			"crowdsourced_yara_results": [{
+					"rule_name": "Methodology_Codelang_Golang_BuildId_Catchall"
+				},
+				{
+					"rule_name": "Methodology_Codelang_Golang_Strings_PE"
+				},
+				{
+					"rule_name": "Methodology_Algorithm_SHA256_Constants"
+				},
+				{
+					"rule_name": "Methodology_PotentialCredentialHarvester"
+				}
+			],
+			"occurrences": [{
+				"environment": {
+					"id": "2FPYDD-8LP9XU-VYQAAC-VTRF29MT",
+					"name": "Ida Bear Sandbox"
+				},
+				"assets": [{
+					"id": "AD64SQ-C3VABC-8HJN6L-LF2CR999",
+					"name": "WORKGROUP\\SW-MJW-CRD-1"
+				}]
+			},
+			{
+				"environment": {
+					"id": "2FPYDD-8LP9XU-VYQAAC-YYD",
+					"name": "Ida Bear Sandbox2"
+				},
+				"assets": [{
+					"id": "AD64SQ-C3VABC-8HJN6L-LF2CR999",
+					"name": "WORKGROUP\\SW-MJW-CRD-1"
+				}]
+			}],
+			"mal_eval_result": {
+				"label": "onlinegames",
+				"probability_bucket": "PROBABILITY_VERY_HIGH"
+			},
+			"magic": "EXE",
+			"imphash": "c7269d59926fa4252270f407e4dab043",
+			"ssdeep": "98304:Q4xcDSb5mWNPEU8O/41EhETAN4EwKy+QJ:9yWBEjOd54+Q"
+		}
+	}
+}

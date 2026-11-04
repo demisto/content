@@ -1,0 +1,749 @@
+category: Data Enrichment & Threat Intelligence
+provider: Stairwell
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: Stairwell
+  version: -1
+configuration:
+- display: ""
+  displaypassword: API Key
+  name: apikey
+  type: 9
+  required: true
+  hiddenusername: true
+  section: Connect
+- display: Source Reliability
+  name: integrationReliability
+  defaultvalue: A - Completely reliable
+  type: 15
+  required: false
+  additionalinfo: Reliability of the source providing the intelligence data.
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  section: Collect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+  section: Connect
+description: Stairwell helps security teams speed up security workflows by continuously tying signal intelligence with their enterprise's files, performing private file and malware analysis, and bringing data search techniques to finding threats that others miss.
+display: 'Stairwell'
+name: Stairwell
+script:
+  commands:
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      isArray: true
+      default: true
+      description: A comma-separated list of file hashes (MD5, SHA1, or SHA256) to check.
+    description: Returns the Stairwell reputation of a file. The DBotScore comes from Stairwell's MalEval verdict. Malicious for PROBABILITY_VERY_HIGH and PROBABILITY_HIGH, suspicious for PROBABILITY_MEDIUM, good for PROBABILITY_LOW, unknown otherwise.
+    outputs:
+    - contextPath: DBotScore.Indicator
+      type: String
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      type: String
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      type: String
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      type: Number
+      description: The actual score.
+    - contextPath: DBotScore.Reliability
+      type: String
+      description: Reliability of the source providing the intelligence data.
+    - contextPath: File.MD5
+      type: String
+      description: The MD5 hash of the file.
+    - contextPath: File.SHA1
+      type: String
+      description: The SHA1 hash of the file.
+    - contextPath: File.SHA256
+      type: String
+      description: The SHA256 hash of the file.
+    - contextPath: File.Size
+      type: Number
+      description: The size of the file in bytes.
+    - contextPath: File.Name
+      type: String
+      description: The name of the file.
+    - contextPath: File.Type
+      type: String
+      description: The MIME type or magic of the file.
+    - contextPath: File.Tags
+      type: Unknown
+      description: The YARA rules the file matches.
+    - contextPath: File.Malicious.Vendor
+      type: String
+      description: The vendor that reported the file as malicious.
+    - contextPath: File.Malicious.Description
+      type: String
+      description: The MalEval verdict, severity and labels behind the malicious score.
+    - contextPath: Stairwell.File.sha256
+      type: String
+      description: The SHA256 hash of the file.
+    - contextPath: Stairwell.File.md5
+      type: String
+      description: The MD5 hash of the file.
+    - contextPath: Stairwell.File.sha1
+      type: String
+      description: The SHA1 hash of the file.
+    - contextPath: Stairwell.File.name
+      type: String
+      description: The name of the file.
+    - contextPath: Stairwell.File.size
+      type: Number
+      description: The size of the file in bytes.
+    - contextPath: Stairwell.File.mimeType
+      type: String
+      description: The MIME type of the file.
+    - contextPath: Stairwell.File.magic
+      type: String
+      description: The libmagic description of the file.
+    - contextPath: Stairwell.File.malEval.probabilityBucket
+      type: String
+      description: The MalEval probability bucket, for example PROBABILITY_HIGH.
+    - contextPath: Stairwell.File.malEval.severity
+      type: String
+      description: The MalEval severity, for example SEVERITY_HIGH.
+    - contextPath: Stairwell.File.malEval.labels
+      type: Unknown
+      description: The MalEval labels, such as malware family names.
+    - contextPath: Stairwell.File.yaraRuleMatches
+      type: Unknown
+      description: The names of the YARA rules the file matches.
+    - contextPath: Stairwell.File.stairwellFirstSeenTime
+      type: Date
+      description: When Stairwell first saw the file.
+    - contextPath: Stairwell.File.networkIndicators
+      type: Unknown
+      description: The IP addresses, hostnames and URLs extracted from the file.
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      isArray: true
+      default: true
+      description: A comma-separated list of IP addresses to check.
+    description: Returns Stairwell network intelligence for an IP address. Stairwell holds no verdict for an IP, so the DBotScore is always unknown; the value is the ASN, geolocation, cloud provider and reverse DNS context.
+    outputs:
+    - contextPath: DBotScore.Indicator
+      type: String
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      type: String
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      type: String
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      type: Number
+      description: The actual score.
+    - contextPath: DBotScore.Reliability
+      type: String
+      description: Reliability of the source providing the intelligence data.
+    - contextPath: IP.Address
+      type: String
+      description: The IP address.
+    - contextPath: IP.ASN
+      type: String
+      description: The autonomous system number the IP belongs to.
+    - contextPath: IP.ASOwner
+      type: String
+      description: The holder of the IP's address prefix from WHOIS.
+    - contextPath: IP.Geo.Country
+      type: String
+      description: The country of the IP address.
+    - contextPath: IP.Geo.Description
+      type: String
+      description: The city and region of the IP address.
+    - contextPath: IP.Hostname
+      type: String
+      description: A hostname that resolves to the IP address.
+    - contextPath: IP.Tags
+      type: Unknown
+      description: Cloud provider, datacenter and VPN tags.
+    - contextPath: Stairwell.IP.ip
+      type: String
+      description: The IP address.
+    - contextPath: Stairwell.IP.asns
+      type: Unknown
+      description: The autonomous system numbers the IP belongs to.
+    - contextPath: Stairwell.IP.cloudProvider
+      type: String
+      description: The cloud provider that owns the IP, if any.
+    - contextPath: Stairwell.IP.isDatacenter
+      type: Boolean
+      description: Whether the IP is in a datacenter range.
+    - contextPath: Stairwell.IP.isVpn
+      type: Boolean
+      description: Whether the IP is a known VPN exit.
+    - contextPath: Stairwell.IP.geoLocation.country
+      type: String
+      description: The country code of the IP address.
+    - contextPath: Stairwell.IP.geoLocation.countryName
+      type: String
+      description: The country name of the IP address.
+    - contextPath: Stairwell.IP.geoLocation.city
+      type: String
+      description: The city of the IP address.
+    - contextPath: Stairwell.IP.geoLocation.region
+      type: String
+      description: The region of the IP address.
+    - contextPath: Stairwell.IP.subnetInfo.cidr
+      type: String
+      description: The network address of the IP's subnet.
+    - contextPath: Stairwell.IP.subnetInfo.prefixLength
+      type: Number
+      description: The prefix length of the IP's subnet.
+    - contextPath: Stairwell.IP.whoisOrganization
+      type: String
+      description: The holder of the IP's address prefix from WHOIS.
+    - contextPath: Stairwell.IP.hostnames
+      type: Unknown
+      description: The hostnames that resolve to the IP address.
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      isArray: true
+      default: true
+      description: A comma-separated list of domains to check.
+    description: Returns Stairwell hostname intelligence for a domain. A hostname on Stairwell's whitelist scores good; any other scores unknown, as Stairwell holds no malicious verdict for a hostname. Includes the DNS resolution history.
+    outputs:
+    - contextPath: DBotScore.Indicator
+      type: String
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      type: String
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      type: String
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      type: Number
+      description: The actual score.
+    - contextPath: DBotScore.Reliability
+      type: String
+      description: Reliability of the source providing the intelligence data.
+    - contextPath: Domain.Name
+      type: String
+      description: The domain name.
+    - contextPath: Domain.DNS
+      type: String
+      description: The IP addresses the domain resolves to.
+    - contextPath: Domain.Tags
+      type: Unknown
+      description: Whether Stairwell whitelists the domain.
+    - contextPath: Stairwell.Domain.hostname
+      type: String
+      description: The hostname.
+    - contextPath: Stairwell.Domain.etldPlusOne
+      type: String
+      description: The effective top-level domain plus one of the hostname.
+    - contextPath: Stairwell.Domain.whitelisted
+      type: Boolean
+      description: Whether Stairwell lists the hostname as known-good.
+    - contextPath: Stairwell.Domain.resolutions.recordType
+      type: String
+      description: The DNS record type of the resolution.
+    - contextPath: Stairwell.Domain.resolutions.answer
+      type: String
+      description: The DNS answer of the resolution.
+    - contextPath: Stairwell.Domain.resolutions.firstSeen
+      type: Date
+      description: When the resolution was first seen.
+    - contextPath: Stairwell.Domain.resolutions.lastSeen
+      type: Date
+      description: When the resolution was last seen.
+    - contextPath: Stairwell.Domain.resolutions.observationCount
+      type: Number
+      description: How many times the resolution was observed.
+  - name: stairwell-variant-discovery
+    arguments:
+    - name: sha256
+      required: true
+      description: The SHA256 hash of the file.
+    description: Discovers file variants using a SHA256 hash.
+    outputs:
+    - contextPath: Stairwell.Variants.sha256
+      type: String
+      description: The SHA256 hash that was queried.
+    - contextPath: Stairwell.Variants.variants
+      type: Unknown
+      description: The variant files discovered, each with a hash and similarity score.
+  - name: stairwell-file-enrichment
+    arguments:
+    - name: file_hash
+      required: true
+      description: The file hash (MD5, SHA1, or SHA256) to enrich.
+    description: Enriches file details using a file hash (MD5, SHA1, or SHA256).
+    outputs:
+    - contextPath: Stairwell.File_Details.sha256
+      type: String
+      description: The SHA256 hash of the file.
+    - contextPath: Stairwell.File_Details.summary.md5
+      type: String
+      description: The MD5 hash of the file.
+    - contextPath: Stairwell.File_Details.summary.sha256
+      type: String
+      description: The SHA256 hash of the file.
+    - contextPath: Stairwell.File_Details.summary.filenames
+      type: Unknown
+      description: The file names and paths the file was seen with.
+    - contextPath: Stairwell.File_Details.summary.seen_assets_count
+      type: Number
+      description: The number of assets on which the file was seen, across all environments.
+    - contextPath: Stairwell.File_Details.summary.seen_environments.environment_id
+      type: String
+      description: The ID of an environment in which the file was seen.
+    - contextPath: Stairwell.File_Details.summary.seen_environments.environment_name
+      type: String
+      description: The name of an environment in which the file was seen.
+    - contextPath: Stairwell.File_Details.summary.seen_environments.asset_count
+      type: Number
+      description: The number of assets in that environment on which the file was seen.
+    - contextPath: Stairwell.File_Details.summary.seen_environments.assets.id
+      type: String
+      description: The ID of an asset on which the file was seen.
+    - contextPath: Stairwell.File_Details.summary.seen_environments.assets.name
+      type: String
+      description: The name of an asset on which the file was seen.
+    - contextPath: Stairwell.File_Details.raw
+      type: Unknown
+      description: The full file reputation response.
+  - name: stairwell-intake-upload
+    arguments:
+    - name: asset_id
+      required: true
+      description: The ID of the asset to upload the file to.
+    - name: entry_id
+      required: false
+      description: The entry ID of the file from the War Room.
+    - name: url
+      required: false
+      description: The HTTP or HTTPS URL to download the file from. The host must resolve to a public address, redirects are not followed, and the download is limited to 256 MB.
+    - name: sha256
+      required: false
+      description: The SHA256 hash of the file. If not provided, it will be calculated automatically.
+    - name: origin_type
+      required: false
+      description: The origin type of the file. Can be web or unspecified.
+      auto: PREDEFINED
+      predefined:
+      - web
+      - unspecified
+    - name: origin_referrer_url
+      required: false
+      description: The HTTP referrer URL for the file origin.
+    - name: origin_host_url
+      required: false
+      description: The original host URL for the file origin.
+    - name: origin_zone_id
+      required: false
+      description: The zone ID (integer) for the file origin.
+    description: Uploads a file from a War Room entry or a URL to Stairwell for analysis. The file is stored in your Stairwell environment under the given asset. Provide exactly one of entry_id or url. A failed upload returns an error entry.
+    outputs:
+    - contextPath: Stairwell.Intake.sha256
+      type: String
+      description: The SHA256 hash of the file.
+    - contextPath: Stairwell.Intake.result
+      type: String
+      description: The intake outcome, either uploaded or already_exists.
+    - contextPath: Stairwell.Intake.upload_status
+      type: Number
+      description: The HTTP status code returned by the upload. Absent when the file already existed.
+    - contextPath: Stairwell.Intake.preflight
+      type: Unknown
+      description: The preflight response from the Stairwell Intake API.
+  - name: stairwell-object-sightings
+    arguments:
+    - name: object_id
+      required: true
+      description: The SHA256 hash or object ID of the object.
+    description: Lists all sightings for an object across the organization's assets.
+    outputs:
+    - contextPath: Stairwell.Sightings.objectId
+      type: String
+      description: The object ID that was queried.
+    - contextPath: Stairwell.Sightings.objectSightings
+      type: Unknown
+      description: The sightings of the object across assets.
+  - name: stairwell-object-opinions
+    arguments:
+    - name: object_id
+      required: true
+      description: The SHA256 hash or object ID of the object.
+    description: Lists threat intelligence opinions for an object.
+    outputs:
+    - contextPath: Stairwell.Opinions
+      type: Dictionary
+      description: Opinions for the object.
+  - name: stairwell-run-to-ground-generate
+    arguments:
+    - name: object_ids
+      required: true
+      description: A comma-separated list of object IDs or SHA256 hashes.
+    description: Generates a run-to-ground analysis for one or more objects.
+    outputs:
+    - contextPath: Stairwell.RunToGround
+      type: Dictionary
+      description: Run-to-ground analysis results.
+  - name: stairwell-ai-triage-summarize
+    arguments:
+    - name: object_id
+      required: true
+      description: The SHA256 hash or object ID of the object.
+    description: Gets an AI-generated summary for a file using Stairwell AI triage.
+    outputs:
+    - contextPath: Stairwell.AI_Triage.hash
+      type: String
+      description: The hash of the analyzed file.
+    - contextPath: Stairwell.AI_Triage.malicious_likelihood
+      type: Number
+      description: The likelihood (0-100) that the file is malicious.
+    - contextPath: Stairwell.AI_Triage.confidence
+      type: Number
+      description: The confidence (0-100) of the assessment.
+    - contextPath: Stairwell.AI_Triage.threat_type
+      type: String
+      description: The threat type classification.
+    - contextPath: Stairwell.AI_Triage.tldr
+      type: String
+      description: The short summary of the analysis.
+    - contextPath: Stairwell.AI_Triage.summary_points
+      type: Unknown
+      description: The key findings of the analysis, one sentence each.
+    - contextPath: Stairwell.AI_Triage.iocs
+      type: Unknown
+      description: The indicators of compromise extracted from the file, grouped by kind (URLs, file paths, registry keys, IP addresses, other).
+    - contextPath: Stairwell.AI_Triage.raw
+      type: Unknown
+      description: The full AI triage response, with the report as markdown under summary and its structured form under summaryJson.
+  - name: stairwell-asn-get-whois
+    arguments:
+    - name: asn
+      required: true
+      description: The ASN number to query.
+    description: Gets WHOIS information for an ASN.
+    outputs:
+    - contextPath: Stairwell.ASN.WHOIS
+      type: Dictionary
+      description: ASN WHOIS information.
+  - name: stairwell-hostname-get
+    arguments:
+    - name: hostname
+      required: true
+      description: The hostname to look up.
+    - name: record_type
+      required: false
+      description: The DNS record type to filter by. Can be A, AAAA, or MX.
+      auto: PREDEFINED
+      predefined:
+      - A
+      - AAAA
+      - MX
+    description: Gets a hostname entity with DNS resolution data.
+    outputs:
+    - contextPath: Stairwell.Hostname
+      type: Dictionary
+      description: Hostname entity with DNS resolution data.
+  - name: stairwell-hostname-get-resolutions
+    arguments:
+    - name: hostname
+      required: true
+      description: The hostname to look up.
+    - name: start_time
+      required: false
+      description: The start time of the resolution range in ISO 8601 format.
+    - name: end_time
+      required: false
+      description: The end time of the resolution range in ISO 8601 format.
+    description: Gets all IP addresses resolved to by a hostname over a time range.
+    outputs:
+    - contextPath: Stairwell.Hostname.Resolutions
+      type: Dictionary
+      description: Hostname resolution history.
+  - name: stairwell-hostname-batch-get-resolutions
+    arguments:
+    - name: hostnames
+      required: true
+      description: A comma-separated list of hostnames.
+    - name: start_time
+      required: false
+      description: The start time of the resolution range in ISO 8601 format.
+    - name: end_time
+      required: false
+      description: The end time of the resolution range in ISO 8601 format.
+    - name: record_types
+      required: false
+      description: A comma-separated list of DNS record types (A, AAAA, or MX).
+    - name: include_errors
+      required: false
+      description: Whether to include DNS error responses in the results.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    description: Gets DNS resolution summaries for multiple hostnames.
+    outputs:
+    - contextPath: Stairwell.Hostname.BatchResolutions
+      type: Dictionary
+      description: Batch hostname resolution summaries.
+  - name: stairwell-ipaddress-get
+    arguments:
+    - name: ip_address
+      required: true
+      description: The IP address to look up.
+    description: Gets an IP address entity with enrichment data.
+    outputs:
+    - contextPath: Stairwell.IPAddress
+      type: Dictionary
+      description: IP address entity with enrichment data.
+  - name: stairwell-ipaddress-lookup-cloud-provider
+    arguments:
+    - name: ip_address
+      required: true
+      description: The IP address to check.
+    description: Checks whether an IP address belongs to a known cloud provider.
+    outputs:
+    - contextPath: Stairwell.IPAddress.CloudProvider
+      type: Dictionary
+      description: Cloud provider lookup results.
+  - name: stairwell-ipaddress-get-hostnames-resolving-to-ip
+    arguments:
+    - name: ip_address
+      required: true
+      description: The IP address to look up.
+    - name: start_time
+      required: false
+      description: The start time of the resolution range in ISO 8601 format.
+    - name: end_time
+      required: false
+      description: The end time of the resolution range in ISO 8601 format.
+    description: Gets all hostnames that resolved to an IP address over a time interval.
+    outputs:
+    - contextPath: Stairwell.IPAddress.Hostnames
+      type: Dictionary
+      description: Hostnames that resolved to the IP address.
+  - name: stairwell-ipaddress-get-whois
+    arguments:
+    - name: ip_address
+      required: true
+      description: The IP address to look up.
+    description: Gets WHOIS information for an IP address.
+    outputs:
+    - contextPath: Stairwell.IPAddress.WHOIS
+      type: Dictionary
+      description: IP address WHOIS information.
+  - name: stairwell-utilities-get-cloud-ip-ranges
+    arguments:
+    - name: provider
+      required: false
+      description: The cloud provider name to filter by.
+    description: Gets IP address ranges for known cloud providers.
+    outputs:
+    - contextPath: Stairwell.Utilities.CloudIPRanges
+      type: Dictionary
+      description: Cloud provider IP address ranges.
+  - name: stairwell-utilities-batch-canonicalize-hostnames
+    arguments:
+    - name: hostnames
+      required: true
+      description: A comma-separated list of hostnames to canonicalize.
+    description: Canonicalizes multiple hostnames in bulk.
+    outputs:
+    - contextPath: Stairwell.Utilities.CanonicalizedHostnames
+      type: Dictionary
+      description: Canonicalized hostnames.
+  - name: stairwell-utilities-batch-compute-etld-plus-one
+    arguments:
+    - name: domains
+      required: true
+      description: A comma-separated list of domains.
+    description: Computes the effective top-level domain plus one for multiple domains.
+    outputs:
+    - contextPath: Stairwell.Utilities.ETLDPlusOne
+      type: Dictionary
+      description: eTLD+1 results.
+  - name: stairwell-utilities-canonicalize-hostname
+    arguments:
+    - name: hostname
+      required: true
+      description: The hostname to canonicalize.
+    description: Canonicalizes a single hostname.
+    outputs:
+    - contextPath: Stairwell.Utilities.CanonicalizedHostname
+      type: Dictionary
+      description: Canonicalized hostname.
+  - name: stairwell-utilities-compute-etld-plus-one
+    arguments:
+    - name: domain
+      required: true
+      description: The domain to compute the effective top-level domain plus one for.
+    description: Computes the effective top-level domain plus one for a single domain.
+    outputs:
+    - contextPath: Stairwell.Utilities.ETLDPlusOne
+      type: Dictionary
+      description: eTLD+1 result.
+  - name: stairwell-utilities-batch-canonicalize-urls
+    arguments:
+    - name: urls
+      required: true
+      description: A comma-separated list of URLs to canonicalize.
+    description: Canonicalizes multiple URLs in bulk.
+    outputs:
+    - contextPath: Stairwell.Utilities.CanonicalizedURLs
+      type: Dictionary
+      description: Canonicalized URLs.
+  - name: stairwell-utilities-canonicalize-url
+    arguments:
+    - name: url
+      required: true
+      description: The URL to canonicalize.
+    description: Canonicalizes a single URL.
+    outputs:
+    - contextPath: Stairwell.Utilities.CanonicalizedURL
+      type: Dictionary
+      description: Canonicalized URL.
+  - name: stairwell-yara-create-rule
+    arguments:
+    - name: environment
+      required: true
+      description: The ID of the environment.
+    - name: rule_definition
+      required: true
+      description: The YARA rule definition text.
+    description: Creates a new YARA rule in the specified environment. The rule is saved to your Stairwell environment and starts matching files. Multi-line rules must be wrapped in backticks.
+    outputs:
+    - contextPath: Stairwell.YaraRule
+      type: Dictionary
+      description: Created YARA rule.
+  - name: stairwell-yara-get-rule
+    arguments:
+    - name: environment
+      required: true
+      description: The ID of the environment.
+    - name: yara_rule
+      required: true
+      description: The ID of the YARA rule.
+    - name: match_count_envs
+      required: false
+      description: A comma-separated list of environment IDs to include in match counts.
+    description: Gets a YARA rule by ID.
+    outputs:
+    - contextPath: Stairwell.YaraRule
+      type: Dictionary
+      description: YARA rule details.
+  - name: stairwell-yara-query-matches
+    arguments:
+    - name: environment
+      required: true
+      description: The ID of the environment.
+    - name: yara_rule
+      required: true
+      description: The ID of the YARA rule.
+    - name: included_environments
+      required: false
+      description: A comma-separated list of environment IDs to search.
+    - name: page_size
+      required: false
+      description: The maximum number of matches to return.
+    - name: page_token
+      required: false
+      description: The token for pagination.
+    description: Queries objects that match a YARA rule.
+    outputs:
+    - contextPath: Stairwell.YaraRuleMatches
+      type: Dictionary
+      description: Objects matching the YARA rule.
+  - name: stairwell-asset-list
+    arguments:
+    - name: environment
+      required: true
+      description: The ID of the environment.
+    - name: page_size
+      required: false
+      description: The maximum number of assets to return.
+    - name: page_token
+      required: false
+      description: The token for pagination.
+    description: Lists all assets in the specified environment.
+    outputs:
+    - contextPath: Stairwell.Assets
+      type: Dictionary
+      description: List of assets.
+  - name: stairwell-asset-create
+    arguments:
+    - name: environment
+      required: true
+      description: The ID of the environment.
+    - name: label
+      required: true
+      description: The human-readable label for the asset, typically the hostname.
+    - name: idempotency_key
+      required: false
+      description: The client-generated key for idempotent asset creation. Generated when not provided.
+    - name: os
+      required: false
+      description: The operating system of the asset. Can be Windows, macOS, or Linux.
+      auto: PREDEFINED
+      predefined:
+      - Windows
+      - macOS
+      - Linux
+    - name: os_version
+      required: false
+      description: The operating system version string.
+    - name: forwarder_version
+      required: false
+      description: The forwarder version string.
+    description: Creates a new asset in the specified environment. The asset's upload token is a credential and is not returned; retrieve it from the Stairwell web UI.
+    outputs:
+    - contextPath: Stairwell.Asset.name
+      type: String
+      description: The resource name of the created asset, in the form assets/ID.
+    - contextPath: Stairwell.Asset.label
+      type: String
+      description: The label of the created asset.
+  - name: stairwell-asset-get
+    arguments:
+    - name: asset
+      required: true
+      description: The ID of the asset.
+    description: Gets a specific asset by ID. The asset's upload token is a credential and is not returned.
+    outputs:
+    - contextPath: Stairwell.Asset.name
+      type: String
+      description: The resource name of the asset, in the form assets/ID.
+    - contextPath: Stairwell.Asset.label
+      type: String
+      description: The label of the asset.
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.13.10116658
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
