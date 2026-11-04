@@ -54,7 +54,7 @@ configuration:
   required: false
   type: 15
   section: Collect
-- additionalinfo: Used by the ip, domain, email, url and file commands. An indicator whose OpenCTI score (x_opencti_score) is above this threshold and not above the malicious score threshold is suspicious. An indicator whose score is not above this threshold is good. A value unknown to OpenCTI is unknown.
+- additionalinfo: Used by the ip, domain, email, url and file commands. An indicator whose OpenCTI score (x_opencti_score) is above this threshold and not above the malicious score threshold is suspicious. An indicator whose score is not above this threshold is good. A value unknown to OpenCTI, or whose indicator is revoked, is unknown.
   defaultvalue: '20'
   display: Suspicious score threshold (0-100)
   name: reputation_suspicious_threshold

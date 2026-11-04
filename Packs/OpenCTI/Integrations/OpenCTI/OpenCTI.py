@@ -2252,7 +2252,12 @@ def reputation_result(
         indicator_details = build_indicator_details(indicator, indicator_relationships)
     score = indicator_details.get("score") if indicator_details else None
 
-    dbot_score_value = opencti_score_to_dbot_score(score, threshold, suspicious_threshold)
+    if indicator_details and indicator_details.get("revoked"):
+        # A revoked indicator is no longer valid detection in OpenCTI, whatever its score: it is revoked manually,
+        # by the decay manager, or by the expired manager once its valid_until date is passed.
+        dbot_score_value = Common.DBotScore.NONE
+    else:
+        dbot_score_value = opencti_score_to_dbot_score(score, threshold, suspicious_threshold)
     dbot_score = Common.DBotScore(
         indicator=value,
         indicator_type=REPUTATION_COMMANDS[indicator_type]["dbot_type"],

@@ -15,7 +15,7 @@ This integration was tested with OpenCTI 6.9.0 and 7.261.X.
    | Use system proxy settings | Whether to use the system proxy settings to connect to the OpenCTI platform. | False |
    | Redirect stdout | Used for troubleshooting purposes. | False |
    | Source Reliability | The reliability of the source providing the intelligence data. | False |
-   | Suspicious score threshold (0-100) | Used by the ip, domain, email, url and file commands. An indicator whose OpenCTI score (x_opencti_score) is above this threshold and not above the malicious score threshold is suspicious. An indicator whose score is not above this threshold is good. A value unknown to OpenCTI is unknown. | False |
+   | Suspicious score threshold (0-100) | Used by the ip, domain, email, url and file commands. An indicator whose OpenCTI score (x_opencti_score) is above this threshold and not above the malicious score threshold is suspicious. An indicator whose score is not above this threshold is good. A value unknown to OpenCTI, or whose indicator is revoked, is unknown. | False |
    | Malicious score threshold (0-100) | Used by the ip, domain, email, url and file commands. An indicator whose OpenCTI score (x_opencti_score) is above this threshold is malicious. Must not be below the suspicious score threshold. | False |
    | Create relationships | Whether to create relationships between indicators as part of enrichment. | False |
 

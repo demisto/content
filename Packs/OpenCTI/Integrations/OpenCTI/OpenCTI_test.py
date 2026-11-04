@@ -2291,3 +2291,25 @@ def test_reputation_command_uppercase_hash(mocker):
     exact_indicator_filters = indicator_list.call_args_list[0].kwargs["filters"]["filters"]
     assert {"key": "pattern", "values": [f"[file:hashes.'SHA-256' = '{sha256}']"], "operator": "eq"} in exact_indicator_filters
     assert f"OpenCTI reputation for file {sha256}" in results[0].readable_output
+
+
+@pytest.mark.parametrize("revoked, expected_score", [(True, 0), (False, 3)])
+def test_reputation_command_revoked_indicator(mocker, revoked, expected_score):
+    """Tests reputation_command function
+    Given
+        an IP whose indicator has a high OpenCTI score (90), revoked or not
+    When
+        - Calling `reputation_command` for the ip command
+    Then
+        - Ensure a revoked indicator gives an Unknown DBot score without Malicious context, and stays in the context.
+    """
+    indicator = {**REPUTATION_INDICATOR, "x_opencti_score": 90, "revoked": revoked}
+    client, _, _, _ = mock_reputation_lookups(mocker, [], [[indicator]])
+    context = reputation_command(client, {"ip": "1.2.3.4"}, "ip")[0].to_context()["EntryContext"]
+    dbot = context[
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)"
+    ]
+    assert dbot[0]["Score"] == expected_score
+    ip_context = context["IP(val.Address && val.Address == obj.Address)"][0]
+    assert ("Malicious" in ip_context) is not revoked
+    assert context["OpenCTI.Indicator(val.id && val.id == obj.id)"]["revoked"] is revoked
