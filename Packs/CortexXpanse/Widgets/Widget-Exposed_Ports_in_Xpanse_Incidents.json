@@ -27,5 +27,8 @@
     "id": "d964ed66-bf7c-4eb0-86ac-2ca26b377dc8",
     "widgetType": "pie",
     "fromVersion": "6.8.0",
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

@@ -44,5 +44,8 @@
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "6.8.0"
+    "fromVersion": "6.8.0",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

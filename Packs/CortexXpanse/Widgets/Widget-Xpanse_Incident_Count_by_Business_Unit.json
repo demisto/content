@@ -27,5 +27,8 @@
     "id": "dcaf3cf7-ed17-40f8-8b29-5a0a2ef97cd4",
     "widgetType": "column",
     "fromVersion": "6.8.0",
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }
