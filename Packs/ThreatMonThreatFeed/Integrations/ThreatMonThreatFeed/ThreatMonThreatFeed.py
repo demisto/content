@@ -5,6 +5,7 @@ import hashlib
 import re
 import time
 import traceback
+from collections.abc import Callable
 from datetime import datetime, timedelta, UTC
 from email.utils import parsedate_to_datetime
 from typing import Any
@@ -71,8 +72,12 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, username: str, api_token: str, verify: bool, proxy: bool):
+        base_url = base_url.rstrip("/")
+        # Accept both the server root and the TAXII API root as the Server URL.
+        if not base_url.endswith(TAXII_API_ROOT):
+            base_url += TAXII_API_ROOT
         super().__init__(
-            base_url=base_url.rstrip("/") + TAXII_API_ROOT,
+            base_url=base_url,
             verify=verify,
             proxy=proxy,
             auth=(username or "", api_token),
@@ -379,10 +384,14 @@ def crawl(
     now: datetime,
     max_pages: int,
     deadline: float,
-    sink,
+    sink: Callable[[list[dict]], None],
 ) -> dict:
     """
     Crawls every selected collection incrementally, sending indicators to ``sink`` page by page.
+
+    A collection that fails (for example, it is no longer readable with the API token) is skipped for this
+    run, so it cannot block the other collections. The failure is raised after the other collections are
+    crawled, so it is still visible in the fetch status.
 
     Completeness guarantees:
     * Every collection is paged with the TAXII ``next`` cursor until ``more`` is false.
@@ -412,18 +421,16 @@ def crawl(
         "unsupported": 0,
         "completed": [],
         "pending": [],
+        "failed": [],
     }
     unsupported_samples: list[str] = []
+    errors: list[str] = []
 
     for collection_name, collection_id in crawl_order(resolve_collections(params), state):
         col_state = state["collections"].setdefault(collection_id, {})
         col_state.setdefault("added_after", to_taxii_time(first_fetch))
 
-        while True:
-            if stats["pages"] >= max_pages or time.time() >= deadline:
-                stats["pending"].append(collection_name)
-                break
-
+        while stats["pages"] < max_pages and time.time() < deadline:
             try:
                 envelope, server_time = client.get_objects_page(collection_id, col_state["added_after"], col_state.get("next"))
             except DemistoException as e:
@@ -434,7 +441,12 @@ def crawl(
                     demisto.info(f"ThreatMon: cursor rejected for {collection_name} ({status}), restarting crawl.")
                     col_state["next"] = None
                     continue
-                raise
+                # Skip this collection for this run; its position is kept, so the next run retries it.
+                # The error is raised at the end of the run, so it is still reported.
+                demisto.info(f"ThreatMon: failed to fetch collection {collection_name}: {e}")
+                stats["failed"].append(collection_name)
+                errors.append(f"{collection_name}: {e}")
+                break
             stats["pages"] += 1
             if not col_state.get("crawl_started_at"):
                 col_state["crawl_started_at"] = to_taxii_time(server_time or now)
@@ -482,9 +494,14 @@ def crawl(
             save_state(state, seen)
             if not col_state.get("next"):
                 break
+        else:
+            # The page or time budget was reached: the next run continues this collection.
+            stats["pending"].append(collection_name)
 
     if unsupported_samples:
         demisto.info(f"ThreatMon: {stats['unsupported']} unsupported STIX observables were skipped, e.g. {unsupported_samples}")
+    if errors:
+        raise DemistoException(f"Failed to fetch {len(errors)} ThreatMon collection(s): {'; '.join(errors)}")
     return stats
 
 
@@ -499,6 +516,8 @@ def fetch_indicators_command(client: Client, params: dict, now: datetime | None 
         for indicators_batch in batch(indicators, batch_size=2000):
             demisto.createIndicators(indicators_batch)
 
+    # The state is not saved if the crawl raises: a page whose indicators were not created must not be
+    # marked as processed. The pages completed before the failure were already saved by ``crawl``.
     stats = crawl(client, params, state, seen, now, max_pages, time.time() + MAX_FETCH_RUN_SECONDS, sink)
     save_state(state, seen)
     demisto.debug(f"ThreatMon fetch finished: {stats}")
@@ -537,7 +556,7 @@ def get_indicators_command(client: Client, params: dict, args: dict) -> CommandR
         for indicator in indicators
     ]
     return CommandResults(
-        readable_output=tableToMarkdown(f"Indicators from {FEED_SOURCE_TAG} ({collection_name}):", table, removeNull=True),
+        readable_output=tableToMarkdown(f"Indicators from {FEED_SOURCE_TAG} ({collection_name})", table, removeNull=True),
         raw_response=[indicator["rawJSON"] for indicator in indicators],
     )
 
@@ -550,14 +569,22 @@ def get_fetch_state_command(params: dict) -> CommandResults:
         rows.append(
             {
                 "Collection": collection_name,
-                "Fetching Since (added_after)": col_state.get("added_after") or "Not started",
-                "Crawl In Progress": bool(col_state.get("next")),
-                "Last Completed Crawl": col_state.get("last_completed_at"),
+                "AddedAfter": col_state.get("added_after"),
+                "CrawlInProgress": bool(col_state.get("next")),
+                "LastCompletedCrawl": col_state.get("last_completed_at"),
             }
         )
+    readable_rows = [{**row, "AddedAfter": row["AddedAfter"] or "Not started"} for row in rows]
     return CommandResults(
-        readable_output=tableToMarkdown("ThreatMon fetch state", rows) + f"\nDe-duplication cache size: {len(seen)}",
+        readable_output=tableToMarkdown(
+            "ThreatMon fetch state",
+            readable_rows,
+            headers=["Collection", "AddedAfter", "CrawlInProgress", "LastCompletedCrawl"],
+            headerTransform=pascalToSpace,
+        )
+        + f"\nDe-duplication cache size: {len(seen)}",
         outputs_prefix="ThreatMon.FetchState",
+        outputs_key_field="Collection",
         outputs=rows,
     )
 
@@ -580,13 +607,19 @@ def get_collections_command(client: Client) -> CommandResults:
             "ID": collection.get("id"),
             "Title": collection.get("title"),
             "Description": collection.get("description"),
-            "Can Read": collection.get("can_read"),
-            "Known By Integration": collection.get("id") in known_ids,
+            "CanRead": collection.get("can_read"),
+            "KnownByIntegration": collection.get("id") in known_ids,
         }
         for collection in (client.get_collections().get("collections") or [])
     ]
     return CommandResults(
-        readable_output=tableToMarkdown("ThreatMon TAXII collections", rows, removeNull=True),
+        readable_output=tableToMarkdown(
+            "ThreatMon TAXII collections",
+            rows,
+            headers=["ID", "Title", "Description", "CanRead", "KnownByIntegration"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        ),
         outputs_prefix="ThreatMon.Collection",
         outputs_key_field="ID",
         outputs=rows,
@@ -603,7 +636,12 @@ def test_module(client: Client, params: dict) -> str:
     missing = [name for name, collection_id in resolve_collections(params) if collection_id not in available]
     if missing:
         return f"The following collections are not available for this API Token: {', '.join(missing)}"
-    arg_to_datetime(params.get("first_fetch") or DEFAULT_FIRST_FETCH)
+    try:
+        first_fetch = arg_to_datetime(params.get("first_fetch") or DEFAULT_FIRST_FETCH)
+    except ValueError:
+        first_fetch = None
+    if not first_fetch:
+        return "Invalid First Fetch Time parameter."
     return "ok"
 
 

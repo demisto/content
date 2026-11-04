@@ -57,6 +57,7 @@ class FakeTaxiiServer:
         self.calls: list[dict] = []
         self.fail_on_call: int | None = None
         self.reject_cursor_once = False
+        self.failing_collections: set[str] = set()
 
     def add(self, collection_id: str, *objects: dict) -> None:
         for obj in objects:
@@ -71,6 +72,8 @@ class FakeTaxiiServer:
         self.calls.append({"collection": collection_id, "added_after": added_after, "next": next_cursor})
         if self.fail_on_call is not None and len(self.calls) == self.fail_on_call:
             raise DemistoException("connection reset")
+        if collection_id in self.failing_collections:
+            raise FakeResponseError(403)
         if next_cursor and self.reject_cursor_once:
             self.reject_cursor_once = False
             raise FakeResponseError(400)
@@ -278,7 +281,7 @@ def test_fetch_respects_page_budget_and_resumes_without_loss(context, created, m
     params = {**BASE_PARAMS, "collections": "All Threat Indicators", "max_pages_per_fetch": "2"}
 
     runs = 0
-    while True:
+    for _ in range(5):
         runs += 1
         stats = run_fetch(server, params, mocker)
         if stats["completed"]:
@@ -286,6 +289,7 @@ def test_fetch_respects_page_budget_and_resumes_without_loss(context, created, m
         assert stats["pending"] == ["All Threat Indicators"]
         assert context["ctx"]["collections"][ALL]["next"]
 
+    assert stats["completed"] == ["All Threat Indicators"]
     assert runs == 3
     assert values(created) == sorted(f"d{i}.com" for i in range(9))
 
@@ -305,6 +309,33 @@ def test_fetch_resumes_after_failure_mid_crawl(context, created, mocker):
     run_fetch(server, params, mocker)
     assert values(created) == sorted(f"d{i}.com" for i in range(7))
     assert len(created) == 7  # nothing sent twice
+
+
+def test_failing_collection_does_not_block_the_others(context, created, mocker):
+    """
+    Given: A collection that always fails (for example, it is not readable with the API token) and is
+           ordered first because it never completed a crawl.
+    When: Fetching.
+    Then: The other collections are still crawled, and the failure is raised at the end of the run.
+    """
+    server = FakeTaxiiServer(page_size=2)
+    server.add(IPS, *[stix(f"ipv4-addr:value = '1.1.1.{i}'", NOW) for i in range(3)])
+    params = {**BASE_PARAMS, "collections": "All Threat Indicators,IP Address Indicators"}
+    # IPS completed a crawl before, so ALL (never completed) is ordered first.
+    context["ctx"] = {
+        "version": feed.STATE_VERSION,
+        "collections": {
+            IPS: {"added_after": "2026-11-01T00:00:00.000000Z", "last_completed_at": "2026-11-02T00:00:00.000000Z"},
+        },
+    }
+    server.failing_collections = {ALL}
+
+    with pytest.raises(DemistoException, match="All Threat Indicators"):
+        run_fetch(server, params, mocker)
+
+    assert server.calls[0]["collection"] == ALL
+    assert values(created) == ["1.1.1.0", "1.1.1.1", "1.1.1.2"]
+    assert context["ctx"]["collections"][IPS]["last_completed_at"] == feed.to_taxii_time(NOW)
 
 
 def test_fetch_does_not_commit_page_when_create_indicators_fails(context, mocker):
@@ -510,6 +541,10 @@ def test_test_module_missing_collection(mocker):
     assert "IP Address Indicators" in feed.test_module(server, {"collections": "All Threat Indicators,IP Address Indicators"})
 
 
+def test_test_module_invalid_first_fetch():
+    assert feed.test_module(FakeTaxiiServer(), {"first_fetch": "not a date"}) == "Invalid First Fetch Time parameter."
+
+
 def test_get_indicators_command(context):
     server = FakeTaxiiServer(page_size=10)
     server.add(IPS, *[stix(f"ipv4-addr:value = '1.1.1.{i}'", NOW - timedelta(minutes=i)) for i in range(5)])
@@ -532,8 +567,10 @@ def test_fetch_state_and_reset_commands(context, created, mocker):
     run_fetch(server, {**BASE_PARAMS, "collections": "All Threat Indicators"}, mocker)
 
     result = feed.get_fetch_state_command({"collections": "All Threat Indicators"})
-    assert result.outputs[0]["Fetching Since (added_after)"] == feed.to_taxii_time(NOW - timedelta(minutes=60))
-    assert result.outputs[0]["Crawl In Progress"] is False
+    assert result.outputs[0]["AddedAfter"] == feed.to_taxii_time(NOW - timedelta(minutes=60))
+    assert result.outputs[0]["CrawlInProgress"] is False
+    assert result.outputs[0]["LastCompletedCrawl"] == feed.to_taxii_time(NOW)
+    assert "Added After" in result.readable_output
 
     feed.reset_fetch_state_command()
     assert context["ctx"] == {}
@@ -558,6 +595,13 @@ def test_client_sends_taxii_request(requests_mock):
     assert request.headers["Authorization"] == "Basic " + base64.b64encode(b":token").decode()
     assert envelope == {"objects": [], "more": False}
     assert server_time == datetime(2026, 11, 3, 8, 41, 3, tzinfo=UTC)
+
+
+@pytest.mark.parametrize(
+    "url", ["https://ioc.example", "https://ioc.example/", "https://ioc.example/taxii", "https://ioc.example/taxii/"]
+)
+def test_client_accepts_server_root_or_taxii_root(url):
+    assert feed.Client(url, "", "token", verify=True, proxy=False)._base_url == f"https://ioc.example{feed.TAXII_API_ROOT}"
 
 
 def test_main_fetch_indicators(mocker, requests_mock, context, created):
@@ -590,5 +634,6 @@ def test_get_collections_command_flags_unknown_collections(mocker):
 
     result = feed.get_collections_command(server)
 
-    assert [(row["ID"], row["Known By Integration"]) for row in result.outputs] == [(ALL, True), ("new-collection", False)]
+    assert [(row["ID"], row["KnownByIntegration"]) for row in result.outputs] == [(ALL, True), ("new-collection", False)]
     assert "Phishing" in result.readable_output
+    assert "Known By Integration" in result.readable_output

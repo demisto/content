@@ -19,8 +19,6 @@ The ThreatMon Threat Feed integration pulls Indicators of Compromise (IOCs) from
 
 Every collection is read page by page with the TAXII `next` cursor until the server reports that no more data is available. The position is saved after every page, so if a run reaches the **Maximum pages per fetch** limit or fails, the next run continues from exactly the same place. Each new crawl starts slightly before the previous one (**Look-back Window**) so late-published IOCs are not missed, and IOCs read twice are de-duplicated.
 
-Use `!threatmon-get-fetch-state` to see the progress of every collection, and `!threatmon-reset-fetch-state` to start again from the First Fetch Time.
-
 ---
 
 **Support**

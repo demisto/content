@@ -57,22 +57,43 @@ configuration:
   - C2 Server Indicators
   required: false
   section: Collect
+- display: Data Type to Fetch (Deprecated)
+  additionalinfo: Deprecated. Use the Collections parameter instead.
+  name: data_type
+  defaultvalue: all
+  type: 15
+  options:
+  - all
+  - ip
+  - domain
+  - url
+  required: false
+  advanced: true
+  section: Collect
+- display: Maximum number of indicators per fetch (Deprecated)
+  additionalinfo: Deprecated. Use the Maximum pages per fetch parameter instead.
+  name: limit
+  defaultvalue: '500'
+  type: 0
+  required: false
+  advanced: true
+  section: Collect
 - display: Additional Collection IDs
-  additionalinfo: Optional comma-separated list of additional TAXII collection IDs to fetch.
+  additionalinfo: The optional comma-separated list of additional TAXII collection IDs to fetch.
   name: collection_ids
   type: 0
   required: false
   section: Collect
   advanced: true
 - display: First Fetch Time
-  additionalinfo: How far back to fetch indicators on the first run, for example "7 days", "12 hours" or "2026-10-01".
+  additionalinfo: The time range to look back when fetching indicators on the first run, for example "7 days", "12 hours" or "2026-10-01".
   name: first_fetch
-  defaultvalue: 7 days
+  defaultvalue: '7 days'
   type: 0
   required: false
   section: Collect
 - display: Look-back Window (minutes)
-  additionalinfo: Each crawl re-reads this many minutes before the previous crawl started, so indicators published late are not missed. Re-read indicators are de-duplicated.
+  additionalinfo: The number of minutes before the previous crawl started to re-read on each crawl, so indicators published late are not missed. Re-read indicators are de-duplicated.
   name: lookback_minutes
   defaultvalue: '180'
   type: 0
@@ -80,7 +101,7 @@ configuration:
   section: Collect
   advanced: true
 - display: Maximum pages per fetch
-  additionalinfo: Maximum number of TAXII pages (500 indicators each) read in a single fetch run. If more data is available, the next run continues from the same position.
+  additionalinfo: The maximum number of TAXII pages (500 indicators each) read in a single fetch run. If more data is available, the next run continues from the same position.
   name: max_pages_per_fetch
   defaultvalue: '300'
   type: 0
@@ -124,11 +145,9 @@ configuration:
   name: tlp_color
   options:
   - RED
-  - AMBER+STRICT
   - AMBER
   - GREEN
   - WHITE
-  - CLEAR
   type: 15
   required: false
   section: Collect
@@ -154,7 +173,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   required: false
   section: Collect
   supportedModules:
@@ -190,7 +208,7 @@ configuration:
 - name: feedTags
   display: Tags
   type: 0
-  additionalinfo: Supports CSV values. The "ThreatMon" tag is always added.
+  additionalinfo: The tags to apply to indicators. Supports CSV values. The "ThreatMon" tag is always added.
   required: false
   section: Collect
   supportedModules:
@@ -200,7 +218,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.13.10404775
+  dockerimage: demisto/python3:3.12.15.14069087
   feed: true
   runonce: false
   commands:
@@ -230,15 +248,15 @@ script:
     - contextPath: ThreatMon.FetchState.Collection
       description: The collection name.
       type: String
-    - contextPath: ThreatMon.FetchState.Fetching Since (added_after)
-      description: The point in time the current or next crawl of the collection starts from.
-      type: String
-    - contextPath: ThreatMon.FetchState.Crawl In Progress
+    - contextPath: ThreatMon.FetchState.AddedAfter
+      description: The point in time the current or next crawl of the collection starts from (e.g., 2026-11-03T08:00:00.000000Z).
+      type: Date
+    - contextPath: ThreatMon.FetchState.CrawlInProgress
       description: Whether a crawl of the collection is in progress and will continue in the next run.
       type: Boolean
-    - contextPath: ThreatMon.FetchState.Last Completed Crawl
-      description: When the last complete crawl of the collection started.
-      type: String
+    - contextPath: ThreatMon.FetchState.LastCompletedCrawl
+      description: The time the last complete crawl of the collection started (e.g., 2026-11-03T08:00:00.000000Z).
+      type: Date
   - name: threatmon-get-collections
     description: Lists the collections published by the ThreatMon TAXII server, and whether the integration fetches them by default.
     arguments: []
@@ -252,10 +270,10 @@ script:
     - contextPath: ThreatMon.Collection.Description
       description: The collection description.
       type: String
-    - contextPath: ThreatMon.Collection.Can Read
+    - contextPath: ThreatMon.Collection.CanRead
       description: Whether the API token can read the collection.
       type: Boolean
-    - contextPath: ThreatMon.Collection.Known By Integration
+    - contextPath: ThreatMon.Collection.KnownByIntegration
       description: Whether the collection is one of the predefined collections of the integration. Unknown collections can be fetched with the Additional Collection IDs parameter.
       type: Boolean
   - name: threatmon-reset-fetch-state
