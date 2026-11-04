@@ -2025,6 +2025,20 @@ script:
       - "false"
     - name: metric_name
       description: The CloudWatch metric name for the web ACL.
+    - name: custom_response_bodies
+      description: A JSON string of custom response bodies. Preserves existing configuration if not provided.
+    - name: captcha_config
+      description: A JSON string of CAPTCHA configuration. Preserves existing configuration if not provided.
+    - name: challenge_config
+      description: A JSON string of challenge configuration. Preserves existing configuration if not provided.
+    - name: token_domains
+      description: A comma-separated list of token domain override domains. Preserves existing configuration if not provided.
+    - name: association_config
+      description: A JSON string of association configuration for request body inspection size. Preserves existing configuration if not provided.
+    - name: data_protection_config
+      description: A JSON string of data protection configuration. Preserves existing configuration if not provided.
+    - name: on_source_ddos_protection_config
+      description: A JSON string of source DDoS protection configuration. Preserves existing configuration if not provided.
     - name: region
       description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
@@ -2328,6 +2342,8 @@ script:
       description: A comma-separated list of log destination ARNs (e.g., Kinesis Firehose delivery stream ARNs).
       isArray: true
       required: true
+    - name: logging_filter
+      description: A JSON string of logging filter configuration to filter which web requests are kept in logs.
     - name: region
       description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
@@ -2914,4 +2930,4 @@ script:
   dockerimage: demisto/boto3py3:1.0.0.12887184
 fromversion: 6.5.0
 tests:
-- No tests (auto formatted)
+- TEST_AWS_WAF

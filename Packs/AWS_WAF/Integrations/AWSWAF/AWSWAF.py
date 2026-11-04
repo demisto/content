@@ -1,5 +1,5 @@
+import json
 from collections.abc import Callable
-from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 import demistomock as demisto
@@ -1116,7 +1116,26 @@ def update_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
     }
 
     if description := args.get("description"):
-        kwargs |= {"Description": description}
+        kwargs["Description"] = description
+
+    json_config_params = {
+        "custom_response_bodies": "CustomResponseBodies",
+        "captcha_config": "CaptchaConfig",
+        "challenge_config": "ChallengeConfig",
+        "association_config": "AssociationConfig",
+        "data_protection_config": "DataProtectionConfig",
+        "on_source_ddos_protection_config": "OnSourceDDoSProtectionConfig",
+    }
+    for arg_name, api_key in json_config_params.items():
+        if value := args.get(arg_name):
+            kwargs[api_key] = json.loads(value)
+        elif existing := web_acl.get(api_key):
+            kwargs[api_key] = existing
+
+    if token_domains := args.get("token_domains"):
+        kwargs["TokenDomains"] = argToList(token_domains)
+    elif existing_domains := web_acl.get("TokenDomains"):
+        kwargs["TokenDomains"] = existing_domains
 
     response = client.update_web_acl(**kwargs)
 
@@ -1210,12 +1229,15 @@ def get_web_acl_for_resource_command(client: "WAFV2Client", args: dict) -> Comma
 def put_logging_configuration_command(client: "WAFV2Client", args: dict) -> CommandResults:
     """Command to put a logging configuration for a web ACL"""
     log_destinations = argToList(args.get("log_destination")) or []
-    kwargs = {
-        "LoggingConfiguration": {
-            "ResourceArn": args.get("resource_arn", ""),
-            "LogDestinationConfigs": log_destinations,
-        }
+    logging_config: dict[str, Any] = {
+        "ResourceArn": args.get("resource_arn", ""),
+        "LogDestinationConfigs": log_destinations,
     }
+
+    if logging_filter := args.get("logging_filter"):
+        logging_config["LoggingFilter"] = json.loads(logging_filter)
+
+    kwargs = {"LoggingConfiguration": logging_config}
 
     response = client.put_logging_configuration(**kwargs)
     outputs = response.get("LoggingConfiguration", {})
@@ -1357,14 +1379,12 @@ def get_sampled_requests_command(client: "WAFV2Client", args: dict) -> CommandRe
         "MaxItems": arg_to_number(args.get("max_items")) or 100,
     }
 
-    response = client.get_sampled_requests(**kwargs)
+    response = json.loads(json.dumps(client.get_sampled_requests(**kwargs), default=lambda value: value.isoformat()))
     sampled_requests = response.get("SampledRequests", [])
 
     table_data = []
     for req in sampled_requests:
         request_info = req.get("Request", {})
-        if isinstance(req.get("Timestamp"), datetime):
-            req["Timestamp"] = req["Timestamp"].isoformat()
         table_data.append(
             {
                 "Action": req.get("Action"),
@@ -1375,11 +1395,6 @@ def get_sampled_requests_command(client: "WAFV2Client", args: dict) -> CommandRe
                 "Timestamp": req.get("Timestamp"),
             }
         )
-
-    time_window = response.get("TimeWindow", {})
-    for key in ("StartTime", "EndTime"):
-        if isinstance(time_window.get(key), datetime):
-            time_window[key] = time_window[key].isoformat()
 
     readable_output = tableToMarkdown(
         f"Sampled Requests (Population Size: {response.get('PopulationSize', 0)})",
