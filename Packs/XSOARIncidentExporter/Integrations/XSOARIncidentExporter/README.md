@@ -3,7 +3,6 @@ This integration was integrated and tested with version xx of XSOARIncidentExpor
 
 ## Configure Xporter in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Cortex XSOAR Server URL | The URL of the Cortex XSOAR server. For XSOAR 6 use the server IP/hostname \(e.g., https://192.168.1.215\). For XSOAR 8 use the API URL \(e.g., https://api-\{tenant\}.xdr.us.paloaltonetworks.com\). | True |
@@ -113,6 +112,7 @@ Resets the sync state so the next sync will send all incidents.
 #### Context Output
 
 There is no context output for this command.
+
 ### xsoar-exporter-sync-close-status
 
 ***
