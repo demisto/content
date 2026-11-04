@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - Utilities
-comment: Searches for a specific indicator in the tenant's event and log data, and extracts the logs the indicator appears in. On the Cortex platform, the search uses the runXQLQuery built-in command.
+comment: Searches for a specific indicator in the tenant's event and log data, and extracts the logs the indicator appears in.
 enabled: true
 args:
 - name: indicator

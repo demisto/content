@@ -160,7 +160,7 @@ def run_platform_query(args: dict) -> CommandResults:
     )
 
 
-def run(args: dict):
+def run(args: dict) -> CommandResults | PollResult:
     """
     Dispatches to the runXQLQuery built-in on the Cortex platform, or to the legacy XDR polling flow otherwise.
     """

@@ -25,10 +25,6 @@ outputs:
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.12.13.10116658
-dependson:
-  must:
-  - getBrokers
-  - runXQLQuery
 fromversion: 8.14.0
 isInternal: true
 tests:
