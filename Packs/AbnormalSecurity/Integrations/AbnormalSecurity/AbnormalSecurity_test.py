@@ -1,6 +1,11 @@
 import json
+import threading
+import time
 from datetime import datetime, timedelta, UTC
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
 import demistomock as demisto
+import httpx
 import pytest
 
 from AbnormalSecurity import (
@@ -28,17 +33,25 @@ from AbnormalSecurity import (
     get_employee_information_command,
     get_employee_login_information_for_last_30_days_in_csv_format_command,
     download_data_from_threat_log_in_csv_format_command,
-    generate_threat_incidents,
-    generate_abuse_campaign_incidents,
-    generate_account_takeover_cases_incidents,
     _is_skippable_error,
     get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command,
     fetch_incidents,
+    build_threat_incident,
+    build_account_takeover_case_incident,
+    build_list_filter,
+    FetchWindow,
+    Deadline,
+    AuthError,
+    fetch_settings_from_params,
+    THREATS_SPEC,
+    ABUSE_CAMPAIGNS_SPEC,
+    ACCOUNT_TAKEOVER_SPEC,
     ISO_8601_FORMAT,
 )
 from CommonServerPython import DemistoException
+from ContentClientApiModule import ContentClient, ContentClientError, TokenBucketRateLimiter
 from test_data.fixtures import BASE_URL, apikey
-from test_data.mock_paginated_response import create_mock_paginator_side_effect, create_mock_detail_side_effect
+from test_data.fake_soar_api import FakeSoarApi
 
 
 headers = {
@@ -488,676 +501,96 @@ def test_provides_the_analysis_and_timeline_details_of_a_case_command(mocker):
     assert results.outputs_prefix == "AbnormalSecurity.CaseAnalysis"
 
 
-def test_fetch_threat_incidents(mocker, mock_get_a_list_of_threats_request):
-    client = mock_client(mocker, util_load_json("test_data/test_get_details_of_a_threat_page2.json"))
-    first_fetch_time = datetime.now().strftime(ISO_8601_FORMAT)
-    _, incidents = fetch_incidents(
-        client=client,
-        last_run={"last_fetch": "2023-09-17T14:43:09Z"},
-        first_fetch_time=first_fetch_time,
-        max_incidents_to_fetch=200,
-        fetch_account_takeover_cases=False,
-        fetch_abuse_campaigns=False,
-        fetch_threats=True,
-    )
-    assert len(incidents) == 1
+def threat_window(start, end):
+    return FetchWindow(window_start=start, window_end=end)
 
 
-def test_fetch_cases_incidents(mocker, mock_get_a_list_of_abnormal_cases_identified_by_abnormal_security_request):
-    client = mock_client(mocker, util_load_json("test_data/test_get_details_of_an_abnormal_case.json"))
-    first_fetch_time = datetime.now().strftime(ISO_8601_FORMAT)
-    _, incidents = fetch_incidents(
-        client=client,
-        last_run={"last_fetch": "2023-09-17T14:43:09Z"},
-        first_fetch_time=first_fetch_time,
-        max_incidents_to_fetch=200,
-        fetch_account_takeover_cases=True,
-        fetch_abuse_campaigns=False,
-        fetch_threats=False,
-    )
-    assert len(incidents) == 1
-    assert incidents[0].get("genaiSummary") == "genai_summary"
-
-
-def test_fetch_abuse_campaign_incidents(mocker, mock_get_a_list_of_campaigns_submitted_to_abuse_mailbox_request):
-    client = mock_client(mocker, util_load_json("test_data/test_get_details_of_abuse_campaign.json"))
-    first_fetch_time = datetime.now().strftime(ISO_8601_FORMAT)
-    _, incidents = fetch_incidents(
-        client=client,
-        last_run={"last_fetch": "2023-09-17T14:43:09Z"},
-        first_fetch_time=first_fetch_time,
-        max_incidents_to_fetch=200,
-        fetch_account_takeover_cases=False,
-        fetch_abuse_campaigns=True,
-        fetch_threats=False,
-    )
-    assert len(incidents) == 1
-
-
-def test_get_details_of_a_threat_request_two_pages(mocker):
+def test_build_threat_incident_two_pages(mocker):
     return_val = util_load_json("test_data/test_get_details_of_a_threat.json")
     return_val["messages"][0]["remediationTimestamp"] = "2023-09-17T15:43:09Z"
     page_2 = util_load_json("test_data/test_get_details_of_a_threat_page2.json")
     page_2["messages"][0]["remediationTimestamp"] = "2023-09-17T16:43:09Z"
-
     client = mock_client(mocker, side_effect=[return_val, page_2])
-    # Create datetime objects instead of using strings
-    start_datetime = datetime(2023, 9, 17, 14, 43, 9, tzinfo=UTC)
-    end_datetime = datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC)
+    window = threat_window(datetime(2023, 9, 17, 14, 43, 9, tzinfo=UTC), datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC))
 
-    incidents = generate_threat_incidents(client, [{"threatId": "asdf097sdf907"}], 2, start_datetime, end_datetime)
-    assert len(incidents) == 1
-    assert len(json.loads(incidents[0].get("rawJSON")).get("messages")) == 2
+    incident = build_threat_incident(client, {"threatId": "asdf097sdf907"}, window, max_page_number=2)
+
+    assert len(json.loads(incident["rawJSON"])["messages"]) == 2
 
 
-def test_get_details_of_a_threat_request_single_page(mocker):
-    return_val = util_load_json("test_data/test_get_details_of_a_threat_page2.json")
-    return_val["messages"][0]["remediationTimestamp"] = "2023-09-17T15:43:09Z"
-    client = mock_client(mocker, response=return_val)
-    # Create datetime objects instead of using strings
-    start_datetime = datetime(2023, 9, 17, 14, 43, 9, tzinfo=UTC)
-    end_datetime = datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC)
+def test_build_threat_incident_nanosecond_timestamp(mocker):
+    threat_details = util_load_json("test_data/test_get_details_of_a_threat_page2.json")
+    threat_details["messages"][0]["remediationTimestamp"] = "2023-09-17T15:43:09Z"
+    client = mock_client(mocker, response=threat_details)
+    window = threat_window(datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC), datetime(2023, 9, 18, 0, 0, 0, tzinfo=UTC))
 
-    incidents = generate_threat_incidents(client, [{"threatId": "asdf097sdf907"}], 1, start_datetime, end_datetime)
-    assert len(incidents) == 1
+    incident = build_threat_incident(client, {"threatId": "asdf097sdf907"}, window, max_page_number=1)
 
-
-def test_get_details_of_a_threat_request_nanosecond_timestamp(mocker, mock_get_details_of_a_threat_request):
-    client = mock_client(mocker, response=util_load_json("test_data/test_get_list_of_abnormal_threats.json"))
-    last_run = {"last_fetch": "2023-09-17T14:43:09Z"}
-    first_fetch_time = "3 days"
-    max_incidents = 200
-    # Call fetch_incidents with the polling lag
-    _, incidents = fetch_incidents(
-        client=client,
-        last_run=last_run,
-        first_fetch_time=first_fetch_time,
-        max_incidents_to_fetch=max_incidents,
-        fetch_account_takeover_cases=False,
-        fetch_abuse_campaigns=False,
-        fetch_threats=True,
-    )
-    assert len(incidents) == 1
-    assert incidents[0].get("occurred") == "2023-12-03T19:26:36.123456"
+    assert incident["occurred"] == "2023-12-03T19:26:36.123456"
 
 
-def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
-    """Test that polling lag is correctly applied when fetching incidents."""
-    # Mock the client and its get_a_list_of_threats_request method
-    return_val = util_load_json("test_data/test_get_list_of_abnormal_threats.json")
-    client = mock_client(mocker, response=return_val)
-
-    # Create a spy on the get_a_list_of_threats_request method to capture its calls
-    get_threats_spy = mocker.spy(client, "get_a_list_of_threats_request")
-
-    # Define test parameters
-    last_run = {"last_fetch": "2023-09-17T14:43:09Z"}
-    first_fetch_time = "3 days"
-    max_incidents = 200
-
-    # Set up a 5-minute polling lag
-    polling_lag = timedelta(minutes=5)
-
-    # Calculate expected timestamps
-    original_timestamp = datetime.fromisoformat(last_run["last_fetch"][:-1]).replace(tzinfo=UTC) + timedelta(milliseconds=1)
-    adjusted_start_time = original_timestamp - polling_lag
-    expected_start_time = adjusted_start_time.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-    # Mock the get_current_datetime function to return a fixed time
-    fixed_current_time = datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC)
-    mocker.patch("AbnormalSecurity.get_current_datetime", return_value=fixed_current_time)
-
-    # Calculate expected end time based on the fixed current time
-    adjusted_end_time = fixed_current_time - polling_lag
-    expected_end_time = adjusted_end_time.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-    expected_filter = f"latestTimeRemediated gte {expected_start_time} and latestTimeRemediated lte {expected_end_time}"
-
-    # Call fetch_incidents with the polling lag
-    _, _ = fetch_incidents(
-        client=client,
-        last_run=last_run,
-        first_fetch_time=first_fetch_time,
-        max_incidents_to_fetch=max_incidents,
-        fetch_account_takeover_cases=False,
-        fetch_abuse_campaigns=False,
-        fetch_threats=True,
-        polling_lag=polling_lag,
-    )
-
-    # Check that the method was called with the expected filter
-    get_threats_spy.assert_called_once()
-    call_args = get_threats_spy.call_args[1]
-
-    # Assert that the filter matches our expected filter
-    assert call_args["filter_"] == expected_filter
-    assert call_args["page_size"] == 100
-
-
-def test_get_details_of_a_threat_request_time_window_filtering(mocker):
-    """Test that messages outside the time window are filtered out."""
-    # Create a mock response with 3 messages
+def test_build_threat_incident_filters_messages_to_window(mocker):
+    """
+    Given a threat whose messages were remediated at the window start, just before its end, at its end,
+    before it, and one with no remediation timestamp.
+    When the incident is built.
+    Then only the messages in [start, end) are kept, and the missing timestamp doesn't raise.
+    """
+    start, end = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC), datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
     mock_response = {
         "threatId": "test-threat-id",
         "messages": [
-            {
-                "threatId": "test-threat-id",
-                "receivedTime": "2023-09-17T15:00:00Z",
-                "remediationTimestamp": "2023-09-17T15:30:00Z",  # Inside window
-            },
-            {
-                "threatId": "test-threat-id",
-                "receivedTime": "2023-09-17T16:00:00Z",
-                "remediationTimestamp": "2023-09-17T16:30:00Z",  # Inside window
-            },
-            {
-                "threatId": "test-threat-id",
-                "receivedTime": "2023-09-17T12:00:00Z",
-                "remediationTimestamp": "2023-09-17T12:30:00Z",  # Outside window (before start_time)
-            },
+            {"receivedTime": "2023-09-17T17:00:00Z", "remediationTimestamp": "2023-09-17T17:00:00Z"},
+            {"receivedTime": "2023-09-17T16:59:59Z", "remediationTimestamp": "2023-09-17T16:59:59.999999Z"},
+            {"receivedTime": "2023-09-17T15:00:00Z"},
+            {"receivedTime": "2023-09-17T14:00:00Z", "remediationTimestamp": "2023-09-17T14:00:00Z"},
+            {"receivedTime": "2023-09-17T12:00:00Z", "remediationTimestamp": "2023-09-17T12:30:00Z"},
         ],
     }
-
     client = mock_client(mocker, response=mock_response)
 
-    # Define time window that includes only the first two messages
-    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
-    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
+    incident = build_threat_incident(client, {"threatId": "test-threat-id"}, threat_window(start, end), max_page_number=1)
 
-    incidents = generate_threat_incidents(client, [{"threatId": "test-threat-id"}], 1, start_datetime, end_datetime)
-
-    # Verify we get one incident
-    assert len(incidents) == 1
-
-    # Verify the incident contains only the messages within the time window
-    incident_data = json.loads(incidents[0]["rawJSON"])
-    assert len(incident_data["messages"]) == 2
-
-    # Verify the filtered messages are the ones we expect
-    remediation_times = [msg["remediationTimestamp"] for msg in incident_data["messages"]]
-    assert "2023-09-17T15:30:00Z" in remediation_times
-    assert "2023-09-17T16:30:00Z" in remediation_times
-    assert "2023-09-17T12:30:00Z" not in remediation_times
+    remediation_times = [m["remediationTimestamp"] for m in json.loads(incident["rawJSON"])["messages"]]
+    assert remediation_times == ["2023-09-17T16:59:59.999999Z", "2023-09-17T14:00:00Z"]
+    assert incident["occurred"] == "2023-09-17T16:59:59Z"
 
 
-def test_get_details_of_a_threat_request_early_exit(mocker):
-    """Test that processing stops early when encountering messages outside the time window."""
-    # Create mock responses for two pages
-    # Page 1 with 2 messages (both inside time window)
+def test_build_threat_incident_stops_at_messages_before_window(mocker):
     page_1 = {
         "threatId": "test-threat-id",
         "messages": [
-            {
-                "threatId": "test-threat-id",
-                "receivedTime": "2023-09-17T16:00:00Z",
-                "remediationTimestamp": "2023-09-17T16:30:00Z",  # Inside window (latest)
-            },
-            {
-                "threatId": "test-threat-id",
-                "receivedTime": "2023-09-17T15:00:00Z",
-                "remediationTimestamp": "2023-09-17T15:30:00Z",  # Inside window
-            },
+            {"receivedTime": "2023-09-17T16:00:00Z", "remediationTimestamp": "2023-09-17T16:30:00Z"},
+            {"receivedTime": "2023-09-17T15:00:00Z", "remediationTimestamp": "2023-09-17T15:30:00Z"},
         ],
-        "nextPageNumber": 2,  # Indicate there's a second page
+        "nextPageNumber": 2,
     }
-
-    # Page 2 with 2 messages (both outside time window)
     page_2 = {
         "threatId": "test-threat-id",
         "messages": [
-            {
-                "threatId": "test-threat-id",
-                "receivedTime": "2023-09-17T13:00:00Z",
-                "remediationTimestamp": "2023-09-17T13:30:00Z",  # Outside window
-            },
-            {
-                "threatId": "test-threat-id",
-                "receivedTime": "2023-09-17T12:00:00Z",
-                "remediationTimestamp": "2023-09-17T12:30:00Z",  # Outside window (earliest)
-            },
+            {"receivedTime": "2023-09-17T13:00:00Z", "remediationTimestamp": "2023-09-17T13:30:00Z"},
+            {"receivedTime": "2023-09-17T12:00:00Z", "remediationTimestamp": "2023-09-17T12:30:00Z"},
         ],
-        "nextPageNumber": None,  # No more pages
     }
-
-    # Create a spy for the get_details_of_a_threat_request method
     client = mock_client(mocker, side_effect=[page_1, page_2])
     get_details_spy = mocker.spy(client, "get_details_of_a_threat_request")
+    window = threat_window(datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC), datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC))
 
-    # Define time window that includes only the first two messages
-    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
-    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
+    incident = build_threat_incident(client, {"threatId": "test-threat-id"}, window, max_page_number=3)
 
-    incidents = generate_threat_incidents(client, [{"threatId": "test-threat-id"}], 3, start_datetime, end_datetime)
+    remediation_times = [m["remediationTimestamp"] for m in json.loads(incident["rawJSON"])["messages"]]
+    assert remediation_times == ["2023-09-17T16:30:00Z", "2023-09-17T15:30:00Z"]
+    assert [c.kwargs["page_number"] for c in get_details_spy.call_args_list] == [1, 2]
 
-    # Verify we get one incident
-    assert len(incidents) == 1
 
-    # Verify the incident contains only the messages within the time window
-    incident_data = json.loads(incidents[0]["rawJSON"])
-    assert len(incident_data["messages"]) == 2
+def test_build_account_takeover_case_incident(mocker):
+    client = mock_client(mocker, util_load_json("test_data/test_get_details_of_an_abnormal_case.json"))
+    window = threat_window(datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC), datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC))
 
-    # Verify the filtered messages are the ones we expect (from page 1 only)
-    remediation_times = [msg["remediationTimestamp"] for msg in incident_data["messages"]]
-    assert "2023-09-17T16:30:00Z" in remediation_times
-    assert "2023-09-17T15:30:00Z" in remediation_times
-    assert "2023-09-17T13:30:00Z" not in remediation_times
-    assert "2023-09-17T12:30:00Z" not in remediation_times
+    incident = build_account_takeover_case_incident(client, {"caseId": "1234", "description": "d"}, window)
 
-    # Verify that get_details_of_a_threat_request was called exactly twice
-    # (once for page 1, once for page 2 where we encounter messages outside the time window and exit early)
-    assert get_details_spy.call_count == 2
-
-    # Verify the calls were made with the correct page numbers
-    first_call_args = get_details_spy.call_args_list[0][1]
-    second_call_args = get_details_spy.call_args_list[1][1]
-    assert first_call_args["page_number"] == 1
-    assert second_call_args["page_number"] == 2
-
-
-def test_pagination_methods_in_fetch_incidents(mocker):
-    """
-    Test that the pagination methods are called correctly from fetch_incidents.
-    This test verifies:
-    1. The methods are called with the correct parameters
-    2. The pagination logic is executed as expected
-    3. The returned incidents are correctly processed
-    """
-    # Create mock pagination side effects for threats, cases, and campaigns
-    threat_list_side_effect = create_mock_paginator_side_effect("threat")
-    case_list_side_effect = create_mock_paginator_side_effect("case")
-    campaign_list_side_effect = create_mock_paginator_side_effect("campaign")
-
-    # Create mock detail side effects
-    threat_detail_side_effect = create_mock_detail_side_effect("threat")
-    case_detail_side_effect = create_mock_detail_side_effect("case")
-    campaign_detail_side_effect = create_mock_detail_side_effect("campaign")
-
-    # Create client
-    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
-
-    # Get threat response samples for the mock
-    threat_page1 = threat_list_side_effect(page_number=1, page_size=2)
-    threat_page2 = threat_list_side_effect(page_number=2, page_size=2)
-
-    # Get case response samples for the mock
-    case_page1 = case_list_side_effect(page_number=1, page_size=2)
-    case_page2 = case_list_side_effect(page_number=2, page_size=2)
-
-    # Get campaign response samples for the mock
-    campaign_page1 = campaign_list_side_effect(page_number=1, page_size=2)
-    campaign_page2 = campaign_list_side_effect(page_number=2, page_size=2)
-
-    # Extract threat IDs for detail responses - for each page we'll get exactly page_size items
-    threat_ids = [threat["threatId"] for threat in threat_page1.get("threats")[:2] + threat_page2.get("threats")[:2]]
-    case_ids = [case["caseId"] for case in case_page1.get("cases")[:2] + case_page2.get("cases")[:2]]
-    campaign_ids = [
-        campaign["campaignId"] for campaign in campaign_page1.get("campaigns")[:2] + campaign_page2.get("campaigns")[:2]
-    ]
-
-    # Combine responses for each type
-    threats_combined = {"threats": threat_page1.get("threats") + threat_page2.get("threats")}
-
-    cases_combined = {"cases": case_page1.get("cases") + case_page2.get("cases")}
-
-    campaigns_combined = {"campaigns": campaign_page1.get("campaigns") + campaign_page2.get("campaigns")}
-
-    # Set up test parameters
-    last_run = {"last_fetch": "2023-09-17T14:43:09Z"}
-    first_fetch_time = "3 days"
-    max_incidents = 200
-    polling_lag = timedelta(minutes=5)
-
-    # Mock the three pagination methods
-    get_paginated_threats_spy = mocker.patch.object(client, "get_paginated_threats_list", return_value=threats_combined)
-
-    get_paginated_cases_spy = mocker.patch.object(client, "get_paginated_cases_list", return_value=cases_combined)
-
-    get_paginated_campaigns_spy = mocker.patch.object(
-        client, "get_paginated_abusecampaigns_list", return_value=campaigns_combined
-    )
-
-    # Mock the get_details methods to return appropriate data for incident generation
-    mocker.patch.object(
-        client, "get_details_of_a_threat_request", side_effect=lambda threat_id, **kwargs: threat_detail_side_effect(threat_id)
-    )
-
-    mocker.patch.object(
-        client, "get_details_of_an_abnormal_case_request", side_effect=lambda case_id, **kwargs: case_detail_side_effect(case_id)
-    )
-
-    mocker.patch.object(
-        client,
-        "get_details_of_an_abuse_mailbox_campaign_request",
-        side_effect=lambda campaign_id, **kwargs: campaign_detail_side_effect(campaign_id),
-    )
-
-    # Mock the get_current_datetime function to return a fixed time
-    mocker.patch("AbnormalSecurity.get_current_datetime", return_value=datetime(2023, 9, 18, 14, 43, 9, tzinfo=UTC))
-
-    # Call fetch_incidents with all three fetch options enabled
-    next_run, incidents = fetch_incidents(
-        client=client,
-        last_run=last_run,
-        first_fetch_time=first_fetch_time,
-        max_incidents_to_fetch=max_incidents,
-        fetch_account_takeover_cases=True,
-        fetch_abuse_campaigns=True,
-        fetch_threats=True,
-        polling_lag=polling_lag,
-    )
-
-    # Verify the pagination methods were called with the correct filters
-
-    # 1. Verify threats pagination
-    get_paginated_threats_spy.assert_called_once()
-    threats_call_kwargs = get_paginated_threats_spy.call_args.kwargs
-
-    # Verify the filter contains latestTimeRemediated with adjusted time due to polling lag
-    assert "latestTimeRemediated gte" in threats_call_kwargs["filter_"]
-    assert "latestTimeRemediated lte" in threats_call_kwargs["filter_"]
-    assert threats_call_kwargs["max_incidents_to_fetch"] == max_incidents
-
-    # 2. Verify abuse campaigns pagination (this is called next in the code)
-    get_paginated_campaigns_spy.assert_called_once()
-    campaigns_call_kwargs = get_paginated_campaigns_spy.call_args.kwargs
-
-    # Verify the filter contains lastReportedTime
-    assert "lastReportedTime gte" in campaigns_call_kwargs["filter_"]
-    assert "lastReportedTime lte" in campaigns_call_kwargs["filter_"]
-    assert campaigns_call_kwargs["max_incidents_to_fetch"] == max_incidents - len(threat_ids)
-
-    # 3. Verify cases pagination (this is called last in the code)
-    get_paginated_cases_spy.assert_called_once()
-    cases_call_kwargs = get_paginated_cases_spy.call_args.kwargs
-    # Verify the filter contains lastModifiedTime
-    assert "lastModifiedTime gte" in cases_call_kwargs["filter_"]
-    assert "lastModifiedTime lte" in cases_call_kwargs["filter_"]
-    assert cases_call_kwargs["max_incidents_to_fetch"] == max_incidents - len(threat_ids) - len(campaign_ids)
-
-    # Verify we got the expected number of incidents
-    expected_incident_count = len(threat_ids) + len(case_ids) + len(campaign_ids)
-    assert len(incidents) == expected_incident_count
-
-    # Verify the types of incidents
-    threat_incidents = [i for i in incidents if i.get("name") == "Threat"]
-    case_incidents = [i for i in incidents if i.get("name") == "Account Takeover Case"]
-    campaign_incidents = [i for i in incidents if i.get("name") == "Abuse Campaign"]
-
-    assert len(threat_incidents) == len(threat_ids)
-    assert len(case_incidents) == len(case_ids)
-    assert len(campaign_incidents) == len(campaign_ids)
-
-    # Verify next_run contains updated last_fetch timestamp
-    assert next_run.get("last_fetch", None) is not None
-    assert next_run.get("last_fetch") > last_run.get("last_fetch")
-
-
-def test_get_paginated_threats_list(mocker):
-    """
-    Test the get_paginated_threats_list method to verify:
-    1. It correctly handles pagination
-    2. It respects the max_incidents_to_fetch parameter
-    """
-    # Create client
-    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
-
-    # Create a side effect function for threats
-    get_threats_side_effect = create_mock_paginator_side_effect("threat")
-
-    # Mock the underlying get_a_list_of_threats_request method
-    get_threats_mock = mocker.patch.object(client, "get_a_list_of_threats_request", side_effect=get_threats_side_effect)
-
-    # Test case 1: Get all threats with high limit (max_incidents_to_fetch > existing items)
-    # This should set page_size to the limit (10) but return only as many items as exist
-    result = client.get_paginated_threats_list(filter_="test filter", max_incidents_to_fetch=10)
-
-    # Verify the result contains threats (the exact count depends on the mock function)
-    assert len(result["threats"]) > 0
-
-    # Verify the first call was made with correct parameters
-    assert get_threats_mock.call_count >= 1
-    first_call_kwargs = get_threats_mock.call_args_list[0][1]
-    assert first_call_kwargs["filter_"] == "test filter"
-    assert first_call_kwargs["page_size"] == 10
-    assert first_call_kwargs["page_number"] == 1
-
-    # Reset the mock for the next test
-    get_threats_mock.reset_mock()
-
-    # Test case 2: Limited page size (max_incidents_to_fetch = 2)
-    # With many threats available and max_incidents_to_fetch=2, we expect page_size=2
-    # This should result in multiple page calls since there are more threats than fit on one page
-    result = client.get_paginated_threats_list(filter_="test filter", max_incidents_to_fetch=2)
-
-    # Verify we got threats
-    assert len(result["threats"]) > 0
-
-    # Verify each page was requested with the correct parameters
-    assert get_threats_mock.call_count >= 1
-
-    # Check first call parameters
-    first_call_kwargs = get_threats_mock.call_args_list[0][1]
-    assert first_call_kwargs["filter_"] == "test filter"
-    assert first_call_kwargs["page_size"] == 2
-    assert first_call_kwargs["page_number"] == 1
-
-    # If there was a second call, check its parameters
-    if get_threats_mock.call_count > 1:
-        second_call_kwargs = get_threats_mock.call_args_list[1][1]
-        assert second_call_kwargs["page_size"] == 2
-        assert second_call_kwargs["page_number"] == 2
-
-    # Reset the mock for the next test
-    get_threats_mock.reset_mock()
-
-    # Test case 3: One threat per page (max_incidents_to_fetch = 1)
-    # With many threats available and max_incidents_to_fetch=1, we expect page_size=1
-    # This should result in multiple page calls, one per threat
-    result = client.get_paginated_threats_list(filter_="test filter", max_incidents_to_fetch=1)
-
-    # Verify we got threats
-    assert len(result["threats"]) > 0
-
-    # Verify multiple pages were requested
-    assert get_threats_mock.call_count >= 1
-
-    # Check that all calls have the correct page_size
-    for i in range(get_threats_mock.call_count):
-        call_kwargs = get_threats_mock.call_args_list[i][1]
-        assert call_kwargs["page_size"] == 1
-        assert call_kwargs["page_number"] == i + 1
-
-    # Reset the mock for the next test
-    get_threats_mock.reset_mock()
-
-    # Test case 4: No threats to fetch (max_incidents_to_fetch = 0)
-    result = client.get_paginated_threats_list(filter_="test filter", max_incidents_to_fetch=0)
-
-    # Verify that no threats were fetched
-    assert len(result["threats"]) == 0
-
-    # Verify that the underlying method was not called
-    assert get_threats_mock.call_count == 0
-
-
-def test_get_paginated_cases_list(mocker):
-    """
-    Test the get_paginated_cases_list method to verify:
-    1. It correctly handles pagination
-    2. It respects the max_incidents_to_fetch parameter
-    """
-    # Create client
-    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
-
-    # Create a side effect function for cases
-    get_cases_side_effect = create_mock_paginator_side_effect("case")
-
-    # Mock the underlying get_a_list_of_abnormal_cases_identified_by_abnormal_security_request method
-    get_cases_mock = mocker.patch.object(
-        client, "get_a_list_of_abnormal_cases_identified_by_abnormal_security_request", side_effect=get_cases_side_effect
-    )
-
-    # Test case 1: Get all cases with high limit (max_incidents_to_fetch > existing items)
-    # This should set page_size to the limit (10) but return only as many items as exist
-    result = client.get_paginated_cases_list(filter_="test filter", max_incidents_to_fetch=10)
-
-    # Verify the result contains cases (the exact count depends on the mock function)
-    assert len(result["cases"]) > 0
-
-    # Verify the first call was made with correct parameters
-    assert get_cases_mock.call_count >= 1
-    first_call_kwargs = get_cases_mock.call_args_list[0][1]
-    assert first_call_kwargs["filter_"] == "test filter"
-    assert first_call_kwargs["page_size"] == 10
-    assert first_call_kwargs["page_number"] == 1
-
-    # Reset the mock for the next test
-    get_cases_mock.reset_mock()
-
-    # Test case 2: Limited page size (max_incidents_to_fetch = 2)
-    # With many cases available and max_incidents_to_fetch=2, we expect page_size=2
-    # This should result in multiple page calls since there are more cases than fit on one page
-    result = client.get_paginated_cases_list(filter_="test filter", max_incidents_to_fetch=2)
-
-    # Verify we got cases
-    assert len(result["cases"]) > 0
-
-    # Verify each page was requested with the correct parameters
-    assert get_cases_mock.call_count >= 1
-
-    # Check first call parameters
-    first_call_kwargs = get_cases_mock.call_args_list[0][1]
-    assert first_call_kwargs["filter_"] == "test filter"
-    assert first_call_kwargs["page_size"] == 2
-    assert first_call_kwargs["page_number"] == 1
-
-    # If there was a second call, check its parameters
-    if get_cases_mock.call_count > 1:
-        second_call_kwargs = get_cases_mock.call_args_list[1][1]
-        assert second_call_kwargs["page_size"] == 2
-        assert second_call_kwargs["page_number"] == 2
-
-    # Reset the mock for the next test
-    get_cases_mock.reset_mock()
-
-    # Test case 3: One case per page (max_incidents_to_fetch = 1)
-    # With many cases available and max_incidents_to_fetch=1, we expect page_size=1
-    # This should result in multiple page calls, one per case
-    result = client.get_paginated_cases_list(filter_="test filter", max_incidents_to_fetch=1)
-
-    # Verify we got cases
-    assert len(result["cases"]) > 0
-
-    # Verify multiple pages were requested
-    assert get_cases_mock.call_count >= 1
-
-    # Check that all calls have the correct page_size
-    for i in range(get_cases_mock.call_count):
-        call_kwargs = get_cases_mock.call_args_list[i][1]
-        assert call_kwargs["page_size"] == 1
-        assert call_kwargs["page_number"] == i + 1
-
-    # Reset the mock for the next test
-    get_cases_mock.reset_mock()
-
-    # Test case 4: No cases to fetch (max_incidents_to_fetch = 0)
-    result = client.get_paginated_cases_list(filter_="test filter", max_incidents_to_fetch=0)
-
-    # Verify that no cases were fetched
-    assert len(result["cases"]) == 0
-
-    # Verify that the underlying method was not called
-    assert get_cases_mock.call_count == 0
-
-
-def test_get_paginated_abusecampaigns_list(mocker):
-    """
-    Test the get_paginated_abusecampaigns_list method to verify:
-    1. It correctly handles pagination
-    2. It respects the max_incidents_to_fetch parameter
-    """
-    # Create client
-    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
-
-    # Create a side effect function for campaigns
-    get_campaigns_side_effect = create_mock_paginator_side_effect("campaign")
-
-    # Mock the underlying get_a_list_of_campaigns_submitted_to_abuse_mailbox_request method
-    get_campaigns_mock = mocker.patch.object(
-        client, "get_a_list_of_campaigns_submitted_to_abuse_mailbox_request", side_effect=get_campaigns_side_effect
-    )
-
-    # Test case 1: Get all campaigns with high limit (max_incidents_to_fetch > existing items)
-    # This should set page_size to the limit (10) but return only as many items as exist
-    result = client.get_paginated_abusecampaigns_list(filter_="test filter", max_incidents_to_fetch=10)
-
-    # Verify the result contains campaigns (the exact count depends on the mock function)
-    assert len(result["campaigns"]) > 0
-
-    # Verify the first call was made with correct parameters
-    assert get_campaigns_mock.call_count >= 1
-    first_call_kwargs = get_campaigns_mock.call_args_list[0][1]
-    assert first_call_kwargs["filter_"] == "test filter"
-    assert first_call_kwargs["page_size"] == 10
-    assert first_call_kwargs["page_number"] == 1
-
-    # Reset the mock for the next test
-    get_campaigns_mock.reset_mock()
-
-    # Test case 2: Limited page size (max_incidents_to_fetch = 2)
-    # With many campaigns available and max_incidents_to_fetch=2, we expect page_size=2
-    # This should result in multiple page calls since there are more campaigns than fit on one page
-    result = client.get_paginated_abusecampaigns_list(filter_="test filter", max_incidents_to_fetch=2)
-
-    # Verify we got campaigns
-    assert len(result["campaigns"]) > 0
-
-    # Verify each page was requested with the correct parameters
-    assert get_campaigns_mock.call_count >= 1
-
-    # Check first call parameters
-    first_call_kwargs = get_campaigns_mock.call_args_list[0][1]
-    assert first_call_kwargs["filter_"] == "test filter"
-    assert first_call_kwargs["page_size"] == 2
-    assert first_call_kwargs["page_number"] == 1
-
-    # If there was a second call, check its parameters
-    if get_campaigns_mock.call_count > 1:
-        second_call_kwargs = get_campaigns_mock.call_args_list[1][1]
-        assert second_call_kwargs["page_size"] == 2
-        assert second_call_kwargs["page_number"] == 2
-
-    # Reset the mock for the next test
-    get_campaigns_mock.reset_mock()
-
-    # Test case 3: One campaign per page (max_incidents_to_fetch = 1)
-    # With many campaigns available and max_incidents_to_fetch=1, we expect page_size=1
-    # This should result in multiple page calls, one per campaign
-    result = client.get_paginated_abusecampaigns_list(filter_="test filter", max_incidents_to_fetch=1)
-
-    # Verify we got campaigns
-    assert len(result["campaigns"]) > 0
-
-    # Verify multiple pages were requested
-    assert get_campaigns_mock.call_count >= 1
-
-    # Check that all calls have the correct page_size
-    for i in range(get_campaigns_mock.call_count):
-        call_kwargs = get_campaigns_mock.call_args_list[i][1]
-        assert call_kwargs["page_size"] == 1
-        assert call_kwargs["page_number"] == i + 1
-
-    # Reset the mock for the next test
-    get_campaigns_mock.reset_mock()
-
-    # Test case 4: No campaigns to fetch (max_incidents_to_fetch = 0)
-    result = client.get_paginated_abusecampaigns_list(filter_="test filter", max_incidents_to_fetch=0)
-
-    # Verify that no campaigns were fetched
-    assert len(result["campaigns"]) == 0
-
-    # Verify that the underlying method was not called
-    assert get_campaigns_mock.call_count == 0
+    assert incident["genaiSummary"] == "genai_summary"
+    assert incident["details"] == "d"
 
 
 def test_search_messages_command(mocker):
@@ -1521,7 +954,7 @@ def test_download_message_eml_command_with_quarantine(mocker):
 )
 def test_is_skippable_error(status_code, expected):
     """Test that _is_skippable_error correctly categorizes errors by response status code."""
-    exc = DemistoException(f"Error in API call [{status_code}]", res=MockResponse(None, status_code))
+    exc = ContentClientError(f"Request failed [{status_code}]", response=httpx.Response(status_code))
     assert _is_skippable_error(exc) == expected
 
 
@@ -1532,232 +965,664 @@ def test_is_skippable_error_no_response():
 
 
 """
-    generate_threat_incidents Error Handling Tests
+    fetch-incidents Tests
 """
 
+FETCH_NOW = datetime(2026, 10, 2, 12, 0, 0, tzinfo=UTC)
+FETCH_START = "2026-10-02T09:00:00Z"
+ALL_TYPES = {"fetch_threats": True, "fetch_abuse_campaigns": True, "fetch_account_takeover_cases": True}
 
-def test_generate_threat_incidents_skips_4xx_error(mocker):
-    """
-    Test that skippable 4xx errors for one threat don't abort processing of other threats.
 
-    When:
-        - Fetching threat details for multiple threats
-        - One threat returns a 404 error (deleted/archived)
-    Then:
-        - The errored threat should be skipped
-        - Other threats should still be processed
-    """
-    valid_threat_response = {
-        "threatId": "valid-threat-id",
-        "messages": [
-            {
-                "threatId": "valid-threat-id",
-                "receivedTime": "2023-09-17T15:00:00Z",
-                "remediationTimestamp": "2023-09-17T15:30:00Z",
-            }
-        ],
+@pytest.fixture
+def api(mocker):
+    mocker.patch("AbnormalSecurity.get_current_datetime", return_value=FETCH_NOW)
+    # ContentClient logs every error response with demisto.error, which prints in tests.
+    mocker.patch.object(demisto, "error")
+    fake = FakeSoarApi(BASE_URL)
+    transport = httpx.MockTransport(fake.handle)
+    mocker.patch.object(ContentClient, "_get_async_client", lambda self: httpx.AsyncClient(transport=transport))
+    return fake
+
+
+def run_fetch(last_run=None, **kwargs):
+    options = {
+        "first_fetch_time": FETCH_START,
+        "fetch_threats": True,
+        "fetch_abuse_campaigns": False,
+        "fetch_account_takeover_cases": False,
+        "polling_lag": timedelta(0),
+        "max_incidents_to_fetch": 200,
+        # Hour-long windows let small fixtures span several windows.
+        "max_window_minutes": 60,
+        # Fast enough not to slow the tests; the limiter itself is tested on its own.
+        "detail_rate_per_second": 1000,
+        **kwargs,
     }
+    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
+    return fetch_incidents(client=client, last_run=last_run or {}, **options)
 
-    def mock_get_details(threat_id, **kwargs):
-        if threat_id == "deleted-threat-id":
-            raise DemistoException("Error in API call [404] - Not Found", res=MockResponse(None, 404))
-        return valid_threat_response
 
-    client = mock_client(mocker, response=None)
-    mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
+def fetch_until_caught_up(last_run=None, max_runs=30, **kwargs):
+    """Runs fetch the way XSOAR does, feeding each run's last_run into the next, until a run returns nothing."""
+    last_run, emitted, all_warnings = last_run or {}, [], []
+    for _ in range(max_runs):
+        last_run, incidents, warnings = run_fetch(last_run, **kwargs)
+        all_warnings.extend(warnings)
+        if not incidents and not any(
+            last_run[k]["failed"] for k in ("threats", "abuse_campaigns", "account_takeover") if k in last_run
+        ):
+            return last_run, emitted, all_warnings
+        emitted.extend(incident["dbotMirrorId"] for incident in incidents)
+    raise AssertionError("fetch never caught up")
 
-    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
-    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
 
-    threats = [
-        {"threatId": "deleted-threat-id"},
-        {"threatId": "valid-threat-id"},
-    ]
+def add_threats(api, count, start="2026-10-02T09:00:00Z", step_minutes=7):
+    base = datetime.strptime(start, ISO_8601_FORMAT).replace(tzinfo=UTC)
+    ids = []
+    for i in range(count):
+        threat_id = f"t-{i:03d}"
+        api.add_threat(threat_id, (base + timedelta(minutes=step_minutes * i)).strftime(ISO_8601_FORMAT))
+        ids.append(threat_id)
+    return ids
 
-    incidents = generate_threat_incidents(client, threats, 1, start_datetime, end_datetime)
+
+def test_fetch_resumes_after_max_fetch(api):
+    """
+    Given 20 threats over 3 hours, more than one run's max_fetch.
+    When fetch runs repeatedly with max_fetch=3.
+    Then every threat becomes exactly one incident, which 2.4.9 lost by moving last_fetch to now.
+    """
+    ids = add_threats(api, 20, step_minutes=9)
+
+    last_run, emitted, warnings = fetch_until_caught_up(max_incidents_to_fetch=3)
+
+    assert sorted(emitted) == ids
+    assert warnings == []
+    assert last_run["threats"]["window_start"] == "2026-10-02T12:00:00Z"
+    assert last_run["last_fetch"] == "2026-10-02T12:00:00Z"
+
+
+def test_fetch_resumes_after_budget_exhausted(api):
+    """
+    Given a fake clock that advances 10s per HTTP call and a 45s budget.
+    When fetch runs.
+    Then it stops early without raising, and the next runs pick up the rest with nothing lost.
+    """
+    ids = add_threats(api, 8)
+    clock = {"now": 0.0}
+
+    def tick(_path):
+        clock["now"] += 10
+
+    api.on_call = tick
+    first_run, incidents, _ = run_fetch(deadline=Deadline(45, clock=lambda: clock["now"]), detail_concurrency=1)
+
+    assert 0 < len(incidents) < len(ids)
+    assert first_run["threats"]["window_start"] == "2026-10-02T09:00:00Z"
+    api.on_call = None
+    _, rest, _ = fetch_until_caught_up(first_run)
+    assert sorted([i["dbotMirrorId"] for i in incidents] + rest) == ids
+
+
+def test_fetch_relisted_window_in_new_order_deduplicates(api):
+    ids = add_threats(api, 6, step_minutes=5)
+    first_run, first, _ = run_fetch(max_incidents_to_fetch=2)
+    api.ascending = True
+
+    _, rest, _ = fetch_until_caught_up(first_run, max_incidents_to_fetch=2)
+
+    emitted = [i["dbotMirrorId"] for i in first] + rest
+    assert sorted(emitted) == ids
+    assert len(emitted) == len(set(emitted))
+
+
+def test_fetch_5xx_on_cases_still_lets_threats_advance(api):
+    add_threats(api, 3)
+    api.add_case("c-1", "2026-10-02T09:30:00Z")
+    api.fail(r"^/cases$", 500)
+
+    last_run, incidents, warnings = run_fetch(**ALL_TYPES)
+
+    assert {i["name"] for i in incidents} == {"Threat"}
+    assert last_run["threats"]["window_start"] == "2026-10-02T12:00:00Z"
+    assert last_run["account_takeover"]["window_start"] == "2026-10-02T09:00:00Z"
+    assert any("account takeover cases failed" in w for w in warnings)
+    _, rest, _ = fetch_until_caught_up(last_run, **ALL_TYPES)
+    assert rest == ["c-1"]
+
+
+@pytest.mark.parametrize("path, status", [(r"^/threats$", 401), (r"^/threats/", 403)])
+def test_fetch_auth_error_commits_nothing(api, path, status):
+    add_threats(api, 2)
+    api.fail(path, status)
+
+    with pytest.raises(AuthError):
+        run_fetch()
+
+
+def test_fetch_404_detail_counts_as_emitted(api):
+    add_threats(api, 2)
+    api.add_threat("t-gone", "2026-10-02T09:01:00Z")
+    api.fail(r"^/threats/t-gone$", 404, times=None)
+
+    last_run, incidents, warnings = run_fetch()
+
+    assert sorted(i["dbotMirrorId"] for i in incidents) == ["t-000", "t-001"]
+    assert last_run["threats"]["window_start"] == "2026-10-02T12:00:00Z"
+    assert warnings == []
+
+
+def test_fetch_retention_400_moves_window_forward_and_warns(api):
+    add_threats(api, 1, start="2026-10-02T10:30:00Z")
+    message = "Dates provided (2026-10-02 09:00:00 to 2026-10-02 10:00:00) are out of accepted data retention range"
+    api.fail(r"^/threats$", 400, body={"message": message})
+
+    _, incidents, warnings = run_fetch()
+
+    assert [i["dbotMirrorId"] for i in incidents] == ["t-000"]
+    assert len(warnings) == 1
+    assert "retention" in warnings[0]
+
+
+def test_fetch_other_400_does_not_skip_window(api):
+    add_threats(api, 1)
+    api.fail(r"^/threats$", 400, body={"message": "bad filter"})
+
+    last_run, incidents, warnings = run_fetch()
+
+    assert incidents == []
+    assert last_run["threats"]["window_start"] == "2026-10-02T09:00:00Z"
+    assert len(warnings) == 1
+
+
+def test_fetch_402_on_cases_skips_account_takeover_cases_and_warns(api):
+    add_threats(api, 1)
+    api.add_case("c-1", "2026-10-02T09:30:00Z")
+    api.fail(r"^/cases$", 402, times=None)
+
+    last_run, incidents, warnings = run_fetch(**ALL_TYPES)
+
+    assert [i["name"] for i in incidents] == ["Threat"]
+    assert warnings == ["Skipped account takeover cases: the tenant isn't licensed for them."]
+    # The window starts over at now, so licensing the tenant later doesn't replay the backlog.
+    assert last_run["account_takeover"]["window_start"] == last_run["account_takeover"]["window_end"] == "2026-10-02T12:00:00Z"
+    assert last_run["last_fetch"] == "2026-10-02T12:00:00Z"
+    api.clear_failures()
+    _, incidents, warnings = run_fetch(last_run, **ALL_TYPES)
+    assert incidents == []
+    assert warnings == []
+
+
+def test_fetch_item_failing_on_three_runs_is_skipped_with_warning(api):
+    """
+    Given one threat whose detail call always returns 500.
+    When fetch runs three times.
+    Then the others become incidents on the first run, the window waits for the bad one,
+    and on the third failure it's skipped with a warning and the window advances.
+    """
+    add_threats(api, 3)
+    api.fail(r"^/threats/t-001$", 500, times=None)
+
+    run_1, incidents_1, warnings_1 = run_fetch()
+    run_2, incidents_2, _ = run_fetch(run_1)
+    run_3, incidents_3, warnings_3 = run_fetch(run_2)
+
+    assert sorted(i["dbotMirrorId"] for i in incidents_1) == ["t-000", "t-002"]
+    assert run_1["threats"]["failed"] == {"t-001": 1}
+    assert run_2["threats"]["failed"] == {"t-001": 2}
+    assert incidents_2 == incidents_3 == []
+    assert warnings_1 == []
+    assert any("t-001" in w and "3 runs" in w for w in warnings_3)
+    assert run_3["threats"]["window_start"] == "2026-10-02T12:00:00Z"
+    assert len(api.detail_calls("threats")) == 3 + 1 + 1
+
+
+def test_fetch_bad_item_does_not_stop_others(api):
+    api.add_case("c-1", "2026-10-02T09:10:00Z")
+    api.add_case("c-2", "2026-10-02T09:20:00Z", firstObserved=None)
+    api.add_case("c-3", "2026-10-02T09:30:00Z")
+
+    last_run, incidents, _ = run_fetch(fetch_threats=False, fetch_account_takeover_cases=True)
+
+    assert sorted(i["dbotMirrorId"] for i in incidents) == ["c-1", "c-3"]
+    assert last_run["account_takeover"]["failed"] == {"c-2": 1}
+
+
+def test_fetch_five_consecutive_failures_stop_the_type(api):
+    add_threats(api, 7)
+    api.add_campaign("a-1", "2026-10-02T09:30:00Z")
+    api.fail(r"^/threats/", 503, times=None)
+
+    last_run, incidents, warnings = run_fetch(fetch_abuse_campaigns=True, detail_concurrency=1)
+
+    assert [i["dbotMirrorId"] for i in incidents] == ["a-1"]
+    assert any("5 failures in a row" in w for w in warnings)
+    assert len(last_run["threats"]["failed"]) == 5
+
+
+def test_fetch_overflow_halves_window_and_saves_new_end(api, mocker):
+    """
+    Given 6 threats in the first hour and a list page size of 2.
+    When fetch runs with max_fetch=1.
+    Then the window is halved until it fits in one page, the halved end is saved, and later runs
+    still emit every threat once.
+    """
+    mocker.patch("AbnormalSecurity.LIST_PAGE_SIZE", 2)
+    ids = add_threats(api, 6, step_minutes=9)
+
+    first_run, incidents, _ = run_fetch(max_incidents_to_fetch=1)
 
     assert len(incidents) == 1
-    assert incidents[0]["dbotMirrorId"] == "valid-threat-id"
+    assert first_run["threats"]["window_end"] < "2026-10-02T10:00:00Z"
+    assert all(int(q["pageSize"]) == 2 and q.get("pageNumber", "1") == "1" for q in api.list_calls("threats"))
+    _, rest, _ = fetch_until_caught_up(first_run, max_incidents_to_fetch=1)
+    assert sorted([incidents[0]["dbotMirrorId"]] + rest) == ids
 
 
-@pytest.mark.parametrize("status_code,reason", [(401, "Unauthorized"), (403, "Forbidden"), (429, "Too Many Requests")])
-def test_generate_threat_incidents_raises_non_skippable_errors(mocker, status_code, reason):
+def test_fetch_partly_drained_window_paginates_instead_of_halving(api, mocker):
+    mocker.patch("AbnormalSecurity.LIST_PAGE_SIZE", 2)
+    add_threats(api, 4, step_minutes=5)
+    last_run = {
+        "version": 2,
+        "threats": {
+            "window_start": "2026-10-02T09:00:00Z",
+            "window_end": "2026-10-02T10:00:00Z",
+            "emitted_ids": ["t-003"],
+            "failed": {},
+        },
+    }
+
+    next_run, incidents, _ = run_fetch(last_run)
+
+    assert sorted(i["dbotMirrorId"] for i in incidents) == ["t-000", "t-001", "t-002"]
+    first_window_calls = api.list_calls("threats")[:2]
+    assert [q.get("pageNumber") for q in first_window_calls] == ["1", "2"]
+    assert all(q["filter"].endswith("lte 2026-10-02T10:00:00Z") for q in first_window_calls)
+    assert next_run["threats"]["window_start"] == "2026-10-02T12:00:00Z"
+
+
+def test_build_list_filter_strings():
+    window = FetchWindow(
+        window_start=datetime(2026, 10, 2, 9, 0, 0, tzinfo=UTC),
+        window_end=datetime(2026, 10, 2, 10, 0, 0, tzinfo=UTC),
+    )
+
+    assert (
+        build_list_filter(THREATS_SPEC, window)
+        == "latestTimeRemediated gte 2026-10-02T09:00:00Z and latestTimeRemediated lte 2026-10-02T10:00:00Z"
+    )
+    assert (
+        build_list_filter(ABUSE_CAMPAIGNS_SPEC, window)
+        == "lastReportedTime gte 2026-10-02T09:00:00Z and lastReportedTime lte 2026-10-02T09:59:59.999999Z"
+    )
+    assert (
+        build_list_filter(ACCOUNT_TAKEOVER_SPEC, window)
+        == "lastModifiedTime gte 2026-10-02T09:00:00Z and lastModifiedTime lte 2026-10-02T09:59:59.999999Z"
+    )
+
+
+def test_fetch_window_boundary_items_land_in_exactly_one_window(api):
+    api.add_threat("t-edge", "2026-10-02T10:00:00Z")
+    api.add_campaign("a-edge", "2026-10-02T10:00:00Z")
+
+    _, emitted, _ = fetch_until_caught_up(fetch_abuse_campaigns=True)
+
+    assert sorted(emitted) == ["a-edge", "t-edge"]
+
+
+def test_fetch_migrates_v1_last_run(api):
     """
-    Test that non-skippable errors (401, 403, 429) are re-raised.
+    Given a 2.4.9 last_run and a 2-minute polling lag.
+    When the new code runs for the first time.
+    Then each window starts where 2.4.9's next run would have started.
     """
+    api.add_threat("t-1", "2026-10-02T10:59:00Z")
 
-    def mock_get_details(threat_id, **kwargs):
-        raise DemistoException(f"Error in API call [{status_code}] - {reason}", res=MockResponse(None, status_code))
+    next_run, incidents, _ = run_fetch(
+        {"last_fetch": "2026-10-02T11:00:00Z"}, polling_lag=timedelta(minutes=2), max_incidents_to_fetch=0
+    )
 
-    client = mock_client(mocker, response=None)
-    mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
-
-    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
-    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
-
-    threats = [{"threatId": "some-threat-id"}]
-
-    with pytest.raises(DemistoException) as exc_info:
-        generate_threat_incidents(client, threats, 1, start_datetime, end_datetime)
-
-    assert str(status_code) in str(exc_info.value)
+    assert next_run["version"] == 2
+    assert next_run["threats"]["window_start"] == "2026-10-02T10:58:00Z"
+    assert next_run["threats"]["window_end"] == "2026-10-02T11:58:00Z"
+    assert next_run["last_fetch"] == "2026-10-02T10:58:00Z"
+    assert "abuse_campaigns" not in next_run
+    assert incidents == []
+    _, incidents, _ = run_fetch(next_run, polling_lag=timedelta(minutes=2))
+    assert [i["dbotMirrorId"] for i in incidents] == ["t-1"]
 
 
-def test_generate_threat_incidents_raises_5xx_errors(mocker):
-    """Test that 5xx errors are re-raised."""
+def test_fetch_writes_oldest_window_start_as_last_fetch_for_rollback(api):
+    add_threats(api, 2)
+    api.add_case("c-1", "2026-10-02T09:30:00Z")
+    api.fail(r"^/cases$", 500)
 
-    def mock_get_details(threat_id, **kwargs):
-        raise DemistoException("Error in API call [500] - Internal Server Error", res=MockResponse(None, 500))
+    next_run, _, _ = run_fetch(**ALL_TYPES)
 
-    client = mock_client(mocker, response=None)
-    mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
-
-    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
-    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
-
-    with pytest.raises(DemistoException) as exc_info:
-        generate_threat_incidents(client, [{"threatId": "id"}], 1, start_datetime, end_datetime)
-
-    assert "500" in str(exc_info.value)
+    assert next_run["last_fetch"] == next_run["account_takeover"]["window_start"] == "2026-10-02T09:00:00Z"
 
 
-def test_generate_threat_incidents_handles_4xx_mid_pagination(mocker):
+def test_fetch_newly_enabled_type_starts_at_now_minus_lag(api):
+    add_threats(api, 1)
+    api.add_campaign("a-old", "2026-10-02T09:30:00Z")
+    api.add_campaign("a-new", "2026-10-02T11:59:30Z")
+    first_run, _, _ = run_fetch()
+    first_run, _, _ = run_fetch(first_run, fetch_abuse_campaigns=False)
+
+    next_run, incidents, _ = run_fetch(first_run, fetch_abuse_campaigns=True, polling_lag=timedelta(minutes=1))
+
+    assert next_run["abuse_campaigns"]["window_start"] == "2026-10-02T11:59:00Z"
+    assert incidents == []
+
+
+def test_fetch_disabled_type_drops_its_window(api):
+    first_run, _, _ = run_fetch(**ALL_TYPES)
+
+    next_run, _, _ = run_fetch(first_run, fetch_abuse_campaigns=False)
+
+    assert "abuse_campaigns" not in next_run
+    assert next_run["last_fetch"] == next_run["threats"]["window_start"]
+
+
+def test_fetch_rotates_which_type_goes_first(api):
+    api.add_threat("t-1", "2026-10-02T09:10:00Z")
+    api.add_threat("t-2", "2026-10-02T09:20:00Z")
+    api.add_campaign("a-1", "2026-10-02T09:10:00Z")
+    api.add_campaign("a-2", "2026-10-02T09:20:00Z")
+
+    run_1, incidents_1, _ = run_fetch(fetch_abuse_campaigns=True, max_incidents_to_fetch=1)
+    _, incidents_2, _ = run_fetch(run_1, fetch_abuse_campaigns=True, max_incidents_to_fetch=1)
+
+    assert [i["name"] for i in incidents_1 + incidents_2] == ["Threat", "Abuse Campaign"]
+
+
+def test_fetch_with_wide_max_window_uses_one_window(api):
+    add_threats(api, 1)
+
+    next_run, incidents, _ = run_fetch(max_window_minutes=10**6)
+
+    assert len(incidents) == 1
+    assert next_run["threats"]["window_start"] == next_run["threats"]["window_end"] == "2026-10-02T12:00:00Z"
+
+
+class _StubHandler(BaseHTTPRequestHandler):
+    """Serves no response at all (`hang`), a body that trickles in a byte at a time (`drip`), a body
+    that trickles in and then stops mid-way (`stall`), or an error whose body trickles in (`error_drip`)."""
+
+    # HTTP/1.1 keeps the connection open, as the SOAR API does, so the client can reach its socket.
+    protocol_version = "HTTP/1.1"
+
+    def log_message(self, *args):
+        pass
+
+    def do_GET(self):
+        try:
+            if self.server.mode == "hang":
+                self.server.release.wait(30)
+                return
+            self.send_response(503 if self.server.mode == "error_drip" else 200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", "100000")
+            self.end_headers()
+            started = time.monotonic()
+            while not self.server.release.wait(0.2):
+                if self.server.mode == "stall" and time.monotonic() - started > 1.5:
+                    continue
+                self.wfile.write(b" ")
+                self.wfile.flush()
+        except OSError:
+            pass
+
+
+@pytest.fixture
+def stub_server():
+    server = ThreadingHTTPServer(("127.0.0.1", 0), _StubHandler)
+    server.daemon_threads = True
+    server.release = threading.Event()
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    yield server
+    server.release.set()
+    server.shutdown()
+    server.server_close()
+
+
+@pytest.mark.parametrize("mode", ["hang", "drip", "stall", "error_drip"])
+def test_fetch_time_budget_bounds_hung_and_slow_responses(stub_server, mode, mocker):
     """
-    Test that skippable 4xx errors during pagination are handled gracefully.
+    Given a server that never responds, sends its body a byte at a time, stops sending mid-body, or
+    sends an error response whose body arrives a byte at a time.
+    When fetch runs with a 4s budget.
+    Then the run stops within the budget and keeps its window, instead of waiting for the server.
     """
+    stub_server.mode = mode
+    mocker.patch("AbnormalSecurity.get_current_datetime", return_value=FETCH_NOW)
+    mocker.patch.object(demisto, "error")
+    client = Client(
+        server_url=f"http://127.0.0.1:{stub_server.server_port}", verify=False, proxy=False, auth=None, headers=headers
+    )
+    started = time.monotonic()
 
-    def mock_get_details(threat_id, **kwargs):
-        if threat_id == "paginating-threat-id":
-            if kwargs.get("page_number", 1) == 1:
-                return {
-                    "threatId": "paginating-threat-id",
-                    "messages": [
-                        {
-                            "threatId": "paginating-threat-id",
-                            "receivedTime": "2023-09-17T15:00:00Z",
-                            "remediationTimestamp": "2023-09-17T15:30:00Z",
-                        }
-                    ],
-                    "nextPageNumber": 2,
-                }
-            else:
-                raise DemistoException("Error in API call [404] - Not Found", res=MockResponse(None, 404))
-        return {
-            "threatId": "valid-threat-id",
-            "messages": [
-                {
-                    "threatId": "valid-threat-id",
-                    "receivedTime": "2023-09-17T16:00:00Z",
-                    "remediationTimestamp": "2023-09-17T16:30:00Z",
-                }
-            ],
+    next_run, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={},
+        first_fetch_time=FETCH_START,
+        fetch_threats=True,
+        fetch_abuse_campaigns=False,
+        fetch_account_takeover_cases=False,
+        fetch_time_budget=4,
+    )
+
+    # A stalled read that kept the socket timeout from the start of the call would end ~1.5s late.
+    assert time.monotonic() - started < 4 + 1
+    assert incidents == []
+    assert next_run["threats"]["window_start"] == "2026-10-02T09:00:00Z"
+
+
+def test_fetch_rate_limit_spaces_http_calls(api):
+    """
+    Given one list call and 4 detail calls, and a limit of 20 requests per second with a burst of 1.
+    When fetch runs with 4 workers.
+    Then the 5 calls take at least 4 intervals of 50ms, however many workers there are.
+    """
+    add_threats(api, 4)
+    started = time.monotonic()
+
+    _, incidents, _ = run_fetch(detail_rate_per_second=20, max_window_minutes=10**6)
+
+    assert len(incidents) == 4
+    assert len(api.calls) == 5
+    assert time.monotonic() - started >= 4 * 0.05
+
+
+def test_fetch_waiting_for_a_rate_token_counts_against_the_budget(api):
+    """
+    Given a limit of one request every 2s and a 3s budget.
+    When fetch runs.
+    Then it stops at the budget while waiting for a token, instead of waiting past it.
+    """
+    add_threats(api, 3)
+    started = time.monotonic()
+
+    next_run, _, _ = run_fetch(detail_rate_per_second=0.5, fetch_time_budget=3, max_window_minutes=10**6, detail_concurrency=1)
+
+    assert time.monotonic() - started < 3 + 1
+    assert len(api.calls) == 2
+    assert next_run["threats"]["window_start"] == "2026-10-02T09:00:00Z"
+
+
+def patch_threat_details(mocker, delay):
+    """Serves threat details after a per-threat delay, to control when each worker finishes."""
+
+    def get_details(self, threat_id, deadline=None, **kwargs):
+        time.sleep(delay(threat_id))
+        remediated = "2026-10-02T09:30:00Z"
+        return {"threatId": threat_id, "messages": [{"receivedTime": remediated, "remediationTimestamp": remediated}]}
+
+    return mocker.patch.object(Client, "get_details_of_a_threat_request", autospec=True, side_effect=get_details)
+
+
+def test_fetch_detail_calls_stay_under_the_worker_cap(api, mocker):
+    add_threats(api, 12, step_minutes=4)
+    lock, in_flight = threading.Lock(), {"now": 0, "max": 0}
+
+    def delay(_threat_id):
+        with lock:
+            in_flight["now"] += 1
+            in_flight["max"] = max(in_flight["max"], in_flight["now"])
+        time.sleep(0.05)
+        with lock:
+            in_flight["now"] -= 1
+        return 0
+
+    patch_threat_details(mocker, delay)
+    _, incidents, _ = run_fetch(detail_concurrency=4, max_window_minutes=10**6)
+
+    assert len(incidents) == 12
+    assert in_flight["max"] == 4
+
+
+def test_fetch_takes_one_rate_token_per_http_call(api, mocker):
+    page = [{"receivedTime": "2026-10-02T09:10:00Z", "remediationTimestamp": "2026-10-02T09:10:00Z"}]
+    api.add_threat("t-paged", "2026-10-02T09:10:00Z", message_pages=[page, page, page])
+    acquire = mocker.spy(TokenBucketRateLimiter, "acquire")
+
+    _, incidents, _ = run_fetch(max_window_minutes=10**6)
+
+    assert len(json.loads(incidents[0]["rawJSON"])["messages"]) == 3
+    assert len(api.detail_calls("threats")) == 3
+    assert acquire.call_count == len(api.calls)
+
+
+def test_fetch_429_mid_batch_keeps_completed_incidents(api):
+    """
+    Given 8 threats where the third one's detail call is rate limited.
+    When fetch runs with 2 workers.
+    Then incidents completed before the 429 are kept, the run stops, the window stays, and the
+    next run emits the rest with no duplicates.
+    """
+    ids = add_threats(api, 8)
+    api.ascending = True
+    api.fail(r"^/threats/t-002$", 429)
+
+    first_run, incidents, warnings = run_fetch(detail_concurrency=2, **ALL_TYPES)
+
+    emitted = [i["dbotMirrorId"] for i in incidents]
+    assert {"t-000", "t-001"} <= set(emitted)
+    assert "t-002" not in emitted
+    assert any("Rate limited" in w for w in warnings)
+    assert first_run["threats"]["window_start"] == "2026-10-02T09:00:00Z"
+    assert api.list_calls("abusecampaigns") == []
+    _, rest, _ = fetch_until_caught_up(first_run)
+    assert sorted(emitted + rest) == ids
+
+
+def test_fetch_output_order_does_not_depend_on_worker_timing(api, mocker):
+    add_threats(api, 10, step_minutes=5)
+    # Earlier items finish last, so completion order is the reverse of list order.
+    patch_threat_details(mocker, lambda threat_id: 0.1 - int(threat_id[2:]) * 0.01)
+
+    _, concurrent, _ = run_fetch(detail_concurrency=4, max_window_minutes=10**6)
+    _, serial, _ = run_fetch(detail_concurrency=1, max_window_minutes=10**6)
+
+    assert [i["dbotMirrorId"] for i in concurrent] == [i["dbotMirrorId"] for i in serial]
+
+
+@pytest.mark.parametrize("mode, expected_incidents", [("created", 1), ("modified", 4)])
+def test_fetch_case_mode_controls_duplicate_incidents_for_modified_cases(api, mocker, mode, expected_incidents):
+    """
+    Given one Account Takeover case that is modified 3 times after it's first fetched.
+    When fetch runs after each modification.
+    Then created-time mode creates one incident, and last-modified mode creates a new one every time.
+    """
+    clock = {"now": FETCH_NOW}
+    mocker.patch("AbnormalSecurity.get_current_datetime", side_effect=lambda: clock["now"])
+    api.add_case("c-1", "2026-10-02T09:10:00Z")
+    options = {"fetch_threats": False, "fetch_account_takeover_cases": True, "case_fetch_mode": mode}
+
+    last_run, incidents, _ = run_fetch(**options)
+    emitted = [i["dbotMirrorId"] for i in incidents]
+    for minutes in (10, 20, 30):
+        api.items["cases"][0]["lastModifiedTime"] = (FETCH_NOW + timedelta(minutes=minutes)).strftime(ISO_8601_FORMAT)
+        clock["now"] = FETCH_NOW + timedelta(minutes=minutes + 5)
+        last_run, incidents, _ = run_fetch(last_run, **options)
+        emitted += [i["dbotMirrorId"] for i in incidents]
+
+    assert emitted == ["c-1"] * expected_incidents
+    assert last_run["account_takeover"]["mode"] == mode
+    field_name = "createdTime" if mode == "created" else "lastModifiedTime"
+    assert all(q["filter"].startswith(f"{field_name} gte") for q in api.list_calls("cases"))
+
+
+def test_fetch_case_mode_change_restarts_window_from_its_start(api):
+    api.add_case("c-1", "2026-10-02T09:10:00Z")
+    last_run = {
+        "version": 2,
+        "account_takeover": {
+            "window_start": "2026-10-02T09:00:00Z",
+            "window_end": "2026-10-02T09:30:00Z",
+            "emitted_ids": ["c-1"],
+            "failed": {"c-2": 1},
+            "mode": "modified",
+        },
+    }
+
+    next_run, incidents, _ = run_fetch(
+        last_run, fetch_threats=False, fetch_account_takeover_cases=True, case_fetch_mode="created", max_incidents_to_fetch=0
+    )
+
+    assert next_run["account_takeover"] == {
+        "window_start": "2026-10-02T09:00:00Z",
+        "window_end": "2026-10-02T10:00:00Z",
+        "emitted_ids": [],
+        "failed": {},
+        "mode": "created",
+    }
+    assert incidents == []
+
+
+def test_fetch_settings_from_params_defaults_for_instances_without_the_new_params():
+    assert fetch_settings_from_params({}) == {
+        "fetch_time_budget": 150,
+        "max_window_minutes": 1440,
+        "detail_concurrency": 4,
+        "detail_rate_per_second": 2.0,
+        "case_fetch_mode": "modified",
+    }
+
+
+def test_fetch_settings_from_params_parses_configured_values():
+    settings = fetch_settings_from_params(
+        {
+            "fetch_time_budget": "100",
+            "max_window_minutes": "120",
+            "detail_concurrency": "2",
+            "detail_rate_per_second": "0.5",
+            "case_fetch_mode": "Created time",
         }
+    )
 
-    client = mock_client(mocker, response=None)
-    mocker.patch.object(client, "get_details_of_a_threat_request", side_effect=mock_get_details)
-
-    start_datetime = datetime(2023, 9, 17, 14, 0, 0, tzinfo=UTC)
-    end_datetime = datetime(2023, 9, 17, 17, 0, 0, tzinfo=UTC)
-
-    threats = [
-        {"threatId": "paginating-threat-id"},
-        {"threatId": "valid-threat-id"},
-    ]
-
-    incidents = generate_threat_incidents(client, threats, 5, start_datetime, end_datetime)
-
-    assert len(incidents) == 1
-    assert incidents[0]["dbotMirrorId"] == "valid-threat-id"
-
-
-"""
-    generate_abuse_campaign_incidents Error Handling Tests
-"""
-
-
-def test_generate_abuse_campaign_incidents_skips_4xx_error(mocker):
-    """Test that skippable 4xx errors skip the campaign and continue."""
-    valid_campaign_response = {
-        "campaignId": "valid-campaign-id",
-        "firstReported": "2023-09-17T15:00:00Z",
+    assert settings == {
+        "fetch_time_budget": 100.0,
+        "max_window_minutes": 120,
+        "detail_concurrency": 2,
+        "detail_rate_per_second": 0.5,
+        "case_fetch_mode": "created",
     }
 
-    def mock_get_campaign(campaign_id, **kwargs):
-        if campaign_id == "deleted-campaign-id":
-            raise DemistoException("Error in API call [404] - Not Found", res=MockResponse(None, 404))
-        return valid_campaign_response
 
-    client = mock_client(mocker, response=None)
-    mocker.patch.object(client, "get_details_of_an_abuse_mailbox_campaign_request", side_effect=mock_get_campaign)
-
-    campaigns = [
-        {"campaignId": "deleted-campaign-id"},
-        {"campaignId": "valid-campaign-id"},
-    ]
-
-    incidents = generate_abuse_campaign_incidents(client, campaigns)
-
-    assert len(incidents) == 1
-    assert incidents[0]["dbotMirrorId"] == "valid-campaign-id"
+@pytest.mark.parametrize("params", [{"detail_concurrency": "0"}, {"detail_rate_per_second": "-1"}, {"case_fetch_mode": "x"}])
+def test_fetch_settings_from_params_rejects_invalid_values(params):
+    with pytest.raises(DemistoException):
+        fetch_settings_from_params(params)
 
 
-def test_generate_abuse_campaign_incidents_raises_non_skippable_errors(mocker):
-    """Test that non-skippable errors (401) are re-raised."""
+def test_fetch_upgrade_from_v1_keeps_last_modified_case_mode(api):
+    next_run, _, _ = run_fetch(
+        {"last_fetch": "2026-10-02T11:00:00Z"},
+        fetch_account_takeover_cases=True,
+        **{k: v for k, v in fetch_settings_from_params({}).items() if k != "detail_rate_per_second"},
+    )
 
-    def mock_get_campaign(campaign_id, **kwargs):
-        raise DemistoException("Error in API call [401] - Unauthorized", res=MockResponse(None, 401))
-
-    client = mock_client(mocker, response=None)
-    mocker.patch.object(client, "get_details_of_an_abuse_mailbox_campaign_request", side_effect=mock_get_campaign)
-
-    with pytest.raises(DemistoException) as exc_info:
-        generate_abuse_campaign_incidents(client, [{"campaignId": "id"}])
-
-    assert "401" in str(exc_info.value)
-
-
-"""
-    generate_account_takeover_cases_incidents Error Handling Tests
-"""
-
-
-def test_generate_account_takeover_cases_incidents_skips_4xx_error(mocker):
-    """Test that skippable 4xx errors skip the case and continue."""
-    valid_case_response = {
-        "caseId": "valid-case-id",
-        "firstObserved": "2023-09-17T15:00:00Z",
-        "genai_summary": "Test summary",
-    }
-
-    def mock_get_case(case_id, **kwargs):
-        if case_id == "deleted-case-id":
-            raise DemistoException("Error in API call [410] - Gone", res=MockResponse(None, 410))
-        return valid_case_response
-
-    client = mock_client(mocker, response=None)
-    mocker.patch.object(client, "get_details_of_an_abnormal_case_request", side_effect=mock_get_case)
-
-    cases = [
-        {"caseId": "deleted-case-id", "description": "Deleted case"},
-        {"caseId": "valid-case-id", "description": "Valid case"},
-    ]
-
-    incidents = generate_account_takeover_cases_incidents(client, cases)
-
-    assert len(incidents) == 1
-    assert incidents[0]["dbotMirrorId"] == "valid-case-id"
-
-
-def test_generate_account_takeover_cases_incidents_raises_non_skippable_errors(mocker):
-    """Test that non-skippable errors (429) are re-raised."""
-
-    def mock_get_case(case_id, **kwargs):
-        raise DemistoException("Error in API call [429] - Too Many Requests", res=MockResponse(None, 429))
-
-    client = mock_client(mocker, response=None)
-    mocker.patch.object(client, "get_details_of_an_abnormal_case_request", side_effect=mock_get_case)
-
-    with pytest.raises(DemistoException) as exc_info:
-        generate_account_takeover_cases_incidents(client, [{"caseId": "id", "description": "test"}])
-
-    assert "429" in str(exc_info.value)
+    assert next_run["account_takeover"]["mode"] == "modified"
+    assert next_run["account_takeover"]["window_start"] == "2026-10-02T12:00:00Z"
+    assert "mode" not in next_run["threats"]
