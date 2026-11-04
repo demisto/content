@@ -1,3 +1,5 @@
+Note: This integration is deprecated. Use the **Google Cloud Platform** integration instead.
+
 Google Cloud Functions is an event-driven serverless compute platform that enables you to run your code locally or in the cloud without having to provision servers.
 This integration was integrated and tested with API version 1 of Google Cloud Functions
 

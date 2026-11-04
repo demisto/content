@@ -32,8 +32,8 @@ configuration:
   type: 8
 
   required: false
-description: Google Cloud Functions is an event-driven serverless compute platform that enables you to run your code locally or in the cloud without having to provision servers.
-display: Google Cloud Functions
+description: Deprecated. Use Google Cloud Platform instead.
+display: Google Cloud Functions (Deprecated)
 name: Google Cloud Functions
 script:
   commands:
@@ -57,6 +57,7 @@ script:
     - contextPath: GoogleCloudFunctions.Function.runtime
       description: The time in which to run the Google Cloud function.
       type: String
+    deprecated: true
   - arguments:
     - description: The project ID the Google Cloud function is in. Default is the instance's project.
       name: project_id
@@ -72,6 +73,7 @@ script:
     - contextPath: GoogleCloudFunctions.Region.labels
       description: The labels for the region.
       type: String
+    deprecated: true
   - arguments:
     - description: The project ID the Google Cloud function is in. Default is the instance's project.
       name: project_id
@@ -95,6 +97,7 @@ script:
     - contextPath: GoogleCloudFunctions.Function.runtime
       description: The time in which to run the Google Cloud function.
       type: String
+    deprecated: true
   - arguments:
     - description: The name of the Google Cloud function to execute.
       name: function_name
@@ -115,6 +118,7 @@ script:
     - contextPath: GoogleCloudFunctions.Execution.error
       description: Either a system or user-function generated error. Set if the execution was not successful.
       type: String
+    deprecated: true
   dockerimage: demisto/google-api-py3:1.0.0.10182333
   runonce: false
   script: '-'
@@ -122,4 +126,5 @@ script:
   subtype: python3
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
+deprecated: true

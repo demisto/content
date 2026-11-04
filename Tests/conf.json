@@ -608,11 +608,6 @@
             "instance_names": "JSON Feed_post"
         },
         {
-            "integrations": "Google Cloud Functions",
-            "playbookID": "test playbook - Google Cloud Functions",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "Plain Text Feed",
             "playbookID": "PlainText Feed - Test",
             "fromversion": "5.5.0",
@@ -2748,11 +2743,6 @@
             "playbookID": "GDPRContactAuthorities Test"
         },
         {
-            "integrations": "Google Resource Manager",
-            "playbookID": "GoogleResourceManager-Test",
-            "timeout": 500
-        },
-        {
             "integrations": "SlashNext Phishing Incident Response",
             "playbookID": "SlashNextPhishingIncidentResponse-Test",
             "timeout": 500
@@ -3365,12 +3355,6 @@
             "integrations": "SecurityAdvisor",
             "playbookID": "SecurityAdvisor-Test",
             "fromversion": "4.5.0"
-        },
-        {
-            "integrations": "Google Key Management Service",
-            "playbookID": "Google-KMS-test",
-            "pid_threshold": 6,
-            "memory_threshold": 60
         },
         {
             "integrations": "SecBI",
@@ -6110,7 +6094,6 @@
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
         "AD v2 - debug-mode - Test": "No credentials",
-        "Google-KMS-test": "No instance",
         "hashicorp_test": "No instance",
         "Google BigQuery Test": "No instance",
         "GCS Object Operations - Test": "No instance",
@@ -6124,7 +6107,6 @@
         "Microsoft Graph Groups - Test prod": "No Working Instance",
         "Microsoft Graph Groups - Test": "No Working Instance",
         "playbook-AzureDevOps-Test": "No Working Instance",
-        "test playbook - Google Cloud Functions": "No Working Instance",
         "playbook-GCP-IAM_Test": "No Working Instance",
         "GoogleCalendar-Test": "No Working Instance",
         "AlexaV2 Test Playbook": "The service is deprecated on Dec 15, 2022",
@@ -6286,7 +6268,6 @@
         "ThreatConnect v2": "unstable instance",
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
-        "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "_comment4": "~~~ OTHER ~~~",
         "Anomali ThreatStream v2": "Will be deprecated soon.",

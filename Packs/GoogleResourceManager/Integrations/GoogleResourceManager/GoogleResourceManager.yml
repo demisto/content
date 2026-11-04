@@ -60,8 +60,8 @@ configuration:
   type: 8
 
   required: false
-description: Google Cloud Platform Resource Manager.
-display: Google Resource Manager
+description: Deprecated. Use Google Cloud Platform instead.
+display: Google Resource Manager (Deprecated)
 name: Google Resource Manager
 script:
   commands:
@@ -132,6 +132,7 @@ script:
     - contextPath: GRM.Project.Parent.Type
       description: Type of the parent resource.
       type: String
+    deprecated: true
   - arguments:
     - defaultValue: ''
       description: The unique ID of the Project to fetch, e.g., tokyo-rain-123.
@@ -165,6 +166,7 @@ script:
     - contextPath: GRM.Project.Parent.Type
       description: Type of the parent resource.
       type: String
+    deprecated: true
   - arguments:
     - defaultValue: ''
       description: |-
@@ -209,6 +211,7 @@ script:
     - contextPath: GRM.Project.Parent.Type
       description: Type of the parent resource.
       type: String
+    deprecated: true
   - arguments:
     - defaultValue: ''
       description: |-
@@ -276,6 +279,7 @@ script:
     - contextPath: GRM.Project.Parent.Type
       description: Type of the parent resource.
       type: String
+    deprecated: true
   - arguments:
     - defaultValue: ''
       description: |-
@@ -306,6 +310,7 @@ script:
     - contextPath: GRM.Organization.Owner.CustomerID
       description: The G Suite customer ID used in the Directory API.
       type: String
+    deprecated: true
   - arguments:
     - defaultValue: ''
       description: The resource name of the Organization to fetch, e.g., "organizations/1234".
@@ -327,6 +332,7 @@ script:
     - contextPath: GRM.Organization.Owner.CustomerID
       description: The G Suite customer ID used in the Directory API.
       type: String
+    deprecated: true
   - arguments:
     - defaultValue: ''
       description: |-
@@ -363,6 +369,7 @@ script:
     - contextPath: GRM.Project.Parent.Type
       description: Type of the parent resource.
       type: String
+    deprecated: true
   - arguments:
     - defaultValue: ''
       description: |-
@@ -398,6 +405,7 @@ script:
     - contextPath: GRM.Project.Parent.Type
       description: Type of the parent resource.
       type: String
+    deprecated: true
   dockerimage: demisto/googleapi-python3:1.0.0.115338
   runonce: false
   script: ''
@@ -405,4 +413,5 @@ script:
   subtype: python3
 fromversion: 5.0.0
 tests:
-- GoogleResourceManager-Test
+- No tests (deprecated)
+deprecated: true

@@ -1,3 +1,5 @@
+Note: This integration is deprecated. Use the **Google Cloud Platform** integration instead.
+
 Use the Google Key Management Service API for CryptoKey management and encrypt/decrypt functionality.
 
 ## Configure Google Key Management Service in Cortex
