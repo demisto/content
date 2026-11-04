@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 import demistomock as demisto
@@ -1362,6 +1363,8 @@ def get_sampled_requests_command(client: "WAFV2Client", args: dict) -> CommandRe
     table_data = []
     for req in sampled_requests:
         request_info = req.get("Request", {})
+        if isinstance(req.get("Timestamp"), datetime):
+            req["Timestamp"] = req["Timestamp"].isoformat()
         table_data.append(
             {
                 "Action": req.get("Action"),
@@ -1372,6 +1375,11 @@ def get_sampled_requests_command(client: "WAFV2Client", args: dict) -> CommandRe
                 "Timestamp": req.get("Timestamp"),
             }
         )
+
+    time_window = response.get("TimeWindow", {})
+    for key in ("StartTime", "EndTime"):
+        if isinstance(time_window.get(key), datetime):
+            time_window[key] = time_window[key].isoformat()
 
     readable_output = tableToMarkdown(
         f"Sampled Requests (Population Size: {response.get('PopulationSize', 0)})",
