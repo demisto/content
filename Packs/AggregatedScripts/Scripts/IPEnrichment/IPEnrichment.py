@@ -144,6 +144,10 @@ def ip_enrichment_script(
 
 
 def main():
+    if is_xdr_tenant():
+        return_results(CommandResults(readable_output="IPEnrichment is not supported on Cortex XDR tenants."))
+        return
+
     args = demisto.args()
     ip_list = argToList(args.get("ip_list"))
     external_enrichment = argToBoolean(args.get("external_enrichment", False))

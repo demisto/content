@@ -1487,6 +1487,22 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
 """HELPER FUNCTIONS"""
 
+XDR_PLATFORM_MODULES = {"x0"}
+
+
+def is_xdr_tenant() -> bool:
+    """
+    Determines whether the script is running on a Cortex XDR tenant (unified platform, XDR module).
+    Shared utility for the aggregated scripts; not used by this module's own logic.
+
+    Returns:
+        bool: True if running on the unified platform with an XDR module, False otherwise.
+    """
+    version_info = demisto.demistoVersion() or {}
+    demisto.debug(f"Version info: {version_info}")
+    module = (version_info.get("module") or "").lower()
+    return is_platform() and module in XDR_PLATFORM_MODULES
+
 
 def build_hash_dict(value: str | None) -> dict[str, str]:
     """

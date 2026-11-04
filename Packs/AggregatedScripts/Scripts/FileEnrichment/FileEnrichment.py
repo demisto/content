@@ -141,6 +141,10 @@ def file_enrichment_script(
 
 
 def main():  # pragma: no cover
+    if is_xdr_tenant():
+        return_results(CommandResults(readable_output="FileEnrichment is not supported on Cortex XDR tenants."))
+        return
+
     args = demisto.args()
     file_list = argToList(args.get("file_hash"))
     external_enrichment = argToBoolean(args.get("external_enrichment", False))

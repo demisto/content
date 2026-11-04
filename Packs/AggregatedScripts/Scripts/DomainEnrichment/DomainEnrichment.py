@@ -122,6 +122,10 @@ def domain_enrichment_script(
 
 
 def main():  # pragma: no cover
+    if is_xdr_tenant():
+        return_results(CommandResults(readable_output="DomainEnrichment is not supported on Cortex XDR tenants."))
+        return
+
     args = demisto.args()
     domain_list = argToList(args.get("domain_list"))
     external_enrichment = argToBoolean(args.get("external_enrichment", False))
