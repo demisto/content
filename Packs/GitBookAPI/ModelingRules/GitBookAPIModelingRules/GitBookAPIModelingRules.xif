@@ -1,0 +1,678 @@
+// SPDX-FileCopyrightText: GoCortexIO
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//
+// Generated via
+// GOCORTEX_SKILLS_MODEL="claude-opus-5"
+// GOCORTEX_SKILLS_SKILL_NAME="cortex-platform-xdm-author"
+// GOCORTEX_SKILLS_SKILL_VERSION="1.8.19"
+// GOCORTEX_SKILLS_SKILL_WARNING_COUNT="0"
+// GOCORTEX_SKILLS_SOURCE_BASIS="spec-backed"
+//
+// VENDOR:  gitbook
+// PRODUCT: invites
+// DATASET: gitbook_invites_raw
+//
+// Tenant-adjustable: xdm.observer.vendor, xdm.observer.product, [MODEL: dataset=...].
+//
+// A GitBook link invite is a STANDING URL that grants entry to an organisation, a space
+// or a collection. Anyone holding the URL can redeem it, it names no recipient, and it
+// keeps working until somebody revokes it. The record is therefore a live access path
+// rather than a report of something that happened, and the field that matters most is
+// the role it confers: an invite carrying the administrator role is a URL that makes its
+// holder an organisation administrator.
+//
+// This is a SNAPSHOT feed. The GitBook API exposes no audit log, so nothing here names an
+// actor, a source address or a creation author, and no such field is invented. A change
+// is found by comparing one snapshot against the next.
+//
+// EVENT FIELD MAPPING
+//   id                  -> xdm.event.id
+//   object              -> xdm.target.resource.type
+//   role                -> xdm.target.resource.sub_type
+//   invite_target       -> xdm.target.resource.value
+//   organization_id     -> xdm.target.resource.parent_id
+//   source_log_type     -> xdm.event.type
+//   (derived)           -> xdm.event.description
+//   (constant)          -> xdm.observer.vendor, xdm.observer.product
+//   (constant)          -> xdm.event.tags = EVENT_TAG_SAAS
+//
+// NOTES
+//   NO STORY IS CLAIMED. The record carries no actor and no network peer, so it is
+//   neither an authentication event nor a network event, and tagging it as either would
+//   promise fields that cannot be filled. It is SaaS posture, which the SAAS tag states
+//   honestly on its own.
+//
+//   xdm.event.operation is deliberately UNSET. The record describes a standing state
+//   rather than an action, so no verb in OPERATION_TYPE_* is true of it. The same applies
+//   to xdm.event.outcome: nothing here succeeded or failed.
+//
+//   role is kept as free text in a String field rather than mapped onto
+//   xdm.auth.privilege_level. That field is const-typed, GitBook's roles do not correspond
+//   to its members, and forcing them onto it would assert a privilege model the source
+//   does not use. Keeping the vendor value means a role GitBook adds later still arrives.
+//
+//   THE SIGN-IN METHOD IS A FIELD, NOT ONLY PROSE. An earlier version of this rule read
+//   sso only to build the description sentence, which left the one question worth asking of
+//   a privileged account, whether it authenticates through the identity provider or with a
+//   credential the provider does not control, impossible to filter on. A value a detection
+//   must select on has to reach a field: prose cannot be queried.
+//
+//   IDENTITY_TYPE and USER_TYPE were both considered and REJECTED for it. Their members
+//   describe what KIND of principal an account is, builtin or machine or regular, and none
+//   of them says how that principal proves who it is. Forcing the sign-in method onto one
+//   would assert a principal class the source never stated.
+//
+// NOT MAPPED
+//   redundant           -- CALLER-RELATIVE, not a property of the invite. The API defines
+//                          it as true when the REQUESTING user already holds the necessary
+//                          permissions, so it describes the token that collected the record.
+//                          Collected under an administrator token it reads true for every
+//                          invite, and mapping it would put a fact about the collector into
+//                          a field a reader would take as a fact about the invite.
+//   is_privileged_role  -- a convenience boolean the collector derives from role. It is
+//                          fully recoverable from xdm.target.resource.sub_type, so mapping
+//                          it would store the same fact twice and let the two disagree.
+//   snapshot_at         -- the collection time, already carried by _time.
+//
+// REVIEW UNMODELLED
+//   datamodel dataset = gitbook_invites_raw
+//   | filter xdm.event.original_event_type = "GOCORTEX_UNMODELLED"
+//   | comp count() as n by object, invite_target, role
+//
+// RAISE SKILL ISSUES -- if this rule mis-modelled something, please open
+// an issue and include the REVIEW UNMODELLED output above:
+//   https://github.com/gocortexio/skills/issues
+
+[MODEL: dataset = gitbook_invites_raw]
+// The null guard is on id, NOT on _raw_log. This collector sends structured events, so the
+// platform stores typed top-level columns and leaves _raw_log NULL on every record. The
+// usual "filter _raw_log != null" guard would therefore discard the entire dataset.
+filter
+    id != null
+| alter
+    tmp_id           = id,
+    tmp_object       = object,
+    tmp_role         = role,
+    tmp_target       = invite_target,
+    tmp_org          = organization_id,
+    tmp_log_type     = source_log_type
+| alter
+    xdm.observer.vendor  = "gitbook",
+    xdm.observer.product = "invites",
+    xdm.event.id         = tmp_id,
+    xdm.event.type       = coalesce(tmp_log_type, "link_invite"),
+    xdm.event.original_event_type = if(tmp_role != null, concat("invite_", tmp_role), "GOCORTEX_UNMODELLED"),
+    xdm.event.tags       = arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+    xdm.target.resource.type      = tmp_object,
+    xdm.target.resource.sub_type  = tmp_role,
+    xdm.target.resource.value     = tmp_target,
+    xdm.target.resource.parent_id = tmp_org,
+    xdm.event.description = concat(
+        "GitBook link invite granting ", coalesce(tmp_role, "an unstated role"),
+        " to the ", coalesce(tmp_target, "unstated"),
+        " ", coalesce(tmp_org, "unknown"));
+
+// ---------------------------------------------------------------------------
+//
+// Generated via
+// GOCORTEX_SKILLS_MODEL="claude-opus-5"
+// GOCORTEX_SKILLS_SKILL_NAME="cortex-platform-xdm-author"
+// GOCORTEX_SKILLS_SKILL_VERSION="1.8.19"
+// GOCORTEX_SKILLS_SKILL_WARNING_COUNT="0"
+// GOCORTEX_SKILLS_SOURCE_BASIS="spec-backed"
+//
+// VENDOR:  gitbook
+// PRODUCT: members
+// DATASET: gitbook_members_raw
+//
+// Tenant-adjustable: xdm.observer.vendor, xdm.observer.product, [MODEL: dataset=...].
+//
+// A GitBook organisation member is a ROSTER ENTRY describing the standing access one
+// person holds. It states the role they hold, whether their membership is disabled,
+// whether they can sign in through single sign-on, and when they were last active. That
+// is the access story for a person, and the role is the field that carries the weight:
+// a member holding the administrator role can create and delete spaces at will.
+//
+// This is a SNAPSHOT feed. The GitBook API exposes no audit log, so nothing here names an
+// actor, a source address or a granting author, and no such field is invented. A change
+// of role, or an account falling dormant, is found by comparing one snapshot to the next.
+//
+// EVENT FIELD MAPPING
+//   id                  -> xdm.event.id
+//   object              -> xdm.target.resource.type
+//   role                -> xdm.target.resource.sub_type, xdm.source.user.roles
+//   organization_id     -> xdm.target.resource.parent_id
+//   user_id             -> xdm.source.user.identifier
+//   user_displayName    -> xdm.source.user.username
+//   user_email          -> xdm.source.user.upn
+//   disabled            -> xdm.source.user.is_disabled
+//   sso                 -> xdm.target.resource.value (as the sign-in method)
+//   source_log_type     -> xdm.event.type
+//   (derived)           -> xdm.event.original_event_type, xdm.event.description
+//   (constant)          -> xdm.observer.vendor, xdm.observer.product
+//   (constant)          -> xdm.event.tags = EVENT_TAG_SAAS
+//
+// NOTES
+//   NOT AN AUTHENTICATION EVENT, despite naming a person. This is the tempting mis-read:
+//   the record carries a human identity and an sso flag, so it profiles as authentication,
+//   but NOBODY AUTHENTICATED HERE. It is a roster entry describing standing access. The
+//   authentication story's mandatory set cannot be filled, because there is no login, no
+//   outcome and no source, so claiming the story would promise downstream content fields
+//   that nothing can populate. The person is still mapped to xdm.source.user.*, because
+//   the record genuinely identifies them, and the event is tagged SAAS, which is what it
+//   honestly is.
+//
+//   xdm.event.operation is deliberately UNSET. The record describes a standing state
+//   rather than an action, so no verb in OPERATION_TYPE_* is true of it. The same applies
+//   to xdm.event.outcome: nothing here succeeded or failed.
+//
+//   role is written to TWO fields on purpose, and this is not the duplication the
+//   NOT MAPPED block rejects below. xdm.target.resource.sub_type carries it for parity
+//   with the invites rule above, so one filter over sub_type answers "what holds the
+//   administrator role in this organisation" across BOTH the people and the standing
+//   invite URLs; a person-only mapping would silently omit every human from that answer.
+//   xdm.source.user.roles carries it for the identity-side query that starts from a
+//   person. Both are assigned from the same tmp_role in the same stage, so they cannot
+//   drift apart. Contrast is_privileged_role below, which re-encodes the same fact more
+//   coarsely and answers no question the role itself cannot.
+//
+//   role is kept as free text rather than mapped onto xdm.auth.privilege_level, for the
+//   reason given in the invites rule above: that field is const-typed and GitBook's roles
+//   do not correspond to its members. A null role is not unmodelled -- the API defines the
+//   role as null FOR GUESTS, so the absent role is itself the classification.
+//
+// NOT MAPPED
+//   sso                 -- no XDM home. The nearest field is xdm.auth.auth_method, which
+//                          describes the method used BY an authentication; this record
+//                          reports no authentication, so filling it would assert a login
+//                          that never happened. The capability is stated in the
+//                          description instead, where an unhomed fact may honestly sit.
+//   uses_sso            -- a convenience boolean the collector derives from sso. Mapping
+//                          the derived copy cannot rescue the fact, because the field it
+//                          derives from has no XDM home either.
+//   is_privileged_role  -- a convenience boolean the collector derives from role. It is
+//                          fully recoverable from xdm.target.resource.sub_type, so mapping
+//                          it would store the same fact twice and let the two disagree,
+//                          and it would additionally freeze the collector's opinion of
+//                          which roles count as privileged into the modelled record.
+//   lastSeenAt          -- last-active time, and genuinely wanted. Checked against the
+//   joinedAt               COMPLETE set of Timestamp-typed XDM fields, which covers agent
+//                          installation, host boot and email delivery only. XDM carries no
+//                          timestamp for a user's activity or tenure, so both are left
+//                          visible in the raw columns rather than bent onto a field that
+//                          means something else.
+//   spaces              -- counts of the content and groups the member can reach. XDM has
+//   teams                  no numeric field for access breadth, and the scoring fields
+//   sites                  (xdm.alert.severity, xdm.alert.risks) mean risk, not reach.
+//   snapshot_at         -- the collection time, already carried by _time.
+//
+// REVIEW UNMODELLED
+//   datamodel dataset = gitbook_members_raw
+//   | filter xdm.event.original_event_type = "GOCORTEX_UNMODELLED"
+//   | comp count() as n by object, role
+//
+// RAISE SKILL ISSUES -- if this rule mis-modelled something, please open
+// an issue and include the REVIEW UNMODELLED output above:
+//   https://github.com/gocortexio/skills/issues
+
+[MODEL: dataset = gitbook_members_raw]
+// The null guard is on id, NOT on _raw_log. This collector sends structured events, so the
+// platform stores typed top-level columns and leaves _raw_log NULL on every record. The
+// usual "filter _raw_log != null" guard would therefore discard the entire dataset.
+filter
+    id != null
+| alter
+    tmp_id           = id,
+    tmp_object       = object,
+    tmp_role         = role,
+    tmp_disabled     = disabled,
+    tmp_sso          = sso,
+    tmp_user_id      = user_id,
+    tmp_user_name    = user_displayName,
+    tmp_user_email   = user_email,
+    tmp_org          = organization_id,
+    tmp_log_type     = source_log_type
+| alter
+    tmp_access       = if(to_boolean(tmp_disabled) = true, "disabled",
+                          to_boolean(tmp_disabled) = false, "active",
+                          "of unstated state"),
+    tmp_signin       = if(to_boolean(tmp_sso) = true, "single sign-on",
+                          to_boolean(tmp_sso) = false, "GitBook credentials",
+                          "an unstated method"),
+    tmp_role_label   = if(tmp_role != null, tmp_role,
+                          tmp_object != null, "guest",
+                          "unstated")
+| alter
+    xdm.observer.vendor  = "gitbook",
+    xdm.observer.product = "members",
+    xdm.event.id         = tmp_id,
+    xdm.event.type       = coalesce(tmp_log_type, "member"),
+    xdm.event.original_event_type = if(tmp_role != null, concat("member_", tmp_role),
+                                       tmp_object != null, "member_guest",
+                                       "GOCORTEX_UNMODELLED"),
+    xdm.event.tags       = arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+    xdm.target.resource.type      = tmp_object,
+    xdm.target.resource.sub_type  = tmp_role,
+    xdm.target.resource.value     = tmp_signin,
+    xdm.target.resource.parent_id = tmp_org,
+    xdm.source.user.identifier  = tmp_user_id,
+    xdm.source.user.username    = tmp_user_name,
+    xdm.source.user.upn         = tmp_user_email,
+    xdm.source.user.is_disabled = to_boolean(tmp_disabled),
+    xdm.source.user.roles       = if(tmp_role != null, arraycreate(tmp_role), null),
+    xdm.event.description = concat(
+        "GitBook membership granting the ", tmp_role_label,
+        " role in organisation ", coalesce(tmp_org, "unknown"),
+        ", access is ", tmp_access,
+        ", sign-in via ", tmp_signin);
+
+// ---------------------------------------------------------------------------
+//
+// Generated via
+// GOCORTEX_SKILLS_MODEL="claude-opus-5"
+// GOCORTEX_SKILLS_SKILL_NAME="cortex-platform-xdm-author"
+// GOCORTEX_SKILLS_SKILL_VERSION="1.8.19"
+// GOCORTEX_SKILLS_SKILL_WARNING_COUNT="0"
+// GOCORTEX_SKILLS_SOURCE_BASIS="spec-backed"
+//
+// VENDOR:  gitbook
+// PRODUCT: sites
+// DATASET: gitbook_sites_raw
+//
+// Tenant-adjustable: xdm.observer.vendor, xdm.observer.product, [MODEL: dataset=...].
+//
+// A GitBook site is the PUBLIC FACE of the documentation, the surface through which an
+// organisation's spaces are served to readers. TWO SETTINGS DECIDE TOGETHER whether
+// internal material is reachable from the internet, and they are NOT the same thing.
+// visibility names the AUDIENCE admitted: anyone with the site indexed by search
+// engines, anyone with it unindexed, anyone holding a secret URL, or a visitor
+// authenticated by token. published says whether the site is LIVE AT ALL. A site
+// configured public but not yet published is not reachable, and a published site is
+// reachable by exactly the audience visibility names, so the pair is kept as TWO
+// separate mapped fields. Collapsing them into a single notion of exposure would leave
+// a query unable to tell a site that is live and open from one merely configured to be
+// open, and the distance between those two states is precisely where a site about to
+// become readable sits.
+//
+// This is a SNAPSHOT feed. The GitBook API exposes no audit log, so nothing here names an
+// actor, a source address or a publishing author, and no such field is invented. A site
+// being published, or its audience widening, is found by comparing one snapshot to the next.
+//
+// EVENT FIELD MAPPING
+//   id                  -> xdm.event.id
+//   object              -> xdm.target.resource.type
+//   title               -> xdm.target.resource.name
+//   visibility          -> xdm.target.resource.sub_type
+//   published           -> xdm.target.resource.value
+//   organization_id     -> xdm.target.resource.parent_id
+//   urls_app            -> xdm.target.url
+//   source_log_type     -> xdm.event.type
+//   (derived)           -> xdm.event.original_event_type, xdm.event.description
+//   (constant)          -> xdm.observer.vendor, xdm.observer.product
+//   (constant)          -> xdm.event.tags = EVENT_TAG_SAAS
+//
+// NOTES
+//   NO STORY IS CLAIMED. The record carries no actor and no network peer, so it is
+//   neither an authentication event nor a network event, and tagging it as either would
+//   promise fields that cannot be filled. It is SaaS posture, which the SAAS tag states
+//   honestly on its own. The URL below does not change that: a site address is a property
+//   of the resource, not a connection somebody made.
+//
+//   xdm.event.operation is deliberately UNSET. The record describes a standing state
+//   rather than an action, so no verb in OPERATION_TYPE_* is true of it. The same applies
+//   to xdm.event.outcome: nothing here succeeded or failed. In particular, published is a
+//   SETTING and not a completed publish action, so it is not an outcome.
+//
+//   THE TWO EXPOSURE SETTINGS GET SEPARATE FIELDS, and the choice of field follows what
+//   each one is. visibility goes to xdm.target.resource.sub_type because it classifies the
+//   site itself, which keeps the parity the invites and members rules above already have:
+//   one filter over sub_type answers "what does this record admit" across the standing
+//   invite URLs, the people, and now the published surfaces. published goes to
+//   xdm.target.resource.value as its own live-state label, so a query can ask for sites
+//   that are open AND live by naming both fields, and can still ask either question alone.
+//   Neither field is derived from the other, and neither is written from the other.
+//
+//   xdm.target.url is the site's location in the GitBook APPLICATION, which is the console
+//   address an administrator opens. It is NOT the address a reader reaches. The API carries
+//   the published address as a separate URL that exists only once a site is published, and
+//   the collector does not send it, so nothing in this rule should be read as the site's
+//   public address.
+//
+// NOT MAPPED
+//   type                -- the site's commercial plan tier, and appliedType the tier
+//   appliedType            actually in force once a frozen site falls back to a lower one.
+//                          XDM has no field for a subscription tier, and neither value says
+//                          anything about who may read the site, so mapping one onto
+//                          xdm.target.resource.sub_type would displace the audience setting
+//                          that field exists here to carry.
+//   is_publicly_visible -- a convenience boolean the collector derives from visibility
+//                          alone. It is fully recoverable from xdm.target.resource.sub_type,
+//                          and worse, it answers the WRONG question: reachability needs
+//                          published as well, so a reader taking this field at face value
+//                          would read a site configured open but not yet live as though it
+//                          were already on the internet.
+//   permission_*        -- SIX CALLER-RELATIVE booleans (view, access, admin,
+//                          installIntegration, viewAdaptiveSchema, editAdaptiveSchema), and
+//                          NOT properties of the site. The API defines each as "can the USER
+//                          ...", about the user behind the token that collected the record,
+//                          so collected under an administrator token they read true for
+//                          every site. Mapping one would put a fact about the COLLECTOR into
+//                          a field a reader would take as a fact about the site.
+//   defaultLevel        -- the default access level applied to content within the site, which
+//                          the API defines as a member role or the literal inherit. The
+//                          resource entity offers ONE sub_type, and it carries visibility
+//                          because visibility is what decides the site's audience. Folding a
+//                          second, differently scoped access notion into the same field would
+//                          leave a filter over sub_type unable to say which of the two it
+//                          had matched.
+//   basename            -- the slug the site publishes under. The resource entity carries one
+//                          name, already holding the human title, and a slug is not a second
+//                          name for the same thing.
+//   siteSpaces          -- how many spaces the site serves. XDM has no numeric field for
+//                          content breadth, and the scoring fields (xdm.alert.severity,
+//                          xdm.alert.risks) mean risk, not reach.
+//   createdAt           -- creation time, and genuinely wanted. Checked against the COMPLETE
+//                          set of Timestamp-typed XDM fields, which covers agent installation,
+//                          host boot and email delivery only. XDM carries no timestamp for a
+//                          resource's creation, so it is left visible in the raw columns
+//                          rather than bent onto a field that means something else.
+//   icon                -- the site favicon. Presentation, with nothing to say about access.
+//   snapshot_at         -- the collection time, already carried by _time.
+//
+// REVIEW UNMODELLED
+//   datamodel dataset = gitbook_sites_raw
+//   | filter xdm.event.original_event_type = "GOCORTEX_UNMODELLED"
+//   | comp count() as n by object, visibility, published
+//
+// RAISE SKILL ISSUES -- if this rule mis-modelled something, please open
+// an issue and include the REVIEW UNMODELLED output above:
+//   https://github.com/gocortexio/skills/issues
+
+[MODEL: dataset = gitbook_sites_raw]
+// The null guard is on id, NOT on _raw_log. This collector sends structured events, so the
+// platform stores typed top-level columns and leaves _raw_log NULL on every record. The
+// usual "filter _raw_log != null" guard would therefore discard the entire dataset.
+filter
+    id != null
+| alter
+    tmp_id           = id,
+    tmp_object       = object,
+    tmp_title        = title,
+    tmp_visibility   = visibility,
+    tmp_published    = published,
+    tmp_url          = urls_app,
+    tmp_org          = organization_id,
+    tmp_log_type     = source_log_type
+| alter
+    tmp_live         = if(to_boolean(tmp_published) = true, "published",
+                          to_boolean(tmp_published) = false, "not published",
+                          "of unstated publication state")
+| alter
+    xdm.observer.vendor  = "gitbook",
+    xdm.observer.product = "sites",
+    xdm.event.id         = tmp_id,
+    xdm.event.type       = coalesce(tmp_log_type, "site"),
+    xdm.event.original_event_type = if(tmp_visibility != null, concat("site_", tmp_visibility),
+                                       "GOCORTEX_UNMODELLED"),
+    xdm.event.tags       = arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+    xdm.target.resource.type      = tmp_object,
+    xdm.target.resource.name      = tmp_title,
+    xdm.target.resource.sub_type  = tmp_visibility,
+    xdm.target.resource.value     = tmp_live,
+    xdm.target.resource.parent_id = tmp_org,
+    xdm.target.url                = tmp_url,
+    xdm.event.description = concat(
+        "GitBook site ", coalesce(tmp_title, "untitled"),
+        " in organisation ", coalesce(tmp_org, "unknown"),
+        ", audience ", coalesce(tmp_visibility, "unstated"),
+        ", the site is ", tmp_live);
+
+// ---------------------------------------------------------------------------
+//
+// Generated via
+// GOCORTEX_SKILLS_MODEL="claude-opus-5"
+// GOCORTEX_SKILLS_SKILL_NAME="cortex-platform-xdm-author"
+// GOCORTEX_SKILLS_SKILL_VERSION="1.8.19"
+// GOCORTEX_SKILLS_SKILL_WARNING_COUNT="0"
+// GOCORTEX_SKILLS_SOURCE_BASIS="spec-backed"
+//
+// VENDOR:  gitbook
+// PRODUCT: installations
+// DATASET: gitbook_installations_raw
+//
+// Tenant-adjustable: xdm.observer.vendor, xdm.observer.product, [MODEL: dataset=...].
+//
+// An installation is THIRD-PARTY CODE holding standing access to documentation content.
+// The scopes are the whole record: they state what that third party may do, and the
+// difference between reading content and writing it, or injecting script into a published
+// site, is the difference between a reader and a publisher on your own documentation.
+//
+// This is a SNAPSHOT feed. The GitBook API exposes no audit log, so nothing here names who
+// installed the integration or when they approved it, and no such field is invented.
+//
+// EVENT FIELD MAPPING
+//   id                      -> xdm.event.id
+//   integration_title       -> xdm.target.resource.name
+//   integration_name        -> xdm.target.resource.sub_type
+//   integration_scopes      -> xdm.target.resource.value
+//   organization_id         -> xdm.target.resource.parent_id
+//   urls_app                -> xdm.target.url
+//   source_log_type         -> xdm.event.type
+//   (derived)               -> xdm.event.original_event_type, xdm.event.description
+//   (constant)              -> xdm.observer.vendor, xdm.observer.product
+//   (constant)              -> xdm.event.tags = EVENT_TAG_SAAS
+//
+// NOTES
+//   NO STORY IS CLAIMED. An integration is not a person and nothing here authenticated, so
+//   the record is neither an authentication event nor a network event. It is SaaS supply
+//   chain, which the SAAS tag states honestly on its own.
+//
+//   THE SCOPES GO IN A FIELD, NOT ONLY IN THE DESCRIPTION. They are the one value a rule
+//   must filter on, and a scope list buried in prose cannot be filtered without parsing it.
+//   The vendor sends them as a comma-joined string and they are kept that way, so a rule
+//   asks with contains rather than depending on an order the API does not promise.
+//
+//   xdm.event.operation and xdm.event.outcome are deliberately UNSET. The record describes
+//   an installation that stands, not an act of installing, so no OPERATION_TYPE_* verb is
+//   true of it and nothing succeeded or failed.
+//
+// NOT MAPPED
+//   can_write_content   -- convenience booleans the collector derives from the scope list.
+//   can_inject_script      Both are fully recoverable from xdm.target.resource.value, so
+//                          mapping them would store the same fact twice and let the two
+//                          disagree once GitBook adds a scope neither derivation knows.
+//   integration_owner_id -- the PUBLISHER of the integration, which is a real and useful
+//   integration_owner_title  fact with no XDM home: the resource entity carries one name,
+//                          already holding the integration itself, and the user and host
+//                          entities describe neither a publisher nor a vendor.
+//   integration_verified -- whether GitBook vetted the publisher. A marketplace assurance
+//                          rather than a property of this installation, and XDM has no
+//                          field for a third party's assurance of another third party.
+//   integration_version  -- the version installed. XDM's version fields belong to hosts and
+//                          agents, not to a SaaS integration.
+//   external_ids         -- the identifier the integration holds in ITS OWN system, such as
+//                          a chat workspace. Genuinely useful for pivoting, and deliberately
+//                          left in the raw column rather than bent onto a resource field
+//                          that means something in GitBook.
+//   status               -- the installation lifecycle state. Kept raw; the resource entity
+//   site_selection          offers one sub_type and it carries the integration identity, so
+//   space_selection         a second classification would leave a filter over sub_type
+//   spaces                  unable to say which notion it had matched.
+//   createdAt, updatedAt -- XDM carries no timestamp for a resource's creation or change.
+//   snapshot_at          -- the collection time, already carried by _time.
+//
+// REVIEW UNMODELLED
+//   datamodel dataset = gitbook_installations_raw
+//   | filter xdm.event.original_event_type = "GOCORTEX_UNMODELLED"
+//   | comp count() as n by integration_name, integration_scopes
+//
+// RAISE SKILL ISSUES -- if this rule mis-modelled something, please open
+// an issue and include the REVIEW UNMODELLED output above:
+//   https://github.com/gocortexio/skills/issues
+
+[MODEL: dataset = gitbook_installations_raw]
+// The null guard is on id, NOT on _raw_log. This collector sends structured events, so the
+// platform stores typed top-level columns and leaves _raw_log NULL on every record. The
+// usual "filter _raw_log != null" guard would therefore discard the entire dataset.
+filter
+    id != null
+| alter
+    tmp_id        = id,
+    tmp_title     = integration_title,
+    tmp_name      = integration_name,
+    tmp_scopes    = integration_scopes,
+    tmp_org       = organization_id,
+    tmp_url       = urls_app,
+    tmp_log_type  = source_log_type
+| alter
+    xdm.observer.vendor  = "gitbook",
+    xdm.observer.product = "installations",
+    xdm.event.id         = tmp_id,
+    xdm.event.type       = coalesce(tmp_log_type, "installation"),
+    xdm.event.original_event_type = if(tmp_name != null, concat("installation_", tmp_name),
+                                       "GOCORTEX_UNMODELLED"),
+    xdm.event.tags       = arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+    xdm.target.resource.type      = "installation",
+    xdm.target.resource.name      = tmp_title,
+    xdm.target.resource.sub_type  = tmp_name,
+    xdm.target.resource.value     = tmp_scopes,
+    xdm.target.resource.parent_id = tmp_org,
+    xdm.target.url                = tmp_url,
+    xdm.event.description = concat(
+        "GitBook integration ", coalesce(tmp_title, "unnamed"),
+        " installed in organisation ", coalesce(tmp_org, "unknown"),
+        " holding scopes ", coalesce(tmp_scopes, "none stated"));
+
+// ---------------------------------------------------------------------------
+//
+// Generated via
+// GOCORTEX_SKILLS_MODEL="claude-opus-5"
+// GOCORTEX_SKILLS_SKILL_NAME="cortex-platform-xdm-author"
+// GOCORTEX_SKILLS_SKILL_VERSION="1.8.19"
+// GOCORTEX_SKILLS_SKILL_WARNING_COUNT="0"
+// GOCORTEX_SKILLS_SOURCE_BASIS="spec-backed"
+//
+// VENDOR:  gitbook
+// PRODUCT: gitsync
+// DATASET: gitbook_git_sync_raw
+//
+// Tenant-adjustable: xdm.observer.vendor, xdm.observer.product, [MODEL: dataset=...].
+//
+// Git sync connects a documentation space to an EXTERNAL REPOSITORY, so it is a content
+// path in both directions: content can leave the platform into a repository, and content
+// can be pushed into published documentation from one. The repository IDENTITY is what
+// separates the two readings of that: a space synced inside the organisation's own forge
+// namespace is ordinary docs-as-code, and a space synced outside it is an egress path.
+// Connection alone is not a finding, which is why the repository name is mapped and the
+// configured flag on its own is not treated as one.
+//
+// This is a SNAPSHOT feed, and it emits ONE RECORD PER SPACE whether or not sync is
+// configured, so an unconfigured space is a row rather than an absence. That is deliberate:
+// a space that STOPS syncing has to be visible as a change, and it cannot be if the record
+// simply disappears.
+//
+// EVENT FIELD MAPPING
+//   space_id                -> xdm.event.id
+//   space_object            -> xdm.target.resource.type
+//   space_title             -> xdm.target.resource.name
+//   space_visibility        -> xdm.target.resource.sub_type
+//   git_repoName            -> xdm.target.resource.value
+//   organization_id         -> xdm.target.resource.parent_id
+//   git_url                 -> xdm.target.url
+//   source_log_type         -> xdm.event.type
+//   (derived)               -> xdm.event.original_event_type, xdm.event.description
+//   (constant)              -> xdm.observer.vendor, xdm.observer.product
+//   (constant)              -> xdm.event.tags = EVENT_TAG_SAAS
+//
+// NOTES
+//   NO STORY IS CLAIMED. The record carries no actor and no network peer. A repository URL
+//   is the ADDRESS OF A RESOURCE, not a connection somebody made, so it does not make this
+//   a network event and the network story's mandatory set stays unfilled and unclaimed.
+//
+//   xdm.event.operation and xdm.event.outcome are deliberately UNSET. The record describes
+//   a standing configuration, not a synchronisation that ran. The API does report a state
+//   for the latest sync operation, and it is NOT mapped to outcome for exactly that reason:
+//   it would read as the outcome of this record, which describes no operation at all.
+//
+//   THE ABSENCE OF A REPOSITORY NAME IS ITSELF A CASE. Sync can be configured while the
+//   repository cannot yet be named, which is a different finding from no sync at all, so
+//   the two are distinguished in the event name rather than collapsed into one flag.
+//
+// NOT MAPPED
+//   git_sync_configured   -- a collector-derived boolean, fully recoverable from the event
+//   git_repository_named     name below, so mapping either would store the same fact twice.
+//   git_installationProvider -- the forge, github or gitlab. XDM's vendor and product fields
+//                          describe the OBSERVER, which is GitBook here, so putting a third
+//                          party's name in one would misattribute the record's source.
+//   git_installationId    -- the sync installation identifier, and git_integration the
+//   git_integration          integration providing it. The resource entity carries one id
+//                          and it holds the space, which is the thing being protected.
+//   git_state             -- the state of the latest sync operation. See the note above on
+//   git_operation_state      why this is deliberately not an outcome.
+//   space_internal_*      -- vendor internals (poweredByV2, singleWebsocket) with nothing
+//                          to say about access or content movement.
+//   space_comments        -- collaboration volume. XDM has no numeric field for it, and the
+//   space_changeRequests*    scoring fields mean risk rather than activity.
+//   space_parent          -- the collection holding the space. The resource entity offers
+//                          one parent_id and it carries the organisation, which is the
+//                          boundary that matters for egress.
+//   space_revision        -- the current content revision, an opaque identifier that names
+//                          no state a rule can reason about.
+//   space_editMode        -- whether the space is locked for editing, and space_defaultLevel
+//   space_defaultLevel       the inherited access level. Both are access notions competing
+//                          for the single sub_type, which carries visibility because
+//                          visibility decides who may read the space.
+//   space_emoji           -- presentation.
+//   space_createdAt       -- XDM carries no timestamp for a resource's creation or change.
+//   space_updatedAt
+//   snapshot_at           -- the collection time, already carried by _time.
+//
+// REVIEW UNMODELLED
+//   datamodel dataset = gitbook_git_sync_raw
+//   | filter xdm.event.original_event_type = "GOCORTEX_UNMODELLED"
+//   | comp count() as n by space_object, git_sync_configured
+//
+// RAISE SKILL ISSUES -- if this rule mis-modelled something, please open
+// an issue and include the REVIEW UNMODELLED output above:
+//   https://github.com/gocortexio/skills/issues
+
+[MODEL: dataset = gitbook_git_sync_raw]
+// The null guard is on space_id, NOT on _raw_log. This collector sends structured events,
+// so the platform stores typed top-level columns and leaves _raw_log NULL on every record.
+// The usual "filter _raw_log != null" guard would therefore discard the entire dataset.
+filter
+    space_id != null
+| alter
+    tmp_space_id  = space_id,
+    tmp_object    = space_object,
+    tmp_title     = space_title,
+    tmp_vis       = space_visibility,
+    tmp_repo      = git_repoName,
+    tmp_repo_url  = git_url,
+    tmp_org       = organization_id,
+    tmp_log_type  = source_log_type,
+    tmp_synced    = git_sync_configured
+| alter
+    tmp_state = if(to_boolean(tmp_synced) = true and tmp_repo != null and tmp_repo != "",
+                       "git_sync_to_repository",
+                   to_boolean(tmp_synced) = true, "git_sync_without_named_repository",
+                   to_boolean(tmp_synced) = false, "git_sync_absent",
+                   "GOCORTEX_UNMODELLED")
+| alter
+    xdm.observer.vendor  = "gitbook",
+    xdm.observer.product = "gitsync",
+    xdm.event.id         = tmp_space_id,
+    xdm.event.type       = coalesce(tmp_log_type, "git_sync"),
+    xdm.event.original_event_type = tmp_state,
+    xdm.event.tags       = arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+    xdm.target.resource.type      = tmp_object,
+    xdm.target.resource.name      = tmp_title,
+    xdm.target.resource.sub_type  = tmp_vis,
+    xdm.target.resource.value     = tmp_repo,
+    xdm.target.resource.parent_id = tmp_org,
+    xdm.target.url                = tmp_repo_url,
+    xdm.event.description = concat(
+        "GitBook space ", coalesce(tmp_title, "untitled"),
+        " in organisation ", coalesce(tmp_org, "unknown"),
+        ", audience ", coalesce(tmp_vis, "unstated"),
+        ", synced to ", coalesce(tmp_repo, "no named repository"));
