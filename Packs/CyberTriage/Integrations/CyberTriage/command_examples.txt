@@ -1,0 +1,7 @@
+!ct-triage-endpoint host_name=192.0.2.50 incident_name=incident1
+
+!ct-triage-endpoint host_name=192.0.2.50 incident_name=incident2 scan_options=us,lo,sc
+
+!ct-triage-endpoint host_name=ct-win10-01 incident_name=incident3 send_content=yes
+
+!ct-triage-endpoint host_name=ct-win10-01 incident_name=incident4 malware_scan_requested=no

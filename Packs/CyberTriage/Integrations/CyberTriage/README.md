@@ -1,110 +1,81 @@
-<!-- HTML_DOC -->
-<h2>Overview</h2>
-<hr>
-<p>Use the Cyber Triage integration to collect and analyze endpoint data</p>
-<p>This integration requires Team version of Cyber Triage (not the Standalone desktop version).</p>
-<p>This integration was integrated and tested with Cyber Triage v2.4.0.</p>
-<p> </p>
-<h2>Configure Cyber Triage on Cortex XSOAR</h2>
-<hr>
-<ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for Cyber Triage.</li>
-<li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>
-<ul>
-<li>
-<strong>Name</strong>: a textual name for the integration instance.</li>
-<li>
-<strong>Hostname of Cyber Triage server (e.g. 192.168.1.2)</strong> : the ip or hostname where the Cyber Triage server is setup.</li>
-<li>
-<strong>REST Port</strong> : REST port for Cyber Triage server. 9443 is the default port and currently cannot be changed in Cyber Triage.</li>
-<li>
-<strong>API Key</strong> : can be retrieved from the Cyber Triage server by going to Options -&gt; Deployment Mode -&gt; REST API Key.</li>
-<li>
-<strong>Username</strong> : the username and password of a Windows account with administrative privileges on all endpoints that need to be investigated.</li>
-<li>
-<strong>Use proxy</strong> : select if you have a proxy setup in your environment and need to use it to reach the Cyber Triage server.</li>
-</ul>
-</li>
-<li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
-</ol>
-<h2> </h2>
-<h2>Commands</h2>
-<hr>
-<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
-<ol>
-<li><a href="#h_62899400271539496080241">Initiate a collection on an endpoint: ct-triage-endpoint</a></li>
-</ol>
-<h3 id="h_62899400271539496080241">Initiate a collection on an endpoint</h3>
-<hr>
-<p>Initiates a Cyber Triage collection on an endpoint.</p>
-<h5>Base Command</h5>
-<pre><code>ct-triage-endpoint</code></pre>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 162px;"><strong>Argument Name</strong></th>
-<th style="width: 475px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 162px;">endpoint</td>
-<td style="width: 475px;">IP or hostname of a Windows endpoint</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 162px;">full_scan</td>
-<td style="width: 475px;">Scan the entire file system for suspicious files</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 162px;">malware_hash_upload</td>
-<td style="width: 475px;">Send MD5 hashes to an external malware analysis service</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 162px;">malware_file_upload</td>
-<td style="width: 475px;">Send unknown files to an external malware analysis service. Hash upload must be enabled to execute file uploads.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<h5> </h5>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 186px;"><strong>Path</strong></th>
-<th style="width: 55px;"><strong>Type</strong></th>
-<th style="width: 467px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 186px;">CyberTriage.SessionId</td>
-<td style="width: 55px;">string</td>
-<td style="width: 467px;">The session ID for the newly created session</td>
-</tr>
-<tr>
-<td style="width: 186px;">Endpoint.IPAddress</td>
-<td style="width: 55px;">string</td>
-<td style="width: 467px;">The endpoint IP address that Cyber Triage investigated</td>
-</tr>
-<tr>
-<td style="width: 186px;">Endpoint.Hostname</td>
-<td style="width: 55px;">string</td>
-<td style="width: 467px;">The endpoint hostname that Cyber Triage investigated</td>
-</tr>
-</tbody>
-</table>
-<h5> </h5>
-<h5>Command Example</h5>
-<pre>!ct-triage-endpoint endpoint=ct-win10-01 full_scan=no</pre>
-<h5>Context Example</h5>
-<p>CyberTriage.SessionID: ct-win10-01|1538074422288<br>CyberTriage.Hostname: ct-win10-01</p>
-<h5>Human Readable Output</h5>
-<p>A collection has been scheduled for ct-win10-01</p>
-<p> </p>
+## Cyber Triage Integration
+
+Deploy the Cyber Triage Collector from XSOAR to a Windows endpoint to gather data for a SOC investigation.  Cyber Triage automates the analysis of endpoint data to make sure you can quickly focus on the relevant data.
+
+This integration was integrated and tested with Cyber Triage v4.0.
+
+Cyber Triage Website: [https://cybertriage.com](https://cybertriage.com/)
+User Manual: [https://docs.cybertriage.com/](https://docs.cybertriage.com/)
+Download: [https://www.cybertriage.com/download-eval/](https://www.cybertriage.com/download-eval/)
+
+## Requirements
+
+- Cyber Triage **Team** version >= 4.0 (Standalone desktop version is not supported).
+- The public API enabled in Cyber Triage: Options → Team Settings → *Enable the public API*.
+- A Windows administrative account with privileges on target endpoints.
+
+## Configure Cyber Triage in Cortex XSOAR
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Cyber Triage Server Hostname | IP address or hostname of the Cyber Triage server (e.g. 192.168.1.2) | True |
+| REST Port | REST API port of the Cyber Triage server. Default: 9443 | True |
+| API Authentication Token | Bearer token found in Options → User Accounts.  Click the three dots next to *api-user* and select *View Details*. Under *API Authentication Token*, copy or create a new authentication token. | True |
+| Windows Admin Credentials | Administrative Windows account used to push the collector to endpoints | True |
+| Trust any certificate (not secure) | Skip SSL certificate verification | False |
+| Use system proxy settings | Route requests through system proxy | False |
+
+## Commands
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After successfully executing a command, a DBot message appears in the War Room with the command details.
+
+### ct-triage-endpoint
+
+***
+Initiates a Cyber Triage forensic collection on a Windows endpoint. The collection runs in the background.
+
+#### Base Command
+
+`ct-triage-endpoint`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_name | IP address or hostname of the Windows endpoint to triage. | Required |
+| scan_options | Comma-separated list of data types for Cyber Triage to collect. Valid options: Accounts (us), Logons (lo), Network Shares (ns), Web Artifacts (wb), Data Accessed (ud), Triggered Tasks (sc), Processes (pr), Network (nw), Network Caches (nc), OS Settings (co), Full file system scan (fs). Default: us,lo,ns,wb,ud,sc,pr,nw,nc,co,fs | Optional |
+| malware_scan_requested | Send MD5 hashes to an external malware analysis service. If not set, the Cyber Triage server's default applies. Possible values: yes, no. | Optional |
+| send_content | Send unknown files to an external malware analysis service. Hash upload must be enabled. If not set, the Cyber Triage server's default applies. Possible values: yes, no. | Optional |
+| incident_name | Cyber Triage incident name that the collection will be grouped under. The incident is created if it does not exist. Default: Default | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CyberTriage.SessionId | String | The session ID for the newly created triage session. |
+| Endpoint.IPAddress | String | The IP address of the endpoint that was triaged. |
+| Endpoint.Hostname | String | The hostname of the endpoint that was triaged. |
+
+#### Command Example
+
+``` bash
+!ct-triage-endpoint host_name=ct-win10-01 scan_options=pr,nw malware_scan_requested=yes send_content=no incident_name=MyIncident
+```
+
+#### Context Example
+
+```json
+{
+    "CyberTriage": {
+        "SessionId": "12"
+    },
+    "Endpoint": {
+        "Hostname": "ct-win10-01"
+    }
+}
+```
+
+#### Human Readable Output
+
+A collection has been scheduled for ct-win10-01
