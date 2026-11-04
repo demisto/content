@@ -304,5 +304,7 @@ tests:
 - Test XDR Playbook general commands
 - Test XDR Playbook
 fromversion: 6.10.0
+supportedModules:
+- agentix
 contentitemexportablefields:
   contentitemfields: {}
