@@ -1271,6 +1271,23 @@ class Client(BaseClient):
         """
         return self.send_request(f"change/standard/{template}", "POST", body={}, cr_api=True)
 
+    def create_event(self, events: list[dict]) -> dict:
+        """Create one or more events in ServiceNow Event Management.
+
+        Sends events to the /api/global/em/jsonv2 webhook endpoint which writes
+        to the em_events table.
+
+        Args:
+            events: List of event dictionaries. Each event may contain fields
+                    such as source, node, type, resource, severity, description,
+                    time_of_event, and additional_info.
+
+        Returns:
+            Response dict from ServiceNow.
+        """
+        body = {"records": events}
+        return self.send_request(path="", method="POST", body=body, custom_api="/api/global/em/jsonv2")
+
     def get_co_tasks(self, sys_id: str) -> dict:
         """Get item details from service catalog by sending a GET request to the Change Request REST API.
 
@@ -3748,6 +3765,74 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Ite
     return item
 
 
+# Cortex severity label → ServiceNow em_event severity integer.
+CORTEX_TO_SNOW_SEVERITY: dict[str, str] = {
+    "critical": "1",
+    "high": "2",
+    "medium": "3",
+    "low": "4",
+    "info": "5",
+    "informational": "5",
+}
+
+# Cortex resolution state → ServiceNow em_event resolution_state string.
+CORTEX_TO_SNOW_RESOLUTION_STATE: dict[str, str] = {
+    "new": "open",
+    "in progress": "open",
+    "resolved": "closed",
+}
+
+
+def create_event_command(client: Client, args: dict) -> CommandResults:
+    """Create an event in ServiceNow Event Management via the /api/global/em/jsonv2 webhook.
+
+    Builds the event from named arguments. ``source`` defaults to ``"Cortex"``.
+    ``node``, ``type``, and ``time_of_event`` are required.
+
+    Args:
+        client: Authenticated ServiceNow client.
+        args: Command arguments, usually ``demisto.args()``.
+
+    Returns:
+        ``CommandResults`` with a human-readable success message and the raw ServiceNow response.
+
+    Raises:
+        DemistoException: If required fields are missing.
+    """
+    demisto.debug(f"create_event_command received args: {args}")
+
+    node = args.get("node")
+    event_type = args.get("type")
+    time_of_event = args.get("time_of_event")
+
+    missing = [name for name, val in [("node", node), ("type", event_type), ("time_of_event", time_of_event)] if not val]
+    if missing:
+        raise DemistoException(f"Missing required argument(s): {', '.join(missing)}.")
+
+    event: dict = {
+        "source": args.get("source") or "Cortex",
+        "node": node,
+        "type": event_type,
+        "time_of_event": time_of_event,
+    }
+
+    for field in ("resource", "description", "additional_info", "message_key"):
+        if (value := args.get(field)) is not None:
+            event[field] = value
+
+    if (severity := args.get("severity")) is not None:
+        event["severity"] = CORTEX_TO_SNOW_SEVERITY.get(severity.lower(), severity)
+
+    if (resolution_state := args.get("resolution_state")) is not None:
+        event["resolution_state"] = CORTEX_TO_SNOW_RESOLUTION_STATE.get(resolution_state.lower(), resolution_state)
+
+    client.create_event([event])
+
+    return CommandResults(
+        readable_output="Event successfully sent to ServiceNow Event Management.",
+    )
+
+
 def generic_api_call_command(client: Client, args: dict) -> Union[str, CommandResults]:
     """make a call to ServiceNow api
     Args:
@@ -3969,6 +4054,8 @@ def main():
             demisto.results(get_ticket_command(client, args))
         elif command == "servicenow-delete-ticket":
             return_results(delete_ticket_command(client, args))
+        elif command == "servicenow-create-event":
+            return_results(create_event_command(client, args))
         elif command == "servicenow-generic-api-call":
             return_results(generic_api_call_command(client, args))
         elif command == "get-remote-data":

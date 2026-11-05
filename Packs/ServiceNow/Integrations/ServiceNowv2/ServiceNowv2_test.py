@@ -23,6 +23,7 @@ from ServiceNowv2 import (
     Client,
     ServiceNowClient,
     add_comment_command,
+    create_event_command,
     add_link_command,
     add_tag_command,
     check_assigned_to_field,
@@ -3103,6 +3104,167 @@ def test_generic_api_call_command(command, args, response, mocker):
     mocker.patch.object(client, "send_request", return_value=response)
     result = command(client, args)
     assert result.outputs == response
+
+
+def _make_client() -> Client:
+    """Return a minimal Client instance suitable for unit tests."""
+    return Client(
+        "server_url",
+        "sc_server_url",
+        "cr_server_url",
+        "username",
+        "password",
+        "verify",
+        "fetch_time",
+        "sysparm_query",
+        "sysparm_limit",
+        "timestamp_field",
+        "ticket_type",
+        "get_attachments",
+        "incident_name",
+    )
+
+
+_REQUIRED_FIELDS = {"node": "web-server-01", "type": "CPU Utilization", "time_of_event": "2026-01-01 00:00:00"}
+
+
+@pytest.mark.parametrize(
+    "args, expected_events",
+    [
+        # Individual fields — all required + optional resource/severity/description.
+        (
+            {
+                "source": "SCOM",
+                "node": "web-server-01",
+                "type": "CPU Utilization",
+                "time_of_event": "2026-01-01 00:00:00",
+                "resource": "CPU",
+                "severity": "2",
+                "description": "CPU usage exceeded 90%",
+            },
+            [
+                {
+                    "source": "SCOM",
+                    "node": "web-server-01",
+                    "type": "CPU Utilization",
+                    "time_of_event": "2026-01-01 00:00:00",
+                    "resource": "CPU",
+                    "severity": "2",
+                    "description": "CPU usage exceeded 90%",
+                }
+            ],
+        ),
+        # source defaults to "Cortex" when omitted.
+        (
+            {**_REQUIRED_FIELDS},
+            [{"source": "Cortex", **_REQUIRED_FIELDS}],
+        ),
+        # Cortex severity label "high" → ServiceNow "2".
+        (
+            {**_REQUIRED_FIELDS, "severity": "high"},
+            [{"source": "Cortex", **_REQUIRED_FIELDS, "severity": "2"}],
+        ),
+        # Cortex severity label "critical" → ServiceNow "1".
+        (
+            {**_REQUIRED_FIELDS, "severity": "critical"},
+            [{"source": "Cortex", **_REQUIRED_FIELDS, "severity": "1"}],
+        ),
+        # Cortex resolution_state "resolved" → ServiceNow "closed".
+        (
+            {**_REQUIRED_FIELDS, "resolution_state": "resolved"},
+            [{"source": "Cortex", **_REQUIRED_FIELDS, "resolution_state": "closed"}],
+        ),
+        # Cortex resolution_state "in progress" → ServiceNow "open".
+        (
+            {**_REQUIRED_FIELDS, "resolution_state": "in progress"},
+            [{"source": "Cortex", **_REQUIRED_FIELDS, "resolution_state": "open"}],
+        ),
+        # raw_event JSON object — takes priority over individual fields.
+        (
+            {
+                "raw_event": '{"source": "Zabbix", "node": "app-01", "severity": "1"}',
+            },
+            [{"source": "Zabbix", "node": "app-01", "severity": "1"}],
+        ),
+    ],
+)
+def test_create_event_command_sends_correct_payload(args, expected_events, mocker):
+    """
+    Given:
+        - Case 1: Individual field arguments with all required fields and optional ones.
+        - Case 2: source defaults to "Cortex" when omitted.
+        - Case 3-4: Cortex severity labels are mapped to ServiceNow integers.
+        - Case 5-6: Cortex resolution_state labels are mapped to ServiceNow values.
+        - Case 7: A raw JSON object via 'raw_event'.
+    When:
+        - Running create_event_command.
+    Then:
+        - The client's create_event method is called with the correct list of event dicts.
+        - CommandResults are returned with the expected readable output.
+    """
+    client = _make_client()
+    snow_response = {"result": {"status": "inserted", "message": ""}}
+    mock_create_event = mocker.patch.object(client, "create_event", return_value=snow_response)
+
+    result = create_event_command(client, args)
+
+    mock_create_event.assert_called_once_with(expected_events)
+    assert result.outputs is None
+    assert "Event(s) successfully sent to ServiceNow Event Management." in result.readable_output
+
+
+def test_create_event_command_missing_required_fields_raises(mocker):
+    """
+    Given:
+        - Individual field mode with required fields (node, type, time_of_event) missing.
+    When:
+        - Running create_event_command.
+    Then:
+        - A DemistoException is raised listing the missing fields.
+    """
+    from CommonServerPython import DemistoException
+
+    client = _make_client()
+    mocker.patch.object(client, "create_event", return_value={})
+
+    with pytest.raises(DemistoException, match="Missing required argument"):
+        create_event_command(client, {"source": "SCOM"})
+
+
+def test_create_event_command_invalid_raw_event_json_raises(mocker):
+    """
+    Given:
+        - The 'raw_event' argument contains invalid JSON.
+    When:
+        - Running create_event_command.
+    Then:
+        - A DemistoException is raised indicating the JSON parse failure.
+    """
+    from CommonServerPython import DemistoException
+
+    client = _make_client()
+    mocker.patch.object(client, "create_event", return_value={})
+
+    with pytest.raises(DemistoException, match="Failed to parse 'raw_event' argument as JSON"):
+        create_event_command(client, {"raw_event": "not-valid-json"})
+
+
+def test_create_event_command_raw_event_not_dict_raises(mocker):
+    """
+    Given:
+        - The 'raw_event' argument is valid JSON but not an object (e.g. a list).
+    When:
+        - Running create_event_command.
+    Then:
+        - A DemistoException is raised indicating the value must be a JSON object.
+    """
+    from CommonServerPython import DemistoException
+
+    client = _make_client()
+    mocker.patch.object(client, "create_event", return_value={})
+
+    with pytest.raises(DemistoException, match="must be a JSON object"):
+        create_event_command(client, {"raw_event": '[{"source": "SCOM"}]'})
 
 
 @pytest.mark.parametrize(
