@@ -1609,7 +1609,7 @@ script:
     arguments:
     - name: name
       required: true
-      description: The scope name (e.g. ws_production_bx7qw0). This is the path key, not the id (name:tsg_id).
+      description: The scope name (for example, ws_production_bx7qw0). This is the path key, not the id (name:tsg_id).
     outputs:
     - contextPath: PrismaAIRs.AIGatewayScope.name
       description: The scope name.
