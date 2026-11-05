@@ -4621,7 +4621,7 @@ Lists the DNS zones in all resource groups in a subscription. Use the next_token
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| limit | The maximum number of DNS zones to return. Must be between 1 and 1000. If not specified, Azure returns up to 100 zones. | Optional |
+| limit | The maximum number of DNS zones to return. Must be between 1 and 1000. If not specified, Azure returns up to 100 zones. Ignored when next_token is provided. | Optional |
 | next_token | The token for retrieving the next page of results. Use the Azure.DNS.ZonesNextToken value from the previous response. | Optional |
 
 #### Context Output
@@ -4657,7 +4657,7 @@ Retrieves a DNS record set of type CNAME. Required permissions: Microsoft.Networ
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. | Required |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone_name | The name of the DNS zone \(without a terminating dot\). | Required |
 | relative_record_set_name | The name of the CNAME record set, relative to the name of the zone. | Required |
 
@@ -4690,9 +4690,10 @@ Deletes a DNS record set of type CNAME from a DNS zone. This operation cannot be
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. | Required |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone_name | The name of the DNS zone \(without a terminating dot\). | Required |
 | relative_record_set_name | The name of the CNAME record set, relative to the name of the zone. | Required |
+| etag | The ETag of the record set, as returned in Azure.DNS.RecordSets.etag by the azure-dns-cname-record-set-get command. When provided, the record set is deleted only if it was not modified since the ETag was retrieved. | Optional |
 
 #### Context Output
 

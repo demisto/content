@@ -812,6 +812,8 @@ IP_GROUPS_API_VERSION = "2025-09-01"
 DNS_API_VERSION = "2018-05-01"
 # Only CNAME record sets are supported by the DNS record set commands.
 DNS_CNAME_RECORD_TYPE = "CNAME"
+# Substrings that would let a DNS zone or record set name escape its URL path segment.
+DNS_NAME_FORBIDDEN_SUBSTRINGS = ("/", "\\", "?", "#", "..")
 
 LOG_ANALYTICS_API_VERSION = "2026-03-01"
 LOG_ANALYTICS_TABLE_NAME_SUFFIX = "_SRCH"
@@ -1125,6 +1127,7 @@ class AzureClient:
         resp_type: str = "json",
         json_data: dict | None = None,
         data: dict | bytes | None = None,
+        headers: dict[str, str] | None = None,
     ) -> requests.Response | dict[str, Any]:
         if not params:
             params = {}
@@ -1148,14 +1151,20 @@ class AzureClient:
                 json_data=json_data,
                 params=params,
                 resp_type=resp_type,
-                headers=self.headers,
+                headers=self.headers | (headers or {}),
                 ok_codes=(200, 201, 202, 204, 206),
                 proxies=proxies,
                 data=data,
             )
 
         return self.ms_client.http_request(
-            method=method, url_suffix=url_suffix, full_url=full_url, json_data=json_data, params=params, resp_type=resp_type
+            method=method,
+            url_suffix=url_suffix,
+            full_url=full_url,
+            json_data=json_data,
+            params=params,
+            resp_type=resp_type,
+            headers=headers,
         )
 
     def handle_azure_error(
@@ -3686,6 +3695,7 @@ class AzureClient:
         resource_group_name: str,
         zone_name: str,
         relative_record_set_name: str,
+        etag: str | None = None,
     ):
         """
         Delete a DNS record set of type CNAME from a DNS zone. This operation cannot be undone.
@@ -3695,6 +3705,8 @@ class AzureClient:
             resource_group_name: The resource group name.
             zone_name: The name of the DNS zone (without a terminating dot).
             relative_record_set_name: The name of the CNAME record set, relative to the name of the zone.
+            etag: Optional ETag of the record set. When given, it is sent as If-Match so that the record set
+                is deleted only if it has not changed since the ETag was retrieved.
 
         Return:
             The HTTP response object from the delete operation.
@@ -3708,9 +3720,20 @@ class AzureClient:
         )
         try:
             return self.http_request(
-                method="DELETE", full_url=full_url, params={"api-version": DNS_API_VERSION}, resp_type="response"
+                method="DELETE",
+                full_url=full_url,
+                params={"api-version": DNS_API_VERSION},
+                resp_type="response",
+                headers={"If-Match": etag} if etag else None,
             )
         except Exception as e:
+            error_msg = str(e).lower()
+            if etag and ("412" in error_msg or "precondition" in error_msg):
+                raise DemistoException(
+                    f"DNS record set {relative_record_set_name} of type {DNS_CNAME_RECORD_TYPE} in zone {zone_name} was not "
+                    f"deleted because it was modified after the ETag {etag} was retrieved. Get the record set again and "
+                    "retry with its current ETag."
+                )
             self.handle_azure_error(
                 e=e,
                 resource_name=f"{zone_name}/{DNS_CNAME_RECORD_TYPE}/{relative_record_set_name}",
@@ -5552,6 +5575,24 @@ def validate_limit(limit: int | None, min_limit: int = 1, max_limit: int = BLOB_
         raise DemistoException(
             f"The acceptable values of the argument limit are {min_limit} to {max_limit}, inclusive. "
             f"Currently the value is {limit}."
+        )
+
+
+def validate_dns_name(value: str, arg_name: str) -> None:
+    """
+    Validates that a DNS zone or record set name is safe to place in a URL path segment.
+
+    Args:
+        value (str): The name to validate.
+        arg_name (str): The argument name, used in the error message.
+
+    Raises:
+        DemistoException: If the name contains a character sequence that could alter the request path.
+    """
+    if any(forbidden in value for forbidden in DNS_NAME_FORBIDDEN_SUBSTRINGS):
+        raise DemistoException(
+            f"The argument {arg_name} must not contain any of {', '.join(DNS_NAME_FORBIDDEN_SUBSTRINGS)}. "
+            f"Currently the value is {value}."
         )
 
 
@@ -9101,31 +9142,21 @@ def dns_zones_list_command(client: AzureClient, params: dict[str, Any], args: di
     demisto.debug(f"[Azure] listed DNS zones {len(zones)=} {bool(next_link)=}")
 
     if not zones:
-        return CommandResults(readable_output=f"No DNS zones were found in subscription '{subscription_id}'.")
+        return CommandResults(
+            readable_output=f"No DNS zones were found in subscription '{subscription_id}'.",
+            outputs={"Azure.DNS(true)": {"ZonesNextToken": None}},
+        )
 
-    # The next token is written even when it is None, so that a stale token from a previous page is cleared
-    # from the context instead of lingering. remove_empty_elements must not be applied to these outputs.
     outputs = {
         "Azure.DNS.Zones(val.id && val.id == obj.id)": zones,
         "Azure.DNS(true)": {"ZonesNextToken": next_link},
     }
 
-    readable_zones = [
-        {
-            "name": zone.get("name"),
-            "id": zone.get("id"),
-            "location": zone.get("location"),
-            "zoneType": zone.get("properties", {}).get("zoneType"),
-            "numberOfRecordSets": zone.get("properties", {}).get("numberOfRecordSets"),
-            "nameServers": zone.get("properties", {}).get("nameServers"),
-        }
-        for zone in zones
-    ]
     hr = tableToMarkdown(
         name="DNS Zones List",
-        t=readable_zones,
+        t=zones,
         removeNull=True,
-        headers=["name", "id", "location", "zoneType", "numberOfRecordSets", "nameServers"],
+        headers=["name", "id", "location"],
         headerTransform=pascalToSpace,
     )
 
@@ -9150,6 +9181,8 @@ def dns_cname_record_set_get_command(client: AzureClient, params: dict[str, Any]
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     zone_name = args.get("zone_name", "")
     relative_record_set_name = args.get("relative_record_set_name", "")
+    validate_dns_name(zone_name, "zone_name")
+    validate_dns_name(relative_record_set_name, "relative_record_set_name")
 
     response = client.dns_cname_record_set_get(
         subscription_id=subscription_id,
@@ -9200,12 +9233,15 @@ def dns_cname_record_set_delete_command(client: AzureClient, params: dict[str, A
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     zone_name = args.get("zone_name", "")
     relative_record_set_name = args.get("relative_record_set_name", "")
+    validate_dns_name(zone_name, "zone_name")
+    validate_dns_name(relative_record_set_name, "relative_record_set_name")
 
     response = client.dns_cname_record_set_delete(
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
         zone_name=zone_name,
         relative_record_set_name=relative_record_set_name,
+        etag=args.get("etag"),
     )
     if response.status_code == 204:
         message = (
