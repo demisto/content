@@ -1,0 +1,1675 @@
+id: CertManagerSaaS Certificate Request
+version: -1
+name: CertManagerSaaS Certificate Request
+description: |-
+  Requests a new certificate from CyberArk Certificate Manager SaaS, waits for it to be issued and returns the outcome to the caller.
+
+  This is a reusable building block: it is meant to be called as a sub-playbook from server provisioning, vulnerability response, certificate expiry remediation and incident response playbooks rather than run on its own.
+
+  Calling contract:
+  - CommonName and CertificateIssuingTemplateID are required; the sub-playbook checks them before calling out. Certificate Manager SaaS also requires ApplicationID: without it the request API rejects the request and the sub-playbook reports failure.
+  - Set SourceIntegration, and SourceInstance when the integration has several instances. With both integrations enabled and no SourceIntegration, the sub-playbook refuses to pick one and reports failure.
+  - CertManagerSaaS.CertificateRequest.Succeeded is set on every path, so a caller never has to distinguish 'failed' from 'never ran'.
+  - Set DownloadPrivateKey to true to also download the private key and chain (VSatellite-generated keys only), encrypted with KeystorePassphrase. CertManagerSaaS.CertificateRequest.KeystoreDownloaded then reports the result; the private key is never written to context.
+  - Add this playbook to a parent as a sub-playbook task and set its outputs to Shared globally. Private to sub-playbook is the platform default and returns nothing to the parent. In the YAML that toggle is the task's separatecontext key: false means shared.
+  - After changing these inputs or outputs, refresh the parent playbook's page. Saving and reopening does not pick the change up.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 5c405f37-6fad-5cb1-926a-d57c56269e30
+    type: start
+    task:
+      id: 5c405f37-6fad-5cb1-926a-d57c56269e30
+      version: -1
+      name: ''
+      description: ''
+      type: start
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: b90fc1ab-9b52-512e-bf23-fc4d8cf62129
+    type: condition
+    task:
+      id: b90fc1ab-9b52-512e-bf23-fc4d8cf62129
+      version: -1
+      name: Are the required request fields supplied?
+      description: A request needs a common name and an issuing template identifier. Certificate Manager
+        SaaS also needs an application identifier, and rejects the request without one, which lands on
+        the failure output; Next-Gen Trust Security doesn't use applications. Callers that reach this sub-playbook
+        without the required fields are routed straight to the failure output, so the caller always receives
+        a definite answer rather than an absent key.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '18'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.CommonName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.CertificateIssuingTemplateID
+            iscontext: true
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: a431d84a-b050-5b25-8644-be6b5a808ab2
+    type: regular
+    task:
+      id: a431d84a-b050-5b25-8644-be6b5a808ab2
+      version: -1
+      name: Submit the certificate request
+      description: Submits a new certificate request to Certificate Manager SaaS.
+      script: '|||cmsaas-certificate-request'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#error#':
+      - '32'
+      '#none#':
+      - '3'
+    scriptarguments:
+      application_id:
+        complex:
+          root: inputs.ApplicationID
+      certificate_issuing_template_id:
+        complex:
+          root: inputs.CertificateIssuingTemplateID
+      common_name:
+        complex:
+          root: inputs.CommonName
+      sans:
+        complex:
+          root: inputs.SubjectAlternativeNames
+      validity_period:
+        complex:
+          root: inputs.ValidityPeriod
+      existing_certificate_fingerprint:
+        complex:
+          root: inputs.ExistingCertificateFingerprint
+      using:
+        complex:
+          root: inputs.SourceInstance
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 0ce06b63-956f-5b5a-8d2a-123a47e5ea07
+    type: condition
+    task:
+      id: 0ce06b63-956f-5b5a-8d2a-123a47e5ea07
+      version: -1
+      name: Did Certificate Manager SaaS accept the request?
+      description: The request is only worth polling once an identifier has come back.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '4'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CertManagerSaaS.CertificateRequest.ID
+            iscontext: true
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 5b00ba6c-d76a-57f0-8454-c9c268d765ca
+    type: playbook
+    task:
+      id: 5b00ba6c-d76a-57f0-8454-c9c268d765ca
+      version: -1
+      name: Poll until the request leaves its pending state
+      description: Blocks until cmsaas-certificate-request-status stops reporting a pending state, or
+        until the timeout elapses. GenericPolling must run with its own private context - the authoritative
+        status is re-read by the next task so that it lands in this sub-playbook's own context and therefore
+        in this sub-playbook's declared outputs.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      Ids:
+        complex:
+          root: CertManagerSaaS.CertificateRequest.ID
+      PollingCommandName:
+        simple: cmsaas-certificate-request-status
+      PollingCommandArgName:
+        simple: request_id
+      Interval:
+        complex:
+          root: inputs.PollingInterval
+      Timeout:
+        complex:
+          root: inputs.PollingTimeout
+      dt:
+        simple: CertManagerSaaS.CertificateRequest(val.Status !== 'ISSUED' && val.Status !== 'FAILED'
+          && val.Status !== 'REJECTED' && val.Status !== 'REJECTED_APPROVAL' && val.Status !== 'CANCELLED'
+          && val.Status !== 'REVOKED' && val.Status !== 'DELETED').ID
+      AdditionalPollingCommandArgNames:
+        simple: using
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.SourceInstance
+    separatecontext: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 9d8acd1c-5f50-561a-b557-123458dcd864
+    type: regular
+    task:
+      id: 9d8acd1c-5f50-561a-b557-123458dcd864
+      version: -1
+      name: Read the final request status
+      description: Re-reads the request in the shared context so the outcome is available to this sub-playbook's
+        outputs and, through them, to the calling playbook.
+      script: '|||cmsaas-certificate-request-status'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#error#':
+      - '32'
+      '#none#':
+      - '6'
+    scriptarguments:
+      request_id:
+        complex:
+          root: CertManagerSaaS.CertificateRequest.ID
+      using:
+        complex:
+          root: inputs.SourceInstance
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 19c4e097-7b2a-58a9-b61d-7798354d2724
+    type: condition
+    task:
+      id: 19c4e097-7b2a-58a9-b61d-7798354d2724
+      version: -1
+      name: Was the certificate issued?
+      description: Anything other than an issued certificate is reported to the caller as a failed request.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '7'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          ignorecase: true
+          left:
+            value:
+              simple: CertManagerSaaS.CertificateRequest.Status
+            iscontext: true
+          right:
+            value:
+              simple: ISSUED
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 660e76c9-44dc-5d0e-8bf3-f24720a3213a
+    type: regular
+    task:
+      id: 660e76c9-44dc-5d0e-8bf3-f24720a3213a
+      version: -1
+      name: Download the issued certificate
+      description: Retrieves the issued certificate content. The download endpoint is keyed on the certificate
+        identifier rather than the request identifier, so the first identifier the request produced is
+        used. A download failure does not invalidate the issuance, so this task continues on error.
+      script: '|||cmsaas-certificate-download'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#error#':
+      - '22'
+      '#none#':
+      - '22'
+    scriptarguments:
+      certificate_id:
+        complex:
+          root: CertManagerSaaS.CertificateRequest
+          accessor: CertificateIDs
+          transformers:
+          - operator: FirstArrayElement
+      format:
+        simple: PEM
+      using:
+        complex:
+          root: inputs.SourceInstance
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: d61ee55f-4570-508e-99e0-dcdb684c07ce
+    type: regular
+    task:
+      id: d61ee55f-4570-508e-99e0-dcdb684c07ce
+      version: -1
+      name: Report success to the caller
+      description: Writes the boolean half of the output contract. Callers can branch on this single key
+        instead of re-deriving success from the request status.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      key:
+        simple: CertManagerSaaS.CertificateRequest.Succeeded
+      value:
+        simple: 'true'
+      append:
+        simple: 'false'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 3280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 74bdfa92-fe7a-58cc-99d5-5db3085ffd38
+    type: regular
+    task:
+      id: 74bdfa92-fe7a-58cc-99d5-5db3085ffd38
+      version: -1
+      name: Report failure to the caller
+      description: Every unsuccessful path converges here so that a caller always receives a definite
+        answer rather than an absent key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      key:
+        simple: CertManagerSaaS.CertificateRequest.Succeeded
+      value:
+        simple: 'false'
+      append:
+        simple: 'false'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 4c91ddf3-0a36-50bf-b048-16e738f274a5
+    type: title
+    task:
+      id: 4c91ddf3-0a36-50bf-b048-16e738f274a5
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 395,
+          "y": 3470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 2e4bc264-ec5e-4cba-bd97-62b9f6e4ac22
+    type: regular
+    task:
+      id: 2e4bc264-ec5e-4cba-bd97-62b9f6e4ac22
+      version: -1
+      name: Submit the certificate request (NGTS)
+      description: Submits a new certificate request to Certificate Manager SaaS.
+      script: '|||ngts-certificate-request'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#error#':
+      - '32'
+      '#none#':
+      - '13'
+    scriptarguments:
+      certificate_issuing_template_id:
+        complex:
+          root: inputs.CertificateIssuingTemplateID
+      common_name:
+        complex:
+          root: inputs.CommonName
+      sans:
+        complex:
+          root: inputs.SubjectAlternativeNames
+      validity_period:
+        complex:
+          root: inputs.ValidityPeriod
+      existing_certificate_fingerprint:
+        complex:
+          root: inputs.ExistingCertificateFingerprint
+      using:
+        complex:
+          root: inputs.SourceInstance
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: f101bdbc-aa11-4454-8456-ae1f19c78a81
+    type: condition
+    task:
+      id: f101bdbc-aa11-4454-8456-ae1f19c78a81
+      version: -1
+      name: Did Certificate Manager SaaS accept the request? (NGTS)
+      description: The request is only worth polling once an identifier has come back.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '14'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CertManagerSaaS.CertificateRequest.ID
+            iscontext: true
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
+    taskid: 9b8641c8-e048-46f7-ac2b-caa95a5745b2
+    type: playbook
+    task:
+      id: 9b8641c8-e048-46f7-ac2b-caa95a5745b2
+      version: -1
+      name: Poll until the request leaves its pending state (NGTS)
+      description: Blocks until cmsaas-certificate-request-status stops reporting a pending state, or
+        until the timeout elapses. GenericPolling must run with its own private context - the authoritative
+        status is re-read by the next task so that it lands in this sub-playbook's own context and therefore
+        in this sub-playbook's declared outputs.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      Ids:
+        complex:
+          root: CertManagerSaaS.CertificateRequest.ID
+      PollingCommandName:
+        simple: ngts-certificate-request-status
+      PollingCommandArgName:
+        simple: request_id
+      Interval:
+        complex:
+          root: inputs.PollingInterval
+      Timeout:
+        complex:
+          root: inputs.PollingTimeout
+      dt:
+        simple: CertManagerSaaS.CertificateRequest(val.Status !== 'ISSUED' && val.Status !== 'FAILED'
+          && val.Status !== 'REJECTED' && val.Status !== 'REJECTED_APPROVAL' && val.Status !== 'CANCELLED'
+          && val.Status !== 'REVOKED' && val.Status !== 'DELETED').ID
+      AdditionalPollingCommandArgNames:
+        simple: using
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.SourceInstance
+    separatecontext: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: a5e88a89-3286-4c0a-95cc-8c268e33175a
+    type: regular
+    task:
+      id: a5e88a89-3286-4c0a-95cc-8c268e33175a
+      version: -1
+      name: Read the final request status (NGTS)
+      description: Re-reads the request in the shared context so the outcome is available to this sub-playbook's
+        outputs and, through them, to the calling playbook.
+      script: '|||ngts-certificate-request-status'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#error#':
+      - '32'
+      '#none#':
+      - '16'
+    scriptarguments:
+      request_id:
+        complex:
+          root: CertManagerSaaS.CertificateRequest.ID
+      using:
+        complex:
+          root: inputs.SourceInstance
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '16':
+    id: '16'
+    taskid: cdf76788-4272-4169-a333-d101a5f9c741
+    type: condition
+    task:
+      id: cdf76788-4272-4169-a333-d101a5f9c741
+      version: -1
+      name: Was the certificate issued? (NGTS)
+      description: Anything other than an issued certificate is reported to the caller as a failed request.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '17'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          ignorecase: true
+          left:
+            value:
+              simple: CertManagerSaaS.CertificateRequest.Status
+            iscontext: true
+          right:
+            value:
+              simple: ISSUED
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '17':
+    id: '17'
+    taskid: 0201e17c-73d5-4060-b6d8-154519b79f14
+    type: regular
+    task:
+      id: 0201e17c-73d5-4060-b6d8-154519b79f14
+      version: -1
+      name: Download the issued certificate (NGTS)
+      description: Retrieves the issued certificate content. The download endpoint is keyed on the certificate
+        identifier rather than the request identifier, so the first identifier the request produced is
+        used. A download failure does not invalidate the issuance, so this task continues on error.
+      script: '|||ngts-certificate-download'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#error#':
+      - '24'
+      '#none#':
+      - '24'
+    scriptarguments:
+      certificate_id:
+        complex:
+          root: CertManagerSaaS.CertificateRequest
+          accessor: CertificateIDs
+          transformers:
+          - operator: FirstArrayElement
+      format:
+        simple: PEM
+      using:
+        complex:
+          root: inputs.SourceInstance
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: e427c947-ed34-4da8-807b-c21943639569
+    type: condition
+    task:
+      id: e427c947-ed34-4da8-807b-c21943639569
+      version: -1
+      name: Is a Certificate Manager SaaS instance enabled?
+      description: Returns yes when a Certificate Manager SaaS instance is enabled. Reached only when
+        the caller did not say which integration to use.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '20'
+      '#default#':
+      - '12'
+    scriptarguments:
+      brandname:
+        simple: CertificateManagerSaaS
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '18':
+    id: '18'
+    taskid: cba2814b-74af-40f6-8dbd-b4a6d7576f9f
+    type: condition
+    task:
+      id: cba2814b-74af-40f6-8dbd-b4a6d7576f9f
+      version: -1
+      name: Did the caller choose an integration?
+      description: Honours the caller-supplied SourceIntegration; without one, falls back to whichever
+        integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      Next-Gen Trust Security:
+      - '12'
+      Certificate Manager SaaS:
+      - '2'
+      '#default#':
+      - '11'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: Next-Gen Trust Security
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SourceIntegration
+            iscontext: true
+          right:
+            value:
+              simple: NextGenTrustSecurity
+    - label: Certificate Manager SaaS
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SourceIntegration
+            iscontext: true
+          right:
+            value:
+              simple: CertificateManagerSaaS
+  '19':
+    id: '19'
+    taskid: ac7a389d-03bf-496b-a662-0ca82d842d47
+    type: regular
+    task:
+      id: ac7a389d-03bf-496b-a662-0ca82d842d47
+      version: -1
+      name: Clear stale CertificateRequest data
+      description: Removes certificate-request data and error entries left by an earlier run, so the polling
+        and the outcome refer only to this request. Cortex doesn't keep ErrorEntries in time order, so an
+        old error could otherwise be reported as this run's reason.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      key:
+        simple: CertManagerSaaS.CertificateRequest,ErrorEntries
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '20':
+    id: '20'
+    taskid: 6d11c39b-37f0-427e-aaf9-6f3aa99d382f
+    type: condition
+    task:
+      id: 6d11c39b-37f0-427e-aaf9-6f3aa99d382f
+      version: -1
+      name: Is a Next-Gen Trust Security instance enabled too?
+      description: Returns yes when a Next-Gen Trust Security instance is also enabled. With both integrations
+        enabled and no SourceIntegration, the request would have to go to one of them at random, so it
+        stops instead.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '21'
+      '#default#':
+      - '2'
+    scriptarguments:
+      brandname:
+        simple: NextGenTrustSecurity
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '21':
+    id: '21'
+    taskid: c6e9ee74-2c4b-42ed-a69a-917f43accfa9
+    type: regular
+    task:
+      id: c6e9ee74-2c4b-42ed-a69a-917f43accfa9
+      version: -1
+      name: Report that the caller must choose an integration
+      description: Both integrations are enabled and the caller did not set SourceIntegration, so the
+        sub-playbook refuses to pick one.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      value:
+        simple: Both Certificate Manager SaaS and Next-Gen Trust Security are enabled, and the caller
+          did not say which one should issue the certificate. Set the SourceIntegration input (CertificateManagerSaaS
+          or NextGenTrustSecurity), and SourceInstance to pick one instance, then run the request again.
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '22':
+    id: '22'
+    taskid: a6df7926-b823-4e3a-b5bd-6a5ce4113a65
+    type: condition
+    task:
+      id: a6df7926-b823-4e3a-b5bd-6a5ce4113a65
+      version: -1
+      name: Download the private key?
+      description: The private key is downloaded only when the caller sets DownloadPrivateKey to true.
+        Without it, the playbook behaves as before and returns only the certificate.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '8'
+      'yes':
+      - '23'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          ignorecase: true
+          left:
+            value:
+              simple: inputs.DownloadPrivateKey
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '23':
+    id: '23'
+    taskid: bd018297-bc9d-4d7d-92e1-7760190a7c43
+    type: regular
+    task:
+      id: bd018297-bc9d-4d7d-92e1-7760190a7c43
+      version: -1
+      name: Download the private key and chain
+      description: Downloads the issued certificate's keystore to the War Room, with the private key encrypted
+        by KeystorePassphrase. The private key is never written to context. Works only for keys generated
+        by a VSatellite. A failure does not invalidate the issuance, so this task continues on error.
+      script: '|||cmsaas-certificate-keystore-download'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#error#':
+      - '28'
+      '#none#':
+      - '26'
+    scriptarguments:
+      certificate_id:
+        complex:
+          root: CertManagerSaaS.CertificateRequest
+          accessor: CertificateIDs
+          transformers:
+          - operator: FirstArrayElement
+      passphrase:
+        complex:
+          root: inputs.KeystorePassphrase
+      format:
+        complex:
+          root: inputs.KeystoreFormat
+      using:
+        complex:
+          root: inputs.SourceInstance
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '24':
+    id: '24'
+    taskid: 97465450-047d-4fdb-b206-5104a5d5bebd
+    type: condition
+    task:
+      id: 97465450-047d-4fdb-b206-5104a5d5bebd
+      version: -1
+      name: Download the private key? (NGTS)
+      description: The private key is downloaded only when the caller sets DownloadPrivateKey to true.
+        Without it, the playbook behaves as before and returns only the certificate.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '8'
+      'yes':
+      - '25'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          ignorecase: true
+          left:
+            value:
+              simple: inputs.DownloadPrivateKey
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '25':
+    id: '25'
+    taskid: ec4d0037-99ba-497d-b219-9493671a7048
+    type: regular
+    task:
+      id: ec4d0037-99ba-497d-b219-9493671a7048
+      version: -1
+      name: Download the private key and chain (NGTS)
+      description: Downloads the issued certificate's keystore to the War Room, with the private key encrypted
+        by KeystorePassphrase. The private key is never written to context. Works only for keys generated
+        by a VSatellite. A failure does not invalidate the issuance, so this task continues on error.
+      script: '|||ngts-certificate-keystore-download'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#error#':
+      - '28'
+      '#none#':
+      - '26'
+    scriptarguments:
+      certificate_id:
+        complex:
+          root: CertManagerSaaS.CertificateRequest
+          accessor: CertificateIDs
+          transformers:
+          - operator: FirstArrayElement
+      passphrase:
+        complex:
+          root: inputs.KeystorePassphrase
+      format:
+        complex:
+          root: inputs.KeystoreFormat
+      using:
+        complex:
+          root: inputs.SourceInstance
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '26':
+    id: '26'
+    taskid: 08710e16-14fd-49a3-ae40-204159878162
+    type: condition
+    task:
+      id: 08710e16-14fd-49a3-ae40-204159878162
+      version: -1
+      name: Was the private key downloaded?
+      description: Checks for a keystore of the issued certificate, so keystore data left by an earlier
+        run, or a download task that was skipped because the integration lacks the command, is not reported
+        as a download.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '31'
+      'yes':
+      - '27'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CertManagerSaaS.Keystore
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: CertManagerSaaS.Keystore.CertificateID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CertManagerSaaS.CertificateRequest.CertificateIDs
+                      iscontext: true
+                accessor: CertificateID
+            iscontext: true
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 395,
+          "y": 2710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '27':
+    id: '27'
+    taskid: ab586d38-3f42-4204-9145-afc6e18f791b
+    type: regular
+    task:
+      id: ab586d38-3f42-4204-9145-afc6e18f791b
+      version: -1
+      name: Report the private key download to the caller
+      description: Lets a caller branch on one key instead of searching the War Room for the keystore files.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      key:
+        simple: CertManagerSaaS.CertificateRequest.KeystoreDownloaded
+      value:
+        simple: 'true'
+      append:
+        simple: 'false'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '28':
+    id: '28'
+    taskid: c2c83106-26bb-401b-8192-d28952ddb61c
+    type: regular
+    task:
+      id: c2c83106-26bb-401b-8192-d28952ddb61c
+      version: -1
+      name: Read why the private key download failed
+      description: Collects the error of the failed keystore download, so the caller can report the reason.
+      scriptName: GetErrorsFromEntry
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments:
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 2710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '29':
+    id: '29'
+    taskid: 4829d5a6-9e23-402d-a475-bf8838ace22a
+    type: regular
+    task:
+      id: 4829d5a6-9e23-402d-a475-bf8838ace22a
+      version: -1
+      name: Record why the private key download failed
+      description: Keeps this run's error as the failure reason. ErrorEntries was cleared at the start, so
+        it holds only errors from this run.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments:
+      key:
+        simple: CertManagerSaaS.CertificateRequest.KeystoreErrorMessage
+      value:
+        complex:
+          root: ErrorEntries
+          transformers:
+          - operator: LastArrayElement
+      append:
+        simple: 'false'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '30':
+    id: '30'
+    taskid: cebab66b-8f5f-4eb0-a227-b186662c7988
+    type: regular
+    task:
+      id: cebab66b-8f5f-4eb0-a227-b186662c7988
+      version: -1
+      name: Report the failed private key download to the caller
+      description: The certificate is still issued, so Succeeded stays true; only the keystore is missing.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      key:
+        simple: CertManagerSaaS.CertificateRequest.KeystoreDownloaded
+      value:
+        simple: 'false'
+      append:
+        simple: 'false'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 3090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '31':
+    id: '31'
+    taskid: a70c630b-442c-4916-bfdd-c5cec0b1933b
+    type: regular
+    task:
+      id: a70c630b-442c-4916-bfdd-c5cec0b1933b
+      version: -1
+      name: Record that no keystore came back
+      description: Reached when the download task was skipped or returned no keystore for the issued certificate.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments:
+      key:
+        simple: CertManagerSaaS.CertificateRequest.KeystoreErrorMessage
+      value:
+        simple: No keystore was returned for the issued certificate. Check that the integration is enabled
+          and its version has the keystore download command.
+      append:
+        simple: 'false'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '32':
+    id: '32'
+    taskid: 7dbaafb4-2786-4890-8824-92ef8ab9f4e2
+    type: regular
+    task:
+      id: 7dbaafb4-2786-4890-8824-92ef8ab9f4e2
+      version: -1
+      name: Read why the request failed
+      description: Collects the error of the failed submit or status command, so the caller can report the reason.
+      scriptName: GetErrorsFromEntry
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '33'
+    scriptarguments:
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '33':
+    id: '33'
+    taskid: 0f1d05aa-bdc6-4e41-a086-3a70a9248b81
+    type: regular
+    task:
+      id: 0f1d05aa-bdc6-4e41-a086-3a70a9248b81
+      version: -1
+      name: Record why the request failed
+      description: Keeps this run's error as the failure reason. ErrorEntries was cleared at the start, so
+        it holds only errors from this run.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      key:
+        simple: CertManagerSaaS.CertificateRequest.ErrorMessage
+      value:
+        complex:
+          root: ErrorEntries
+          transformers:
+          - operator: LastArrayElement
+      append:
+        simple: 'false'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3670,
+        "width": 1650,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: SourceIntegration
+  value: {}
+  required: false
+  description: 'The integration to request through: CertificateManagerSaaS or NextGenTrustSecurity (the
+    SourceBrand of the certificate being replaced). When empty, the only enabled integration is used;
+    with both enabled, the sub-playbook stops and reports failure rather than pick one.'
+  playbookInputQuery: null
+- key: SourceInstance
+  value: {}
+  required: false
+  description: The integration instance to send the request, status polling and download to - the SourceInstance
+    of the certificate being replaced. Set it when the integration has several instances; when empty,
+    the commands run on every enabled instance of that integration.
+  playbookInputQuery: null
+- key: CommonName
+  value: {}
+  required: true
+  description: The subject common name for the new certificate. Required - the sub-playbook reports failure
+    without calling out if it is empty.
+  playbookInputQuery: null
+- key: ApplicationID
+  value: {}
+  required: false
+  description: The identifier of the Certificate Manager SaaS application the certificate is requested
+    for. Required by Certificate Manager SaaS; ignored by Next-Gen Trust Security, which doesn't use applications.
+  playbookInputQuery: null
+- key: CertificateIssuingTemplateID
+  value: {}
+  required: true
+  description: The identifier of the Certificate Manager SaaS issuing template to issue under. Required
+    by the API.
+  playbookInputQuery: null
+- key: SubjectAlternativeNames
+  value: {}
+  required: false
+  description: A comma-separated list of DNS subject alternative names for the new certificate.
+  playbookInputQuery: null
+- key: ValidityPeriod
+  value: {}
+  required: false
+  description: The requested validity as an ISO 8601 duration - P1Y for a year, P90D for ninety days.
+    Leave empty to use the issuing template default.
+  playbookInputQuery: null
+- key: ExistingCertificateFingerprint
+  value: {}
+  required: false
+  description: The SHA-1 fingerprint of the certificate being replaced, when this request is a renewal.
+    Links the new certificate to the old one in Certificate Manager SaaS. A renewal keeps the old certificate's
+    subject and subject alternative names.
+  playbookInputQuery: null
+- key: PollingInterval
+  value:
+    simple: '1'
+  required: false
+  description: How often the request status is polled, in minutes.
+  playbookInputQuery: null
+- key: PollingTimeout
+  value:
+    simple: '30'
+  required: false
+  description: How long to poll the request before giving up, in minutes.
+  playbookInputQuery: null
+- key: DownloadPrivateKey
+  value:
+    simple: 'false'
+  required: false
+  description: Set to true to also download the issued certificate's private key and chain to the War
+    Room, encrypted with KeystorePassphrase. Works only when a VSatellite generated the key. A failed download
+    does not fail the request.
+  playbookInputQuery: null
+- key: KeystoreFormat
+  value:
+    simple: PEM
+  required: false
+  description: 'The keystore format when DownloadPrivateKey is true: PEM (an encrypted private key file
+    and a chain file, leaf first) or PKCS12 (one .p12 file).'
+  playbookInputQuery: null
+- key: KeystorePassphrase
+  value: {}
+  required: false
+  description: Used when DownloadPrivateKey is true. The passphrase that encrypts the downloaded private key. Leave it empty to use the integration instance's Keystore passphrase setting, which can come from a saved credential (recommended). Don't type the passphrase here or save it as a default value.
+  playbookInputQuery: null
+outputs:
+- contextPath: CertManagerSaaS.CertificateRequest.Succeeded
+  description: Whether a certificate was issued. Always set, on every path through the sub-playbook.
+  type: boolean
+- contextPath: CertManagerSaaS.CertificateRequest.ID
+  description: The identifier of the certificate request.
+  type: string
+- contextPath: CertManagerSaaS.CertificateRequest.Status
+  description: The final status of the certificate request.
+  type: string
+- contextPath: CertManagerSaaS.CertificateRequest.CertificateIDs
+  description: The identifiers of the certificates the request produced.
+  type: string
+- contextPath: CertManagerSaaS.CertificateRequest.SubjectDN
+  description: The subject distinguished name of the certificate request.
+  type: string
+- contextPath: CertManagerSaaS.CertificateRequest.ErrorMessage
+  description: Why the request failed, when it did.
+  type: string
+- contextPath: CertManagerSaaS.CertificateContents.Contents
+  description: The PEM content of the issued certificate, when the download succeeded.
+  type: string
+- contextPath: File.EntryID
+  description: The war room entry identifier of the downloaded certificate file, and of the keystore files
+    when DownloadPrivateKey is true.
+  type: string
+- contextPath: File.Name
+  description: The name of the downloaded certificate file, and of the keystore files when DownloadPrivateKey
+    is true.
+  type: string
+- contextPath: CertManagerSaaS.CertificateRequest.KeystoreDownloaded
+  description: Whether the private key and chain were downloaded. Set only when DownloadPrivateKey is true
+    and the certificate was issued.
+  type: boolean
+- contextPath: CertManagerSaaS.CertificateRequest.KeystoreErrorMessage
+  description: Why the private key download failed, when it did.
+  type: string
+- contextPath: CertManagerSaaS.Keystore.CertificateID
+  description: The identifier of the certificate whose keystore was downloaded.
+  type: string
+- contextPath: CertManagerSaaS.Keystore.Format
+  description: The keystore format, PEM or PKCS12.
+  type: string
+- contextPath: CertManagerSaaS.Keystore.PrivateKeyFileName
+  description: The name of the War Room file that holds the encrypted private key (PEM format).
+  type: string
+- contextPath: CertManagerSaaS.Keystore.ChainFileName
+  description: The name of the War Room file that holds the certificate chain, leaf first (PEM format).
+  type: string
+- contextPath: CertManagerSaaS.Keystore.KeystoreFileName
+  description: The name of the War Room .p12 file (PKCS12 format).
+  type: string
+tests:
+- CertificateManagerSaaS - Test
+fromversion: 6.10.0

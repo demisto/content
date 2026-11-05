@@ -1,0 +1,3 @@
+# The fetch deduplicates by state, not by time range, so it has no first-fetch time.
+[file:NextGenTrustSecurity.yml]
+ignore=IN126
