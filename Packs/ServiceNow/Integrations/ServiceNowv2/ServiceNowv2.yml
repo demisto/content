@@ -1786,10 +1786,8 @@ script:
       name: resource
     - auto: PREDEFINED
       description: >-
-        Severity of the event. Accepts Cortex labels (critical, high, medium,
-        low, info) which are mapped to ServiceNow values (1–5), or a raw
-        ServiceNow integer string (0 = Clear, 1 = Critical, 2 = Major,
-        3 = Minor, 4 = Warning, 5 = Info). Maps to xdm.issue.severity.
+        Severity of the event. Accepts Cortex severity labels, which are mapped
+        to ServiceNow values (critical=1, high=2, medium=3, low=4, info=5).
       name: severity
       predefined:
       - critical
@@ -1797,12 +1795,6 @@ script:
       - medium
       - low
       - info
-      - '0'
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-      - '5'
     - description: >-
         Human-readable description of the event. Maps to xdm.issue.description.
       name: description
@@ -1814,16 +1806,15 @@ script:
         Unique key used to deduplicate events. Events with the same message_key
         are treated as updates to the same alert. Maps to xdm.issue.id.
       name: message_key
-    - description: >-
-        Resolution state of the event. Accepts Cortex labels (new, in progress,
-        resolved) which are mapped to ServiceNow values (open, closed), or a
-        raw ServiceNow value. Maps to xdm.issue.status.progress.
+    - auto: PREDEFINED
+      description: >-
+        Resolution state of the event. Cortex labels are mapped to ServiceNow
+        values (new=open, in progress=open, resolved=closed).
       name: resolution_state
-    - description: >-
-        A raw JSON object representing a single event (e.g.
-        '{"source":"Cortex","node":"web-01","severity":"1"}'). Takes priority
-        over all individual field arguments when provided.
-      name: raw_event
+      predefined:
+      - new
+      - in progress
+      - resolved
     description: >-
       Creates an event in ServiceNow Event Management by posting to the
       /api/global/em/jsonv2 webhook endpoint (em_events table). source defaults
@@ -2090,23 +2081,20 @@ script:
       name: source
       prettyname: Source
       required: true
-    - defaultValue: Node
-      description: Node (hostname or asset name) where the event occurred.
+    - description: Node (hostname or asset name) where the event occurred.
       name: node
       prettyname: Node
       required: true
       prettypredefined:
         Alert Name: ${issue.name}
-    - defaultValue: Type
-      description: Event type or detection rule name.
+    - description: Event type or detection rule name.
       name: type
       prettyname: Type
       required: true
       prettypredefined:
         Alert Name: ${issue.name}
         Category: ${issue.categoryname}
-    - defaultValue: Time of Event
-      description: Time the event occurred, in the format "YYYY-MM-DD HH:MM:SS" (UTC).
+    - description: Time the event occurred, in the format "YYYY-MM-DD HH:MM:SS" (UTC).
       name: time_of_event
       prettyname: Time of Event
       required: true
@@ -2121,18 +2109,6 @@ script:
       description: Severity of the event. Accepts Cortex labels (critical, high, medium, low, info) or raw ServiceNow integers (0–5).
       name: severity
       prettyname: Severity
-      predefined:
-      - critical
-      - high
-      - medium
-      - low
-      - info
-      - '0'
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-      - '5'
       prettypredefined:
         Severity: ${issue.severityStr}
     - description: Human-readable description of the event.
@@ -2155,9 +2131,6 @@ script:
       prettyname: Additional Info
       prettypredefined:
         Full Issue: ${issue}
-    - description: Raw JSON object for a single event. Takes priority over all other arguments.
-      name: raw_event
-      prettyname: Raw Event
     description: Creates an event in ServiceNow Event Management.
     name: servicenow-create-event-quick-action
     prettyname: Create ServiceNow Event

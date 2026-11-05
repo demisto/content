@@ -3783,115 +3783,53 @@ CORTEX_TO_SNOW_RESOLUTION_STATE: dict[str, str] = {
 }
 
 
-def create_event_command(client: Client, args: dict, is_quick_action: bool = False) -> CommandResults:
+def create_event_command(client: Client, args: dict) -> CommandResults:
     """Create an event in ServiceNow Event Management via the /api/global/em/jsonv2 webhook.
 
-    Supports two mutually exclusive input modes:
-
-    1. **raw_event** — a raw JSON string for a single event object. Sent as-is to ServiceNow.
-       Cannot be combined with individual field arguments.
-    2. **Individual fields** — build the event from named arguments.
-       ``source`` defaults to ``"Cortex"``. ``node``, ``type``, and ``time_of_event``
-       are required when called as a regular command; they are optional in quick-action
-       mode (the platform pre-fills them from the alert XDM context via ``prettypredefined``).
-
-    When invoked as a quick action (``is_quick_action=True``), the function additionally
-    calls ``demisto.results()`` with an ``ExtendedPayload.MirrorObject`` so that XSIAM
-    renders a clickable link to the ServiceNow Event Management list in the action result card.
+    Builds the event from named arguments. ``source`` defaults to ``"Cortex"``.
+    ``node``, ``type``, and ``time_of_event`` are required.
 
     Args:
         client: Authenticated ServiceNow client.
         args: Command arguments, usually ``demisto.args()``.
-        is_quick_action: ``True`` when dispatched via ``servicenow-create-event-quick-action``.
 
     Returns:
         ``CommandResults`` with a human-readable success message and the raw ServiceNow response.
 
     Raises:
-        DemistoException: If ``raw_event`` is combined with individual field arguments,
-            if ``raw_event`` is not valid JSON, if ``raw_event`` is not a JSON object,
-            or if required individual fields are missing (regular command only).
+        DemistoException: If required fields are missing.
     """
     demisto.debug(f"create_event_command received args: {args}")
-    raw_event_arg = args.get("raw_event")
 
-    _INDIVIDUAL_FIELD_NAMES = (
-        "node", "type", "time_of_event", "source", "resource",
-        "severity", "description", "message_key", "resolution_state", "additional_info",
-    )
-    individual_fields_provided = [k for k in _INDIVIDUAL_FIELD_NAMES if args.get(k)]
+    node = args.get("node")
+    event_type = args.get("type")
+    time_of_event = args.get("time_of_event")
 
-    if raw_event_arg and individual_fields_provided:
-        raise DemistoException(
-            f"'raw_event' cannot be combined with individual field arguments "
-            f"({', '.join(individual_fields_provided)}). Use one input mode at a time."
-        )
+    missing = [name for name, val in [("node", node), ("type", event_type), ("time_of_event", time_of_event)] if not val]
+    if missing:
+        raise DemistoException(f"Missing required argument(s): {', '.join(missing)}.")
 
-    if raw_event_arg:
-        # Mode 1: pass the raw JSON event object directly to ServiceNow.
-        try:
-            parsed = json.loads(raw_event_arg) if isinstance(raw_event_arg, str) else raw_event_arg
-        except json.JSONDecodeError as exc:
-            raise DemistoException(f"Failed to parse 'raw_event' as JSON: {exc}") from exc
-        if not isinstance(parsed, dict):
-            raise DemistoException("'raw_event' must be a JSON object (dict), not an array or scalar.")
-        events: list[dict] = [parsed]
+    event: dict = {
+        "source": args.get("source") or "Cortex",
+        "node": node,
+        "type": event_type,
+        "time_of_event": time_of_event,
+    }
 
-    else:
-        # Mode 2: build the event from individual field arguments.
-        source = args.get("source") or "Cortex"
-        node = args.get("node")
-        event_type = args.get("type")
-        time_of_event = args.get("time_of_event")
+    for field in ("resource", "description", "additional_info", "message_key"):
+        if (value := args.get(field)) is not None:
+            event[field] = value
 
-        if not is_quick_action:
-            missing = [name for name, val in [("node", node), ("type", event_type), ("time_of_event", time_of_event)] if not val]
-            if missing:
-                raise DemistoException(f"Missing required argument(s): {', '.join(missing)}.")
+    if (severity := args.get("severity")) is not None:
+        event["severity"] = CORTEX_TO_SNOW_SEVERITY.get(severity.lower(), severity)
 
-        event: dict = {"source": source}
-        if node:
-            event["node"] = node
-        if event_type:
-            event["type"] = event_type
-        if time_of_event:
-            event["time_of_event"] = time_of_event
+    if (resolution_state := args.get("resolution_state")) is not None:
+        event["resolution_state"] = CORTEX_TO_SNOW_RESOLUTION_STATE.get(resolution_state.lower(), resolution_state)
 
-        for field in ("resource", "description", "additional_info", "message_key"):
-            if (value := args.get(field)) is not None:
-                event[field] = value
-
-        if (severity := args.get("severity")) is not None:
-            event["severity"] = CORTEX_TO_SNOW_SEVERITY.get(severity.lower(), severity)
-
-        if (resolution_state := args.get("resolution_state")) is not None:
-            event["resolution_state"] = CORTEX_TO_SNOW_RESOLUTION_STATE.get(resolution_state.lower(), resolution_state)
-
-        events = [event]
-
-    result = client.create_event(events)
-    print(result)
-
-    if is_quick_action:
-        # Render a clickable link to the ServiceNow Event Management list in the XSIAM action card.
-        instance_url = client.base_url.replace("/api/now/", "/")
-        mirror_obj = MirrorObject(
-            object_url=f"{instance_url}em_event_list.do",
-            object_id="",
-            object_name="ServiceNow Event",
-        ).to_context()
-        demisto.results(
-            {
-                "Type": entryTypes["note"],
-                "ContentsFormat": formats["text"],
-                "Contents": "MirrorObject created successfully.",
-                "ExtendedPayload": {"MirrorObject": mirror_obj},
-            }
-        )
+    client.create_event([event])
 
     return CommandResults(
-        readable_output="Event(s) successfully sent to ServiceNow Event Management.",
-        raw_response=result,
+        readable_output="Event successfully sent to ServiceNow Event Management.",
     )
 
 
@@ -4118,8 +4056,6 @@ def main():
             return_results(delete_ticket_command(client, args))
         elif command == "servicenow-create-event":
             return_results(create_event_command(client, args))
-        elif command == "servicenow-create-event-quick-action":
-            return_results(create_event_command(client, args, is_quick_action=True))
         elif command == "servicenow-generic-api-call":
             return_results(generic_api_call_command(client, args))
         elif command == "get-remote-data":
