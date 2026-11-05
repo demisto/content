@@ -2207,7 +2207,7 @@ script:
       description: The access tier for the share (TransactionOptimized, Hot, Cool, or Premium).
       type: String
     - contextPath: Azure.Storage.FileShares.properties.lastModifiedTime
-      description: The date and time the share was last modified.
+      description: The date and time the share was last modified in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Azure.Storage.FileShares.properties.shareQuota
       description: The provisioned size of the share, in gibibytes.
@@ -2231,14 +2231,8 @@ script:
       description: The version of the share.
       type: String
     - contextPath: Azure.Storage.FileShares.properties.fileSharePaidBursting.paidBurstingEnabled
-      description: Indicates whether paid bursting is enabled for the share (premium file shares only).
-      type: Boolean
-    - contextPath: Azure.Storage.FileShares.properties.fileSharePaidBursting.paidBurstingMaxBandwidthMibps
-      description: The maximum paid bursting bandwidth for the share, in mebibytes per second.
-      type: Number
-    - contextPath: Azure.Storage.FileShares.properties.fileSharePaidBursting.paidBurstingMaxIops
-      description: The maximum paid bursting IOPS for the share.
-      type: Number
+      description: The File Share Paid Bursting properties.
+      type: Unknown
     - contextPath: Azure.Storage.FileSharesNextToken
       description: The URI to fetch the next page of file shares. Run the same command with the next_token argument to get the next page.
       type: String
@@ -2262,7 +2256,7 @@ script:
       defaultValue: '50'
       description: The maximum number of entries to retrieve.
     - name: prefix
-      description: Filters the results to return only entries whose name begins with the specified prefix.
+      description: The prefix used to filter entries. Only entries whose names begin with this prefix are returned.
     outputs:
     - contextPath: Azure.Storage.FileShares.name
       description: The share name.
@@ -2384,7 +2378,7 @@ script:
       description: The entry ID of the file.
       type: String
     - contextPath: File.Info
-      description: File information.
+      description: The file information.
       type: String
     - contextPath: File.Type
       description: The file type.

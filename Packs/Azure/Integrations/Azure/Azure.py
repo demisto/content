@@ -41,8 +41,6 @@ FILESHARE_OAUTH_HEADERS = {"x-ms-file-request-intent": "backup"}
 FILESHARE_ARM_API_VERSION = "2026-06-01"
 
 DEFAULT_LIMIT = "50"
-MIN_LIMIT_VALUE = 1
-MAX_LIMIT_VALUE = 1000
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 STORAGE_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 API_VERSION = "2022-09-01"
@@ -13147,7 +13145,7 @@ def storage_fileshare_create_command(client: AzureClient, params: dict, args: di
     # https://learn.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-shares--directories--files--and-metadata
     share_name_regex = "^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$"
     if not re.search(share_name_regex, share_name):
-        raise Exception("The specified share name is invalid.")
+        raise DemistoException("The specified share name is invalid.")
 
     client.create_share_request(subscription_id, resource_group_name, account_name, share_name)
 
@@ -13275,7 +13273,7 @@ def storage_fileshare_directory_create_command(client: AzureClient, params: dict
     directory_path = args.get("directory_path")
 
     if not fileshare_validate_characters(directory_name, r'"\/:|<>*?'):
-        raise Exception("The specified directory name is invalid.")
+        raise DemistoException("The specified directory name is invalid.")
 
     client.create_directory_request(account_name, share_name, directory_name, directory_path)
 
