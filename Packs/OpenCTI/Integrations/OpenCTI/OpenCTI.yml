@@ -1469,7 +1469,7 @@ script:
       description: Creation date and time of the observable.
       type: Date
     - contextPath: OpenCTI.Observable.updatedAt
-      description: Last update date of the observable.
+      description: Last update date and time of the observable.
       type: Date
   - arguments:
     - default: true
