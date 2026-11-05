@@ -1697,7 +1697,7 @@ script:
       description: The provider display name.
       type: String
   - name: prisma-airs-aigateway-integrations-list
-    description: Lists credential integrations (upstream provider bindings) for the tenant on the AI Gateway admin plane. Distinct from mcp-integrations.
+    description: Lists credential integrations (upstream provider bindings) for the tenant on the AI Gateway admin plane. This command is distinct from mcp-integrations.
     arguments:
     - name: page_size
       description: The number of results to return per page.
