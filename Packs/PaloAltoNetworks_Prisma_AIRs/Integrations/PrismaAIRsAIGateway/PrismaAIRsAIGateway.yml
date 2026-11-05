@@ -1844,7 +1844,7 @@ script:
       description: The integration UUID.
     - name: models
       required: true
-      description: The model entries to set (JSON array of objects, at least one).
+      description: A JSON array of model entries to set. Provide at least one object.
     - name: allow_all_models
       description: Whether to allow all models for this integration.
       auto: PREDEFINED
