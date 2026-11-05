@@ -905,7 +905,7 @@ script:
       description: New malware ID.
       type: String
   - arguments:
-    - description: Name of the vulnerability (e.g., CVE-2025-0001).
+    - description: Name of the vulnerability (for example, CVE-2025-0001).
       name: name
       required: true
     - description: Description of the vulnerability.
