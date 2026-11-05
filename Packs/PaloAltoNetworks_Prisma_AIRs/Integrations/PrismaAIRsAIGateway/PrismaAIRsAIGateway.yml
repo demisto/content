@@ -1834,7 +1834,7 @@ script:
       required: true
       description: The integration UUID.
     - name: organisation_id
-      description: The numeric organisation ID. Defaults to the configured tenant TSG ID when omitted.
+      description: The numeric organization ID. Defaults to the configured tenant TSG ID when omitted.
     outputs: []
   - name: prisma-airs-aigateway-integrations-models-set
     description: Bulk-sets the models bound to a credential integration on the AI Gateway admin plane.
