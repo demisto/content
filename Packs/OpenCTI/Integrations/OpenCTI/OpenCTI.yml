@@ -979,7 +979,7 @@ script:
       description: New grouping ID.
       type: String
   - arguments: []
-    description: Get a list of all grouping contexts.
+    description: Gets a list of all grouping contexts.
     name: opencti-grouping-context-list
     outputs:
     - contextPath: OpenCTI.GroupingContexts.GroupingContextsList.id
