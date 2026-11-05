@@ -1824,7 +1824,7 @@ script:
       secret: true
       description: A JSON array of secret mapping entries.
     - name: pricing_adjustments
-      description: Pricing adjustment settings (JSON).
+      description: The pricing adjustment settings, in JSON format.
     outputs: []
   - name: prisma-airs-aigateway-integrations-delete
     execution: true
