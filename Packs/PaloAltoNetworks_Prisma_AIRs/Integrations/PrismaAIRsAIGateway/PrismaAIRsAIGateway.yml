@@ -1564,7 +1564,7 @@ script:
     - name: icon
       description: The workspace icon identifier.
     - name: defaults
-      description: 'Default settings for the workspace as a JSON object (e.g. {"config_id": "...", "allow_config_override": true, "metadata": {}}).'
+      description: 'The default settings for the workspace as a JSON object (for example, {"config_id": "...", "allow_config_override": true, "metadata": {}}).'
     - name: users
       description: Comma-separated list of user IDs to seed as workspace members.
       isArray: true
