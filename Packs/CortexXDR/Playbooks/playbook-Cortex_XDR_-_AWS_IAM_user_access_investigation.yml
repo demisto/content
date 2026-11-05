@@ -1548,3 +1548,5 @@ outputs: []
 tests:
 - No tests
 fromversion: 6.2.0
+supportedModules:
+- agentix
