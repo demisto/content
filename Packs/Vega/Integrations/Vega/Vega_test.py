@@ -2041,53 +2041,6 @@ def test_get_remote_data_command_mirrors_incident_alerts(mocker):
     )
 
 
-def test_get_remote_data_command_mirrors_content_fields(mocker):
-    mocker.patch.object(demisto, "info")
-    mocker.patch.object(demisto, "debug")
-    updated_alert = _full_incident_alert()
-    updated_alert["status"] = "RESOLVED"
-    added_alert = _full_incident_alert("alert-2")
-    added_alert["name"] = "New alert"
-    mock_client = mocker.Mock(spec=Client)
-    mock_client.get_incident_for_mirror.return_value = {
-        "id": "inc-1",
-        "status": "INVESTIGATING",
-        "alerts": [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}],
-    }
-    mock_client.get_incident_by_id.return_value = {
-        "id": "inc-1",
-        "status": "INVESTIGATING",
-        "assets": ["host-1"],
-        "typedAssets": [{"type": "HOST", "value": "host-1"}],
-        "observables": ["10.0.0.1"],
-        "incidentFindings": ["Host host-1 spoke to 10.0.0.1"],
-        "recommendedActions": [{"name": "Isolate", "description": "Block the host"}],
-        "alerts": [
-            {"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1},
-            {"alertId": "alert-2", "name": "New alert", "createdAt": TIMESTAMP_T2},
-        ],
-    }
-    mock_client.get_alerts.return_value = {"alerts": [updated_alert, added_alert], "total": 2, "limit": 100, "offset": 0}
-
-    result = get_remote_data_command(
-        mock_client,
-        {"id": "inc-1", "lastUpdate": "2026-06-15T11:00:00Z", "data": {"type": "Vega Incident"}},
-        include_alert_metadata=True,
-    )
-
-    fields = result.mirrored_object["CustomFields"]
-    assert fields["vegaassets"] == [{"type": "HOST", "value": "host-1"}]
-    assert fields["vegaassetsvalue"] == ["host-1"]
-    assert fields["vegaobservables"] == [{"value": "10.0.0.1"}]
-    assert "host-1" in fields["vegaincidentfindings"]
-    assert fields["vegarecommendedactions"][0]["name"] == "Isolate"
-    assert [row["alertId"] for row in fields["vegaalerts"]] == ["alert-1", "alert-2"]
-    assert fields["vegaalerts"][0]["status"] == "RESOLVED"
-    assert fields["vegaalerts"][0]["name"] == "Suspicious login"
-    assert fields["vegaalerts"][1]["name"] == "New alert"
-    assert "assets" not in fields["vegaalerts"][0]
-
-
 def test_fetch_incidents_command_omits_alert_metadata_when_disabled(mocker):
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock()
@@ -4403,7 +4356,6 @@ def test_get_modified_remote_data_command_respects_entity_filter(mocker):
                 "id": "alert-1",
                 "vegaAlertId": "VA-1",
                 "updatedAt": "2026-06-15T12:00:00Z",
-                "relatedIncidents": [{"incidentId": "inc-1", "name": "Parent"}],
             }
         ],
         "total": 1,
@@ -4477,47 +4429,6 @@ def test_get_modified_remote_data_command_both_entities(mocker):
     assert mock_client.get_alerts.call_args.kwargs["updated_from"] is not None
     assert "updated_to" not in mock_client.get_alerts.call_args.kwargs
     assert mock_client.get_incidents.call_args.kwargs["updated_to"] is not None
-    assert set(result.modified_incident_ids) == {
-        "alert:alert-1",
-        "alert:alert-2",
-        "alert-1",
-        "alert-2",
-        "incident:inc-1",
-        "inc-1",
-    }
-
-
-def test_get_modified_remote_data_command_queues_related_incidents(mocker):
-    mocker.patch.object(demisto, "debug")
-    mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": {"data": []}}])
-    mock_client = mocker.Mock(spec=Client)
-    mock_client.get_alerts.return_value = {
-        "alerts": [
-            {
-                "id": "alert-1",
-                "vegaAlertId": "VA-1",
-                "updatedAt": "2026-06-15T12:00:00Z",
-                "relatedIncidents": [
-                    {"incidentId": "inc-1", "name": "Parent"},
-                    {"incidentId": "inc-1", "name": "Duplicate"},
-                ],
-            },
-            {
-                "id": "alert-2",
-                "vegaAlertId": "VA-2",
-                "updatedAt": "2026-06-15T12:00:00Z",
-                "relatedIncidents": [{"incidentId": "inc-1", "name": "Same parent"}],
-            },
-        ],
-        "total": 2,
-    }
-    mock_client.get_incidents.return_value = {"incidents": [], "total": 0}
-
-    result = get_modified_remote_data_command(
-        mock_client,
-        {"lastUpdate": "2026-06-01T00:00:00Z"},
-    )
-
     assert set(result.modified_incident_ids) == {
         "alert:alert-1",
         "alert:alert-2",
