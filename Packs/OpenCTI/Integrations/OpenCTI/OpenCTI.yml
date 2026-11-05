@@ -898,7 +898,7 @@ script:
       - "true"
       - "false"
       required: false
-    description: Create a new malware.
+    description: Creates a new malware.
     name: opencti-malware-create
     outputs:
     - contextPath: OpenCTI.Malware.id
