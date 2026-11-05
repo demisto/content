@@ -911,7 +911,7 @@ script:
     - description: Description of the vulnerability.
       name: description
       required: false
-    description: Create a new vulnerability.
+    description: Creates a new vulnerability.
     name: opencti-vulnerability-create
     outputs:
     - contextPath: OpenCTI.Vulnerability.id
