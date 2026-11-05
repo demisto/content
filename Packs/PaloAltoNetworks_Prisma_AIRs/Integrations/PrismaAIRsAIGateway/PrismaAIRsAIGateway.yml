@@ -1984,7 +1984,7 @@ script:
     - name: usage_limits
       description: The usage limit settings, in JSON format.
     - name: rate_limits
-      description: Rate limit settings (JSON).
+      description: The rate limit settings, in JSON format.
     - name: expires_at
       description: The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
     - name: reset_usage
