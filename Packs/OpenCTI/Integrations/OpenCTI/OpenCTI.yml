@@ -1103,7 +1103,7 @@ script:
       description: Confidence level of the indicator.
       type: Number
     - contextPath: OpenCTI.Indicator.validFrom
-      description: Date from which the indicator is valid.
+      description: The date and time from which the indicator is valid.
       type: Date
     - contextPath: OpenCTI.Indicator.validUntil
       description: Date until which the indicator is valid.
