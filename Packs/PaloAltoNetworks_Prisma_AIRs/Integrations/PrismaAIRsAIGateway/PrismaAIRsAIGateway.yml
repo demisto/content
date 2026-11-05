@@ -2022,7 +2022,7 @@ script:
       description: The plugin binding status.
       type: String
   - name: prisma-airs-aigateway-plugins-create
-    description: Binds a plugin to the organisation on the AI Gateway admin plane. Takes live secret credential material, which is never echoed back in the output.
+    description: Binds a plugin to the organization on the AI Gateway admin plane. Takes live secret credential material, which is never echoed back in the output.
     arguments:
     - name: integration_id
       required: true
