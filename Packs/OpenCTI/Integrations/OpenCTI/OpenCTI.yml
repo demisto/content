@@ -1541,10 +1541,10 @@ script:
       description: Confidence level of the indicator.
       type: Number
     - contextPath: OpenCTI.Indicator.validFrom
-      description: Date from which the indicator is valid.
+      description: The date and time from which the indicator is valid.
       type: Date
     - contextPath: OpenCTI.Indicator.validUntil
-      description: Date until which the indicator is valid.
+      description: The date and time until which the indicator is valid.
       type: Date
     - contextPath: OpenCTI.Indicator.revoked
       description: Whether the indicator is revoked.
@@ -1553,10 +1553,10 @@ script:
       description: Whether the indicator is used for detection.
       type: Boolean
     - contextPath: OpenCTI.Indicator.created
-      description: Creation date of the indicator.
+      description: Creation date and time of the indicator.
       type: Date
     - contextPath: OpenCTI.Indicator.updatedAt
-      description: Last update date of the indicator.
+      description: Last update date and time of the indicator.
       type: Date
     - contextPath: OpenCTI.Indicator.createdBy
       description: Author of the indicator.
@@ -1682,10 +1682,10 @@ script:
       description: Entity type of the entity related to the observable.
       type: String
     - contextPath: OpenCTI.Observable.created
-      description: Creation date of the observable.
+      description: Creation date and time of the observable.
       type: Date
     - contextPath: OpenCTI.Observable.updatedAt
-      description: Last update date of the observable.
+      description: Last update date and time of the observable.
       type: Date
   - arguments:
     - default: true
@@ -1763,10 +1763,10 @@ script:
       description: Confidence level of the indicator.
       type: Number
     - contextPath: OpenCTI.Indicator.validFrom
-      description: Date from which the indicator is valid.
+      description: The date and time from which the indicator is valid.
       type: Date
     - contextPath: OpenCTI.Indicator.validUntil
-      description: Date until which the indicator is valid.
+      description: The date and time until which the indicator is valid.
       type: Date
     - contextPath: OpenCTI.Indicator.revoked
       description: Whether the indicator is revoked.
@@ -1775,10 +1775,10 @@ script:
       description: Whether the indicator is used for detection.
       type: Boolean
     - contextPath: OpenCTI.Indicator.created
-      description: Creation date of the indicator.
+      description: Creation date and time of the indicator.
       type: Date
     - contextPath: OpenCTI.Indicator.updatedAt
-      description: Last update date of the indicator.
+      description: Last update date and time of the indicator.
       type: Date
     - contextPath: OpenCTI.Indicator.createdBy
       description: Author of the indicator.
@@ -1904,10 +1904,10 @@ script:
       description: Entity type of the entity related to the observable.
       type: String
     - contextPath: OpenCTI.Observable.created
-      description: Creation date of the observable.
+      description: Creation date and time of the observable.
       type: Date
     - contextPath: OpenCTI.Observable.updatedAt
-      description: Last update date of the observable.
+      description: Last update date and time of the observable.
       type: Date
   - arguments:
     - default: true
@@ -1991,10 +1991,10 @@ script:
       description: Confidence level of the indicator.
       type: Number
     - contextPath: OpenCTI.Indicator.validFrom
-      description: Date from which the indicator is valid.
+      description: The date and time from which the indicator is valid.
       type: Date
     - contextPath: OpenCTI.Indicator.validUntil
-      description: Date until which the indicator is valid.
+      description: The date and time until which the indicator is valid.
       type: Date
     - contextPath: OpenCTI.Indicator.revoked
       description: Whether the indicator is revoked.
@@ -2003,10 +2003,10 @@ script:
       description: Whether the indicator is used for detection.
       type: Boolean
     - contextPath: OpenCTI.Indicator.created
-      description: Creation date of the indicator.
+      description: Creation date and time of the indicator.
       type: Date
     - contextPath: OpenCTI.Indicator.updatedAt
-      description: Last update date of the indicator.
+      description: Last update date and time of the indicator.
       type: Date
     - contextPath: OpenCTI.Indicator.createdBy
       description: Author of the indicator.
@@ -2132,10 +2132,10 @@ script:
       description: Entity type of the entity related to the observable.
       type: String
     - contextPath: OpenCTI.Observable.created
-      description: Creation date of the observable.
+      description: Creation date and time of the observable.
       type: Date
     - contextPath: OpenCTI.Observable.updatedAt
-      description: Last update date of the observable.
+      description: Last update date and time of the observable.
       type: Date
   dockerimage: demisto/opencti:1.0.0.7499058
   runonce: false
