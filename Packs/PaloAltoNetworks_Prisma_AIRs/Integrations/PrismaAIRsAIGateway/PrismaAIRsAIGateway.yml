@@ -2212,7 +2212,7 @@ script:
     - name: rate_limits
       description: A JSON array of rate limit settings.
     - name: usage_limits
-      description: Usage limit settings (JSON object).
+      description: The usage limit settings as a JSON object.
     - name: defaults
       description: Default settings (JSON object).
     - name: rotation_policy
