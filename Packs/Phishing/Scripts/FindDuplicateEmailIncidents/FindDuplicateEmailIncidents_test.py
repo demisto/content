@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+import pytest
 
 from CommonServerPython import *
 from FindDuplicateEmailIncidents import *
@@ -443,3 +444,77 @@ def test_empty_query(mocker):
     )
     res = get_existing_incidents({"query": ""}, "Phishing")
     assert "()" not in res["query"]
+
+
+@pytest.mark.parametrize(
+    "arg_value",
+    [
+        pytest.param(text, id="field value with whitespace"),
+        pytest.param("a" * (MAX_FIELD_NAME_LENGTH + 1), id="too long without whitespace"),
+        pytest.param("   ", id="whitespace only"),
+        pytest.param("", id="empty string"),
+        pytest.param(None, id="None"),
+    ],
+)
+def test_get_field_name_arg_invalid_value_falls_back_to_default(arg_value):
+    """
+    Given: An email argument that holds a field VALUE (or nothing) instead of an incident field name.
+    When: get_field_name_arg is called.
+    Then: The default incident field name is returned.
+    """
+    assert get_field_name_arg({"emailBody": arg_value}, "emailBody", "emailbody") == "emailbody"
+
+
+def test_get_field_name_arg_missing_arg_returns_default():
+    """
+    Given: Script arguments that do not contain the email argument.
+    When: get_field_name_arg is called.
+    Then: The default incident field name is returned.
+    """
+    assert get_field_name_arg({}, "emailSubject", "emailsubject") == "emailsubject"
+
+
+@pytest.mark.parametrize("arg_value", ["emailbody", "customemailbody", " customemailbody "])
+def test_get_field_name_arg_valid_field_name_is_kept(arg_value):
+    """
+    Given: An email argument that holds a valid incident field name.
+    When: get_field_name_arg is called.
+    Then: The field name is returned unchanged (stripped of surrounding whitespace).
+    """
+    assert get_field_name_arg({"emailBody": arg_value}, "emailBody", "emailbody") == arg_value.strip()
+
+
+def test_field_values_passed_as_args_still_find_duplicate(mocker):
+    """
+    Given: Email arguments that hold field VALUES (as with ${incident.emailbody}) instead of field names,
+        and an existing incident with the same body.
+    When: The script runs.
+    Then: The default field names are used, the email text is not sent in populateFields,
+        and the duplicate incident is found.
+    """
+    global EXISTING_INCIDENT_ID, DUP_INCIDENT_ID
+    EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
+    existing_incident = create_incident(body=text, emailfrom="mt.kb.user@gmail.com")
+    set_existing_incidents_list([existing_incident])
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "fromPolicy": "TextOnly",
+            "emailBody": text,
+            "emailSubject": "Some email subject",
+            "emailBodyHTML": f"<html><body>{text}</body></html>",
+            "emailFrom": "Some Sender <mt.kb.user@gmail.com>",
+        },
+    )
+    execute_command_mock = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    new_incident = create_incident(body=text, emailfrom="mt.kb.user@gmail.com")
+    mocker.patch.object(demisto, "incidents", return_value=[new_incident])
+    mocker.patch.object(demisto, "results", side_effect=results)
+
+    main()
+
+    populate_fields = execute_command_mock.call_args_list[0][0][1]["populateFields"]
+    assert text not in populate_fields
+    assert {"emailbody", "emailsubject", "emailbodyhtml", "emailfrom"}.issubset(populate_fields.split(","))
+    assert duplicated_incidents_found(existing_incident)
