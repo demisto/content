@@ -937,7 +937,7 @@ script:
     - description: Description of the threat actor group.
       name: description
       required: false
-    description: Create a new threat actor group.
+    description: Creates a new threat actor group.
     name: opencti-threat-actor-group-create
     outputs:
     - contextPath: OpenCTI.ThreatActorGroup.id
