@@ -288,7 +288,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/fastapi:0.125.0.12689358
+  dockerimage: demisto/fastapi:0.162.0.14169403
 fromversion: 6.8.0
 marketplaces:
   - marketplacev2

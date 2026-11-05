@@ -405,7 +405,7 @@ script:
       description: Type-specific enrichment data (geo, whois, file info, etc.).
       type: Unknown
     description: Enriches a single IOC indicator with reputation, threat intelligence, and type-specific enrichment data.
-  dockerimage: demisto/fastapi:0.125.0.12689358
+  dockerimage: demisto/fastapi:0.162.0.14169403
   feed: true
   subtype: python3
 tests:
