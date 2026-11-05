@@ -1025,7 +1025,7 @@ script:
     - description: ID of the object to add to the container.
       name: object_id
       required: true
-    description: Add an object to a container (report, grouping, case-rft, case-rfi, case-incident).
+    description: Adds an object to a container (report, grouping, case-rft, case-rfi, case-incident).
     name: opencti-add-object-to-container
   - arguments:
     - default: true
