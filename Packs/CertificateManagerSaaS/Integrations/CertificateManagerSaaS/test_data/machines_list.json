@@ -1,0 +1,6 @@
+{
+  "machines": [
+    { "id": "mach-0001", "machineName": "F5 v17", "status": "ACTIVE", "pluginId": "plug-f5", "edgeInstanceId": "edge-01", "creationDate": "2025-11-02T12:00:00Z", "modificationDate": "2026-09-01T09:00:00Z" },
+    { "id": "mach-0002", "machineName": "Prod Key Vault", "status": "ACTIVE", "pluginId": "plug-akv", "edgeInstanceId": null, "creationDate": "2025-12-10T12:00:00Z", "modificationDate": "2026-08-11T09:00:00Z" }
+  ]
+}
