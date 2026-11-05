@@ -1244,7 +1244,7 @@ script:
       description: Entity type of the entity related to the observable.
       type: String
     - contextPath: OpenCTI.Observable.created
-      description: Creation date of the observable.
+      description: Creation date and time of the observable.
       type: Date
     - contextPath: OpenCTI.Observable.updatedAt
       description: Last update date of the observable.
