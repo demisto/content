@@ -972,7 +972,7 @@ script:
     - description: Context of the grouping. Use opencti-grouping-context-list to find all grouping contexts in OpenCTI.
       name: context
       required: true
-    description: Create a new grouping.
+    description: Creates a new grouping.
     name: opencti-grouping-create
     outputs:
     - contextPath: OpenCTI.Grouping.id
