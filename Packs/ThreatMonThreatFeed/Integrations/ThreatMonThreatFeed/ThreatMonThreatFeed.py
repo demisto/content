@@ -444,6 +444,7 @@ def crawl(
                 # Skip this collection for this run; its position is kept, so the next run retries it.
                 # The error is raised at the end of the run, so it is still reported.
                 demisto.info(f"ThreatMon: failed to fetch collection {collection_name}: {e}")
+                demisto.debug(traceback.format_exc())
                 stats["failed"].append(collection_name)
                 errors.append(f"{collection_name}: {e}")
                 break

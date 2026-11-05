@@ -329,9 +329,12 @@ def test_failing_collection_does_not_block_the_others(context, created, mocker):
         },
     }
     server.failing_collections = {ALL}
+    debug = mocker.patch.object(feed.demisto, "debug")
 
     with pytest.raises(DemistoException, match="All Threat Indicators"):
         run_fetch(server, params, mocker)
+
+    assert any("Traceback" in str(call.args[0]) for call in debug.call_args_list)
 
     assert server.calls[0]["collection"] == ALL
     assert values(created) == ["1.1.1.0", "1.1.1.1", "1.1.1.2"]
