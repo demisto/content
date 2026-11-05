@@ -1,0 +1,450 @@
+{
+    "id": "Luminar Cognyte V3 Feeds Dashboard",
+    "version": -1,
+    "fromVersion": "6.8.0",
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 30,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "Luminar Cognyte V3 Feeds Dashboard",
+    "layout": [
+        {
+            "id": "28d2a340-cf8f-11f1-a6d3-ff11ccaf7801",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "28d2a340-cf8f-11f1-a6d3-ff11ccaf7801",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "fcb80140-cf90-11f1-a6d3-ff11ccaf7801",
+                "version": 1,
+                "modified": "2026-10-04T18:05:29.063302063Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Luminar Indicators by Type",
+                "prevName": "Luminar Indicators by Type",
+                "dataType": "indicators",
+                "widgetType": "pie",
+                "query": "sourceBrands:CognyteLuminarV3",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "type"
+                    ],
+                    "showGraphValues": true,
+                    "valuesFormat": "abbreviated"
+                },
+                "size": 0,
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "29239110-cf8f-11f1-a6d3-ff11ccaf7801",
+            "forceRange": false,
+            "x": 4,
+            "y": 0,
+            "i": "29239110-cf8f-11f1-a6d3-ff11ccaf7801",
+            "w": 8,
+            "h": 3,
+            "widget": {
+                "id": "fce17b20-cf90-11f1-a6d3-ff11ccaf7801",
+                "version": 1,
+                "modified": "2026-10-04T18:42:42.785627813Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Luminar Ingestion Profile",
+                "prevName": "Luminar Ingestion Profile",
+                "dataType": "indicators",
+                "widgetType": "column",
+                "query": "sourceBrands:CognyteLuminarV3",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "occurred(d)",
+                        "type"
+                    ],
+                    "showGraphValues": true,
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "Date",
+                    "yAxisLabel": "Total Indicators Ingested"
+                },
+                "size": 0,
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "299b7d40-cf8f-11f1-a6d3-ff11ccaf7801",
+            "forceRange": false,
+            "x": 0,
+            "y": 3,
+            "i": "299b7d40-cf8f-11f1-a6d3-ff11ccaf7801",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "fd04e860-cf90-11f1-a6d3-ff11ccaf7801",
+                "version": 1,
+                "modified": "2026-10-04T18:36:43.786148558Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Luminar Incident Threat Score Profile",
+                "prevName": "Luminar Incident Threat Score Profile",
+                "dataType": "indicators",
+                "widgetType": "pie",
+                "query": "sourceBrands:CognyteLuminarV3 and type:\"Luminar Incident\" and luminarthreatscore:*",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "customGroupBy": [
+                        {
+                            "Low (<=40)": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "luminarthreatscore",
+                                            "operator": "lessThanOrEqual",
+                                            "right": "40",
+                                            "type": "number"
+                                        }
+                                    ]
+                                ],
+                                "name": "Low (<=40)"
+                            },
+                            "Medium (41-60)": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "luminarthreatscore",
+                                            "operator": "greaterThanOrEqual",
+                                            "right": "41",
+                                            "type": "number"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "field": "luminarthreatscore",
+                                            "operator": "lessThanOrEqual",
+                                            "right": "60",
+                                            "type": "number"
+                                        }
+                                    ]
+                                ],
+                                "name": "Medium (41-60)"
+                            },
+                            "High (61-80)": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "luminarthreatscore",
+                                            "operator": "greaterThanOrEqual",
+                                            "right": "61",
+                                            "type": "number"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "field": "luminarthreatscore",
+                                            "operator": "lessThanOrEqual",
+                                            "right": "80",
+                                            "type": "number"
+                                        }
+                                    ]
+                                ],
+                                "name": "High (61-80)"
+                            },
+                            "Very High (>=81)": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "luminarthreatscore",
+                                            "operator": "greaterThanOrEqual",
+                                            "right": "81",
+                                            "type": "number"
+                                        }
+                                    ]
+                                ],
+                                "name": "Very High (>=81)"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "luminarthreatscore"
+                    ],
+                    "showGraphValues": true,
+                    "showOthers": false,
+                    "valuesFormat": "abbreviated"
+                },
+                "size": 0,
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "2a19d520-cf8f-11f1-a6d3-ff11ccaf7801",
+            "forceRange": false,
+            "x": 4,
+            "y": 3,
+            "i": "2a19d520-cf8f-11f1-a6d3-ff11ccaf7801",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "fd350640-cf90-11f1-a6d3-ff11ccaf7801",
+                "version": 1,
+                "modified": "2026-10-04T18:26:59.452002378Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Luminar IOC Confidence Profile",
+                "prevName": "Luminar IOC Confidence Profile",
+                "dataType": "indicators",
+                "widgetType": "pie",
+                "query": "sourceBrands:CognyteLuminarV3 and (type:IP or type:Domain or type:IPv6 or type:URL or type:Email or type:File or type:Registry or type:MUTEX or type:AS)",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "customGroupBy": [
+                        {
+                            "Low (<=40)": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "confidence",
+                                            "operator": "lessThanOrEqual",
+                                            "right": "40",
+                                            "type": "number"
+                                        }
+                                    ]
+                                ],
+                                "name": "Low (<=40)"
+                            },
+                            "Medium (41-60)": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "confidence",
+                                            "operator": "greaterThanOrEqual",
+                                            "right": "41",
+                                            "type": "number"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "field": "confidence",
+                                            "operator": "lessThanOrEqual",
+                                            "right": "60",
+                                            "type": "number"
+                                        }
+                                    ]
+                                ],
+                                "name": "Medium (41-60)"
+                            },
+                            "High (61-80)": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "confidence",
+                                            "operator": "greaterThanOrEqual",
+                                            "right": "61",
+                                            "type": "number"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "field": "confidence",
+                                            "operator": "lessThanOrEqual",
+                                            "right": "80",
+                                            "type": "number"
+                                        }
+                                    ]
+                                ],
+                                "name": "High (61-80)"
+                            },
+                            "Very High (>=81)": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "confidence",
+                                            "operator": "greaterThanOrEqual",
+                                            "right": "81",
+                                            "type": "number"
+                                        }
+                                    ]
+                                ],
+                                "name": "Very High (>=81)"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "confidence"
+                    ],
+                    "showGraphValues": true,
+                    "showOthers": false,
+                    "valuesFormat": "abbreviated"
+                },
+                "size": 0,
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "2a8945b0-cf8f-11f1-a6d3-ff11ccaf7801",
+            "forceRange": false,
+            "x": 8,
+            "y": 3,
+            "i": "2a8945b0-cf8f-11f1-a6d3-ff11ccaf7801",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "fd57cbf0-cf90-11f1-a6d3-ff11ccaf7801",
+                "version": 1,
+                "modified": "2026-10-04T18:06:52.008346744Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Leaked Credentials by Leak Source",
+                "prevName": "Leaked Credentials by Leak Source",
+                "dataType": "indicators",
+                "widgetType": "pie",
+                "query": "sourceBrands:CognyteLuminarV3 and type:Account and accounttype:\"LEAKED CREDENTIAL\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "luminarleaksource"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "size": 0,
+                "category": ""
+            },
+            "reflectDimensions": true
+        }
+    ],
+    "shouldPublish": false,
+    "shouldCommit": false
+}

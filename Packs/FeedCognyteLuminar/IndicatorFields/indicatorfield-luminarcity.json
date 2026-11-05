@@ -1,0 +1,30 @@
+{
+    "id": "indicator_luminarcity",
+    "version": -1,
+    "name": "Luminar City",
+    "ownerOnly": false,
+    "description": "The city of the location reported by Luminar.",
+    "cliName": "luminarcity",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.9.0",
+    "associatedTypes": [
+        "Location"
+    ]
+}
