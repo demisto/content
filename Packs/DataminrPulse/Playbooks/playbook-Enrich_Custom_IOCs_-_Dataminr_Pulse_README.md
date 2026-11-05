@@ -24,6 +24,7 @@ This playbook does not use any integrations.
 * dataminrpulse-malware-enrich
 * dataminrpulse-threat-actor-enrich
 * dataminrpulse-vulnerability-enrich
+* dataminrpulse-ioc-enrich
 
 ## Playbook Inputs
 
@@ -34,6 +35,7 @@ This playbook does not use any integrations.
 | vulnerability_indicators | List of Vulnerability indicators. | incident.labels.vulnerability_indicators | Optional |
 | malware_indicators | List of Malware indicators. | incident.labels.malware_indicators | Optional |
 | threat_actors_indicators | List of threat actor indicators. | incident.labels.threat_actors_indicators | Optional |
+| ioc_indicators | List of IP, URL and File indicators. | incident.labels.ioc_indicators | Optional |
 
 ## Playbook Outputs
 

@@ -64,7 +64,7 @@ Dataminr has been the global leader in AI for risk detection since 2009. Datamin
 | Alert Type | Filters the incoming alerts with the provided alert type. Default All. | False |
 | Max Fetch | The maximum number of alerts to fetch each time. If the value is greater than 100, it will be considered as 100. The maximum is 100. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
-| Create relationships |  Create relationships between indicators as part of enrichment. | False |
+| Create relationships | Create relationships between indicators as part of enrichment. | False |
 | Trust any certificate (not secure) | Indicates whether to allow connections without verifying the SSL certificate's validity. | False |
 | Use system proxy settings | Indicates whether to use XSOAR's system proxy settings to connect to the API. | False |
 | Incident type |  | False |
