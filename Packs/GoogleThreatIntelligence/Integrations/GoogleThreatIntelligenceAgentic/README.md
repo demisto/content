@@ -4,14 +4,7 @@ This integration allows the security teams to automate and interact with the Goo
 
 This integration was integrated and tested with the Google Threat Intelligence Agentic API.
 
-## Configure Google Threat Intelligence - Agentic in Cortex
-
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| API Key | Provide the API key of the Google Threat Intelligence platform for the authentication. Leave the username field empty and fill in the API key in the password field. | True |
-| Group ID | Specify the ID of the group to which the API quota of the requests should be charged. If not provided, the quota is charged to the user that owns the API key. | False |
-| Trust any certificate (not secure) | | False |
-| Use system proxy settings | | False |
+## Prerequisites
 
 ### Acquiring your API key
 
@@ -21,16 +14,20 @@ Your API key can be found in your GoogleThreatIntelligence account user menu, cl
 
 Your API key carries all your privileges, so keep it secure and don't share it with anyone.
 
+## Configure Google Threat Intelligence - Agentic in Cortex
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Key | Provide the API key of the Google Threat Intelligence platform for the authentication. Leave the username field empty and fill in the API key in the password field. | True |
+| Group ID | Specify the ID of the group to which the API quota of the requests should be charged. If not provided, the quota is charged to the user that owns the API key. | False |
+| Trust any certificate (not secure) | | False |
+| Use system proxy settings | | False |
+
 ### Testing the connection
 
 Click **Test** to validate the configured parameters. The test connectivity sends a `GET` request to the list flows endpoint with the minimum page size and returns `ok` when the credentials are valid.
 
 The integration retries the request three times when the Google Threat Intelligence API responds with a `429` or a `5XX` status code.
-
-## Limitations
-
-- The Google Threat Intelligence Agentic API is available only for the users that have the Agentic capabilities enabled on their Google Threat Intelligence account.
-- The integration does not fetch incidents, as all the use cases are executed on demand through the commands and the playbooks.
 
 ## Commands
 
@@ -2536,3 +2533,8 @@ Note: Each execution creates a new session, hence re-running the command creates
 >The file is **malicious**.
 >
 >- Family: Emotet
+
+## Known Limitations
+
+- The Google Threat Intelligence Agentic API is available only for the users that have the Agentic capabilities enabled on their Google Threat Intelligence account.
+- The integration does not fetch incidents, as all the use cases are executed on demand through the commands and the playbooks.
