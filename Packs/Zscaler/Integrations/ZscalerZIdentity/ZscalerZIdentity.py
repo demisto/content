@@ -63,13 +63,31 @@ def _sanitize_url_entry(value: Any) -> Any:
     """
     if not isinstance(value, str):
         return value
-    return html.unescape(value)
+    prev = value
+    max_unescape_depth = 5
+    for _ in range(max_unescape_depth):
+        if (unescaped := html.unescape(prev)) == prev:
+            break
+        prev = unescaped
+    return prev
 
 
 def _sanitize_url_list(values: list | None) -> list:
     if not values:
         return []
     return [_sanitize_url_entry(v) for v in values]
+
+
+def _merge_category_list(existing: list[str] | None, incoming: list[str] | None, action: str) -> list[str]:
+    """Merges an incoming list of category items with the existing list according to action."""
+    existing_list = existing or []
+    if not incoming:
+        return existing_list
+    if action == "ADD_TO_LIST":
+        return existing_list + [item for item in incoming if item not in existing_list]
+    if action == "REMOVE_FROM_LIST":
+        return [item for item in existing_list if item not in incoming]
+    return incoming
 
 
 def _is_html_content_error(exc: Exception) -> bool:
@@ -455,18 +473,11 @@ class Client(BaseClient):
         """
         # Fetch current category to merge
         current = self.api_request("GET", f"/urlCategories/{category_id}")
-        existing_urls = current.get("urls", [])
-        existing_ips = current.get("ipRanges", [])
+        existing_urls = current.get("urls") or []
+        existing_ips = current.get("ipRanges") or []
 
-        if action == "ADD_TO_LIST":
-            new_urls = existing_urls + [u for u in urls if u not in existing_urls]
-            new_ips = existing_ips + [ip for ip in ips if ip not in existing_ips]
-        elif action == "REMOVE_FROM_LIST":
-            new_urls = [u for u in existing_urls if u not in urls]
-            new_ips = [ip for ip in existing_ips if ip not in ips]
-        else:  # OVERWRITE
-            new_urls = urls
-            new_ips = ips
+        new_urls = _merge_category_list(existing_urls, urls, action)
+        new_ips = _merge_category_list(existing_ips, ips, action)
 
         payload: dict = {
             "id": category_id,
@@ -480,14 +491,26 @@ class Client(BaseClient):
             payload["superCategory"] = current["superCategory"]
         if description is not None:
             payload["description"] = description
-        if keywords is not None:
-            payload["keywords"] = keywords
-        if db_categorized_urls is not None:
-            payload["dbCategorizedUrls"] = db_categorized_urls
-        if keywords_retaining_parent_category is not None:
-            payload["keywordsRetainingParentCategory"] = keywords_retaining_parent_category
-        if ip_ranges_retaining_parent_category is not None:
-            payload["ipRangesRetainingParentCategory"] = ip_ranges_retaining_parent_category
+        elif current.get("description") is not None:
+            payload["description"] = current["description"]
+        if keywords is not None or "keywords" in current:
+            payload["keywords"] = _merge_category_list(current.get("keywords") or [], keywords, action)
+        if db_categorized_urls is not None or "dbCategorizedUrls" in current:
+            payload["dbCategorizedUrls"] = _merge_category_list(
+                current.get("dbCategorizedUrls") or [], db_categorized_urls, action
+            )
+        if keywords_retaining_parent_category is not None or "keywordsRetainingParentCategory" in current:
+            payload["keywordsRetainingParentCategory"] = _merge_category_list(
+                current.get("keywordsRetainingParentCategory") or [],
+                keywords_retaining_parent_category,
+                action,
+            )
+        if ip_ranges_retaining_parent_category is not None or "ipRangesRetainingParentCategory" in current:
+            payload["ipRangesRetainingParentCategory"] = _merge_category_list(
+                current.get("ipRangesRetainingParentCategory") or [],
+                ip_ranges_retaining_parent_category,
+                action,
+            )
 
         try:
             self.api_request("PUT", f"/urlCategories/{category_id}", data=payload, resp_type="response")
@@ -497,9 +520,11 @@ class Client(BaseClient):
             demisto.debug(traceback.format_exc())
             demisto.debug(
                 "Zscaler rejected the URL category update with 'URLs must not contain HTML content'. "
-                "Retrying once with HTML entities decoded in the URL list."
+                "Retrying once with HTML entities decoded in the URL lists."
             )
             payload["urls"] = _sanitize_url_list(payload["urls"])
+            if "dbCategorizedUrls" in payload:
+                payload["dbCategorizedUrls"] = _sanitize_url_list(payload["dbCategorizedUrls"])
             self.api_request("PUT", f"/urlCategories/{category_id}", data=payload, resp_type="response")
 
     # ---- URL Quota ----
@@ -1052,12 +1077,6 @@ def zia_category_update_command(client: Client, args: dict) -> CommandResults:
     urls = argToList(args.get("url", ""))
     ips = argToList(args.get("ip", ""))
     action = args.get("action", "")
-
-    if not urls and not ips:
-        raise DemistoException("At least one of 'url' or 'ip' arguments must be provided.")
-    if not action:
-        raise DemistoException("The 'action' argument is required.")
-
     keywords = argToList(args.get("keywords")) if args.get("keywords") else None
     description = args.get("description")
     db_categorized_urls = argToList(args.get("db_categorized_urls")) if args.get("db_categorized_urls") else None
@@ -1067,6 +1086,29 @@ def zia_category_update_command(client: Client, args: dict) -> CommandResults:
     ip_ranges_retaining = (
         argToList(args.get("ip_ranges_retaining_parent_category")) if args.get("ip_ranges_retaining_parent_category") else None
     )
+
+    if not any(
+        (
+            urls,
+            ips,
+            keywords is not None,
+            description is not None,
+            db_categorized_urls is not None,
+            keywords_retaining is not None,
+            ip_ranges_retaining is not None,
+        )
+    ):
+        raise DemistoException(
+            "At least one of 'url', 'ip', 'keywords', 'description', 'db_categorized_urls', "
+            "'keywords_retaining_parent_category', or 'ip_ranges_retaining_parent_category' arguments must be provided."
+        )
+    if not action:
+        raise DemistoException("The 'action' argument is required.")
+    valid_actions = {"ADD_TO_LIST", "REMOVE_FROM_LIST", "OVERWRITE"}
+    if action not in valid_actions:
+        raise DemistoException(
+            f"Invalid action '{action}'. The 'action' argument must be one of: {', '.join(sorted(valid_actions))}."
+        )
 
     client.update_url_category(
         category_id=category_id,
