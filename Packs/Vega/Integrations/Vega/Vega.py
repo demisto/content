@@ -110,10 +110,10 @@ _INCIDENT_ALERT_LIST_FIELDS = (
     "comments",
     "labels",
     "skills",
-    "actors",
-    "targets",
 )
+_INCIDENT_ALERT_FIELD_VALUE_MAP_FIELDS = ("actors", "targets")
 _INCIDENT_ALERT_OBJECT_FIELDS = ("assignee", "mitre", "escalation")
+_MISSING_FIELD_PLACEHOLDERS = frozenset({"", "n/a", "na", "null"})
 INCIDENT_ALERT_LOOKUP_BATCH_SIZE = 1000
 VEGA_MIRROR_TAG_FROM_VEGA = "From Vega"
 VEGA_MIRROR_TAG_TO_VEGA = "To Vega"
@@ -2547,6 +2547,57 @@ def _normalize_list_items(value: Any) -> list[str]:
     return items
 
 
+def _is_missing_field_placeholder(value: Any) -> bool:
+    """Return True for None or string placeholders such as N/A, na, null, or blank."""
+    if value is None:
+        return True
+    return isinstance(value, str) and value.strip().lower() in _MISSING_FIELD_PLACEHOLDERS
+
+
+def _preprocess_actor_target_fields(data_list: Any) -> dict[str, Any]:
+    """Reshape actors/targets from [{field, values}] into {field: values}.
+
+    Preserves order and duplicates inside each values list. Grid-style values (list of
+    objects) stay as objects. Missing or placeholder inputs become {}.
+    """
+    if data_list is None or data_list == [] or data_list == {}:
+        return {}
+    if _is_missing_field_placeholder(data_list):
+        return {}
+    if isinstance(data_list, dict):
+        return data_list
+    if not isinstance(data_list, list):
+        return {}
+
+    result: dict[str, Any] = {}
+    for item in data_list:
+        if not isinstance(item, dict):
+            continue
+        field = item.get("field")
+        if field is None or _is_missing_field_placeholder(field):
+            continue
+        field_key = str(field).strip()
+        if not field_key or field_key.lower() in _MISSING_FIELD_PLACEHOLDERS:
+            continue
+        values = item.get("values")
+        if values is None or values == [] or _is_missing_field_placeholder(values):
+            result[field_key] = []
+        elif isinstance(values, list):
+            result[field_key] = values
+        else:
+            result[field_key] = []
+    return result
+
+
+def _preprocess_vega_related_alerts(alerts: Any) -> list[Any]:
+    """Normalize a Vega related-alerts list; missing or placeholder values become []."""
+    if alerts is None or alerts == [] or _is_missing_field_placeholder(alerts):
+        return []
+    if not isinstance(alerts, list):
+        return []
+    return alerts
+
+
 def _ensure_recommended_action_description_newline(description: Any) -> str:
     """Ensure a recommended-action description ends with a newline for XSOAR grid wrapping."""
     text = str(description or "")
@@ -3197,6 +3248,11 @@ def _format_raw_entity_for_xsoar(raw: dict) -> None:
         raw["vegaComments"] = _format_vega_comments_html(raw.get("comments"))
     if "recommendedActions" in raw:
         raw["recommendedActions"] = _format_recommended_actions_for_grid(raw.get("recommendedActions"))
+    for key in _INCIDENT_ALERT_FIELD_VALUE_MAP_FIELDS:
+        if key in raw:
+            raw[key] = _preprocess_actor_target_fields(raw.get(key))
+    if "alerts" in raw:
+        raw["alerts"] = _preprocess_vega_related_alerts(raw.get("alerts"))
     _apply_vega_mitre_attack_format(raw)
 
 
@@ -4107,6 +4163,8 @@ def _format_incident_alert_grid_row(alert: dict[str, Any]) -> dict[str, Any]:
     for key in _INCIDENT_ALERT_LIST_FIELDS:
         value = alert.get(key)
         row[key] = value if isinstance(value, list) else []
+    for key in _INCIDENT_ALERT_FIELD_VALUE_MAP_FIELDS:
+        row[key] = _preprocess_actor_target_fields(alert.get(key))
     for key in _INCIDENT_ALERT_OBJECT_FIELDS:
         value = alert.get(key)
         row[key] = value if isinstance(value, dict) else None
@@ -4212,7 +4270,8 @@ def incident_to_xsoar_incident(
     if timeline_events is not None:
         raw["timelineEvents"] = timeline_events
         raw["vegaTimelineEvents"] = _format_timeline_events_html(timeline_events)
-    if isinstance(raw.get("alerts"), list):
+    raw["alerts"] = _preprocess_vega_related_alerts(raw.get("alerts"))
+    if raw["alerts"]:
         if include_alert_metadata and client is not None:
             raw["alerts"] = _enrich_incident_alerts(client, raw.get("alerts"))
         else:

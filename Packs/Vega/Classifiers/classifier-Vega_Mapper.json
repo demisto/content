@@ -75,6 +75,12 @@
                 "Vega Related Incidents": {
                     "simple": "relatedIncidents"
                 },
+                "Vega Actors": {
+                    "simple": "actors"
+                },
+                "Vega Targets": {
+                    "simple": "targets"
+                },
                 "Vega Alert Link": {
                     "simple": "link"
                 },

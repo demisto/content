@@ -29,6 +29,9 @@ from Vega import (
     _is_retryable_http_error,
     _format_key_findings_html,
     _format_raw_entity_for_xsoar,
+    _format_incident_alert_grid_row,
+    _preprocess_actor_target_fields,
+    _preprocess_vega_related_alerts,
     _format_recommended_actions_for_grid,
     VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY,
     _format_timeline_events_html,
@@ -1192,6 +1195,105 @@ def test_parse_backfill_days_defaults_when_none():
     parsed = datetime.strptime(result, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
     today_start = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0)
     assert (today_start - parsed).days == 30
+
+
+def test_preprocess_actor_target_fields_standard_and_grid():
+    assert _preprocess_actor_target_fields(
+        [
+            {"field": "src_endpoint.ip", "values": ["1.1.1.1"]},
+            {"field": "dst_endpoint.ip", "values": ["2.2.2.2", "3.3.3.3"]},
+            {
+                "field": "network_grid",
+                "values": [
+                    {"ip": "10.0.0.1", "hostname": "host-a"},
+                    {"ip": "10.0.0.2", "hostname": "host-b"},
+                ],
+            },
+        ]
+    ) == {
+        "src_endpoint.ip": ["1.1.1.1"],
+        "dst_endpoint.ip": ["2.2.2.2", "3.3.3.3"],
+        "network_grid": [
+            {"ip": "10.0.0.1", "hostname": "host-a"},
+            {"ip": "10.0.0.2", "hostname": "host-b"},
+        ],
+    }
+
+
+def test_preprocess_actor_target_fields_preserves_duplicates():
+    assert _preprocess_actor_target_fields([{"field": "src_endpoint.ip", "values": ["1.1.1.1", "1.1.1.1", "2.2.2.2"]}]) == {
+        "src_endpoint.ip": ["1.1.1.1", "1.1.1.1", "2.2.2.2"]
+    }
+
+
+@pytest.mark.parametrize(
+    "value",
+    [None, [], {}, "", "N/A", "na", "null", "NA", 123, "not-a-list"],
+)
+def test_preprocess_actor_target_fields_edge_cases(value):
+    assert _preprocess_actor_target_fields(value) == {}
+
+
+def test_preprocess_actor_target_fields_skips_bad_items_and_empty_values():
+    assert _preprocess_actor_target_fields(
+        [
+            None,
+            "skip",
+            {"field": None, "values": ["1.1.1.1"]},
+            {"field": "", "values": ["1.1.1.1"]},
+            {"field": "N/A", "values": ["1.1.1.1"]},
+            {"values": ["1.1.1.1"]},
+            {"field": "src_endpoint.ip", "values": None},
+            {"field": "dst_endpoint.ip", "values": "N/A"},
+            {"field": "account.uid"},
+            {"field": "keep.me", "values": ["ok"]},
+        ]
+    ) == {
+        "src_endpoint.ip": [],
+        "dst_endpoint.ip": [],
+        "account.uid": [],
+        "keep.me": ["ok"],
+    }
+
+
+def test_preprocess_actor_target_fields_idempotent_for_dict():
+    shaped = {"src_endpoint.ip": ["1.1.1.1"]}
+    assert _preprocess_actor_target_fields(shaped) == shaped
+
+
+@pytest.mark.parametrize("value", [None, [], "", "N/A", "na", "null", {}, 123])
+def test_preprocess_vega_related_alerts_edge_cases(value):
+    assert _preprocess_vega_related_alerts(value) == []
+
+
+def test_format_raw_entity_for_xsoar_alert_actors_and_targets():
+    alert = {
+        "vegaEntityType": "Vega Alert",
+        "actors": [{"field": "src_endpoint.ip", "values": ["1.1.1.1"]}],
+        "targets": [{"field": "account.uid", "values": ["890123456789"]}],
+    }
+    _format_raw_entity_for_xsoar(alert)
+    assert alert["actors"] == {"src_endpoint.ip": ["1.1.1.1"]}
+    assert alert["targets"] == {"account.uid": ["890123456789"]}
+
+
+def test_format_incident_alert_grid_row_preprocesses_actors_and_targets():
+    row = _format_incident_alert_grid_row(
+        {
+            "id": "alert-1",
+            "actors": [{"field": "src_endpoint.ip", "values": ["1.1.1.1", "1.1.1.1"]}],
+            "targets": "N/A",
+        }
+    )
+    assert row["actors"] == {"src_endpoint.ip": ["1.1.1.1", "1.1.1.1"]}
+    assert row["targets"] == {}
+
+
+def test_incident_to_xsoar_incident_normalizes_missing_alerts():
+    xsoar_incident = incident_to_xsoar_incident({"id": "inc-1", "name": "No alerts", "alerts": "N/A"})
+    raw = json.loads(xsoar_incident["rawJSON"])
+    assert raw["alerts"] == []
+    assert xsoar_incident["CustomFields"]["vegaalerts"] == []
 
 
 def test_format_recommended_actions_for_grid_empty_shows_placeholder():
