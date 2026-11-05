@@ -868,7 +868,7 @@ script:
       description: New incident response ID.
       type: String
   - arguments: []
-    description: Get a list of all incident response types.
+    description: Gets a list of all incident response types.
     name: opencti-incident-response-types-list
     outputs:
     - contextPath: OpenCTI.IncidentResponseTypes.IncidentResponseTypesList.id
