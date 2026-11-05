@@ -312,7 +312,7 @@ def create_worker_context(workers, num_of_managers):
     return [_worker_context(_as_dict(_as_dict(worker).get("Worker_Data")), num_of_managers) for worker in _as_list(workers)]
 
 
-def sanitize_wsu_id_token(token) -> str:
+def sanitize_wsu_id_token(token: Any) -> str:
     """Replaces every character that is not allowed in the wsu:Id XML attribute (outside [A-Za-z0-9._-]) with '_'.
 
     The token is only used as an identifier of the UsernameToken element and is not validated by Workday,
