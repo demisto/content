@@ -1,0 +1,32 @@
+{
+    "name": "QualysETM",
+    "description": "Qualys Enterprise TruRisk Management (ETM) consolidates findings relating to vulnerabilities, misconfigurations, malware, and compliance from multiple sources into a unified view with a TruRisk Score.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2026-10-12T00:00:00Z",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [],
+    "useCases": [
+        "Vulnerability Management"
+    ],
+    "keywords": [
+        "Qualys",
+        "ETM",
+        "TruRisk",
+        "Vulnerability Management"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

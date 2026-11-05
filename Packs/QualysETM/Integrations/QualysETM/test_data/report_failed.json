@@ -1,0 +1,12 @@
+{
+    "id": "0b127284-e128-4d02-a720-2748240c9f1a",
+    "name": "Critical Findings Report",
+    "reportFormat": "JSON",
+    "status": "FAILED",
+    "findingsQql": "finding.severity: 5",
+    "created": "2026-10-01T10:00:00Z",
+    "createdBy": {
+        "name": "john_doe"
+    },
+    "updated": "2026-10-01T10:02:00Z"
+}
