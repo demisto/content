@@ -191,6 +191,16 @@ script:
       description: Request body.
     description: send HTTP PUT request.
     execution: true
+  - name: core-api-patch
+    arguments:
+    - name: uri
+      required: true
+      default: true
+      description: Request endpoint (e.g. /platform/iam/v1/user/{user_email}).
+    - name: body
+      description: Request body.
+    description: send HTTP PATCH request.
+    execution: true
   - name: core-api-delete
     arguments:
     - name: uri

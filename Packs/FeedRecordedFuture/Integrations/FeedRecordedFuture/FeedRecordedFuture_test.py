@@ -5,7 +5,15 @@ from csv import DictReader
 
 import pytest
 from CommonServerPython import argToList
-from FeedRecordedFuture import Client, fetch_indicators_command, get_indicator_type, get_indicators_command, requests
+from FeedRecordedFuture import (
+    Client,
+    fetch_indicators_command,
+    get_indicator_type,
+    get_indicators_command,
+    main,
+    parse_services,
+    requests,
+)
 from pytest_mock import MockerFixture
 
 
@@ -628,3 +636,101 @@ def test_client_init_with_null_values():
      - Verify that no errors were thrown (especially the part that check that malicious_threshold <= suspicious_threshold)
     """
     Client(indicator_type="ip", api_token="123", services=["fusion"], malicious_threshold=None, suspicious_threshold=None)
+
+
+@pytest.mark.parametrize(
+    "services_param, expected_services",
+    [
+        (["connectApi"], ["connectApi"]),
+        ('["connectApi"]', ["connectApi"]),
+        ("connectApi", ["connectApi"]),
+        ("connectApi,fusion", ["connectApi", "fusion"]),
+        (
+            ["[", '"', "c", "o", "n", "n", "e", "c", "t", "A", "p", "i", '"', "]", "fusion"],
+            ["fusion"],
+        ),
+        (
+            ["[", '"', "c", "o", "n", "n", "e", "c", "t", "A", "p", "i", '"', "]"],
+            ["connectApi"],
+        ),
+        (
+            '["[","\\"","c","o","n","n","e","c","t","A","p","i","\\"","]"]',
+            ["connectApi"],
+        ),
+        (
+            '["[","\\"","[","\\"",",","\\"","\\\\","\\"","\\"",",","\\"","c","\\"",",","\\"","o",",","\\"","i","\\"",",","\\"","\\\\","\\"","\\"",",","\\"","]","\\"","]","connectApi"]',
+            ["connectApi"],
+        ),
+        (None, []),
+    ],
+)
+def test_parse_services(services_param: list | str | None, expected_services: list[str]):
+    """
+    Given:
+     - Various 'services' parameter representations including native lists, JSON strings,
+       and UCP character-split strings/arrays.
+
+    When:
+     - Calling parse_services().
+
+    Then:
+     - Verify it normalizes to the expected list of service names without single-character artifacts.
+    """
+    assert parse_services(services_param) == expected_services
+
+
+@pytest.mark.parametrize(
+    "services_param",
+    [
+        ["connectApi"],
+        '["connectApi"]',
+        "connectApi",
+        ["[", '"', "c", "o", "n", "n", "e", "c", "t", "A", "p", "i", '"', "]", "connectApi"],
+        '["[","\\"","[","\\"",",","\\"","\\\\","\\"","\\"",",","\\"","c","\\"",",","\\"","o",",","\\"","i","\\"",",","\\"","\\\\","\\"","\\"",",","\\"","]","\\"","]","connectApi"]',
+        '["[","\\"","c","o","n","n","e","c","t","A","p","i","\\"","]"]',
+    ],
+)
+def test_main_services_param_normalization(mocker, services_param: list | str):
+    """
+    Given:
+     - The 'services' parameter from demisto.params() in different formats:
+       1. A native list (first configuration).
+       2. A JSON-encoded string (after save and re-edit on XSIAM).
+       3. A plain string.
+
+    When:
+     - Running main() with the 'test-module' command.
+
+    Then:
+     - Verify the client is initialized with a proper list of services and test_module completes without
+       raising a 'Service unknown' error.
+    """
+    mocker.patch.object(
+        Client,
+        "build_iterator",
+    )
+    mocker.patch.object(
+        Client,
+        "get_batches_from_file",
+    )
+    mocker.patch(
+        "demistomock.params",
+        return_value={
+            "credentials_api_token": {"password": "dummytoken"},
+            "indicator_type": "ip",
+            "services": services_param,
+            "polling_timeout": "20",
+            "insecure": False,
+            "proxy": False,
+            "threshold": "65",
+            "suspicious_threshold": "25",
+            "risk_score_threshold": "0",
+            "performance": True,
+        },
+    )
+    mocker.patch("demistomock.command", return_value="test-module")
+    mock_return_outputs = mocker.patch("FeedRecordedFuture.return_outputs")
+
+    main()
+
+    mock_return_outputs.assert_called_once_with("ok", {}, {})
