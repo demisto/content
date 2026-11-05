@@ -1,0 +1,10 @@
+!openshell-gateway-info
+!openshell-sandbox-list
+!openshell-sandbox-get name=agent-1
+!openshell-sandbox-logs name=agent-1 lines=20
+!openshell-policy-get name=agent-1
+!openshell-policy-history name=agent-1 limit=5
+!openshell-egress-block-host name=agent-1 host=files.example.com reason="Incident 42"
+!openshell-provider-list name=agent-1
+!openshell-sandbox-stop name=agent-1
+!openshell-sandbox-start name=agent-1
