@@ -7,27 +7,27 @@ This integration was integrated and tested with version 0.1.6 of NVIDIA OpenShel
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Gateway endpoint (host:port) | The OpenShell gateway gRPC endpoint. The gateway is usually private, so run this integration on an engine that can reach it. | True |
-| Workspace |  | False |
-| Gateway CA certificate |  | False |
-| Client certificate |  | False |
-| Client private key |  | False |
-| OIDC bearer token | Only for gateways configured for OIDC authentication. | False |
-| Plaintext gateway (no TLS) | Not secure. Use only for test gateways that do not use TLS. | False |
-| Timeout (seconds) |  | False |
+| Workspace | The default OpenShell workspace for commands that do not specify one. | False |
+| Gateway CA certificate | The PEM CA certificate that signed the gateway certificate \(ca.crt\). | False |
+| Client certificate | The PEM client certificate for mutual TLS \(tls.crt\). | False |
+| Client private key | The PEM private key of the client certificate \(tls.key\). | False |
+| OIDC bearer token | The OIDC access token. Only for gateways configured for OIDC authentication. | False |
+| Plaintext gateway (no TLS) | Whether to connect without TLS. Not secure. Use only for test gateways that do not use TLS. | False |
+| Timeout (seconds) | The number of seconds to wait for each gateway call. | False |
 
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### openshell-gateway-info
+### openshell-gateway-info-get
 
 ***
 Returns the OpenShell gateway version and information.
 
 #### Base Command
 
-`openshell-gateway-info`
+`openshell-gateway-info-get`
 
 #### Input
 
@@ -57,7 +57,7 @@ Lists sandboxes and their phase.
 | --- | --- | --- |
 | workspace | The OpenShell workspace. Defaults to the instance workspace. | Optional | 
 | all_workspaces | Whether to list sandboxes across all workspaces. Possible values are: true, false. Default is false. | Optional | 
-| label_selector | A Kubernetes-style label selector, for example team=ml. | Optional | 
+| label_selector | The Kubernetes-style label selector to filter sandboxes by, for example team=ml. | Optional | 
 | limit | The maximum number of sandboxes to return. Default is 50. | Optional | 
 
 #### Context Output
@@ -114,7 +114,7 @@ Stops a sandbox. The agent stops running. Its identity and workspace are kept, s
 | name | The sandbox name. | Required | 
 | workspace | The OpenShell workspace. Defaults to the instance workspace. | Optional | 
 | wait | Whether to wait until the sandbox reports STOPPED. Possible values are: true, false. Default is true. | Optional | 
-| timeout_seconds | How long to wait for the sandbox to stop, in seconds. Default is 120. | Optional | 
+| timeout_seconds | The number of seconds to wait for the sandbox to stop. Default is 120. | Optional | 
 
 #### Context Output
 
@@ -227,7 +227,7 @@ Deletes a sandbox. This action cannot be undone.
 | --- | --- | --- |
 | name | The sandbox name. | Required | 
 | workspace | The OpenShell workspace. Defaults to the instance workspace. | Optional | 
-| confirm | This action cannot be undone. Set to yes to confirm. Possible values are: yes, no. | Required | 
+| confirm | Whether to confirm the action, which cannot be undone. Set to yes to run it. Possible values are: yes, no. | Required | 
 | allow_missing | Whether to succeed if the sandbox does not exist. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
@@ -255,8 +255,8 @@ Returns recent sandbox log lines, such as network decisions, process and policy 
 | name | The sandbox name. | Required | 
 | workspace | The OpenShell workspace. Defaults to the instance workspace. | Optional | 
 | lines | The number of log lines to return. Default is 200. | Optional | 
-| min_level | The minimum log level, for example WARN. | Optional | 
-| sources | A comma-separated list of log sources to include. | Optional | 
+| min_level | The minimum log level to return, for example WARN. | Optional | 
+| sources | The comma-separated list of log sources to include. | Optional | 
 
 #### Context Output
 
@@ -343,7 +343,7 @@ Removes every allow entry for a host from the sandbox network policy, so the age
 | name | The sandbox name. | Required | 
 | host | The destination host, for example files.example.com. | Required | 
 | workspace | The OpenShell workspace. Defaults to the instance workspace. | Optional | 
-| reason | Free text recorded on the new policy revision. Default is Cortex response. | Optional | 
+| reason | The reason for the change, recorded on the new policy revision. Default is Cortex response. | Optional | 
 
 #### Context Output
 
@@ -370,7 +370,7 @@ Removes a network rule from the sandbox policy. All destinations of the rule are
 | name | The sandbox name. | Required | 
 | rule_name | The network rule name. | Required | 
 | workspace | The OpenShell workspace. Defaults to the instance workspace. | Optional | 
-| reason | Free text recorded on the new policy revision. Default is Cortex response. | Optional | 
+| reason | The reason for the change, recorded on the new policy revision. Default is Cortex response. | Optional | 
 
 #### Context Output
 
@@ -399,7 +399,7 @@ Removes a single host and port from a network rule.
 | host | The host to remove. | Required | 
 | port | The port to remove. 0 removes the host on any port. Default is 0. | Optional | 
 | workspace | The OpenShell workspace. Defaults to the instance workspace. | Optional | 
-| reason | Free text recorded on the new policy revision. Default is Cortex response. | Optional | 
+| reason | The reason for the change, recorded on the new policy revision. Default is Cortex response. | Optional | 
 
 #### Context Output
 
@@ -427,7 +427,7 @@ Removes a binary, for example /usr/bin/curl, from a network rule so it can no lo
 | rule_name | The network rule name. | Required | 
 | binary_path | The binary path. | Required | 
 | workspace | The OpenShell workspace. Defaults to the instance workspace. | Optional | 
-| reason | Free text recorded on the new policy revision. Default is Cortex response. | Optional | 
+| reason | The reason for the change, recorded on the new policy revision. Default is Cortex response. | Optional | 
 
 #### Context Output
 
@@ -479,7 +479,7 @@ Detaches a credential provider from a sandbox, so the agent no longer receives t
 | name | The sandbox name. | Required | 
 | provider | The provider name. | Required | 
 | workspace | The OpenShell workspace. Defaults to the instance workspace. | Optional | 
-| confirm | This action cannot be undone. Set to yes to confirm. Possible values are: yes, no. | Required | 
+| confirm | Whether to confirm the action, which cannot be undone. Set to yes to run it. Possible values are: yes, no. | Required | 
 
 #### Context Output
 

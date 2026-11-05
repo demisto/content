@@ -18,6 +18,7 @@ from openshell._proto import datamodel_pb2, openshell_pb2, sandbox_pb2
 PREFIX = "OpenShell"
 DEFAULT_ENDPOINT = "127.0.0.1:17670"
 DEFAULT_WORKSPACE = "default"
+DEFAULT_TIMEOUT = 30
 
 """ HELPERS """
 
@@ -38,26 +39,32 @@ def normalize_pem(content: str) -> str:
     return "\n".join(rebuilt) + "\n"
 
 
-def write_secret_file(content: str, suffix: str) -> Path:
-    fd, path = tempfile.mkstemp(suffix=suffix)
-    with os.fdopen(fd, "w") as f:
-        f.write(normalize_pem(content))
+def write_secret_file(directory: str, content: str, filename: str) -> Path:
+    """Write a PEM credential to a file readable only by the integration, inside a directory removed on close."""
+    path = Path(directory) / filename
+    path.write_text(normalize_pem(content))
     os.chmod(path, 0o600)
-    return Path(path)
+    return path
 
 
 def get_secret(params: dict, name: str) -> str:
+    """Return the value of a type 9 credential parameter."""
     value = params.get(name)
     if isinstance(value, dict):
         return value.get("password") or ""
     return value or ""
 
 
-def phase_name(phase: int) -> str:
+def enum_name(enum: Any, value: int, prefix: str) -> str:
+    """Return a protobuf enum value as a short name, for example SANDBOX_PHASE_READY as READY."""
     try:
-        return openshell_pb2.SandboxPhase.Name(phase).replace("SANDBOX_PHASE_", "")
+        return enum.Name(value).replace(prefix, "")
     except ValueError:
-        return str(phase)
+        return str(value)
+
+
+def phase_name(phase: int) -> str:
+    return enum_name(openshell_pb2.SandboxPhase, phase, "SANDBOX_PHASE_")
 
 
 def sandbox_to_dict(ref: Any) -> dict:
@@ -105,7 +112,7 @@ def policy_rows(policy: Any) -> list[dict]:
 
 
 class Client:
-    """Wraps the OpenShell SDK. Uses the generated gRPC stub for RPCs the SDK does not wrap yet."""
+    """Connects to the OpenShell gateway through the OpenShell SDK."""
 
     def __init__(
         self,
@@ -121,20 +128,31 @@ class Client:
         self.endpoint = re.sub(r"^https?://", "", endpoint or DEFAULT_ENDPOINT).rstrip("/")
         self.workspace = workspace or DEFAULT_WORKSPACE
         self.timeout = timeout
-        tls = None
-        if not plaintext:
-            tls = TlsConfig(
-                ca_path=write_secret_file(ca_cert, ".ca") if ca_cert else None,
-                cert_path=write_secret_file(client_cert, ".crt") if client_cert else None,
-                key_path=write_secret_file(client_key, ".key") if client_key else None,
-            )
-        self.sdk = SandboxClient(self.endpoint, tls=tls, bearer_token=bearer_token or None, timeout=timeout)
-        self.stub = self.sdk._stub
+        # The SDK reads the TLS files once while it builds the channel, so they are deleted right after.
+        with tempfile.TemporaryDirectory() as tls_dir:
+            tls = None
+            if not plaintext:
+                tls = TlsConfig(
+                    ca_path=write_secret_file(tls_dir, ca_cert, "ca.crt") if ca_cert else None,
+                    cert_path=write_secret_file(tls_dir, client_cert, "tls.crt") if client_cert else None,
+                    key_path=write_secret_file(tls_dir, client_key, "tls.key") if client_key else None,
+                )
+            self.sdk = SandboxClient(self.endpoint, tls=tls, bearer_token=bearer_token or None, timeout=timeout)
+
+    @property
+    def stub(self) -> Any:
+        """The generated gRPC stub of the SDK client.
+
+        The SDK does not wrap the policy, log and provider RPCs yet, so they are called through the stub
+        the SDK already authenticated. This is the only place the integration reaches into the SDK.
+        """
+        return self.sdk._stub
 
     def close(self) -> None:
         self.sdk.close()
 
     def ws(self, args: dict) -> str:
+        """Return the workspace argument, or the instance workspace."""
         return args.get("workspace") or self.workspace
 
 
@@ -142,12 +160,13 @@ class Client:
 
 
 def test_module(client: Client) -> str:
+    """Checks the connection and the credentials with an authenticated gateway call."""
     client.sdk.health()
     client.stub.GetGatewayInfo(openshell_pb2.GetGatewayInfoRequest(), timeout=client.timeout)
     return "ok"
 
 
-def gateway_info_command(client: Client, args: dict) -> CommandResults:
+def gateway_info_get_command(client: Client, args: dict) -> CommandResults:
     health = client.sdk.health()
     info = client.stub.GetGatewayInfo(openshell_pb2.GetGatewayInfoRequest(), timeout=client.timeout)
     out = {"Endpoint": client.endpoint, "Version": health.version, "Info": MessageToDict(info)}
@@ -251,6 +270,7 @@ def sandbox_logs_command(client: Client, args: dict) -> CommandResults:
     ]
     return CommandResults(
         outputs_prefix=f"{PREFIX}.Log",
+        outputs_key_field=["Sandbox", "Time", "Message"],
         outputs=rows,
         readable_output=tableToMarkdown(
             f"Last {len(rows)} log lines for {args['name']}", rows, ["Time", "Level", "Source", "Message"]
@@ -286,7 +306,7 @@ def policy_history_command(client: Client, args: dict) -> CommandResults:
         {
             "Sandbox": args["name"],
             "Version": r.version,
-            "Status": str(r.status),
+            "Status": enum_name(openshell_pb2.PolicyStatus, r.status, "POLICY_STATUS_"),
             "Hash": r.policy_hash,
             "LoadError": r.load_error,
             "Created": r.created_time.ToJsonString() if r.HasField("created_time") else "",
@@ -295,6 +315,7 @@ def policy_history_command(client: Client, args: dict) -> CommandResults:
     ]
     return CommandResults(
         outputs_prefix=f"{PREFIX}.PolicyRevision",
+        outputs_key_field=["Sandbox", "Version"],
         outputs=rows,
         readable_output=tableToMarkdown(
             f"Policy history for {args['name']}", rows, ["Version", "Status", "Created", "LoadError"]
@@ -314,6 +335,7 @@ def merge_policy(client: Client, args: dict, operation: Any, summary: str) -> Co
     out = {"Sandbox": args["name"], "NewVersion": resp.version, "PolicyHash": resp.policy_hash, "Change": summary}
     return CommandResults(
         outputs_prefix=f"{PREFIX}.PolicyChange",
+        outputs_key_field=["Sandbox", "NewVersion"],
         outputs=out,
         readable_output=f"### Policy updated on {args['name']}\n{summary}\nNew policy version: {resp.version}",
     )
@@ -361,6 +383,7 @@ def provider_list_command(client: Client, args: dict) -> CommandResults:
     ]
     return CommandResults(
         outputs_prefix=f"{PREFIX}.Provider",
+        outputs_key_field=["Sandbox", "Name"],
         outputs=rows,
         readable_output=tableToMarkdown(f"Credential providers attached to {args['name']}", rows, ["Name", "Type", "Workspace"]),
     )
@@ -378,13 +401,14 @@ def provider_detach_command(client: Client, args: dict) -> CommandResults:
     out = {"Sandbox": args["name"], "Name": args["provider"], "Action": "detach"}
     return CommandResults(
         outputs_prefix=f"{PREFIX}.Provider",
+        outputs_key_field=["Sandbox", "Name"],
         outputs=out,
         readable_output=f"### Provider {args['provider']} detached from {args['name']}.",
     )
 
 
 COMMANDS = {
-    "openshell-gateway-info": gateway_info_command,
+    "openshell-gateway-info-get": gateway_info_get_command,
     "openshell-sandbox-list": sandbox_list_command,
     "openshell-sandbox-get": sandbox_get_command,
     "openshell-sandbox-stop": lambda c, a: sandbox_lifecycle_command(c, a, "stop"),
@@ -405,6 +429,7 @@ COMMANDS = {
 
 
 def format_error(e: Exception) -> str:
+    """Return a readable error, including the gRPC status code for gateway errors."""
     if isinstance(e, grpc.RpcError):
         return f"OpenShell gateway returned {e.code().name}: {e.details()}"
     return str(e)
@@ -421,7 +446,7 @@ def main() -> None:  # pragma: no cover
         client = Client(
             endpoint=params.get("gateway_endpoint") or DEFAULT_ENDPOINT,
             workspace=params.get("workspace") or DEFAULT_WORKSPACE,
-            timeout=float(params.get("timeout") or 30),
+            timeout=float(arg_to_number(params.get("timeout"), arg_name="Timeout") or DEFAULT_TIMEOUT),
             ca_cert=get_secret(params, "ca_cert"),
             client_cert=get_secret(params, "client_cert"),
             client_key=get_secret(params, "client_key"),

@@ -6,11 +6,14 @@
     "author": "Nadav Kanon",
     "url": "",
     "email": "",
+    "created": "2026-11-05T00:00:00Z",
     "categories": [
         "Endpoint"
     ],
     "tags": [],
-    "useCases": [],
+    "useCases": [
+        "Incident Response"
+    ],
     "keywords": [
         "nvidia",
         "openshell",
@@ -23,5 +26,8 @@
         "marketplacev2",
         "platform"
     ],
-    "dependencies": {}
+    "dependencies": {},
+    "githubUser": [
+        "nkanon"
+    ]
 }

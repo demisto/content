@@ -1,4 +1,4 @@
-!openshell-gateway-info
+!openshell-gateway-info-get
 !openshell-sandbox-list
 !openshell-sandbox-get name=agent-1
 !openshell-sandbox-logs name=agent-1 lines=20

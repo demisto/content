@@ -26,7 +26,36 @@ tasks:
     isautoswitchedtoquietmode: false
     nextTasks:
       '#none#':
+      - '10'
+  '10':
+    id: '10'
+    taskid: 0b9d7c3e-0010-4c1a-9e5f-0a1b2c3d4e5f
+    type: condition
+    task:
+      id: 0b9d7c3e-0010-4c1a-9e5f-0a1b2c3d4e5f
+      version: -1
+      name: Is an NVIDIA OpenShell instance enabled?
+      description: Checks whether an enabled instance of the NVIDIA OpenShell integration is available.
+      type: condition
+      iscommand: false
+      brand: ''
+      scriptName: IsIntegrationAvailable
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 200\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nextTasks:
+      '#default#':
+      - '9'
+      'yes':
       - '1'
+    scriptarguments:
+      brandname:
+        simple: NVIDIA OpenShell
   '1':
     id: '1'
     taskid: 0b9d7c3e-0001-4c1a-9e5f-0a1b2c3d4e5f
@@ -35,11 +64,11 @@ tasks:
       id: 0b9d7c3e-0001-4c1a-9e5f-0a1b2c3d4e5f
       version: -1
       name: Is a sandbox name available?
-      description: Checks that the SandboxName input resolved to a value.
+      description: Checks that the SandboxName input has a value.
       type: condition
       iscommand: false
       brand: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 200\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 370\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -69,12 +98,12 @@ tasks:
       id: 0b9d7c3e-0002-4c1a-9e5f-0a1b2c3d4e5f
       version: -1
       name: Get the sandbox state
-      description: Returns the sandbox phase and policy version from the OpenShell gateway.
+      description: Gets the sandbox phase and policy version from the OpenShell gateway.
       type: regular
       iscommand: true
       brand: NVIDIA OpenShell
       script: NVIDIA OpenShell|||openshell-sandbox-get
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 370\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 540\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -98,12 +127,12 @@ tasks:
       id: 0b9d7c3e-0003-4c1a-9e5f-0a1b2c3d4e5f
       version: -1
       name: Get recent sandbox logs
-      description: Returns the latest network and policy decisions for the sandbox.
+      description: Gets the latest network and policy decisions for the sandbox.
       type: regular
       iscommand: true
       brand: NVIDIA OpenShell
       script: NVIDIA OpenShell|||openshell-sandbox-logs
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 540\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 710\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -131,7 +160,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 710\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 880\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -169,7 +198,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-    view: "{\n  \"position\": {\n    \"x\": 250,\n    \"y\": 880\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 250,\n    \"y\": 1050\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -195,7 +224,7 @@ tasks:
       iscommand: true
       brand: NVIDIA OpenShell
       script: NVIDIA OpenShell|||openshell-sandbox-stop
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1050\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1220\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -225,7 +254,7 @@ tasks:
       iscommand: true
       brand: NVIDIA OpenShell
       script: NVIDIA OpenShell|||openshell-sandbox-get
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1220\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1390\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -250,7 +279,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1390\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1560\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -265,12 +294,12 @@ tasks:
     task:
       id: 0b9d7c3e-0009-4c1a-9e5f-0a1b2c3d4e5f
       version: -1
-      name: Identify the sandbox manually
-      description: No sandbox name was provided. Run openshell-sandbox-list to find the sandbox, then run openshell-sandbox-stop.
+      name: Contain the sandbox manually
+      description: Checks the NVIDIA OpenShell instance, runs openshell-sandbox-list to find the sandbox, and runs openshell-sandbox-stop.
       type: regular
       iscommand: false
       brand: ''
-    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 370\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 800,\n    \"y\": 540\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -281,15 +310,12 @@ tasks:
     nextTasks:
       '#none#':
       - '8'
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1405,\n      \"width\": 880,\n      \"x\": 250,\n      \"y\": 50\n    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1575,\n      \"width\": 880,\n      \"x\": 250,\n      \"y\": 50\n    }\n  }\n}"
 inputs:
 - key: SandboxName
-  value:
-    complex:
-      root: alert
-      accessor: sandboxname
+  value: {}
   required: false
-  description: The name of the OpenShell sandbox to contain.
+  description: The name of the OpenShell sandbox to contain. Map it from the incident or alert field that holds the sandbox name.
   playbookInputQuery: null
 - key: RequireApproval
   value:

@@ -14,7 +14,7 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-This playbook does not use any scripts.
+* IsIntegrationAvailable
 
 ### Commands
 
@@ -28,7 +28,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| SandboxName | The name of the OpenShell sandbox to contain. | alert.sandboxname | Optional |
+| SandboxName | The name of the OpenShell sandbox to contain. Map it from the incident or alert field that holds the sandbox name. |  | Optional |
 | RequireApproval | Whether an analyst must approve before the sandbox is stopped. Set to false to stop the sandbox automatically. | true | Optional |
 
 ## Playbook Outputs
