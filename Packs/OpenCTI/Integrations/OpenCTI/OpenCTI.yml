@@ -924,7 +924,7 @@ script:
     - description: Description of the intrusion set.
       name: description
       required: false
-    description: Create a new intrusion set.
+    description: Creates a new intrusion set.
     name: opencti-intrusion-set-create
     outputs:
     - contextPath: OpenCTI.IntrusionSet.id
