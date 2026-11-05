@@ -953,7 +953,7 @@ script:
     - description: First seen date (ISO 8601 format, e.g., 2020-01-01T00:11:22Z).
       name: first_seen
       required: false
-    - description: Last seen date (ISO 8601 format, e.g., 2020-01-01T00:11:22Z).
+    - description: Last seen date and time (ISO 8601 format, for example, 2020-01-01T00:11:22Z).
       name: last_seen
       required: false
     description: Create a new campaign.
