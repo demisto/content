@@ -1775,7 +1775,7 @@ script:
       required: true
       description: The integration slug.
     - name: organisation_id
-      description: The numeric organisation ID. Defaults to the configured tenant TSG ID when omitted.
+      description: The numeric organization ID. Defaults to the configured tenant TSG ID when omitted.
     - name: workspace_id
       description: Optional upstream workspace scope.
     - name: description
