@@ -1982,7 +1982,7 @@ script:
     - name: note
       description: A free-form note.
     - name: usage_limits
-      description: Usage limit settings (JSON).
+      description: The usage limit settings, in JSON format.
     - name: rate_limits
       description: Rate limit settings (JSON).
     - name: expires_at
