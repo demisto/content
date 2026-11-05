@@ -1,7 +1,9 @@
 """Unit tests for AtlassianApiModule."""
 
+import re
 import time
 from unittest.mock import MagicMock, patch
+from urllib.parse import parse_qs, quote, urlparse
 
 import pytest
 
@@ -12,6 +14,21 @@ from AtlassianApiModule import (
     create_atlassian_oauth_client,
     create_jira_oauth_client,
 )
+
+
+def assert_scopes_are_percent20_separated(url: str, expected_scopes: list[str]) -> None:
+    """Assert the authorize URL joins scopes with %20 and never with '+'.
+
+    A '+' separator gets swallowed by the War Room markdown renderer ('+text+' is underline markup),
+    which leaves Atlassian with one invalid scope (XSUP-80386).
+    """
+    raw_scope_match = re.search(r"[?&]scope=([^&]*)", url)
+    assert raw_scope_match, f"No scope parameter in URL: {url}"
+    raw_scope = raw_scope_match.group(1)
+
+    assert "+" not in raw_scope
+    assert raw_scope == "%20".join(quote(scope, safe="") for scope in expected_scopes)
+    assert parse_qs(urlparse(url).query)["scope"][0].split(" ") == expected_scopes
 
 
 class TestJiraCloudOAuthClient:
@@ -198,6 +215,7 @@ class TestJiraCloudOAuthClient:
         assert "read%3Aaudit-log%3Ajira" in url or "read:audit-log:jira" in url
         assert "response_type=code" in url
         assert "state=" in url
+        assert_scopes_are_percent20_separated(url, oauth_client.get_oauth_scopes())
 
         # Verify state was stored in integration context
         mock_set_context.assert_called_once()
@@ -370,6 +388,7 @@ class TestConfluenceCloudOAuthClient:
         assert "https://auth.atlassian.com/authorize" in url
         assert "client_id=test-client-id" in url
         assert "response_type=code" in url
+        assert_scopes_are_percent20_separated(url, oauth_client.get_oauth_scopes())
 
     def test_oauth2_retrieve_access_token_both_params(self, oauth_client):
         """Test error when both code and refresh_token are provided for Confluence."""
