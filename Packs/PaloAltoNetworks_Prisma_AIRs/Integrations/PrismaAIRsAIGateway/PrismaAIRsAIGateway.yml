@@ -1871,7 +1871,7 @@ script:
       required: true
       description: The integration UUID.
     - name: workspaces
-      description: Workspace binding entries (JSON array).
+      description: A JSON array of workspace binding entries.
     - name: global_workspace_access
       description: Global workspace access settings object (JSON) with enabled/rate_limits/usage_limits.
     - name: override_existing_workspace_access
