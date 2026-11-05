@@ -853,7 +853,7 @@ script:
       name: description
     - description: Organization ID. Use opencti-organization-list to find all organization IDs in OpenCTI, or use opencti-organization-create to create a new organization ID.
       name: created_by
-    - description: Incident Response date (ISO 8601 format, e.g., 2020-01-01T00:11:22.000Z).
+    - description: Incident Response date and time (ISO 8601 format, for example, 2020-01-01T00:11:22.000Z).
       name: incident_response_date
     - description: Incident Response label ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label.
       name: label_id
