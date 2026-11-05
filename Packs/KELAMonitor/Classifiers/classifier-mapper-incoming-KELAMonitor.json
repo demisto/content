@@ -1,0 +1,503 @@
+{
+    "id": "KELA Monitor - Incoming Mapper",
+    "name": "KELA Monitor - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps KELA Monitor incidents to the KELA Monitor incident fields.",
+    "feed": false,
+    "mapping": {
+        "KELA Monitor Hacking Discussion": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "KELA Monitor ID": {
+                    "simple": "kelaMeta.monitorId"
+                },
+                "KELA Monitor Incident ID": {
+                    "simple": "id"
+                },
+                "KELA Monitor Aggregation ID": {
+                    "simple": "feed_property_id"
+                },
+                "KELA Monitor Incident Type": {
+                    "simple": "type"
+                },
+                "KELA Monitor Sub Type": {
+                    "simple": "sub_type"
+                },
+                "KELA Monitor Sub Type Description": {
+                    "simple": "sub_type_description"
+                },
+                "KELA Monitor Tags": {
+                    "simple": "tags"
+                },
+                "KELA Monitor Categories": {
+                    "simple": "categories"
+                },
+                "KELA Monitor Assets": {
+                    "complex": {
+                        "root": "assets",
+                        "accessor": "name",
+                        "filters": [],
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "KELA Monitor Source": {
+                    "simple": "source"
+                },
+                "KELA Monitor Source URL": {
+                    "simple": "source_url"
+                },
+                "KELA Monitor Author": {
+                    "simple": "author"
+                },
+                "KELA Monitor Posted Date": {
+                    "simple": "kelaMeta.postedDateIso"
+                },
+                "KELA Monitor Handled": {
+                    "simple": "user_actions.handled"
+                },
+                "KELA Monitor Starred": {
+                    "simple": "user_actions.star"
+                },
+                "KELA Monitor Title": {
+                    "simple": "title"
+                },
+                "KELA Monitor Thread Key": {
+                    "simple": "thread_key"
+                }
+            }
+        },
+        "KELA Monitor Instant Messaging": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "KELA Monitor ID": {
+                    "simple": "kelaMeta.monitorId"
+                },
+                "KELA Monitor Incident ID": {
+                    "simple": "id"
+                },
+                "KELA Monitor Aggregation ID": {
+                    "simple": "feed_property_id"
+                },
+                "KELA Monitor Incident Type": {
+                    "simple": "type"
+                },
+                "KELA Monitor Sub Type": {
+                    "simple": "sub_type"
+                },
+                "KELA Monitor Sub Type Description": {
+                    "simple": "sub_type_description"
+                },
+                "KELA Monitor Tags": {
+                    "simple": "tags"
+                },
+                "KELA Monitor Categories": {
+                    "simple": "categories"
+                },
+                "KELA Monitor Assets": {
+                    "complex": {
+                        "root": "assets",
+                        "accessor": "name",
+                        "filters": [],
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "KELA Monitor Source": {
+                    "simple": "source_name"
+                },
+                "KELA Monitor Source URL": {
+                    "simple": "source_url"
+                },
+                "KELA Monitor Author": {
+                    "simple": "author"
+                },
+                "KELA Monitor Posted Date": {
+                    "simple": "kelaMeta.postedDateIso"
+                },
+                "KELA Monitor Handled": {
+                    "simple": "user_actions.handled"
+                },
+                "KELA Monitor Starred": {
+                    "simple": "user_actions.star"
+                },
+                "KELA Monitor Chat Name": {
+                    "simple": "chat_name"
+                },
+                "KELA Monitor Chat Type": {
+                    "simple": "chat_type"
+                },
+                "KELA Monitor Message ID": {
+                    "simple": "message_id"
+                }
+            }
+        },
+        "KELA Monitor Leaked Credentials": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "KELA Monitor ID": {
+                    "simple": "kelaMeta.monitorId"
+                },
+                "KELA Monitor Incident ID": {
+                    "simple": "id"
+                },
+                "KELA Monitor Aggregation ID": {
+                    "simple": "feed_property_id"
+                },
+                "KELA Monitor Incident Type": {
+                    "simple": "type"
+                },
+                "KELA Monitor Sub Type": {
+                    "simple": "sub_type"
+                },
+                "KELA Monitor Sub Type Description": {
+                    "simple": "sub_type_description"
+                },
+                "KELA Monitor Tags": {
+                    "simple": "tags"
+                },
+                "KELA Monitor Categories": {
+                    "simple": "categories"
+                },
+                "KELA Monitor Assets": {
+                    "complex": {
+                        "root": "assets",
+                        "accessor": "name",
+                        "filters": [],
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "KELA Monitor Source": {
+                    "simple": "source"
+                },
+                "KELA Monitor Posted Date": {
+                    "simple": "kelaMeta.postedDateIso"
+                },
+                "KELA Monitor Handled": {
+                    "simple": "user_actions.handled"
+                },
+                "KELA Monitor Starred": {
+                    "simple": "user_actions.star"
+                },
+                "KELA Monitor Email": {
+                    "simple": "email"
+                },
+                "KELA Monitor Domain": {
+                    "simple": "domain"
+                },
+                "KELA Monitor Password Masked": {
+                    "simple": "kelaMeta.passwordMasked"
+                },
+                "KELA Monitor Password Type": {
+                    "simple": "password_type"
+                },
+                "KELA Monitor Dump Name": {
+                    "simple": "dump_name"
+                },
+                "KELA Monitor Service": {
+                    "simple": "service"
+                }
+            }
+        },
+        "KELA Monitor Network Vulnerability": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "KELA Monitor ID": {
+                    "simple": "kelaMeta.monitorId"
+                },
+                "KELA Monitor Incident ID": {
+                    "simple": "id"
+                },
+                "KELA Monitor Aggregation ID": {
+                    "simple": "feed_property_id"
+                },
+                "KELA Monitor Incident Type": {
+                    "simple": "type"
+                },
+                "KELA Monitor Sub Type": {
+                    "simple": "sub_type"
+                },
+                "KELA Monitor Sub Type Description": {
+                    "simple": "sub_type_description"
+                },
+                "KELA Monitor Tags": {
+                    "simple": "tags"
+                },
+                "KELA Monitor Categories": {
+                    "simple": "categories"
+                },
+                "KELA Monitor Assets": {
+                    "complex": {
+                        "root": "assets",
+                        "accessor": "name",
+                        "filters": [],
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "KELA Monitor Posted Date": {
+                    "simple": "kelaMeta.postedDateIso"
+                },
+                "KELA Monitor Handled": {
+                    "simple": "user_actions.handled"
+                },
+                "KELA Monitor Starred": {
+                    "simple": "user_actions.star"
+                },
+                "KELA Monitor Service": {
+                    "simple": "service"
+                },
+                "KELA Monitor IP": {
+                    "simple": "ip"
+                },
+                "KELA Monitor Port": {
+                    "simple": "port"
+                },
+                "KELA Monitor Hostname": {
+                    "complex": {
+                        "root": "hostname",
+                        "accessor": "",
+                        "filters": [],
+                        "transformers": [
+                            {
+                                "operator": "join",
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "KELA Monitor Technology": {
+                    "simple": "technology"
+                },
+                "KELA Monitor ISP": {
+                    "simple": "isp"
+                },
+                "KELA Monitor CVEs": {
+                    "simple": "cve_details"
+                }
+            }
+        },
+        "KELA Monitor Credit Cards": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "KELA Monitor ID": {
+                    "simple": "kelaMeta.monitorId"
+                },
+                "KELA Monitor Incident ID": {
+                    "simple": "id"
+                },
+                "KELA Monitor Aggregation ID": {
+                    "simple": "feed_property_id"
+                },
+                "KELA Monitor Incident Type": {
+                    "simple": "type"
+                },
+                "KELA Monitor Sub Type": {
+                    "simple": "sub_type"
+                },
+                "KELA Monitor Sub Type Description": {
+                    "simple": "sub_type_description"
+                },
+                "KELA Monitor Tags": {
+                    "simple": "tags"
+                },
+                "KELA Monitor Categories": {
+                    "simple": "categories"
+                },
+                "KELA Monitor Assets": {
+                    "complex": {
+                        "root": "assets",
+                        "accessor": "name",
+                        "filters": [],
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "KELA Monitor Source": {
+                    "simple": "source"
+                },
+                "KELA Monitor Posted Date": {
+                    "simple": "kelaMeta.postedDateIso"
+                },
+                "KELA Monitor Handled": {
+                    "simple": "user_actions.handled"
+                },
+                "KELA Monitor Starred": {
+                    "simple": "user_actions.star"
+                },
+                "KELA Monitor Card BIN": {
+                    "simple": "bin"
+                },
+                "KELA Monitor Card Number Masked": {
+                    "simple": "kelaMeta.cardNumberMasked"
+                }
+            }
+        },
+        "KELA Monitor Compromised Accounts": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "KELA Monitor ID": {
+                    "simple": "kelaMeta.monitorId"
+                },
+                "KELA Monitor Incident ID": {
+                    "simple": "id"
+                },
+                "KELA Monitor Aggregation ID": {
+                    "simple": "feed_property_id"
+                },
+                "KELA Monitor Incident Type": {
+                    "simple": "type"
+                },
+                "KELA Monitor Sub Type": {
+                    "simple": "sub_type"
+                },
+                "KELA Monitor Sub Type Description": {
+                    "simple": "sub_type_description"
+                },
+                "KELA Monitor Tags": {
+                    "simple": "tags"
+                },
+                "KELA Monitor Categories": {
+                    "simple": "categories"
+                },
+                "KELA Monitor Assets": {
+                    "complex": {
+                        "root": "assets",
+                        "accessor": "name",
+                        "filters": [],
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "KELA Monitor Posted Date": {
+                    "simple": "kelaMeta.postedDateIso"
+                },
+                "KELA Monitor Handled": {
+                    "simple": "user_actions.handled"
+                },
+                "KELA Monitor Starred": {
+                    "simple": "user_actions.star"
+                },
+                "KELA Monitor ISP": {
+                    "simple": "isp"
+                },
+                "KELA Monitor Bot ID": {
+                    "simple": "bot_id"
+                },
+                "KELA Monitor Resource": {
+                    "simple": "resource"
+                },
+                "KELA Monitor Infection Type": {
+                    "simple": "infection_type"
+                },
+                "KELA Monitor Country": {
+                    "simple": "country"
+                },
+                "KELA Monitor Price": {
+                    "simple": "price"
+                },
+                "KELA Monitor Purchased": {
+                    "simple": "purchased"
+                },
+                "KELA Monitor Available Data": {
+                    "simple": "kelaMeta.availableDataJson"
+                }
+            }
+        },
+        "KELA Monitor Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "KELA Monitor ID": {
+                    "simple": "kelaMeta.monitorId"
+                },
+                "KELA Monitor Incident ID": {
+                    "simple": "id"
+                },
+                "KELA Monitor Aggregation ID": {
+                    "simple": "feed_property_id"
+                },
+                "KELA Monitor Incident Type": {
+                    "simple": "type"
+                },
+                "KELA Monitor Sub Type": {
+                    "simple": "sub_type"
+                },
+                "KELA Monitor Sub Type Description": {
+                    "simple": "sub_type_description"
+                },
+                "KELA Monitor Tags": {
+                    "simple": "tags"
+                },
+                "KELA Monitor Categories": {
+                    "simple": "categories"
+                },
+                "KELA Monitor Assets": {
+                    "complex": {
+                        "root": "assets",
+                        "accessor": "name",
+                        "filters": [],
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "KELA Monitor Source": {
+                    "simple": "source"
+                },
+                "KELA Monitor Posted Date": {
+                    "simple": "kelaMeta.postedDateIso"
+                },
+                "KELA Monitor Handled": {
+                    "simple": "user_actions.handled"
+                },
+                "KELA Monitor Starred": {
+                    "simple": "user_actions.star"
+                },
+                "KELA Monitor Title": {
+                    "simple": "title"
+                }
+            }
+        }
+    },
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

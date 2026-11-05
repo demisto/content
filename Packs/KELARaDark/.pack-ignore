@@ -4,3 +4,5 @@ ignore=IM111
 [file:MapRaDarkIncidentDetails.yml]
 ignore=BA124
 
+[file:incidenttype-RaDark.json]
+ignore=GR107

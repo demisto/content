@@ -1,0 +1,37 @@
+{
+    "name": "KELA Monitor",
+    "description": "Track your organization's dark web exposure, such as leaked credentials, compromised accounts and hacking discussions, as Cortex incidents.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "KELA",
+    "url": "https://www.kelacyber.com",
+    "email": "support@ke-la.com",
+    "created": "2026-10-20T00:00:00Z",
+    "githubUser": [
+        "hadarsapan-max"
+    ],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence",
+        "Dark Web"
+    ],
+    "useCases": [
+        "Threat Intelligence Management",
+        "Breach Notification"
+    ],
+    "keywords": [
+        "KELA",
+        "Monitor",
+        "Dark web",
+        "Leaked credentials",
+        "Credit cards",
+        "Botnets"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ]
+}

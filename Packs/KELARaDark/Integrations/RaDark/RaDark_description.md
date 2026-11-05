@@ -1,3 +1,5 @@
+**Deprecated. Use the KELA Monitor integration instead.** RaDark is now KELA Monitor. For new deployments, use the KELA Monitor pack. If you move a monitor to KELA Monitor, disable this instance first, otherwise every incident is created twice.
+
 ## RaDark Integration
 #### Configuration Instructions:
 

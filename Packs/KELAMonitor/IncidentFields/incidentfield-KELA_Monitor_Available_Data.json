@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "KELA Monitor Compromised Accounts"
+    ],
+    "caseInsensitive": true,
+    "cliName": "kelamonitoravailabledata",
+    "closeForm": false,
+    "content": true,
+    "description": "Fields extracted from the bot, as JSON, with secrets masked.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_kelamonitoravailabledata",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "KELA Monitor Available Data",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "longText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

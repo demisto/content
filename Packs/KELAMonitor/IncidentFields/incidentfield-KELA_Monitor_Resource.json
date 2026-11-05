@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "KELA Monitor Compromised Accounts"
+    ],
+    "caseInsensitive": true,
+    "cliName": "kelamonitorresource",
+    "closeForm": false,
+    "content": true,
+    "description": "Server the compromised credentials were used on.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_kelamonitorresource",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "KELA Monitor Resource",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import json
 import traceback
 from typing import Any, cast
+from urllib.parse import quote, quote_plus
 
 import urllib3
 
@@ -50,6 +51,8 @@ DEFAULT_INCIDENT_TYPES = [
     "Hacking Discussions",
 ]  # All types allowed
 DEFAULT_FIRST_TIME_TO_FETCH = "45 days"
+MASK = "********"
+SENSITIVE_KEYS = {"password", "passwd", "pass", "pwd"}
 # Get from instance
 API_KEY = demisto.params().get("api_key")
 MONITOR_ID = demisto.params().get("monitor_id")
@@ -89,16 +92,18 @@ class Client(BaseClient):
                 headers=headers,
             )
         except Exception as e:
-            return_error(str(e))
+            return_sanitized_error(str(e))
 
     def incident_get_items(self, incident_id: str) -> dict[str, Any] | None:
         try:
             return self._http_request(
                 method="GET",
-                url_suffix=FETCH_ITEMS_API.format(incident_id=incident_id, API_KEY=self.api_key, MONITOR_ID=self.monitor_id),
+                url_suffix=FETCH_ITEMS_API.format(
+                    incident_id=quote(incident_id, safe=""), API_KEY=self.api_key, MONITOR_ID=self.monitor_id
+                ),
             )
         except Exception as e:
-            return_error(str(e))
+            return_sanitized_error(str(e))
             return None
 
     def email_enrich_data(self, email: str) -> dict[str, Any] | None:
@@ -117,7 +122,7 @@ class Client(BaseClient):
                 headers=headers,
             )
         except Exception as e:
-            return_error(str(e))
+            return_sanitized_error(str(e))
             return None
 
     def action_on_item(self, item_id: str, action: str) -> dict[str, Any] | None:
@@ -126,22 +131,26 @@ class Client(BaseClient):
         try:
             return self._http_request(
                 method="POST",
-                url_suffix=INCIDENT_ACTION_API.format(item_id=item_id, action=action, API_KEY=self.api_key),
+                url_suffix=INCIDENT_ACTION_API.format(
+                    item_id=quote(item_id, safe=""), action=quote(action, safe=""), API_KEY=self.api_key
+                ),
                 json_data=params,
                 headers=headers,
             )
         except Exception as e:
-            return_error(str(e))
+            return_sanitized_error(str(e))
             return None
 
     def get_item(self, item_id: str) -> dict[str, Any] | None:
         try:
             return self._http_request(
                 method="GET",
-                url_suffix=FETCH_AN_ITEM_API.format(item_id=item_id, API_KEY=self.api_key, MONITOR_ID=self.monitor_id),
+                url_suffix=FETCH_AN_ITEM_API.format(
+                    item_id=quote(item_id, safe=""), API_KEY=self.api_key, MONITOR_ID=self.monitor_id
+                ),
             )
         except Exception as e:
-            return_error(str(e))
+            return_sanitized_error(str(e))
             return None
 
     def message_on_incident(self, message: dict[str, Any], room: dict[str, str]) -> dict[str, Any] | None:
@@ -152,7 +161,7 @@ class Client(BaseClient):
                 method="POST", url_suffix=MESSAGE_API.format(API_KEY=self.api_key), json_data=params, headers=headers
             )
         except Exception as e:
-            return_error(str(e))
+            return_sanitized_error(str(e))
             return None
 
     def get_mention_list(self) -> dict[str, Any] | None:
@@ -161,14 +170,42 @@ class Client(BaseClient):
                 method="GET", url_suffix=MENTIONS_LIST_API.format(API_KEY=self.api_key, MONITOR_ID=self.monitor_id)
             )
         except Exception as e:
-            return_error(str(e))
+            return_sanitized_error(str(e))
             return None
 
 
 """ HELPER FUNCTIONS """
 
 
-def parse_email_enrichment_markdown_table(data: dict):
+def mask_api_key(text: str) -> str:
+    """Remove the API key (raw and URL-encoded) from a text before it reaches the War Room or the logs."""
+    if not API_KEY:
+        return text
+    for variant in {API_KEY, quote(API_KEY, safe=""), quote_plus(API_KEY)}:
+        text = text.replace(variant, "<API_KEY>")
+    return text
+
+
+def return_sanitized_error(message: str) -> None:
+    """Call return_error without the API key, also in debug mode.
+
+    In debug mode return_error appends the traceback of the exception being handled, which holds the request URL and
+    therefore the API key. A sanitized exception raised from None is handled here instead, so that traceback holds
+    neither the original exception nor the key.
+    """
+    sanitized_message = mask_api_key(message)
+    try:
+        raise DemistoException(sanitized_message) from None
+    except DemistoException as sanitized:
+        return_error(sanitized_message, error=sanitized)
+
+
+def mask_password(password: Any, mask: bool) -> Any:
+    """Passwords are masked by default in War Room tables and context; the clear value is kept only when mask is False."""
+    return MASK if mask and password else password
+
+
+def parse_email_enrichment_markdown_table(data: dict, mask: bool = True):
     items = data["incidents"]
     table = []
     # Set headers. Important for order.
@@ -178,7 +215,7 @@ def parse_email_enrichment_markdown_table(data: dict):
         email = item.get("email", "")
         domain = item.get("domain", "")
         password_type = item.get("password_type", "")
-        password = item.get("password", "")
+        password = mask_password(item.get("password", ""), mask)
         service = item.get("service", "")
         source = item.get("source", "")
         date = item.get("posted_date", "")
@@ -196,7 +233,7 @@ def parse_email_enrichment_markdown_table(data: dict):
     return table, tableToMarkdown(name="", t=table, headers=headers, headerTransform=lambda s: s.replace("_", " ").title())
 
 
-def parse_incident_markdown_table(data: dict, incident_id: str):
+def parse_incident_markdown_table(data: dict, incident_id: str, mask: bool = True):
     items = data.get("incidents", "")
     aggr = data.get("aggregation", "")
     if not aggr or not items or not isinstance(items, list) or len(items) < 1:
@@ -212,12 +249,12 @@ def parse_incident_markdown_table(data: dict, incident_id: str):
         count = len(items)
         many_suffix = "s" if count > 1 else ""
         details = f'Incident contains {count} item{many_suffix}. Full details can be found on "items" tab.'
-        table = parse_botnets_markdown_table(items, sub_type)
+        table = parse_botnets_markdown_table(items, sub_type, mask)
     elif aggr_type == "leaked_credentials":
         count = len(items)
         many_suffix = "s" if count > 1 else ""
         details = f'Incident contains {count} item{many_suffix}. Full details can be found on "items" tab.'
-        table = parse_leaked_credentials_markdown_table(items, sub_type)
+        table = parse_leaked_credentials_markdown_table(items, sub_type, mask)
     elif aggr_type == "network_vulnerabilities":
         count = len(items)
         many_suffix = "s" if count > 1 else ""
@@ -240,14 +277,14 @@ def parse_incident_markdown_table(data: dict, incident_id: str):
     return table, details
 
 
-def parse_leaked_credentials_markdown_table(items: list[dict[str, Any]], sub_type: int):
+def parse_leaked_credentials_markdown_table(items: list[dict[str, Any]], sub_type: int, mask: bool = True):
     table = []
     # Parse each item base on subtype
     for item in items:
         item_id = item.get("id", "")
         email = item.get("email", "")
         domain = item.get("domain", "")
-        password = item.get("password", "")
+        password = mask_password(item.get("password", ""), mask)
         password_type = item.get("password_type", "")
         row = {
             "item_id": item_id if item_id else "-",
@@ -272,7 +309,7 @@ def parse_leaked_credentials_markdown_table(items: list[dict[str, Any]], sub_typ
     return table
 
 
-def parse_botnets_markdown_table(items: list[dict[str, Any]], sub_type: int):
+def parse_botnets_markdown_table(items: list[dict[str, Any]], sub_type: int, mask: bool = True):
     table = []
     # Parse each item base on subtype
     for item in items:
@@ -289,7 +326,7 @@ def parse_botnets_markdown_table(items: list[dict[str, Any]], sub_type: int):
             "updated_date": timestamp_to_datestring(updated_date * 1000, DATE_FORMAT) if updated_date else "-",
         }
         if sub_type in [16]:
-            additional_data, username, password = extract_available_data_from_item(item)
+            additional_data, username, password = extract_available_data_from_item(item, mask)
             source_ip = item.get("source_ip", "")
             price = item.get("price", "")
             row["username"] = username if username else "-"
@@ -299,7 +336,7 @@ def parse_botnets_markdown_table(items: list[dict[str, Any]], sub_type: int):
             row["price"] = str(price) + "$" if price else price
         elif sub_type in [17]:
             username = item.get("username", "")
-            password = item.get("password", "")
+            password = mask_password(item.get("password", ""), mask)
             source_ip = item.get("source_ip", "")
             infection_type = item.get("infection_type", "")
             row["username"] = username if username else "-"
@@ -307,7 +344,7 @@ def parse_botnets_markdown_table(items: list[dict[str, Any]], sub_type: int):
             row["source_ip"] = source_ip if source_ip else "-"
             row["infection_type"] = infection_type if infection_type else "-"
         elif sub_type in [18]:
-            additional_data, username, password = extract_available_data_from_item(item)
+            additional_data, username, password = extract_available_data_from_item(item, mask)
             isp = item.get("isp", "")
             infection_type = item.get("infection_type", "")
             price = item.get("price", "")
@@ -318,7 +355,7 @@ def parse_botnets_markdown_table(items: list[dict[str, Any]], sub_type: int):
             row["infection_type"] = infection_type if infection_type else "-"
             row["price"] = str(price) + "$" if price else price
         elif sub_type in [26]:
-            additional_data, username, password = extract_available_data_from_item(item)
+            additional_data, username, password = extract_available_data_from_item(item, mask)
             tags = item.get("tags", "")
             price = item.get("price", "")
             row["username"] = username if username else "-"
@@ -454,11 +491,13 @@ def parse_hacking_discussions_markdown_table(items: list[dict[str, Any]], aggr: 
     return table
 
 
-def extract_available_data_from_item(item: dict) -> tuple[str, str, str]:
+def extract_available_data_from_item(item: dict, mask: bool = True) -> tuple[str, str, str]:
     additional_data = ""
     available_data = item.get("available_data", "")
     if not available_data:
         available_data = {"-": ""}
+    if mask:
+        available_data = {k: mask_password(v, True) if str(k).lower() in SENSITIVE_KEYS else v for k, v in available_data.items()}
     for key in available_data:
         additional_data += key + "(" + available_data[key] + ")," if available_data[key] else key + ","
     if additional_data[-1] == ",":
@@ -574,7 +613,7 @@ def fetch_incidents(
     return next_run, incidents
 
 
-def incident_get_items_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def incident_get_items_command(client: Client, args: dict[str, Any], mask: bool = True) -> CommandResults:
     try:
         incident_id = str(args.get("incident_id", ""))
         incident_data = client.incident_get_items(incident_id=incident_id)
@@ -584,7 +623,7 @@ def incident_get_items_command(client: Client, args: dict[str, Any]) -> CommandR
             and isinstance(incident_data["data"].get("incidents"), list)
             and len(incident_data["data"]["incidents"]) > 0
         ):
-            parsed_data, readable_output = parse_incident_markdown_table(incident_data["data"], incident_id)
+            parsed_data, readable_output = parse_incident_markdown_table(incident_data["data"], incident_id, mask)
         else:
             readable_output = f"No data found for item ID: {incident_id}."
             parsed_data = []
@@ -598,7 +637,7 @@ def incident_get_items_command(client: Client, args: dict[str, Any]) -> CommandR
         raise Exception(f"RaDark Error: Failed to execute command.\nError:\n {e!s} {incident_data}")
 
 
-def email_enrich_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def email_enrich_command(client: Client, args: dict[str, Any], mask: bool = True) -> CommandResults:
     try:
         email = str(args.get("email", ""))
         email_data = client.email_enrich_data(email=email)
@@ -608,7 +647,7 @@ def email_enrich_command(client: Client, args: dict[str, Any]) -> CommandResults
             and isinstance(email_data["data"].get("incidents"), list)
             and len(email_data["data"]["incidents"]) > 0
         ):
-            parsed_data, readable_output = parse_email_enrichment_markdown_table(email_data["data"])
+            parsed_data, readable_output = parse_email_enrichment_markdown_table(email_data["data"], mask)
         else:
             readable_output = f"No data found for email: {email}."
             parsed_data = None
@@ -722,6 +761,9 @@ def main() -> None:
     params = demisto.params()
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
+    mask = argToBoolean(params.get("mask_sensitive_data") if params.get("mask_sensitive_data") is not None else True)
+    if API_KEY:
+        add_sensitive_log_strs(API_KEY)
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_timestamp = get_first_time_fetch(demisto.params().get("first_fetch"))
@@ -750,9 +792,9 @@ def main() -> None:
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif demisto.command() == "radark-incident-get-items":
-            return_results(incident_get_items_command(client, demisto.args()))
+            return_results(incident_get_items_command(client, demisto.args(), mask))
         elif demisto.command() == "radark-email-enrich":
-            return_results(email_enrich_command(client, demisto.args()))
+            return_results(email_enrich_command(client, demisto.args(), mask))
         elif demisto.command() == "radark-item-handle":
             return_results(item_handle_command(client, demisto.args()))
         elif demisto.command() == "radark-item-purchase":
@@ -760,8 +802,8 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
+        demisto.error(mask_api_key(traceback.format_exc()))  # print the traceback, without the API key
+        return_sanitized_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

@@ -1,7 +1,10 @@
 import json
 import os
 
+import pytest
 import RaDark as integration
+import requests
+import requests_mock as requests_mock_module
 
 API_KEY = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 MONITOR_ID = "0000"
@@ -185,6 +188,92 @@ def test_extract_available_data_from_item():
     mock_data = load_mock_response("helper_functions_info.json").get("EXTRACT_AVAILABLE_DATA_FROM_ITEM", {})
     args = mock_data.get("ARGS", {})
     return_value = mock_data.get("RETURN_VALUE", [])
-    results = integration.extract_available_data_from_item(args.get("ITEM", {}))
+    # Stage 10 (A5b-RD-02): passwords are masked by default now; the B0 expectation (clear password) is kept for mask=False.
+    results = integration.extract_available_data_from_item(args.get("ITEM", {}), mask=False)
 
     assert results == tuple(return_value)
+
+
+# Stage 10 additions (approved items A5b-RD-01, A5b-RD-02, A5b-RD-03) ---------------------------------------------------
+def test_extract_available_data_masks_passwords_by_default():
+    """
+    A5b-RD-02.
+    Given: a bot item whose available data holds a username and a password.
+    When: extract_available_data_from_item runs with the default settings.
+    Then: the password is masked both in the returned password and in the additional data string.
+    """
+    item = {"available_data": {"username": "test", "password": "password"}}
+    assert integration.extract_available_data_from_item(item) == ("username(test),password(********)", "test", "********")
+
+
+@pytest.mark.parametrize("mask, expected", [(True, "********"), (False, "Example-Secret")])
+def test_password_tables_follow_the_mask_option(mask, expected):
+    """
+    A5b-RD-02.
+    Given: a leaked credential, an email enrichment row and a sub type 17 bot, each with a password.
+    When: the War Room tables are built with masking on (default) and off.
+    Then: the password column holds ******** when masking is on and the clear value only when it is off.
+    """
+    leak = [{"id": "i", "email": "user@example.com", "password": "Example-Secret", "posted_date": 1568062800}]
+    assert integration.parse_leaked_credentials_markdown_table(leak, 2, mask)[0]["password"] == expected
+    table, markdown = integration.parse_email_enrichment_markdown_table({"incidents": leak}, mask)
+    assert table[0]["password"] == expected
+    assert (expected in markdown) is True
+    bot = [{"id": "b", "bot_id": "x", "username": "u", "password": "Example-Secret"}]
+    assert integration.parse_botnets_markdown_table(bot, 17, mask)[0]["password"] == expected
+
+
+def test_email_enrich_command_masks_by_default(requests_mock):
+    """
+    A5b-RD-02.
+    Given: an email enrichment response with a clear password.
+    When: radark-email-enrich runs with the default settings.
+    Then: neither the War Room table nor the context holds the password.
+    """
+    response = {"data": {"incidents": [{"email": "user@example.com", "password": "Example-Secret", "posted_date": 1568062800}]}}
+    api = integration.EMAIL_ENRICHMENT_API.format(MONITOR_ID=MONITOR_ID, API_KEY=API_KEY)
+    requests_mock.post(f"{integration.BASE_URL}/{api}", json=response)
+    results = integration.email_enrich_command(CLIENT, {"email": "user@example.com"})
+    assert "Example-Secret" not in results.readable_output
+    assert "Example-Secret" not in json.dumps(results.outputs)
+
+
+def test_fetch_error_never_contains_the_api_key(mocker, requests_mock):
+    """
+    A5b-RD-01.
+    Given: fetch-incidents runs in debug mode and the KELA host is unreachable; the connection error text holds the
+           request URL with the apiToken query parameter.
+    When: main() handles the failure (return_error raises for fetch).
+    Then: neither the raised error nor any log line holds the API key.
+    """
+    mocker.patch.object(integration, "API_KEY", API_KEY)
+    mocker.patch.object(integration, "MONITOR_ID", MONITOR_ID)
+    mocker.patch.object(
+        integration.demisto, "params", return_value={"api_key": API_KEY, "monitor_id": MONITOR_ID, "max_fetch": "10"}
+    )
+    mocker.patch.object(integration.demisto, "command", return_value="fetch-incidents")
+    mocker.patch.object(integration.demisto, "getLastRun", return_value={})
+    mocker.patch.object(integration.demisto, "is_debug", True, create=True)
+    logged: list[str] = []
+    for level in ("debug", "info", "error"):
+        mocker.patch.object(integration.demisto, level, side_effect=lambda msg, *a, **k: logged.append(str(msg)))
+    api = integration.FETCH_INCIDENTS_API.format(MONITOR_ID=MONITOR_ID, API_KEY=API_KEY, max_results=10)
+    error_text = f"Max retries exceeded with url: /api/{api}"
+    requests_mock.post(f"{integration.BASE_URL}/{api}", exc=requests.exceptions.ConnectionError(error_text))
+    with pytest.raises(Exception) as error:
+        integration.main()
+    assert "Traceback" in str(error.value)  # debug mode appended the traceback
+    assert API_KEY not in str(error.value)
+    assert all(API_KEY not in line for line in logged)
+
+
+def test_item_ids_are_encoded_in_the_url_path(requests_mock):
+    """
+    A5b-RD-03.
+    Given: an item ID that tries to re-target the request ("x/../../other?").
+    When: radark-item-handle runs.
+    Then: the ID is percent-encoded inside its path segment, so the request stays on the incident action endpoint.
+    """
+    requests_mock.post(requests_mock_module.ANY, json={"data": {"value": True}})
+    integration.item_handle_command(CLIENT, {"item_id": "x/../../other?"})
+    assert requests_mock.last_request.path.startswith("/api/incidents/x%2f..%2f..%2fother%3f/handled")

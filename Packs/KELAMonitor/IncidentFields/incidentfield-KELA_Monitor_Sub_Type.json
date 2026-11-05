@@ -1,0 +1,40 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "KELA Monitor Hacking Discussion",
+        "KELA Monitor Instant Messaging",
+        "KELA Monitor Leaked Credentials",
+        "KELA Monitor Network Vulnerability",
+        "KELA Monitor Credit Cards",
+        "KELA Monitor Compromised Accounts",
+        "KELA Monitor Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "kelamonitorsubtype",
+    "closeForm": false,
+    "content": true,
+    "description": "Numeric KELA Monitor sub type.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_kelamonitorsubtype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "KELA Monitor Sub Type",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

@@ -1,0 +1,55 @@
+{
+  "data": {
+    "incidents": [
+      {
+        "id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1",
+        "feed_property_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb1",
+        "data_id": "100001",
+        "type": "hacking_discussions",
+        "sub_type": 1,
+        "sub_type_description": "Hacking Discussions",
+        "severity": 3,
+        "incident_date": 1767225700,
+        "title": "Example forum thread",
+        "text": "...posted a list for <span>www.example.com</span> &amp; more...",
+        "author": "example-actor",
+        "assets": [],
+        "tags": ["www.example.com"],
+        "categories": ["vulnerability"],
+        "user_actions": {"read": false, "star": false, "hide": false, "handled": false, "publish": false, "request": false, "delete": false},
+        "media": [],
+        "publish_date": 1767225000,
+        "source": "ExampleForum",
+        "source_url": "https://forum.example.org/thread/1",
+        "thread_key": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "image": "https://cdn.example.com/screenshot-1.jpg",
+        "preview": "https://cdn.example.com/preview-1.jpg",
+        "pdf": "https://cdn.example.com/capture-1.pdf"
+      },
+      {
+        "id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa2",
+        "feed_property_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb2",
+        "data_id": "100002",
+        "type": "instant_messaging",
+        "sub_type": 22,
+        "sub_type_description": "Instant Messaging - Discord",
+        "severity": 2,
+        "incident_date": 1767225800,
+        "author": "example-user",
+        "assets": [],
+        "tags": ["www.example.com"],
+        "categories": ["general threat"],
+        "actions": {"read": false, "star": false, "hide": false, "handled": false, "publish": false, "request": false, "delete": false},
+        "media": [],
+        "source_name": "ExampleServer",
+        "chat_name": "lounge",
+        "message_id": "1200000000000000001",
+        "posted_date": 1767225500,
+        "posted_date_range": {"min": 1767225500000, "max": 1767225500000},
+        "snippet": "...see <span>www.example.com</span>...",
+        "full_text": "see https://www.example.com/news"
+      }
+    ],
+    "scrollId": null
+  }
+}

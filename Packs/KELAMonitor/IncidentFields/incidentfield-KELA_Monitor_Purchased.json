@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "KELA Monitor Compromised Accounts"
+    ],
+    "caseInsensitive": true,
+    "cliName": "kelamonitorpurchased",
+    "closeForm": false,
+    "content": true,
+    "description": "Whether the bot data was already purchased.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_kelamonitorpurchased",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "KELA Monitor Purchased",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "boolean",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "KELA Monitor Instant Messaging"
+    ],
+    "caseInsensitive": true,
+    "cliName": "kelamonitorchattype",
+    "closeForm": false,
+    "content": true,
+    "description": "Chat type (Telegram only), for example channel or group.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_kelamonitorchattype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "KELA Monitor Chat Type",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

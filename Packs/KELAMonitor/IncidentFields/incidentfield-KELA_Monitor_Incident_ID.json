@@ -1,0 +1,40 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "KELA Monitor Hacking Discussion",
+        "KELA Monitor Instant Messaging",
+        "KELA Monitor Leaked Credentials",
+        "KELA Monitor Network Vulnerability",
+        "KELA Monitor Credit Cards",
+        "KELA Monitor Compromised Accounts",
+        "KELA Monitor Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "kelamonitorincidentid",
+    "closeForm": false,
+    "content": true,
+    "description": "ID of the incident in KELA Monitor.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_kelamonitorincidentid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "KELA Monitor Incident ID",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}
