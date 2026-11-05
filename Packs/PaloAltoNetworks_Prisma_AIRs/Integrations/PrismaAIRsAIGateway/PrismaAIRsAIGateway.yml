@@ -1631,7 +1631,7 @@ script:
     arguments:
     - name: name
       required: true
-      description: The scope name. Must be unique in the tenant, e.g. ws_production_bx7qw0.
+      description: The scope name. Must be unique in the tenant, for example, ws_production_bx7qw0.
     - name: description
       description: The scope description.
     - name: resources
