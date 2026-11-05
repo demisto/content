@@ -142,7 +142,8 @@ def file_enrichment_script(
 
 def main():  # pragma: no cover
     if is_xdr_tenant():
-        return_results(CommandResults(readable_output="FileEnrichment is not supported on Cortex XDR tenants."))
+        demisto.debug("FileEnrichment is not supported on Cortex XDR tenants, returning empty results.")
+        return_results(CommandResults())
         return
 
     args = demisto.args()
