@@ -1,0 +1,54 @@
+commonfields:
+  id: 8bbbf763-fae9-4748-8048-ff9a42d85e46
+  version: 3
+vcShouldKeepItemLegacyProdMachine: false
+name: CyfirmaCompromisedAccountParser
+script: '-'
+type: python
+tags: []
+enabled: true
+outputs:
+- contextPath: Cyfirma.CA.Uid
+  description: ID
+  type: string
+- contextPath: Cyfirma.CA.Category
+  description: Category
+  type: string
+- contextPath: Cyfirma.CA.Subcategory
+  description: Subcategory
+  type: string
+- contextPath: Cyfirma.CA.Description
+  description: Description
+  type: string
+- contextPath: Cyfirma.CA.Ip
+  description: IP address
+  type: string
+- contextPath: Cyfirma.CA.Url
+  description: Url
+  type: string
+- contextPath: Cyfirma.CA.Source
+  description: Source
+  type: string
+- contextPath: Cyfirma.CA.Computername
+  description: Computername
+- contextPath: Cyfirma.CA.Breachdate
+  description: Breachdate
+  type: unknown
+- contextPath: Cyfirma.CA.Stealerfamily
+  description: Stealerfamily
+- contextPath: Cyfirma.CA.User
+  description: User
+- contextPath: Cyfirma.CA.Email
+  description: Email
+- contextPath: Cyfirma.CA.Password
+  description: Password
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.12.14.13919218
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
+restrictioncenter: {}
+signature: ""

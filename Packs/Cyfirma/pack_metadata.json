@@ -1,0 +1,68 @@
+{
+    "name": "Cyfirma",
+    "description": "Cyfirma API's provides External Threat Landscape Management insights",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "CYFIRMA",
+    "url": "https://www.cyfirma.com",
+    "email": "integrations@cyfirma.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Alerts",
+        "Security",
+        "Threat Intelligence Management",
+        "Threat Intelligence"
+    ],
+    "useCases": [
+        "Network Security",
+        "Threat Intelligence Management",
+        "Asset Management"
+    ],
+    "keywords": [
+        "Attack Surface",
+        "DeCYFIR",
+        "Cyfirma"
+    ],
+    "dependencies": {
+        "DefaultPlaybook": {
+            "mandatory": false,
+            "display_name": "Default"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        }
+    },
+    "displayedImages": [
+        "DefaultPlaybook",
+        "CommonPlaybooks",
+        "CommonScripts",
+        "CommonTypes",
+        "CoreAlertFields"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "xsoar_saas",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ],
+    "defaultDataSource": "Cyfirma Attack Surface"
+}
