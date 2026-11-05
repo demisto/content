@@ -12,6 +12,23 @@
     ]
   },
   "data": {
+    "apk_meta": {
+      "accessibility_service": "string",
+      "app_name": "string",
+      "certificate": {
+        "fingerprint": "string",
+        "issuer": "string",
+        "serial": "string",
+        "subject": "string",
+        "valid_from": "2026-01-01T00:00:00Z",
+        "valid_to": "2026-01-01T00:00:00Z"
+      },
+      "impersonated_app_name": "string",
+      "impersonated_app_package": "string",
+      "loader": "string",
+      "main_activity": "string",
+      "package_name": "string"
+    },
     "arguments": [
       "string"
     ],
@@ -26,7 +43,9 @@
         {
           "algorithm": "string",
           "context": "string",
-          "key": "string"
+          "iv": "string",
+          "key": "string",
+          "nonce": "string"
         }
       ],
       "exit_country": "string",
@@ -75,7 +94,9 @@
       {
         "algorithm": "string",
         "context": "string",
-        "key": "string"
+        "iv": "string",
+        "key": "string",
+        "nonce": "string"
       }
     ],
     "exfil_location": "string",
@@ -133,7 +154,9 @@
     "redirects": [
       {
         "address": "string",
-        "host": "string"
+        "host": "string",
+        "trigger": "string",
+        "url": "string"
       }
     ],
     "senders": [

@@ -27,6 +27,14 @@ CONTENT_PACK = f"Intel471 Feed/{get_pack_version()!s}"
 INTEGRATION = "Intel471 Watcher Alerts"
 USER_AGENT = f'XSOAR/{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"]} - {CONTENT_PACK} - {INTEGRATION}'
 TAG_RE = re.compile(r"<[^>]+>")
+# Transient failures on the per-alert detail endpoint are retried before the alert is given up on.
+# urllib3 sleeps backoff_factor * (2 ** (attempt - 1)) between attempts, so this bounds a single
+# alert at roughly six seconds of backoff rather than stalling the whole fetch.
+DETAIL_FETCH_RETRIES = 3
+DETAIL_FETCH_BACKOFF_FACTOR = 1
+RETRY_STATUS_CODES = [429, 500, 502, 503, 504]
+# The generic form an alert takes when no adapter claims its type, or when the one that does fails.
+UNKNOWN_ALERT_TYPE = "UNKNOWN ALERT TYPE"
 # disable-secrets-detection-end
 
 """ CLIENT CLASS """
@@ -145,7 +153,9 @@ class Client(BaseClient):
         """Fetches a single Verity alert document from the given API URL.
 
         Sends an HTTP GET to ``alert_url`` (typically ``links.verity_api.href`` on an alert). No path
-        suffix is appended; the full URL is used as-is.
+        suffix is appended; the full URL is used as-is. Transient server-side statuses are retried
+        with an exponential backoff; once the retries are exhausted the underlying error is raised so
+        the caller can decide whether to drop the alert.
 
         :type alert_url: ``str``
         :param alert_url: Absolute Verity API URL for the alert detail resource.
@@ -153,7 +163,14 @@ class Client(BaseClient):
         :return: Dict containing the JSON body returned for that alert document.
         :rtype: ``Dict``
         """
-        response = self._http_request(method="GET", full_url=alert_url, auth=self._auth)
+        response = self._http_request(
+            method="GET",
+            full_url=alert_url,
+            auth=self._auth,
+            retries=DETAIL_FETCH_RETRIES,
+            status_list_to_retry=RETRY_STATUS_CODES,
+            backoff_factor=DETAIL_FETCH_BACKOFF_FACTOR,
+        )
         return response
 
     @lru_cache
@@ -723,6 +740,45 @@ def _verity_format_girs_block(girs: Any) -> str:
         path = str(gir.get("path", ""))
         parts.append(f"{name} ({path})" if name and path else name or path)
     return "\n".join(part for part in parts if part)
+
+
+# A marketplace product document is a union: `kind` names one of these blocks, and the fields of the
+# listing itself live inside it rather than at the top level.
+MARKETPLACE_PRODUCT_KINDS = (
+    "account",
+    "article",
+    "bank",
+    "bot",
+    "card",
+    "database",
+    "digital_good",
+    "drug",
+    "exploit",
+    "paypal",
+    "personal_info",
+    "proxy",
+    "real_document",
+    "shop",
+)
+
+
+def _verity_product_kind_block(alert: Any) -> dict:
+    """Returns the kind-specific block of a marketplace product document.
+
+    Prefers the block named by the document's own ``kind``, and otherwise takes the first known block
+    the document carries, so a listing still renders when ``kind`` is absent or names something this
+    integration has not seen yet.
+    """
+    if not isinstance(alert, dict):
+        return {}
+    named_block = alert.get(str(alert.get("kind") or ""))
+    if isinstance(named_block, dict) and named_block:
+        return named_block
+    for kind in MARKETPLACE_PRODUCT_KINDS:
+        block = alert.get(kind)
+        if isinstance(block, dict) and block:
+            return block
+    return {}
 
 
 def _verity_format_price(price: Any) -> str:
@@ -1461,20 +1517,21 @@ class MarketplaceProductAdapter(BaseAdapter):
         details = _verity_append_field(details, "Vendor", self.alert.get("vendor_name"))
         details = _verity_append_field(details, "Marketplace ID", self.alert.get("marketplace_id"))
         details = _verity_append_field(details, "Price", _verity_format_price(self.alert.get("price")))
-        basic_info_fields = self.alert.get("basic_info") or {}
+        kind_block = _verity_product_kind_block(self.alert)
+        basic_info_fields = kind_block.get("basic_info") or {}
         # Read numbers straight off the dict: deep_get() swaps any falsy value for its default.
         details = _verity_append_field(details, "Times sold", basic_info_fields.get("times_sold"))
         details = _verity_append_field(details, "Link", basic_info_fields.get("link"))
         description = str(self.alert.get("description", ""))
         if not _verity_is_blank(description):
             details += "\n\nDescription:\n" + description
-        quantity = self.alert.get("quantity")
+        quantity = kind_block.get("quantity")
         if not _verity_is_blank(quantity):
             details += "\n\nQuantity:\n" + json.dumps(quantity, indent=2, sort_keys=False, default=str)
-        shipping = self.alert.get("shipping")
+        shipping = kind_block.get("shipping")
         if not _verity_is_blank(shipping):
             details += "\n\nShipping:\n" + json.dumps(shipping, indent=2, sort_keys=False, default=str)
-        basic_info = self.alert.get("basic_info")
+        basic_info = kind_block.get("basic_info")
         if not _verity_is_blank(basic_info):
             details += "\n\nProduct details:\n" + json.dumps(basic_info, indent=2, sort_keys=False, default=str)
         return details
@@ -1488,14 +1545,13 @@ class MarketplaceResourceAdapter(BaseAdapter):
 
     @property
     def incident_name(self) -> str:
-        label = str(self.alert.get("name") or self.alert.get("product_title") or "")
+        label = str(self.alert.get("name") or "")
         return "MARKETPLACE RESOURCE:\n" + label
 
     @property
     def incident_details(self) -> str:
         details = "Source Object: MARKETPLACE RESOURCE"
         details = _verity_append_field(details, "Name", self.alert.get("name"))
-        details = _verity_append_field(details, "Product title", self.alert.get("product_title"))
         details = _verity_append_field(details, "Marketplace ID", self.alert.get("marketplace_id"))
         details = _verity_append_field(details, "Link", self.alert.get("link"))
         details = _verity_append_field(details, "Login available", self.alert.get("login_available"))
@@ -1616,11 +1672,11 @@ class UnknownAlertAdapter(BaseAdapter):
     @property
     def incident_name(self) -> str:
         uid = self.alert.get("id", self.alert.get("uid", "")) if isinstance(self.alert, dict) else ""
-        return "UNKNOWN ALERT TYPE:\n" + "UID: " + str(uid)
+        return f"{UNKNOWN_ALERT_TYPE}:\n" + "UID: " + str(uid)
 
     @property
     def incident_details(self) -> str:
-        details = "Source Object: UNKNOWN ALERT TYPE"
+        details = f"Source Object: {UNKNOWN_ALERT_TYPE}"
         a = self.alert
         if isinstance(a, (dict | list)):
             if not _verity_is_blank(a):
@@ -1638,6 +1694,7 @@ class UnknownAlertAdapter(BaseAdapter):
 
 
 VERITY471_DOCUMENT_TYPES: dict[str, type] = {
+    # The Verity471 stream does not emit "actor" yet; the adapter is kept ready for when it does.
     "actor": ActorAdapter,
     "breach_alerts": BreachAlertAdapter,
     "creds_cred": CredentialAdapter,
@@ -1661,6 +1718,10 @@ VERITY471_DOCUMENT_TYPES: dict[str, type] = {
     "marketplaces_seller": MarketplaceVendorAdapter,
     "data_leak_sites_post": DataLeakSitePostAdapter,
     "data_leak_sites_file_listing": DataLeakSiteFileListingAdapter,
+    "compromised_cards": UnknownAlertAdapter,
+    "compromised_card_occurrences": UnknownAlertAdapter,
+    "data_leak_sites_file": UnknownAlertAdapter,
+    "geopol_spot_reports": SpotReportAdapter,
 }
 
 
@@ -1674,7 +1735,13 @@ def compose_verity471_url(alert_details, _id, document_type):
         return verity_ui_url
 
     def _report_url():
-        verity_report_type = alert_details.get("type").replace("report", "").replace("_", "").lower()
+        # The portal path is built from the document's own type, so report subtypes resolve to the
+        # view of the family they belong to. A document with no type yields no link rather than an
+        # AttributeError, which would otherwise fail the whole fetch batch.
+        report_type = alert_details.get("type") or ""
+        if not report_type:
+            return ""
+        verity_report_type = report_type.replace("report", "").replace("_", "").lower()
         verity_ui_url = f"https://verity.intel471.com/intelligence/{verity_report_type}ReportView/{_id}"
         return verity_ui_url
 
@@ -1725,6 +1792,7 @@ def compose_verity471_url(alert_details, _id, document_type):
         "information_reports": _report_url,
         "malware_reports": _report_url,
         "spot_reports": _report_url,
+        "geopol_spot_reports": _report_url,
         "marketplaces_website": _portal_link_url,
         "marketplaces_product": _portal_link_url,
         "marketplaces_resource": _portal_link_url,
@@ -1735,6 +1803,60 @@ def compose_verity471_url(alert_details, _id, document_type):
     if not get_url:
         return ""
     return get_url()
+
+
+def _compose_verity471_url_safely(alert_details: Any, alert_id: Any, document_type: str) -> str:
+    """Builds the portal URL for a document, returning no link if the builder cannot handle it.
+
+    The URL builders read fields straight off the document, so an unexpected payload raises. The
+    link is decoration on an incident that is otherwise complete, so it is never worth losing the
+    alert over.
+    """
+    try:
+        return compose_verity471_url(alert_details, alert_id, document_type)
+    except Exception as e:
+        demisto.error(f"Could not compose the portal URL for a {document_type!r} document. Error: {e!s}")
+        return ""
+
+
+def _adapt_verity471_alert(adapter_cls: type, alert_details: Any, document_type: str) -> tuple[str, Any, str, bool]:
+    """Renders a document's incident name, alert id and details through an adapter.
+
+    Each adapter is written against the shape of one document type, so a schema change on the Verity
+    side, or a payload that is not the type the alert claimed, raises somewhere inside it. Rather
+    than drop the alert, fall back to the generic form, which renders any payload. The fallback is
+    itself guarded so that rendering an alert can never fail outright.
+
+    :return: The incident name, the alert id, the incident details, and whether the generic form was
+        used in place of a type-specific adapter.
+    """
+    if adapter_cls is not UnknownAlertAdapter:
+        try:
+            adapted = adapter_cls(alert_details)
+            return adapted.incident_name, adapted.alert_id, adapted.incident_details, False
+        except Exception as e:
+            demisto.error(
+                f"{adapter_cls.__name__} could not render a {document_type!r} document, "
+                f"falling back to the generic alert form. Error: {e!s}"
+            )
+
+    try:
+        adapted = UnknownAlertAdapter(alert_details)
+        return adapted.incident_name, adapted.alert_id, adapted.incident_details, True
+    except Exception as e:
+        demisto.error(f"Could not render a {document_type!r} document in any form. Error: {e!s}")
+        return f"{UNKNOWN_ALERT_TYPE}:\nUID: ", None, f"Source Object: {UNKNOWN_ALERT_TYPE}", True
+
+
+def render_verity471_alert(alert_details: Any, document_type: str) -> tuple[str, Any, str, str]:
+    """Renders a detail document into the incident name, alert id, details and portal URL."""
+    adapter_cls = VERITY471_DOCUMENT_TYPES.get(document_type, UnknownAlertAdapter)
+    incident_name, alert_id, incident_details, fell_back = _adapt_verity471_alert(adapter_cls, alert_details, document_type)
+    # The portal URL builders read the same fields the adapter just failed on, so a link built from a
+    # document that could not be rendered would point at empty path segments. Give it up with the
+    # rest of the type-specific rendering.
+    verity471_url = "" if fell_back else _compose_verity471_url_safely(alert_details, alert_id, document_type)
+    return incident_name, alert_id, incident_details, verity471_url
 
 
 def compose_incident_watcher_details_verity471(alert: dict, client) -> tuple[str, str]:
@@ -1923,10 +2045,10 @@ def fetch_incidents_verity471(
 
         highlights = []
         """[h['field_name']+ " - " + ", ".join(h['snippets']) for h in alert['highlights']]"""
-        for h in alert["highlights"]:
-            field_name = h["field_name"]
+        for h in alert.get("highlights") or []:
+            field_name = h.get("field_name", "")
             snippets = []
-            for snippet in h["snippets"]:
+            for snippet in h.get("snippets") or []:
                 snippet_text = remove_tags(snippet)
                 if len(snippet_text) > alert_highlight_size:
                     snippet_text = snippet_text[:alert_highlight_size] + "[...]"
@@ -1937,18 +2059,34 @@ def fetch_incidents_verity471(
         highlights_str = "\n".join(highlights)
 
         incident_created_time = as_timestamp(alert.get("creation_ts", "0"))
-        alert_details: dict = client.search_alert_details_verity471(deep_get(alert, "links.verity_api.href", {}))
-        if not alert_details:
+        alert_reference = f"alert id {alert.get('id')} (source type {alert.get('source_type', '')!r})"
+
+        alert_url: str = deep_get(alert, "links.verity_api.href", "")
+        if not alert_url:
+            demisto.error(f"Skipping {alert_reference}: the alert carries no links.verity_api.href detail URL.")
             continue
 
-        adapter_cls = VERITY471_DOCUMENT_TYPES.get(alert.get("source_type", ""), UnknownAlertAdapter)
-        adapted_alert = adapter_cls(alert_details)
-        incident_name: str = adapted_alert.incident_name
-        alert_id = adapted_alert.alert_id
+        # A detail document that cannot be retrieved must not abort the batch - the alerts already
+        # collected would be discarded along with the cursor, and a permanently unavailable document
+        # would stall every subsequent fetch.
+        try:
+            alert_details: dict = client.search_alert_details_verity471(alert_url)
+        except Exception as e:
+            demisto.error(f"Skipping {alert_reference}: failed to fetch alert details from {alert_url}. Error: {e!s}")
+            continue
+        if not alert_details:
+            demisto.debug(f"Skipping {alert_reference}: the detail endpoint returned an empty document.")
+            continue
+
         alert_document_type = alert.get("source_type", "")
-        verity471_url: str = compose_verity471_url(alert_details, alert_id, alert_document_type)
-        watcher_group_description, watcher_description = compose_incident_watcher_details_verity471(alert, client)
-        incident_details: str = adapted_alert.incident_details
+        incident_name, _alert_id, incident_details, verity471_url = render_verity471_alert(alert_details, alert_document_type)
+        # The watcher descriptions are cosmetic metadata, so an unreachable watchers endpoint degrades
+        # the incident rather than dropping it.
+        try:
+            watcher_group_description, watcher_description = compose_incident_watcher_details_verity471(alert, client)
+        except Exception as e:
+            demisto.error(f"Could not resolve watcher details for {alert_reference}. Error: {e!s}")
+            watcher_group_description, watcher_description = "", ""
 
         incident = {
             "name": incident_name,

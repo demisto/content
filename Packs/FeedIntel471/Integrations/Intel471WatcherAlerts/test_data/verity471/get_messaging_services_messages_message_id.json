@@ -83,6 +83,7 @@
         "href": "string"
       }
     },
+    "reply_to_message_id": "string",
     "text": "string"
   },
   "server": {

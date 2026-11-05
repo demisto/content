@@ -1,3 +1,4 @@
+import copy
 import json
 from pathlib import Path
 
@@ -419,7 +420,6 @@ VERITY471_CASES = [
         [
             "Source Object: MARKETPLACE RESOURCE",
             "Name: string",
-            "Product title: string",
             "Login available: True",
             "Password available: True",
             "Cookies available: True",
@@ -937,6 +937,515 @@ def test_fetch_incidents_verity471_handles_non_dict_detail_response(requests_moc
     assert incidents[0]["name"] == "UNKNOWN ALERT TYPE:\nUID: "
     assert incidents[0]["details"] == "Source Object: UNKNOWN ALERT TYPE\n\n<binary>"
     assert incidents[0]["CustomFields"]["intel471url"] == ""
+
+
+""" MARKETPLACE PRODUCT KIND TESTS """
+
+
+def test_product_kind_block_prefers_the_block_named_by_kind():
+    """
+    Given:
+        - A product document carrying several kind blocks and a kind naming one of them.
+
+    When:
+        - The kind block is resolved.
+
+    Then:
+        - The named block wins, so a listing renders the fields of the kind it actually is.
+    """
+    document = {"kind": "card", "account": {"basic_info": {"link": "wrong"}}, "card": {"basic_info": {"link": "right"}}}
+
+    assert feed._verity_product_kind_block(document) == {"basic_info": {"link": "right"}}
+
+
+@pytest.mark.parametrize(
+    "document",
+    [
+        {"card": {"basic_info": {"link": "right"}}},  # no kind at all
+        {"kind": "something_new", "card": {"basic_info": {"link": "right"}}},  # kind this build does not know
+        {"kind": "shop", "shop": {}, "card": {"basic_info": {"link": "right"}}},  # named block is empty
+    ],
+    ids=["no-kind", "unknown-kind", "empty-named-block"],
+)
+def test_product_kind_block_falls_back_to_the_block_the_document_carries(document):
+    """
+    Given:
+        - A product document whose kind is missing, unrecognized, or names an empty block.
+
+    When:
+        - The kind block is resolved.
+
+    Then:
+        - The block the document actually carries is used, so the listing still renders.
+    """
+    assert feed._verity_product_kind_block(document) == {"basic_info": {"link": "right"}}
+
+
+@pytest.mark.parametrize("document", [{}, {"kind": "card"}, "not a document", None], ids=["empty", "no-block", "str", "none"])
+def test_product_kind_block_is_empty_when_there_is_nothing_to_read(document):
+    """
+    Given:
+        - A product document with no kind block, or one that is not a document at all.
+
+    When:
+        - The kind block is resolved.
+
+    Then:
+        - An empty mapping comes back, so the adapter renders the fields it can and skips the rest.
+    """
+    assert feed._verity_product_kind_block(document) == {}
+
+
+def test_marketplace_product_adapter_reads_the_kind_block():
+    """
+    Given:
+        - A card product whose listing fields live under the card block.
+
+    When:
+        - MarketplaceProductAdapter renders it.
+
+    Then:
+        - Times sold, Link, Quantity, Shipping and Product details all come from that block. They
+          used to be read from the top level, which the Verity schema no longer populates.
+    """
+    document = {
+        "id": "p1",
+        "title": "Dumps lot",
+        "kind": "card",
+        "card": {
+            "basic_info": {"times_sold": 0, "link": "https://market.example/p1"},
+            "quantity": {"available": 5},
+            "shipping": {"methods": ["digital"]},
+        },
+    }
+
+    details = feed.MarketplaceProductAdapter(document).incident_details
+
+    assert "Times sold: 0" in details
+    assert "Link: https://market.example/p1" in details
+    assert '"available": 5' in details.split("Quantity:")[1]
+    assert '"digital"' in details.split("Shipping:")[1]
+    assert '"times_sold": 0' in details.split("Product details:")[1]
+
+
+""" ADAPTER FALLBACK TESTS """
+
+
+class ExplodingAdapter(feed.BaseAdapter):
+    """Stands in for an adapter meeting a document whose shape it was not written for."""
+
+    @property
+    def incident_name(self) -> str:
+        raise KeyError("forum")
+
+    @property
+    def incident_details(self) -> str:
+        raise KeyError("forum")
+
+
+def test_render_verity471_alert_falls_back_when_the_adapter_raises(mocker):
+    """
+    Given:
+        - A document type whose adapter raises on the document it is handed.
+
+    When:
+        - render_verity471_alert runs.
+
+    Then:
+        - The alert is rendered in the generic form instead of the exception reaching the fetch loop,
+          and the failure is logged with the adapter and document type that caused it.
+    """
+    error = mocker.patch.object(feed.demisto, "error")
+    mocker.patch.dict(feed.VERITY471_DOCUMENT_TYPES, {"forums_post": ExplodingAdapter})
+
+    name, alert_id, details, url = feed.render_verity471_alert({"id": "abc123"}, "forums_post")
+
+    assert name == "UNKNOWN ALERT TYPE:\nUID: abc123"
+    assert details.startswith("Source Object: UNKNOWN ALERT TYPE")
+    assert '"id": "abc123"' in details
+    assert alert_id == "abc123"
+    assert url == ""
+    assert "ExplodingAdapter" in error.call_args[0][0]
+    assert "forums_post" in error.call_args[0][0]
+
+
+def test_render_verity471_alert_survives_the_generic_adapter_failing(mocker):
+    """
+    Given:
+        - A document that not even the generic adapter can render.
+
+    When:
+        - render_verity471_alert runs.
+
+    Then:
+        - A bare generic incident comes back rather than an exception, so rendering an alert can
+          never fail outright.
+    """
+    mocker.patch.object(feed.demisto, "error")
+    mocker.patch.object(feed, "UnknownAlertAdapter", ExplodingAdapter)
+
+    name, alert_id, details, url = feed.render_verity471_alert({"id": "abc123"}, "some_unmapped_type")
+
+    assert name == "UNKNOWN ALERT TYPE:\nUID: "
+    assert details == "Source Object: UNKNOWN ALERT TYPE"
+    assert alert_id is None
+    assert url == ""
+
+
+def test_render_verity471_alert_drops_only_the_url_when_the_builder_raises(mocker):
+    """
+    Given:
+        - A document the adapter renders fine but whose portal URL builder raises.
+
+    When:
+        - render_verity471_alert runs.
+
+    Then:
+        - The type-specific rendering is kept and only the link is given up.
+    """
+    error = mocker.patch.object(feed.demisto, "error")
+    mocker.patch.object(feed, "compose_verity471_url", side_effect=TypeError("bad document"))
+
+    name, _, details, url = feed.render_verity471_alert(util_load_verity471("get_credentials_id"), "creds_cred")
+
+    assert name == "CREDENTIAL:\nstring"
+    assert details.startswith("Source Object: CREDENTIAL")
+    assert url == ""
+    assert "creds_cred" in error.call_args[0][0]
+
+
+def test_fetch_incidents_verity471_creates_an_incident_when_the_adapter_raises(mocker, requests_mock):
+    """
+    Given:
+        - A batch whose single alert has an adapter that raises.
+
+    When:
+        - fetch_incidents_verity471 runs.
+
+    Then:
+        - The incident is still created in the generic form and the cursor advances, instead of the
+          exception escaping to main() and failing the fetch with nothing committed.
+    """
+    mocker.patch.object(feed.demisto, "error")
+    mocker.patch.dict(feed.VERITY471_DOCUMENT_TYPES, {"creds_cred": ExplodingAdapter})
+    envelope = build_verity471_stream("creds_cred", DETAIL_URL)
+    register_verity471_stream(requests_mock, envelope, util_load_verity471("get_credentials_id"))
+
+    _, next_run, incidents = feed.fetch_incidents_verity471(
+        client=make_verity471_client(),
+        max_results=100,
+        last_run={},
+        first_fetch_time=0,
+        watcher_group_uids=None,
+    )
+
+    assert len(incidents) == 1
+    assert incidents[0]["name"].startswith("UNKNOWN ALERT TYPE")
+    assert incidents[0]["CustomFields"]["highlights"] == "string - string"
+    assert next_run["last_cursor"] == "string"
+
+
+""" DOCUMENT TYPE INVENTORY TESTS """
+
+# Verity471 document types that the stream can emit but that have no dedicated adapter yet.
+VERITY471_TYPES_WITHOUT_ADAPTERS = [
+    "compromised_cards",
+    "compromised_card_occurrences",
+    "data_leak_sites_file",
+]
+
+
+@pytest.mark.parametrize("source_type", VERITY471_TYPES_WITHOUT_ADAPTERS)
+def test_verity471_types_without_adapters_are_registered_as_unknown(source_type):
+    """
+    Given:
+        - A known Verity471 document type that has no dedicated adapter.
+
+    When:
+        - The document type mapping is inspected.
+
+    Then:
+        - It is registered against UnknownAlertAdapter and carries no portal URL builder, so adding a
+          real adapter later is a single edit and an unregistered type stands out as an omission.
+    """
+    assert feed.VERITY471_DOCUMENT_TYPES[source_type] is feed.UnknownAlertAdapter
+    assert feed.compose_verity471_url({}, "some-id", source_type) == ""
+
+
+def test_geopol_spot_reports_reuses_the_spot_report_adapter():
+    """
+    Given:
+        - The geopol_spot_reports document type.
+
+    When:
+        - The document type mapping is inspected.
+
+    Then:
+        - It renders through SpotReportAdapter, the same as spot_reports.
+    """
+    assert feed.VERITY471_DOCUMENT_TYPES["geopol_spot_reports"] is feed.SpotReportAdapter
+
+
+@pytest.mark.parametrize(
+    "document_type",
+    ["spot_reports", "geopol_spot_reports"],
+    ids=["spot", "geopol-spot"],
+)
+def test_spot_report_portal_url_is_built_from_the_document_type(document_type):
+    """
+    Given:
+        - A spot report document, reached either as a spot report or as its geopol subtype.
+
+    When:
+        - compose_verity471_url runs.
+
+    Then:
+        - Both resolve to the same portal view, because the path is built from the document's own
+          type rather than from the alert's source_type.
+    """
+    url = feed.compose_verity471_url({"type": "spot_report"}, "abc123", document_type)
+
+    assert url == "https://verity.intel471.com/intelligence/spotReportView/abc123"  # disable-secrets-detection
+
+
+@pytest.mark.parametrize(
+    "document_type",
+    ["fintel", "geopol_reports", "information_reports", "malware_reports", "spot_reports", "geopol_spot_reports"],
+)
+def test_report_portal_url_is_empty_when_the_document_carries_no_type(document_type):
+    """
+    Given:
+        - A report document with no type field.
+
+    When:
+        - compose_verity471_url runs.
+
+    Then:
+        - No link is returned. The builder used to call .replace on None, and the AttributeError was
+          raised outside the per-alert guard, failing the whole fetch batch.
+    """
+    assert feed.compose_verity471_url({}, "abc123", document_type) == ""
+
+
+@pytest.mark.parametrize("source_type", VERITY471_TYPES_WITHOUT_ADAPTERS)
+def test_fetch_incidents_verity471_creates_incidents_for_types_without_adapters(requests_mock, source_type):
+    """
+    Given:
+        - A stream alert of a type that has no dedicated adapter.
+
+    When:
+        - fetch_incidents_verity471 runs.
+
+    Then:
+        - An incident is still created, rendered by UnknownAlertAdapter.
+    """
+    envelope = build_verity471_stream(source_type, DETAIL_URL)
+    register_verity471_stream(requests_mock, envelope, util_load_verity471("get_credentials_id"))
+
+    _, _, incidents = feed.fetch_incidents_verity471(
+        client=make_verity471_client(),
+        max_results=100,
+        last_run={},
+        first_fetch_time=0,
+        watcher_group_uids=None,
+    )
+
+    assert len(incidents) == 1
+    assert incidents[0]["name"].startswith("UNKNOWN ALERT TYPE")
+    assert incidents[0]["CustomFields"]["intel471url"] == ""
+
+
+""" DETAIL FETCH RESILIENCE TESTS """
+
+BAD_DETAIL_URL = "https://api.verity.intel471.com/detail-unavailable"
+
+
+def build_verity471_stream_pair(source_type, first_href, second_href):
+    """Returns the stream envelope carrying two alerts, each aimed at its own detail URL."""
+    envelope = build_verity471_stream(source_type, first_href)
+    second_alert = copy.deepcopy(envelope["alerts"][0])
+    second_alert["id"] = 1
+    second_alert["links"]["verity_api"]["href"] = second_href
+    envelope["alerts"].append(second_alert)
+    return envelope
+
+
+@pytest.mark.parametrize("status_code", [403, 404, 429, 500, 503])
+def test_fetch_incidents_verity471_skips_alert_whose_detail_fetch_fails(mocker, requests_mock, status_code):
+    """
+    Given:
+        - A stream alert whose detail endpoint answers with an error status.
+
+    When:
+        - fetch_incidents_verity471 runs.
+
+    Then:
+        - The alert is dropped with an error logged, and the cursor still advances, instead of the
+          DemistoException escaping to main() and failing the fetch with nothing committed.
+    """
+    error = mocker.patch.object(feed.demisto, "error")
+    envelope = build_verity471_stream("creds_cred", DETAIL_URL)
+    register_verity471_stream(requests_mock, envelope, {})
+    requests_mock.get(DETAIL_URL, status_code=status_code, json={"message": "unavailable"})
+
+    last_cursor, next_run, incidents = feed.fetch_incidents_verity471(
+        client=make_verity471_client(),
+        max_results=100,
+        last_run={},
+        first_fetch_time=0,
+        watcher_group_uids=None,
+    )
+
+    assert incidents == []
+    assert last_cursor == "string"
+    assert next_run["last_cursor"] == "string"
+    assert str(status_code) in error.call_args[0][0]
+
+
+def test_fetch_incidents_verity471_bad_detail_does_not_drop_the_rest_of_the_batch(mocker, requests_mock):
+    """
+    Given:
+        - Two stream alerts, the first of which has an unavailable detail document.
+
+    When:
+        - fetch_incidents_verity471 runs.
+
+    Then:
+        - The healthy alert still becomes an incident. Previously the first failure aborted the loop
+          and discarded every alert in the batch along with the cursor.
+    """
+    mocker.patch.object(feed.demisto, "error")
+    envelope = build_verity471_stream_pair("creds_cred", BAD_DETAIL_URL, DETAIL_URL)
+    register_verity471_stream(requests_mock, envelope, util_load_verity471("get_credentials_id"))
+    requests_mock.get(BAD_DETAIL_URL, status_code=500, json={"message": "boom"})
+
+    _, next_run, incidents = feed.fetch_incidents_verity471(
+        client=make_verity471_client(),
+        max_results=100,
+        last_run={},
+        first_fetch_time=0,
+        watcher_group_uids=None,
+    )
+
+    assert len(incidents) == 1
+    assert incidents[0]["rawJSON"] == json.dumps(envelope["alerts"][1])
+    assert next_run["last_cursor"] == "string"
+
+
+def test_fetch_incidents_verity471_skips_alert_without_a_detail_link(mocker, requests_mock):
+    """
+    Given:
+        - A stream alert carrying no links.verity_api.href.
+
+    When:
+        - fetch_incidents_verity471 runs.
+
+    Then:
+        - The alert is skipped without any detail request being issued. The deep_get default used to
+          be {}, which _http_request treats as falsy and silently turns into a GET on the API root.
+    """
+    mocker.patch.object(feed.demisto, "error")
+    envelope = build_verity471_stream("creds_cred", "")
+    register_verity471_stream(requests_mock, envelope, util_load_verity471("get_credentials_id"))
+
+    _, next_run, incidents = feed.fetch_incidents_verity471(
+        client=make_verity471_client(),
+        max_results=100,
+        last_run={},
+        first_fetch_time=0,
+        watcher_group_uids=None,
+    )
+
+    assert incidents == []
+    assert next_run["last_cursor"] == "string"
+    assert [r.path for r in requests_mock.request_history] == ["/integrations/watchers/v1/alerts/stream"]
+
+
+def test_fetch_incidents_verity471_degrades_when_the_watcher_lookup_fails(mocker, requests_mock):
+    """
+    Given:
+        - A healthy alert whose watcher-groups lookup answers with an error status.
+
+    When:
+        - fetch_incidents_verity471 runs.
+
+    Then:
+        - The incident is still created, with the cosmetic watcher metadata left blank.
+    """
+    mocker.patch.object(feed.demisto, "error")
+    envelope = build_verity471_stream("creds_cred", DETAIL_URL)
+    register_verity471_stream(requests_mock, envelope, util_load_verity471("get_credentials_id"))
+    requests_mock.get(WATCHER_GROUPS_URL, status_code=503, json={"message": "unavailable"})
+
+    _, _, incidents = feed.fetch_incidents_verity471(
+        client=make_verity471_client(),
+        max_results=100,
+        last_run={},
+        first_fetch_time=0,
+        watcher_group_uids=None,
+    )
+
+    assert len(incidents) == 1
+    assert incidents[0]["CustomFields"]["watchergroup"] == ""
+    assert incidents[0]["CustomFields"]["watcher"] == ""
+
+
+@pytest.mark.parametrize(
+    "highlights",
+    [None, [], [{}], [{"field_name": "field"}], [{"snippets": ["snippet"]}]],
+    ids=["null", "empty", "empty-entry", "no-snippets", "no-field-name"],
+)
+def test_fetch_incidents_verity471_tolerates_malformed_highlights(requests_mock, highlights):
+    """
+    Given:
+        - A stream alert whose highlights block is missing the keys the fetch indexes into.
+
+    When:
+        - fetch_incidents_verity471 runs.
+
+    Then:
+        - The incident is still created. The loop used to index alert["highlights"], h["field_name"]
+          and h["snippets"] directly, so a KeyError there failed the whole batch.
+    """
+    envelope = build_verity471_stream("creds_cred", DETAIL_URL)
+    if highlights is None:
+        del envelope["alerts"][0]["highlights"]
+    else:
+        envelope["alerts"][0]["highlights"] = highlights
+    register_verity471_stream(requests_mock, envelope, util_load_verity471("get_credentials_id"))
+
+    _, _, incidents = feed.fetch_incidents_verity471(
+        client=make_verity471_client(),
+        max_results=100,
+        last_run={},
+        first_fetch_time=0,
+        watcher_group_uids=None,
+    )
+
+    assert len(incidents) == 1
+
+
+def test_search_alert_details_verity471_asks_for_retries_on_transient_statuses(mocker):
+    """
+    Given:
+        - The Verity alert detail client method.
+
+    When:
+        - It issues its request.
+
+    Then:
+        - It passes a retry budget and the transient status list down to _http_request, which
+          otherwise defaults to retries=0 and gives up on the first 429 or 5xx.
+    """
+    http_request = mocker.patch.object(feed.Client, "_http_request", return_value={})
+
+    make_verity471_client().search_alert_details_verity471(DETAIL_URL)
+
+    kwargs = http_request.call_args.kwargs
+    assert kwargs["full_url"] == DETAIL_URL
+    assert kwargs["retries"] == feed.DETAIL_FETCH_RETRIES >= 1
+    assert kwargs["backoff_factor"] == feed.DETAIL_FETCH_BACKOFF_FACTOR
+    assert set(kwargs["status_list_to_retry"]) == {429, 500, 502, 503, 504}
 
 
 """ TITAN WATCHER LOOKUP TESTS """
