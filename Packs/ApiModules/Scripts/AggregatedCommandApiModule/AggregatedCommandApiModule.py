@@ -1497,11 +1497,16 @@ def is_xdr_tenant() -> bool:
 
     Returns:
         bool: True if running on the unified platform with an XDR module, False otherwise.
+              Returns False if the tenant type cannot be determined.
     """
-    version_info = demisto.demistoVersion() or {}
-    demisto.debug(f"Version info: {version_info}")
-    module = (version_info.get("module") or "").lower()
-    return is_platform() and module == XDR_PLATFORM_MODULE
+    try:
+        version_info = demisto.demistoVersion() or {}
+        demisto.debug(f"Version info: {version_info}")
+        module = (version_info.get("module") or "").lower()
+        return is_platform() and module == XDR_PLATFORM_MODULE
+    except Exception as e:
+        demisto.debug(f"Failed to determine whether running on a Cortex XDR tenant, continuing as non-XDR: {e}")
+        return False
 
 
 def build_hash_dict(value: str | None) -> dict[str, str]:
