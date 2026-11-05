@@ -1590,7 +1590,7 @@ script:
     arguments: []
     outputs:
     - contextPath: PrismaAIRs.AIGatewayScope.name
-      description: The scope name (the path key, e.g. ws_production_bx7qw0).
+      description: The scope name (the path key, for example, ws_production_bx7qw0).
       type: String
     - contextPath: PrismaAIRs.AIGatewayScope.description
       description: The scope description.
