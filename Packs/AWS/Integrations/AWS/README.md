@@ -7308,3 +7308,153 @@ Retrieves the tags associated with the specified resource. Tags are key:value pa
 | AWS.NetworkFirewall.Tags.Tags.Key | String | The part of the key:value pair that defines a tag. |
 | AWS.NetworkFirewall.Tags.Tags.Value | String | The part of the key:value pair that defines a tag. |
 | AWS.NetworkFirewall.Tags.TagsNextToken | String | The token to use when requesting the next set of items. |
+
+### aws-route53-hosted-zones-list
+
+***
+Retrieves a list of the public and private hosted zones that are associated with the AWS account. Route53 is a global service. Required IAM permission: route53:ListHostedZones.
+
+#### Base Command
+
+`aws-route53-hosted-zones-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| limit | The maximum number of hosted zones to return. Valid range is 1-100. Default is 100. | Optional |
+| next_token | The token for the next page of hosted zones. Use the value of AWS.Route53.HostedZonesNextToken from the previous response. | Optional |
+| delegation_set_id | The ID of a reusable delegation set. If provided, only the hosted zones that are associated with this delegation set are returned. | Optional |
+| hosted_zone_type | The type of hosted zones to return. If not provided, all hosted zones are returned. Possible values are: PrivateHostedZone. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Route53.HostedZones.Id | String | The ID that Route53 assigned to the hosted zone when it was created. |
+| AWS.Route53.HostedZones.Name | String | The name of the domain. |
+| AWS.Route53.HostedZones.CallerReference | String | The value that was specified for CallerReference when the hosted zone was created. |
+| AWS.Route53.HostedZones.Config.Comment | String | The comment that was included about the hosted zone. |
+| AWS.Route53.HostedZones.Config.PrivateZone | Boolean | Whether this is a private hosted zone. |
+| AWS.Route53.HostedZones.ResourceRecordSetCount | Number | The number of resource record sets in the hosted zone. |
+| AWS.Route53.HostedZones.LinkedService.ServicePrincipal | String | If the hosted zone was created by another service, the service that created it. |
+| AWS.Route53.HostedZones.LinkedService.Description | String | If the hosted zone was created by another service, an optional description provided by that service. |
+| AWS.Route53.HostedZonesNextToken | String | The token to use in the next_token argument to retrieve the next page of hosted zones. Null when there are no more results. |
+
+### aws-route53-hosted-zones-by-name-list
+
+***
+Retrieves a list of the hosted zones associated with the AWS account, sorted in ASCII order by domain name (labels reversed). Route53 is a global service. Required IAM permission: route53:ListHostedZonesByName.
+
+#### Base Command
+
+`aws-route53-hosted-zones-by-name-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| dns_name | The domain name to start listing hosted zones from, in ASCII order. To retrieve the next page, use the value of AWS.Route53.HostedZonesNextDNSName. | Optional |
+| hosted_zone_id | The hosted zone ID to start listing from, together with dns_name. To retrieve the next page, use the value of AWS.Route53.HostedZonesNextHostedZoneId. Requires the dns_name argument. | Optional |
+| limit | The maximum number of hosted zones to return. Valid range is 1-100. Default is 100. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Route53.HostedZones.Id | String | The ID that Route53 assigned to the hosted zone when it was created. |
+| AWS.Route53.HostedZones.Name | String | The name of the domain. |
+| AWS.Route53.HostedZones.CallerReference | String | The value that was specified for CallerReference when the hosted zone was created. |
+| AWS.Route53.HostedZones.Config.Comment | String | The comment that was included about the hosted zone. |
+| AWS.Route53.HostedZones.Config.PrivateZone | Boolean | Whether this is a private hosted zone. |
+| AWS.Route53.HostedZones.ResourceRecordSetCount | Number | The number of resource record sets in the hosted zone. |
+| AWS.Route53.HostedZones.LinkedService.ServicePrincipal | String | If the hosted zone was created by another service, the service that created it. |
+| AWS.Route53.HostedZones.LinkedService.Description | String | If the hosted zone was created by another service, an optional description provided by that service. |
+| AWS.Route53.HostedZonesNextDNSName | String | The DNS name to use in the dns_name argument to retrieve the next page of hosted zones. Null when there are no more results. |
+| AWS.Route53.HostedZonesNextHostedZoneId | String | The hosted zone ID to use in the hosted_zone_id argument to retrieve the next page of hosted zones. Null when there are no more results. |
+
+### aws-route53-resource-record-sets-list
+
+***
+Lists the resource record sets in a specified hosted zone. Route53 is a global service. Required IAM permission: route53:ListResourceRecordSets.
+
+#### Base Command
+
+`aws-route53-resource-record-sets-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| hosted_zone_id | The ID of the hosted zone that contains the resource record sets to list. | Required |
+| start_record_name | The first name in the lexicographic ordering of resource record sets to list. To retrieve the next page, use the value of AWS.Route53.RecordSetsNextRecordName. | Optional |
+| start_record_type | The type of resource record set to begin the listing from. Requires the start_record_name argument. To retrieve the next page, use the value of AWS.Route53.RecordSetsNextRecordType. Possible values are: A, AAAA, CAA, CNAME, DS, HTTPS, MX, NAPTR, NS, PTR, SOA, SPF, SRV, SSHFP, SVCB, TLSA, TXT. | Optional |
+| start_record_identifier | For resource record sets that have a routing policy other than simple, the set identifier to begin the listing from. Requires the start_record_name and start_record_type arguments. To retrieve the next page, use the value of AWS.Route53.RecordSetsNextRecordIdentifier. | Optional |
+| limit | The maximum number of resource record sets to return. Valid range is 1-300. Default is 300. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Route53.RecordSets.HostedZoneId | String | The ID of the hosted zone that contains the resource record set, without the /hostedzone/ prefix. |
+| AWS.Route53.RecordSets.Name | String | The name of the domain. |
+| AWS.Route53.RecordSets.Type | String | The DNS record type. |
+| AWS.Route53.RecordSets.SetIdentifier | String | An identifier that differentiates among multiple resource record sets that have the same combination of name and type. |
+| AWS.Route53.RecordSets.Weight | Number | Weighted resource record sets only. The weight of the resource record set. |
+| AWS.Route53.RecordSets.Region | String | Latency-based resource record sets only. The AWS region of the resource that this record set refers to. |
+| AWS.Route53.RecordSets.GeoLocation | Unknown | Geolocation resource record sets only. The geolocation of the record set, containing ContinentCode, CountryCode, and SubdivisionCode. |
+| AWS.Route53.RecordSets.Failover | String | Failover resource record sets only. Whether this is the PRIMARY or SECONDARY resource record set. |
+| AWS.Route53.RecordSets.MultiValueAnswer | Boolean | Multivalue answer resource record sets only. |
+| AWS.Route53.RecordSets.TTL | Number | The resource record cache time to live \(TTL\), in seconds. |
+| AWS.Route53.RecordSets.ResourceRecords.Value | String | The value of the record. |
+| AWS.Route53.RecordSets.AliasTarget.HostedZoneId | String | Alias resource record sets only. The hosted zone ID of the alias target. |
+| AWS.Route53.RecordSets.AliasTarget.DNSName | String | Alias resource record sets only. The DNS name of the alias target. |
+| AWS.Route53.RecordSets.AliasTarget.EvaluateTargetHealth | Boolean | Alias resource record sets only. Whether the alias record inherits the health of the referenced resource. |
+| AWS.Route53.RecordSets.HealthCheckId | String | The ID of the applicable health check. |
+| AWS.Route53.RecordSets.TrafficPolicyInstanceId | String | The ID of the traffic policy instance that Route53 created this resource record set for. |
+| AWS.Route53.RecordSetsNextRecordName | String | The name to use in the start_record_name argument to retrieve the next page. Null when there are no more results. |
+| AWS.Route53.RecordSetsNextRecordType | String | The type to use in the start_record_type argument to retrieve the next page. Null when there are no more results. |
+| AWS.Route53.RecordSetsNextRecordIdentifier | String | The set identifier to use in the start_record_identifier argument to retrieve the next page. Null when there are no more results or the next record has no set identifier. |
+| AWS.Route53.RecordSetsIsTruncated | Boolean | Whether more resource record sets are available. |
+
+### aws-route53-resource-record-sets-change
+
+***
+Creates, updates (UPSERT), or deletes a single resource record set in a hosted zone. Provide either the values and ttl arguments, or the alias target arguments. A DELETE request must exactly match the existing record, including the TTL and all the values, or the alias target. Route53 is a global service. Required IAM permission: route53:ChangeResourceRecordSets.
+
+#### Base Command
+
+`aws-route53-resource-record-sets-change`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| hosted_zone_id | The ID of the hosted zone that contains the resource record set. | Required |
+| action | The action to perform. CREATE creates a new record set, UPSERT creates the record set or updates it if it exists, and DELETE deletes an existing record set. Possible values are: CREATE, UPSERT, DELETE. | Required |
+| name | The name of the record, for example, www.example.com. | Required |
+| type | The DNS record type. Possible values are: A, AAAA, CAA, CNAME, DS, HTTPS, MX, NAPTR, NS, PTR, SOA, SPF, SRV, SSHFP, SVCB, TLSA, TXT. | Required |
+| ttl | The resource record cache time to live (TTL), in seconds. Required when the values argument is provided. Cannot be used with an alias record. | Optional |
+| values | The comma-separated list of record values. For a DELETE action, provide all the values of the existing record. Cannot be used with the alias target arguments. | Optional |
+| alias_target_hosted_zone_id | The hosted zone ID of the AWS resource that the alias record routes traffic to. Alias records only. Required together with alias_target_dns_name. | Optional |
+| alias_target_dns_name | The DNS name of the AWS resource that the alias record routes traffic to. Alias records only. Required together with alias_target_hosted_zone_id. | Optional |
+| alias_target_evaluate_target_health | Whether the alias record inherits the health of the referenced AWS resource. Alias records only. If not provided for an alias record, false is used. Possible values are: true, false. | Optional |
+| set_identifier | The identifier that differentiates among multiple resource record sets that have the same name and type. Required for record sets with a routing policy other than simple. | Optional |
+| comment | The comment about the change. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Route53.RecordSetsChange.Id | String | The ID of the change request. |
+| AWS.Route53.RecordSetsChange.Status | String | The current state of the request. PENDING indicates that the request has not yet been applied to all Route53 DNS servers. |
+| AWS.Route53.RecordSetsChange.SubmittedAt | Date | The date and time that the change request was submitted. |
+| AWS.Route53.RecordSetsChange.Comment | String | The comment that was specified for the change request. |
