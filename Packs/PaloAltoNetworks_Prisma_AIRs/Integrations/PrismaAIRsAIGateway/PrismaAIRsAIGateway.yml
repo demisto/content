@@ -2003,7 +2003,7 @@ script:
       description: The provider UUID.
     outputs: []
   - name: prisma-airs-aigateway-plugins-list
-    description: Lists organisation-level plugin bindings on the AI Gateway admin plane. Credential values are masked in the output.
+    description: Lists organization-level plugin bindings on the AI Gateway admin plane. Credential values are masked in the output.
     arguments: []
     outputs:
     - contextPath: PrismaAIRs.AIGatewayPlugin.id
