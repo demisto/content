@@ -861,7 +861,7 @@ script:
       name: marking_id
     - description: External reference ID. Use opencti-external-reference-create to create a new external reference.
       name: external_references_id
-    description: Create a new incident response.
+    description: Creates a new incident response.
     name: opencti-incident-response-create
     outputs:
     - contextPath: OpenCTI.IncidentResponse.id
