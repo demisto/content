@@ -2208,7 +2208,7 @@ script:
       description: A comma-separated list of alert notification email addresses.
       isArray: true
     - name: expires_at
-      description: The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time when the API key expires, in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
     - name: rate_limits
       description: Rate limit settings (JSON array).
     - name: usage_limits
