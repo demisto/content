@@ -2606,6 +2606,7 @@ async def test_check_status_of_report_failed(mocker):
 
     # Mock generate_report to return a new instance_id
     mock_generate_report = mocker.patch("Rapid7_Nexpose.generate_report", return_value="new-instance-id")
+    mock_update_context = mocker.patch("Rapid7_Nexpose.update_integration_context_by_event_type")
 
     # Call the function under test
     result = await check_status_of_report(mock_client, "test-report-id", "test-instance-id", "assets")
@@ -2618,6 +2619,72 @@ async def test_check_status_of_report_failed(mocker):
 
     # Verify generate_report was called with the correct parameters
     mock_generate_report.assert_called_once_with(mock_client, "test-report-id", "assets")
+
+    # The regenerated instance must be persisted immediately, not only after the report completes
+    mock_update_context.assert_called_once_with("assets", {"instance_id": "new-instance-id"})
+
+
+def _status_response(mocker, status: str):
+    response = mocker.AsyncMock()
+    response.json = mocker.AsyncMock(return_value={"status": status})
+    return response
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("terminal_status", ["failed", "aborted"])
+async def test_check_status_of_report_stops_after_max_regenerations(mocker, terminal_status: str):
+    """
+    Given:
+      - A report that ends 'failed' or 'aborted' on every attempt (XSUP-77463)
+
+    When:
+      - Calling check_status_of_report
+
+    Then:
+      - Regenerate exactly MAX_REPORT_REGENERATIONS times, then raise instead of looping forever
+      - Apply the configured backoff before each regeneration
+    """
+    mock_client = mocker.AsyncMock()
+    mock_client.http_request = mocker.AsyncMock(side_effect=lambda *_: _status_response(mocker, terminal_status))
+    mock_sleep = mocker.patch("Rapid7_Nexpose.asyncio.sleep")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    mocker.patch("Rapid7_Nexpose.update_integration_context_by_event_type")
+    mock_generate_report = mocker.patch("Rapid7_Nexpose.generate_report", side_effect=["instance-2", "instance-3", "instance-4"])
+
+    with pytest.raises(DemistoException, match=f"ended with status '{terminal_status}' after {MAX_REPORT_REGENERATIONS + 1}"):
+        await check_status_of_report(mock_client, "report-id", "instance-1", "vulnerability")
+
+    assert mock_generate_report.call_count == MAX_REPORT_REGENERATIONS
+    sleeps = [c.args[0] for c in mock_sleep.call_args_list]
+    for backoff in REPORT_REGENERATION_BACKOFF_SECONDS[:MAX_REPORT_REGENERATIONS]:
+        assert backoff in sleeps
+
+
+@pytest.mark.asyncio
+async def test_check_status_of_report_times_out_without_regenerating(mocker):
+    """
+    Given:
+      - A report that stays 'running' past REPORT_STATUS_TIMEOUT_SECONDS
+
+    When:
+      - Calling check_status_of_report
+
+    Then:
+      - Raise a timeout error instead of polling forever
+      - Do not regenerate (the next run resumes polling the same instance)
+    """
+    mock_client = mocker.AsyncMock()
+    mock_client.http_request = mocker.AsyncMock(side_effect=lambda *_: _status_response(mocker, "running"))
+    mocker.patch("Rapid7_Nexpose.asyncio.sleep")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    # First call sets the deadline; the next is already past it.
+    mocker.patch("Rapid7_Nexpose._monotonic", side_effect=[0, REPORT_STATUS_TIMEOUT_SECONDS + 1])
+    mock_generate_report = mocker.patch("Rapid7_Nexpose.generate_report")
+
+    with pytest.raises(DemistoException, match="did not complete within"):
+        await check_status_of_report(mock_client, "report-id", "instance-1", "asset")
+
+    mock_generate_report.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -3613,3 +3680,121 @@ async def test_stream_and_parse_report_error_includes_exception_type(mocker):
     message = str(excinfo.value)
     assert "CancelledError" in message, "error message must include the exception type name"
     assert "streaming or sending events" in message
+
+
+def test_vulnerability_query_filters_dates_before_aggregation():
+    """
+    Given:
+        - The SQL query used to collect vulnerabilities.
+    When:
+        - Inspecting where the 100-day date filter is applied.
+    Then:
+        - The filter is inside the aggregated_details CTE (before GROUP BY), so findings outside the window are not aggregated.
+        - The filter is not repeated in the outer query.
+    """
+    cte_start = BASE_QUERY_FOR_VULNERABILITIES.index("aggregated_details AS (")
+    outer_select = BASE_QUERY_FOR_VULNERABILITIES.index("\nSELECT", cte_start)
+    cte_body = BASE_QUERY_FOR_VULNERABILITIES[cte_start:outer_select]
+    date_filter = "fasvi.date >= CURRENT_DATE - INTERVAL '{lookback_days} days'"
+
+    assert date_filter in cte_body
+    assert cte_body.index(date_filter) < cte_body.index("GROUP BY")
+    assert "INTERVAL" not in BASE_QUERY_FOR_VULNERABILITIES[outer_select:]
+
+
+def test_asset_query_uses_latest_completed_scan():
+    """
+    Given:
+        - The asset collector SQL query.
+    When:
+        - Selecting each asset's latest scan in the asset_latest_scan CTE.
+    Then:
+        - Only completed scans with a finish time are considered, so an unfinished scan (NULL finish time, which sorts
+          first in DESC order) cannot hide an asset's earlier completed scans.
+    """
+    cte = BASE_QUERY_FOR_ASSETS.split("asset_latest_scan AS (", 1)[1].split("latest_os_certainty AS (", 1)[0]
+    where_clause = cte.split("WHERE", 1)[1].split("ORDER BY", 1)[0]
+
+    assert "ds.status_id = 'C'" in where_clause
+    assert "ds.finished IS NOT NULL" in where_clause
+
+
+@pytest.mark.parametrize(
+    "params, expected",
+    [
+        ({}, DEFAULT_LOOKBACK_DAYS),
+        ({"lookback_days": ""}, DEFAULT_LOOKBACK_DAYS),
+        ({"lookback_days": "7"}, 7),
+        ({"lookback_days": 30}, 30),
+    ],
+)
+def test_get_lookback_days(params, expected):
+    """
+    Given:
+        - Integration parameters with a missing, empty or valid lookback.
+    When:
+        - Calling get_lookback_days.
+    Then:
+        - The configured value is returned, or the default (100) when not set.
+    """
+    assert get_lookback_days(params) == expected
+
+
+@pytest.mark.parametrize("lookback", ["0", "-5", "abc"])
+def test_get_lookback_days_invalid(lookback):
+    """
+    Given:
+        - A non-positive or non-numeric lookback.
+    When:
+        - Calling get_lookback_days.
+    Then:
+        - An error is raised.
+    """
+    with pytest.raises((DemistoException, ValueError)):
+        get_lookback_days({"lookback_days": lookback})
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("event_type, lookback", [("asset", 7), ("vulnerability", 30), ("asset", DEFAULT_LOOKBACK_DAYS)])
+async def test_create_report_config_uses_lookback(event_type, lookback):
+    """
+    Given:
+        - A lookback value and an event type.
+    When:
+        - Creating the report configuration.
+    Then:
+        - The submitted SQL query uses the lookback in its date filter and contains no unformatted placeholders.
+    """
+    response = AsyncMock()
+    response.headers = {"Location": "https://nexpose/api/3/reports/42"}
+    response.release = lambda: None
+    client = AsyncMock()
+    client.http_request.return_value = response
+
+    report_id = await create_report_config_from_template(client, event_type, lookback)
+
+    query = client.http_request.call_args.kwargs["payload"]["query"]
+    assert report_id == "42"
+    assert f"INTERVAL '{lookback} days'" in query
+    assert "{lookback_days}" not in query
+
+
+@pytest.mark.asyncio
+async def test_fetch_assets_command_passes_lookback(mocker):
+    """
+    Given:
+        - The lookback_days integration parameter is set.
+    When:
+        - Running fetch_assets_command.
+    Then:
+        - The configured lookback is passed to run_all_collectors.
+    """
+    mock_run_all = mocker.patch("Rapid7_Nexpose.run_all_collectors", new_callable=AsyncMock)
+    mock_client_cls = mocker.patch("Rapid7_Nexpose.InsightVMClient")
+    mock_client_cls.return_value.__aenter__ = AsyncMock(return_value=AsyncMock())
+    mock_client_cls.return_value.__aexit__ = AsyncMock(return_value=False)
+    params = {"server": "https://nexpose.example.com", "credentials": {"identifier": "u", "password": "p"}, "lookback_days": "7"}
+
+    await fetch_assets_command(params, "")
+
+    assert mock_run_all.call_args.kwargs["lookback_days"] == 7
