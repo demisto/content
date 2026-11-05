@@ -1080,7 +1080,7 @@ script:
       description: The replyTo recipients of the email.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.12833174
+  dockerimage: demisto/crypto:1.0.0.13737394
   isfetch: true
   script: ''
   type: python

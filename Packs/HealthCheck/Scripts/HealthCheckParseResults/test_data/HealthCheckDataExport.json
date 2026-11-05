@@ -1,0 +1,1652 @@
+{
+    "incident": {
+        "CustomFields": {
+            "_product": [
+                "XSIAM Manual"
+            ],
+            "_vendor": "PANW",
+            "action": "SCANNED",
+            "alert_domain": "DOMAIN_HEALTH",
+            "categoryname": "Health Check Report",
+            "cgosignature": [
+                "SIGNATURE_UNAVAILABLE"
+            ],
+            "containsfeaturedhost": [
+                "NO"
+            ],
+            "containsfeaturedipaddress": [
+                "NO"
+            ],
+            "containsfeatureduser": [
+                "NO"
+            ],
+            "country": null,
+            "emailsentsuccessfully": false,
+            "excluded": false,
+            "external_id": "a100c36e-24d3-48a2-9366-0e73bb71f6ef",
+            "family_tags": [
+                "DS:PANW/XSIAM Manual",
+                "DOM:Health"
+            ],
+            "followup": false,
+            "healthcheckactionableitems": [
+                {
+                    "category": "Content packs",
+                    "description": "Updates are needed for various content packs",
+                    "resolution": "Navigate to the market place and update the outdated packs",
+                    "severity": "Low"
+                },
+                {
+                    "category": "Playbooks",
+                    "description": "The playbook: \"GenericPollingDemo, GenericPolling_copy, TestGenericPolling\" may be a copy of a built-in playbook, you may consider using out of the box playbooks",
+                    "resolution": "Consider using out of the box playbooks",
+                    "severity": "Low"
+                },
+                {
+                    "category": "Content packs",
+                    "description": "The number of installed packs on your system is too high",
+                    "resolution": "Delete unneeded packs, refer to: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Manage-content-packs",
+                    "severity": "Medium"
+                }
+            ],
+            "healthcheckbiocscount": "3",
+            "healthcheckcustomdashboardcount": "12",
+            "healthcheckcustomfielddetails": [
+                {
+                    "field": "Total Issue Fields",
+                    "value": "1776"
+                },
+                {
+                    "field": "Custom Issue Fields Count",
+                    "value": "111"
+                },
+                {
+                    "field": "Custom Issue Fields Percentage",
+                    "value": "6.25%"
+                },
+                {
+                    "field": "Total Case Fields",
+                    "value": "42"
+                },
+                {
+                    "field": "Custom Case Fields Count",
+                    "value": "11"
+                },
+                {
+                    "field": "Custom Case Fields Percentage",
+                    "value": "26.19%"
+                },
+                {
+                    "field": "Issue and Case Fields with Trigger Scripts",
+                    "value": "3"
+                }
+            ],
+            "healthcheckcustomlayoutdetails": [
+                {
+                    "field": "Total Issue Layouts",
+                    "value": "34"
+                },
+                {
+                    "field": "Custom Issue Layouts Count",
+                    "value": "17"
+                },
+                {
+                    "field": "Custom Issue Layouts Percentage",
+                    "value": "50.0%"
+                },
+                {
+                    "field": "Total Case Layouts",
+                    "value": "4"
+                },
+                {
+                    "field": "Custom Case Layouts Count",
+                    "value": "3"
+                },
+                {
+                    "field": "Custom Case Layouts Percentage",
+                    "value": "75.0%"
+                }
+            ],
+            "healthcheckcustomscriptdetails": [
+                {
+                    "field": "Total Automation Scripts",
+                    "value": "714"
+                },
+                {
+                    "field": "Custom Scripts Count",
+                    "value": "62"
+                },
+                {
+                    "field": "Custom Scripts Percentage",
+                    "value": "8.68%"
+                },
+                {
+                    "field": "Detached Scripts Count",
+                    "value": "2"
+                },
+                {
+                    "field": "Detached Scripts Percentage",
+                    "value": "0.28%"
+                }
+            ],
+            "healthcheckcustomwidgetcount": "73",
+            "healthcheckdisconnectedenginescount": 0,
+            "healthcheckenabledinstances": [
+                {
+                    "instancename": "Absolute_instance_1"
+                },
+                {
+                    "instancename": "Active Directory Query v2_instance_CanT_DemoDC"
+                },
+                {
+                    "instancename": "agentprofiles"
+                },
+                {
+                    "instancename": "Built-in Mail Sender"
+                },
+                {
+                    "instancename": "Core REST API_instance_1"
+                },
+                {
+                    "instancename": "Cortex Core - IOC_default_instance"
+                },
+                {
+                    "instancename": "Cortex Core - IR_default_instance"
+                },
+                {
+                    "instancename": "Cortex Core - Platform_default_instance"
+                },
+                {
+                    "instancename": "fcm_default_instance"
+                },
+                {
+                    "instancename": "GitHub_instance_1"
+                },
+                {
+                    "instancename": "GozdePhishing"
+                },
+                {
+                    "instancename": "Image OCR_default_instance"
+                },
+                {
+                    "instancename": "Imperva WAF_instance_1"
+                },
+                {
+                    "instancename": "ipinfo_v2_instance_1"
+                },
+                {
+                    "instancename": "Kursus_internet_blokering"
+                },
+                {
+                    "instancename": "Mail Listener v2_instance_1"
+                },
+                {
+                    "instancename": "Microsoft Graph_instance_1"
+                },
+                {
+                    "instancename": "MISP Feed_instance_1"
+                },
+                {
+                    "instancename": "MITRE ATT&CK v2_instance_1"
+                },
+                {
+                    "instancename": "Palo Alto Networks IoT_instance_1"
+                },
+                {
+                    "instancename": "PlaybookMetrics"
+                },
+                {
+                    "instancename": "Rasterize_default_instance"
+                },
+                {
+                    "instancename": "Rasterize_instance_1"
+                },
+                {
+                    "instancename": "ServiceNow v2_instance_1"
+                },
+                {
+                    "instancename": "socfw_ir_execution"
+                },
+                {
+                    "instancename": "SOCFWPackManager_instance_1"
+                },
+                {
+                    "instancename": "Test_xsoar-microsoft-graph-files_310ecfbb-733c-4897-833c-6fc23943b595"
+                },
+                {
+                    "instancename": "Unit_42_Intelligence_SOCFW"
+                },
+                {
+                    "instancename": "VirusTotal (API v3)_instance_1"
+                },
+                {
+                    "instancename": "Whois_instance_1"
+                },
+                {
+                    "instancename": "Whois_instance_SOCFW"
+                },
+                {
+                    "instancename": "WildFire-Reports_default_instance"
+                },
+                {
+                    "instancename": "WildFire-v2_default_instancee"
+                },
+                {
+                    "instancename": "wins_AbuseIPDB"
+                },
+                {
+                    "instancename": "XQL Query Engine_default_instance"
+                }
+            ],
+            "healthcheckinactiveadminscount": 33,
+            "healthcheckinstalledpacks": [
+                {
+                    "currentversion": "1.0.33",
+                    "packs": "AI Agents",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.5.58",
+                    "packs": "Microsoft Teams",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.5.42",
+                    "packs": "Whois",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.2.30",
+                    "packs": "MITRE ATT&CK",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.1.23",
+                    "packs": "Threat Intelligence Management",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.1.47",
+                    "packs": "Image OCR",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.1.6",
+                    "packs": "Unit 42 Intel (Deprecated)",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.1.13",
+                    "packs": "Unit 42 ATOMs Feed (Deprecated)",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.7.22",
+                    "packs": "Common Dashboards",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "4.0.9",
+                    "packs": "HelloWorld",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.1.13",
+                    "packs": "Cortex Lock",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.20",
+                    "packs": "Unit 42 Threat Intelligence by Palo Alto Networks",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.10",
+                    "packs": "Microsoft DNS",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.3",
+                    "packs": "Microsoft Windows AMSI",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.22",
+                    "packs": "Microsoft AD FS Collection",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.3",
+                    "packs": "Microsoft Sysmon",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.1.21",
+                    "packs": "Microsoft Windows Event Logs",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "2.2.2",
+                    "packs": "MISP",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.2",
+                    "packs": "Cortex Exposure Management",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.2.9",
+                    "packs": "Cisco Firepower",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "2.0.14",
+                    "packs": "Fortinet Fortiweb",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.1.40",
+                    "packs": "AWS - AccessAnalyzer",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.27",
+                    "packs": "JsonWhoIs",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "2.1.27",
+                    "packs": "Ipinfo",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.45",
+                    "packs": "MISP Feed",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.10",
+                    "packs": "MITRE ATT&CK - Courses of Action",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.2.25",
+                    "packs": "Best Practice Assessment (BPA) by Palo Alto Networks (Deprecated)",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.11",
+                    "packs": "NIST",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.2",
+                    "packs": "Sample Incident Generator",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "6.2.49",
+                    "packs": "Cortex XDR by Palo Alto Networks",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.42",
+                    "packs": "IoT by Palo Alto Networks",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.4",
+                    "packs": "GenericAPIEventCollector",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.1.11",
+                    "packs": "Alibaba Action Trail",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.2.16",
+                    "packs": "Impossible Traveler",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.18",
+                    "packs": "MaxMind GeoIP2",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.5",
+                    "packs": "Google Vertex AI",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.17",
+                    "packs": "Office 365",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "2.0.43",
+                    "packs": "McAfee ePO",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.2",
+                    "packs": "Trellix_ePO",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "2.0.5",
+                    "packs": "Absolute",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.5.0",
+                    "packs": "Community Common Scripts",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.2.0",
+                    "packs": "Cortex Insights",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.2.24",
+                    "packs": "Proofpoint TAP",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.0",
+                    "packs": "ContextReplica",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.1.66",
+                    "packs": "Microsoft Graph API",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "3.3.22",
+                    "packs": "Qualys",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.1.0",
+                    "packs": "Cloud Security Policy Management",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.0",
+                    "packs": "SOC Framework Pack Manager",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "3.10.9",
+                    "packs": "SOC Framework Unified",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.6.3",
+                    "packs": "SOC Framework NIST IR (800-61)",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.1.8",
+                    "packs": "Ansible Automation Platform",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "2.3.3",
+                    "packs": "ANY.RUN",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "2.3.0",
+                    "packs": "GitHub",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "2.0.7",
+                    "packs": "Wiz",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.1.13",
+                    "packs": "Generic Webhook",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "2.1.24",
+                    "packs": "Salesforce",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "4.4.31",
+                    "packs": "Prisma Cloud by Palo Alto Networks",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.51",
+                    "packs": "Core Alert Fields",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "3.8.8",
+                    "packs": "Slack",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.2.31",
+                    "packs": "AWS - CloudWatchLogs",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.2.41",
+                    "packs": "AWS - S3",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "3.3.39",
+                    "packs": "Atlassian Jira",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.7.32",
+                    "packs": "Prisma Cloud Compute by Palo Alto Networks",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "2.9.12",
+                    "packs": "ServiceNow",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.2.2",
+                    "packs": "GCP",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "2.3.2",
+                    "packs": "AWS",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.1.22",
+                    "packs": "Azure",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.0.0",
+                    "packs": "Cortex - Get Override Assets",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.0.0",
+                    "packs": "Cortex - Revert Override Action",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.0.0",
+                    "packs": "Cortex - List Available Assets For Override",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.0.0",
+                    "packs": "Cortex - Update Override Assets",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.0.27",
+                    "packs": "Imperva WAF",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.1.6",
+                    "packs": "AbuseIPDB",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "3.3.43",
+                    "packs": "Okta",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.1.36",
+                    "packs": "TIM - Indicator Auto-Processing",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "2.1.83",
+                    "packs": "WildFire by Palo Alto Networks",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.3.52",
+                    "packs": "Aggregated Scripts",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.3.56",
+                    "packs": "Cortex Response And Remediation",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.1.14",
+                    "packs": "CyberArk Identity",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.0.2",
+                    "packs": "Microsoft Graph Files (Standard Connector)",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "2.8.9",
+                    "packs": "Common Playbooks",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.5.5",
+                    "packs": "Cortex REST API",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "3.10.15",
+                    "packs": "Common Types",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.3.0",
+                    "packs": "AzureManaged",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "2.8.0",
+                    "packs": "AWSManaged",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.0.9",
+                    "packs": "Ivanti Connect Secure",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.3.0",
+                    "packs": "GCPManaged",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "3.5.0",
+                    "packs": "System Diagnostics and Health Check",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "2.6.49",
+                    "packs": "PAN-OS by Palo Alto Networks",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "2.1.45",
+                    "packs": "Rasterize",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "3.8.7",
+                    "packs": "Phishing",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.4.30",
+                    "packs": "Filters And Transformers",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "2.6.1",
+                    "packs": "Microsoft Graph Security",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "3.5.90",
+                    "packs": "Core",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.8.1",
+                    "packs": "Active Directory Query",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.4.21",
+                    "packs": "Gmail Single User",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.1.2",
+                    "packs": "Mail Sender (New)",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.8.8",
+                    "packs": "Microsoft Graph Mail",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "2.7.24",
+                    "packs": "VirusTotal",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "2.3.9",
+                    "packs": "AutoFocus by Palo Alto Networks",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "4.6.39",
+                    "packs": "Microsoft 365 Defender",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.0.71",
+                    "packs": "Mail Listener",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "3.4.2",
+                    "packs": "Generic Export Indicators Service",
+                    "updateavailable": "false"
+                },
+                {
+                    "currentversion": "1.42.25",
+                    "packs": "Base",
+                    "updateavailable": "true"
+                },
+                {
+                    "currentversion": "1.22.53",
+                    "packs": "Common Scripts",
+                    "updateavailable": "false"
+                }
+            ],
+            "healthchecklicensedetails": [
+                {
+                    "field": "License Type",
+                    "value": "XSIAM Premium"
+                },
+                {
+                    "field": "License Breakdown",
+                    "value": "100 Agents (enabled: 7),\n100 Users,\n100 GB"
+                },
+                {
+                    "field": "License Expiration",
+                    "value": "Dec 30th 2026 23:59:59"
+                },
+                {
+                    "field": "Purchased Compute Units",
+                    "value": "1000"
+                },
+                {
+                    "field": "Hot Storage Retention (months)",
+                    "value": "3"
+                },
+                {
+                    "field": "Cold Storage Retention (months)",
+                    "value": "6"
+                },
+                {
+                    "field": "Modules \\ Features in Trial",
+                    "value": "Compute Unit,\nForensics,\nHost Insights,\nIdentity Threat,\nXTH"
+                },
+                {
+                    "field": "Odd expirations",
+                    "value": "No components found expiring with a date different from the main license."
+                },
+                {
+                    "field": "Cloud Posture Workloads Breakdown",
+                    "value": "Total Workloads: 100,\n0 Unmanaged Assets,\n0 Scanned VM,\n0 SaaS Applications,\n0 Storage Assets,\n0 Scanned Registry Images,\n0 DBaaS,\n0 Scanned Serverless Functions,\n0 On premises assets,\n0 Databases"
+                },
+                {
+                    "field": "Cloud Runtime Workloads Breakdown",
+                    "value": "Total Workloads: 100,\n0 Agent Protected CaaS Workloads,\n0 Agent Protected VM"
+                }
+            ],
+            "healthchecknumberofengines": 1,
+            "healthcheckoutdatedenginescount": 1,
+            "healthcheckstart": false,
+            "healthchecktotaladminscount": 35,
+            "healthchecktotaloutdatedpacks": 69,
+            "healthchecktotalpacksinstalled": 105,
+            "hostos": "NO_HOST",
+            "initiatorsignature": [
+                "SIGNATURE_UNAVAILABLE"
+            ],
+            "is_excepted": false,
+            "is_rule_triggering": false,
+            "isphishing": [
+                "NOT_AVAILABLE"
+            ],
+            "last_update_timestamp": "2026-09-14T12:56:42.325Z",
+            "local_insert_ts": "2026-09-14T10:59:13.652Z",
+            "osparentsignature": [
+                "SIGNATURE_UNAVAILABLE"
+            ],
+            "passwordresetsuccessfully": false,
+            "prismacloudcomputeinteractive": false,
+            "processexecutionsignature": [
+                "SIGNATURE_UNAVAILABLE"
+            ],
+            "resolution_status_modified_ts": "2026-09-14T10:59:19.026Z",
+            "starred": false,
+            "status.progress": "STATUS_020_UNDER_INVESTIGATION",
+            "tags": [
+                "DOM:Health",
+                "DS:PANW/XSIAM Manual"
+            ],
+            "timestamp": "2026-09-14T10:58:59.928Z",
+            "winsdemo1vip": false,
+            "xdmresolutiontimer": {
+                "runStatus": "running",
+                "startDate": "2026-09-14 10:59:13"
+            },
+            "xdmsourcehostosfamily": "NO_HOST",
+            "xdmsourcelocationcountry": [
+                "UNKNOWN"
+            ],
+            "xdmsourceprocessexecutablesignaturestatus": [
+                "SIGNATURE_UNAVAILABLE"
+            ],
+            "xdmtargetprocessexecutablesignaturestatus": [
+                "SIGNATURE_UNAVAILABLE"
+            ],
+            "xdrstarred": false
+        },
+        "OWNER": {},
+        "account": "",
+        "activated": "0001-01-01T00:00:00Z",
+        "attachment": null,
+        "autime": 1789383539928000000,
+        "cacheVersn": 0,
+        "canvases": null,
+        "category": "",
+        "closeNotes": "",
+        "closeReason": "",
+        "closed": "0001-01-01T00:00:00Z",
+        "closingUserId": "",
+        "created": "2026-09-14T10:58:59.928Z",
+        "custom_status": "In Progress",
+        "dbotCurrentDirtyFields": null,
+        "dbotDirtyFields": null,
+        "dbotMirrorDirection": "",
+        "dbotMirrorId": "",
+        "dbotMirrorInstance": "",
+        "dbotMirrorLastSync": "0001-01-01T00:00:00Z",
+        "dbotMirrorTags": null,
+        "dedupID": "",
+        "details": "Collecting local information to assest the system healthcheck",
+        "droppedCount": 0,
+        "dueDate": "0001-01-01T00:00:00Z",
+        "exported": false,
+        "feedBased": false,
+        "haIntegrationEventID": "",
+        "haOriginalID": "",
+        "id": "395223",
+        "incidentSchedulingKey": "",
+        "investigationId": "395223",
+        "isDebug": false,
+        "isPlayground": false,
+        "labels": null,
+        "lastJobRunTime": "0001-01-01T00:00:00Z",
+        "lastOpen": "0001-01-01T00:00:00Z",
+        "linkedCount": 0,
+        "linkedIncidents": null,
+        "modified": "2026-09-14T12:56:42.325Z",
+        "name": "System Diagnostics and Healthcheck Report",
+        "notifyTime": "2026-09-14T11:03:35.426692637Z",
+        "occurred": "0001-01-01T00:00:00Z",
+        "openDuration": 0,
+        "owner": "",
+        "parent": "",
+        "parentXDRIncident": "INCIDENT-4953",
+        "phase": "",
+        "playbookId": "HealthCheck",
+        "rawCategory": "",
+        "rawCloseReason": "",
+        "rawJSON": "",
+        "rawName": "System Diagnostics and Healthcheck Report",
+        "rawPhase": "",
+        "rawType": "Unclassified",
+        "reason": "",
+        "reminder": "0001-01-01T00:00:00Z",
+        "resolution_status": "In Progress",
+        "retained": false,
+        "runStatus": "completed",
+        "severity": 3,
+        "sizeInBytes": 0,
+        "sla": 0,
+        "sourceBrand": "CREATE_ALERT_PUBLIC_API",
+        "sourceInstance": "",
+        "status": 1,
+        "type": "Unclassified",
+        "version": 0
+    },
+    "ctx": {
+        "HealthCheck": [
+            {
+                "ActionableItems": [
+                    {
+                        "category": "Content packs",
+                        "description": "Updates are needed for various content packs",
+                        "resolution": "Navigate to the market place and update the outdated packs",
+                        "severity": "Low"
+                    },
+                    {
+                        "category": "Content packs",
+                        "description": "The number of installed packs on your system is too high",
+                        "resolution": "Delete unneeded packs, refer to: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Manage-content-packs",
+                        "severity": "Medium"
+                    },
+                    {
+                        "category": "Playbooks",
+                        "description": "The playbook: \"GenericPollingDemo, GenericPolling_copy, TestGenericPolling\" may be a copy of a built-in playbook, you may consider using out of the box playbooks",
+                        "resolution": "Consider using out of the box playbooks",
+                        "severity": "Low"
+                    }
+                ],
+                "CollectResults": {
+                    "Agent Policy Assignment": [
+                        {
+                            "assigned_prevention_policy": "Emre_Block_Mode",
+                            "policy_count": 6
+                        },
+                        {
+                            "assigned_prevention_policy": "Emre_Windows_Block",
+                            "policy_count": 4
+                        },
+                        {
+                            "assigned_prevention_policy": "Android Default",
+                            "policy_count": 3
+                        },
+                        {
+                            "assigned_prevention_policy": "CanT Linux Server Group1 PPolicy",
+                            "policy_count": 2
+                        },
+                        {
+                            "assigned_prevention_policy": "CanT Test PC PPolicy MacOS",
+                            "policy_count": 1
+                        },
+                        {
+                            "assigned_prevention_policy": "Cs Lab",
+                            "policy_count": 1
+                        },
+                        {
+                            "assigned_prevention_policy": "Windows Default",
+                            "policy_count": 1
+                        },
+                        {
+                            "assigned_prevention_policy": "wins-agent-policy",
+                            "policy_count": 1
+                        },
+                        {
+                            "assigned_prevention_policy": "GozdeMachines",
+                            "policy_count": 1
+                        },
+                        {
+                            "assigned_prevention_policy": "CanT Test PC PPolicy",
+                            "policy_count": 1
+                        }
+                    ],
+                    "Agent Scan Status": [
+                        {
+                            "scan_status": "SUCCESS",
+                            "scancount": 2
+                        },
+                        {
+                            "scan_status": "IN_PROGRESS",
+                            "scancount": 1
+                        },
+                        {
+                            "scan_status": "NONE",
+                            "scancount": 18
+                        }
+                    ],
+                    "Auto Agent Upgrade Status": [
+                        {
+                            "auto_upgrade_status": "STATUS_UP_TO_DATE",
+                            "upgradestatuscount": 9
+                        },
+                        {
+                            "auto_upgrade_status": "STATUS_NOT_CONFIGURED",
+                            "upgradestatuscount": 8
+                        },
+                        {
+                            "auto_upgrade_status": "STATUS_PENDING",
+                            "upgradestatuscount": 1
+                        }
+                    ],
+                    "Correlation Rules Without Automation": [
+                        {
+                            "count": 10,
+                            "xdm.issue.name": "WINS-B3  Insider fusion: resigned + exfil"
+                        },
+                        {
+                            "count": 5,
+                            "xdm.issue.name": "WINS-A3 Multi-stage"
+                        },
+                        {
+                            "count": 4,
+                            "xdm.issue.name": "WINS-B2  Exfil to personal cloud-personal email"
+                        },
+                        {
+                            "count": 4,
+                            "xdm.issue.name": "WINS-C3  Persistence: attacker MFA enroll + OAuth"
+                        },
+                        {
+                            "count": 4,
+                            "xdm.issue.name": "WINS-A2  Inhibit recovery"
+                        },
+                        {
+                            "count": 4,
+                            "xdm.issue.name": "WINS-A1 Credential Theft"
+                        },
+                        {
+                            "count": 4,
+                            "xdm.issue.name": "WINS-B1  Abnormal bulk confidential access"
+                        },
+                        {
+                            "count": 3,
+                            "xdm.issue.name": "WINS-C4  ATO fusion"
+                        },
+                        {
+                            "count": 2,
+                            "xdm.issue.name": "WINS-C2  Impossible travel"
+                        },
+                        {
+                            "count": 2,
+                            "xdm.issue.name": "WINS-A5 C2 beaconing to known-bad domain"
+                        }
+                    ],
+                    "EDR Disabled Endpoints": [
+                        {
+                            "Policy": "Cs Lab",
+                            "name": "jupiter-win10",
+                            "type": "TYPE_WORKSTATION"
+                        },
+                        {
+                            "Policy": "Windows Default",
+                            "name": "DESKTOP-TOQBBJT",
+                            "type": "TYPE_WORKSTATION"
+                        }
+                    ],
+                    "Health Check - Agent and Asset - Agent Policy Assignment xql_1773742279543": [
+                        {
+                            "assigned_prevention_policy": "Emre_Block_Mode",
+                            "policy_count": 6
+                        },
+                        {
+                            "assigned_prevention_policy": "Emre_Windows_Block",
+                            "policy_count": 4
+                        },
+                        {
+                            "assigned_prevention_policy": "Android Default",
+                            "policy_count": 3
+                        },
+                        {
+                            "assigned_prevention_policy": "CanT Linux Server Group1 PPolicy",
+                            "policy_count": 2
+                        },
+                        {
+                            "assigned_prevention_policy": "CanT Test PC PPolicy MacOS",
+                            "policy_count": 1
+                        },
+                        {
+                            "assigned_prevention_policy": "Cs Lab",
+                            "policy_count": 1
+                        },
+                        {
+                            "assigned_prevention_policy": "Windows Default",
+                            "policy_count": 1
+                        },
+                        {
+                            "assigned_prevention_policy": "wins-agent-policy",
+                            "policy_count": 1
+                        },
+                        {
+                            "assigned_prevention_policy": "GozdeMachines",
+                            "policy_count": 1
+                        },
+                        {
+                            "assigned_prevention_policy": "CanT Test PC PPolicy",
+                            "policy_count": 1
+                        }
+                    ],
+                    "Health Check - Agent and Asset - Agent Scan Status xql_1773743335910": [
+                        {
+                            "scan_status": "SUCCESS",
+                            "scancount": 2
+                        },
+                        {
+                            "scan_status": "IN_PROGRESS",
+                            "scancount": 1
+                        },
+                        {
+                            "scan_status": "NONE",
+                            "scancount": 18
+                        }
+                    ],
+                    "Health Check - Agent and Asset - Auto Agent Upgrade Status xql_1773741704945": [
+                        {
+                            "auto_upgrade_status": "STATUS_UP_TO_DATE",
+                            "upgradestatuscount": 9
+                        },
+                        {
+                            "auto_upgrade_status": "STATUS_NOT_CONFIGURED",
+                            "upgradestatuscount": 8
+                        },
+                        {
+                            "auto_upgrade_status": "STATUS_PENDING",
+                            "upgradestatuscount": 1
+                        }
+                    ],
+                    "Health Check - Agent and Asset - EDR Disabled Endpoints xql_1773148595080": [
+                        {
+                            "Policy": "Cs Lab",
+                            "name": "jupiter-win10",
+                            "type": "TYPE_WORKSTATION"
+                        },
+                        {
+                            "Policy": "Windows Default",
+                            "name": "DESKTOP-TOQBBJT",
+                            "type": "TYPE_WORKSTATION"
+                        }
+                    ],
+                    "Health Check - Agent and Asset - Unprotected & Partially Protected Endpoints xql_1773147948011": [
+                        {
+                            "operational_status": "PARTIALLY_PROTECTED",
+                            "platform": "LINUX",
+                            "total": 1
+                        }
+                    ],
+                    "Health Check - Ingestion/Integration/Configuration - CIE - Ingested Domains xql_1773145541487": [
+                        {
+                            "IdentityDomain": "demoautomata.local",
+                            "generatedTime": 1767703378341,
+                            "last_modified": 1767165786000,
+                            "last_modified_dc_record": 1767165786000,
+                            "record_generated_time": 1767703378341
+                        }
+                    ],
+                    "Health Check - Ingestion/Integration/Configuration - CIE Non Reporting Domains xql_1773145445339": [
+                        {
+                            "daysNoUpdate": 251,
+                            "generatedTime": 1767703378341,
+                            "last_modified": 1767165786000,
+                            "last_modified_dc_record": 1767165786000,
+                            "name": "demoautomata.local",
+                            "record_generated_time": 1767703378341
+                        }
+                    ],
+                    "Health Check - Ingestion/Integration/Configuration - Health Issues - 7d xql_1773664559419": [
+                        {
+                            "count": 4,
+                            "xdm.issue.name": "System Diagnostics and Healthcheck Report",
+                            "xdm.issue.type": "Unclassified"
+                        },
+                        {
+                            "count": 3,
+                            "xdm.issue.name": "Collection error in the instance GozdePhishing of a Gmail Single User collector",
+                            "xdm.issue.type": "Collection"
+                        },
+                        {
+                            "count": 1,
+                            "xdm.issue.name": "Collection error in the instance MITRE ATT&CK v2_instance_1 of a MITRE ATT&CK v2 collector",
+                            "xdm.issue.type": "Collection"
+                        },
+                        {
+                            "count": 1,
+                            "xdm.issue.name": "Docker Image - Large Docker Image",
+                            "xdm.issue.type": "Automation"
+                        }
+                    ],
+                    "Health Check - Ingestion/Integration/Configuration - Playbook Failing Tasks - 30d xql_1773147166230": [
+                        {
+                            "task_name": "",
+                            "tasks": [
+                                "373528",
+                                "391236",
+                                "391298",
+                                "391302",
+                                "395223",
+                                "playbook-execution-43854dbe-054b-49f0-99b6-f5720ada8d83",
+                                "playbook-execution-d39b57e3-0c76-47d4-8bdd-21a7f987ab62"
+                            ]
+                        },
+                        {
+                            "task_name": "Send Data Collection Form to Approver",
+                            "tasks": [
+                                "playbook-execution-43854dbe-054b-49f0-99b6-f5720ada8d83",
+                                "playbook-execution-d39b57e3-0c76-47d4-8bdd-21a7f987ab62"
+                            ]
+                        },
+                        {
+                            "task_name": "What Was the Decision Result?",
+                            "tasks": [
+                                "playbook-execution-43854dbe-054b-49f0-99b6-f5720ada8d83",
+                                "playbook-execution-d39b57e3-0c76-47d4-8bdd-21a7f987ab62"
+                            ]
+                        },
+                        {
+                            "task_name": "Notify Requestor Of Approval",
+                            "tasks": [
+                                "playbook-execution-43854dbe-054b-49f0-99b6-f5720ada8d83"
+                            ]
+                        },
+                        {
+                            "task_name": "Update Exception as Approved",
+                            "tasks": [
+                                "playbook-execution-43854dbe-054b-49f0-99b6-f5720ada8d83",
+                                "playbook-execution-d39b57e3-0c76-47d4-8bdd-21a7f987ab62"
+                            ]
+                        },
+                        {
+                            "task_name": "Custom Scripts",
+                            "tasks": [
+                                "391236",
+                                "391298",
+                                "391302",
+                                "395223"
+                            ]
+                        },
+                        {
+                            "task_name": "Custom Dashboards",
+                            "tasks": [
+                                "391236",
+                                "391298",
+                                "391302",
+                                "395223"
+                            ]
+                        },
+                        {
+                            "task_name": "Integrations instances",
+                            "tasks": [
+                                "391236",
+                                "391298",
+                                "391302",
+                                "395223"
+                            ]
+                        },
+                        {
+                            "task_name": "Custom Layouts",
+                            "tasks": [
+                                "391236",
+                                "391298",
+                                "391302",
+                                "395223"
+                            ]
+                        },
+                        {
+                            "task_name": "Custom Widgets",
+                            "tasks": [
+                                "391236",
+                                "391298",
+                                "391302",
+                                "395223"
+                            ]
+                        },
+                        {
+                            "task_name": "Check for disconnected engines",
+                            "tasks": [
+                                "391298",
+                                "391302",
+                                "395223"
+                            ]
+                        },
+                        {
+                            "task_name": "Collect agents data",
+                            "tasks": [
+                                "391298",
+                                "391302",
+                                "395223"
+                            ]
+                        },
+                        {
+                            "task_name": "Check for outdated engines",
+                            "tasks": [
+                                "391298",
+                                "391302",
+                                "395223"
+                            ]
+                        },
+                        {
+                            "task_name": "Collect cases data",
+                            "tasks": [
+                                "391298",
+                                "391302",
+                                "395223"
+                            ]
+                        },
+                        {
+                            "task_name": "Analyze playbooks",
+                            "tasks": [
+                                "391298",
+                                "391302",
+                                "395223"
+                            ]
+                        },
+                        {
+                            "task_name": "Custom Fields",
+                            "tasks": [
+                                "391236",
+                                "391298",
+                                "391302",
+                                "395223"
+                            ]
+                        },
+                        {
+                            "task_name": "Installed Packs",
+                            "tasks": [
+                                "391236",
+                                "391298",
+                                "391302",
+                                "395223"
+                            ]
+                        },
+                        {
+                            "task_name": "Count BIOCs",
+                            "tasks": [
+                                "391236",
+                                "391298",
+                                "391302",
+                                "395223"
+                            ]
+                        },
+                        {
+                            "task_name": "Save to action items table",
+                            "tasks": [
+                                "391298",
+                                "391302",
+                                "395223"
+                            ]
+                        },
+                        {
+                            "task_name": "Admin users",
+                            "tasks": [
+                                "391236",
+                                "391298",
+                                "391302",
+                                "395223"
+                            ]
+                        },
+                        {
+                            "task_name": "License Data",
+                            "tasks": [
+                                "391236",
+                                "391298",
+                                "391302",
+                                "395223"
+                            ]
+                        },
+                        {
+                            "task_name": "What action should we take?",
+                            "tasks": [
+                                "373528"
+                            ]
+                        },
+                        {
+                            "task_name": "Get Endpoint Details",
+                            "tasks": [
+                                "373528"
+                            ]
+                        },
+                        {
+                            "task_name": "Was The Action Blocked and No Featured Host?",
+                            "tasks": [
+                                "373528"
+                            ]
+                        },
+                        {
+                            "task_name": "Notify SOC Team",
+                            "tasks": [
+                                "373528"
+                            ]
+                        },
+                        {
+                            "task_name": "Open health check dashboards",
+                            "tasks": [
+                                "391298",
+                                "391302"
+                            ]
+                        },
+                        {
+                            "task_name": "Collect widgets data",
+                            "tasks": [
+                                "391298",
+                                "391302"
+                            ]
+                        },
+                        {
+                            "task_name": "Parse collected results",
+                            "tasks": [
+                                "391298",
+                                "391302"
+                            ]
+                        }
+                    ],
+                    "Health Check - Ingestion/Integration/Configuration - Sources Feeding Authentication Preset - 3d xql_1773911506249": [
+                        {
+                            "_product": "Fusion",
+                            "_time": 1789386484183,
+                            "_vendor": "PANW",
+                            "assacioatedproducts": "Cortex Audit",
+                            "insert_timestamp": 1789386604767
+                        },
+                        {
+                            "_product": "Fusion",
+                            "_time": 1789202696212,
+                            "_vendor": "PANW",
+                            "assacioatedproducts": "XDR Agent",
+                            "insert_timestamp": 1789202767949
+                        }
+                    ],
+                    "Health Check - Ingestion/Integration/Configuration - Sources Feeding Network Preset - 3d xql_1773920763500": [
+                        {
+                            "_product": "Fusion",
+                            "_time": 1789343954469,
+                            "_vendor": "PANW",
+                            "assacioatedproducts": "XDR Agent",
+                            "insert_timestamp": 1789344305017
+                        },
+                        {
+                            "_product": "Fusion",
+                            "_time": 1789305633000,
+                            "_vendor": "PANW",
+                            "assacioatedproducts": "NGFW",
+                            "insert_timestamp": 1789305768068
+                        }
+                    ],
+                    "Health Check - Issues/Cases - Correlation Rules Without Automation xql_1773663920960": [
+                        {
+                            "count": 10,
+                            "xdm.issue.name": "WINS-B3  Insider fusion: resigned + exfil"
+                        },
+                        {
+                            "count": 5,
+                            "xdm.issue.name": "WINS-A3 Multi-stage"
+                        },
+                        {
+                            "count": 4,
+                            "xdm.issue.name": "WINS-B2  Exfil to personal cloud-personal email"
+                        },
+                        {
+                            "count": 4,
+                            "xdm.issue.name": "WINS-C3  Persistence: attacker MFA enroll + OAuth"
+                        },
+                        {
+                            "count": 4,
+                            "xdm.issue.name": "WINS-A2  Inhibit recovery"
+                        },
+                        {
+                            "count": 4,
+                            "xdm.issue.name": "WINS-A1 Credential Theft"
+                        },
+                        {
+                            "count": 4,
+                            "xdm.issue.name": "WINS-B1  Abnormal bulk confidential access"
+                        },
+                        {
+                            "count": 3,
+                            "xdm.issue.name": "WINS-C4  ATO fusion"
+                        },
+                        {
+                            "count": 2,
+                            "xdm.issue.name": "WINS-C2  Impossible travel"
+                        },
+                        {
+                            "count": 2,
+                            "xdm.issue.name": "WINS-A5 C2 beaconing to known-bad domain"
+                        }
+                    ],
+                    "Health Check - Issues/Cases - Noisy Issue Categories - 30d xql_1772798270735": [
+                        {
+                            "Alerts": 5013,
+                            "xdm.issue.detection.method": "THREAT_INTELLIGENCE"
+                        },
+                        {
+                            "Alerts": 144,
+                            "xdm.issue.detection.method": "FW"
+                        },
+                        {
+                            "Alerts": 121,
+                            "xdm.issue.detection.method": "TRAPS"
+                        },
+                        {
+                            "Alerts": 45,
+                            "xdm.issue.detection.method": "CORRELATION"
+                        },
+                        {
+                            "Alerts": 34,
+                            "xdm.issue.detection.method": "ANALYTICS_BIOC"
+                        },
+                        {
+                            "Alerts": 21,
+                            "xdm.issue.detection.method": "HEALTH"
+                        },
+                        {
+                            "Alerts": 11,
+                            "xdm.issue.detection.method": "CREATE_ALERT_PUBLIC_API"
+                        },
+                        {
+                            "Alerts": 9,
+                            "xdm.issue.detection.method": "MAGNIFIER"
+                        }
+                    ],
+                    "Health Check - Issues/Cases - Non-Prevented Issues xql_1773144919377": [
+                        {
+                            "alert_name": "Local Analysis Malware",
+                            "assigned_prevention_policy": "CanT Test PC PPolicy MacOS",
+                            "events": 80
+                        }
+                    ],
+                    "Noisy Issue Categories - 30d": [
+                        {
+                            "Alerts": 5013,
+                            "xdm.issue.detection.method": "THREAT_INTELLIGENCE"
+                        },
+                        {
+                            "Alerts": 144,
+                            "xdm.issue.detection.method": "FW"
+                        },
+                        {
+                            "Alerts": 121,
+                            "xdm.issue.detection.method": "TRAPS"
+                        },
+                        {
+                            "Alerts": 45,
+                            "xdm.issue.detection.method": "CORRELATION"
+                        },
+                        {
+                            "Alerts": 34,
+                            "xdm.issue.detection.method": "ANALYTICS_BIOC"
+                        },
+                        {
+                            "Alerts": 21,
+                            "xdm.issue.detection.method": "HEALTH"
+                        },
+                        {
+                            "Alerts": 11,
+                            "xdm.issue.detection.method": "CREATE_ALERT_PUBLIC_API"
+                        },
+                        {
+                            "Alerts": 9,
+                            "xdm.issue.detection.method": "MAGNIFIER"
+                        }
+                    ],
+                    "Non-Prevented Issues": [
+                        {
+                            "alert_name": "Local Analysis Malware",
+                            "assigned_prevention_policy": "CanT Test PC PPolicy MacOS",
+                            "events": 80
+                        }
+                    ],
+                    "Unprotected & Partially Protected Endpoints": [
+                        {
+                            "operational_status": "PARTIALLY_PROTECTED",
+                            "platform": "LINUX",
+                            "total": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "ActionableItems": [
+                    {
+                        "category": "Agent & Asset",
+                        "description": "Found 8 policies with ≤ 3 agents assigned.",
+                        "resolution": "Consider auditing policies to reduce maintenance overhead",
+                        "severity": "Medium"
+                    },
+                    {
+                        "category": "Agent & Asset",
+                        "description": "EDR is disabled on 2 endpoints: jupiter-win10, DESKTOP-TOQBBJT",
+                        "resolution": "Review the prevention policy assigned to these endpoints and enable EDR protection.",
+                        "severity": "Medium"
+                    },
+                    {
+                        "category": "Agent & Asset",
+                        "description": "Category THREAT_INTELLIGENCE is generating a disproportionately high percentage of all system issues, indicating high signal-to-noise ratio from that specific detection mechanism.",
+                        "resolution": "Create targeted suppression rules or baseline exceptions for known benign behaviors",
+                        "severity": "Medium"
+                    }
+                ]
+            }
+        ],
+        "InfoFile": [
+            {
+                "EntryID": "d2ff5928-2c68-410a-8254-454826fd19d3@395223",
+                "Extension": "html",
+                "Info": "text/html; charset=utf-8",
+                "Name": "HealthCheckCollect_Results.html",
+                "Size": 10916,
+                "Type": "HTML document, ASCII text"
+            },
+            {
+                "EntryID": "a1fa7177-f1a6-443b-8686-377d067e65d4@395223",
+                "Extension": "html",
+                "Info": "text/html; charset=utf-8",
+                "Name": "HealthCheckCollect_Results.html",
+                "Size": 10640,
+                "Type": "HTML document, ASCII text"
+            },
+            {
+                "EntryID": "21db9f63-a39d-4593-8b0b-93b774d836c7@395223",
+                "Extension": "html",
+                "Info": "text/html; charset=utf-8",
+                "Name": "HealthCheckCollect_Results.html",
+                "Size": 10421,
+                "Type": "HTML document, ASCII text"
+            }
+        ]
+    },
+    "cases": {
+        "daily": 0,
+        "weekly": 13,
+        "monthly": 147
+    }
+}

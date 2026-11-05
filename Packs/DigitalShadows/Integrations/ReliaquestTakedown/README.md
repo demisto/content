@@ -1,8 +1,6 @@
 This is Reliaquest DRP Takedown integration. It enables xsoar user to create and manage takedowns.
 This integration was integrated and tested with version 6.9.0 of ReliaquestTakedown.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 ## Configure ReliaquestTakedown in Cortex
 
 | **Parameter** | **Description** | **Required** |

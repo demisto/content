@@ -1,0 +1,10 @@
+{
+    "value": [
+        {
+            "TableName": "mocktable1"
+        },
+        {
+            "TableName": "mocktable2"
+        }
+    ]
+}
