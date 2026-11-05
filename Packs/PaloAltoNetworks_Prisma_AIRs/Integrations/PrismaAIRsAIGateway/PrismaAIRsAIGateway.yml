@@ -1822,7 +1822,7 @@ script:
       description: The upstream API key / credential (secret).
     - name: secret_mappings
       secret: true
-      description: Secret mapping entries (JSON array).
+      description: A JSON array of secret mapping entries.
     - name: pricing_adjustments
       description: Pricing adjustment settings (JSON).
     outputs: []
