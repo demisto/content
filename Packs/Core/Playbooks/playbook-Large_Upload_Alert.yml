@@ -1,7 +1,7 @@
 id: Large Upload Alert
 version: -1
 name: Large Upload Alert
-description: "The playbook investigates Cortex XDR alerts involving large upload alerts. \nThe playbook consists of the following procedures:\n- Searches for similar previous alerts that were closed as false positives.\n- Enrichment and investigation of the initiator and destination hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\nThis playbook supports the following Cortex XDR alert names:\n- Large Upload (Generic)\n- Large Upload (SMTP)\n- Large Upload (FTP)\n- Large Upload (HTTPS)."
+description: "The playbook investigates Cortex XDR alerts involving large upload alerts. \nThe playbook consists of the following procedures:\n- Searches for similar previous alerts that were closed as false positives.\n- Enrichment and investigation of the initiator and destination hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\nThis playbook supports the following Cortex XDR alert names:\n- Large Upload (Generic)\n- Large Upload (SMTP)\n- Large Upload (FTP)\n- Large Upload (HTTPS)"
 starttaskid: "0"
 tasks:
   "0":
@@ -2761,19 +2761,21 @@ tasks:
       version: -1
       name: Get Alert Extra Data
       description: Returns information about each alert ID.
-      script: 'Builtin|||getRawAlerts'
+      script: '|||core-get-cloud-original-alerts'
       type: regular
       iscommand: true
-      brand: "Builtin"
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
     scriptarguments:
-      issue_ids:
+      alert_ids:
         complex:
           root: inputs.Alert_ID
           transformers:
           - operator: uniq
+      filter_alert_fields:
+        simple: "false"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3695,10 +3697,10 @@ tasks:
       version: -1
       name: Core Isolate Endpoint
       description: Isolates the specified endpoint.
-      script: 'Builtin|||isolateEndpoint'
+      script: '|||core-isolate-endpoint'
       type: regular
       iscommand: true
-      brand: "Builtin"
+      brand: ""
     nexttasks:
       '#none#':
       - "58"
@@ -3966,7 +3968,6 @@ tests:
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2
-- platform
 
 
 supportedModules:

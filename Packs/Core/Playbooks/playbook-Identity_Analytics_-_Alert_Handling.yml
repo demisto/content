@@ -971,20 +971,22 @@ tasks:
       version: -1
       name: Fetch alert extra data
       description: Returns information about each alert ID.
-      script: 'Builtin|||getRawAlerts'
+      script: '|||core-get-cloud-original-alerts'
       type: regular
       iscommand: true
-      brand: "Builtin"
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
     scriptarguments:
-      issue_ids:
+      alert_ids:
         complex:
           root: alert
           accessor: id
           transformers:
           - operator: uniq
+      filter_alert_fields:
+        simple: "false"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1720,7 +1722,6 @@ tests:
 - Test Playbook - Identity Analytics - Alert Handling
 marketplaces:
 - marketplacev2
-- platform
 fromversion: 6.10.0
 contentitemexportablefields:
   contentitemfields: {}

@@ -34,8 +34,8 @@ This playbook does not use any scripts.
 ### Commands
 
 * extractIndicators
-* getEndpoints
-* runScriptExecuteCommands
+* core-get-endpoints
+* core-run-script-execute-commands
 * setAlert
 * setIncident
 

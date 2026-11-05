@@ -507,13 +507,13 @@ tasks:
       version: -1
       name: Fetch ransomware file
       description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
-      script: 'Builtin|||retrieveFiles'
+      script: '|||core-retrieve-files'
       type: regular
       iscommand: true
-      brand: "Builtin"
+      brand: ""
     nexttasks:
       '#none#':
-      - "28"
+      - "33"
     scriptarguments:
       endpoint_ids:
         complex:
@@ -674,6 +674,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: c074ea2f-9389-402e-826a-ed1bd9ba7d0f
+    type: regular
+    task:
+      id: c074ea2f-9389-402e-826a-ed1bd9ba7d0f
+      version: -1
+      name: Retrieve file to the playbook's war room
+      description: View the file retrieved by the core-retrieve-files command according to the action ID. Before running this command, use the core-action-status-get command to check if this action completed successfully.
+      script: '|||core-retrieve-file-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      action_id:
+        complex:
+          root: Core.RetrievedFiles
+          accessor: action_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -520,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "34":
     id: "34"
     taskid: b354207a-e502-48a3-8b4d-81cb2606d5a8
@@ -683,10 +720,10 @@ tasks:
       version: -1
       name: Remote attacker enrichment
       description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
-      script: 'Builtin|||getEndpoints'
+      script: '|||core-get-endpoints'
       type: regular
       iscommand: true
-      brand: "Builtin"
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -787,10 +824,10 @@ tasks:
       version: -1
       name: Remote attacker isolation
       description: Isolates the specified endpoint.
-      script: 'Builtin|||isolateEndpoint'
+      script: '|||core-isolate-endpoint'
       type: regular
       iscommand: true
-      brand: "Builtin"
+      brand: ""
     nexttasks:
       '#none#':
       - "35"
@@ -1142,7 +1179,8 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-marketplaces: ["marketplacev2", "platform"]
+marketplaces:
+- marketplacev2
 fromversion: 6.6.0
 
 

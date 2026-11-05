@@ -43,7 +43,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* isolateEndpoint
+* core-isolate-endpoint
 * ip
 * ad-expire-password
 * setIncident

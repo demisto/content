@@ -415,15 +415,15 @@ tasks:
       version: -1
       name: Get cloud original alert
       description: Returns information about each alert ID.
-      script: 'Builtin|||getRawAlerts'
+      script: '|||core-get-cloud-original-alerts'
       type: regular
       iscommand: true
-      brand: "Builtin"
+      brand: ""
     nexttasks:
       '#none#':
       - "60"
     scriptarguments:
-      issue_ids:
+      alert_ids:
         complex:
           root: alert
           accessor: id
@@ -637,3 +637,5 @@ supportedModules:
 - cloud_runtime_security
 - edr
 - xsiam
+marketplaces:
+- marketplacev2

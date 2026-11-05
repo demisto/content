@@ -59,10 +59,10 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* getCmdAnalyticsPrevalence
+* core-get-cmd-analytics-prevalence
 * closeInvestigation
 * setParentIncidentFields
-* getRawAlerts
+* core-get-dynamic-analysis
 
 ## Playbook Inputs
 
