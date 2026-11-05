@@ -3665,6 +3665,111 @@ Modifies attributes for a Classic Elastic Load Balancer. Required IAM permission
 | AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.S3BucketPrefix | string | The S3 key prefix for access logs. |
 | AWS.ELB.LoadBalancer.LoadBalancerAttributes.AdditionalAttributes | unknown | Additional attributes returned by the API. |
 
+### aws-elasticbeanstalk-environment-create
+
+***
+Starts launching an AWS Elastic Beanstalk environment for the specified application using the specified configuration. This command only initiates the environment creation and returns immediately, without waiting for the environment to finish launching (the returned Status is typically Launching). Use aws-elasticbeanstalk-environments-describe to track the progress and the final Status and Health of the environment. Can be used to recreate a deleted environment with the same CNAME prefix to prevent subdomain takeover. Note: This command creates real, billable AWS resources (for example, EC2 instances, Auto Scaling groups, load balancers and S3 objects). Exactly one of template_name, solution_stack_name or platform_arn must be provided. Required IAM permission: elasticbeanstalk:CreateEnvironment. Elastic Beanstalk also requires further permissions to provision the environment resources, such as CloudFormation, EC2, AutoScaling, Elastic Load Balancing, S3 and iam:PassRole.
+
+#### Base Command
+
+`aws-elasticbeanstalk-environment-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| application_name | The name of the application that is associated with this environment. | Required |
+| environment_name | A unique name for the environment. Must be from 4 to 40 characters in length and can contain only letters, numbers, and hyphens. It can't start or end with a hyphen. If cname_prefix is not specified, the environment name is used as the CNAME prefix. | Optional |
+| cname_prefix | If specified, the environment attempts to use this value as the prefix for the CNAME in the Elastic Beanstalk environment URL (for example, &lt;cname_prefix&gt;.&lt;region&gt;.elasticbeanstalk.com). If not specified, the CNAME is generated automatically by appending a random alphanumeric string to the environment name. | Optional |
+| description | Your description for this environment. | Optional |
+| tags | The tags to apply to the environment, in the format: key=abc,value=123;key=fed,value=456. | Optional |
+| template_name | The name of the Elastic Beanstalk configuration template to use with the environment. Exactly one of template_name, solution_stack_name or platform_arn must be provided. | Optional |
+| solution_stack_name | The name of an Elastic Beanstalk solution stack (platform version) to use with the environment (for example, "64bit Amazon Linux 2023 v6.1.0 running Node.js 20"). Exactly one of template_name, solution_stack_name or platform_arn must be provided. | Optional |
+| platform_arn | The Amazon Resource Name (ARN) of the custom platform to use with the environment. Exactly one of template_name, solution_stack_name or platform_arn must be provided. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.ElasticBeanstalk.Environments.EnvironmentName | String | The name of the environment. |
+| AWS.ElasticBeanstalk.Environments.EnvironmentId | String | The ID of the environment. |
+| AWS.ElasticBeanstalk.Environments.EnvironmentArn | String | The environment's Amazon Resource Name \(ARN\). |
+| AWS.ElasticBeanstalk.Environments.ApplicationName | String | The name of the application associated with this environment. |
+| AWS.ElasticBeanstalk.Environments.VersionLabel | String | The application version deployed in this environment. |
+| AWS.ElasticBeanstalk.Environments.SolutionStackName | String | The name of the SolutionStack deployed with this environment. |
+| AWS.ElasticBeanstalk.Environments.PlatformArn | String | The ARN of the platform version. |
+| AWS.ElasticBeanstalk.Environments.TemplateName | String | The name of the configuration template used to originally launch this environment. |
+| AWS.ElasticBeanstalk.Environments.Description | String | Describes this environment. |
+| AWS.ElasticBeanstalk.Environments.EndpointURL | String | For load-balanced, autoscaling environments, the URL to the LoadBalancer. For single-instance environments, the IP address of the instance. |
+| AWS.ElasticBeanstalk.Environments.CNAME | String | The URL to the CNAME for this environment. |
+| AWS.ElasticBeanstalk.Environments.DateCreated | Date | The creation date for this environment. |
+| AWS.ElasticBeanstalk.Environments.DateUpdated | Date | The last modified date for this environment. |
+| AWS.ElasticBeanstalk.Environments.Status | String | The current operational status of the environment \(for example, Launching, Updating, Ready, Terminating, Terminated\). |
+| AWS.ElasticBeanstalk.Environments.AbortableOperationInProgress | Boolean | Indicates if there is an in-progress environment configuration update or application version deployment that you can cancel. |
+| AWS.ElasticBeanstalk.Environments.Health | String | Describes the health status of the environment \(Green, Yellow, Red, Grey\). |
+| AWS.ElasticBeanstalk.Environments.HealthStatus | String | Returns the health status of the application running in your environment. |
+| AWS.ElasticBeanstalk.Environments.Resources | Unknown | The description of the AWS resources used by this environment. |
+| AWS.ElasticBeanstalk.Environments.Tier.Name | String | The name of this environment tier. |
+| AWS.ElasticBeanstalk.Environments.Tier.Type | String | The type of this environment tier. |
+| AWS.ElasticBeanstalk.Environments.Tier.Version | String | The version of this environment tier. |
+| AWS.ElasticBeanstalk.Environments.EnvironmentLinks | Unknown | A list of links to other environments in the same group. |
+| AWS.ElasticBeanstalk.Environments.OperationsRole | String | The ARN of the environment's operations role. |
+
+### aws-elasticbeanstalk-environments-describe
+
+***
+Returns descriptions for existing AWS Elastic Beanstalk environments. Required IAM permission: elasticbeanstalk:DescribeEnvironments.
+
+#### Base Command
+
+`aws-elasticbeanstalk-environments-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| application_name | If specified, returns only environments that are associated with this application. | Optional |
+| version_label | If specified, returns only environments that are associated with this application version. | Optional |
+| environment_ids | A comma-separated list of environment IDs. If specified, returns only the environments with these IDs. | Optional |
+| environment_names | A comma-separated list of environment names. If specified, returns only the environments with these names. | Optional |
+| include_deleted | Whether to include deleted environments. If true, environments deleted after included_deleted_back_to are displayed. If false, deleted environments are not included. Possible values are: true, false. | Optional |
+| included_deleted_back_to | If include_deleted is true, only environments deleted after this date are included. Format: YYYY-MM-DDTHH:MM:SSZ (for example, 2024-01-15T10:30:00Z). | Optional |
+| limit | The maximum number of environments to return. Maximum is 1000. Default is 50. | Optional |
+| next_token | The NextToken value returned from a previous paginated request. The next_token will be at AWS.ElasticBeanstalk.EnvironmentsNextToken. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.ElasticBeanstalk.Environments.EnvironmentName | String | The name of the environment. |
+| AWS.ElasticBeanstalk.Environments.EnvironmentId | String | The ID of the environment. |
+| AWS.ElasticBeanstalk.Environments.EnvironmentArn | String | The environment's Amazon Resource Name \(ARN\). |
+| AWS.ElasticBeanstalk.Environments.ApplicationName | String | The name of the application associated with this environment. |
+| AWS.ElasticBeanstalk.Environments.VersionLabel | String | The application version deployed in this environment. |
+| AWS.ElasticBeanstalk.Environments.SolutionStackName | String | The name of the SolutionStack deployed with this environment. |
+| AWS.ElasticBeanstalk.Environments.PlatformArn | String | The ARN of the platform version. |
+| AWS.ElasticBeanstalk.Environments.TemplateName | String | The name of the configuration template used to originally launch this environment. |
+| AWS.ElasticBeanstalk.Environments.Description | String | Describes this environment. |
+| AWS.ElasticBeanstalk.Environments.EndpointURL | String | For load-balanced, autoscaling environments, the URL to the LoadBalancer. For single-instance environments, the IP address of the instance. |
+| AWS.ElasticBeanstalk.Environments.CNAME | String | The URL to the CNAME for this environment. |
+| AWS.ElasticBeanstalk.Environments.DateCreated | Date | The creation date for this environment. |
+| AWS.ElasticBeanstalk.Environments.DateUpdated | Date | The last modified date for this environment. |
+| AWS.ElasticBeanstalk.Environments.Status | String | The current operational status of the environment \(for example, Launching, Updating, Ready, Terminating, Terminated\). |
+| AWS.ElasticBeanstalk.Environments.AbortableOperationInProgress | Boolean | Indicates if there is an in-progress environment configuration update or application version deployment that you can cancel. |
+| AWS.ElasticBeanstalk.Environments.Health | String | Describes the health status of the environment \(Green, Yellow, Red, Grey\). |
+| AWS.ElasticBeanstalk.Environments.HealthStatus | String | Returns the health status of the application running in your environment. |
+| AWS.ElasticBeanstalk.Environments.Resources | Unknown | The description of the AWS resources used by this environment. |
+| AWS.ElasticBeanstalk.Environments.Tier.Name | String | The name of this environment tier. |
+| AWS.ElasticBeanstalk.Environments.Tier.Type | String | The type of this environment tier. |
+| AWS.ElasticBeanstalk.Environments.Tier.Version | String | The version of this environment tier. |
+| AWS.ElasticBeanstalk.Environments.EnvironmentLinks | Unknown | A list of links to other environments in the same group. |
+| AWS.ElasticBeanstalk.Environments.OperationsRole | String | The ARN of the environment's operations role. |
+| AWS.ElasticBeanstalk.EnvironmentsNextToken | String | The token used to request the next page of results. Provided when the number of remaining environments exceeds the requested limit. |
+
 ### aws-acm-certificate-options-update
 
 ***

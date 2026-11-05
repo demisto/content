@@ -1252,6 +1252,7 @@ class AWSServices(str, Enum):
     CloudWatchLogs = "logs"
     NetworkFirewall = "network-firewall"
     STS = "sts"
+    ElasticBeanstalk = "elasticbeanstalk"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -7450,6 +7451,199 @@ class ELB:
         return "\n\n".join(sections)
 
 
+class ElasticBeanstalk:
+    service = AWSServices.ElasticBeanstalk
+    ENVIRONMENTS_HR_HEADERS = [
+        "EnvironmentName",
+        "EnvironmentId",
+        "ApplicationName",
+        "CNAME",
+        "EndpointURL",
+        "Status",
+        "Health",
+        "DateCreated",
+    ]
+
+    @staticmethod
+    def validate_environment_source_args(args: Dict[str, Any]) -> None:
+        """
+        Validates that exactly one of template_name, solution_stack_name or platform_arn is provided.
+
+        Args:
+            args (Dict[str, Any]): Command arguments.
+
+        Raises:
+            ValueError: If none or more than one of the arguments is provided.
+        """
+        source_args = ("template_name", "solution_stack_name", "platform_arn")
+        provided = [arg_name for arg_name in source_args if args.get(arg_name)]
+        if len(provided) != 1:
+            raise ValueError(
+                "You must provide exactly one of the following arguments: 'template_name', 'solution_stack_name' or "
+                f"'platform_arn'. Provided: {provided or 'none'}."
+            )
+
+    @staticmethod
+    def build_create_environment_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Builds the kwargs for the CreateEnvironment API call.
+
+        Args:
+            args (Dict[str, Any]): Command arguments.
+
+        Returns:
+            Dict[str, Any]: The CreateEnvironment kwargs without empty values.
+        """
+        kwargs: Dict[str, Any] = {
+            "ApplicationName": args.get("application_name"),
+            "EnvironmentName": args.get("environment_name"),
+            "CNAMEPrefix": args.get("cname_prefix"),
+            "Description": args.get("description"),
+            "TemplateName": args.get("template_name"),
+            "SolutionStackName": args.get("solution_stack_name"),
+            "PlatformArn": args.get("platform_arn"),
+            "Tags": parse_tag_field(args.get("tags")),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        return kwargs
+
+    @staticmethod
+    def build_describe_environments_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Builds the kwargs for the DescribeEnvironments API call, including pagination.
+
+        Args:
+            args (Dict[str, Any]): Command arguments.
+
+        Returns:
+            Dict[str, Any]: The DescribeEnvironments kwargs without empty values.
+        """
+        kwargs: Dict[str, Any] = {
+            "ApplicationName": args.get("application_name"),
+            "VersionLabel": args.get("version_label"),
+            "EnvironmentIds": argToList(args.get("environment_ids")),
+            "EnvironmentNames": argToList(args.get("environment_names")),
+            "IncludeDeleted": arg_to_bool_or_none(args.get("include_deleted")),
+            "IncludedDeletedBackTo": validate_iso8601_date(args.get("included_deleted_back_to")),
+        }
+        kwargs.update(build_pagination_kwargs(args, next_token_name="NextToken", limit_name="MaxRecords"))
+        remove_nulls_from_dictionary(kwargs)
+        return kwargs
+
+    @staticmethod
+    def format_environments_hr(title: str, environments: list[dict], next_token: str | None = None) -> str:
+        """
+        Formats Elastic Beanstalk environments as a markdown table.
+
+        Args:
+            title (str): The table title.
+            environments (list[dict]): The serialized environment descriptions.
+            next_token (str | None): The pagination token, if more results are available.
+
+        Returns:
+            str: The human-readable output.
+        """
+        readable_output = tableToMarkdown(
+            title,
+            environments,
+            headers=ElasticBeanstalk.ENVIRONMENTS_HR_HEADERS,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+        if next_token:
+            readable_output += f"\nTo get the next page of results, use next_token={next_token}"
+        return readable_output
+
+    @staticmethod
+    def format_create_environment_hr(environment: dict) -> str:
+        """
+        Formats the created environment as a markdown table, followed by a note that the creation is asynchronous.
+
+        Args:
+            environment (dict): The serialized description of the created environment.
+
+        Returns:
+            str: The human-readable output.
+        """
+        readable_output = ElasticBeanstalk.format_environments_hr("AWS Elastic Beanstalk Environment Created", [environment])
+        status = environment.get("Status")
+        status_note = f" (Status: {status})" if status else ""
+        return (
+            f"{readable_output}\nEnvironment creation was initiated and is in progress{status_note}. "
+            "Use aws-elasticbeanstalk-environments-describe to track its status."
+        )
+
+    @staticmethod
+    def create_environment_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Starts launching an AWS Elastic Beanstalk environment for the specified application.
+        The creation is asynchronous: the command returns immediately while the environment is still launching.
+
+        Args:
+            client (BotoClient): The boto3 client for Elastic Beanstalk service.
+            args (Dict[str, Any]): Command arguments including application name, environment name, CNAME prefix
+                and exactly one of template name, solution stack name or platform ARN.
+
+        Returns:
+            CommandResults: The description of the created environment.
+        """
+        ElasticBeanstalk.validate_environment_source_args(args)
+        kwargs = ElasticBeanstalk.build_create_environment_kwargs(args)
+        print_debug_logs(client, f"Creating Elastic Beanstalk environment with parameters: {kwargs.keys()}")
+        response = client.create_environment(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        environment = serialize_response_with_datetime_encoding(response)
+        environment.pop("ResponseMetadata", None)
+
+        return CommandResults(
+            outputs_prefix="AWS.ElasticBeanstalk.Environments",
+            outputs_key_field="EnvironmentId",
+            outputs=environment,
+            readable_output=ElasticBeanstalk.format_create_environment_hr(environment),
+            raw_response=environment,
+        )
+
+    @staticmethod
+    def describe_environments_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Returns descriptions for existing AWS Elastic Beanstalk environments.
+
+        Args:
+            client (BotoClient): The boto3 client for Elastic Beanstalk service.
+            args (Dict[str, Any]): Command arguments including optional filters (application name, version label,
+                environment IDs/names, deleted environments) and pagination (limit, next_token).
+
+        Returns:
+            CommandResults: The environments descriptions and the next token for pagination.
+        """
+        kwargs = ElasticBeanstalk.build_describe_environments_kwargs(args)
+        print_debug_logs(client, f"Describing Elastic Beanstalk environments with parameters: {kwargs.keys()}")
+        response = client.describe_environments(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        serialized_response = serialize_response_with_datetime_encoding(response)
+        environments = serialized_response.get("Environments", [])
+        next_token = serialized_response.get("NextToken")
+
+        outputs = {
+            "AWS.ElasticBeanstalk.Environments(val.EnvironmentId && val.EnvironmentId == obj.EnvironmentId)": environments,
+            "AWS.ElasticBeanstalk(true)": {"EnvironmentsNextToken": next_token},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=ElasticBeanstalk.format_environments_hr(
+                "AWS Elastic Beanstalk Environments", environments, next_token
+            ),
+            raw_response=serialized_response,
+        )
+
+
 class Lambda:
     service = AWSServices.LAMBDA
 
@@ -11536,6 +11730,8 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-resource-untag": NetworkFirewall.untag_resource_command,
     "aws-network-firewall-logging-configuration-describe": NetworkFirewall.describe_logging_configuration_command,
     "aws-network-firewall-logging-configuration-update": NetworkFirewall.update_logging_configuration_command,
+    "aws-elasticbeanstalk-environment-create": ElasticBeanstalk.create_environment_command,
+    "aws-elasticbeanstalk-environments-describe": ElasticBeanstalk.describe_environments_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -11745,6 +11941,8 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:UntagResource",
     "network-firewall:DescribeLoggingConfiguration",
     "network-firewall:UpdateLoggingConfiguration",
+    "elasticbeanstalk:CreateEnvironment",
+    "elasticbeanstalk:DescribeEnvironments",
 ]
 
 COMMAND_SERVICE_MAP = {
