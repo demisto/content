@@ -1337,7 +1337,7 @@ script:
       description: Whether the indicator is used for detection.
       type: Boolean
     - contextPath: OpenCTI.Indicator.created
-      description: Creation date of the indicator.
+      description: Creation date and time of the indicator.
       type: Date
     - contextPath: OpenCTI.Indicator.updatedAt
       description: Last update date of the indicator.
