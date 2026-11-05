@@ -1328,7 +1328,7 @@ script:
       description: The date and time from which the indicator is valid.
       type: Date
     - contextPath: OpenCTI.Indicator.validUntil
-      description: Date until which the indicator is valid.
+      description: The date and time until which the indicator is valid.
       type: Date
     - contextPath: OpenCTI.Indicator.revoked
       description: Whether the indicator is revoked.
