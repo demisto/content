@@ -1118,7 +1118,7 @@ script:
       description: Creation date and time of the indicator.
       type: Date
     - contextPath: OpenCTI.Indicator.updatedAt
-      description: Last update date of the indicator.
+      description: Last update date and time of the indicator.
       type: Date
     - contextPath: OpenCTI.Indicator.createdBy
       description: Author of the indicator.
