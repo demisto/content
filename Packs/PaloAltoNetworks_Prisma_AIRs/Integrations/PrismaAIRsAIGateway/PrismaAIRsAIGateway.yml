@@ -1873,7 +1873,7 @@ script:
     - name: workspaces
       description: A JSON array of workspace binding entries.
     - name: global_workspace_access
-      description: Global workspace access settings object (JSON) with enabled/rate_limits/usage_limits.
+      description: The global workspace access settings as a JSON object with the enabled, rate_limits, and usage_limits fields.
     - name: override_existing_workspace_access
       description: Whether to override existing workspace access.
       auto: PREDEFINED
