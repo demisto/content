@@ -2032,7 +2032,7 @@ script:
       secret: true
       description: 'A JSON object of provider-specific credential name/value pairs. Example: {"AIRS_API_KEY": "<secret>"}.'
     - name: organisation_id
-      description: The numeric organisation ID. Defaults to the configured tenant TSG ID.
+      description: The numeric organization ID. Defaults to the configured tenant TSG ID.
     outputs:
     - contextPath: PrismaAIRs.AIGatewayPlugin.id
       description: The created plugin binding ID.
