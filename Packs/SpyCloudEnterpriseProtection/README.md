@@ -8,7 +8,7 @@ SpyCloud closes that gap. We recapture stolen identity data directly from crimin
 
 The goal is a lower mean time to respond (MTTR) through a repeatable, policy-driven response built on reliable identity evidence – plaintext credentials and session cookies or tokens – not heuristics.
 
-## What's new in 1.0.13: Session theft gets its own incident type
+## What's new in 1.0.14: Session theft gets its own incident type
 
 **A password reset doesn't end a stolen session. Revocation does.**
 
@@ -17,10 +17,11 @@ The September 1, 2026 release adds SpyCloud Access Data, built on SpyCloud's hig
 - **New incident type:** SpyCloud Access Data, with its own layout and incoming field mappings
 - **Classifier update:** Severity 30 records now map to the SpyCloud Access Data incident type
 - **Feed update:** The Severity parameter now includes Severity 30 by default, and its description documents the severity-to-record-type mapping
+- **Enrichment update:** The Enrichment commands, including spycloud-watchlist-data-list, now accept Severity 30, so playbooks can look up Access Data records on demand
 
 **Why it matters:** A stolen session can outlive a password reset. An Access record points to a compromised session, so the right fix is session revocation, not a password reset alone. Route SpyCloud Access Data incidents to your own session-revocation playbook and close the gap before the attacker uses it again.
 
-### Before you upgrade to 1.0.13
+### Before you upgrade to 1.0.14
 
 Existing instances that haven't overridden the Severity parameter will start ingesting SpyCloud Access Data incidents after the upgrade.
 
