@@ -1,7 +1,7 @@
-This is the GitGuardian event collector integration for Cortex XSIAM.
-This integration was integrated and tested with version 1.0.0 of GitGuardianEventCollector.
+This is the GitGuardian Enterprise event collector integration for Cortex XSIAM.
+For the GitGuardian SaaS platform, use the **GitGuardian SaaS** integration.
 
-## Configure GitGuardian Event Collector in Cortex
+## Configure GitGuardian Enterprise in Cortex
 
 | **Parameter** | **Required** |
 | --- | --- |
