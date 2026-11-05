@@ -1,7 +1,6 @@
 Pushes Cortex XSOAR 6 or Cortex XSOAR 8 incidents to Cortex XSIAM as parsed alerts using the Insert Parsed Alerts API.
-This integration was integrated and tested with version xx of XSOARIncidentExporter.
 
-## Configure Xporter in Cortex
+## Configure XSOAR Incident Exporter in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -150,17 +149,17 @@ Syncs War Room entries from a Cortex XSOAR incident to the matching Cortex XSIAM
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The Cortex XSOAR incident ID whose War Room entries to sync. | Required |
-| xsiam_alert_id | The Cortex XSIAM alert external ID to sync entries to. If not provided, automatically looks up the matching alert by XSOAR incident ID. | Optional |
+| xsiam_alert_id | The Cortex XSIAM alert external ID to sync entries to. If not provided, automatically looks up the matching alert by Cortex XSOAR incident ID. | Optional |
 | categories | A comma-separated list of War Room entry categories to sync. If not provided, all non-empty entries are synced. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| XSOARExporter.WarRoom.IncidentID | String | The XSOAR incident ID. |
-| XSOARExporter.WarRoom.XSIAMAlertID | String | The XSIAM alert ID entries were synced to. |
+| XSOARExporter.WarRoom.IncidentID | String | The Cortex XSOAR incident ID. |
+| XSOARExporter.WarRoom.XSIAMAlertID | String | The Cortex XSIAM alert ID entries were synced to. |
 | XSOARExporter.WarRoom.SyncedCount | Number | The number of War Room entries synced. |
 | XSOARExporter.WarRoom.SkippedCount | Number | The number of entries skipped because they were already synced. |
 | XSOARExporter.WarRoom.ErrorCount | Number | The number of entries that failed to sync. |
-| XSOARExporter.WarRoom.TotalEntries | Number | The total number of War Room entries in the XSOAR incident. |
+| XSOARExporter.WarRoom.TotalEntries | Number | The total number of War Room entries in the Cortex XSOAR incident. |
 | XSOARExporter.WarRoom.FilteredEntries | Number | The number of entries after filtering empty and category filters. |

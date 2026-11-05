@@ -180,7 +180,7 @@ script:
       description: The Cortex XSOAR incident ID whose War Room entries to sync.
       required: true
     - name: xsiam_alert_id
-      description: The Cortex XSIAM alert external ID to sync entries to. If not provided, automatically looks up the matching alert by XSOAR incident ID.
+      description: The Cortex XSIAM alert external ID to sync entries to. If not provided, automatically looks up the matching alert by Cortex XSOAR incident ID.
       required: false
     - name: categories
       description: A comma-separated list of War Room entry categories to sync. If not provided, all non-empty entries are synced.
@@ -188,10 +188,10 @@ script:
       isArray: true
     outputs:
     - contextPath: XSOARExporter.WarRoom.IncidentID
-      description: The XSOAR incident ID.
+      description: The Cortex XSOAR incident ID.
       type: String
     - contextPath: XSOARExporter.WarRoom.XSIAMAlertID
-      description: The XSIAM alert ID entries were synced to.
+      description: The Cortex XSIAM alert ID entries were synced to.
       type: String
     - contextPath: XSOARExporter.WarRoom.SyncedCount
       description: The number of War Room entries synced.
@@ -203,7 +203,7 @@ script:
       description: The number of entries that failed to sync.
       type: Number
     - contextPath: XSOARExporter.WarRoom.TotalEntries
-      description: The total number of War Room entries in the XSOAR incident.
+      description: The total number of War Room entries in the Cortex XSOAR incident.
       type: Number
     - contextPath: XSOARExporter.WarRoom.FilteredEntries
       description: The number of entries after filtering empty and category filters.

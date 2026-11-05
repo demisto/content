@@ -4,6 +4,7 @@ from CommonServerUserPython import *  # noqa: F401
 
 import json
 import re
+import traceback
 import urllib3
 from datetime import UTC, datetime
 from typing import Any
@@ -87,7 +88,7 @@ class XSIAMClient(BaseClient):
                 events = alert.get("events", [])
                 if events:
                     description = events[0].get("alert_description", "")
-            if f"XSOAR Incident ID: {xsoar_incident_id}" in description:
+            if extract_alert_field(description, "XSOAR Incident ID") == str(xsoar_incident_id):
                 return alert
         return None
 
@@ -732,7 +733,7 @@ def sync_war_room_for_incident(xsiam_client: XSIAMClient, xsoar_client: XSOARCli
     try:
         alert = xsiam_client.find_alert_by_xsoar_id(incident_id)
     except Exception as e:
-        demisto.debug(f"War Room sync: failed to find XSIAM alert for incident {incident_id}: {e}")
+        demisto.debug(f"War Room sync: failed to find XSIAM alert for incident {incident_id}: {e}\n{traceback.format_exc()}")
         alert = None
     if not alert:
         demisto.info(f"War Room sync incomplete for incident {incident_id}: XSIAM alert not found (ingestion delay)")
@@ -740,6 +741,11 @@ def sync_war_room_for_incident(xsiam_client: XSIAMClient, xsoar_client: XSOARCli
         return result
 
     xsiam_alert_id = alert.get("external_id", "")
+    if not xsiam_alert_id:
+        demisto.info(f"War Room sync incomplete for incident {incident_id}: XSIAM alert missing external_id")
+        result["status"] = "missing_external_id"
+        return result
+
     try:
         entries = xsoar_client.get_war_room_entries(incident_id)
     except Exception as e:
@@ -762,11 +768,11 @@ def sync_war_room_for_incident(xsiam_client: XSIAMClient, xsoar_client: XSOARCli
                 entry_id_part = after_marker.split(" |")[0].strip()
                 if entry_id_part:
                     already_synced.add(entry_id_part)
-    except Exception:
-        pass
+    except Exception as e:
+        demisto.debug(f"Could not read existing XSIAM War Room entries for dedup for alert {xsiam_alert_id}: {e}")
 
     for entry in meaningful:
-        entry_id = entry.get("id", "")
+        entry_id = str(entry.get("id", ""))
         if entry_id in already_synced:
             result["skipped"] += 1
             continue
@@ -856,7 +862,7 @@ def sync_war_room_command(xsiam_client: XSIAMClient, xsoar_client: XSOARClient, 
     skipped = 0
     errors = []
     for entry in meaningful:
-        entry_id = entry.get("id", "")
+        entry_id = str(entry.get("id", ""))
         if entry_id in already_synced:
             skipped += 1
             continue
