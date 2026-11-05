@@ -2201,7 +2201,7 @@ script:
       description: The API key type.
       defaultValue: workspace
     - name: organisation_id
-      description: The numeric organisation ID. Defaults to the configured tenant TSG ID.
+      description: The numeric organization ID. Defaults to the configured tenant TSG ID.
     - name: description
       description: A free-form description.
     - name: alert_emails
