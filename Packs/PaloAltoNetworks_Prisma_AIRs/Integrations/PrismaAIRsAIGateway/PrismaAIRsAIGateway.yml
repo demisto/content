@@ -1668,7 +1668,7 @@ script:
       description: The scope name to bind the workspace to.
     - name: workspace_slug
       required: true
-      description: The workspace slug (e.g. ws-produc-985697) to bind. Not the UUID - SCM binds by slug.
+      description: The workspace slug (for example, ws-produc-985697) to bind. Do not use the UUID, because SCM binds by slug.
     outputs:
     - contextPath: PrismaAIRs.AIGatewayScope.name
       description: The scope name.
