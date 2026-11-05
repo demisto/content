@@ -1487,7 +1487,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
 """HELPER FUNCTIONS"""
 
-XDR_PLATFORM_MODULES = {"x0"}
+XDR_PLATFORM_MODULE = "x0"
 
 
 def is_xdr_tenant() -> bool:
@@ -1501,7 +1501,7 @@ def is_xdr_tenant() -> bool:
     version_info = demisto.demistoVersion() or {}
     demisto.debug(f"Version info: {version_info}")
     module = (version_info.get("module") or "").lower()
-    return is_platform() and module in XDR_PLATFORM_MODULES
+    return is_platform() and module == XDR_PLATFORM_MODULE
 
 
 def build_hash_dict(value: str | None) -> dict[str, str]:
