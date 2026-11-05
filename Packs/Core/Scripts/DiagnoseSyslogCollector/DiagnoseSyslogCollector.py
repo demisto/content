@@ -1,15 +1,52 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+BROKER_CONTEXT_KEY = "Core.Broker"
+XQL_CONTEXT_KEY = "GenericXQLQuery"
+
+
+def get_context_value(entry_result: list, context_key: str) -> Any:
+    """
+    Returns the value stored under context_key (with or without a DT selector suffix) in the
+    EntryContext of the first entry returned by a built-in command, or None if it is missing.
+    """
+    entry = entry_result[0] if isinstance(entry_result, list) and entry_result else {}
+    entry_context = (entry.get("EntryContext") if isinstance(entry, dict) else None) or {}
+    for key, value in entry_context.items():
+        if key == context_key or key.startswith(f"{context_key}("):
+            return value
+    return None
+
+
+def extract_broker_list(broker_result: list) -> list:
+    """
+    Extracts the list of brokers from a getBrokers response.
+    The brokers are stored in the EntryContext under Core.Broker.
+    Returns an empty list when no brokers were found.
+    """
+    brokers = get_context_value(broker_result, BROKER_CONTEXT_KEY) or []
+    if isinstance(brokers, dict):
+        brokers = [brokers]
+    return [broker for broker in brokers if isinstance(broker, dict)]
+
+
+def extract_xql_outputs(xql_result: list) -> dict:
+    """
+    Extracts the query outputs (status, results, error_details) from a runXQLQuery response.
+    The outputs are stored in the EntryContext under GenericXQLQuery.
+    """
+    outputs = get_context_value(xql_result, XQL_CONTEXT_KEY)
+    return outputs if isinstance(outputs, dict) else {}
+
 
 def diagnose_syslog_collector(broker_vm_name: str, timeframe: str) -> CommandResults:
     """
     Diagnoses why the syslog collector on a specified Broker VM is failing.
 
     This function performs the following checks:
-    1. Calls core-list-brokers to get broker information
+    1. Calls the getBrokers built-in command to get broker information
     2. Checks if the Syslog Collector app is present and has "Active" status
-    3. If collector is valid, queries collection_auditing for errors/warnings using core-xql-generic-query-platform
+    3. If collector is valid, queries collection_auditing for errors/warnings using the runXQLQuery built-in command
 
     Args:
         broker_vm_name (str): The name of the Broker VM to diagnose.
@@ -23,16 +60,16 @@ def diagnose_syslog_collector(broker_vm_name: str, timeframe: str) -> CommandRes
     demisto.debug(f"Starting syslog collector diagnosis for broker: {broker_vm_name}")
 
     # Get basic broker information
-    broker_result = demisto.executeCommand("core-list-brokers", {"broker_vm_names": broker_vm_name})
+    broker_result = demisto.executeCommand("getBrokers", {"broker_vm_names": broker_vm_name})
 
     if is_error(broker_result) or not broker_result or not isinstance(broker_result, list):
         if is_error(broker_result):
             demisto.debug(f"Error retrieving broker information: {get_error(broker_result)}")
         raise DemistoException("Failed to retrieve broker information: Internal Error.")
 
-    broker_data_list = broker_result[0].get("Contents", [])
+    broker_data_list = extract_broker_list(broker_result)
 
-    if not broker_data_list or not isinstance(broker_data_list, list):
+    if not broker_data_list:
         raise DemistoException(f"Broker VM '{broker_vm_name}' not found")
 
     broker_data = broker_data_list[0]
@@ -88,7 +125,7 @@ dataset = collection_auditing
 | limit {default_limit}
 """
             try:
-                # Call core-xql-generic-query-platform
+                # Call the runXQLQuery built-in command
                 xql_args = {
                     "query": xql_query,
                     "timeframe": timeframe,
@@ -96,17 +133,20 @@ dataset = collection_auditing
                 }
 
                 demisto.debug(f"Executing XQL query with args: {xql_args}")
-                xql_result = demisto.executeCommand("core-xql-generic-query-platform", xql_args)
+                xql_result = demisto.executeCommand("runXQLQuery", xql_args)
 
                 demisto.debug(f"XQL query result: {xql_result}")
 
-                if is_error(xql_result) or not xql_result or not isinstance(xql_result, list) or len(xql_result) == 0:
-                    if is_error(xql_result):
-                        demisto.debug(f"XQL query failed: {get_error(xql_result)}")
+                if not xql_result or not isinstance(xql_result, list):
                     raise DemistoException("Failed to execute XQL query")
 
-                xql_outputs = xql_result[0].get("Contents", {})
+                xql_outputs = extract_xql_outputs(xql_result)
                 demisto.debug(f"XQL outputs: {xql_outputs}")
+
+                # A FAILed query is returned as an error entry that still holds the query outputs.
+                if is_error(xql_result) and xql_outputs.get("status") != "FAIL":
+                    demisto.debug(f"XQL query failed: {get_error(xql_result)}")
+                    raise DemistoException("Failed to execute XQL query")
 
                 query_status = xql_outputs.get("status")
                 errors_found = xql_outputs.get("results", [])
@@ -130,7 +170,9 @@ dataset = collection_auditing
                         diagnosis_report.append(f"Syslog Collector is active with no errors in the last {timeframe}")
                 else:
                     status = "ERROR"
-                    error_details = xql_outputs.get("error_details")
+                    error_details = (get_error(xql_result) if is_error(xql_result) else "") or str(
+                        xql_outputs.get("error_details") or f"XQL query finished with status {query_status}"
+                    )
                     raise DemistoException(error_details)
 
             except Exception as e:

@@ -6,6 +6,7 @@ from CoreXQLApiModule import *
 urllib3.disable_warnings()
 DEFAULT_TIMEOUT = 600
 DEFAULT_INTERVAL = 30
+XQL_CONTEXT_KEY = "GenericXQLQuery"
 
 
 def check_status(args: dict) -> PollResult:
@@ -99,9 +100,78 @@ def retrieve_data_from_xdr(args: dict) -> PollResult:
         return check_status(args=args)
 
 
+def build_xql_query(indicator: str, data_set: str) -> str:
+    """
+    Escapes the indicator value and builds the XQL search query.
+    """
+    sanitized = indicator.replace("\\", "\\\\").replace('"', '\\"')
+    return f'search "{sanitized}" dataset = {data_set}'
+
+
+def extract_xql_outputs(entry_result: list) -> dict:
+    """
+    Extracts the GenericXQLQuery outputs (status, results, error_details) from a runXQLQuery entry.
+    Returns an empty dict when the outputs cannot be found.
+    """
+    entry = entry_result[0] if isinstance(entry_result, list) and entry_result else {}
+    entry_context = (entry.get("EntryContext") if isinstance(entry, dict) else None) or {}
+    for key, value in entry_context.items():
+        if (key == XQL_CONTEXT_KEY or key.startswith(f"{XQL_CONTEXT_KEY}(")) and isinstance(value, dict):
+            return value
+    demisto.debug(f"Could not find {XQL_CONTEXT_KEY} outputs in the runXQLQuery response: {entry_result}")
+    return {}
+
+
+def run_platform_query(args: dict) -> CommandResults:
+    """
+    Runs the indicator search on the Cortex platform using the runXQLQuery built-in command,
+    which waits for the query results natively (no script-level polling).
+    """
+    indicator: str = args["indicator"]
+    data_set: str = args.get("data_set") or "xdr_data"
+    time_frame: str = args.get("time_frame") or "7 days"
+    query_name: str = args.get("query_name", "")
+
+    command_args = {
+        "query": build_xql_query(indicator, data_set),
+        "query_name": query_name,
+        "timeframe": time_frame,
+        "wait_for_results": "true",
+        "interval_in_seconds": str(args.get("interval_in_seconds") or DEFAULT_INTERVAL),
+        "timeout_in_seconds": str(args.get("timeout_in_seconds") or DEFAULT_TIMEOUT),
+    }
+    entry_result = demisto.executeCommand("runXQLQuery", command_args)
+    demisto.debug(f"This is the entry result from executing runXQLQuery command:\n{entry_result}")
+
+    outputs = extract_xql_outputs(entry_result)
+    if outputs.get("status") == "FAIL":
+        error_message = (get_error(entry_result) if is_error(entry_result) else "") or str(outputs.get("error_details", ""))
+        raise DemistoException(f"XQL query failed: {error_message}")
+    if is_error(entry_result):
+        raise DemistoException(f"Failed to execute query: {get_error(entry_result)}")
+    if outputs.get("status") != "SUCCESS":
+        raise DemistoException(f"XQL query did not complete (status: {outputs.get('status') or 'unknown'}).")
+
+    results = outputs.get("results") or []
+    return CommandResults(
+        readable_output=tableToMarkdown(f"Query Results for indicator '{indicator}' in '{data_set}' dataset", results),
+        outputs=results,
+        outputs_prefix="PaloAltoNetworksXQL",
+    )
+
+
+def run(args: dict) -> CommandResults | PollResult:
+    """
+    Dispatches to the runXQLQuery built-in on the Cortex platform, or to the legacy XDR polling flow otherwise.
+    """
+    if is_platform():
+        return run_platform_query(args=args)
+    return retrieve_data_from_xdr(args=args)
+
+
 def main():  # pragma: no cover
     try:
-        return_results(retrieve_data_from_xdr(args=demisto.args()))
+        return_results(run(args=demisto.args()))
     except Exception as e:
         return_error("Error occurred while retrieving data from XDR. Exception info:\n" + str(e))
 
