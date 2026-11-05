@@ -38,7 +38,7 @@ Before configuring the integration, ensure you have:
 | Scorecard Identifier | The domain identifier for the scorecard to monitor.<br/>Example: `google.com` | True |
 | Fetch events | Whether to automatically fetch events. | False |
 | Maximum number of events per fetch | Maximum number of events to fetch per cycle.<br/>Default: `1000` | False |
-| First fetch time | How far back to fetch events on the first run.<br/>Example: `3 days`, `7 days`, `1 day`<br/>Default: `3 days` | False |
+| First fetch time | How far back to fetch events on the first run. The start time is rounded down to midnight UTC, since history events are dated at midnight UTC.<br/>Example: `1 day`, `3 days`, `7 days`<br/>Default: `1 day` | False |
 | Trust any certificate (not secure) | When selected, the integration will not verify SSL certificates. | False |
 | Use system proxy settings | When selected, the integration will use the system proxy settings. | False |
 
@@ -56,7 +56,7 @@ The SecurityScorecard API enforces rate limits to ensure system stability and pr
 
 The integration handles rate limits gracefully in two scenarios:
 
-1. **Rate limit on history events API**: If the rate limit is hit when fetching the list of events, the integration skips the current fetch cycle and waits for the next one.
+1. **Rate limit on history events API**: If the rate limit is hit when fetching the list of events, the integration keeps the current fetch start time and retries in the next fetch cycle.
 
 2. **Rate limit on detail URL enrichment**: Each event includes a `detail_url` that provides additional information. If the rate limit is hit while fetching these details, the integration:
    - Sends all events that were successfully enriched to Cortex XSIAM.
