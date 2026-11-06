@@ -13,7 +13,7 @@ What this means for you:
 
 We recommend migrating to the new "Google SecOps" integration to ensure continued support, compatibility, and access to the latest updates.
 
-If you have any questions or need assistance, please reach out via [XSOAR Support Contact](https://go.chronicle.security/contact).
+If you have any questions or need assistance, please reach out via [XSOAR Support Contact](https://cloud.google.com/contact/security).
 
 ## Overview
 
