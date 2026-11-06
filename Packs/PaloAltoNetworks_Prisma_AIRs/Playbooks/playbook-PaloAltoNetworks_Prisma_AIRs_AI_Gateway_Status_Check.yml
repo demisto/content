@@ -233,7 +233,7 @@ tasks:
       id: d1e2f3a4-0007-4e5f-9a0b-1c2d3e4f6007
       version: -1
       name: Any unhealthy gateways found?
-      description: Branch to the reporting/notification path only when at least one gateway is unhealthy. Otherwise everything is healthy and the incident is closed.
+      description: Branches to the reporting/notification path only when at least one gateway is unhealthy. Otherwise everything is healthy and the incident is closed.
       type: condition
       iscommand: false
       brand: ""
