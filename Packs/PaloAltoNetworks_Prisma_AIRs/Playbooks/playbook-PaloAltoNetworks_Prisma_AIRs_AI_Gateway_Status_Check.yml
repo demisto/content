@@ -453,7 +453,7 @@ tasks:
       id: d1e2f3a4-0013-4e5f-9a0b-1c2d3e4f6013
       version: -1
       name: Email recipients configured?
-      description: Send an email only when notifications are enabled (SendEmail is true) AND at least one recipient is configured. When no recipient is configured, the unhealthy gateways have already been reported to the War Room and no email is sent.
+      description: Sends an email only when notifications are enabled (SendEmail is true) and at least one recipient is configured. When no recipient is configured, the unhealthy gateways have already been reported to the War Room and no email is sent.
       type: condition
       iscommand: false
       brand: ""
