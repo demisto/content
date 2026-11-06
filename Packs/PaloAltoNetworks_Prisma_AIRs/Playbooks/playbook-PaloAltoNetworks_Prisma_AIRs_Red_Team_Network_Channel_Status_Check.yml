@@ -733,7 +733,7 @@ tasks:
       id: e2f3a4b5-0016-4e5f-9a0b-1c2d3e4f7016
       version: -1
       name: Any problem found?
-      description: If any offline or outdated problem was recorded, route to the manual approve-to-close gate. Otherwise nothing needs remediation and the incident closes automatically.
+      description: Routes to the manual approve-to-close gate if any offline or outdated problem was recorded. Otherwise, nothing needs remediation and the incident closes automatically.
       type: condition
       iscommand: false
       brand: ""
