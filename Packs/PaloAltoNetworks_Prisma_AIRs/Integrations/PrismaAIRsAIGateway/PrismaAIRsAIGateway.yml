@@ -2402,7 +2402,7 @@ script:
     - name: organisation_id
       description: The numeric organisation (TSG) ID. Defaults to the configured tenant TSG ID.
     - name: auth_settings
-      description: Auth settings to update (JSON object).
+      description: A JSON object of the auth settings to update.
     - name: domains
       description: A comma-separated list of SSO/SCIM domains.
       isArray: true
