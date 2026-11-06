@@ -11,7 +11,7 @@ inputs:
   value:
     simple: ws_xsoar_test
   required: false
-  description: Base name of the IAM scope to create. The playbook appends "_<RandomString>" to make a per-run-unique name (EffectiveScopeName). Scope names must be lowercase alphanumerics/underscores (SCM ws_<name>_<suffix> convention), so keep this base to that charset.
+  description: The base name of the IAM scope to create. The playbook appends "_<RandomString>" to make a per-run-unique name (EffectiveScopeName). Scope names must be lowercase alphanumerics/underscores (SCM ws_<name>_<suffix> convention), so keep this base to that character set.
   playbookInputQuery:
 - key: WorkspaceName
   value:
