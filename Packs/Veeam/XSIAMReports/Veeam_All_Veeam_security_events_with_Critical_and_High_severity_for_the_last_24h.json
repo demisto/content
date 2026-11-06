@@ -1,126 +1,114 @@
 {
-  "templates_data": [
-    {
+    "templates_data": [
+      {
       "id": "5582a3167bab421595e9e9df9b257457",
       "name": "All Veeam security events with Critical and High severity for the last 24h",
-      "report_name": "All Veeam security events with Critical and High severity for the last 24h",
-      "report_description": "Provides an overview of Veeam Backup & Replication security events with Critical and High severity created for the last 24 hours.",
-      "layout": [
-        {
-          "id": "Row 1",
-          "data": [
-            {
-              "key": "header",
-              "data": {
-                "name": "All security events with Critical and High severity for the last 24h",
-                "type": "",
-                "width": 100,
-                "height": 140,
-                "tenantId": "2209138820274",
-                "description": "Provides an overview of Veeam Backup & Replication security events with Critical and High severity created for the last 24 hours.",
-                "customerName": "Veeam Software Corporation (Tech Partner Only)"
-              }
-            }
-          ]
-        },
-        {
-          "id": "row-6854",
-          "data": [
-            {
-              "key": "xql",
-              "data": {
-                "type": "Custom XQL",
-                "title": "All Security Events",
-                "width": 100,
-                "height": 285,
-                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\",\r\n\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\")\r\n| alter _status=if(\r\n    _instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\"), \"Critical\", \r\n    _instanceId in (\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\"), \"High\", \"\"),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"), 0)\r\n| comp count(_instanceId ) as _count by _status\r\n\r\n| view graph type = pie subtype = full xaxis = _status yaxis = _count valuecolor(\"Critical\",\"#ec0101\") valuecolor(\"High\",\"#e77f23\")",
-                "time_frame": {
-                  "relativeTime": 86400000
-                },
-                "viewOptions": {
-                  "type": "pie",
-                  "commands": [
-                    {
-                      "command": {
-                        "op": "=",
-                        "name": "subtype",
-                        "value": "full"
-                      }
-                    },
-                    {
-                      "command": {
-                        "op": "=",
-                        "name": "xaxis",
-                        "value": "_status"
-                      }
-                    },
-                    {
-                      "command": {
-                        "op": "=",
-                        "name": "yaxis",
-                        "value": "_count"
-                      }
-                    },
-                    {
-                      "func": {
-                        "args": [
-                          "\"Critical\"",
-                          "\"#ec0101\""
-                        ],
-                        "name": "valuecolor"
-                      }
-                    },
-                    {
-                      "func": {
-                        "args": [
-                          "\"High\"",
-                          "\"#e77f23\""
-                        ],
-                        "name": "valuecolor"
-                      }
-                    }
-                  ]
+        "report_name": "All Veeam security events with Critical and High severity for the last 24h",
+        "report_description": "Provides an overview of Veeam Backup & Replication security events with Critical and High severity created for the last 24 hours.",
+        "layout": [
+          {
+            "id": "Row 1",
+            "data": [
+              {
+                "key": "header",
+                "data": {
+                  "name": "All security events with Critical and High severity for the last 24h",
+                  "type": "",
+                  "width": 100,
+                  "height": 140,
+                  "tenantId": "2209138820274",
+                  "description": "Provides an overview of Veeam Backup & Replication security events with Critical and High severity created for the last 24 hours.",
+                  "customerName": "Veeam Software Corporation (Tech Partner Only)"
                 }
               }
-            }
-          ]
-        },
-        {
-          "id": "row-7848",
-          "data": [
-            {
-              "key": "xql",
-              "data": {
-                "type": "Custom XQL",
-                "title": "Latest Security Events",
-                "width": 100,
-                "height": 844,
-                "params": [],
-                "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\",\r\n\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\")\r\n| alter\r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _host=regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup)\"),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _severity=if(\r\n        _instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\"), \"Critical\", \r\n        _instanceId in (\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\"), \"High\", \"\"),\r\n    _user=arrayindex(if(\r\n        _instanceId in (\"40201\",\"42402\",\"42404\",\"42405\",\"40204\",\"40400\",\"40500\",\"40600\",\"40700\",\"42400\",\"42401\",\"42403\"), regextract(_raw_log, \"fullName\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"36013\"), regextract(_raw_log, \"InitiatorName\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"41800\",\"41810\"), regextract(_raw_log, \"param3\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"23090\",\"23420\",\"41402\"), regextract(_raw_log, \"param6\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"40205\",\"40206\",\"41610\",\"42301\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"25500\",\"28100\",\"29800\",\"31600\",\"31700\",\"31800\",\"31900\",\"42260\",\"42270\",\"42280\",\"42302\",\"30100\",\"30400\",\"31500\",\"31210\",\"31400\",\"41600\", \"31200\",\"28970\",\"28980\",\"42230\",\"42220\",\"42290\"), regextract(_raw_log, \"UserName\\=\\\"([^\\\"]*)\\\"\"), \r\n        regextract(_raw_log, \"user\\=\\\"([^\\\"]*)\\\"\")\r\n        ), 0)\r\n| sort desc _time\r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _user as `User`, _description as `Message Details`, _severity as `Severity`",
-                "time_frame": {
-                  "relativeTime": 86400000
-                },
-                "viewOptions": {
-                  "type": "table",
-                  "commands": []
+            ]
+          },
+          {
+            "id": "row-6854",
+            "data": [
+              {
+                "key": "xql",
+                "data": {
+                  "type": "Custom XQL",
+                  "title": "All Security Events",
+                  "width": 100,
+                  "height": 285,
+                  "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\",\"10050\",\"24120\",\"31210\",\"31320\",\"42702\",\"43002\",\"44002\",\r\n\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\",\"23230\",\"23320\",\"23490\",\"23632\",\"23633\",\"25210\",\"25400\",\"26600\",\"26900\",\"40202\",\"42205\",\"42210\",\"42701\",\"43001\",\"43003\", \"24114\")\r\n| alter _status=if(\r\n    _instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\",\"10050\",\"24120\",\"31210\",\"31320\",\"42702\",\"43002\",\"44002\"), \"Critical\", \r\n    _instanceId in (\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\",\"23230\",\"23320\",\"23490\",\"23632\",\"23633\",\"25210\",\"25400\",\"26600\",\"26900\",\"40202\",\"42205\",\"42210\",\"42701\",\"43001\",\"43003\",\"24114\"), \"High\", \"\"),\r\n    _host=arrayindex(regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup|Veeam_Security)\"), 0)\r\n| comp count(_instanceId ) as _count by _status\r\n\r\n| view graph type = pie subtype = full xaxis = _status yaxis = _count valuecolor(\"Critical\",\"#ec0101\") valuecolor(\"High\",\"#e77f23\")",
+                  "time_frame": { "relativeTime": 86400000 },
+                  "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                      {
+                        "command": {
+                          "op": "=",
+                          "name": "subtype",
+                          "value": "full"
+                        }
+                      },
+                      {
+                        "command": {
+                          "op": "=",
+                          "name": "xaxis",
+                          "value": "_status"
+                        }
+                      },
+                      {
+                        "command": {
+                          "op": "=",
+                          "name": "yaxis",
+                          "value": "_count"
+                        }
+                      },
+                      {
+                        "func": {
+                          "args": [ "\"Critical\"", "\"#ec0101\"" ],
+                          "name": "valuecolor"
+                        }
+                      },
+                      {
+                        "func": {
+                          "args": [ "\"High\"", "\"#e77f23\"" ],
+                          "name": "valuecolor"
+                        }
+                      }
+                    ]
+                  }
                 }
               }
-            }
-          ]
-        }
-      ],
-      "default_template_id": 1,
-      "time_frame": {
-        "relativeTime": 86400000
-      },
-      "global_id": "5582a3167bab421595e9e9df9b257457",
-      "time_offset": 10800,
-      "metadata": "{\"params\": []}"
-    }
-  ],
+            ]
+          },
+          {
+            "id": "row-7848",
+            "data": [
+              {
+                "key": "xql",
+                "data": {
+                  "type": "Custom XQL",
+                  "title": "Latest Security Events",
+                  "width": 100,
+                  "height": 844,
+                  "params": [],
+                  "phrase": "dataset in (veeam_*) \r\n| filter _vendor=\"Veeam\"\r\n| alter \r\n    _instanceId=arrayindex(regextract(_raw_log, \"instanceId\\=(\\d+)\\s\"), 0)\r\n| filter _instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\",\"10050\",\"24120\",\"31210\",\"31320\",\"42702\",\"43002\",\"44002\",\r\n\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\",\"23230\",\"23320\",\"23490\",\"23632\",\"23633\",\"25210\",\"25400\",\"26600\",\"26900\",\"40202\",\"42205\",\"42210\",\"42701\",\"43001\",\"43003\", \"24114\")\r\n| alter\r\n    _time= parse_timestamp(\"%FT%H:%M:%E6S%Ez\", arrayindex(regextract(_raw_log, \"<\\d+>1\\s+(\\S+)\\s\"), 0)),\r\n    _host=regextract(_raw_log , \"\\s(\\S+)\\s(?:Veeam_MP|Veeam_Backup|Veeam_Security)\"),\r\n    _description=arrayindex(regextract(_raw_log, \"Description\\=\\\"([^\\\"]*)(?:\\\"|$)\"),0),\r\n    _severity=if(\r\n        _instanceId in (\"21224\",\"23090\",\"25500\",\"28200\",\"28980\",\"29900\",\"30200\",\"31400\",\"31800\",\"32200\",\"40201\",\"40204\",\"40206\",\"41402\",\"41600\",\"41800\",\"41810\",\"42220\",\"42301\",\"42401\",\"42402\",\"10050\",\"24120\",\"31210\",\"31320\",\"42702\",\"43002\",\"44002\"), \"Critical\", \r\n        _instanceId in (\"115\",\"23420\",\"24030\",\"24050\",\"24080\",\"27000\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"30100\",\"31200\",\"31700\",\"31900\",\"32120\",\"40205\",\"40400\",\"40600\",\"42260\",\"42280\",\"42290\",\"42302\",\"42405\",\"23230\",\"23320\",\"23490\",\"23632\",\"23633\",\"25210\",\"25400\",\"26600\",\"26900\",\"40202\",\"42205\",\"42210\",\"42701\",\"43001\",\"43003\",\"24114\"), \"High\", \"\"),\r\n    _user=arrayindex(if(\r\n        _instanceId in (\"40201\",\"42402\",\"42404\",\"42405\",\"40204\",\"40400\",\"40500\",\"40600\",\"42400\",\"42401\",\"23220\",\"24142\",\"24143\",\"31300\",\"31310\",\"31320\",\"40202\",\"40800\",\"40901\",\"40902\",\"41200\",\"41304\",\"42900\"), regextract(_raw_log, \"fullName\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"10050\",\"23230\",\"31850\",\"42901\",\"42902\",\"42903\"), regextract(_raw_log, \"UserFullInfo\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"36013\"), regextract(_raw_log, \"InitiatorName\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"41800\",\"41810\"), regextract(_raw_log, \"(?:UserName|param3)\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"23420\",\"41402\"), regextract(_raw_log, \"(?:UserName|param6)\\=\\\"([^\\\"]*)\\\"\"),\r\n        _instanceId in (\"40205\",\"40206\",\"41610\",\"42301\",\"24080\",\"28200\",\"28500\",\"28920\",\"28950\",\"29120\",\"29150\",\"29900\",\"30200\",\"30500\",\"32120\",\"32200\",\"25500\",\"28100\",\"29800\",\"31600\",\"31700\",\"31800\",\"31900\",\"42260\",\"42270\",\"42280\",\"42302\",\"30100\",\"30400\",\"31500\",\"31210\",\"31400\",\"41600\", \"31200\",\"28970\",\"28980\",\"42230\",\"42220\",\"42290\",\"23050\",\"23130\",\"23450\",\"23620\",\"23621\",\"23622\",\"23623\",\"23630\",\"23631\",\"23632\",\"23633\",\"24131\",\"25400\",\"27200\",\"27300\",\"27500\",\"27600\",\"27800\",\"27900\",\"28400\",\"28700\",\"28750\",\"28800\",\"28910\",\"28940\",\"29110\",\"29140\",\"30700\",\"30800\",\"31000\",\"32100\",\"32400\",\"32500\",\"32600\",\"32800\",\"40101\",\"41401\",\"42800\",\"43001\",\"43002\",\"43004\",\"43006\",\"23320\",\"23490\",\"28850\",\"40207\",\"41615\",\"42701\",\"42702\",\"44200\",\"44201\",\"44202\",\"23090\"), regextract(_raw_log, \"UserName\\=\\\"([^\\\"]*)\\\"\"), \r\n        regextract(_raw_log, \"user\\=\\\"([^\\\"]*)\\\"\")\r\n        ), 0)\r\n| sort desc _time\r\n| fields\r\n    _host as `Data Source`, _time as `Date`, _user as `User`, _description as `Message Details`, _severity as `Severity`",
+                  "time_frame": { "relativeTime": 86400000 },
+                  "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "default_template_id": 1,
+        "time_frame": { "relativeTime": 86400000 },
+        "global_id": "5582a3167bab421595e9e9df9b257457",
+        "time_offset": 10800,
+        "metadata": "{\"params\": []}"
+      }
+    ],
   "fromVersion": "8.9.0",
   "widgets_data": [],
   "supportedModules": [
     "xsiam"
   ]
-}
+  }
