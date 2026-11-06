@@ -1580,29 +1580,38 @@ def test_get_file_hash_type(value, expected):
 @pytest.mark.parametrize(
     "value, indicator_type, expected",
     [
-        ("1.2.3.4", "ip", "[ipv4-addr:value = '1.2.3.4']"),
-        ("2001:db8::1", "ip", "[ipv6-addr:value = '2001:db8::1']"),
-        ("example.com", "domain", "[domain-name:value = 'example.com']"),
-        ("user@example.com", "email", "[email-addr:value = 'user@example.com']"),
-        ("https://example.com/a", "url", "[url:value = 'https://example.com/a']"),
-        ("d41d8cd98f00b204e9800998ecf8427e", "file", "[file:hashes.'MD5' = 'd41d8cd98f00b204e9800998ecf8427e']"),
+        ("1.2.3.4", "ip", ["[ipv4-addr:value = '1.2.3.4']"]),
+        ("2001:db8::1", "ip", ["[ipv6-addr:value = '2001:db8::1']"]),
+        ("example.com", "domain", ["[domain-name:value = 'example.com']"]),
+        ("user@example.com", "email", ["[email-addr:value = 'user@example.com']"]),
+        ("https://example.com/a", "url", ["[url:value = 'https://example.com/a']"]),
+        (
+            "d41d8cd98f00b204e9800998ecf8427e",
+            "file",
+            [
+                "[file:hashes.MD5 = 'd41d8cd98f00b204e9800998ecf8427e']",
+                "[file:hashes.'MD5' = 'd41d8cd98f00b204e9800998ecf8427e']",
+            ],
+        ),
         (
             "da39a3ee5e6b4b0d3255bfef95601890afd80709",
             "file",
-            "[file:hashes.'SHA-1' = 'da39a3ee5e6b4b0d3255bfef95601890afd80709']",
+            ["[file:hashes.'SHA-1' = 'da39a3ee5e6b4b0d3255bfef95601890afd80709']"],
         ),
+        ("not-a-hash", "file", []),
     ],
 )
-def test_build_reputation_pattern(value, indicator_type, expected):
-    """Tests build_reputation_pattern function
+def test_build_reputation_patterns(value, indicator_type, expected):
+    """Tests build_reputation_patterns function
     Given
         a value and the reputation command type
     When
-        - Calling `build_reputation_pattern`
+        - Calling `build_reputation_patterns`
     Then
-        - Ensure the STIX pattern is the one OpenCTI gives to an indicator of this value.
+        - Ensure the first STIX pattern is the one OpenCTI gives to an indicator of this value (MD5 not quoted,
+          SHA-1 and SHA-256 quoted), and that the quoted MD5 form is searched too.
     """
-    assert build_reputation_pattern(value, indicator_type) == expected
+    assert build_reputation_patterns(value, indicator_type) == expected
 
 
 REPUTATION_OBSERVABLE = {
@@ -1846,21 +1855,118 @@ def test_reputation_command_file_lookup_filters(mocker):
     assert {"key": "pattern", "values": [f"[file:hashes.'SHA-256' = '{sha256}']"], "operator": "eq"} in exact_indicator_filters
 
 
-def test_reputation_command_indicator_fallback_search(mocker):
+def test_reputation_command_md5_lookup_filters(mocker):
     """Tests reputation_command function
     Given
-        an IP whose indicator is not found by the exact pattern filter
+        an MD5 hash
     When
-        - Calling `reputation_command` for the ip command and the full-text search returns several indicators
+        - Calling `reputation_command` for the file command
     Then
-        - Ensure only the indicator with the exact same pattern is kept.
+        - Ensure the indicator is searched on the unquoted MD5 pattern that OpenCTI writes, and on the quoted one.
     """
-    other_indicator = {**REPUTATION_INDICATOR, "id": "other-id", "pattern": "[ipv4-addr:value = '1.2.3.40']"}
-    client, _, indicator_list, _ = mock_reputation_lookups(mocker, [], [[], [other_indicator, REPUTATION_INDICATOR]])
-    results = reputation_command(client, {"ip": "1.2.3.4"}, "ip")
-    context = results[0].to_context()["EntryContext"]
-    assert context["OpenCTI.Indicator(val.id && val.id == obj.id)"]["id"] == "indicator-id"
-    assert indicator_list.call_args_list[1].kwargs["search"] == '"1.2.3.4"'
+    md5 = "e505d4ffa21cf494a5dc2d7c8f4f1236"
+    client, observable_list, indicator_list, _ = mock_reputation_lookups(mocker, [], [[], []])
+    reputation_command(client, {"file": md5}, "file")
+    observable_filters = observable_list.call_args.kwargs["filters"]["filters"]
+    assert {"key": "hashes.MD5", "values": [md5], "operator": "eq"} in observable_filters
+    exact_indicator_filters = indicator_list.call_args_list[0].kwargs["filters"]["filters"]
+    expected_patterns = [f"[file:hashes.MD5 = '{md5}']", f"[file:hashes.'MD5' = '{md5}']"]
+    assert {"key": "pattern", "values": expected_patterns, "operator": "eq"} in exact_indicator_filters
+
+
+def test_reputation_command_unknown_value_no_search(mocker):
+    """Tests reputation_command function
+    Given
+        an IP that is neither an observable nor the exact pattern of an indicator in OpenCTI
+    When
+        - Calling `reputation_command` for the ip command
+    Then
+        - Ensure the indicators are queried only once, by the exact pattern filter, without a full-text search.
+    """
+    client, _, indicator_list, _ = mock_reputation_lookups(mocker, [], [[], []])
+    reputation_command(client, {"ip": "1.2.3.4"}, "ip")
+    assert indicator_list.call_count == 1
+    assert "search" not in indicator_list.call_args.kwargs
+
+
+def based_on(indicator_id: str) -> dict:
+    return {
+        "id": f"based-on-{indicator_id}",
+        "relationship_type": "based-on",
+        "from": {"id": indicator_id, "entity_type": "Indicator", "name": "composite"},
+        "to": {"id": "observable-id", "entity_type": "StixFile", "observable_value": "file"},
+    }
+
+
+def test_reputation_command_based_on_indicator(mocker):
+    """Tests reputation_command function
+    Given
+        a file hash whose indicators have a composite pattern (MD5 OR SHA-1 OR SHA-256), so the exact pattern filter
+        finds none, and whose observable is the base of three indicators: revoked with score 100, active with score
+        20 and active with score 80
+    When
+        - Calling `reputation_command` for the file command
+    Then
+        - Ensure the indicators based on the observable are read in one call, by their IDs.
+        - Ensure the active indicator with the highest score is returned: Malicious.
+        - Ensure the based-on relationship of the returned indicator is left out of the observable relationships.
+    """
+    md5 = "35082029988399b9bb493563ce567fd5"
+    composite = f"[file:hashes.'SHA-256' = '{'a' * 64}' OR file:hashes.MD5 = '{md5}']"
+    revoked = {**REPUTATION_INDICATOR, "id": "revoked-id", "pattern": composite, "x_opencti_score": 100, "revoked": True}
+    low = {**REPUTATION_INDICATOR, "id": "low-id", "pattern": composite, "x_opencti_score": 20, "updated_at": "2026-10-01"}
+    high = {**REPUTATION_INDICATOR, "id": "high-id", "pattern": composite, "x_opencti_score": 80, "updated_at": "2026-01-01"}
+    observable = {**REPUTATION_OBSERVABLE, "entity_type": "StixFile", "observable_value": md5}
+    client, _, indicator_list, _ = mock_reputation_lookups(
+        mocker,
+        [observable],
+        [[], [revoked, low, high]],
+        [[based_on("revoked-id"), based_on("low-id"), based_on("high-id")], []],
+    )
+    context = reputation_command(client, {"file": md5}, "file", 70)[0].to_context()["EntryContext"]
+    id_filter = indicator_list.call_args_list[1].kwargs["filters"]["filters"][0]
+    assert id_filter == {"key": "id", "values": ["revoked-id", "low-id", "high-id"], "operator": "eq", "mode": "or"}
+    assert context["OpenCTI.Indicator(val.id && val.id == obj.id)"]["id"] == "high-id"
+    dbot_key = next(key for key in context if key.startswith("DBotScore("))
+    assert context[dbot_key][0]["Score"] == 3
+    observable_context = context["OpenCTI.Observable(val.value && val.value == obj.value)"]
+    assert [r["relatedEntityId"] for r in observable_context["relationships"]] == ["revoked-id", "low-id"]
+
+
+@pytest.mark.parametrize(
+    "indicators, expected_id",
+    [
+        ([{"id": "a", "x_opencti_score": 50}, {"id": "b", "x_opencti_score": 90}], "b"),
+        ([{"id": "a", "x_opencti_score": 90, "revoked": True}, {"id": "b", "x_opencti_score": 10}], "b"),
+        (
+            [
+                {"id": "a", "x_opencti_score": 60, "updated_at": "2026-01-01"},
+                {"id": "b", "x_opencti_score": 60, "updated_at": "2026-06-01"},
+            ],
+            "b",
+        ),
+        (
+            [
+                {"id": "a", "x_opencti_score": 90, "revoked": True, "updated_at": "2026-06-01"},
+                {"id": "b", "x_opencti_score": 10, "revoked": True, "updated_at": "2026-01-01"},
+            ],
+            "a",
+        ),
+        ([], None),
+    ],
+)
+def test_select_indicator(indicators, expected_id):
+    """Tests select_indicator function
+    Given
+        indicators based on the same observable
+    When
+        - Calling `select_indicator`
+    Then
+        - Ensure the active indicator with the highest score is selected, the latest updated one on a tie, and the
+          latest updated one when all of them are revoked.
+    """
+    selected = select_indicator(indicators)
+    assert (selected or {}).get("id") == expected_id
 
 
 def test_reputation_command_invalid_values(mocker):
