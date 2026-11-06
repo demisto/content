@@ -769,7 +769,9 @@ def sync_war_room_for_incident(xsiam_client: XSIAMClient, xsoar_client: XSOARCli
                 if entry_id_part:
                     already_synced.add(entry_id_part)
     except Exception as e:
-        demisto.debug(f"Could not read existing XSIAM War Room entries for dedup for alert {xsiam_alert_id}: {e}")
+        demisto.debug(
+            f"Could not read existing XSIAM War Room entries for dedup for alert {xsiam_alert_id}: {e}\n{traceback.format_exc()}"
+        )
 
     for entry in meaningful:
         entry_id = str(entry.get("id", ""))
@@ -855,8 +857,10 @@ def sync_war_room_command(xsiam_client: XSIAMClient, xsoar_client: XSOARClient, 
                 entry_id_part = after_marker.split(" |")[0].strip()
                 if entry_id_part:
                     already_synced.add(entry_id_part)
-    except Exception:
-        demisto.debug("Could not read existing XSIAM War Room entries for dedup, proceeding without dedup.")
+    except Exception as e:
+        demisto.debug(
+            f"Could not read existing XSIAM War Room entries for dedup for alert {xsiam_alert_id}: {e}\n{traceback.format_exc()}"
+        )
 
     synced = 0
     skipped = 0
