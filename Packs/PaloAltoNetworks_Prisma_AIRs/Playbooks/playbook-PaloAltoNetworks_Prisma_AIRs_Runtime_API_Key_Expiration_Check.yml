@@ -911,7 +911,7 @@ tasks:
       id: e3f4a5b6-0018-4c5d-8e9f-0a1b2c3d0018
       version: -1
       name: Email more-than-medium-risk keys?
-      description: Send an email only when at least one recipient is configured AND at least one key is more than medium risk (Critical or High). All severities have already been reported to the War Room.
+      description: Sends an email only when at least one recipient is configured and at least one key is more than medium risk (Critical or High). All severities have already been reported to the War Room.
       type: condition
       iscommand: false
       brand: ""
