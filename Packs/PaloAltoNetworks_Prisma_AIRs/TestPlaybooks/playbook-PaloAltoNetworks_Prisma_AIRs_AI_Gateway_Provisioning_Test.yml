@@ -438,7 +438,7 @@ tasks:
       id: c1a2b3d4-0012-4e5f-9a0b-1c2d3e4f5012
       version: -1
       name: Set CreatedWorkspaceId
-      description: Capture the created workspace UUID before the second list re-populates the context array, so later get/config/archive steps reference exactly this workspace.
+      description: Captures the created workspace UUID before the second list re-populates the context array, so later get/config/archive steps reference exactly this workspace.
       scriptName: Set
       type: regular
       iscommand: false
