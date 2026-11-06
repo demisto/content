@@ -2252,7 +2252,7 @@ script:
     - name: defaults
       description: The default settings as a JSON object.
     - name: rotation_policy
-      description: Rotation policy settings (JSON object).
+      description: The rotation policy settings as a JSON object.
     - name: reset_usage
       description: Whether to reset the accumulated usage counters.
       auto: PREDEFINED
