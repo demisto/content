@@ -130,7 +130,7 @@ tasks:
       id: d1e2f3a4-0004-4e5f-9a0b-1c2d3e4f6004
       version: -1
       name: Any gateways found?
-      description: Continue only if the inventory returned at least one deployment.
+      description: Continues only if the inventory returned at least one deployment.
       type: condition
       iscommand: false
       brand: ""
