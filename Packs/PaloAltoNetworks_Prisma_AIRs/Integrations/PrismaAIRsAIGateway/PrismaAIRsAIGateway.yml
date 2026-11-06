@@ -2216,7 +2216,7 @@ script:
     - name: defaults
       description: The default settings as a JSON object.
     - name: rotation_policy
-      description: Rotation policy settings (JSON object).
+      description: The rotation policy settings as a JSON object.
     outputs:
     - contextPath: PrismaAIRs.AIGatewayApiKey.id
       description: The created API key ID.
