@@ -37,7 +37,7 @@ inputs:
   value:
     simple: "31"
   required: false
-  description: A key is Medium risk when it expires in fewer than this many days but is not already High or Critical. Default 31 (with HighWithinDays 10) means 10-30 days remaining is Medium; anything further out is Low.
+  description: The number of days remaining below which a key is Medium risk but not already High or Critical. The default is 31 (when HighWithinDays is 10), which means 10-30 days remaining is Medium; anything further out is Low.
   playbookInputQuery:
 - key: NotificationRecipients
   value: {}
