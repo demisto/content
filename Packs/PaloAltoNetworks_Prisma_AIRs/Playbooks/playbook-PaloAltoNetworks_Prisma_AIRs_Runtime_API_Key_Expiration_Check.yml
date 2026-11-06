@@ -25,7 +25,7 @@ inputs:
   value:
     simple: "5"
   required: false
-  description: A key is Critical risk when it expires in fewer than this many days (including already-expired keys). Default 5 means 0-4 days remaining, or expired, is Critical.
+  description: The number of days remaining below which a key is Critical risk (including already-expired keys). The default is 5, which means 0-4 days remaining, or expired, is Critical.
   playbookInputQuery:
 - key: HighWithinDays
   value:
