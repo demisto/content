@@ -1,27 +1,42 @@
-!opencti-get-observables score_start=20 score_end=70 observable_types=Domain
-!opencti-observable-create type=Domain created_by=0c7cb378-64c3-4809-b423-986ac7cecf91 description=test value="TestDomainDocs.com" score=70 label_id=fa57f98e-f2f5-45fd-97f2-bf2c53119044 marking_id=9128e411-c759-4af0-aeb0-b65f12082648
-!opencti-observable-delete id=74faf2e8-bbab-4a1a-a548-58db202c5e57
-!opencti-observable-field-add id=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b field=label value=07cfae2d-6cc9-42c5-9fd0-32eff8142404
-!opencti-observable-field-remove id=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b field=marking value=c9819001-c80c-45e1-8edb-e543e350f195
-!opencti-observable-field-update field=score id=81d63245-9ba3-495d-8e78-03b037d71e01 value=100
-!opencti-external-reference-create source_name=source_name url=www.url.com
+!opencti-get-observables score_start=20 score_end=70 observable_types=Domain limit=2
+!opencti-observable-create type=Domain created_by=b545b7c4-b7eb-42d0-a39d-7077b43c6e1f description=test value="testdomaindocs.example.com" score=70 label_id=c532efcd-70b6-4d0a-b8a3-dcd2e51a3fe6 marking_id=936174b6-df6d-4370-ae76-97b03fb438b8
+!opencti-observable-delete id=d009a630-1e8e-414b-a366-34a19387d27c
+!opencti-observable-field-add id=c288ff0e-4601-4e97-8b21-423dc08c1f83 field=label value=c532efcd-70b6-4d0a-b8a3-dcd2e51a3fe6
+!opencti-observable-field-remove id=c288ff0e-4601-4e97-8b21-423dc08c1f83 field=marking value=936174b6-df6d-4370-ae76-97b03fb438b8
+!opencti-observable-field-update id=c288ff0e-4601-4e97-8b21-423dc08c1f83 field=score value=80
+!opencti-external-reference-create source_name=source_name url=https://www.example.com
 !opencti-label-list limit=2
 !opencti-label-create name=docsTest
 !opencti-marking-definition-list limit=2
 !opencti-organization-list limit=2
-!opencti-label-list limit=2
-!opencti-organization-create name=ExampleOrganization description="create organization" reliability="C"
-!opencti-incident-create name=ExampleIncident description="create incident" incident_types=Test
-!opencti-incident-delete id=7bb1e29c-0d3a-4fcf-960b-beae280558e3
-!opencti-get-incidents limit=2 label_id=07cfae2d-6cc9-42c5-9fd0-32eff8142404
+!opencti-organization-create name=ExampleOrganization description="create organization" reliability=C
+!opencti-incident-create name=ExampleIncident description="create incident"
+!opencti-incident-delete id=a695b219-c499-4bdf-8df5-348e9e4618b8
+!opencti-get-incidents limit=2 search="XSOAR Docs Incident"
 !opencti-incident-types-list
-!opencti-relationship-create from=7bb1e29c-0d3a-4fcf-960b-beae280558e3 to=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b relationship_type=related-to
-!opencti-relationship-list from_id=7bb1e29c-0d3a-4fcf-960b-beae280558e3
-!opencti-relationship-delete id=7bb1e29c-0d3a-4fcf-960b-beae280558e3
-!opencti-indicator-create name=ExampleIndicator indicator="1.1.1.1" main_observable_type=ip
-!opencti-indicator-update id=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b name=ExampleIndicator2
-!opencti-indicator-field-add field=marking value=c9819001-c80c-45e1-8edb-e543e350f195
-!opencti-indicator-field-remove field=marking value=c9819001-c80c-45e1-8edb-e543e350f195
-!opencti-get-indicators limit=2 label_id=07cfae2d-6cc9-42c5-9fd0-32eff8142404
+!opencti-relationship-create from_id=de1d63ab-2081-4c33-a36f-25412f7ff42b to_id=c288ff0e-4601-4e97-8b21-423dc08c1f83 relationship_type=related-to
+!opencti-relationship-list from_id=de1d63ab-2081-4c33-a36f-25412f7ff42b limit=2
+!opencti-relationship-delete id=00640892-836d-4513-a2a4-8f0ed99f0444
+!opencti-indicator-create name=ExampleIndicator indicator="198.51.100.7" main_observable_type=IP
+!opencti-indicator-update id=7203be86-63ed-4ffd-992b-0ab76611b96e name=ExampleIndicator2
+!opencti-indicator-field-add id=7203be86-63ed-4ffd-992b-0ab76611b96e field=marking value=936174b6-df6d-4370-ae76-97b03fb438b8
+!opencti-indicator-field-remove id=7203be86-63ed-4ffd-992b-0ab76611b96e field=marking value=936174b6-df6d-4370-ae76-97b03fb438b8
+!opencti-get-indicators limit=2 search=suspicious.example.com
 !opencti-indicator-types-list
-!opencti-get-incidents additional_filters=`[{"key": "description","operator": "eq","values": ["test"],"mode": "and"}]`
+!opencti-get-incidents additional_filters=`[{"key": "description","operator": "eq","values": ["create incident"],"mode": "and"}]`
+!opencti-incident-response-create name="Example Incident Response" severity=high priority=P2 description="Incident response created from Cortex XSOAR." incident_response_date=2025-01-15T09:30:00.000Z
+!opencti-incident-response-types-list
+!opencti-malware-create name="Example Malware" malware_types=ransomware,worm is_family=true
+!opencti-vulnerability-create name=CVE-2025-0001 description="Vulnerability created from Cortex XSOAR."
+!opencti-intrusion-set-create name="Example Intrusion Set"
+!opencti-threat-actor-group-create name="Example Threat Actor Group"
+!opencti-campaign-create name="Example Campaign" first_seen=2025-01-01T00:00:00Z last_seen=2025-06-30T00:00:00Z
+!opencti-grouping-create name="Example Grouping" context=suspicious-activity
+!opencti-grouping-context-list
+!opencti-report-create name="Example Report" published=2025-01-15T00:00:00.000Z
+!opencti-add-object-to-container container_type=report container_id=d245afe6-56d1-4442-aef7-c42dc0e47f24 object_id=c288ff0e-4601-4e97-8b21-423dc08c1f83
+!ip ip=203.0.113.42
+!domain domain=suspicious.example.com
+!email email=phishing@example.com
+!url url=https://malicious.example.com/payload
+!file file=41d099611bfc31f99e8234be7942016551d38b3c0326630475bef6ae35995e84
