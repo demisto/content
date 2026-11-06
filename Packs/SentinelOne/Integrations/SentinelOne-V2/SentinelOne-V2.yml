@@ -822,6 +822,324 @@ script:
       description: Whether the threat is marked as benign. Relevant for version 2.0 only.
       type: Boolean
   - arguments:
+    - description: The name of the firewall rule.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: Defines whether the agent blocks or allows traffic matching the rule parameters.
+      name: action
+      predefined:
+      - Allow
+      - Block
+      required: true
+    - auto: PREDEFINED
+      description: Defines whether the rule is Enabled or Disabled.
+      name: status
+      predefined:
+      - Enabled
+      - Disabled
+      required: true
+    - auto: PREDEFINED
+      description: Defines the direction of the firewall rule.
+      name: direction
+      predefined:
+      - any
+      - inbound
+      - outbound
+    - auto: PREDEFINED
+      description: A comma-separated list of OS types for the rule (e.g., windows, macos, linux, windows_legacy).
+      isArray: true
+      name: os_types
+      predefined:
+      - linux
+      - windows
+      - macos
+      - windows_legacy
+    - description: The network protocol for the rule (e.g., any, tcp, udp, icmp).
+      name: protocol
+    - auto: PREDEFINED
+      description: The type of remote host to match (any, cidr, range, addresses, fqdn). Use 'addresses' for IP addresses and 'fqdn' for domains/FQDNs.
+      name: remote_host_type
+      predefined:
+      - any
+      - cidr
+      - range
+      - addresses
+      - fqdn
+    - description: A comma-separated list of remote host values (e.g., IP addresses, CIDR blocks, IP ranges, or domains/FQDNs).
+      isArray: true
+      name: remote_host_values
+    - auto: PREDEFINED
+      description: The type of local host to match (any, cidr, range, addresses, fqdn).
+      name: local_host_type
+      predefined:
+      - any
+      - cidr
+      - range
+      - addresses
+      - fqdn
+    - description: A comma-separated list of local host values.
+      isArray: true
+      name: local_host_values
+    - auto: PREDEFINED
+      description: The type of remote ports to match (any, ports, range).
+      name: remote_port_type
+      predefined:
+      - any
+      - ports
+      - range
+    - description: A comma-separated list of remote port numbers (integers between 0 and 65535).
+      isArray: true
+      name: remote_port_values
+    - auto: PREDEFINED
+      description: The type of local ports to match (any, ports, range).
+      name: local_port_type
+      predefined:
+      - any
+      - ports
+      - range
+    - description: A comma-separated list of local port numbers (integers between 0 and 65535).
+      isArray: true
+      name: local_port_values
+    - auto: PREDEFINED
+      description: The type of application for the rule (any, path, sha1, system).
+      name: application_type
+      predefined:
+      - any
+      - path
+      - sha1
+      - system
+    - description: A comma-separated list of application values.
+      isArray: true
+      name: application_values
+    - auto: PREDEFINED
+      description: The location type for the rule (all, specific, fallback).
+      name: location_type
+      predefined:
+      - all
+      - specific
+      - fallback
+    - description: A comma-separated list of location IDs (applicable when location_type is 'specific').
+      isArray: true
+      name: location_ids
+    - description: Free-text description of the firewall rule.
+      name: description
+    - description: A comma-separated list of tag IDs to link to this firewall rule.
+      isArray: true
+      name: tag_ids
+    - auto: PREDEFINED
+      description: Indicates a tenant (global) scope request. Set to true for global scope, or false when filtering by account_ids, site_ids, or group_ids.
+      name: tenant
+      predefined:
+      - 'true'
+      - 'false'
+    - description: A comma-separated list of Account IDs to scope the firewall rule to.
+      isArray: true
+      name: account_ids
+    - description: A comma-separated list of Site IDs to scope the firewall rule to.
+      isArray: true
+      name: site_ids
+    - description: A comma-separated list of Group IDs to scope the firewall rule to.
+      isArray: true
+      name: group_ids
+    description: Creates a Firewall Control rule for a specified scope and OS to allow or block network traffic to matching endpoints (uses the v2.1 firewall-control endpoint).
+    name: sentinelone-create-firewall-rule
+    outputs:
+    - contextPath: SentinelOne.FirewallRule.ID
+      description: The created firewall rule ID.
+      type: string
+    - contextPath: SentinelOne.FirewallRule.Name
+      description: The name of the firewall rule.
+      type: string
+    - contextPath: SentinelOne.FirewallRule.Action
+      description: The rule action (Allow or Block).
+      type: string
+    - contextPath: SentinelOne.FirewallRule.Status
+      description: The status of the rule (Enabled or Disabled).
+      type: string
+    - contextPath: SentinelOne.FirewallRule.Direction
+      description: The direction of the firewall rule (any, inbound, outbound).
+      type: string
+    - contextPath: SentinelOne.FirewallRule.OsType
+      description: The primary OS type of the rule.
+      type: string
+    - contextPath: SentinelOne.FirewallRule.OsTypes
+      description: The list of OS types for the rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.Protocol
+      description: The protocol of the firewall rule.
+      type: string
+    - contextPath: SentinelOne.FirewallRule.RemoteHost
+      description: The first remote host in the rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.RemoteHosts
+      description: The list of remote hosts in the rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.LocalHost
+      description: The local host structure of the rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.RemotePort
+      description: The remote ports structure of the rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.LocalPort
+      description: The local ports structure of the rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.Application
+      description: The application structure of the rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.Location
+      description: The location associated with the rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.Scope
+      description: The scope of the rule (global, account, group, site).
+      type: string
+    - contextPath: SentinelOne.FirewallRule.ScopeId
+      description: The group, site, or account ID depending on the scope.
+      type: string
+    - contextPath: SentinelOne.FirewallRule.Order
+      description: The position of the rule in the list of rules.
+      type: number
+    - contextPath: SentinelOne.FirewallRule.Editable
+      description: Whether the rule can be modified at this scope level.
+      type: boolean
+    - contextPath: SentinelOne.FirewallRule.Creator
+      description: The full name of the user who created the rule.
+      type: string
+    - contextPath: SentinelOne.FirewallRule.CreatorId
+      description: The ID of the user who created the rule.
+      type: string
+    - contextPath: SentinelOne.FirewallRule.CreatedAt
+      description: The date and time of rule creation.
+      type: date
+    - contextPath: SentinelOne.FirewallRule.UpdatedAt
+      description: The date and time of the last update.
+      type: date
+    - contextPath: SentinelOne.FirewallRule.Description
+      description: The description of the firewall rule.
+      type: string
+    - contextPath: SentinelOne.FirewallRule.RuleCategory
+      description: The rule category (firewall or network_quarantine).
+      type: string
+    - contextPath: SentinelOne.FirewallRule.TagIds
+      description: The list of tag IDs linked to this rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.TagNames
+      description: The list of tag names linked to this rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.Tags
+      description: The list of tag objects linked to this rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.ProductId
+      description: The product identifier.
+      type: string
+  - arguments:
+    - description: 'A comma-separated list of firewall rule IDs to filter by, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: ids
+    - description: 'A comma-separated list of Account IDs to filter by, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: account_ids
+    - description: 'A comma-separated list of Site IDs to filter by, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: site_ids
+    - description: 'A comma-separated list of Group IDs to filter by, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: group_ids
+    - auto: PREDEFINED
+      description: Indicates a tenant (global) scope request.
+      name: tenant
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Free-text search on name, tag, application, or protocol.
+      name: query
+    - auto: PREDEFINED
+      description: A comma-separated list of scopes to filter firewall rules by (global, account, group, site).
+      isArray: true
+      name: scopes
+      predefined:
+      - global
+      - account
+      - group
+      - site
+    - description: A comma-separated list of firewall classes/applications to filter by.
+      isArray: true
+      name: applications
+    - description: Filter firewall rules by exact rule name.
+      name: name
+    - description: A comma-separated list of protocols to filter firewall rules by.
+      isArray: true
+      name: protocols
+    - auto: PREDEFINED
+      description: A comma-separated list of OS types to filter firewall rules by (linux, windows, macos, windows_legacy).
+      isArray: true
+      name: os_types
+      predefined:
+      - linux
+      - windows
+      - macos
+      - windows_legacy
+    - auto: PREDEFINED
+      description: A comma-separated list of directions to filter firewall rules by (any, inbound, outbound).
+      isArray: true
+      name: directions
+      predefined:
+      - any
+      - inbound
+      - outbound
+    - auto: PREDEFINED
+      description: A comma-separated list of actions to filter firewall rules by (Allow, Block).
+      isArray: true
+      name: actions
+      predefined:
+      - Allow
+      - Block
+    - auto: PREDEFINED
+      description: A comma-separated list of statuses to filter firewall rules by (Enabled, Disabled).
+      isArray: true
+      name: statuses
+      predefined:
+      - Enabled
+      - Disabled
+    - description: 'Filter firewall rules created before this timestamp (e.g., 2018-02-27T04:49:26.257525Z).'
+      name: created_at_lt
+    - description: 'Filter firewall rules created after this timestamp (e.g., 2018-02-27T04:49:26.257525Z).'
+      name: created_at_gt
+    - description: 'Filter firewall rules created before or at this timestamp (e.g., 2018-02-27T04:49:26.257525Z).'
+      name: created_at_lte
+    - description: 'Filter firewall rules created after or at this timestamp (e.g., 2018-02-27T04:49:26.257525Z).'
+      name: created_at_gte
+    - description: 'Filter firewall rules created within this range (inclusive), for example: "1514978764288-1514978999999".'
+      name: created_at_between
+    - description: A comma-separated list of associated location IDs to filter by.
+      isArray: true
+      name: location_ids
+    - description: A comma-separated list of associated tag IDs to filter by.
+      isArray: true
+      name: tag_ids
+    - description: Free-text filter by the rule name (supports multiple comma-separated values).
+      isArray: true
+      name: name_contains
+    - description: Free-text filter by the tag name (supports multiple comma-separated values).
+      isArray: true
+      name: tag_name_contains
+    - description: Free-text filter by application (supports multiple comma-separated values).
+      isArray: true
+      name: application_contains
+    - description: Free-text filter by protocol (supports multiple comma-separated values).
+      isArray: true
+      name: protocol_contains
+    - description: Free-text filter by service (supports multiple comma-separated values).
+      isArray: true
+      name: service_contains
+    description: Deletes Firewall Control rules that match the filter (uses the v2.1 firewall-control endpoint).
+    execution: true
+    name: sentinelone-delete-firewall-rule
+    outputs:
+    - contextPath: SentinelOne.FirewallRule.Deleted.Affected
+      description: The number of firewall rules successfully deleted.
+      type: number
+  - arguments:
     - description: 'A comma-separated list of group IDs by which to filter, for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: group_ids

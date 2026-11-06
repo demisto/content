@@ -10,6 +10,7 @@ This pack enables you to
 - Get information about threats, mark a suspicious behavior as a threat, and mitigate threats.
 - Get information about the system sites and reactivate a site if necessary.
 - Get information about activities, events and processes in the system.
+- Create and delete Firewall Control rules to allow or block network traffic (such as IP addresses, CIDR blocks, and domains/FQDNs).
 The **Sentinel One - Endpoint data collection** playbook collects endpoint information by using SentinelOne commands.
 The pack includes the **SentinelOne v2** integration and the **Sentinel One - Endpoint data collection** playbook.
 
