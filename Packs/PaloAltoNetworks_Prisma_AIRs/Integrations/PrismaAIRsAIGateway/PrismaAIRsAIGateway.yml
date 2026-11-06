@@ -2352,7 +2352,7 @@ script:
       description: The numeric organisation (TSG) ID. Defaults to the configured tenant TSG ID.
     outputs:
     - contextPath: PrismaAIRs.AIGatewayOrganisationInfo.id
-      description: The organisation ID.
+      description: The organization ID.
       type: String
     - contextPath: PrismaAIRs.AIGatewayOrganisationInfo.name
       description: The organization name.
