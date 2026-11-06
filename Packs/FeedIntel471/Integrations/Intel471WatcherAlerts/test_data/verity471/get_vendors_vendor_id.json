@@ -1,0 +1,32 @@
+{
+  "activity": {
+    "first_seen_ts": "2026-01-01T00:00:00Z",
+    "last_seen_ts": "2026-01-01T00:00:00Z"
+  },
+  "additional_links_forum": "string",
+  "additional_links_reviews": "string",
+  "average_response_time": 0,
+  "id": "string",
+  "link": "string",
+  "links": {
+    "external": {
+      "href": "string"
+    },
+    "verity_api": {
+      "href": "string"
+    },
+    "verity_portal": {
+      "href": "string"
+    }
+  },
+  "marketplace_id": "string",
+  "marketplace_name": "string",
+  "name": "string",
+  "rating": {
+    "max": 0.0,
+    "value": 0.0
+  },
+  "valid_rate_10_days": 0.0,
+  "valid_rate_30_days": 0.0,
+  "valid_rate_overall": 0.0
+}

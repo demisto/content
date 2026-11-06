@@ -1,0 +1,32 @@
+{
+  "alerts": [
+    {
+      "creation_ts": "2026-01-01T00:00:00Z",
+      "highlights": [
+        {
+          "field_name": "string",
+          "snippets": [
+            "string"
+          ]
+        }
+      ],
+      "id": 0,
+      "is_trashed": true,
+      "links": {
+        "verity_api": {
+          "href": "string"
+        },
+        "verity_portal": {
+          "href": "string"
+        }
+      },
+      "source_id": "string",
+      "source_type": "string",
+      "status": "string",
+      "watcher_group_id": 0,
+      "watcher_id": 0
+    }
+  ],
+  "count": 0,
+  "cursor_next": "string"
+}

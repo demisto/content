@@ -1,0 +1,209 @@
+{
+  "active_event": true,
+  "attachments": [
+    {
+      "description": "string",
+      "file_name": "string",
+      "file_size": 0,
+      "malicious": true,
+      "mime_type": "string",
+      "url": "string"
+    }
+  ],
+  "body": "string",
+  "classification": {
+    "girs": [
+      {
+        "name": "string",
+        "path": "string"
+      }
+    ]
+  },
+  "country_profiles": [
+    {
+      "country": "string",
+      "country_iso_code": "string",
+      "id": "string",
+      "information_ts": "string",
+      "is_country_of_interest": true,
+      "security_assessment": "low",
+      "threat_rating": "low"
+    }
+  ],
+  "creation_ts": "string",
+  "derived_entities": [
+    {
+      "type": "string",
+      "value": "string"
+    }
+  ],
+  "entities": [
+    {
+      "type": "string",
+      "value": "string"
+    }
+  ],
+  "id": "string",
+  "information_ts": "string",
+  "intelligence_estimate": {
+    "is_country_of_interest": true,
+    "overview": "string",
+    "report_location": {
+      "country": "string",
+      "iso": "string",
+      "link": "string",
+      "region": "string"
+    },
+    "security_assessment": "low",
+    "text_toc": "string",
+    "threat_rating": "low"
+  },
+  "is_sensitive_source": true,
+  "is_truncated": true,
+  "last_updated_ts": "string",
+  "links": {
+    "external": {
+      "href": "string"
+    },
+    "verity_api": {
+      "href": "string"
+    },
+    "verity_portal": {
+      "href": "string"
+    }
+  },
+  "locations": [
+    {
+      "country": "string",
+      "iso": "string",
+      "link": "string",
+      "region": "string"
+    }
+  ],
+  "regional_tension_points": [
+    {
+      "id": "string",
+      "information_ts": "string",
+      "name": "string"
+    }
+  ],
+  "related_reports": [
+    {
+      "assessment": {
+        "admiralty_code": "A1",
+        "confidence": {
+          "description": "string",
+          "level": "high"
+        }
+      },
+      "classification": {
+        "girs": [
+          {
+            "name": "string",
+            "path": "string"
+          }
+        ]
+      },
+      "creation_ts": "string",
+      "id": "string",
+      "information_ts": "string",
+      "last_updated_ts": "string",
+      "links": {
+        "external": {
+          "href": "string"
+        },
+        "verity_api": {
+          "href": "string"
+        },
+        "verity_portal": {
+          "href": "string"
+        }
+      },
+      "released_ts": "string",
+      "sources": [
+        {
+          "index": 0,
+          "last_updated_ts": "string",
+          "links": {
+            "external": {
+              "href": "string"
+            },
+            "verity_api": {
+              "href": "string"
+            },
+            "verity_portal": {
+              "href": "string"
+            }
+          },
+          "source_type": "string",
+          "title": "string",
+          "type": "string"
+        }
+      ],
+      "sub_type": "fintel_blog",
+      "summary": "string",
+      "title": "string",
+      "type": "fintel",
+      "version_id": "string",
+      "version_number": 0
+    }
+  ],
+  "released_ts": "string",
+  "significant_activity": {
+    "comments": "string",
+    "event_tag": "economic",
+    "summary": "string"
+  },
+  "sources": [
+    {
+      "index": 0,
+      "last_updated_ts": "string",
+      "links": {
+        "external": {
+          "href": "string"
+        },
+        "verity_api": {
+          "href": "string"
+        },
+        "verity_portal": {
+          "href": "string"
+        }
+      },
+      "source_type": "string",
+      "title": "string",
+      "type": "string"
+    }
+  ],
+  "sub_type": "spot_report",
+  "title": "string",
+  "type": "string",
+  "version_id": "string",
+  "version_number": 0,
+  "victims": [
+    {
+      "country": "string",
+      "industries": [
+        {
+          "industry": "string",
+          "sector": "string"
+        }
+      ],
+      "links": [
+        {
+          "external": {
+            "href": "string"
+          },
+          "verity_api": {
+            "href": "string"
+          },
+          "verity_portal": {
+            "href": "string"
+          }
+        }
+      ],
+      "name": "string",
+      "region": "string",
+      "revenue": "string"
+    }
+  ]
+}

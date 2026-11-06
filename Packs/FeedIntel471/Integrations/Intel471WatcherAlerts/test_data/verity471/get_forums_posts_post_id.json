@@ -1,0 +1,114 @@
+{
+  "forum": {
+    "activity": {
+      "first_seen_ts": "2026-01-01T00:00:00Z",
+      "last_seen_ts": "2026-01-01T00:00:00Z"
+    },
+    "description": "string",
+    "id": "string",
+    "links": {
+      "external": {
+        "href": "string"
+      },
+      "verity_api": {
+        "href": "string"
+      },
+      "verity_portal": {
+        "href": "string"
+      }
+    },
+    "title": "string"
+  },
+  "post": {
+    "attachments": [
+      {
+        "attachment_highlights": [
+          "string"
+        ],
+        "attachment_original_url": "string",
+        "classification": "csam",
+        "dimensions": "string",
+        "file_available": true,
+        "file_hash": "string",
+        "file_name": "string",
+        "file_size": 0,
+        "file_url": "string",
+        "highlights": [
+          {
+            "field": "string",
+            "snippets": [
+              "string"
+            ]
+          }
+        ],
+        "id": "string",
+        "is_not_image": true,
+        "mime_type": "string",
+        "original_height": 0,
+        "original_width": 0,
+        "processing_status": "converted",
+        "recognized_logos": "string",
+        "recognized_text": "string",
+        "reporting_status": "none",
+        "source_entity_id": "string",
+        "thumbnail_available": true,
+        "thumbnail_height": 0,
+        "thumbnail_width": 0,
+        "webp_available": true
+      }
+    ],
+    "author": {
+      "historical_usernames": [
+        "string"
+      ],
+      "id": "string",
+      "user_name": "string"
+    },
+    "creation_ts": "string",
+    "entities": [
+      {
+        "type": "string",
+        "value": "string"
+      }
+    ],
+    "first_post": true,
+    "html": "string",
+    "id": "string",
+    "last_updated_ts": "string",
+    "message": "string",
+    "source_id": 0,
+    "thread_source_id": "string",
+    "translated_message": "string",
+    "translation_status": "WaitingForTranslation"
+  },
+  "sub_forum": {
+    "activity": {
+      "first_seen_ts": "2026-01-01T00:00:00Z",
+      "last_seen_ts": "2026-01-01T00:00:00Z"
+    },
+    "id": "string",
+    "title": "string"
+  },
+  "thread": {
+    "activity": {
+      "first_seen_ts": "2026-01-01T00:00:00Z",
+      "last_seen_ts": "2026-01-01T00:00:00Z"
+    },
+    "id": "string",
+    "links": {
+      "external": {
+        "href": "string"
+      },
+      "verity_api": {
+        "href": "string"
+      },
+      "verity_portal": {
+        "href": "string"
+      }
+    },
+    "post_count": 0,
+    "topic": "string",
+    "topic_original": "string",
+    "translation_status": "WaitingForTranslation"
+  }
+}

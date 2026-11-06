@@ -1,0 +1,84 @@
+{
+  "activity": {
+    "first_seen_ts": "2026-01-01T00:00:00Z",
+    "last_seen_ts": "2026-01-01T00:00:00Z"
+  },
+  "classification": {
+    "girs": [
+      {
+        "name": "string",
+        "path": "string"
+      }
+    ]
+  },
+  "confidence": 0,
+  "data": {
+    "domain": "string",
+    "email": "string",
+    "file": {
+      "md5": "string",
+      "sha1": "string",
+      "sha256": "string",
+      "size": 0,
+      "ssdeep": "string",
+      "type": "string"
+    },
+    "ipv4": {
+      "geo_ip": {
+        "city": "string",
+        "country": "string",
+        "country_code": "string",
+        "isp": {
+          "autonomous_system": "string",
+          "isp": "string",
+          "network": "string",
+          "organization": "string"
+        },
+        "subdivision": [
+          "string"
+        ]
+      },
+      "ip_address": "string"
+    },
+    "url": "string",
+    "yara": {
+      "signature": "string",
+      "title": "string"
+    }
+  },
+  "description": "string",
+  "expiration_ts": "2026-01-01T00:00:00Z",
+  "id": "string",
+  "kill_chain_phases": [
+    {
+      "kill_chain_name": "string",
+      "phase_name": "string"
+    }
+  ],
+  "pattern": "string",
+  "pattern_type": "string",
+  "pattern_version": "string",
+  "revocation": {
+    "revoked": true
+  },
+  "threat": {
+    "data": {
+      "bulletproof_hosting": {
+        "provider": "string"
+      },
+      "malware": {
+        "component": "string",
+        "family": "string",
+        "id": "string",
+        "variant": "string",
+        "version": "string"
+      },
+      "malware_family": {
+        "id": "string",
+        "name": "string"
+      }
+    },
+    "type": "malware"
+  },
+  "type": "domain"
+}

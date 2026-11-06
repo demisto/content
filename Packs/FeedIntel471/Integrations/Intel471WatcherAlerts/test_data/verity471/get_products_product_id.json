@@ -1,0 +1,684 @@
+{
+  "account": {
+    "basic_info": {
+      "account_balance": "string",
+      "activation_region": "string",
+      "additional_info": "string",
+      "available_games": [
+        "string"
+      ],
+      "bank_name": "string",
+      "country": "string",
+      "email_domain": "string",
+      "free_insurance_time": "string",
+      "game_statistics": [
+        "string"
+      ],
+      "in_game_items": {
+        "agents_amount": "string",
+        "arena": "string",
+        "cars_amount": "string",
+        "cash_amount": "string",
+        "free_name_change": "string",
+        "maxed_weapons": "string",
+        "operators": [
+          "string"
+        ],
+        "skins": [
+          "string"
+        ],
+        "skins_amount": "string",
+        "trophies": "string"
+      },
+      "last_activity_ts": "2026-01-01T00:00:00Z",
+      "last_order": "string",
+      "link": "string",
+      "negative_points": [
+        "string"
+      ],
+      "origin_country": "string",
+      "platform": "string",
+      "points": "string",
+      "positive_points": [
+        "string"
+      ],
+      "product_types": [
+        "string"
+      ],
+      "region": "string",
+      "registered_ts": "2026-01-01T00:00:00Z",
+      "server": "string",
+      "shop_name": "string",
+      "shop_type": "string",
+      "short_description": "string",
+      "times_sold": 0,
+      "works_on": "string",
+      "zip": "string"
+    },
+    "policy": {
+      "terms_and_service": "string"
+    },
+    "quantity": {
+      "available_from_vendor": 0,
+      "available_on_market": 0.0,
+      "maximum_order": 0,
+      "minimum_order": 0,
+      "sold_from_vendor": 0,
+      "stock": 0
+    },
+    "shipping": {
+      "destinations": [
+        "string"
+      ],
+      "options": [
+        "string"
+      ],
+      "origin": "string",
+      "time": "string",
+      "type": "string"
+    }
+  },
+  "activity": {
+    "first_seen_ts": "2026-01-01T00:00:00Z",
+    "last_seen_ts": "2026-01-01T00:00:00Z"
+  },
+  "article": {
+    "basic_info": {
+      "access": "string",
+      "account_balance": "string",
+      "account_type": "string",
+      "activation_region": "string",
+      "additional_info": "string",
+      "address": "string",
+      "admin_type": "string",
+      "alexa_reach_rank": "string",
+      "bulk_buying_options": [
+        "string"
+      ],
+      "city": "string",
+      "connection_type": "string",
+      "country": "string",
+      "cpr_score": "string",
+      "cpu": 0,
+      "denomination": "string",
+      "domain": "string",
+      "domain_authority": "string",
+      "driving_license_available": true,
+      "driving_license_expire_date": "string",
+      "edu_backlinks": "string",
+      "emails_number": "string",
+      "escrow_available": true,
+      "escrow_info": "string",
+      "external_backlinks": "string",
+      "free_insurance_time": "string",
+      "gender": "string",
+      "global_rank": "string",
+      "google_directory_listed": true,
+      "gov_backlinks": "string",
+      "host_info": "string",
+      "hosting": "string",
+      "in_game_items": {
+        "agents_amount": "string",
+        "arena": "string",
+        "cars_amount": "string",
+        "cash_amount": "string",
+        "free_name_change": "string",
+        "maxed_weapons": "string",
+        "operators": [
+          "string"
+        ],
+        "skins": [
+          "string"
+        ],
+        "skins_amount": "string",
+        "trophies": "string"
+      },
+      "indexed_urls": "string",
+      "ip_blacklist": "string",
+      "niche": "string",
+      "operating_system": "string",
+      "origin_country": "string",
+      "page_authority": "string",
+      "page_rank": "string",
+      "password": "string",
+      "payment_method": "string",
+      "phone_number": "string",
+      "ping": "string",
+      "platform": "string",
+      "port": 0,
+      "pr_quality": "string",
+      "product_types": [
+        "string"
+      ],
+      "provider": "string",
+      "proxy_score": 0,
+      "proxy_type": "string",
+      "ram": "string",
+      "referring_domains": "string",
+      "region": "string",
+      "secure_sockets_layer": "string",
+      "seo_rank": "string",
+      "server": "string",
+      "service": "string",
+      "size": "string",
+      "source": "string",
+      "spam_score": "string",
+      "speed": "string",
+      "state": "string",
+      "statement_date": "string",
+      "stock_available": true,
+      "topic": "string",
+      "topic_value": "string",
+      "total_stock_price": 0.0,
+      "trust_metric": "string",
+      "url_to_market": "string",
+      "username": "string",
+      "verified_attributes": "string",
+      "visitors": "string",
+      "web_host_manager_available": true,
+      "website": "string",
+      "works_on": "string",
+      "zip": "string"
+    },
+    "policy": {
+      "terms_and_service": "string"
+    },
+    "quantity": {
+      "available_from_vendor": 0,
+      "available_on_market": 0.0,
+      "maximum_order": 0,
+      "minimum_order": 0,
+      "sold_from_vendor": 0,
+      "stock": 0
+    },
+    "rating": {
+      "max": 0.0,
+      "value": 0.0
+    },
+    "shipping": {
+      "destinations": [
+        "string"
+      ],
+      "options": [
+        "string"
+      ],
+      "origin": "string",
+      "time": "string",
+      "type": "string"
+    },
+    "victim": {
+      "address": "string",
+      "city": "string",
+      "country": "string",
+      "email_address": "string",
+      "holder": "string",
+      "ip_address": "string",
+      "link": "string",
+      "name": "string",
+      "phone_number": "string",
+      "state": "string",
+      "zip": "string"
+    }
+  },
+  "bank": {
+    "basic_info": {
+      "account_balance": "string",
+      "additional_info": "string",
+      "address": "string",
+      "bank_account": "string",
+      "bank_account_available": true,
+      "bank_name": "string",
+      "checked_ts": "2026-01-01T00:00:00Z",
+      "city": "string",
+      "country": "string",
+      "credit_card_available": true,
+      "credit_cards": "string",
+      "credit_score": 0,
+      "date_of_birth_year": 0,
+      "domain": "string",
+      "driving_license_available": true,
+      "email_domain": "string",
+      "first_name": "string",
+      "last_order": "string",
+      "mother_maiden_name_available": true,
+      "points": "string",
+      "state": "string"
+    }
+  },
+  "bot": {
+    "file": {
+      "size": "string",
+      "structure": "string"
+    },
+    "infostealer": {
+      "country": "string",
+      "description": "string",
+      "internet_service_provider": "string",
+      "ip_address": "string",
+      "operating_system": "string"
+    },
+    "installed_ts": "2026-01-01T00:00:00Z",
+    "other": {
+      "link": "string",
+      "name": "string"
+    },
+    "stealer": "string"
+  },
+  "card": {
+    "available_info": {
+      "address_available": true,
+      "city_available": true,
+      "cvv_available": true,
+      "date_of_birth_available": true,
+      "email_available": true,
+      "holder_name_available": true,
+      "ip_available": true,
+      "is_refundable": true,
+      "mother_maiden_name_available": true,
+      "phone_available": true,
+      "social_security_number_available": true,
+      "zip_available": true
+    },
+    "basic_info": {
+      "name": "string",
+      "valid_rate": 0.0
+    },
+    "cc": {
+      "bank": "string",
+      "bin": "string",
+      "class": "string",
+      "expire_date": "string",
+      "level": "string",
+      "number": "string",
+      "payment_system": "string"
+    },
+    "sales_price": [
+      {
+        "currency": "string",
+        "value": 0.0
+      }
+    ],
+    "victim": {
+      "address": "string",
+      "city": "string",
+      "country": "string",
+      "email_address": "string",
+      "holder": "string",
+      "ip_address": "string",
+      "link": "string",
+      "name": "string",
+      "phone_number": "string",
+      "state": "string",
+      "zip": "string"
+    }
+  },
+  "database": {
+    "basic_info": {
+      "file_name": "string",
+      "is_valid": true,
+      "records": 0,
+      "year": 0
+    },
+    "victim": {
+      "address": "string",
+      "city": "string",
+      "country": "string",
+      "email_address": "string",
+      "holder": "string",
+      "ip_address": "string",
+      "link": "string",
+      "name": "string",
+      "phone_number": "string",
+      "state": "string",
+      "zip": "string"
+    }
+  },
+  "description": "string",
+  "digital_good": {
+    "basic_info": {
+      "activation_region": "string",
+      "additional_info": "string",
+      "free_insurance_time": "string",
+      "link": "string",
+      "origin_country": "string",
+      "platform": "string",
+      "product_types": [
+        "string"
+      ],
+      "short_description": "string",
+      "works_on": "string"
+    },
+    "policy": {
+      "terms_and_service": "string"
+    },
+    "quantity": {
+      "available_from_vendor": 0,
+      "available_on_market": 0.0,
+      "maximum_order": 0,
+      "minimum_order": 0,
+      "sold_from_vendor": 0,
+      "stock": 0
+    },
+    "rating": {
+      "max": 0.0,
+      "value": 0.0
+    },
+    "shipping": {
+      "destinations": [
+        "string"
+      ],
+      "options": [
+        "string"
+      ],
+      "origin": "string",
+      "time": "string",
+      "type": "string"
+    }
+  },
+  "drug": {
+    "basic_info": {
+      "bulk_buying_options": [
+        "string"
+      ],
+      "escrow_available": true,
+      "escrow_info": "string",
+      "link": "string",
+      "origin_country": "string",
+      "payment_method": "string",
+      "product_types": [
+        "string"
+      ],
+      "short_description": "string"
+    },
+    "policy": {
+      "terms_and_service": "string"
+    },
+    "quantity": {
+      "available_from_vendor": 0,
+      "available_on_market": 0.0,
+      "maximum_order": 0,
+      "minimum_order": 0,
+      "sold_from_vendor": 0,
+      "stock": 0
+    },
+    "rating": {
+      "max": 0.0,
+      "value": 0.0
+    },
+    "shipping": {
+      "destinations": [
+        "string"
+      ],
+      "options": [
+        "string"
+      ],
+      "origin": "string",
+      "time": "string",
+      "type": "string"
+    }
+  },
+  "exploit": {
+    "basic_info": {
+      "affected_version": "string",
+      "comments": [
+        "string"
+      ],
+      "exploit_category": "string",
+      "link": "string",
+      "origin_country": "string",
+      "platform": "string",
+      "product_types": [
+        "string"
+      ],
+      "risk": "string",
+      "short_description": "string",
+      "tested_on": "string",
+      "times_used": 0,
+      "usage_info": "string"
+    },
+    "policy": {
+      "terms_and_service": "string"
+    },
+    "shipping": {
+      "destinations": [
+        "string"
+      ],
+      "options": [
+        "string"
+      ],
+      "origin": "string",
+      "time": "string",
+      "type": "string"
+    }
+  },
+  "id": "string",
+  "kind": "string",
+  "links": {
+    "external": {
+      "href": "string"
+    },
+    "verity_api": {
+      "href": "string"
+    },
+    "verity_portal": {
+      "href": "string"
+    }
+  },
+  "marketplace_id": "string",
+  "name": "string",
+  "others": {
+    "key": "string"
+  },
+  "paypal": {
+    "basic_info": {
+      "account_balance": "string",
+      "account_type": "string",
+      "additional_info": "string",
+      "address": "string",
+      "bank": "string",
+      "bank_access_available": true,
+      "bank_account": "string",
+      "bank_account_available": true,
+      "checked_ts": "2026-01-01T00:00:00Z",
+      "cookies_available": true,
+      "country": "string",
+      "credit_card_available": true,
+      "credit_cards": "string",
+      "domain": "string",
+      "email_access_available": true,
+      "email_confirmed": true,
+      "email_domain": "string",
+      "is_verified": true,
+      "last_order": "string",
+      "last_transaction": "string",
+      "points": "string",
+      "state": "string",
+      "status_available": true,
+      "verified_attributes": "string"
+    }
+  },
+  "personal_info": {
+    "basic_info": {
+      "account_balance": "string",
+      "account_number_available": true,
+      "additional_info": "string",
+      "address": "string",
+      "address_available": true,
+      "age": 0,
+      "background_check_available": true,
+      "background_report_available": true,
+      "bank_name": "string",
+      "checked_ts": "2026-01-01T00:00:00Z",
+      "city": "string",
+      "company_name": "string",
+      "company_type": "string",
+      "country": "string",
+      "credit_cards": "string",
+      "credit_record_available": true,
+      "credit_score": 0,
+      "credit_score_available": true,
+      "date_of_birth": "string",
+      "date_of_birth_available": true,
+      "date_of_birth_year": 0,
+      "domain": "string",
+      "driving_license_available": true,
+      "driving_license_photo_available": true,
+      "driving_license_state": "string",
+      "email_access_available": true,
+      "employer_name": "string",
+      "employment_type": "string",
+      "escrow_available": true,
+      "escrow_info": "string",
+      "first_name": "string",
+      "full_name": "string",
+      "gender": "string",
+      "last_order": "string",
+      "link": "string",
+      "mother_maiden_name_available": true,
+      "phone_available": true,
+      "points": "string",
+      "principal_office_street": "string",
+      "product_types": [
+        "string"
+      ],
+      "routing_number_available": true,
+      "short_description": "string",
+      "social_insurance_number": "string",
+      "social_security_number": "string",
+      "social_security_number_available": true,
+      "state": "string",
+      "zip": "string"
+    },
+    "policy": {
+      "terms_and_service": "string"
+    },
+    "shipping": {
+      "destinations": [
+        "string"
+      ],
+      "options": [
+        "string"
+      ],
+      "origin": "string",
+      "time": "string",
+      "type": "string"
+    },
+    "victim": {
+      "address": "string",
+      "city": "string",
+      "country": "string",
+      "email_address": "string",
+      "holder": "string",
+      "ip_address": "string",
+      "link": "string",
+      "name": "string",
+      "phone_number": "string",
+      "state": "string",
+      "zip": "string"
+    }
+  },
+  "price": [
+    {
+      "currency": "string",
+      "value": 0.0
+    }
+  ],
+  "product": {
+    "created_ts": "2026-01-01T00:00:00Z"
+  },
+  "proxy": {
+    "basic_info": {
+      "city": "string",
+      "country": "string",
+      "css_blacklist": "string",
+      "dns_address": "string",
+      "domain": "string",
+      "internet_service_provider": "string",
+      "ip_address": "string",
+      "is_online": true,
+      "ping": "string",
+      "proxy_type": "string",
+      "sbl_blacklist": "string",
+      "speed": "string",
+      "state": "string",
+      "xbl_blacklist": "string",
+      "zip": "string"
+    }
+  },
+  "real_document": {
+    "basic_info": {
+      "additional_info": "string",
+      "address": "string",
+      "available_images": "string",
+      "bank_name": "string",
+      "checked_ts": "2026-01-01T00:00:00Z",
+      "city": "string",
+      "company_address": "string",
+      "country": "string",
+      "date_of_birth_available": true,
+      "date_of_birth_year": 0,
+      "document_type": "string",
+      "domain": "string",
+      "driving_license_available": true,
+      "employer_identification_number": "string",
+      "expiration_date": "string",
+      "expiration_year": 0,
+      "first_name": "string",
+      "gender": "string",
+      "last_order": "string",
+      "mother_maiden_name_available": true,
+      "payment_ts": "2026-01-01T00:00:00Z",
+      "points": "string",
+      "product_types": [
+        "string"
+      ],
+      "state": "string",
+      "year": 0
+    },
+    "victim": {
+      "address": "string",
+      "city": "string",
+      "country": "string",
+      "email_address": "string",
+      "holder": "string",
+      "ip_address": "string",
+      "link": "string",
+      "name": "string",
+      "phone_number": "string",
+      "state": "string",
+      "zip": "string"
+    }
+  },
+  "shop": {
+    "basic_info": {
+      "account_balance": "string",
+      "account_type": "string",
+      "additional_info": "string",
+      "address": "string",
+      "bank_account": "string",
+      "bank_account_available": true,
+      "bank_name": "string",
+      "checked_ts": "2026-01-01T00:00:00Z",
+      "country": "string",
+      "credit_cards": "string",
+      "date_of_birth_year": 0,
+      "domain": "string",
+      "email_access_available": true,
+      "email_domain": "string",
+      "gender": "string",
+      "last_order": "string",
+      "last_order_ts": "2026-01-01T00:00:00Z",
+      "points": "string",
+      "product_types": [
+        "string"
+      ],
+      "shop_name": "string",
+      "shop_type": "string",
+      "state": "string",
+      "zip": "string"
+    }
+  },
+  "title": "string",
+  "vendor_id": "string",
+  "vendor_name": "string"
+}
