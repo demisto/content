@@ -396,7 +396,7 @@ tasks:
       id: b7c8d9e0-0004-4a1b-8c2d-3e4f5a6b0004
       version: -1
       name: Bucket - Critical risk keys
-      description: Keep the live keys expiring within CriticalWithinDays days (including already-expired keys) under PrismaAIRs.AIGatewayApiKeyCritical.
+      description: Keeps the live keys expiring within CriticalWithinDays days (including already-expired keys) under PrismaAIRs.AIGatewayApiKeyCritical.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
