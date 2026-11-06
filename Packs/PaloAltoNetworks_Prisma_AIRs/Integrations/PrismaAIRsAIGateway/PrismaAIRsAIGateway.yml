@@ -2283,7 +2283,7 @@ script:
     - name: usage_limits
       description: The usage limit settings as a JSON object.
     - name: defaults
-      description: Default settings (JSON object).
+      description: The default settings as a JSON object.
     - name: rotation_policy
       description: Rotation policy settings (JSON object).
     - name: reset_usage
