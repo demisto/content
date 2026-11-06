@@ -2377,7 +2377,7 @@ script:
     description: Updates the calling organisation's settings on the AI Gateway admin plane. Provide at least one field.
     arguments:
     - name: name
-      description: The organisation display name.
+      description: The organization display name.
     - name: settings
       description: A JSON object of additional organization settings to update. Merged into the update body.
     outputs:
