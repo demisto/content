@@ -1,0 +1,4 @@
+!threatmon-get-indicators limit=3 collection="IP Address Indicators"
+!threatmon-get-collections
+!threatmon-get-fetch-state
+!threatmon-reset-fetch-state

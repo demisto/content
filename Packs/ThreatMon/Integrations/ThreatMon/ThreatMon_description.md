@@ -38,4 +38,4 @@ For more information about Threatmon, visit: [https://www.threatmon.io](https://
 ---
 
 **Support**
-For support, please contact the Threatmon team at: [integration@threatmonit.io](mailto:integration@threatmonit.io)
+For support, please contact the Threatmon team at: [support@threatmonit.io](mailto:support@threatmonit.io)

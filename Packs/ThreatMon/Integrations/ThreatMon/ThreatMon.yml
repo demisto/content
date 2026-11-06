@@ -245,7 +245,7 @@ script:
       type: Date
     description: Retrieves a paginated list of CVEs affecting products that the authenticated company (or a specified child customer) is actively subscribed to.
   isfetch: true
-  dockerimage: demisto/python3:3.12.13.10404775
+  dockerimage: demisto/python3:3.12.15.14069087
 fromversion: 5.0.0
 tests:
 - No tests
