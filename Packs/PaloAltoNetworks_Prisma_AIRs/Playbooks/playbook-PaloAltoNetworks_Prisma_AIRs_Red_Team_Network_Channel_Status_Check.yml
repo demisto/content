@@ -169,7 +169,7 @@ tasks:
       id: e2f3a4b5-0004-4e5f-9a0b-1c2d3e4f7004
       version: -1
       name: Filter offline channels
-      description: Keep only the channels whose status is OFFLINE under PrismaAIRs.RedTeamOfflineChannel. DRAFT (not yet completed) channels are treated as informational and excluded.
+      description: Keeps only the channels whose status is OFFLINE under PrismaAIRs.RedTeamOfflineChannel. DRAFT (not yet completed) channels are treated as informational and excluded.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
