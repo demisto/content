@@ -1,0 +1,446 @@
+adopted: true
+contentitemexportablefields:
+  contentitemfields: {}
+description: Daily Jev Marketplace assessment with recursive mandatory dependency planning, platform-catalog installation, verified versions, and deduplicated issues for evidenced breaking impact. Held, unresolved or failed updates get one deduplicated manual-review case each.
+id: silent-TypeSafe Jev - Marketplace Daily Assessment
+inputs:
+- description: Run without installing packs or creating, updating, or closing cases. Set to false only after reviewing the playbook behavior in your environment.
+  key: DryRun
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "true"
+- description: Core REST API integration instance name. An explicit instance prevents tenant inventory or state-changing requests from being sent to multiple instances.
+  key: CoreInstance
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: TypeSafe Jev model alias used for Marketplace release judgments.
+  key: JevModel
+  playbookInputQuery:
+  required: false
+  value:
+    simple: jev-1.13.0
+name: silent-TypeSafe Jev - Marketplace Daily Assessment
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e3c04312-768f-407c-82c5-0c365f82ee72
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: e3c04312-768f-407c-82c5-0c365f82ee72
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: collect
+      core_instance:
+        simple: ${inputs.CoreInstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Runs in the native JavaScript runtime. No external AI service or Python worker.
+      id: d1ea894c-0601-4186-88a0-f5644b3f4f05
+      iscommand: false
+      name: Collect installed packs and enabled integrations
+      script: TypeSafeJevMarketplaceAssessment
+      type: regular
+      version: -1
+    taskid: d1ea894c-0601-4186-88a0-f5644b3f4f05
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: prepare_ai
+      core_instance:
+        simple: ${inputs.CoreInstance}
+      jev_model:
+        simple: ${inputs.JevModel}
+      snapshot:
+        simple: ${TypeSafeJevMarketplace.Snapshot}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Runs in the native JavaScript runtime. No external AI service or Python worker.
+      id: 61945d73-a811-48d4-8399-2e1f0f9b8efb
+      iscommand: false
+      name: Prepare release evidence for Jev
+      script: TypeSafeJevMarketplaceAssessment
+      type: regular
+      version: -1
+    taskid: 61945d73-a811-48d4-8399-2e1f0f9b8efb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: publish
+      assessment:
+        simple: ${TypeSafeJevMarketplace.Assessment}
+      core_instance:
+        simple: ${inputs.CoreInstance}
+      dry_run:
+        simple: ${inputs.DryRun}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Runs in the native JavaScript runtime. No external AI service or Python worker.
+      id: e9f8f358-5e68-4b4b-8252-648974dba13f
+      iscommand: false
+      name: Create validation cases for affected breaking changes
+      script: TypeSafeJevMarketplaceAssessment
+      type: regular
+      version: -1
+    taskid: e9f8f358-5e68-4b4b-8252-648974dba13f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1200
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: Marketplace release review, guarded installation and manual-review case routing completed. See TypeSafeJevMarketplace.Assessment, Routing, Installation and Review. Only this run's host investigation is closed; review cases stay open.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close only the investigation created for this completed scheduled run. Review cases remain open until resolved.
+      id: d38c2b20-d38e-4998-81d8-77b983cafa95
+      iscommand: true
+      name: Close the completed Marketplace run
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: d38c2b20-d38e-4998-81d8-77b983cafa95
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1800
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: TypeSafeJevMarketplace.ReviewPlan.Required
+          operator: isTrue
+      label: "yes"
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Continue to Jev analysis only when the collected Marketplace inventory contains newer releases requiring review.
+      id: d2050397-868c-4266-810f-b42c251ff024
+      iscommand: false
+      name: Are there newer releases to review?
+      type: condition
+      version: -1
+    taskid: d2050397-868c-4266-810f-b42c251ff024
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 600
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      BatchJSON:
+        simple: ${TypeSafeJevMarketplace.ReviewPlan.BatchJSON}
+      JevModel:
+        simple: ${inputs.JevModel}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Run TypeSafe Jev for every evidence batch. Each returned question ID remains tied to its source release.
+      id: afb53db3-d57e-4cf5-8146-dcce97a242e5
+      iscommand: false
+      name: Review pending releases with Jev
+      playbookId: TypeSafe Jev - Marketplace Release Analysis
+      type: playbook
+      version: -1
+    taskid: afb53db3-d57e-4cf5-8146-dcce97a242e5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 800
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: apply_ai
+      analysis_response:
+        simple: ${TypeSafeJevMarketplace.AnalystBatch}
+      core_instance:
+        simple: ${inputs.CoreInstance}
+      review_plan:
+        simple: ${TypeSafeJevMarketplace.ReviewPlan}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Validate the complete collection of Jev answers in a single invocation. Accept supported JSON and array envelopes, reject conflicting answers, preserve missing or uncertain judgments as unresolved.
+      id: 8f1c093b-968d-4c80-8eb0-cf26a26a2f5d
+      iscommand: false
+      name: Validate Jev decisions against supplied evidence
+      script: TypeSafeJevMarketplaceAssessment
+      type: regular
+      version: -1
+    taskid: 8f1c093b-968d-4c80-8eb0-cf26a26a2f5d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1000
+        }
+      }
+  "8":
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - "9"
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: install
+      assessment:
+        simple: ${TypeSafeJevMarketplace.Assessment}
+      core_instance:
+        simple: ${inputs.CoreInstance}
+      dry_run:
+        simple: ${inputs.DryRun}
+      snapshot:
+        simple: ${TypeSafeJevMarketplace.Snapshot}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Install reviewed missing mandatory dependencies before parent packs using the tenant platform catalog, submit cyclic groups together, and verify each exact target. A failed dependency blocks its parents.
+      id: f818f2b3-bb27-4dcd-83d9-e5d6fa9d2496
+      iscommand: false
+      name: Install approved updates and verify versions
+      script: TypeSafeJevMarketplaceAssessment
+      type: regular
+      version: -1
+    taskid: f818f2b3-bb27-4dcd-83d9-e5d6fa9d2496
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1400
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: review
+      assessment:
+        simple: ${TypeSafeJevMarketplace.Assessment}
+      core_instance:
+        simple: ${inputs.CoreInstance}
+      dry_run:
+        simple: ${inputs.DryRun}
+      installation:
+        simple: ${TypeSafeJevMarketplace.Installation}
+      snapshot:
+        simple: ${TypeSafeJevMarketplace.Snapshot}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'One deduplicated review issue/case per held, unresolved or failed pack update (key: pack + target version). Auto-resolves stale review cases when the pack is installed or the target changes. Never installs or approves anything.'
+      id: 7e649f6f-4ebd-413c-8c03-23c7c18b262e
+      iscommand: false
+      name: Create manual review cases for held or unresolved updates
+      script: TypeSafeJevMarketplaceAssessment
+      type: regular
+      version: -1
+    taskid: 7e649f6f-4ebd-413c-8c03-23c7c18b262e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1600
+        }
+      }
+version: -1
+fromversion: 8.9.0
+marketplaces:
+- marketplacev2
+- platform
+supportedModules:
+- xsiam
+tests:
+- No tests (auto formatted)
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1830,
+        "width": 1000,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+issilent: true
