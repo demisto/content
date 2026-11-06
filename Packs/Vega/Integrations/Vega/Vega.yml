@@ -211,7 +211,7 @@ configuration:
   - INVESTIGATING
   - COMPLETED
   - FAILED
-  defaultvalue: NEW,INVESTIGATING,COMPLETED,FAILED
+  defaultvalue: COMPLETED,FAILED
 - display: Incident Verdicts to fetch
   name: incident_verdicts
   type: 16
@@ -235,7 +235,7 @@ configuration:
   advanced: true
   additionalinfo: >-
     Whether to store full related-alert metadata on each incident. This can make incidents large.
-  defaultvalue: "false"
+  defaultvalue: "true"
 - display: Fetch alerts and incidents by ID
   name: incident_reconciliation
   required: false
