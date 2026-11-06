@@ -232,7 +232,7 @@ tasks:
       id: b7c8d9e0-0003-4a1b-8c2d-3e4f5a6b0003
       version: -1
       name: Keep active keys that have an expiry
-      description: Keep only the keys that are active AND have an expiry set (expires_at is not empty) under PrismaAIRs.AIGatewayApiKeyLive. Keys with no expiry cannot expire and are out of scope; inactive keys are not evaluated.
+      description: Keeps only the keys that are active and have an expiry set (expires_at is not empty) under PrismaAIRs.AIGatewayApiKeyLive. Keys with no expiry cannot expire and are out of scope; inactive keys are not evaluated.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
