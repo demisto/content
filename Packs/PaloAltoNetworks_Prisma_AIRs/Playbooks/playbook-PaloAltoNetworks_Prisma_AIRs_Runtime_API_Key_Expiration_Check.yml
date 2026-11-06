@@ -148,7 +148,7 @@ tasks:
       id: e3f4a5b6-0003-4c5d-8e9f-0a1b2c3d0003
       version: -1
       name: Keep non-revoked keys
-      description: Keep only the keys that have not been revoked under PrismaAIRs.RuntimeApiKeyLive. Revoked keys are already dead and are not evaluated for expiration.
+      description: Keeps only the keys that have not been revoked under PrismaAIRs.RuntimeApiKeyLive. Revoked keys are no longer valid and are not evaluated for expiration.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
