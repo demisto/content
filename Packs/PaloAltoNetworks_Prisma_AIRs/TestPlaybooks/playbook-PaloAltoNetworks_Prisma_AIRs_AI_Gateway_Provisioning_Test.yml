@@ -329,7 +329,7 @@ tasks:
       id: c1a2b3d4-0009-4e5f-9a0b-1c2d3e4f5009
       version: -1
       name: Clear baseline workspaces from context
-      description: Delete only the AIGatewayWorkspace key so the create output is isolated from the baseline list (lets the id capture below be a single value).
+      description: Deletes only the AIGatewayWorkspace key so the create output is isolated from the baseline list (lets the ID capture below be a single value).
       scriptName: DeleteContext
       type: regular
       iscommand: false
