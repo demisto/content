@@ -954,7 +954,8 @@ Notes:
 - This command works with the consent user, not with the bot. Which means, the message is sent to the given chat by the consent user, not the bot.
 - This command will fail if the consent user is not a member of the destination chat.
 - This command may fail if the bot app has not yet appeared in the "built for your org" section in teams.
-- This command can only send messages from type 'message'
+- This command can only send messages from type 'message'.
+- To mention a chat member, use `@Display Name;`. The display name must uniquely match a member of the destination chat. Messages containing mentions are sent as HTML. Any text that starts with `@` and ends with `;` (for example, `Meet @ 5pm;`) is treated as a mention, and the command fails if it does not match a chat member.
 
 ##### Base Command
 
@@ -981,7 +982,7 @@ Note: Chat.Create is needed only when sending to one-on-one chats.
 | **Argument Name** | **Description**                                                                                                                       | **Required** |
 |-------------------|---------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat. |  Required     |
-| content           | The content of the chat message.                                                 | Required     |
+| content           | The content of the chat message. To mention a chat member, use `@Display Name;`. The display name must uniquely match a member of the destination chat. Messages containing mentions are sent as HTML. Any text that starts with `@` and ends with `;` (for example, `Meet @ 5pm;`) is treated as a mention, and the command fails if it does not match a chat member. | Required     |
 | content_type      | The message content type. Possible values are: text, html. Default is text.      | Optional     |
 
 #### Context Output
@@ -1014,7 +1015,7 @@ Note: Chat.Create is needed only when sending to one-on-one chats.
 
 ##### Command Example
 
-```!microsoft-teams-message-send-to-chat chat="example chat" content="Hello World"```
+```!microsoft-teams-message-send-to-chat chat="example chat" content="Hello @Bruce Willis;"```
 
 ##### Human Readable Output
 >
@@ -1022,7 +1023,7 @@ Note: Chat.Create is needed only when sending to one-on-one chats.
 >
 >| Chat Id                                       | Created DateTime        | Etag          | From user | From user id                         | From user userIdentityType | Importance | Message Content | Message Type | Message contentType | Message id    | lastModified DateTime   |
 >|-----------------------------------------------|-------------------------|---------------|-----------|--------------------------------------|----------------------------|------------|-----------------|--------------|---------------------|---------------|-------------------------|
->| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | 2021-03-29T04:17:43.15Z | 1616991463150 | itayadmin | 8ea0e38b-efb3-4757-924a-5f94061cf8c2 | aadUser                    | normal     | Hello World     | message      | text                | 1616991463150 | 2021-03-29T04:17:43.15Z |
+>| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | 2021-03-29T04:17:43.15Z | 1616991463150 | itayadmin | 8ea0e38b-efb3-4757-924a-5f94061cf8c2 | aadUser                    | normal     | Hello &lt;at id="0"&gt;Bruce Willis&lt;/at&gt; | message      | html                | 1616991463150 | 2021-03-29T04:17:43.15Z |
 
 ### microsoft-teams-chat-add-user
 

@@ -8,7 +8,7 @@
 !microsoft-teams-channel-user-list team=DemistoTeam channel_name="example channel"
 !microsoft-teams-user-remove-from-channel channel_name="example channel" member=itayadmin team=DemistoTeam
 !microsoft-teams-chat-create chat_type=group member="itayadmin, Bruce Willis" chat_name="example chat"
-!microsoft-teams-message-send-to-chat chat="example chat" content="Hello World"
+!microsoft-teams-message-send-to-chat chat="example chat" content="Hello @Bruce Willis;"
 !microsoft-teams-chat-add-user chat="example chat" member="hellouser" share_history=false
 !microsoft-teams-chat-member-list chat="example chat"
 !microsoft-teams-chat-list filter="topic eq 'testing'"
