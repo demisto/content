@@ -23,7 +23,7 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: Whether to investigate and alert on offline channels. One of "true" or "false". When false, offline channels are ignored and never block auto-close.
+  description: Whether to investigate and alert on offline channels. Possible values are true or false. When false, offline channels are ignored and never block auto-close.
   playbookInputQuery:
 - key: NotifyOutdated
   value:
