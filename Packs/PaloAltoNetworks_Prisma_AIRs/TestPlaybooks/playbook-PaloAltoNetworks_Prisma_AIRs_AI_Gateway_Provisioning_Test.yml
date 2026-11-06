@@ -108,7 +108,7 @@ tasks:
       id: c1a2b3d4-0003-4e5f-9a0b-1c2d3e4f5003
       version: -1
       name: GenerateRandomString
-      description: Generate a 6-char run token (RandomString) appended to every created object so each run is globally unique and never collides with archived objects.
+      description: Generates a 6-character run token (RandomString) appended to every created object, so each run is globally unique and never collides with archived objects.
       scriptName: GenerateRandomString
       type: regular
       iscommand: false
