@@ -401,7 +401,7 @@ tasks:
       id: c1a2b3d4-0011-4e5f-9a0b-1c2d3e4f5011
       version: -1
       name: prisma-airs-aigateway-workspaces-create
-      description: Create a workspace (unique name) bound to the scope created in the previous step.
+      description: Creates a workspace (unique name) bound to the scope created in the previous step.
       script: '|||prisma-airs-aigateway-workspaces-create'
       type: regular
       iscommand: true
