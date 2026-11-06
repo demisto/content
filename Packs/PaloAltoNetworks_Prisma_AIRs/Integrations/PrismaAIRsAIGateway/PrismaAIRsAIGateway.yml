@@ -2355,7 +2355,7 @@ script:
       description: The organisation ID.
       type: String
     - contextPath: PrismaAIRs.AIGatewayOrganisationInfo.name
-      description: The organisation name.
+      description: The organization name.
       type: String
     - contextPath: PrismaAIRs.AIGatewayOrganisationInfo.subscription.type
       description: The subscription type.
