@@ -264,7 +264,7 @@ tasks:
       id: e2f3a4b5-0006-4e5f-9a0b-1c2d3e4f7006
       version: -1
       name: Alert on offline channels?
-      description: Branch to the offline reporting path only when offline alerting is enabled (NotifyOffline is true) AND at least one channel is offline.
+      description: Branches to the offline reporting path only when offline alerting is enabled (NotifyOffline is true) and at least one channel is offline.
       type: condition
       iscommand: false
       brand: ""
