@@ -351,7 +351,7 @@ tasks:
       id: e3f4a5b6-0005-4c5d-8e9f-0a1b2c3d0005
       version: -1
       name: Bucket - High risk keys
-      description: Keep the live keys expiring within HighWithinDays days but not already Critical (still on/after CriticalWithinDays days) under PrismaAIRs.RuntimeApiKeyHigh.
+      description: Keeps the live keys expiring within HighWithinDays days but not already Critical (still on/after CriticalWithinDays days) under PrismaAIRs.RuntimeApiKeyHigh.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
