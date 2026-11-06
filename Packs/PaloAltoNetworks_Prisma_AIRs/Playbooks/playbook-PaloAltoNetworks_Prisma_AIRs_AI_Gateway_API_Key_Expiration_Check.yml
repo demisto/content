@@ -923,7 +923,7 @@ tasks:
       id: b7c8d9e0-0016-4a1b-8c2d-3e4f5a6b0016
       version: -1
       name: Any low keys?
-      description: Branch to the low reporting path only when at least one key is in the Low bucket.
+      description: Branches to the low reporting path only when at least one key is in the Low bucket.
       type: condition
       iscommand: false
       brand: ""
