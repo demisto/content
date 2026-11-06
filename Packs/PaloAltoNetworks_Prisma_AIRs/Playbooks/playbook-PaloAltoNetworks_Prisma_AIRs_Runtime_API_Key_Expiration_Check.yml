@@ -1121,7 +1121,7 @@ tasks:
       id: e3f4a5b6-0022-4c5d-8e9f-0a1b2c3d0022
       version: -1
       name: Any problem found?
-      description: If any Critical or High key was recorded, route to the manual approve-to-close gate. Otherwise nothing needs remediation and the incident closes automatically.
+      description: Routes to the manual approve-to-close gate if any Critical or High key was recorded. Otherwise, nothing needs remediation and the incident closes automatically.
       type: condition
       iscommand: false
       brand: ""
