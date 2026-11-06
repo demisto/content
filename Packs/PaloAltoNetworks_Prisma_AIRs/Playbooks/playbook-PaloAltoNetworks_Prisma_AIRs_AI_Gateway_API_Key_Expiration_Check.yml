@@ -31,7 +31,7 @@ inputs:
   value:
     simple: "10"
   required: false
-  description: A key is High risk when it expires in fewer than this many days but is not already Critical. Default 10 (with CriticalWithinDays 5) means 5-9 days remaining is High.
+  description: The number of days remaining below which a key is High risk but not already Critical. The default is 10 (when CriticalWithinDays is 5), which means 5-9 days remaining is High.
   playbookInputQuery:
 - key: MediumWithinDays
   value:
