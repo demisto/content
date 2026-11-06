@@ -14,7 +14,6 @@ from Doppel import (
     doppel_update_alert_command,
     doppel_get_alerts_command,
     doppel_create_alert_command,
-    doppel_create_abuse_alert_command,
     doppel_get_alert_screenshot_command,
     _screenshot_blob_path,
     _attach_screenshot_if_new,
@@ -872,50 +871,6 @@ def test_doppel_get_alerts_optional_params(mocker):
     assert result.outputs_prefix == "Doppel.GetAlerts"
     assert len(result.outputs) == 1
     assert result.outputs["alerts"][0]["name"] == "Optional Param Test"
-
-
-def test_doppel_create_abuse_alert_command(client, mocker):
-    test_response = util_load_json("test_data/create-abuse-alert.json")
-
-    client.create_abuse_alert.return_value = test_response
-
-    args = {"entity": "test-doppel.com"}
-
-    result = doppel_create_abuse_alert_command(client, args)
-
-    assert isinstance(result, CommandResults)
-
-    assert result.outputs_prefix == "Doppel.AbuseAlert"
-    assert result.outputs_key_field == "id"
-
-    expected_output = util_load_json("test_data/create-abuse-alert.json")
-
-    assert result.outputs == expected_output
-
-    assert "Alert Summary" in result.readable_output
-
-
-def test_doppel_create_abuse_alert_command_missing_entity(client):
-    args = {}
-
-    with pytest.raises(ValueError, match="Entity must be specified to create an abuse alert."):
-        doppel_create_abuse_alert_command(client, args)
-
-
-def test_doppel_create_abuse_alert_command_failure(mocker):
-    """Test doppel_create_abuse_alert_command when abuse alert creation fails."""
-    # Mock client
-    mock_client = MagicMock()
-
-    # Simulate API failure
-    mock_client.create_abuse_alert.side_effect = Exception("API call failed")
-
-    # Define arguments
-    test_args = {"entity": "test_entity"}
-
-    # Verify exception is raised
-    with pytest.raises(Exception, match="Failed to create the abuse alert with the given parameters:- API call failed"):
-        doppel_create_abuse_alert_command(client=mock_client, args=test_args)
 
 
 def test_get_modified_remote_data_command(mocker):

@@ -52,7 +52,7 @@ ACTIVE_QUEUE_STATES = {"doppel_review", "actioned", "needs_confirmation"}
 # Client attribution sent with every Doppel API request (usage attribution only; the header
 # is optional server-side and never affects request handling). The version is the pack
 # version and must be bumped on each release (pack_metadata.json is not readable at runtime).
-PACK_VERSION = "1.4.0"
+PACK_VERSION = "1.4.1"
 CLIENT_ATTRIBUTION = f"xsoar/{PACK_VERSION}"
 
 # --- API V2 (OAuth 2.0 client credentials) constants ---
@@ -350,19 +350,6 @@ class Client(BaseClient):
 
     def create_alert(self, entity: str) -> dict[str, Any]:
         api_name = "alert"
-        api_url = f"{self._base_url}/{api_name}"
-        response_content = self._http_request(
-            method="POST",
-            full_url=api_url,
-            json_data={"entity": entity},
-            retries=self._retries,
-            backoff_factor=self._backoff_factor,
-            status_list_to_retry=self._status_list_to_retry,
-        )
-        return response_content
-
-    def create_abuse_alert(self, entity: str) -> dict[str, Any]:
-        api_name = "alert/abuse"
         api_url = f"{self._base_url}/{api_name}"
         response_content = self._http_request(
             method="POST",
@@ -847,36 +834,6 @@ def doppel_create_alert_command(client: Client, args: dict[str, Any]) -> Command
     )
 
 
-def doppel_create_abuse_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """
-    Comand to create an abuse alert in the Doppel client using the provided arguments.
-
-    :param client: Client instance to interact with the API.
-    :param args: Command arguments containing the query parameters as key-value pairs.
-    :return: CommandResults object including details of the created abuse alert.
-
-    """
-
-    entity = args.get("entity")
-    if not entity:
-        raise ValueError("Entity must be specified to create an abuse alert.")
-
-    try:
-        result = client.create_abuse_alert(entity=entity)
-    except Exception as exception:
-        raise Exception(f"Failed to create the abuse alert with the given parameters:- {str(exception)}.")
-
-    title = "Alert Summary"
-    human_readable = tableToMarkdown(title, result, removeNull=True)
-    return CommandResults(
-        outputs_prefix="Doppel.AbuseAlert",
-        outputs_key_field="id",
-        outputs=result,
-        readable_output=human_readable,
-        raw_response=result,
-    )
-
-
 def doppel_get_alert_screenshot_command(client: Client, args: dict[str, Any]) -> list:
     """Fetch the alert's current screenshot and attach it to the incident as a file entry.
 
@@ -1313,7 +1270,6 @@ def main() -> None:
         "doppel-update-alert": doppel_update_alert_command,
         "doppel-get-alerts": doppel_get_alerts_command,
         "doppel-create-alert": doppel_create_alert_command,
-        "doppel-create-abuse-alert": doppel_create_abuse_alert_command,
         "doppel-get-alert-screenshot": doppel_get_alert_screenshot_command,
     }
 

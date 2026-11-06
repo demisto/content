@@ -290,52 +290,6 @@ Updates an alert in the Doppel platform. Either `alert_id` or `entity` must be s
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |  
 >| TST-31 | <http://dummyrul.com> | test_brand | actioned | down | medium | domains | domains | Analyst Upload | 2024-11-27T06:51:50.357664 | [Doppel Link](https://app.doppel.com/alerts/TST-31222) | currentuser@doppel.com |  
 
-### doppel-create-abuse-alert
-
-***
-
-Create an alert for the provided value to abuse box. Will fail if the alert value is invalid or is protected.
-
-#### Base Command
-
-`doppel-create-abuse-alert`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |  
-| --- | --- | --- |  
-| entity | The entity for which the abuse alert should be created. | Required |  
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |  
-| --- | --- | --- |  
-| Doppel.AbuseAlert.message | String | Message indicating the status of the submission process. |  
-
-#### Command example
-
-```!doppel-create-abuse-alert entity="http://malicious.com"```
-
-#### Context Example
-
-```json
-{
-  "Doppel": {
-    "AbuseAlert": {
-      "message": "Abuse alert created successfully"
-    }
-  }
-}
-```
-
-#### Human Readable Output
-
->### Abuse Alert Submission
->
->| Message |  
->| --- |  
->| Abuse alert created successfully |  
-
 ### doppel-get-alert-screenshot
 
 ***

@@ -342,16 +342,6 @@ script:
       description: 'The user or system that uploaded the alert (e.g., Doppel).'
       type: String
   - arguments:
-    - description: The entity for which the abuse alert should be created.
-      name: entity
-      required: true
-    description: Create an alert for the provided value to abuse box. Will fail if the alert value is invalid or is protected.
-    name: doppel-create-abuse-alert
-    outputs:
-    - contextPath: Doppel.AbuseAlert.message
-      description: 'Message indicating the status of the submission process.'
-      type: String
-  - arguments:
     - description: Currently only supports search by URL.
       name: search_key
     - auto: PREDEFINED

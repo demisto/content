@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The doppel-create-abuse-alert command was removed. The underlying Doppel API endpoint has been deprecated since December 2025 and no longer accepts submissions. Playbooks or automations that reference this command should be updated to use doppel-create-alert instead."
+}
