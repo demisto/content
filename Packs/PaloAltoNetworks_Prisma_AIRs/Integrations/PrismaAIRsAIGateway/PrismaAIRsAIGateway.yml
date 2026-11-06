@@ -2371,7 +2371,7 @@ script:
       description: The organisation ID.
       type: String
     - contextPath: PrismaAIRs.AIGatewayOrganisation.name
-      description: The organisation name.
+      description: The organization name.
       type: String
   - name: prisma-airs-aigateway-organisations-self-update
     description: Updates the calling organization's settings on the AI Gateway admin plane. Provide at least one field.
