@@ -2364,7 +2364,7 @@ script:
       description: The subscription name.
       type: String
   - name: prisma-airs-aigateway-organisations-self-get
-    description: Gets the calling organisation's record on the AI Gateway admin plane.
+    description: Gets the calling organization's record on the AI Gateway admin plane.
     arguments: []
     outputs:
     - contextPath: PrismaAIRs.AIGatewayOrganisation.id
