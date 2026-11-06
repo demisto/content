@@ -171,7 +171,7 @@ tasks:
       id: d1e2f3a4-0006-4e5f-9a0b-1c2d3e4f6006
       version: -1
       name: Filter unhealthy gateways
-      description: Keep only the deployments whose connection_status is present and indicates a definite problem - that is, not "healthy" and not "unknown" (unknown/unset are treated as informational, not alerted) - under PrismaAIRs.AIGatewayUnhealthy.
+      description: Keeps only the deployments whose connection_status is present and indicates a definite problem - that is, not "healthy" and not "unknown" (unknown/unset are treated as informational, not alerted) - under PrismaAIRs.AIGatewayUnhealthy.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
