@@ -2374,7 +2374,7 @@ script:
       description: The organisation name.
       type: String
   - name: prisma-airs-aigateway-organisations-self-update
-    description: Updates the calling organisation's settings on the AI Gateway admin plane. Provide at least one field.
+    description: Updates the calling organization's settings on the AI Gateway admin plane. Provide at least one field.
     arguments:
     - name: name
       description: The organization display name.
