@@ -17,7 +17,7 @@ inputs:
   value:
     simple: active
   required: false
-  description: Which deployments to inventory and health-check. One of "active" or "archived". Defaults to active; archived gateways are intentionally disabled and are not treated as faults.
+  description: The status of the deployments to inventory and health-check. Possible values are active or archived. The default is active. Archived gateways are intentionally disabled and are not treated as faults.
   playbookInputQuery:
 - key: WorkspaceSlug
   value: {}
