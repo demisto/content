@@ -2246,7 +2246,7 @@ script:
     - name: expires_at
       description: The date and time when the API key expires, in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
     - name: rate_limits
-      description: Rate limit settings (JSON array).
+      description: A JSON array of rate limit settings.
     - name: usage_limits
       description: Usage limit settings (JSON object).
     - name: defaults
