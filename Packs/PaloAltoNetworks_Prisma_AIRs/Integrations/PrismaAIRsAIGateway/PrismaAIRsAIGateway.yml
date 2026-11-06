@@ -2400,7 +2400,7 @@ script:
     description: Updates an organisation's auth settings on the AI Gateway admin plane. Takes a secret scim_token as input; the response is redacted. Provide at least one field.
     arguments:
     - name: organisation_id
-      description: The numeric organisation (TSG) ID. Defaults to the configured tenant TSG ID.
+      description: The numeric organization (TSG) ID. Defaults to the configured tenant TSG ID.
     - name: auth_settings
       description: A JSON object of the auth settings to update.
     - name: domains
