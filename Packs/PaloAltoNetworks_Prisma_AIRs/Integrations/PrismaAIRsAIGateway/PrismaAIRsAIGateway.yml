@@ -2346,7 +2346,7 @@ script:
       description: The timestamp when the previous key stops being accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-aigateway-organisations-info-get
-    description: Gets one organisation's capabilities and settings on the AI Gateway admin plane.
+    description: Gets one organization's capabilities and settings on the AI Gateway admin plane.
     arguments:
     - name: organisation_id
       description: The numeric organization (TSG) ID. Defaults to the configured tenant TSG ID.
