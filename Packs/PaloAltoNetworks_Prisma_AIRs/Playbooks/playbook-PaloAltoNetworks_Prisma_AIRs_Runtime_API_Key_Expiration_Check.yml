@@ -631,7 +631,7 @@ tasks:
       id: e3f4a5b6-0011-4c5d-8e9f-0a1b2c3d0011
       version: -1
       name: Any high keys?
-      description: Branch to the high reporting path only when at least one key is in the High bucket.
+      description: Branches to the high reporting path only when at least one key is in the High bucket.
       type: condition
       iscommand: false
       brand: ""
