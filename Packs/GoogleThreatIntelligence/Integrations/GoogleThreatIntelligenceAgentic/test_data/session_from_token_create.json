@@ -1,0 +1,43 @@
+{
+    "data": {
+        "type": "agentic_session",
+        "id": "44444444-4444-4444-4444-000000000010",
+        "attributes": {
+            "title": "Malware analysis of a shared file",
+            "creation_date": "2026-10-12T10:00:00.123456Z",
+            "last_modification_date": "2026-10-12T10:00:00.123456Z",
+            "events": [
+                {
+                    "id": "55555555-5555-5555-5555-000000000014",
+                    "message_type": "USER_MESSAGE",
+                    "user_message": {
+                        "timestamp_seconds": 1791190800,
+                        "widgets": [
+                            {
+                                "widget_type": "MARKDOWN_TEXT",
+                                "markdown_text_widget": {
+                                    "text": "Analyze this file."
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "55555555-5555-5555-5555-000000000015",
+                    "message_type": "AGENT_FINAL_RESPONSE",
+                    "agent_final_response": {
+                        "agent_id": "malware-analyst",
+                        "widgets": [
+                            {
+                                "widget_type": "MARKDOWN_TEXT",
+                                "markdown_text_widget": {
+                                    "text": "### Verdict\n\nThe file is **malicious**.\n\n- Family: Emotet"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

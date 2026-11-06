@@ -1,0 +1,10 @@
+{
+    "links": {
+        "self": "https://www.virustotal.com/api/v3/flow_executions/22222222-2222-2222-2222-222222222222/relationships/flow_snapshot",
+        "related": "https://www.virustotal.com/api/v3/flow_executions/22222222-2222-2222-2222-222222222222/flow_snapshot"
+    },
+    "meta": {
+        "count": 0
+    },
+    "data": {}
+}

@@ -1,0 +1,80 @@
+{
+    "links": {
+        "self": "https://www.virustotal.com/api/v3/flows/11111111-1111-1111-1111-111111111111/group"
+    },
+    "meta": {
+        "count": 1
+    },
+    "data": {
+        "id": "acmecorp",
+        "type": "group",
+        "links": {
+            "self": "https://www.virustotal.com/api/v3/groups/acmecorp"
+        },
+        "attributes": {
+            "country_iso": "US",
+            "default_roles": [
+                "USER_ROLE_FILE_DOWNLOADS",
+                "USER_ROLE_GROUP_ADMIN"
+            ],
+            "display_flat_rate_message": false,
+            "gti_gcp_project": "gti-00000000-0000-0000-0000-00",
+            "notify_admin_on_autoadd_users_to_group": false,
+            "legal_name": "Acme Corp",
+            "uuid": "00000000-0000-4000-8000-000000000000",
+            "auto_add_users": [],
+            "country": "United States",
+            "experiments": [
+                "atd_alerts_redirect"
+            ],
+            "scim_token": "",
+            "invoice_emails": [],
+            "workforce_identity_pool_name": "gti-workforce-pool-000000000000",
+            "contact_emails": [
+                "admin@example.com"
+            ],
+            "organization": "Acme Corp",
+            "group_token": "dummy-group-token",
+            "workforce_identity_pool_provider_name": "wfpp-000000000000",
+            "domain_name": "example.com",
+            "force_users_saml_login": true,
+            "billing_emails": [],
+            "force_users_oidc_login": false,
+            "lock_users_api_quota_group": true,
+            "privileges": {
+                "agentic-platform": {
+                    "granted": true,
+                    "inherited_from": "gti-enterprise-plus",
+                    "inherited_via": "privilege"
+                },
+                "asm": {
+                    "granted": true
+                }
+            },
+            "preferences": {
+                "collection": {
+                    "default_visibility": "public",
+                    "block_public_collections": false
+                },
+                "alerts": {
+                    "lookup_period_days": 90
+                }
+            },
+            "organization_legal_name": "Acme Corp",
+            "industry": "Tech",
+            "quotas": {
+                "api_requests_daily": {
+                    "allowed": 100000000,
+                    "used": 103
+                },
+                "active_flows": {
+                    "allowed": 25,
+                    "used": 7
+                }
+            }
+        },
+        "context_attributes": {
+            "role": "admin"
+        }
+    }
+}

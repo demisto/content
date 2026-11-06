@@ -1,0 +1,41 @@
+{
+    "GoogleThreatIntelligenceAgentic.Session(val.id && val.id == obj.id)": {
+        "type": "agentic_session",
+        "id": "44444444-4444-4444-4444-000000000006",
+        "title": "Triage of a suspicious IP address",
+        "creation_date": "2026-10-07T11:00:00.123456Z",
+        "last_modification_date": "2026-10-07T11:15:20.654321Z",
+        "events": [
+            {
+                "id": "55555555-5555-5555-5555-000000000012",
+                "message_type": "USER_MESSAGE",
+                "user_message": {
+                    "timestamp_seconds": 1791370800,
+                    "widgets": [
+                        {
+                            "widget_type": "MARKDOWN_TEXT",
+                            "markdown_text_widget": {
+                                "text": "Is the IP address 192.0.2.1 malicious?"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "id": "55555555-5555-5555-5555-000000000013",
+                "message_type": "AGENT_FINAL_RESPONSE",
+                "agent_final_response": {
+                    "agent_id": "gti-assistant",
+                    "widgets": [
+                        {
+                            "widget_type": "MARKDOWN_TEXT",
+                            "markdown_text_widget": {
+                                "text": "The IP address is flagged as **malicious** by 4 security vendors."
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
