@@ -2385,7 +2385,7 @@ script:
       description: The organisation ID.
       type: String
   - name: prisma-airs-aigateway-organisations-auth-settings-get
-    description: Gets an organisation's auth settings on the AI Gateway admin plane. The scim_token and any client_secret values are redacted from the output.
+    description: Gets an organization's auth settings on the AI Gateway admin plane. The scim_token and any client_secret values are redacted from the output.
     arguments:
     - name: organisation_id
       description: The numeric organization (TSG) ID. Defaults to the configured tenant TSG ID.
