@@ -2379,7 +2379,7 @@ script:
     - name: name
       description: The organisation display name.
     - name: settings
-      description: Additional organisation settings to update (JSON object). Merged into the update body.
+      description: A JSON object of additional organization settings to update. Merged into the update body.
     outputs:
     - contextPath: PrismaAIRs.AIGatewayOrganisation.id
       description: The organisation ID.
