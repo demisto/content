@@ -494,7 +494,7 @@ tasks:
       id: e2f3a4b5-0011-4e5f-9a0b-1c2d3e4f7011
       version: -1
       name: Alert on outdated clients?
-      description: Branch to the outdated-client reporting path only when outdated alerting is enabled (NotifyOutdated is true) AND at least one channel has outdated connected clients.
+      description: Branches to the outdated-client reporting path only when outdated alerting is enabled (NotifyOutdated is true) and at least one channel has outdated connected clients.
       type: condition
       iscommand: false
       brand: ""
