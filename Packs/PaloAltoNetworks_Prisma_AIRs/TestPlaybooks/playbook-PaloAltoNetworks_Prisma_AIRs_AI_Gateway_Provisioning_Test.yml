@@ -364,7 +364,7 @@ tasks:
       id: c1a2b3d4-0010-4e5f-9a0b-1c2d3e4f5010
       version: -1
       name: prisma-airs-aigateway-scopes-create
-      description: Create the IAM scope (unique name) the workspace will be bound to.
+      description: Creates the IAM scope (unique name) the workspace will be bound to.
       script: '|||prisma-airs-aigateway-scopes-create'
       type: regular
       iscommand: true
