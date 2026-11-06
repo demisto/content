@@ -842,7 +842,7 @@ tasks:
       id: b7c8d9e0-0014-4a1b-8c2d-3e4f5a6b0014
       version: -1
       name: Any medium keys?
-      description: Branch to the medium reporting path only when at least one key is in the Medium bucket.
+      description: Branches to the medium reporting path only when at least one key is in the Medium bucket.
       type: condition
       iscommand: false
       brand: ""
