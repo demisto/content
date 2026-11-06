@@ -2388,7 +2388,7 @@ script:
     description: Gets an organisation's auth settings on the AI Gateway admin plane. The scim_token and any client_secret values are redacted from the output.
     arguments:
     - name: organisation_id
-      description: The numeric organisation (TSG) ID. Defaults to the configured tenant TSG ID.
+      description: The numeric organization (TSG) ID. Defaults to the configured tenant TSG ID.
     outputs:
     - contextPath: PrismaAIRs.AIGatewayOrganisationAuthSettings.domains
       description: The configured SSO/SCIM domains.
