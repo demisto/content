@@ -391,7 +391,7 @@ tasks:
       id: e2f3a4b5-0009-4e5f-9a0b-1c2d3e4f7009
       version: -1
       name: Email offline notification?
-      description: Send an offline-channel email only when at least one recipient is configured. The offline channels have already been reported to the War Room.
+      description: Sends an offline-channel email only when at least one recipient is configured. The offline channels have already been reported to the War Room.
       type: condition
       iscommand: false
       brand: ""
