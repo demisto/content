@@ -11,7 +11,7 @@ inputs:
 - key: InstanceName
   value: {}
   required: false
-  description: The Prisma AIRS AI Gateway integration instance name to run every command against (universal "using" argument). Leave empty to use the single enabled instance. Set this (and clone the playbook) to check a different tenant.
+  description: The Prisma AIRS AI Gateway integration instance name to run every command against (universal using argument). Leave empty to use the single enabled instance. Set this (and clone the playbook) to check a different tenant.
   playbookInputQuery:
 - key: StatusFilter
   value:
