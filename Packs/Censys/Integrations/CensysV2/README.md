@@ -10,12 +10,13 @@ This integration was integrated and tested with version 2.0 of Censys.
 | Organization ID | The unique identifier for your Censys organization. | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Determine IP score by labels (for paid subscribers) | Censys API provides reputation data exclusively to paid subscribers. <br/>When set to True, the integration will use labels to determine the IP score.  | False |
-| IP Malicious labels | Used only when \`Determine IP score by labels\` is set.<br/>Labels to classify IP as Malicious.<br/>Input can be an array or comma-separated values. | False |
-| IP Suspicious labels | Used when \`Determine IP score by labels\` is set.<br/>Labels to classify IP as Suspicious.<br/>Input can be an array or comma-separated values. | False |
-| Malicious labels threshold | Determines the minimum number of labels returned that are classified as malicious for IP. | False |
-| Suspicious labels threshold | Determines the minimum number of labels returned that are classified as suspicious for IP. | False |
-| Use enrichment API for the ip command | When set to True, the "ip" command retrieves IP data from the Censys host enrichment API. | False |
+| Determine IP score using Censys Host Reputation data (for Censys Core customers) | Leverages the host.reputation.label data from Censys to score IPs as Malicious, Suspicious or Good. | False |
+| Use Censys Host Enrichment API for ip command | Leverages the Censys Host Enrichment API by default for all IP lookups. | False |
+| Determine IP score using Censys Labels | Leverages the host.labels.value and host.services.labels.value labels provided to all Censys users to score IPs based on customer defined thresholds. | False |
+| IP Malicious labels | Used only when Determine IP score using Censys Labels is set.<br/>Labels to classify IP as Malicious.<br/>Input can be an array or comma-separated values.<br/>Labels that are not listed can be typed in manually. | False |
+| IP Suspicious labels | Used only when Determine IP score using Censys Labels is set.<br/>Labels to classify IP as Suspicious.<br/>Input can be an array or comma-separated values.<br/>Labels that are not listed can be typed in manually. | False |
+| Malicious labels threshold | Determines the minimum number of distinct labels across the host and its services that are classified as malicious for IP. | False |
+| Suspicious labels threshold | Determines the minimum number of distinct labels across the host and its services that are classified as suspicious for IP. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. |  |
 
 ## Commands
@@ -1566,7 +1567,7 @@ Runs reputation on IPs.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | IP address or a list of IP addresses to assess reputation. | Required |
-| use_enrichment_endpoint | Whether to retrieve the IP data from the Censys host enrichment API.<br/><br/>Note: This argument overrides the "Use enrichment API for the ip command" configuration parameter. Possible values are: True, False. | Optional |
+| use_enrichment_endpoint | Whether to retrieve the IP data from the Censys host enrichment API.<br/><br/>Note: This argument overrides the "Use Censys Host Enrichment API for ip command" configuration parameter. Possible values are: True, False. | Optional |
 
 #### Context Output
 
@@ -2033,12 +2034,6 @@ Runs reputation on IPs.
 >|Network Hosting|Network Mobile|Network Satellite|Privacy Anonymous|Privacy Tor|Privacy Proxy|Privacy Relay|Privacy VPN|
 >|---|---|---|---|---|---|---|---|
 >| true | false | false | true | false | false | false | true |
->
->### Mallory
->
->|Name|Type|First Seen At|Last Seen At|Last Update At|Description|Verdict|Confidence|Source|Source Count|Tags|
->|---|---|---|---|---|---|---|---|---|---|---|
->| 8.8.8.8 | ip.v4 | 2026-07-10T00:00:00Z | 2026-07-22T13:48:19Z | 2026-07-22T13:48:19Z | Generic description for the observable. | malicious: 1 | high | generic_source_one | 1 | c2, dns |
 
 ### cen-host-history-list
 
@@ -2933,12 +2928,6 @@ Initiate a live rescan for a known host service at a specific IP and port (ip:po
 >|Network Hosting|Network Mobile|Network Satellite|Privacy Anonymous|Privacy Tor|Privacy Proxy|Privacy Relay|Privacy VPN|
 >|---|---|---|---|---|---|---|---|
 >| true | false | false | true | false | false | false | true |
->
->### Mallory
->
->|Name|Type|First Seen At|Last Seen At|Last Update At|Description|Verdict|Confidence|Source|Source Count|Tags|
->|---|---|---|---|---|---|---|---|---|---|---|
->| 0.0.0.1 | ip.v4 | 2026-07-10T00:00:00Z | 2026-07-22T13:48:19Z | 2026-07-22T13:48:19Z | Generic description for the observable. | malicious: 1 | high | generic_source_one | 1 | c2, dns |
 
 ### cen-related-infrastructure-list
 
