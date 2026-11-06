@@ -12,8 +12,11 @@ from XSOARIncidentExporter import (
     sync_new_incidents_command,
     reset_sync_command,
     extract_alert_field,
+    format_war_room_entry,
     map_xsiam_resolution,
     sync_close_status_command,
+    sync_war_room_command,
+    sync_war_room_for_incident,
 )
 
 
@@ -214,30 +217,30 @@ class TestExtractAlertField:
 
 class TestMapXsiamResolution:
     def test_resolved(self):
-        assert map_xsiam_resolution("Resolved") == "STATUS_030_RESOLVED_THREAT_HANDLED"
+        assert map_xsiam_resolution("Resolved") == "resolved_true_positive"
 
     def test_false_positive(self):
-        assert map_xsiam_resolution("False Positive") == "STATUS_060_RESOLVED_FALSE_POSITIVE"
+        assert map_xsiam_resolution("False Positive") == "resolved_false_positive"
 
     def test_duplicate(self):
-        assert map_xsiam_resolution("Duplicate") == "STATUS_050_RESOLVED_DUPLICATE"
+        assert map_xsiam_resolution("Duplicate") == "resolved_duplicate_alert"
 
     def test_other(self):
-        assert map_xsiam_resolution("Other") == "STATUS_080_RESOLVED_OTHER"
+        assert map_xsiam_resolution("Other") == "resolved_other"
 
     def test_case_insensitive(self):
-        assert map_xsiam_resolution("RESOLVED") == "STATUS_030_RESOLVED_THREAT_HANDLED"
+        assert map_xsiam_resolution("RESOLVED") == "resolved_true_positive"
 
     def test_empty_maps_to_other(self):
-        assert map_xsiam_resolution("") == "STATUS_080_RESOLVED_OTHER"
+        assert map_xsiam_resolution("") == "resolved_other"
 
     def test_unknown_maps_to_other(self):
-        assert map_xsiam_resolution("Custom") == "STATUS_080_RESOLVED_OTHER"
+        assert map_xsiam_resolution("Custom") == "resolved_other"
 
 
-CLOSED_ALERT_DESC = "XSOAR Incident ID: 42\n" "Status: Done\n" "Close Reason: Resolved\n" "Close Notes: Fixed the issue"
+CLOSED_ALERT_DESC = "XSOAR Incident ID: 42\nStatus: Done\nClose Reason: Resolved\nClose Notes: Fixed the issue"
 
-OPEN_ALERT_DESC = "XSOAR Incident ID: 43\n" "Status: Active\n" "Close Reason: \n" "Close Notes: "
+OPEN_ALERT_DESC = "XSOAR Incident ID: 43\nStatus: Active\nClose Reason: \nClose Notes: "
 
 
 def _make_alert(alert_id, description, name="Test Alert"):
@@ -268,7 +271,7 @@ class TestSyncCloseStatusCommand:
         mock_xsiam.update_alerts.assert_called_once()
         call_args = mock_xsiam.update_alerts.call_args
         assert call_args[0][0] == [1001]
-        assert call_args[0][1] == "STATUS_030_RESOLVED_THREAT_HANDLED"
+        assert call_args[0][1] == "resolved_true_positive"
         assert result.outputs["ClosedCount"] == 1
 
     def test_skips_open_alerts(self, mocker):
@@ -325,3 +328,168 @@ class TestSyncCloseStatusCommand:
         result = sync_close_status_command(mock_xsiam, {})
         assert result.outputs["ClosedCount"] == 1
         assert "Failed" in result.outputs["ClosedAlerts"][0]["result"]
+
+
+class TestFormatWarRoomEntry:
+    def test_basic_formatting(self):
+        entry = {
+            "id": "42",
+            "type": 1,
+            "user": "admin",
+            "category": "notes",
+            "created": "2026-10-01T10:30:00Z",
+            "contents": "test",
+        }
+        result = format_war_room_entry(entry)
+        assert "**[XSOAR War Room]**" in result
+        assert "42" in result
+        assert "admin" in result
+        assert "test" in result
+
+    def test_missing_user_defaults_to_system(self):
+        entry = {"id": "1", "type": 1, "user": "", "category": "", "created": "", "contents": "msg"}
+        result = format_war_room_entry(entry)
+        assert "system" in result
+
+    def test_unknown_entry_type(self):
+        entry = {"id": "1", "type": 99, "user": "admin", "category": "", "created": "", "contents": "msg"}
+        result = format_war_room_entry(entry)
+        assert "Unknown" in result
+
+
+class TestSyncWarRoomForIncident:
+    def test_alert_not_found(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = None
+        mock_xsoar = mocker.MagicMock()
+
+        result = sync_war_room_for_incident(mock_xsiam, mock_xsoar, "123")
+        assert result["status"] == "alert_not_found"
+
+    def test_missing_external_id(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = {"external_id": ""}
+        mock_xsoar = mocker.MagicMock()
+
+        result = sync_war_room_for_incident(mock_xsiam, mock_xsoar, "123")
+        assert result["status"] == "missing_external_id"
+
+    def test_syncs_entries(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = {"external_id": "alert-1"}
+        mock_xsiam.get_war_room_entries.return_value = []
+        mock_xsiam.insert_war_room_entry.return_value = {}
+
+        mock_xsoar = mocker.MagicMock()
+        mock_xsoar.get_war_room_entries.return_value = [
+            {"id": "1", "type": 1, "user": "admin", "category": "notes", "created": "", "contents": "entry 1"},
+            {"id": "2", "type": 1, "user": "admin", "category": "notes", "created": "", "contents": "entry 2"},
+        ]
+
+        result = sync_war_room_for_incident(mock_xsiam, mock_xsoar, "100")
+        assert result["synced"] == 2
+        assert result["skipped"] == 0
+
+    def test_skips_already_synced(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = {"external_id": "alert-1"}
+        mock_xsiam.get_war_room_entries.return_value = [
+            {"contents": "**[XSOAR War Room]** 1 | Standard | notes | by admin | \n\nentry 1"},
+        ]
+        mock_xsiam.insert_war_room_entry.return_value = {}
+
+        mock_xsoar = mocker.MagicMock()
+        mock_xsoar.get_war_room_entries.return_value = [
+            {"id": "1", "type": 1, "user": "admin", "category": "notes", "created": "", "contents": "entry 1"},
+            {"id": "2", "type": 1, "user": "admin", "category": "notes", "created": "", "contents": "entry 2"},
+        ]
+
+        result = sync_war_room_for_incident(mock_xsiam, mock_xsoar, "100")
+        assert result["synced"] == 1
+        assert result["skipped"] == 1
+
+    def test_empty_entries_skipped(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = {"external_id": "alert-1"}
+        mock_xsiam.get_war_room_entries.return_value = []
+
+        mock_xsoar = mocker.MagicMock()
+        mock_xsoar.get_war_room_entries.return_value = [
+            {"id": "1", "type": 1, "user": "admin", "category": "", "created": "", "contents": ""},
+            {"id": "2", "type": 1, "user": "admin", "category": "", "created": "", "contents": "   "},
+        ]
+
+        result = sync_war_room_for_incident(mock_xsiam, mock_xsoar, "100")
+        assert result["synced"] == 0
+
+
+class TestSyncWarRoomCommand:
+    def test_missing_incident_id(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsoar = mocker.MagicMock()
+
+        with pytest.raises(Exception, match="incident_id"):
+            sync_war_room_command(mock_xsiam, mock_xsoar, {})
+
+    def test_alert_not_found_raises(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = None
+        mock_xsoar = mocker.MagicMock()
+
+        with pytest.raises(Exception, match="No XSIAM alert found"):
+            sync_war_room_command(mock_xsiam, mock_xsoar, {"incident_id": "123"})
+
+    def test_no_entries(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = {"external_id": "alert-1"}
+        mock_xsoar = mocker.MagicMock()
+        mock_xsoar.get_war_room_entries.return_value = []
+
+        result = sync_war_room_command(mock_xsiam, mock_xsoar, {"incident_id": "123"})
+        assert result.outputs["SyncedCount"] == 0
+
+    def test_syncs_and_returns_summary(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = {"external_id": "alert-1"}
+        mock_xsiam.get_war_room_entries.return_value = []
+        mock_xsiam.insert_war_room_entry.return_value = {}
+
+        mock_xsoar = mocker.MagicMock()
+        mock_xsoar.get_war_room_entries.return_value = [
+            {"id": "10", "type": 1, "user": "admin", "category": "notes", "created": "", "contents": "hello"},
+        ]
+
+        result = sync_war_room_command(mock_xsiam, mock_xsoar, {"incident_id": "100"})
+        assert result.outputs["SyncedCount"] == 1
+        assert result.outputs["IncidentID"] == "100"
+        assert result.outputs["XSIAMAlertID"] == "alert-1"
+
+    def test_category_filter(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.find_alert_by_xsoar_id.return_value = {"external_id": "alert-1"}
+        mock_xsiam.get_war_room_entries.return_value = []
+        mock_xsiam.insert_war_room_entry.return_value = {}
+
+        mock_xsoar = mocker.MagicMock()
+        mock_xsoar.get_war_room_entries.return_value = [
+            {"id": "1", "type": 1, "user": "admin", "category": "notes", "created": "", "contents": "note entry"},
+            {"id": "2", "type": 1, "user": "admin", "category": "chat", "created": "", "contents": "chat entry"},
+        ]
+
+        result = sync_war_room_command(mock_xsiam, mock_xsoar, {"incident_id": "100", "categories": "notes"})
+        assert result.outputs["SyncedCount"] == 1
+        assert result.outputs["FilteredEntries"] == 1
+
+    def test_provided_xsiam_alert_id(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.get_war_room_entries.return_value = []
+        mock_xsiam.insert_war_room_entry.return_value = {}
+
+        mock_xsoar = mocker.MagicMock()
+        mock_xsoar.get_war_room_entries.return_value = [
+            {"id": "1", "type": 1, "user": "admin", "category": "", "created": "", "contents": "test"},
+        ]
+
+        result = sync_war_room_command(mock_xsiam, mock_xsoar, {"incident_id": "100", "xsiam_alert_id": "custom-alert-id"})
+        assert result.outputs["XSIAMAlertID"] == "custom-alert-id"
+        mock_xsiam.find_alert_by_xsoar_id.assert_not_called()
