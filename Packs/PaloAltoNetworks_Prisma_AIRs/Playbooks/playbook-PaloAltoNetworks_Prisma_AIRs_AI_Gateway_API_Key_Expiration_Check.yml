@@ -501,7 +501,7 @@ tasks:
       id: b7c8d9e0-0006-4a1b-8c2d-3e4f5a6b0006
       version: -1
       name: Bucket - Medium risk keys
-      description: Keep the live keys expiring within MediumWithinDays days but not already High or Critical (still on/after HighWithinDays days) under PrismaAIRs.AIGatewayApiKeyMedium.
+      description: Keeps the live keys expiring within MediumWithinDays days but not already High or Critical (still on/after HighWithinDays days) under PrismaAIRs.AIGatewayApiKeyMedium.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
