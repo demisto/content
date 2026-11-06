@@ -32,6 +32,7 @@ This playbook does not use any integrations.
 | UserContainment | Set to 'True' to disable the user account. | True | Optional |
 | Username | The username to disable. |  | Optional |
 | UserVerification | Possible values:True/False. Default:True.<br/>Specify if User Verification is required to disable users. | True | Optional |
+| IAMUserDomain | The IAM users domain. The domain will be appended to the username. E.g., username@IAMUserDomain. |  | Optional |
 
 ## Playbook Outputs
 
