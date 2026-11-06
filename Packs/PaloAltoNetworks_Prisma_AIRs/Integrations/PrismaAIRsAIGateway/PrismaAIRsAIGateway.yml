@@ -2382,7 +2382,7 @@ script:
       description: A JSON object of additional organization settings to update. Merged into the update body.
     outputs:
     - contextPath: PrismaAIRs.AIGatewayOrganisation.id
-      description: The organisation ID.
+      description: The organization ID.
       type: String
   - name: prisma-airs-aigateway-organisations-auth-settings-get
     description: Gets an organization's auth settings on the AI Gateway admin plane. The scim_token and any client_secret values are redacted from the output.
