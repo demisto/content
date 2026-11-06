@@ -217,7 +217,7 @@ tasks:
       id: e2f3a4b5-0005-4e5f-9a0b-1c2d3e4f7005
       version: -1
       name: Filter channels with outdated clients
-      description: Keep only the channels with at least one connected client running an outdated version (outdated_clients_count >= 1) under PrismaAIRs.RedTeamOutdatedChannel.
+      description: Keeps only the channels with at least one connected client running an outdated version (outdated_clients_count >= 1) under PrismaAIRs.RedTeamOutdatedChannel.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
