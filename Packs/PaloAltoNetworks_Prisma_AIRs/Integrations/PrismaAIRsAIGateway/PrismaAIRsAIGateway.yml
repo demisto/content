@@ -2433,7 +2433,7 @@ script:
       description: The pricing currency (USD).
       type: String
     - contextPath: PrismaAIRs.AIGatewayModelPricing.pay_as_you_go
-      description: The pay-as-you-go rate configuration.
+      description: A dictionary of the pay-as-you-go rate configuration.
       type: Unknown
     - contextPath: PrismaAIRs.AIGatewayModelPricing.calculate
       description: The unevaluated price calculation expressions.
