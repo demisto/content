@@ -2325,7 +2325,7 @@ script:
       description: The new one-time secret key value. Shown only once - capture it immediately.
       type: String
     - contextPath: PrismaAIRs.AIGatewayApiKeyRotation.key_transition_expires_at
-      description: The timestamp when the previous key stops being accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time when the previous key stops being accepted, in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-aigateway-api-keys-user-rotate
     description: Rotates a user API key on the AI Gateway data plane. The new one-time secret key is returned ONLY in this response - capture it immediately.
