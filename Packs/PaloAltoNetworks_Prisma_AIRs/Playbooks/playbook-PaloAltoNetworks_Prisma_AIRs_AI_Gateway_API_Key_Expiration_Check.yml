@@ -606,7 +606,7 @@ tasks:
       id: b7c8d9e0-0008-4a1b-8c2d-3e4f5a6b0008
       version: -1
       name: Any critical keys?
-      description: Branch to the critical reporting path only when at least one key is in the Critical bucket.
+      description: Branches to the critical reporting path only when at least one key is in the Critical bucket.
       type: condition
       iscommand: false
       brand: ""
