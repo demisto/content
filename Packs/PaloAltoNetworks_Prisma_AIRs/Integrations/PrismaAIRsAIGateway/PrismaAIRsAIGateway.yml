@@ -2349,7 +2349,7 @@ script:
     description: Gets one organisation's capabilities and settings on the AI Gateway admin plane.
     arguments:
     - name: organisation_id
-      description: The numeric organisation (TSG) ID. Defaults to the configured tenant TSG ID.
+      description: The numeric organization (TSG) ID. Defaults to the configured tenant TSG ID.
     outputs:
     - contextPath: PrismaAIRs.AIGatewayOrganisationInfo.id
       description: The organization ID.
