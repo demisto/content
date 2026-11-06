@@ -2368,7 +2368,7 @@ script:
     arguments: []
     outputs:
     - contextPath: PrismaAIRs.AIGatewayOrganisation.id
-      description: The organisation ID.
+      description: The organization ID.
       type: String
     - contextPath: PrismaAIRs.AIGatewayOrganisation.name
       description: The organization name.
