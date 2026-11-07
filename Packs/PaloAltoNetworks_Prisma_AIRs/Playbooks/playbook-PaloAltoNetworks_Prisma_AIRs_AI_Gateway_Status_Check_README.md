@@ -35,8 +35,8 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| InstanceName | The Prisma AIRS AI Gateway integration instance name to run every command against \(universal "using" argument\). Leave empty to use the single enabled instance. Set this \(and clone the playbook\) to check a different tenant. |  | Optional |
-| StatusFilter | Which deployments to inventory and health-check. One of "active" or "archived". Defaults to active; archived gateways are intentionally disabled and are not treated as faults. | active | Optional |
+| InstanceName | The Prisma AIRS AI Gateway integration instance name to run every command against \(universal using argument\). Leave empty to use the single enabled instance. Set this \(and clone the playbook\) to check a different tenant. |  | Optional |
+| StatusFilter | The status of the deployments to inventory and health-check. Possible values are active or archived. The default is active. Archived gateways are intentionally disabled and are not treated as faults. | active | Optional |
 | WorkspaceSlug | Optional comma-separated list of workspace slugs to narrow the deployment inventory. Leave empty to check all workspaces. |  | Optional |
 | SendEmail | Master on/off switch for email notifications. One of "true" or "false". Email is sent only when this is true AND NotificationRecipients is non-empty AND at least one unhealthy gateway is found. | true | Optional |
 | NotificationRecipients | Comma-separated email address\(es\) to notify. If left empty, no email is sent \(the unhealthy gateways are still reported to the War Room\). Requires a configured mail-sender integration on the tenant. |  | Optional |

@@ -38,7 +38,7 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | InstanceName | The Prisma AIRS Red Team integration instance name to run every command against \(universal "using" argument\). Leave empty to use the single enabled instance. Set this \(and clone the playbook\) to check a different tenant. |  | Optional |
 | MaxChannels | The maximum number of network channels to inventory \(passed to the list command's limit argument\). Raise this if a tenant has more channels than the default. | 1000 | Optional |
-| NotifyOffline | Whether to investigate and alert on offline channels. One of "true" or "false". When false, offline channels are ignored and never block auto-close. | true | Optional |
+| NotifyOffline | Whether to investigate and alert on offline channels. Possible values are true or false. When false, offline channels are ignored and never block auto-close. | true | Optional |
 | NotifyOutdated | Whether to investigate and alert on channels with outdated connected clients. One of "true" or "false". When false, outdated clients are ignored and never block auto-close. | true | Optional |
 | NotificationRecipients | Comma-separated email address\(es\) to notify. If left empty, no email is sent \(offenders are still reported to the War Room\). Requires a configured mail-sender integration on the tenant. |  | Optional |
 | EmailSubjectPrefix | Prefix added to notification email subjects. Useful for per-tenant mailbox filtering. | [Prisma AIRS Red Team] | Optional |

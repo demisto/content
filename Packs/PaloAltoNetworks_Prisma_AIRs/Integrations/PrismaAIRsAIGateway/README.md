@@ -2034,7 +2034,7 @@ Updates an AI Gateway workspace by UUID or slug (admin plane). Partial patch - s
 | name | The new workspace display name. | Optional |
 | description | The new workspace description. | Optional |
 | icon | The new workspace icon identifier. | Optional |
-| defaults | Default settings for the workspace as a JSON object of key/value pairs (e.g. {"config_id": "9ff8ead5-2438-xxxx"}). | Optional |
+| defaults | The default settings for the workspace as a JSON object of key/value pairs (for example, {"config_id": "9ff8ead5-2438-xxxx"}). | Optional |
 | usage_limits | Usage-limit definitions as a JSON array. | Optional |
 | rate_limits | Rate-limit definitions as a JSON array. | Optional |
 
@@ -2079,7 +2079,7 @@ Provisions a workspace end to end the way the SCM UI does (admin + IAM planes): 
 | existing_scope | Whether to bind to a scope that already exists instead of creating one. When true, scope_name is required. Possible values are: true, false. Default is false. | Optional |
 | description | The workspace (and, when created, the IAM scope) description. | Optional |
 | icon | The workspace icon identifier. | Optional |
-| defaults | Default settings for the workspace as a JSON object (e.g. {"config_id": "...", "allow_config_override": true, "metadata": {}}). | Optional |
+| defaults | The default settings for the workspace as a JSON object (for example, {"config_id": "...", "allow_config_override": true, "metadata": {}}). | Optional |
 | users | Comma-separated list of user IDs to seed as workspace members. | Optional |
 | usage_limits | Usage-limit definitions as a JSON array. | Optional |
 | rate_limits | Rate-limit definitions as a JSON array. | Optional |
@@ -2196,7 +2196,7 @@ Gets one SCM IAM scope by name.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The scope name (e.g. ws_production_bx7qw0). This is the path key, not the id (name:tsg_id). | Required |
+| name | The scope name (for example, ws_production_bx7qw0). This is the path key, not the id (name:tsg_id). | Required |
 
 #### Context Output
 
@@ -2221,7 +2221,7 @@ Creates an unbound SCM IAM scope. This is step 1 of workspace provisioning; a wo
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The scope name. Must be unique in the tenant, e.g. ws_production_bx7qw0. | Required |
+| name | The scope name. Must be unique in the tenant, for example, ws_production_bx7qw0. | Required |
 | description | The scope description. | Optional |
 | resources | A JSON array of resources to bind at creation time. For example, '[{"resource_type":"workspace","resource_id":"ws-produc-985697"}]'. Usually omitted; bind later with prisma-airs-aigateway-scopes-bind. | Optional |
 
@@ -2270,7 +2270,7 @@ Binds a workspace to an existing SCM IAM scope. This is step 3 of workspace prov
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The scope name to bind the workspace to. | Required |
-| workspace_slug | The workspace slug (e.g. ws-produc-985697) to bind. Not the UUID - SCM binds by slug. | Required |
+| workspace_slug | The workspace slug (for example, ws-produc-985697) to bind. Do not use the UUID, because SCM binds by slug. | Required |
 
 #### Context Output
 
@@ -2377,7 +2377,7 @@ Lists the static provider catalog on the AI Gateway admin plane. Maps a provider
 ### prisma-airs-aigateway-integrations-list
 
 ***
-Lists credential integrations (upstream provider bindings) for the tenant on the AI Gateway admin plane. Distinct from mcp-integrations.
+Lists credential integrations (upstream provider bindings) for the tenant on the AI Gateway admin plane. This command is distinct from mcp-integrations.
 
 #### Base Command
 
@@ -2561,12 +2561,12 @@ Creates a credential integration (upstream provider binding) on the AI Gateway a
 | ai_provider_id | The upstream provider UUID (from integrations-catalog). | Required |
 | name | The integration display name. | Required |
 | slug | The integration slug. | Required |
-| organisation_id | The numeric organisation ID. Defaults to the configured tenant TSG ID when omitted. | Optional |
+| organisation_id | The numeric organization ID. Defaults to the configured tenant TSG ID when omitted. | Optional |
 | workspace_id | Optional upstream workspace scope. | Optional |
 | description | A free-form description. | Optional |
 | configurations | Provider-specific configuration object (JSON). | Optional |
 | key | The upstream API key / credential (secret). | Optional |
-| secret_mappings | Secret mapping entries (JSON array). | Optional |
+| secret_mappings | A JSON array of secret mapping entries. | Optional |
 | create_default_provider | Whether to create a default provider binding for this integration. Possible values are: true, false. | Optional |
 | default_provider_slug | Slug for the default provider when create_default_provider is set. | Optional |
 | pricing_adjustments | Pricing adjustment settings (JSON). | Optional |
@@ -2596,8 +2596,8 @@ Updates a credential integration on the AI Gateway admin plane. Provide at least
 | description | A free-form description. | Optional |
 | configurations | Provider-specific configuration object (JSON). | Optional |
 | key | The upstream API key / credential (secret). | Optional |
-| secret_mappings | Secret mapping entries (JSON array). | Optional |
-| pricing_adjustments | Pricing adjustment settings (JSON). | Optional |
+| secret_mappings | A JSON array of secret mapping entries. | Optional |
+| pricing_adjustments | The pricing adjustment settings, in JSON format. | Optional |
 
 #### Context Output
 
@@ -2617,7 +2617,7 @@ Deletes a credential integration on the AI Gateway admin plane. The organisation
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | integration_id | The integration UUID. | Required |
-| organisation_id | The numeric organisation ID. Defaults to the configured tenant TSG ID when omitted. | Optional |
+| organisation_id | The numeric organization ID. Defaults to the configured tenant TSG ID when omitted. | Optional |
 
 #### Context Output
 
@@ -2637,7 +2637,7 @@ Bulk-sets the models bound to a credential integration on the AI Gateway admin p
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | integration_id | The integration UUID. | Required |
-| models | The model entries to set (JSON array of objects, at least one). | Required |
+| models | A JSON array of model entries to set. Provide at least one object. | Required |
 | allow_all_models | Whether to allow all models for this integration. Possible values are: true, false. | Optional |
 
 #### Context Output
@@ -2678,8 +2678,8 @@ Bulk-sets which workspaces a credential integration is exposed to, on the AI Gat
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | integration_id | The integration UUID. | Required |
-| workspaces | Workspace binding entries (JSON array). | Optional |
-| global_workspace_access | Global workspace access settings object (JSON) with enabled/rate_limits/usage_limits. | Optional |
+| workspaces | A JSON array of workspace binding entries. | Optional |
+| global_workspace_access | The global workspace access settings as a JSON object with the enabled, rate_limits, and usage_limits fields. | Optional |
 | override_existing_workspace_access | Whether to override existing workspace access. Possible values are: true, false. | Optional |
 | create_default_provider | Whether to create a default provider binding. Possible values are: true, false. | Optional |
 | default_provider_slug | Slug for the default provider when create_default_provider is set. | Optional |
@@ -2805,7 +2805,7 @@ Creates a provider binding inside a workspace on the AI Gateway control plane. R
 | note | A free-form note. | Optional |
 | usage_limits | Usage limit settings (JSON). | Optional |
 | rate_limits | Rate limit settings (JSON). | Optional |
-| expires_at | The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
+| expires_at | The date and time when the provider expires, in ISO 8601 format (for example, 2024-01-15T12:34:56Z). | Optional |
 
 #### Context Output
 
@@ -2830,9 +2830,9 @@ Updates a provider binding on the AI Gateway control plane. Provide at least one
 | provider_id | The provider UUID. | Required |
 | name | The provider display name. | Optional |
 | note | A free-form note. | Optional |
-| usage_limits | Usage limit settings (JSON). | Optional |
-| rate_limits | Rate limit settings (JSON). | Optional |
-| expires_at | The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
+| usage_limits | The usage limit settings, in JSON format. | Optional |
+| rate_limits | The rate limit settings, in JSON format. | Optional |
+| expires_at | The date and time when the provider expires, in ISO 8601 format (for example, 2024-01-15T12:34:56Z). | Optional |
 | reset_usage | Whether to reset the accumulated usage counters. Possible values are: true, false. | Optional |
 
 #### Context Output
@@ -2861,7 +2861,7 @@ There is no context output for this command.
 ### prisma-airs-aigateway-plugins-list
 
 ***
-Lists organisation-level plugin bindings on the AI Gateway admin plane. Credential values are masked in the output.
+Lists organization-level plugin bindings on the AI Gateway admin plane. Credential values are masked in the output.
 
 #### Base Command
 
@@ -2885,7 +2885,7 @@ Lists organisation-level plugin bindings on the AI Gateway admin plane. Credenti
 ### prisma-airs-aigateway-plugins-create
 
 ***
-Binds a plugin to the organisation on the AI Gateway admin plane. Takes live secret credential material, which is never echoed back in the output.
+Binds a plugin to the organization on the AI Gateway admin plane. Takes live secret credential material, which is never echoed back in the output.
 
 #### Base Command
 
@@ -2897,7 +2897,7 @@ Binds a plugin to the organisation on the AI Gateway admin plane. Takes live sec
 | --- | --- | --- |
 | integration_id | The credential integration UUID to bind the plugin to. | Required |
 | credentials | A JSON object of provider-specific credential name/value pairs. Example: {"AIRS_API_KEY": "&lt;secret&gt;"}. | Required |
-| organisation_id | The numeric organisation ID. Defaults to the configured tenant TSG ID. | Optional |
+| organisation_id | The numeric organization ID. Defaults to the configured tenant TSG ID. | Optional |
 
 #### Context Output
 
@@ -3027,14 +3027,14 @@ Creates a service API key in a workspace on the AI Gateway data plane. The one-t
 | scopes | A comma-separated list of at least one scope (for example: completions.write,logs.write). | Required |
 | workspace_id | The workspace UUID to create the key in. | Required |
 | type | The API key type. Default is workspace. | Optional |
-| organisation_id | The numeric organisation ID. Defaults to the configured tenant TSG ID. | Optional |
+| organisation_id | The numeric organization ID. Defaults to the configured tenant TSG ID. | Optional |
 | description | A free-form description. | Optional |
 | alert_emails | A comma-separated list of alert notification email addresses. | Optional |
-| expires_at | The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
-| rate_limits | Rate limit settings (JSON array). | Optional |
+| expires_at | The date and time when the API key expires, in ISO 8601 format (for example, 2024-01-15T12:34:56Z). | Optional |
+| rate_limits | A JSON array of rate limit settings. | Optional |
 | usage_limits | Usage limit settings (JSON object). | Optional |
-| defaults | Default settings (JSON object). | Optional |
-| rotation_policy | Rotation policy settings (JSON object). | Optional |
+| defaults | The default settings as a JSON object. | Optional |
+| rotation_policy | The rotation policy settings as a JSON object. | Optional |
 
 #### Context Output
 
@@ -3062,14 +3062,14 @@ Creates a user API key in a workspace on the AI Gateway data plane. Requires use
 | workspace_id | The workspace UUID to create the key in. | Required |
 | user_id | The user UUID the key belongs to. | Required |
 | type | The API key type. Default is workspace. | Optional |
-| organisation_id | The numeric organisation ID. Defaults to the configured tenant TSG ID. | Optional |
+| organisation_id | The numeric organization ID. Defaults to the configured tenant TSG ID. | Optional |
 | description | A free-form description. | Optional |
 | alert_emails | A comma-separated list of alert notification email addresses. | Optional |
-| expires_at | The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
-| rate_limits | Rate limit settings (JSON array). | Optional |
-| usage_limits | Usage limit settings (JSON object). | Optional |
-| defaults | Default settings (JSON object). | Optional |
-| rotation_policy | Rotation policy settings (JSON object). | Optional |
+| expires_at | The date and time when the API key expires, in ISO 8601 format (for example, 2024-01-15T12:34:56Z). | Optional |
+| rate_limits | A JSON array of rate limit settings. | Optional |
+| usage_limits | The usage limit settings as a JSON object. | Optional |
+| defaults | The default settings as a JSON object. | Optional |
+| rotation_policy | The rotation policy settings as a JSON object. | Optional |
 
 #### Context Output
 
@@ -3097,11 +3097,11 @@ Updates a service API key on the AI Gateway data plane. Provide at least one fie
 | description | A free-form description. | Optional |
 | scopes | A comma-separated list of at least one scope. | Optional |
 | alert_emails | A comma-separated list of alert notification email addresses. | Optional |
-| expires_at | The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
-| rate_limits | Rate limit settings (JSON array). | Optional |
+| expires_at | The date and time when the API key expires, in ISO 8601 format (for example, 2024-01-15T12:34:56Z). | Optional |
+| rate_limits | A JSON array of rate limit settings. | Optional |
 | usage_limits | Usage limit settings (JSON object). | Optional |
-| defaults | Default settings (JSON object). | Optional |
-| rotation_policy | Rotation policy settings (JSON object). | Optional |
+| defaults | The default settings as a JSON object. | Optional |
+| rotation_policy | The rotation policy settings as a JSON object. | Optional |
 | reset_usage | Whether to reset the accumulated usage counters. Possible values are: true, false. | Optional |
 
 #### Context Output
@@ -3126,11 +3126,11 @@ Updates a user API key on the AI Gateway data plane. Provide at least one field.
 | description | A free-form description. | Optional |
 | scopes | A comma-separated list of at least one scope. | Optional |
 | alert_emails | A comma-separated list of alert notification email addresses. | Optional |
-| expires_at | The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
-| rate_limits | Rate limit settings (JSON array). | Optional |
-| usage_limits | Usage limit settings (JSON object). | Optional |
-| defaults | Default settings (JSON object). | Optional |
-| rotation_policy | Rotation policy settings (JSON object). | Optional |
+| expires_at | The date and time when the API key expires, in ISO 8601 format (for example, 2024-01-15T12:34:56Z). | Optional |
+| rate_limits | A JSON array of rate limit settings. | Optional |
+| usage_limits | The usage limit settings as a JSON object. | Optional |
+| defaults | The default settings as a JSON object. | Optional |
+| rotation_policy | The rotation policy settings as a JSON object. | Optional |
 | reset_usage | Whether to reset the accumulated usage counters. Possible values are: true, false. | Optional |
 
 #### Context Output
@@ -3226,7 +3226,7 @@ Rotates a user API key on the AI Gateway data plane. The new one-time secret key
 ### prisma-airs-aigateway-organisations-info-get
 
 ***
-Gets one organisation's capabilities and settings on the AI Gateway admin plane.
+Gets one organization's capabilities and settings on the AI Gateway admin plane.
 
 #### Base Command
 
@@ -3236,7 +3236,7 @@ Gets one organisation's capabilities and settings on the AI Gateway admin plane.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organisation_id | The numeric organisation (TSG) ID. Defaults to the configured tenant TSG ID. | Optional |
+| organisation_id | The numeric organization (TSG) ID. Defaults to the configured tenant TSG ID. | Optional |
 
 #### Context Output
 
@@ -3250,7 +3250,7 @@ Gets one organisation's capabilities and settings on the AI Gateway admin plane.
 ### prisma-airs-aigateway-organisations-self-get
 
 ***
-Gets the calling organisation's record on the AI Gateway admin plane.
+Gets the calling organization's record on the AI Gateway admin plane.
 
 #### Base Command
 
@@ -3271,7 +3271,7 @@ Gets the calling organisation's record on the AI Gateway admin plane.
 ### prisma-airs-aigateway-organisations-self-update
 
 ***
-Updates the calling organisation's settings on the AI Gateway admin plane. Provide at least one field.
+Updates the calling organization's settings on the AI Gateway admin plane. Provide at least one field.
 
 #### Base Command
 
@@ -3281,8 +3281,8 @@ Updates the calling organisation's settings on the AI Gateway admin plane. Provi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The organisation display name. | Optional |
-| settings | Additional organisation settings to update (JSON object). Merged into the update body. | Optional |
+| name | The organization display name. | Optional |
+| settings | A JSON object of additional organization settings to update. Merged into the update body. | Optional |
 
 #### Context Output
 
@@ -3293,7 +3293,7 @@ Updates the calling organisation's settings on the AI Gateway admin plane. Provi
 ### prisma-airs-aigateway-organisations-auth-settings-get
 
 ***
-Gets an organisation's auth settings on the AI Gateway admin plane. The scim_token and any client_secret values are redacted from the output.
+Gets an organization's auth settings on the AI Gateway admin plane. The scim_token and any client_secret values are redacted from the output.
 
 #### Base Command
 
@@ -3303,7 +3303,7 @@ Gets an organisation's auth settings on the AI Gateway admin plane. The scim_tok
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organisation_id | The numeric organisation (TSG) ID. Defaults to the configured tenant TSG ID. | Optional |
+| organisation_id | The numeric organization (TSG) ID. Defaults to the configured tenant TSG ID. | Optional |
 
 #### Context Output
 
@@ -3315,7 +3315,7 @@ Gets an organisation's auth settings on the AI Gateway admin plane. The scim_tok
 ### prisma-airs-aigateway-organisations-auth-settings-update
 
 ***
-Updates an organisation's auth settings on the AI Gateway admin plane. Takes a secret scim_token as input; the response is redacted. Provide at least one field.
+Updates an organization's auth settings on the AI Gateway admin plane. Takes a secret scim_token as input; the response is redacted. Provide at least one field.
 
 #### Base Command
 
@@ -3325,8 +3325,8 @@ Updates an organisation's auth settings on the AI Gateway admin plane. Takes a s
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organisation_id | The numeric organisation (TSG) ID. Defaults to the configured tenant TSG ID. | Optional |
-| auth_settings | Auth settings to update (JSON object). | Optional |
+| organisation_id | The numeric organization (TSG) ID. Defaults to the configured tenant TSG ID. | Optional |
+| auth_settings | A JSON object of the auth settings to update. | Optional |
 | domains | A comma-separated list of SSO/SCIM domains. | Optional |
 | scim_token | The SCIM token (secret). Never echoed back in the output. | Optional |
 

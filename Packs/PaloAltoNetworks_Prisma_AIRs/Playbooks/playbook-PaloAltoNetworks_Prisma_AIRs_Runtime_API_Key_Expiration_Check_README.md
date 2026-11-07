@@ -40,9 +40,9 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | InstanceName | The Prisma AIRS Runtime integration instance name to run every command against \(universal "using" argument\). Leave empty to use the single enabled instance. Set this \(and clone the playbook\) to check a different tenant. |  | Optional |
 | MaxKeys | The maximum number of Runtime API keys to inventory \(passed to the list command's limit argument\). Raise this if a tenant has more keys than the default. | 1000 | Optional |
-| CriticalWithinDays | A key is Critical risk when it expires in fewer than this many days \(including already-expired keys\). Default 5 means 0-4 days remaining, or expired, is Critical. | 5 | Optional |
-| HighWithinDays | A key is High risk when it expires in fewer than this many days but is not already Critical. Default 10 \(with CriticalWithinDays 5\) means 5-9 days remaining is High. | 10 | Optional |
-| MediumWithinDays | A key is Medium risk when it expires in fewer than this many days but is not already High or Critical. Default 31 \(with HighWithinDays 10\) means 10-30 days remaining is Medium; anything further out is Low. | 31 | Optional |
+| CriticalWithinDays | The number of days remaining below which a key is Critical risk \(including already-expired keys\). The default is 5, which means 0-4 days remaining, or expired, is Critical. | 5 | Optional |
+| HighWithinDays | The number of days remaining below which a key is High risk but not already Critical. The default is 10 \(when CriticalWithinDays is 5\), which means 5-9 days remaining is High. | 10 | Optional |
+| MediumWithinDays | The number of days remaining below which a key is Medium risk but not already High or Critical. The default is 31 \(when HighWithinDays is 10\), which means 10-30 days remaining is Medium; anything further out is Low. | 31 | Optional |
 | NotificationRecipients | Comma-separated email address\(es\) to notify when a key is more than medium risk. If left empty, no email is sent \(offenders are still reported to the War Room\). Requires a configured mail-sender integration on the tenant. |  | Optional |
 | EmailSubjectPrefix | Prefix added to notification email subjects. Useful for per-tenant mailbox filtering. | [Prisma AIRS Runtime] | Optional |
 
