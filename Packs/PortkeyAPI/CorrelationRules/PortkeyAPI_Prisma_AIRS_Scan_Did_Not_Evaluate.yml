@@ -1,0 +1,56 @@
+name: Portkey - Prisma AIRS Did Not Evaluate A Request - by GoCortexIO
+description: Reports requests where the Prisma AIRS scan errored or timed out. Such a request reached the model with no AIRS verdict at all, and an absent verdict is not a clean one. This is the AIRS equivalent of a guardrail that has quietly stopped running.
+severity: SEV_030_MEDIUM
+xql_query: |-
+  // PROVENANCE
+  //   Pattern:   a control that did not run, rather than one that fired. The request was not
+  //              judged, and nothing downstream distinguishes that from a request judged safe.
+  //   Basis:     the vendor's own error and timeout flags, mapped by the data model to
+  //              llm_request_airs_not_evaluated rather than being folded into a clean verdict.
+  //   ATT&CK:    T1685
+  //   Threshold: none. One unevaluated request is the finding.
+  //   THIS RULE'S RESTING STATE IS ZERO, and that is correct. Every AIRS check observed on
+  //              this estate returned error false and timeout false. A zero here means the
+  //              scanner is answering, not that the rule is broken. Do NOT relax the filter
+  //              to produce a non-zero: an error flag is the only thing that makes this true,
+  //              and a rule that fires without one is measuring something else.
+  //   Grouping:  per workspace and model, because an AIRS outage is a property of the path
+  //              rather than of the person who happened to be using it.
+  datamodel dataset = portkey_llm_requests_raw
+  | filter xdm.event.original_event_type = "llm_request_airs_not_evaluated"
+  | comp count() as unevaluated_requests,
+         count_distinct(xdm.event.id) as distinct_requests,
+         count_distinct(xdm.source.user.identifier) as affected_actors,
+         values(xdm.target.resource.name) as models,
+         min(_time) as first_seen,
+         max(_time) as last_seen
+      by xdm.target.resource.parent_id, xdm.event.type
+  | sort desc unevaluated_requests
+  | fields xdm.target.resource.parent_id, xdm.event.type, unevaluated_requests, distinct_requests, affected_actors, models, first_seen, last_seen
+alert_name: Portkey - Prisma AIRS did not evaluate $unevaluated_requests request(s) in workspace $xdm.target.resource.parent_id
+alert_category: User Defined
+user_defined_category: xdm.event.type
+alert_description: $unevaluated_requests request(s) in workspace $xdm.target.resource.parent_id reached $models with no Prisma AIRS verdict, because the scan errored or timed out, affecting $affected_actors actor(s). Those requests were not judged, and an absent verdict must not be read as a clean one.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0005 - Defense Evasion:
+  - T1685 - Disable or Modify Tools
+suppression_fields:
+- xdm.target.resource.parent_id
+- xdm.event.type
+global_rule_id: d380caf6-4602-4389-91ea-aacd969c11a0
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 26 hours
+timezone: Australia/Melbourne
+crontab: '23 * * * *'
+suppression_enabled: true
+suppression_duration: 24 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_llm_requests_raw | filter airs_error = true or airs_timeout = true
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0
