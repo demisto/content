@@ -97,7 +97,7 @@ There is no context output for this command.
 ### duoadmin-get-users
 
 ***
-Return usernames and their user id. Optionally filter by username or user ID to retrieve a single user.
+Return usernames and their user IDs. Optionally filter by username or user ID to retrieve specific users (up to 100).
 
 #### Base Command
 

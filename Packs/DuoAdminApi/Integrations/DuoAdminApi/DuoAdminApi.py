@@ -1,5 +1,6 @@
 # imports
 import calendar
+import traceback
 
 import demistomock as demisto  # noqa: F401
 import duo_client
@@ -188,7 +189,9 @@ USER_NOT_FOUND_MESSAGE = "No user found matching the given {field}: {value}."
 MAX_USERS_PER_LOOKUP = 100  # Duo accepts up to 100 values in username_list / user_id_list
 
 
-def fetch_users(admin_api, username_list: list[str] | None = None, user_id_list: list[str] | None = None) -> list:
+def fetch_users(
+    admin_api: duo_client.Admin, username_list: list[str] | None = None, user_id_list: list[str] | None = None
+) -> list[dict[str, Any]]:
     """Fetch users from Duo, optionally filtered by usernames or user IDs.
 
     Uses the Retrieve Users endpoint (GET /admin/v1/users) with the `username_list` / `user_id_list`
@@ -220,11 +223,12 @@ def fetch_users(admin_api, username_list: list[str] | None = None, user_id_list:
         # Return a readable "no user found" message instead of a raw 404 error.
         if getattr(e, "status", None) == 404:
             demisto.debug(f"No user found (HTTP 404): {e}")
+            demisto.debug(traceback.format_exc())
             return []
         raise
 
 
-def get_all_users(admin_api, args: dict | None = None):
+def get_all_users(admin_api: duo_client.Admin, args: dict[str, Any] | None = None) -> None:
     args = args or {}
     username_list = argToList(args.get("username_list"))
     user_id_list = argToList(args.get("user_id_list"))

@@ -137,7 +137,7 @@ script:
       required: true
     description: Delete a u2f token.
     name: duoadmin-delete-u2f-token
-  - description: Return usernames and their user id. Optionally filter by username or user ID to retrieve a specific users.
+  - description: Return usernames and their user IDs. Optionally filter by username or user ID to retrieve specific users (up to 100).
     name: duoadmin-get-users
     outputs:
     - contextPath: DuoAdmin.UserDetails.username

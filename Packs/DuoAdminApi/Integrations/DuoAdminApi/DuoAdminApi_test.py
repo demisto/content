@@ -176,7 +176,6 @@ def test_get_users_both_args_raises(mocker):
     Then
     - Validate a readable error is raised and no API call is made.
     """
-    import pytest
     from DuoAdminApi import get_all_users
 
     client = mock_client()
