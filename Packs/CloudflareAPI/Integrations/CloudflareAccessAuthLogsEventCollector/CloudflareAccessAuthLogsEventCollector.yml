@@ -1,0 +1,91 @@
+commonfields:
+  id: Cloudflare Access Authentication Logs Event Collector
+  version: -1
+name: Cloudflare Access Authentication Logs Event Collector
+display: Cloudflare Access Authentication Logs Event Collector
+category: Analytics & SIEM
+description: Collect Zero Trust Access authentication logs from Cloudflare and ingest them into Cortex XSIAM.
+configuration:
+- display: Server URL
+  name: url
+  type: 0
+  required: true
+  defaultvalue: https://api.cloudflare.com/client/v4
+  additionalinfo: The Cloudflare API base URL.
+- display: API Token
+  name: credentials
+  type: 9
+  required: true
+  displaypassword: API Token
+  hiddenusername: true
+  additionalinfo: 'A Cloudflare API Token with the "Access: Audit Logs Read" permission (add "Account Settings Read" if your configuration requires it), scoped to the account. Provide the token in the password field.'
+- display: Account IDs
+  name: account_ids
+  type: 0
+  required: true
+  additionalinfo: A comma-separated list of Cloudflare account IDs to collect Access authentication logs from.
+- display: First fetch time
+  name: first_fetch
+  type: 0
+  required: false
+  defaultvalue: 3 days
+  additionalinfo: 'The time range to fetch on the first run (e.g. "3 days", "12 hours").'
+- display: Maximum number of events per account per fetch
+  name: max_fetch
+  type: 0
+  required: false
+  defaultvalue: "5000"
+  advanced: true
+  additionalinfo: The maximum number of Access log events to fetch per account on each run.
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  advanced: true
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.13.10404775
+  isfetchevents: true
+  defaultEnabled: true
+  commands:
+  - name: cloudflare-access-auth-logs-get-events
+    description: Manual command to retrieve and preview Cloudflare Access authentication log events. Used for testing and development.
+    arguments:
+    - name: account_ids
+      description: A comma-separated list of Cloudflare account IDs. Defaults to the instance-configured account IDs.
+      isArray: true
+    - name: since
+      description: 'The time range to fetch events from (e.g. "3 days", "12 hours").'
+      defaultValue: 3 days
+    - name: limit
+      description: The maximum number of events to return per account.
+      defaultValue: "50"
+    - name: should_push_events
+      description: If true, the fetched events are also pushed to the XSIAM dataset. Defaults to false.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+    outputs: []
+fromversion: 6.8.0
+defaultEnabled: true
+marketplaces:
+- marketplacev2
+- platform
+supportedModules:
+- C1
+- C3
+- X1
+- X3
+- X5
+- ENT_PLUS
+tests:
+- No tests (auto formatted)
