@@ -5388,14 +5388,14 @@ def format_rule(rule_json: dict | list, security_rule_name: str):
     return CommandResults(outputs_prefix="Azure.NSGRule", outputs_key_field="id", outputs=rule_json, readable_output=hr)
 
 
-def set_etag_fields(resource: dict) -> None:
+def set_etag_fields(resource: dict[str, Any]) -> None:
     """
     Keeps the original ETag of a resource under the "originalETag" key, and cleans up the "etag" key
-    by removing the "W/\\"" prefix and the "\\"" suffix (kept for backward compatibility).
+    by removing the weak validator prefix ("W/") and the surrounding quotes (kept for backward compatibility).
     Args:
         resource: The resource returned from the Azure API. Updated in place.
     """
-    original_etag = resource.get("etag", "")
+    original_etag = resource.get("etag") or ""
     resource["originalETag"] = original_etag
     resource["etag"] = original_etag[3:-1]
 

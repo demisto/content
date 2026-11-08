@@ -2918,11 +2918,12 @@ def test_get_monitor_log_profile_error_handling(mocker, client):
             'W/"00000000-0000-0000-0000-000000000000"',
         ),
         ({}, "", ""),
+        ({"etag": None}, "", ""),
     ],
 )
 def test_set_etag_fields(resource, expected_etag, expected_original_etag):
     """
-    Given: An Azure resource with a weak ETag (W/"...") or without an ETag.
+    Given: An Azure resource with a weak ETag (W/"..."), a null ETag, or without an ETag.
     When: set_etag_fields is called.
     Then: The "etag" key holds the cleaned-up ETag (backward compatible), and the "originalETag" key
           holds the original ETag exactly as returned by Azure.
