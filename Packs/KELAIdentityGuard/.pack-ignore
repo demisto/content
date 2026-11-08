@@ -1,0 +1,4 @@
+# Add linter/validation exceptions here as they come up while running
+# `demisto-sdk validate` and `demisto-sdk lint`, e.g.:
+# [file:KELAIdentityGuard.yml]
+# ignore=BA108
