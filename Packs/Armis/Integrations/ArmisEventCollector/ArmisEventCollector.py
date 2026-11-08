@@ -1454,18 +1454,27 @@ def fetch_events(
             type_start = time.monotonic()
             safe_debug(f"Starting sequential fetch for {event_type} (max: {event_max_fetch}, stream={stream_this})")
 
-            fetch_by_event_type(
-                client,
-                EVENT_TYPES[event_type],
-                events,
-                event_max_fetch,
-                last_run,
-                next_run,
-                fetch_start_time,
-                fetch_delay=fetch_delay,
-                stream=stream_this,
-                max_pagination_seconds=max_pagination_seconds,
-            )
+            try:
+                fetch_by_event_type(
+                    client,
+                    EVENT_TYPES[event_type],
+                    events,
+                    event_max_fetch,
+                    last_run,
+                    next_run,
+                    fetch_start_time,
+                    fetch_delay=fetch_delay,
+                    stream=stream_this,
+                    max_pagination_seconds=max_pagination_seconds,
+                )
+            except Exception:
+                if enable_streaming:  # periodic fetch-events only, never the manual armis-get-events
+                    # Persist the progress of event types that already succeeded (e.g. alerts already
+                    # shipped) so they are not re-sent next cycle; the failed type keeps its old cursor.
+                    _wait_for_enrichment(enrichment_future, enrichment_executor)
+                    demisto.debug(f"Fetching {event_type} failed. Saving the progress of the event types that succeeded.")
+                    demisto.setLastRun({**last_run, **next_run})
+                raise
 
             type_duration = time.monotonic() - type_start
             type_count = len(events.get(EVENT_TYPES[event_type].dataset_name, []))

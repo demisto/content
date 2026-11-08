@@ -3060,3 +3060,70 @@ class TestHandleFetchedEventsNextRunLogging:
         assert "id-1" not in summary_logs[0]
         assert "2023-01-01T01:00:17" in summary_logs[0]
         assert mock_set_last_run.call_args.args[0][ACT_IDS] == ids
+
+
+class TestSequentialFailureKeepsProgress:
+    def test_alerts_progress_saved_when_activities_fails(self, mocker, dummy_client):
+        """
+        Given: Alerts and Activities fetched in the same cycle (sequential path), and the Activities
+               request fails with an API error after the alerts were already fetched.
+        When:  fetch_events runs as the periodic fetch (streaming enabled).
+        Then:  the error is still raised, and the last run is saved first with the new alerts cursor
+               and the unchanged activities cursor, so the alerts are not re-sent next cycle.
+        """
+        last_run = {
+            "alerts_last_fetch_time": "2026-11-04T13:08:45",
+            "activity_last_fetch_time": "2026-11-03T17:31:34",
+            "activity_last_fetch_next_field": 0,
+        }
+
+        def fake_fetch_by_event_type(client, event_type, events, max_fetch, last_run, next_run, *args, **kwargs):
+            if event_type.type == "alerts":
+                next_run["alerts_last_fetch_time"] = "2026-11-04T14:13:02"
+                return
+            raise DemistoException("Error in API call [500] - Internal Server Error")
+
+        mocker.patch("ArmisEventCollector.fetch_by_event_type", side_effect=fake_fetch_by_event_type)
+        mock_set_last_run = mocker.patch("ArmisEventCollector.demisto.setLastRun")
+
+        with pytest.raises(DemistoException, match="500"):
+            fetch_events(
+                client=dummy_client,
+                max_fetch=10,
+                devices_max_fetch=10,
+                last_run=last_run,
+                fetch_start_time=None,
+                event_types_to_fetch=["Alerts", "Activities"],
+                device_fetch_interval=None,
+                use_multithreading=True,
+                context_manager=IntegrationContextManager(),
+                enable_streaming=True,
+            )
+
+        saved = mock_set_last_run.call_args.args[0]
+        assert saved["alerts_last_fetch_time"] == "2026-11-04T14:13:02"
+        assert saved["activity_last_fetch_time"] == "2026-11-03T17:31:34"
+
+    def test_last_run_not_touched_for_manual_get_events(self, mocker, dummy_client):
+        """
+        Given: the manual armis-get-events path (streaming disabled) and a failing Activities fetch.
+        When:  fetch_events runs.
+        Then:  the error is raised and the last run is not modified.
+        """
+        mocker.patch("ArmisEventCollector.fetch_by_event_type", side_effect=DemistoException("boom"))
+        mock_set_last_run = mocker.patch("ArmisEventCollector.demisto.setLastRun")
+
+        with pytest.raises(DemistoException, match="boom"):
+            fetch_events(
+                client=dummy_client,
+                max_fetch=10,
+                devices_max_fetch=10,
+                last_run={},
+                fetch_start_time=None,
+                event_types_to_fetch=["Activities"],
+                device_fetch_interval=None,
+                use_multithreading=False,
+                enable_streaming=False,
+            )
+
+        mock_set_last_run.assert_not_called()
