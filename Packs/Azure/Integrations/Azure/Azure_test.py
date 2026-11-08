@@ -1311,7 +1311,7 @@ def test_sql_firewall_rule_replace_command_with_entry_id(mocker, client, mock_pa
     mocker.patch.object(client, "sql_firewall_rule_replace", return_value=raw)
     mocker.patch("Azure.demisto.getFilePath", return_value={"path": str(tmp_file)})
 
-    args = {"server_name": "integration", "entry_id": "123@456"}
+    args = {"server_name": "integration", "entry_id": "123456"}
     result = sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
 
     assert "Successfully updated the firewall rules" in result.readable_output
@@ -1334,7 +1334,7 @@ def test_sql_firewall_rule_replace_command_entry_id_with_other_args(mocker, clie
     When: sql_firewall_rule_replace_command is called.
     Then: A DemistoException is raised.
     """
-    args = {"server_name": "integration", "entry_id": "123@456", **extra_arg}
+    args = {"server_name": "integration", "entry_id": "123456", **extra_arg}
     with pytest.raises(DemistoException) as exc:
         sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
     assert "When 'entry_id' is provided" in str(exc.value)
