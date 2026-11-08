@@ -30,6 +30,7 @@ urllib3.disable_warnings(InsecureRequestWarning)
 print = timestamped_print
 INTERNAL_LABEL = "Internal PR"
 MAPPING_LABEL = "Mapping Contribution"
+SKIP_AI_REVIEW_LABEL = "skip-ai-review"
 XSIAM_CONTENT = [
     "ModelingRules",
     "ParsingRules",
@@ -250,6 +251,8 @@ def prepare_labels(pr: PullRequest):
     labels.append("ready-for-pipeline-running")
     if MAPPING_LABEL in labels:
         labels.remove(MAPPING_LABEL)
+    if SKIP_AI_REVIEW_LABEL not in labels:
+        labels.append(SKIP_AI_REVIEW_LABEL)
     return labels
 
 
