@@ -545,6 +545,11 @@
         <td>ID of Incident, Get it from previous command</td>
         <td>Required</td>
     </tr>
+    <tr>
+        <td>extend_attachments</td>
+        <td>If true, the attachment list will also contain the screenshot and submission attachment types (if available). By default, only payload attachments are included. Possible values are: true, false. Default is false.</td>
+        <td>Optional</td>
+    </tr>
     </tbody>
 </table>
 
