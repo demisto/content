@@ -1,0 +1,3 @@
+!kela-identityguard-search-incidents workspace_id=1234 severity=critical status=UNRESOLVED limit=20
+!kela-identityguard-search-bot-markets workspace_id=1234 statuses=pending
+!kela-identityguard-search-cookie-incidents workspace_id=1234 severity=CRITICAL status=UNRESOLVED
