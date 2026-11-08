@@ -17,6 +17,7 @@ PRODUCT = "maas360 security"
 TOKEN_VALIDITY_DURATION = 3600
 PAGE_SIZE = 250
 DEFAULT_MAX_FETCH = 1250
+DATE_OUT_OF_RANGE_ERROR = "Either date passed is/are out of range"
 
 
 class AuditEventType(Enum):
@@ -402,17 +403,31 @@ def fetch_events(
     for event_type in AuditEventType:
         last_run_params = json.loads(last_run.get(event_type.name, "{}")) or {}
         max_fetch_amount = max_events_per_fetch.get(event_type, 0)
+        from_last_run = "from_date" in last_run_params
         from_date = last_run_params.get("from_date", first_fetch_time)
         to_date = last_run_params.get("to_date", int(time.time() * 1000))
         page_offset = last_run_params.get("page_offset", 0)
 
-        audit_events, next_page_offset, pages_remaining = client.fetch_admin_audit_events(
-            event_type=event_type,
-            from_date=str(from_date),
-            to_date=str(to_date),
-            page_offset=page_offset,
-            max_fetch_amount=max_fetch_amount,
-        )
+        try:
+            audit_events, next_page_offset, pages_remaining = client.fetch_admin_audit_events(
+                event_type=event_type,
+                from_date=str(from_date),
+                to_date=str(to_date),
+                page_offset=page_offset,
+                max_fetch_amount=max_fetch_amount,
+            )
+        except DemistoException as e:
+            is_stale_last_run = from_last_run and DATE_OUT_OF_RANGE_ERROR in str(e)
+            if not is_stale_last_run:
+                raise
+
+            # The API rejects old dates, so an instance disabled for a long time fails every fetch until reset.
+            demisto.debug(f"{event_type.name}: API rejected {from_date=} {to_date=} {page_offset=}: {e}")
+            last_run_date = timestamp_to_datestring(from_date, date_format=DATE_FORMAT, is_utc=True)
+            raise DemistoException(
+                f"The API rejected the {event_type.name} last run date ({last_run_date}) as out of range. "
+                "Reset the instance's Last Run to resume fetching."
+            ) from e
 
         demisto.debug(f"Fetched {len(audit_events)} {event_type.name} events.")
         events.extend(audit_events)

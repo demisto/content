@@ -10,6 +10,7 @@ from XSOARmirroring import (
     fetch_incidents,
     get_mapping_fields_command,
     get_modified_remote_data_command,
+    get_remote_data_command,
     update_remote_system_command,
     validate_and_prepare_basic_params,
 )
@@ -887,6 +888,79 @@ def test_get_modified_remote_data_clears_flag_on_success(mocker):
     assert MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY not in integration_context
     mock_set_context.assert_called_once()
     assert result.modified_incident_ids == ["77"]
+
+
+def test_add_incident_entry_uploads_file_as_multipart(mocker, requests_mock, tmp_path):
+    """
+    Given:
+        - A client configured with default headers that include "Content-Type: application/json"
+          (as created in main()).
+        - A file entry (type 3) to mirror to the remote XSOAR.
+
+    When:
+        - Calling Client.add_incident_entry.
+
+    Then:
+        - The /entry/upload request is sent as multipart/form-data with a boundary (not application/json),
+          so XSOAR 8 can parse it (XSUP-79801).
+        - The authentication headers are still sent on the upload request.
+        - The follow-up JSON request (/entry/note) still uses "Content-Type: application/json".
+    """
+    file_path = tmp_path / "evidence.txt"
+    file_path.write_bytes(b"attachment content")
+    mocker.patch("XSOARmirroring.demisto.getFilePath", return_value={"name": "evidence.txt", "path": str(file_path)})
+    upload_mock = requests_mock.post("https://test.com/xsoar/entry/upload/123", json={})
+    note_mock = requests_mock.post("https://test.com/xsoar/entry/note", json={})
+    client = Client(
+        base_url="https://test.com/xsoar",
+        headers={"Authorization": "api-key", "x-xdr-auth-id": "1", "Content-Type": "application/json"},
+    )
+
+    client.add_incident_entry(incident_id="123", entry={"type": EntryType.FILE, "id": "1@1", "note": True, "contents": ""})
+
+    upload_request = upload_mock.last_request
+    assert upload_request.headers["Content-Type"].startswith("multipart/form-data; boundary=")
+    assert upload_request.headers["Authorization"] == "api-key"
+    assert upload_request.headers["x-xdr-auth-id"] == "1"
+    assert b"attachment content" in upload_request.body
+    assert note_mock.last_request.headers["Content-Type"] == "application/json"
+
+
+@pytest.mark.parametrize(
+    "remote_tags, expected_tags",
+    [
+        (["mirror-out", "evidence"], ["mirror-out", "evidence"]),
+        (None, None),
+    ],
+)
+def test_get_remote_data_file_entry_keeps_tags(mocker, remote_tags, expected_tags):
+    """
+    Given:
+        - A remote incident with a file entry, with or without tags.
+
+    When:
+        - Running get_remote_data_command (incoming mirroring).
+
+    Then:
+        - The mirrored file entry carries the same tags as the remote entry.
+        - No "Tags" key is added when the remote entry has no tags.
+    """
+    timestamp = (datetime.now(UTC) - timedelta(hours=1)).strftime(XSOAR_DATE_FORMAT)
+    remote_entry = {"id": "5@26916", "file": "evidence.txt", "tags": remote_tags}
+
+    mocker.patch("XSOARmirroring.get_integration_context", return_value={})
+    mocker.patch.object(Client, "get_incident", return_value={"id": "26916", "modified": timestamp, "occurred": timestamp})
+    mocker.patch.object(Client, "get_incident_entries", return_value=[remote_entry])
+    mocker.patch.object(Client, "get_file_entry", return_value=b"file content")
+    mocker.patch("XSOARmirroring.fileResult", return_value={"Type": EntryType.FILE, "File": "evidence.txt", "FileID": "x"})
+
+    client = Client(base_url="https://test.com")
+    args = {"id": "26916", "lastUpdate": (datetime.now(UTC) - timedelta(days=1)).isoformat()}
+    response = get_remote_data_command(client, args, params={})
+
+    assert len(response.entries) == 1
+    assert response.entries[0].get("Tags") == expected_tags
+    assert ("Tags" in response.entries[0]) == bool(expected_tags)
 
 
 def test_get_modified_remote_data_no_flag_cleared_when_context_clean(mocker):
