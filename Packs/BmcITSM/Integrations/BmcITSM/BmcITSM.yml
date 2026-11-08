@@ -165,9 +165,6 @@ configuration:
   - platform
   required: false
   section: Collect
-  supportedModules:
-  - agentix
-  - xsiam
 - additionalinfo: When selected, closing the BMC Helix ITSM ticket is mirrored in Cortex XSOAR.
   defaultvalue: "false"
   display: Close Mirrored XSOAR Incident
@@ -178,9 +175,6 @@ configuration:
   - platform
   required: false
   section: Collect
-  supportedModules:
-  - agentix
-  - xsiam
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in BMC Helix ITSM.
   defaultvalue: "false"
   display: Close Mirrored BMC Helix ITSM Ticket
@@ -191,9 +185,6 @@ configuration:
   - platform
   required: false
   section: Collect
-  supportedModules:
-  - agentix
-  - xsiam
 - name: proxy
   display: Use system proxy settings
   defaultvalue: "false"
