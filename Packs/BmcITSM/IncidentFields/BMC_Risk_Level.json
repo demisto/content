@@ -40,5 +40,9 @@
             "type": "singleSelect",
             "name": "Bmc Risk Level"
         }
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

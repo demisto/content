@@ -43,5 +43,9 @@
             "type": "shortText",
             "name": "Bmc Submitter"
         }
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

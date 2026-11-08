@@ -22,5 +22,9 @@
     "disabled": false,
     "reputationCalc": 0,
     "fromVersion": "5.0.0",
-    "layout": "Bmc Remedyforce Incident"
+    "layout": "Bmc Remedyforce Incident",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

@@ -34,5 +34,9 @@
             "type": "shortText",
             "name": "Bmc Reason For Change"
         }
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

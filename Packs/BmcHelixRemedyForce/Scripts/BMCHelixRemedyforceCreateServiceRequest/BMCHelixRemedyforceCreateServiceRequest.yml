@@ -74,3 +74,6 @@ fromversion: 5.0.0
 dockerimage: demisto/python3:3.12.13.10116658
 tests:
 - No tests (auto formatted)
+supportedModules:
+- agentix
+- xsiam

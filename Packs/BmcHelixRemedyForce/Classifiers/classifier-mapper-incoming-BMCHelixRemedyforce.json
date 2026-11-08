@@ -24,7 +24,7 @@
      "complex": null,
      "simple": "BMCServiceDesk__Client_Name__c"
     },
-    "Bmc Remedyforce Configuration Item \/ Asset": {
+    "Bmc Remedyforce Configuration Item / Asset": {
      "complex": null,
      "simple": "BMCServiceDesk__FKBMC_BaseElement__r.Name"
     },
@@ -201,5 +201,9 @@
   }
  },
  "version": -1,
- "fromVersion": "6.0.0"
+ "fromVersion": "6.0.0",
+ "supportedModules": [
+  "agentix",
+  "xsiam"
+ ]
 }

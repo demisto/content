@@ -22,5 +22,9 @@
     "disabled": false,
     "reputationCalc": 0,
     "fromVersion": "5.0.0",
-    "layout": "Bmc Remedyforce Service Request"
+    "layout": "Bmc Remedyforce Service Request",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }
