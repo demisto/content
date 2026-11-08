@@ -97,6 +97,7 @@
         "Jira"
     ],
     "supportedModules": [
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }
