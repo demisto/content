@@ -501,4 +501,67 @@ def test_get_incident_by_id_command(mocker):
     assert "INC0660360" in str(human_readable)
     assert raw_response == mock_response
     assert context_entry is not None
-    Client.get_incident_by_id.assert_called_once_with("INC0660360")
+    Client.get_incident_by_id.assert_called_once_with("INC0660360", extend_attachments=False)
+
+
+def test_get_incident_by_id_sends_extend_attachments_param(mocker):
+    """
+    Given: extend_attachments set to True / False.
+    When: Calling Client.get_incident_by_id.
+    Then: The extend_attachments query param is sent only when True.
+    """
+    from PhishLabsIOC_EIR import Client
+
+    client = Client(base_url="https://test.com/api/v1", verify=False)
+    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+
+    client.get_incident_by_id("INC1", extend_attachments=True)
+    http_request.assert_called_with("GET", url_suffix="/incidents/EIR/INC1", params={"extend_attachments": "true"})
+
+    client.get_incident_by_id("INC1")
+    http_request.assert_called_with("GET", url_suffix="/incidents/EIR/INC1", params=None)
+
+
+def test_get_incident_by_id_command_extend_attachments(mocker):
+    """
+    Given: An incident with payload, screenshot and submission attachments carrying extra fields.
+    When: Running get_incident_by_id_command with extend_attachments=true.
+    Then: The flag is passed to the client, the raw response is returned in full and all attachments are in the context.
+    """
+    from PhishLabsIOC_EIR import Client, get_incident_by_id_command
+
+    client = Client(base_url="https://test.com/api/v1", verify=False, reliability="B - Usually reliable")
+    attachments = [
+        {
+            "fileName": "payload.pdf",
+            "mimeType": "application/pdf",
+            "md5": "a",
+            "sha256": "b",
+            "malicious": "true",
+            "type": "payload",
+        },
+        {
+            "fileName": "shot.png",
+            "mimeType": "image/png",
+            "md5": "c",
+            "sha256": "d",
+            "type": "screenshot",
+            "url": "https://google.com/screenshot",
+        },
+        {"fileName": "orig.eml", "mimeType": "message/rfc822", "md5": "e", "sha256": "f", "type": "submission"},
+    ]
+    mock_response = {
+        "incidents": [{"id": "INC1", "modified": "2019-11-01T21:39:57Z", "details": {"urls": [], "attachments": attachments}}]
+    }
+    mocker.patch.object(Client, "get_incident_by_id", return_value=mock_response)
+
+    _, context_entry, raw_response = get_incident_by_id_command(client, {"incident_id": "INC1", "extend_attachments": "true"})
+
+    Client.get_incident_by_id.assert_called_once_with("INC1", extend_attachments=True)
+    assert raw_response == mock_response
+    eir_key = next(key for key in context_entry if key.startswith("PhishLabsIOC"))
+    context_attachments = context_entry[eir_key]["EIR"][0]["Email"]["Attachment"]
+    assert len(context_attachments) == 3
+    assert context_attachments[0]["fileName"] == "payload.pdf"
+    assert context_attachments[1]["fileName"] == "shot.png"
+    assert context_attachments[2]["fileName"] == "orig.eml"
