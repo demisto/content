@@ -80,8 +80,6 @@ The following steps must be done by the **Owner** of the Enterprise Grid organiz
 
 ### Cortex XSIAM Side - Slack Event Collector
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 #### Configuration Parameters
 
  | **Parameter** | **Description** | **Required** |
