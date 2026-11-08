@@ -416,6 +416,40 @@ def test_fetch_events(mocker, client, admin_changes_request, login_reports_reque
             assert event_time == expected_time
 
 
+OUT_OF_RANGE_RESPONSE = {
+    "response": {"description": "Either date passed is/are out of range OR Not valid date", "status": "INVALID_INPUT"}
+}
+
+
+@pytest.mark.parametrize(
+    "last_run, expect_reset_message",
+    [
+        pytest.param({AuditEventType.ChangesAudit.name: json.dumps({"from_date": 1, "page_offset": 0})}, True, id="last run"),
+        pytest.param({}, False, id="first fetch"),
+    ],
+)
+def test_fetch_events_out_of_range_error(mocker, requests_mock, client, last_run, expect_reset_message):
+    """
+    Given: The API rejects the date range with 'out of range'.
+    When: fetch-events runs.
+    Then: Asks to reset Last Run only if the date came from the last run, else re-raises the API error.
+    """
+    from IBMMaaS360SecurityEventCollector import DemistoException, fetch_events
+
+    mocker.patch.object(client, "get_auth_token", return_value=AUTH_TOKEN)
+    requests_mock.get(f"{BASE_URL}{AUDIT_CHANGES_SUFFIX}", status_code=400, json=OUT_OF_RANGE_RESPONSE)
+
+    with pytest.raises(DemistoException) as e:
+        fetch_events(
+            client=client,
+            last_run=last_run,
+            first_fetch_time=date_to_timestamp(TEST_TIME),
+            max_events_per_fetch={AuditEventType.ChangesAudit: PAGE_SIZE},
+        )
+
+    assert ("Reset the instance's Last Run" in str(e.value)) == expect_reset_message
+
+
 def test_test_module_command_success(requests_mock, client, admin_changes_request, login_reports_request):
     """
     Given:
