@@ -9493,12 +9493,13 @@ class SSM:
     @staticmethod
     def parameters_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
-        Lists the SSM Parameter Store parameters in the current AWS account and Region.
+        Lists the SSM Parameter Store parameters in the current AWS account and Region,
+        including parameters shared with the account when the shared option is enabled.
         The AWS API returns the parameter metadata only, it never returns the parameter values.
 
         Args:
             client (BotoClient): The boto3 client for SSM service.
-            args (Dict[str, Any]): Command arguments including optional filters, include_tags, limit, and next_token.
+            args (Dict[str, Any]): Command arguments including optional filters, shared, limit, and next_token.
 
         Returns:
             CommandResults: Results containing the list of SSM parameters with pagination token.
@@ -9506,6 +9507,7 @@ class SSM:
         kwargs: Dict[str, Any] = remove_empty_elements(
             {
                 "ParameterFilters": parse_parameter_filters(args.get("filters")),
+                "Shared": arg_to_bool_or_none(args.get("shared")),
             }
         )
         kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
@@ -9523,24 +9525,10 @@ class SSM:
 
         # With filters, AWS can return an empty page that still has a NextToken, so only stop when both are missing.
         if not parameters and not next_token:
-            return CommandResults(readable_output="No SSM parameters found.")
-
-        headers = [
-            "Name",
-            "Type",
-            "DataType",
-            "Tier",
-            "Version",
-            "LastModifiedDate",
-            "LastModifiedUser",
-            "Description",
-        ]
-        if argToBoolean(args.get("include_tags", False)):
-            print_debug_logs(client, f"Retrieving tags for {len(parameters)} SSM parameters.")
-            for parameter in parameters:
-                tags_response = client.list_tags_for_resource(ResourceType="Parameter", ResourceId=parameter.get("Name"))
-                parameter["Tags"] = tags_response.get("TagList", [])
-            headers.append("Tags")
+            return CommandResults(
+                readable_output="No SSM parameters found.",
+                outputs={"AWS.SSM(true)": {"ParametersNextToken": None}},
+            )
 
         # Outputs are intentionally not cleaned, so a missing NextToken is written as null and clears a stale token.
         outputs = {
@@ -9553,7 +9541,7 @@ class SSM:
             readable_output=tableToMarkdown(
                 "AWS SSM Parameters",
                 parameters,
-                headers=headers,
+                headers=["Name", "Type", "DataType", "Tier", "Version", "LastModifiedDate", "LastModifiedUser", "Description"],
                 headerTransform=pascalToSpace,
                 removeNull=True,
             ),

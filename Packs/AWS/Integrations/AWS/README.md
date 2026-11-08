@@ -6594,7 +6594,7 @@ Returns all Systems Manager (SSM) documents in the current AWS account and Regio
 ### aws-ssm-parameters-list
 
 ***
-Lists the Systems Manager (SSM) Parameter Store parameters in the current AWS account and Region. Returns the parameter metadata only, never the parameter values. Required IAM Permissions: ssm:DescribeParameters, ssm:ListTagsForResource (only when include_tags is true).
+Lists all Systems Manager (SSM) parameters in your current AWS account and Region, including parameters shared with your account when the 'Shared' option is enabled. Returns the parameter metadata only, never the parameter values. Required IAM Permissions: ssm:DescribeParameters.
 
 #### Base Command
 
@@ -6607,9 +6607,9 @@ Lists the Systems Manager (SSM) Parameter Store parameters in the current AWS ac
 | account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
 | filters | A semicolon-separated list of filters in the format key=&lt;key&gt;,option=&lt;option&gt;,values=&lt;value1&gt;,&lt;value2&gt;. The option pair is optional and defaults to Equals when omitted. Valid filter keys: Name, Type, KeyId, Path, Tier, DataType, and tag:&lt;TagName&gt;. Valid options: Equals and BeginsWith for every key except Path, Contains for the Name key only, and Recursive or OneLevel for the Path key only. For example: key=Name,option=Contains,values=prod;key=Type,values=SecureString. | Optional |
-| include_tags | Whether to also return the tags of every parameter. Requires an additional API call per returned parameter. To filter by a tag instead, use the tag:&lt;TagName&gt; filter key, which requires no additional calls. Possible values are: true, false. Default is false. | Optional |
-| limit | The maximum number of parameters to return. Minimum 1, maximum 50. Default is 50. | Optional |
-| next_token | The token for the next set of items to return. Received from a previous call. Use AWS.SSM.ParametersNextToken. | Optional |
+| shared | Whether to list the parameters that are shared with your account \(the 'Shared' option\) instead of the parameters owned by your account. Possible values are: true, false. | Optional |
+| limit | The maximum number of parameters to return. Default is 50. | Optional |
+| next_token | The token for pagination when retrieving large result sets. Use the AWS.SSM.ParametersNextToken value from a previous response to continue listing parameters. | Optional |
 
 #### Context Output
 
@@ -6629,8 +6629,6 @@ Lists the Systems Manager (SSM) Parameter Store parameters in the current AWS ac
 | AWS.SSM.Parameters.Policies.PolicyText | String | The JSON text of the policy. |
 | AWS.SSM.Parameters.Policies.PolicyType | String | The type of policy. Either Expiration, ExpirationNotification, or NoChangeNotification. |
 | AWS.SSM.Parameters.Policies.PolicyStatus | String | The status of the policy. Either Pending, Finished, Failed, or InProgress. |
-| AWS.SSM.Parameters.Tags.Key | String | The name of the tag. Returned only when include_tags is true. |
-| AWS.SSM.Parameters.Tags.Value | String | The value of the tag. Returned only when include_tags is true. |
 | AWS.SSM.ParametersNextToken | String | The token to use when requesting the next set of items. Empty string if no additional items exist. |
 
 ### aws-network-firewall-firewall-policies-list

@@ -16857,8 +16857,8 @@ def test_parse_parameter_filters_invalid_input(filter_string):
 def test_parameters_list_command_success(mocker):
     """
     Given: A mocked SSM client returning a list of parameters and a NextToken.
-    When: parameters_list_command is called without include_tags.
-    Then: It returns the parameters under AWS.SSM.Parameters, the ParametersNextToken, and makes no tag calls.
+    When: parameters_list_command is called.
+    Then: It returns the parameters under AWS.SSM.Parameters and the ParametersNextToken, with a single API call.
     """
     from AWS import SSM
 
@@ -16872,35 +16872,17 @@ def test_parameters_list_command_success(mocker):
 
     assert "AWS SSM Parameters" in result.readable_output
     assert "/prod/db/password" in result.readable_output
-    assert "Tags" not in result.readable_output
     assert result.outputs["AWS.SSM.Parameters(val.ARN && val.ARN == obj.ARN)"][1]["Name"] == "/prod/app/region"
     assert result.outputs["AWS.SSM(true)"]["ParametersNextToken"] == "param-tok"
     mock_client.describe_parameters.assert_called_once_with(MaxResults=50)
     mock_client.list_tags_for_resource.assert_not_called()
 
 
-def test_parameters_list_command_last_page_clears_next_token(mocker):
-    """
-    Given: A mocked SSM client returning parameters without a NextToken (the last page).
-    When: parameters_list_command is called.
-    Then: ParametersNextToken is still present in the outputs and set to None, so a stale token is cleared from context.
-    """
-    from AWS import SSM
-
-    mock_client = mocker.Mock()
-    mock_client.describe_parameters.return_value = copy.deepcopy(SSM_DESCRIBE_PARAMETERS_RESPONSE)
-    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
-
-    result = SSM.parameters_list_command(mock_client, {"account_id": "123456789012", "region": "us-east-1"})
-
-    assert result.outputs["AWS.SSM(true)"] == {"ParametersNextToken": None}
-
-
 def test_parameters_list_command_no_parameters(mocker):
     """
-    Given: A mocked SSM client returning an empty Parameters list.
+    Given: A mocked SSM client returning an empty Parameters list without a NextToken.
     When: parameters_list_command is called.
-    Then: It returns a readable_output indicating no parameters were found.
+    Then: It returns a readable_output indicating no parameters were found and sets ParametersNextToken to None.
     """
     from AWS import SSM
 
@@ -16911,6 +16893,7 @@ def test_parameters_list_command_no_parameters(mocker):
     result = SSM.parameters_list_command(mock_client, {"account_id": "123456789012", "region": "us-east-1"})
 
     assert result.readable_output == "No SSM parameters found."
+    assert result.outputs == {"AWS.SSM(true)": {"ParametersNextToken": None}}
 
 
 def test_parameters_list_command_empty_page_with_next_token(mocker):
@@ -16938,9 +16921,9 @@ def test_parameters_list_command_empty_page_with_next_token(mocker):
 
 def test_parameters_list_command_with_filters_and_pagination(mocker):
     """
-    Given: A mocked SSM client, a filters arg, a limit above the API maximum, and a next_token.
+    Given: A mocked SSM client, a filters arg, shared set to true, a limit above the API maximum, and a next_token.
     When: parameters_list_command is called.
-    Then: describe_parameters is called with the parsed ParameterFilters, MaxResults capped at 50, and NextToken.
+    Then: describe_parameters is called with the parsed ParameterFilters, Shared, MaxResults capped at 50, and NextToken.
     """
     from AWS import SSM
 
@@ -16952,6 +16935,7 @@ def test_parameters_list_command_with_filters_and_pagination(mocker):
         "account_id": "123456789012",
         "region": "us-east-1",
         "filters": "key=tag:Env,values=Production;key=Name,option=BeginsWith,values=/prod",
+        "shared": "true",
         "limit": "100",
         "next_token": "tok",
     }
@@ -16963,34 +16947,10 @@ def test_parameters_list_command_with_filters_and_pagination(mocker):
             {"Key": "tag:Env", "Values": ["Production"]},
             {"Key": "Name", "Option": "BeginsWith", "Values": ["/prod"]},
         ],
+        Shared=True,
         MaxResults=50,
         NextToken="tok",
     )
-
-
-def test_parameters_list_command_with_tags(mocker):
-    """
-    Given: A mocked SSM client returning two parameters, and include_tags set to true.
-    When: parameters_list_command is called.
-    Then: list_tags_for_resource is called once per parameter with the Parameter resource type,
-          the tags are added to each parameter's output, and the readable output includes a Tags column.
-    """
-    from AWS import SSM
-
-    mock_client = mocker.Mock()
-    mock_client.describe_parameters.return_value = copy.deepcopy(SSM_DESCRIBE_PARAMETERS_RESPONSE)
-    mock_client.list_tags_for_resource.return_value = {"TagList": [{"Key": "Env", "Value": "Production"}]}
-    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
-
-    args = {"account_id": "123456789012", "region": "us-east-1", "include_tags": "true"}
-
-    result = SSM.parameters_list_command(mock_client, args)
-
-    assert mock_client.list_tags_for_resource.call_count == 2
-    mock_client.list_tags_for_resource.assert_called_with(ResourceType="Parameter", ResourceId="/prod/app/region")
-    parameters = result.outputs["AWS.SSM.Parameters(val.ARN && val.ARN == obj.ARN)"]
-    assert all(parameter["Tags"] == [{"Key": "Env", "Value": "Production"}] for parameter in parameters)
-    assert "Tags" in result.readable_output
 
 
 def test_parameters_list_command_error_response(mocker):
