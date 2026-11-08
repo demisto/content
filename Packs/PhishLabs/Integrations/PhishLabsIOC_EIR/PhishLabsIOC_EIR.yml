@@ -248,8 +248,8 @@ script:
       name: incident_id
       required: true
     - auto: PREDEFINED
-      defaultValue: 'false'
-      description: 'If true, the attachment list will also contain the screenshot and submission attachment types (if available). By default, only payload attachments are included.'
+      defaultvalue: 'false'
+      description: Whether the attachment list should also contain screenshot and submission attachment types (if available).
       name: extend_attachments
       predefined:
       - 'true'
