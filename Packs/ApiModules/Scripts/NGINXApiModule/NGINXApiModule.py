@@ -486,6 +486,17 @@ log_format edl_detailed
 NGINX_SERVER_CONF = """
 $log_format
 
+# Host header forwarded between the tiers. Clients such as load-balancer health
+# checks may send an HTTP/1.0 request with NO Host header. nginx accepts it, but
+# `$host` is then EMPTY (it falls back to the empty server_name). Tier 1 talks to
+# Tier 2 over HTTP/1.1, and an empty `Host:` there is rejected by Tier 2 with 400
+# ("client sent HTTP/1.1 request without "Host" header") before it reaches the app.
+# Fall back to `localhost` so the upstream request is always valid.
+map $host $upstream_host_header {
+    ""      localhost;
+    default $host;
+}
+
 # Per-URI concurrency zone used to FAIL (not queue) concurrent cold-MISS requests
 # for the same URI. Keyed on $request_uri so the limit is per-resource, not per-client.
 limit_conn_zone $request_uri zone=concurrent_conn_zone:1m;
@@ -546,6 +557,11 @@ proxy_cache_valid 429 0s;
 # `proxy_cache_use_stale timeout http_50x` from serving a previously-cached GOOD
 # copy on timeout - that stale-serving is desirable and is what we keep.
 proxy_cache_valid 500 502 503 504 0s;
+# NEVER cache client-side rejections either. The cache key does not include the
+# Host header (nor, without credentials, the Authorization header), so a single
+# malformed / unauthenticated request producing a 400/401/403 would otherwise be
+# served from cache (HIT/STALE) to EVERY client of that URI for the `any` TTL.
+proxy_cache_valid 400 401 403 0s;
 proxy_cache_valid any $cache_default_ttl;
 
 # Revalidation (use conditional requests when expired)
@@ -611,7 +627,8 @@ proxy_cache_background_update on;
         # Forward the real client identity through the chain so the Python (gevent)
         # upstream's WSGI middleware can log the actual firewall/client instead of
         # 127.0.0.1. Tier 2 forwards these on to the app.
-        proxy_set_header Host $host;
+        # Never forward an empty Host (see the `map` above) - Tier 2 would reject it with 400.
+        proxy_set_header Host $upstream_host_header;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
@@ -654,7 +671,7 @@ server {
         proxy_pass http://localhost:$serverport/;
 
         # Preserve the forwarded client identity headers set by Tier 1.
-        proxy_set_header Host $host;
+        proxy_set_header Host $upstream_host_header;
         proxy_set_header X-Real-IP $http_x_real_ip;
         proxy_set_header X-Forwarded-For $http_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
@@ -840,7 +857,10 @@ def nginx_log_process(nginx_process: subprocess.Popen):
         nginx_process.send_signal(int(SIGUSR1))
         gevent.sleep(0.5)  # sleep 0.5 to let nginx complete the roll
     if log_access:
-        with open(old_access) as f:
+        # errors="replace": the access log may contain arbitrary client-supplied bytes
+        # (URIs, user agents) that are not valid UTF-8. A strict decode would raise
+        # UnicodeDecodeError and permanently kill the log monitor greenlet.
+        with open(old_access, encoding="utf-8", errors="replace") as f:
             start = 1
             for lines in batch(f.readlines(), 100):
                 end = start + len(lines)
@@ -848,7 +868,7 @@ def nginx_log_process(nginx_process: subprocess.Popen):
                 start = end
         Path(old_access).unlink()
     if log_error:
-        with open(old_error) as f:
+        with open(old_error, encoding="utf-8", errors="replace") as f:
             start = 1
             for lines in batch(f.readlines(), 100):
                 end = start + len(lines)
@@ -866,7 +886,12 @@ def nginx_log_monitor_loop(nginx_process: subprocess.Popen):
     """
     while True:
         gevent.sleep(60)
-        nginx_log_process(nginx_process)
+        try:
+            nginx_log_process(nginx_process)
+        except Exception as e:
+            # Never let a single failed iteration kill the monitor: if it dies, logs are
+            # never rotated/dumped again for the lifetime of the container.
+            demisto.error(f"nginx log monitor iteration failed, will retry on next iteration: {e}\n{traceback.format_exc()}")
 
 
 def test_nginx_web_server(port: int, params: dict) -> requests.Response:
