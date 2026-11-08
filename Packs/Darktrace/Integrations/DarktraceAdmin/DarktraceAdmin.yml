@@ -264,7 +264,7 @@ script:
     - contextPath: Darktrace.Device.response
       description: POST action message response.
       type: String
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.15.14069087
   runonce: false
   script: '-'
   subtype: python3
