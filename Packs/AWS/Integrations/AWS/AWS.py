@@ -7465,35 +7465,25 @@ class ElasticBeanstalk:
     ]
 
     @staticmethod
-    def validate_environment_source_args(args: Dict[str, Any]) -> None:
+    def _build_create_environment_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Validates that exactly one of template_name, solution_stack_name or platform_arn is provided.
-
-        Args:
-            args (Dict[str, Any]): Command arguments.
-
-        Raises:
-            ValueError: If none or more than one of the arguments is provided.
-        """
-        source_args = ("template_name", "solution_stack_name", "platform_arn")
-        provided = [arg_name for arg_name in source_args if args.get(arg_name)]
-        if len(provided) != 1:
-            raise ValueError(
-                "You must provide exactly one of the following arguments: 'template_name', 'solution_stack_name' or "
-                f"'platform_arn'. Provided: {provided or 'none'}."
-            )
-
-    @staticmethod
-    def build_create_environment_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Builds the kwargs for the CreateEnvironment API call.
+        Validates the environment source arguments and builds the kwargs for the CreateEnvironment API call.
 
         Args:
             args (Dict[str, Any]): Command arguments.
 
         Returns:
             Dict[str, Any]: The CreateEnvironment kwargs without empty values.
+
+        Raises:
+            ValueError: If none or more than one of template_name, solution_stack_name and platform_arn is provided.
         """
+        provided = [name for name in ("template_name", "solution_stack_name", "platform_arn") if args.get(name)]
+        if len(provided) != 1:
+            raise ValueError(
+                "You must provide exactly one of the following arguments: 'template_name', 'solution_stack_name' or "
+                f"'platform_arn'. Provided: {provided or 'none'}."
+            )
         kwargs: Dict[str, Any] = {
             "ApplicationName": args.get("application_name"),
             "EnvironmentName": args.get("environment_name"),
@@ -7508,7 +7498,7 @@ class ElasticBeanstalk:
         return kwargs
 
     @staticmethod
-    def build_describe_environments_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
+    def _build_describe_environments_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
         """
         Builds the kwargs for the DescribeEnvironments API call, including pagination.
 
@@ -7531,7 +7521,7 @@ class ElasticBeanstalk:
         return kwargs
 
     @staticmethod
-    def format_environments_hr(title: str, environments: list[dict], next_token: str | None = None) -> str:
+    def _format_environments_hr(title: str, environments: list[dict], next_token: str | None = None) -> str:
         """
         Formats Elastic Beanstalk environments as a markdown table.
 
@@ -7555,25 +7545,6 @@ class ElasticBeanstalk:
         return readable_output
 
     @staticmethod
-    def format_create_environment_hr(environment: dict) -> str:
-        """
-        Formats the created environment as a markdown table, followed by a note that the creation is asynchronous.
-
-        Args:
-            environment (dict): The serialized description of the created environment.
-
-        Returns:
-            str: The human-readable output.
-        """
-        readable_output = ElasticBeanstalk.format_environments_hr("AWS Elastic Beanstalk Environment Created", [environment])
-        status = environment.get("Status")
-        status_note = f" (Status: {status})" if status else ""
-        return (
-            f"{readable_output}\nEnvironment creation was initiated and is in progress{status_note}. "
-            "Use aws-elasticbeanstalk-environments-describe to track its status."
-        )
-
-    @staticmethod
     def create_environment_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Starts launching an AWS Elastic Beanstalk environment for the specified application.
@@ -7587,8 +7558,7 @@ class ElasticBeanstalk:
         Returns:
             CommandResults: The description of the created environment.
         """
-        ElasticBeanstalk.validate_environment_source_args(args)
-        kwargs = ElasticBeanstalk.build_create_environment_kwargs(args)
+        kwargs = ElasticBeanstalk._build_create_environment_kwargs(args)
         print_debug_logs(client, f"Creating Elastic Beanstalk environment with parameters: {kwargs.keys()}")
         response = client.create_environment(**kwargs)
 
@@ -7597,12 +7567,18 @@ class ElasticBeanstalk:
 
         environment = serialize_response_with_datetime_encoding(response)
         environment.pop("ResponseMetadata", None)
+        readable_output = ElasticBeanstalk._format_environments_hr("AWS Elastic Beanstalk Environment Created", [environment])
+        status_note = f" (Status: {environment['Status']})" if environment.get("Status") else ""
+        readable_output += (
+            f"\nEnvironment creation was initiated and is in progress{status_note}. "
+            "Use aws-elasticbeanstalk-environments-describe to track its status."
+        )
 
         return CommandResults(
             outputs_prefix="AWS.ElasticBeanstalk.Environments",
             outputs_key_field="EnvironmentId",
             outputs=environment,
-            readable_output=ElasticBeanstalk.format_create_environment_hr(environment),
+            readable_output=readable_output,
             raw_response=environment,
         )
 
@@ -7619,7 +7595,7 @@ class ElasticBeanstalk:
         Returns:
             CommandResults: The environments descriptions and the next token for pagination.
         """
-        kwargs = ElasticBeanstalk.build_describe_environments_kwargs(args)
+        kwargs = ElasticBeanstalk._build_describe_environments_kwargs(args)
         print_debug_logs(client, f"Describing Elastic Beanstalk environments with parameters: {kwargs.keys()}")
         response = client.describe_environments(**kwargs)
 
@@ -7637,7 +7613,7 @@ class ElasticBeanstalk:
 
         return CommandResults(
             outputs=outputs,
-            readable_output=ElasticBeanstalk.format_environments_hr(
+            readable_output=ElasticBeanstalk._format_environments_hr(
                 "AWS Elastic Beanstalk Environments", environments, next_token
             ),
             raw_response=serialized_response,

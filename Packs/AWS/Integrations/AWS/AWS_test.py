@@ -6238,6 +6238,7 @@ def test_elasticbeanstalk_create_environment_success(mocker):
 
     result = ElasticBeanstalk.create_environment_command(mock_client, args)
 
+    mock_client.create_environment.assert_called_once()
     mock_client.create_environment.assert_called_once_with(
         ApplicationName="my-app",
         EnvironmentName="my-env",
@@ -6259,16 +6260,26 @@ def test_elasticbeanstalk_create_environment_success(mocker):
     )
 
 
-def test_elasticbeanstalk_format_create_environment_hr_without_status():
+def test_elasticbeanstalk_create_environment_hr_without_status(mocker):
     """
-    Given: A created environment description without a Status field.
-    When: format_create_environment_hr is called.
-    Then: The asynchronous-creation note is added without a status value.
+    Given: Boto returns HTTP 200 for CreateEnvironment with a response that has no Status field.
+    When: create_environment_command is called.
+    Then: The asynchronous-creation note is added to the readable output without a status value.
     """
     from AWS import ElasticBeanstalk
 
-    readable_output = ElasticBeanstalk.format_create_environment_hr({"EnvironmentName": "my-env", "EnvironmentId": "e-abc123"})
+    mock_client = mocker.Mock()
+    mock_client.create_environment.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "EnvironmentName": "my-env",
+        "EnvironmentId": "e-abc123",
+    }
+    mocker.patch("AWS.print_debug_logs")
 
+    result = ElasticBeanstalk.create_environment_command(mock_client, {"application_name": "my-app", "template_name": "tmpl"})
+
+    mock_client.create_environment.assert_called_once()
+    readable_output = result.readable_output
     assert "e-abc123" in readable_output
     assert readable_output.endswith(
         "Environment creation was initiated and is in progress. "
@@ -6404,6 +6415,7 @@ def test_elasticbeanstalk_describe_environments_filters_and_pagination(mocker):
 
     result = ElasticBeanstalk.describe_environments_command(mock_client, args)
 
+    mock_client.describe_environments.assert_called_once()
     mock_client.describe_environments.assert_called_once_with(
         ApplicationName="my-app",
         VersionLabel="v1",
