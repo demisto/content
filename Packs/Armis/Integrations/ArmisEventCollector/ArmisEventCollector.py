@@ -1472,7 +1472,7 @@ def fetch_events(
                     # Persist the progress of event types that already succeeded (e.g. alerts already
                     # shipped) so they are not re-sent next cycle; the failed type keeps its old cursor.
                     _wait_for_enrichment(enrichment_future, enrichment_executor)
-                    demisto.debug(f"Fetching {event_type} failed. Saving the progress of the event types that succeeded.")
+                    demisto.debug(f"[Fetch] Fetching {event_type} failed. Saving the progress of the event types that succeeded.")
                     demisto.setLastRun({**last_run, **next_run})
                 raise
 
