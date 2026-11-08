@@ -4,6 +4,9 @@ This integration was integrated and tested with version 2.0 of Palo Alto Network
 **Note**:
 Incidents are fetched from every control point the tenant can see. Use the *DLP Channels* parameter to narrow the fetch to specific control points.
 
+**Note**:
+Starting from version 2.4.0, incidents are fetched from the Enterprise DLP v4 incident inventory API (`/v4/api/incidents`). This API returns a summary of each incident, so fetched incidents no longer include several attributes that the previous incident notifications API returned under `incidentDetails`. These include the URL, source and destination IP addresses, user name, email, department, location and manager, upload or download direction, asset size and hash, data patterns, device information and every data profile except the last one. The fields mapped by the default *Data Loss Prevention* mapper are still populated. If you mapped any of these attributes in a custom mapper, layout or playbook, they are now empty. You can still view these attributes in the incident details in Strata Cloud Manager.
+
 ### Setup
 
 Go to the `Settings` tab on the DLP web interface.

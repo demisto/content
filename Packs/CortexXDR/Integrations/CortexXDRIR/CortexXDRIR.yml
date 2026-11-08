@@ -74,6 +74,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  hidden:
+  - marketplacev2
+  - platform
 - additionalinfo: "When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR. Notice: If not selected, but 'Close all related alerts in XDR' is selected, the incident will automatically be closed in Cortex XDR."
   defaultvalue: 'true'
   display: Close Mirrored Cortex XDR Incident
@@ -82,6 +85,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  hidden:
+  - marketplacev2
+  - platform
 - defaultvalue: '1'
   display: XDR mirroring delay in minutes
   name: xdr_delay
@@ -90,6 +96,9 @@ configuration:
   required: false
   advanced: true
   additionalinfo: "In the event of a delay in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the look-back period. However, be aware that this may result in increased latency when updating incidents."
+  hidden:
+  - marketplacev2
+  - platform
 - display: Custom close-reason mapping (XSOAR -> XDR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
   section: Collect
   advanced: true
@@ -98,6 +107,9 @@ configuration:
   defaultvalue: ''
   type: 0
   required: false
+  hidden:
+  - marketplacev2
+  - platform
 - display: Custom close-reason mapping (XDR -> XSOAR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
   section: Collect
   advanced: true
@@ -106,6 +118,9 @@ configuration:
   defaultvalue: ''
   type: 0
   required: false
+  hidden:
+  - marketplacev2
+  - platform
 - display: API Key ID
   name: apikey_id
   type: 4
@@ -160,6 +175,9 @@ configuration:
   advanced: true
   required: false
   additionalinfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR.
+  hidden:
+  - marketplacev2
+  - platform
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -218,6 +236,9 @@ configuration:
   advanced: true
   type: 8
   section: Collect
+  hidden:
+  - marketplacev2
+  - platform
 description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
 name: Cortex XDR - IR
@@ -5656,3 +5677,6 @@ tests:
 defaultmapperin: Cortex XDR - IR-mapper
 defaultmapperout: Cortex XDR - IR-out-mapper
 fromversion: 5.0.0
+supportedModules:
+- agentix
+- xsiam

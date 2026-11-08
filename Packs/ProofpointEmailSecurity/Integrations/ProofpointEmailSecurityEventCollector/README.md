@@ -18,7 +18,7 @@ This integration was integrated and tested Proofpoint Email Security.
 ### proofpoint-es-get-last-run-results
 
 ***
-Retrieves the results of a connection attempt to Proofpoint, indicating whether it was successful or failed and why. If event fetching has been initiated, this command provides the results of the most recent fetch attempt.
+Retrieves the results of a connection attempt to Proofpoint, indicating whether it was successful or failed and why. If event fetching has been initiated, this command provides the results of the most recent fetch attempt for each event type.
 
 ### proofpoint-es-get-events
 

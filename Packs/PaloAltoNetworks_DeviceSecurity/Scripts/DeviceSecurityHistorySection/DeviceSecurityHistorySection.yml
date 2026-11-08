@@ -1,0 +1,20 @@
+commonfields:
+  id: DeviceSecurityHistorySection
+  version: -1
+name: DeviceSecurityHistorySection
+comment: Displays the detection and resolution history for the current Device Security vulnerability incident.
+script: '-'
+type: python
+subtype: python3
+tags:
+- dynamic-section
+enabled: true
+args: []
+outputs: []
+scripttarget: 0
+runonce: false
+dockerimage: demisto/python3:3.12.14.13495286
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
