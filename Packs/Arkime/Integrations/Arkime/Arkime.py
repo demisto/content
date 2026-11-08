@@ -11,6 +11,7 @@ from requests import Response
 from requests.auth import HTTPDigestAuth
 import urllib3
 
+
 # ----------------------------------------- Constants ---------------------------
 PAGE_NUMBER_ERROR_MSG = "Invalid input Error: page number should be a positive number"
 PAGE_SIZE_ERROR_MSG = "Out Of Range Error: page size should be a positive number between 1-100"
