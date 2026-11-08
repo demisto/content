@@ -222,6 +222,34 @@ def test_get_tags_for_device(requests_mock):
     assert integration_response.outputs_prefix == "Darktrace.Device"
 
 
+def test_get_tags_for_device_missing_expiry(requests_mock):
+    """Tests the get_tags_for_device command function when tags are missing optional fields.
+
+    Some tags returned from /tags/entities do not include an 'expiry' key, and the 'data'
+    object can be missing or null. The command must not raise in this case and should
+    return None for the missing values instead.
+    """
+    from DarktraceAdmin import Client, get_tags_for_device_command
+
+    # GIVEN a device whose tags include entries without an 'expiry' key and with a missing or null 'data' object
+    mock_api_response = util_load_json("test_data/device_tags_no_expiry.json")
+    requests_mock.get("https://mock.darktrace.com/tags/entities?did=1", json=mock_api_response)
+
+    client = Client(base_url="https://mock.darktrace.com", verify=False, auth=("examplepub", "examplepri"))
+
+    # WHEN the tags for device id 1 are requested
+    args = {
+        "deviceId": "1",
+    }
+
+    # THEN the command completes without an error and missing fields are returned as None
+    integration_response = get_tags_for_device_command(client, args)
+    expected_response = util_load_json("test_data/formatted_device_tags_no_expiry.json")
+
+    assert integration_response.outputs == expected_response
+    assert integration_response.outputs_prefix == "Darktrace.Device"
+
+
 def test_post_tag_to_device(requests_mock):
     """Tests the post_tag_to_device command function.
 
