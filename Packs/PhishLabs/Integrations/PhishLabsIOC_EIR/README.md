@@ -547,7 +547,7 @@
     </tr>
     <tr>
         <td>extend_attachments</td>
-        <td>If true, the attachment list will also contain the screenshot and submission attachment types (if available). By default, only payload attachments are included. Possible values are: true, false. Default is false.</td>
+        <td>Whether the attachment list should also contain screenshot and submission attachment types (if available).</td>
         <td>Optional</td>
     </tr>
     </tbody>
