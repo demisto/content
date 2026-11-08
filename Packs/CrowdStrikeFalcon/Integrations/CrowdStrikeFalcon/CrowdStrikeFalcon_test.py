@@ -2477,8 +2477,9 @@ test_data2 = get_fetch_data2()
 def test_get_indicator_device_id(mocker, requests_mock):
     from CrowdStrikeFalcon import get_indicator_device_id
 
-    requests_mock.get("https://4.4.4.4/iocs/queries/indicators/devices/v1",
-                      json=test_data["response_for_get_indicator_device_id"])
+    requests_mock.get(
+        "https://4.4.4.4/iocs/queries/indicators/devices/v1", json=test_data["response_for_get_indicator_device_id"]
+    )
     mocker.patch.object(demisto, "args", return_value={"type": "sha256", "value": "example_sha"})
     res = get_indicator_device_id()
 
@@ -14375,13 +14376,13 @@ class TestXsiamSendFailureIsNotCounted:
         records_per_chunk = 10
         records = [{"id": f"vuln{i}", "aid": "aid1"} for i in range(3 * records_per_chunk)]
         # Tag the middle chunk so the fault injector can identify it regardless of completion order.
-        for record in records[records_per_chunk: 2 * records_per_chunk]:
+        for record in records[records_per_chunk : 2 * records_per_chunk]:
             record["reject_me"] = "yes"
 
         def fake_split(data_str, _chunk_size):
             lines = data_str.split("\n") if isinstance(data_str, str) else list(data_str)
             for start in range(0, len(lines), records_per_chunk):
-                yield lines[start: start + records_per_chunk]
+                yield lines[start : start + records_per_chunk]
 
         mocker.patch("CrowdStrikeFalcon.split_data_to_chunks", side_effect=fake_split)
 
