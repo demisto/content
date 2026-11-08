@@ -8017,7 +8017,7 @@ def test_dns_zones_list_command_success(mocker):
     assert result.outputs["Azure.DNS.Zones(val.id && val.id == obj.id)"] == [DNS_ZONE_RESPONSE]
     assert result.outputs["Azure.DNS(true)"] == {"ZonesNextToken": "https://test.url"}
     assert "DNS Zones List" in result.readable_output
-    assert "zone1.com" in result.readable_output
+    assert DNS_ZONE_RESPONSE["name"] in result.readable_output
     mock_client.dns_zones_list.assert_called_once_with(subscription_id="sub-id", limit=10, next_token="")
 
 
@@ -8355,8 +8355,41 @@ def test_dns_cname_record_set_commands_reject_path_traversal(mocker, command_nam
 
     with pytest.raises(DemistoException, match="must not contain"):
         command(client=mock_client, params=params, args=args)
-
     getattr(mock_client, client_method).assert_not_called()
+
+
+@pytest.mark.parametrize("value", ["zone1.com", "www", "my-record", "_dmarc", "*", "a.b.c"])
+def test_validate_dns_name_accepts_valid_names(value):
+    """
+    Given:
+        - A DNS zone or record set name without any forbidden sequence.
+    When:
+        - Calling validate_dns_name.
+    Then:
+        - No exception is raised.
+    """
+    from Azure import validate_dns_name
+
+    validate_dns_name(value, "zone_name")
+
+
+@pytest.mark.parametrize("value", ["a/b", "a\\b", "a?b", "a#b", "a..b", "..", "/"])
+def test_validate_dns_name_rejects_forbidden_sequences(value):
+    """
+    Given:
+        - A DNS zone or record set name containing /, \\, ?, # or ..
+    When:
+        - Calling validate_dns_name.
+    Then:
+        - A DemistoException naming the argument and the value is raised.
+    """
+    from Azure import validate_dns_name
+
+    with pytest.raises(DemistoException) as excinfo:
+        validate_dns_name(value, "relative_record_set_name")
+
+    assert "The argument relative_record_set_name must not contain" in str(excinfo.value)
+    assert f"Currently the value is {value}." in str(excinfo.value)
 
 
 def test_dns_cname_record_set_delete_client_builds_request(mocker, client):
