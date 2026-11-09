@@ -381,3 +381,5 @@ tests:
 - Cortex XDR - IOC - Test
 - Cortex XDR - IOC - Test without fetch
 fromversion: 6.10.0
+supportedModules:
+- agentix
