@@ -4,14 +4,14 @@ Shared content for the **Certificate Manager SaaS** and **Next-Gen Trust Securit
 
 This pack has no integration of its own. Installing either product pack installs it automatically.
 
-## What's in the pack
+## What does this pack do?
 
 | Content | Purpose |
 | --- | --- |
 | **CertManagerSaaS Certificate Expiry** incident type | A certificate that crossed an expiry threshold. |
 | **CertManagerSaaS Revocation Failed** incident type | A key-compromise revocation the CA did not complete. |
 | **Incident fields** | Certificate ID, fingerprint, common name, expiry date, days to expiry, issuer, owning application (Certificate Manager SaaS), owning TSG (NGTS), installation location. |
-| **Layout** and **layout rules** | `CertManagerSaaS Certificate Expiry Layout`, shared by both incident types, and the XSIAM rules that bind it to them. |
+| **Layout** and **layout rules** | `CertManagerSaaS Certificate Expiry Layout`, shared by both incident types, and the Cortex XSIAM rules that bind it to them. |
 | **CertManagerSaaS - Fetch Classifier** | Gives each fetched issue its type (Certificate Expiry or Revocation Failed), from the `IssueType` key the fetch writes. |
 | **CertManagerSaaS - Fetch Incoming Mapper** | Maps the certificate data either integration fetches onto the issue. |
 
@@ -23,7 +23,7 @@ This pack has no integration of its own. Installing either product pack installs
 
 Enable **Fetches incidents** on the integration instance. The fetch classifier and mapper are the integration's defaults. The classifier types each issue, so the instance's **Incident type** can stay empty; a custom type set there still applies to expiry issues.
 
-One issue is raised per threshold crossing: crossing 30 days raises a High issue, crossing 7 days raises a separate Critical one. Severity is never below Medium: on XSIAM a Low issue creates no case and no grouping, so an expiring certificate there would be invisible.
+One issue is raised per threshold crossing: crossing 30 days raises a High issue, crossing 7 days raises a separate Critical one. Severity is never below Medium: on Cortex XSIAM a Low issue creates no case and no grouping, so an expiring certificate there would be invisible.
 
 | Threshold crossed | Severity |
 | --- | --- |
@@ -51,10 +51,10 @@ Both integrations' `certificate` command scores only revocation, and never score
 
 CM SaaS checks public certificates against the CAs' revocation lists about every six hours (`GlobalRevocation` in context); private CAs aren't on those lists, so their certificates usually read `UNKNOWN`. Expiry and self-signed certificates are left to the `CertificateReputation` script of the `Certificate` indicator type.
 
-## XSIAM notes
+## Cortex XSIAM notes
 
-- Fetched certificates become issues through the correlation rule XSIAM creates for each fetching integration ("… Alerts (automatically generated)"). Allow a few minutes after a fetch.
+- Fetched certificates become issues through the correlation rule Cortex XSIAM creates for each fetching integration ("… Alerts (automatically generated)"). Allow a few minutes after a fetch.
 - Issue exclusion rules (**Settings → Exception & Exclusion Configuration**) silently drop matching issues. Check them if expected issues never appear.
-- The layout rule is XSIAM-only; on XSOAR the incident type binds the layout directly.
+- The layout rule is Cortex XSIAM-only; on Cortex XSOAR the incident type binds the layout directly.
 - Issue domain is assigned automatically; nothing in the pack sets it.
 - Incident fields, incident type and mapper require the **xsiam** or **agentix** module.

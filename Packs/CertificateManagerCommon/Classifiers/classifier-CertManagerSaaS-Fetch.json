@@ -1,7 +1,7 @@
 {
     "id": "CertManagerSaaS - Fetch Classifier",
     "name": "CertManagerSaaS - Fetch Classifier",
-    "description": "Classifies issues fetched by the Certificate Manager SaaS and Next-Gen Trust Security integrations by the IssueType key the fetch writes into rawJSON: certificate expiry or failed key-compromise revocation. XSIAM ignores the type an integration sets on a fetched issue, so without this classifier every issue gets the instance's Incident type. A custom expiry type chosen on the instance isn't in the map, so the instance setting still applies to it.",
+    "description": "Classifies issues fetched by the Certificate Manager SaaS and Next-Gen Trust Security integrations by the IssueType key the fetch writes into rawJSON: certificate expiry or failed key-compromise revocation. Cortex XSIAM ignores the type an integration sets on a fetched issue, so without this classifier every issue gets the instance's Incident type. A custom expiry type chosen on the instance isn't in the map, so the instance setting still applies to it.",
     "type": "classification",
     "transformer": {
         "complex": {
