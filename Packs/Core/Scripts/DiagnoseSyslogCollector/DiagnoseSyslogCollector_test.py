@@ -294,6 +294,29 @@ def test_diagnose_syslog_collector_builtin_commands_warning(mocker):
     assert result.outputs["diagnosis_report"] == ["[2026-03-01 11:08:30 UTC][ERROR] Receptor unreachable."]
 
 
+def test_diagnose_syslog_collector_builtin_real_get_brokers_context_shape(mocker):
+    """
+    Given: The real getBrokers EntryContext shape (keys "DeviceName" and "Apps", selector on DeviceName)
+    When: diagnose_syslog_collector is called
+    Then: The Syslog Collector app is detected in "Apps" and HEALTHY status is returned
+    """
+    from DiagnoseSyslogCollector import diagnose_syslog_collector
+
+    broker = {
+        "DeviceName": "test-broker",
+        "STATUS": "CONNECTED",
+        "Apps": [{"app": "SYSLOG", "display_name": "Syslog Collector", "status": "Active"}],
+    }
+    broker_response = [{"Type": 1, "EntryContext": {"Core.Broker(val.DeviceName && val.DeviceName == obj.DeviceName)": [broker]}}]
+    xql_response = [{"Type": 1, "EntryContext": {XQL_SELECTOR_KEY: {"status": "SUCCESS", "results": []}}}]
+
+    mocker.patch.object(demisto, "executeCommand", side_effect=[broker_response, xql_response])
+
+    result = diagnose_syslog_collector("test-broker", "24 hours")
+
+    assert result.outputs["status"] == "HEALTHY"
+
+
 def test_diagnose_syslog_collector_builtin_no_brokers_found(mocker):
     """
     Given: getBrokers returns the "No brokers were found." message entry (empty EntryContext)

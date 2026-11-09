@@ -76,7 +76,7 @@ def diagnose_syslog_collector(broker_vm_name: str, timeframe: str) -> CommandRes
     demisto.debug(f"Found broker data: {broker_data}")
 
     # Check if Syslog Collector app exists and is active
-    apps = broker_data.get("APPS", [])
+    apps = broker_data.get("Apps") or broker_data.get("APPS") or []
     syslog_collector = None
 
     for app in apps:
