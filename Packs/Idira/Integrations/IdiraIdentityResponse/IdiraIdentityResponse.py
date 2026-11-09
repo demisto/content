@@ -31,7 +31,7 @@ class Config:
 
     # Feature Adoption service (metric_key = <service_code>.<master_feature_name>.<metric_name>).
     ADOPTION_SERVICE_CODE = "IDIINT"
-    ADOPTION_FEATURE_NAME = "cortex_idira_identity_response"
+    ADOPTION_FEATURE_NAME = "cortex_identity_response"
     ADOPTION_METRIC_NAME = "integration_executed"
     ADOPTION_IDIRA_SERVICE = "Idira ISPSS"
     ADOPTION_TRIGGERED_BY = "BE"  # allowed: "BE", "UI", "N/A"

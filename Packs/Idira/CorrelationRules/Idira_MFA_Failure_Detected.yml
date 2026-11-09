@@ -6,17 +6,17 @@ alert_fields:
   xdm_source_identity_username: xdm.source.user.username
   action_local_ip: xdm.source.ipv4
 alert_name: Idira - MFA Failure Detected
-crontab: null
+crontab: '*/10 * * * *'
 dataset: alerts
 description: This rule alerts on any failed or denied MFA challenge in the CyberArk Identity Security Platform audit log, based on the modeled authentication outcome.
 drilldown_query_timeframe: ALERT
-execution_mode: REAL_TIME
+execution_mode: SCHEDULED
 global_rule_id: d094edf0-009b-40a2-8feb-323d307fb726
 investigation_query_link: ''
 mapping_strategy: CUSTOM
 mitre_defs: {}
 name: Idira - MFA Failure Detected
-search_window: null
+search_window: 10 minutes
 severity: SEV_040_HIGH
 suppression_duration: null
 suppression_enabled: false

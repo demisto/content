@@ -6,17 +6,17 @@ alert_fields:
   xdm_source_identity_username: username
   action_local_ip: source
 alert_name: Idira - SSH Sudo Command Detected
-crontab: null
+crontab: '*/10 * * * *'
 dataset: alerts
 description: This rule alerts on sudo commands executed in SSH sessions in the CyberArk Identity Security Platform audit log. These events are not covered by the CyberArkISP modeling rule, so the rule matches on raw fields.
 drilldown_query_timeframe: ALERT
-execution_mode: REAL_TIME
+execution_mode: SCHEDULED
 global_rule_id: 8f11e552-7f87-4311-816d-927c9133147b
 investigation_query_link: ''
 mapping_strategy: CUSTOM
 mitre_defs: {}
 name: Idira - SSH Sudo Command Detected
-search_window: null
+search_window: 10 minutes
 severity: SEV_050_CRITICAL
 suppression_duration: null
 suppression_enabled: false

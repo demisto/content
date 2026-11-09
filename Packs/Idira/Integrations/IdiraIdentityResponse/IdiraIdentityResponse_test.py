@@ -125,7 +125,7 @@ def test_build_adoption_event():
     """The event matches the Feature Adoption authenticated-user schema (no user_id)."""
     event = build_adoption_event()
     assert event == {
-        "metric_key": "IDIINT.cortex_idira_identity_response.integration_executed",
+        "metric_key": "IDIINT.cortex_identity_response.integration_executed",
         "number_of_events": 1,
         "triggered_by": "BE",
         "tags": {
