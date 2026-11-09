@@ -1,0 +1,23 @@
+{
+    "name": "PackB",
+    "description": "Test pack B - depends on PackC.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Test",
+    "url": "",
+    "email": "",
+    "created": "2026-11-08T00:00:00Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar"
+    ],
+    "dependencies": {
+        "PackC": {
+            "mandatory": true,
+            "display_name": "PackC"
+        }
+    }
+}

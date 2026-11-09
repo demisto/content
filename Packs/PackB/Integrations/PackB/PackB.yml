@@ -1,0 +1,22 @@
+category: Utilities
+commonfields:
+  id: PackB
+  version: -1
+configuration: []
+description: Dummy integration for PackB dependency chain testing.
+display: PackB
+name: PackB
+script:
+  commands:
+  - description: Returns a hello message from Pack B.
+    name: packb-say-hello
+    outputs:
+    - contextPath: PackB.Message
+      description: The hello message.
+      type: String
+  dockerimage: demisto/python3:3.10.14.100715
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0

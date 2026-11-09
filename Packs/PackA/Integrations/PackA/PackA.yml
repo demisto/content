@@ -1,0 +1,22 @@
+category: Utilities
+commonfields:
+  id: PackA
+  version: -1
+configuration: []
+description: Dummy integration for PackA dependency chain testing.
+display: PackA
+name: PackA
+script:
+  commands:
+  - description: Returns a hello message from Pack A.
+    name: packa-say-hello
+    outputs:
+    - contextPath: PackA.Message
+      description: The hello message.
+      type: String
+  dockerimage: demisto/python3:3.10.14.100715
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
