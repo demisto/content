@@ -2,6 +2,7 @@ import traceback
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
+import httpx
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa: F401
 
@@ -472,7 +473,7 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
     except Exception as e:
-        demisto.debug(traceback.format_exc())
+        demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {command} command.\nError:\n{e!s}", error=e)
 
 

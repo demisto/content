@@ -5,9 +5,9 @@ This integration was integrated and tested with version 3 of the SoChain API.
 
 Every command takes BTC, LTC, DOGE, ZEC and their testnets (BTCTEST is Bitcoin testnet4). When an address command gets no `network`, it uses the first of BTC, LTC, DOGE and ZEC on which the address is valid. A `bitcoin:`, `litecoin:`, `dogecoin:` or `zcash:` prefix on an address also selects the network. Zcash data covers transparent addresses.
 
-## API key and limits
+## Prerequisites
 
-Lookups work without an API key, up to 2,500 a day per IP. A key from SoChain raises the limit: a free account gets 75,000 requests a month, and paid plans start at $35 a month. The key is sent in the `API-KEY` header. See the integration's setup instructions for how to get one.
+Lookups work without an API key, up to 2,500 a day per IP. A key from SoChain raises the limit: a free account gets 75,000 requests a month, and paid plans start at $35 a month. The key is sent in the `API-KEY` header. To obtain an API key, sign up at [https://sochain.com/dashboard](https://sochain.com/dashboard).
 
 ## Configure SoChain in Cortex
 
@@ -27,11 +27,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### crypto
 
 ***
-Enriches cryptocurrency addresses (BTC, LTC, DOGE, ZEC) with their activity and the address poisoning check. SoChain does not give verdicts: the DBot score is always 0 (Unknown), and its message says whether look-alike addresses were found.
-
-#### Reputation
-
-SoChain gives on-chain facts, not verdicts, so `crypto` never returns a malicious verdict: the DBot score is always 0 (Unknown). The score's message says whether look-alike addresses sent the address dust (address poisoning), which marks the address as a target, not as a bad actor. An address that is not valid, or has no transactions, gets "No results found."
+Enriches cryptocurrency addresses (BTC, LTC, DOGE, ZEC) with their activity and the address poisoning check. SoChain gives on-chain facts, not verdicts, so `crypto` never returns a malicious verdict: the DBot score is always 0 (Unknown). The score's message says whether look-alike addresses sent the address dust (address poisoning), which marks the address as a target, not as a bad actor. An address that is not valid, or has no transactions, gets "No results found."
 
 #### Base Command
 
