@@ -29,6 +29,17 @@ In Cortex XSIAM, the pack also includes the **NodeZero Event Collector** integra
 | First fetch time | How far back to fetch on first run (e.g., "7 days", "3 days"). | False |
 | Incidents Fetch Interval | How often to fetch new incidents (in minutes). Default is 10080 (7 days). | False |
 
+### Server URL by region
+
+Set **Server URL** to the NodeZero API URL for the region of the Horizon3.ai Portal that you log in to. If Horizon3.ai gives you a different API URL, enter that URL in **Server URL**.
+
+| **Region** | **Horizon3.ai Portal** | **Server URL** |
+| --- | --- | --- |
+| US | `https://portal.horizon3ai.com` | `https://api.horizon3ai.com` (default) |
+| EU | `https://portal.horizon3ai.eu` | `https://api.horizon3ai.eu` |
+| Australia | `https://portal.horizon3ai.au` | `https://api.horizon3ai.au` |
+| US FedRAMP High | `https://portal.gov-horizon3ai.com` | `https://api.gateway.gov-horizon3ai.com` |
+
 <~XSIAM>
 
 ## NodeZero Event Collector
@@ -46,10 +57,10 @@ The event collector runs independently of the **NodeZero** integration, so you c
 
 ### Configure NodeZero Event Collector in Cortex XSIAM
 
-1. In the [Horizon3.ai Portal](https://portal.horizon3ai.com/), navigate to **Settings** > **My Settings** > **API Keys**, click **Generate API Key**, and copy the key value. The key must have **read** access to pentests and weaknesses.
+1. In your Horizon3.ai Portal (see **Server URL by region**), navigate to **Settings** > **My Settings** > **API Keys**, click **Generate API Key**, and copy the key value. The key must have **read** access to pentests and weaknesses.
 2. In Cortex XSIAM, navigate to **Settings** > **Data Sources** and click **Add Data Source**.
 3. Search for **NodeZero** and click **Connect**.
-4. Paste the key into the **API Key** parameter, select **Fetch events**, and set the other parameters as needed.
+4. Paste the key into the **API Key** parameter, select **Fetch events**, and set the other parameters as needed. If your Horizon3.ai Portal isn't `https://portal.horizon3ai.com`, set **Server URL** to the API URL for your region (see **Server URL by region**).
 5. Click **Test** to verify that Cortex XSIAM can reach the server and authenticate with the API key, and then save the instance.
 
 | **Parameter** | **Description** | **Required** |

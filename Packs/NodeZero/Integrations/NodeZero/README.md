@@ -6,7 +6,7 @@ Integrates with the [NodeZero](https://www.horizon3.ai/nodezero/) autonomous pen
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for NodeZero.
-3. Click **Add instance** to create and configure a new integration instance.
+3. Click **Add instance** to create and configure a new integration instance. If your Horizon3.ai Portal isn't `https://portal.horizon3ai.com`, set **Server URL** to the API URL for your region (see **Server URL by region**).
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -21,6 +21,17 @@ Integrates with the [NodeZero](https://www.horizon3.ai/nodezero/) autonomous pen
 | Incidents Fetch Interval | How often to fetch new incidents (in minutes). Default is 10080 (7 days). | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Server URL by region
+
+Set **Server URL** to the NodeZero API URL for the region of the Horizon3.ai Portal that you log in to. If Horizon3.ai gives you a different API URL, enter that URL in **Server URL**.
+
+| **Region** | **Horizon3.ai Portal** | **Server URL** |
+| --- | --- | --- |
+| US | `https://portal.horizon3ai.com` | `https://api.horizon3ai.com` (default) |
+| EU | `https://portal.horizon3ai.eu` | `https://api.horizon3ai.eu` |
+| Australia | `https://portal.horizon3ai.au` | `https://api.horizon3ai.au` |
+| US FedRAMP High | `https://portal.gov-horizon3ai.com` | `https://api.gateway.gov-horizon3ai.com` |
 
 ## Fetch Incidents
 
@@ -116,5 +127,5 @@ This ensures that even if multiple weaknesses share the same timestamp, they are
 If you encounter authentication errors, verify that:
 
 1. The API Key is correct and has not expired.
-2. The Server URL is accessible from the XSOAR server.
+2. The Server URL is the one for your region (see **Server URL by region**) and is accessible from the XSOAR server.
 3. SSL certificates are valid (or "Trust any certificate" is enabled for testing).
