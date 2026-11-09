@@ -1,5 +1,6 @@
 {
     "citrix_cloud_raw": {
+      "dataset_description": "Audit events collected from Citrix Cloud.",
       "eventType": {
         "type": "string",
         "is_array": false

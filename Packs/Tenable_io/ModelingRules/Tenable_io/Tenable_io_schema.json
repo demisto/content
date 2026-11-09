@@ -1,16 +1,20 @@
 {
     "tenable_io_raw": {
+        "dataset_description": "Audit logs collected from Tenable.io.",
         "actor": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The user or system that performed the action."
         },
         "description": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "A description of the audit event."
         },
         "target": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The object the action was performed on."
         },
         "id": {
             "type": "string",

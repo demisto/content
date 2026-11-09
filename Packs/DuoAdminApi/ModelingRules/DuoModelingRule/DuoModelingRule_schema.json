@@ -1,56 +1,70 @@
 {
   "duo_duo_raw": {
+    "dataset_description": "Administrator audit logs collected from the Duo Admin API.",
     "access_device": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "Details of the device used to access Duo."
     },
     "application": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The application related to the event."
     },
     "eventtype": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The type of the event."
     },
     "factor": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The authentication factor used."
     },
     "isotimestamp": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The event time in ISO 8601 format."
     },
     "action": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The action performed by the administrator."
     },
     "description": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "A description of the event."
     },
     "object": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The object the action was performed on."
     },
     "timestamp": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The event time as a Unix timestamp."
     },
     "username": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The name of the user that performed the action."
     },
     "context": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "Additional context of the event."
     },
     "phone": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The phone number related to the event."
     },
     "type": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The type of the log."
     }
   }
 }
