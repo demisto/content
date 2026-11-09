@@ -15,6 +15,8 @@ DEFAULT_API_VERSION = "v47.0"
 API_VERSION_PATTERN = re.compile(r"^v\d+\.\d+$")
 # The token is placed in wsu:Id="UsernameToken-{token}", an xsd:ID (XML NCName). Any other character makes the request invalid.
 INVALID_WSU_ID_CHARACTERS = re.compile(r"[^A-Za-z0-9._-]")
+# Characters escape() cannot make safe: control characters XML 1.0 forbids, and CR, which XML parsers turn into LF.
+INVALID_XML_CREDENTIAL_CHARACTERS = re.compile(r"[\x00-\x08\x0b-\x1f\ufffe\uffff]")
 HEADERS = [
     "Worker_ID",
     "User_ID",
@@ -321,6 +323,24 @@ def sanitize_wsu_id_token(token: Any) -> str:
     return INVALID_WSU_ID_CHARACTERS.sub("_", str(token))
 
 
+def to_xml_safe_credential(value: str, field_name: str) -> str:
+    """Escapes a credential for an XML text node, raising when it has characters that cannot be sent as-is.
+
+    Args:
+        value: The credential value.
+        field_name: The parameter name, used in the error message.
+
+    Returns:
+        The value with XML special characters (& < >) escaped.
+    """
+    if INVALID_XML_CREDENTIAL_CHARACTERS.search(value):
+        raise DemistoException(
+            f"The {field_name} contains a control character (such as a carriage return) "
+            "that cannot be sent to Workday. Remove it from the instance configuration and try again."
+        )
+    return escape(value)
+
+
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
@@ -328,7 +348,15 @@ class Client(BaseClient):
     """
 
     def __init__(
-        self, tenant_url, verify_certificate, proxy, tenant_name, token, username, password, api_version=DEFAULT_API_VERSION
+        self,
+        tenant_url: str,
+        verify_certificate: bool,
+        proxy: bool,
+        tenant_name: str,
+        token: str,
+        username: str,
+        password: str,
+        api_version: str = DEFAULT_API_VERSION,
     ):
         headers = {"content-type": "text/xml;charset=UTF-8"}
         super().__init__(base_url=tenant_url, verify=verify_certificate, proxy=proxy, headers=headers)
@@ -337,19 +365,22 @@ class Client(BaseClient):
         self.username = username
         self.password = password
         self.api_version = api_version
+        # Values are embedded in an XML document, so they are made XML-safe once here.
+        wsu_id_token = sanitize_wsu_id_token(token)
+        if wsu_id_token != str(token):
+            demisto.debug("The Token contains characters that are not allowed in an XML ID; they were replaced with '_'.")
+        self.xml_safe_params = {
+            "token": wsu_id_token,
+            "username": to_xml_safe_credential(username, "Username"),
+            "password": to_xml_safe_credential(password, "Password"),
+            "api_version": api_version,
+        }
 
     def list_workers(self, page, count, employee_id=None) -> tuple:
-        # Values are embedded in an XML document, so XML special characters (& < >) must be escaped.
-        xml_safe_params = {
-            "token": sanitize_wsu_id_token(self.token),
-            "username": escape(str(self.username)),
-            "password": escape(str(self.password)),
-            "api_version": self.api_version,
-        }
         if employee_id:
-            body = GET_EMPLOYEE_BY_ID.format(employee_id=escape(str(employee_id)), **xml_safe_params)
+            body = GET_EMPLOYEE_BY_ID.format(employee_id=escape(str(employee_id)), **self.xml_safe_params)
         else:
-            body = GET_EMPLOYEES_REQ.format(page=page, count=count, **xml_safe_params)
+            body = GET_EMPLOYEES_REQ.format(page=page, count=count, **self.xml_safe_params)
         raw_response = self._http_request(method="POST", url_suffix="", data=body, resp_type="text", timeout=120)
         return convert_to_json(raw_response)
 
@@ -399,11 +430,13 @@ def main():
     user: str = params.get("credentials", {}).get("identifier")
     base_url: str = params.get("base_url", "").rstrip("/")
     tenant_name: str = params.get("cred_tenant_name", {}).get("password") or params.get("tenant_name", None)
-    username = f"{user}@{tenant_name}"
     password: str = params.get("credentials", {}).get("password")
     token = params.get("cred_token", {}).get("password") or params.get("token")
     if not (token and tenant_name):
         raise DemistoException("Token and Tenant name must be provided.")
+    if not (user and password):
+        raise DemistoException("Username and Password must be provided.")
+    username = f"{user}@{tenant_name}"
     verify_certificate: bool = not params.get("insecure", False)
     proxy: bool = params.get("proxy", False)
     api_version = get_api_version(params)

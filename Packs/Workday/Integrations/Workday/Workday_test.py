@@ -1,6 +1,8 @@
 import json
+from typing import Any
 
 import pytest
+from pytest_mock import MockerFixture
 from CommonServerPython import CommandResults
 from Workday import Client, convert_to_json, create_worker_context, list_workers_command, main
 
@@ -279,7 +281,7 @@ def test_api_request_returns_expected_data(mocker):
 
 
 def _sent_request_body(
-    mocker, list_workers_kwargs: dict, token: str = "token", username: str = "username", password: str = "password"
+    mocker: MockerFixture, list_workers_kwargs: dict, token: str = "token", username: str = "username", password: str = "password"
 ) -> str:
     """Runs Client.list_workers with a mocked _http_request and returns the SOAP body that was sent."""
     soap_client = Client(
@@ -305,7 +307,7 @@ LIST_WORKERS_VARIANTS = [
 
 
 @pytest.mark.parametrize("list_workers_kwargs", LIST_WORKERS_VARIANTS)
-def test_list_workers_response_group_follows_schema_order(mocker, list_workers_kwargs):
+def test_list_workers_response_group_follows_schema_order(mocker: MockerFixture, list_workers_kwargs: dict):
     """
     Given:
     - A Workday client.
@@ -341,7 +343,7 @@ def test_list_workers_response_group_follows_schema_order(mocker, list_workers_k
         pytest.param({"api_version": " v45.1 "}, "v45.1", id="whitespace"),
     ],
 )
-def test_get_api_version(params, expected):
+def test_get_api_version(params: dict, expected: str):
     """
     Given:
     - Instance parameters with or without an api_version.
@@ -356,7 +358,7 @@ def test_get_api_version(params, expected):
 
 
 @pytest.mark.parametrize("api_version", ["47.0", "v47", "version47", "v47.0/"])
-def test_get_api_version_invalid(api_version):
+def test_get_api_version_invalid(api_version: str):
     """
     Given:
     - A malformed api_version parameter.
@@ -373,7 +375,7 @@ def test_get_api_version_invalid(api_version):
 
 
 @pytest.mark.parametrize("list_workers_kwargs", LIST_WORKERS_VARIANTS)
-def test_list_workers_sends_configured_api_version(mocker, list_workers_kwargs):
+def test_list_workers_sends_configured_api_version(mocker: MockerFixture, list_workers_kwargs: dict):
     """
     Given:
     - A Workday client configured with a custom API version.
@@ -416,7 +418,9 @@ WSU_ID = "{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-ut
         pytest.param("isu_user@tenant_name", "&already-escaped", id="already_escaped_text_is_sent_literally"),
     ],
 )
-def test_list_workers_escapes_xml_special_characters_in_credentials(mocker, list_workers_kwargs, username, password):
+def test_list_workers_escapes_xml_special_characters_in_credentials(
+    mocker: MockerFixture, list_workers_kwargs: dict, username: str, password: str
+):
     """
     Given:
     - A Workday client whose username or password contains XML special characters.
@@ -435,7 +439,7 @@ def test_list_workers_escapes_xml_special_characters_in_credentials(mocker, list
     assert envelope.find(f".//{WSSE_NS}Password").text == password
 
 
-def test_list_workers_escapes_employee_id(mocker):
+def test_list_workers_escapes_employee_id(mocker: MockerFixture):
     """
     Given:
     - An employee ID containing XML special characters.
@@ -463,7 +467,7 @@ def test_list_workers_escapes_employee_id(mocker):
         pytest.param("a:b@c", "UsernameToken-a_b_c", id="colon_and_at_sign"),
     ],
 )
-def test_list_workers_sanitizes_token_for_wsu_id(mocker, list_workers_kwargs, token, expected_id):
+def test_list_workers_sanitizes_token_for_wsu_id(mocker: MockerFixture, list_workers_kwargs: dict, token: str, expected_id: str):
     """
     Given:
     - A token that may contain characters that are not allowed in an XML ID (xsd:ID / NCName).
@@ -490,7 +494,7 @@ def test_list_workers_sanitizes_token_for_wsu_id(mocker, list_workers_kwargs, to
         pytest.param(12345, "12345", id="not_a_string"),
     ],
 )
-def test_sanitize_wsu_id_token(token, expected):
+def test_sanitize_wsu_id_token(token: Any, expected: str):
     """
     Given:
     - A token value.
@@ -502,3 +506,121 @@ def test_sanitize_wsu_id_token(token, expected):
     from Workday import sanitize_wsu_id_token
 
     assert sanitize_wsu_id_token(token) == expected
+
+
+@pytest.mark.parametrize(
+    "username, password, field_name",
+    [
+        pytest.param("isu_user@tenant_name", "pass\rword", "Password", id="carriage_return_in_password"),
+        pytest.param("isu_user@tenant_name", "pass\x0bword", "Password", id="vertical_tab_in_password"),
+        pytest.param("isu_user@tenant_name", "pass\x00word", "Password", id="null_in_password"),
+        pytest.param("isu\x01user@tenant_name", "password", "Username", id="control_character_in_username"),
+    ],
+)
+def test_client_rejects_credentials_with_invalid_xml_characters(username: str, password: str, field_name: str):
+    """
+    Given:
+    - A username or password containing a character that cannot be sent in XML as-is
+      (a control character forbidden by XML 1.0, or a carriage return that XML parsers turn into a line feed).
+    When:
+    - Creating a Workday client.
+    Then:
+    - Ensure a DemistoException naming the offending field is raised, instead of sending a request that
+      Workday rejects with 'Client.validationError - Invalid request' or a password that reaches Workday changed.
+    """
+    from CommonServerPython import DemistoException
+
+    with pytest.raises(DemistoException, match=f"The {field_name} contains a control character"):
+        Client(
+            tenant_url="https://test.workday.com/XSOAR",
+            verify_certificate=False,
+            proxy=False,
+            tenant_name="tenant_name",
+            token="token",
+            username=username,
+            password=password,
+        )
+
+
+@pytest.mark.parametrize("list_workers_kwargs", LIST_WORKERS_VARIANTS)
+def test_list_workers_keeps_tab_and_line_feed_in_password(mocker: MockerFixture, list_workers_kwargs: dict):
+    """
+    Given:
+    - A password containing a tab and a line feed, which XML allows in text.
+    When:
+    - Calling list_workers.
+    Then:
+    - Ensure the client accepts the password and it reaches Workday unchanged.
+    """
+    import xml.etree.ElementTree as ET
+
+    body = _sent_request_body(mocker, list_workers_kwargs, password="pass\tword\n")
+
+    assert ET.fromstring(body.strip()).find(f".//{WSSE_NS}Password").text == "pass\tword\n"
+
+
+@pytest.mark.parametrize(
+    "token, expect_debug",
+    [
+        pytest.param("abc def", True, id="token_changed"),
+        pytest.param("xsoar-Token_1.0", False, id="token_unchanged"),
+    ],
+)
+def test_client_logs_when_token_is_sanitized(mocker: MockerFixture, token: str, expect_debug: bool):
+    """
+    Given:
+    - A token that does or does not need sanitizing for the wsu:Id attribute.
+    When:
+    - Creating a Workday client.
+    Then:
+    - Ensure a debug message is written only when the token sent differs from the configured one.
+    """
+    import demistomock as demisto
+
+    debug = mocker.patch.object(demisto, "debug")
+    Client(
+        tenant_url="https://test.workday.com/XSOAR",
+        verify_certificate=False,
+        proxy=False,
+        tenant_name="tenant_name",
+        token=token,
+        username="username",
+        password="password",
+    )
+
+    assert any("Token contains characters" in str(call.args[0]) for call in debug.call_args_list) is expect_debug
+
+
+@pytest.mark.parametrize(
+    "credentials",
+    [
+        pytest.param({"identifier": "user"}, id="missing_password"),
+        pytest.param({"password": "pass"}, id="missing_username"),
+        pytest.param({}, id="missing_both"),
+    ],
+)
+def test_main_requires_username_and_password(mocker: MockerFixture, credentials: dict):
+    """
+    Given:
+    - Instance parameters without a username or password.
+    When:
+    - Running main.
+    Then:
+    - Ensure a clear error is raised instead of sending the literal text 'None' as the credential.
+    """
+    import demistomock as demisto
+    from CommonServerPython import DemistoException
+
+    params = {
+        "credentials": credentials,
+        "base_url": "https://test.com",
+        "cred_tenant_name": {"password": "tenant"},
+        "cred_token": {"password": "token"},
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    http_request = mocker.patch.object(Client, "_http_request")
+
+    with pytest.raises(DemistoException, match="Username and Password must be provided"):
+        main()
+    http_request.assert_not_called()
