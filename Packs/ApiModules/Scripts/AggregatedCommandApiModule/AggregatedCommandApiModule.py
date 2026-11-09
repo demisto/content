@@ -1501,7 +1501,7 @@ def is_xdr_tenant() -> bool:
     """
     try:
         version_info = demisto.demistoVersion() or {}
-        demisto.debug(f"Version info: {version_info}")
+        demisto.debug(f"Version info: module={version_info.get('module')}, platform={version_info.get('platform')}")
         module = (version_info.get("module") or "").lower()
         return is_platform() and module == XDR_PLATFORM_MODULE
     except Exception as e:
