@@ -386,6 +386,84 @@ def test_diagnose_syslog_collector_builtin_xql_error_entry(mocker):
         diagnose_syslog_collector("test-broker", "24 hours")
 
 
+def build_xql_polling_entry(execution_id: str = "exec-1") -> dict:
+    """Builds the in-progress entry runXQLQuery returns to a script (real tenant shape)."""
+    polling_args = {
+        "execution_id": execution_id,
+        "interval_in_seconds": 2,
+        "is_manual_flow": "true",
+        "max_limit": "1000",
+        "query": "dataset = collection_auditing",
+        "timeframe": "24 hours",
+        "timeout_in_seconds": 180,
+        "wait_for_results": "true",
+    }
+    return {
+        "Type": 1,
+        "Contents": "",
+        "HumanReadable": "Running XQL query:",
+        "EntryContext": {},
+        "Metadata": {"polling": True, "pollingCommand": "runXQLQuery"},
+        "NextRun": "2",
+        "PollingCommand": "runXQLQuery",
+        "PollingItemsRemaining": 0,
+        "PollingArgs": polling_args,
+    }
+
+
+def test_diagnose_syslog_collector_xql_polling_then_success(mocker):
+    """
+    Given: runXQLQuery first returns an in-progress polling entry, then SUCCESS with results
+    When: diagnose_syslog_collector is called
+    Then: runXQLQuery is re-called with the returned PollingArgs (execution_id) and WARNING is returned
+    """
+    from DiagnoseSyslogCollector import diagnose_syslog_collector
+
+    broker_response = [{"Type": 1, "EntryContext": {BROKER_SELECTOR_KEY: [ACTIVE_BROKER]}}]
+    results = [{"_time": "2026-03-01 11:08:30 UTC", "classification": "ERROR", "description": "Receptor unreachable."}]
+    success_response = [
+        {"Type": 1, "EntryContext": {XQL_SELECTOR_KEY: {"execution_id": "exec-1", "status": "SUCCESS", "results": results}}}
+    ]
+    mock_execute = mocker.patch.object(
+        demisto, "executeCommand", side_effect=[broker_response, [build_xql_polling_entry()], success_response]
+    )
+    mock_sleep = mocker.patch("DiagnoseSyslogCollector.time.sleep")
+
+    result = diagnose_syslog_collector("test-broker", "24 hours")
+
+    assert result.outputs == {"status": "WARNING", "diagnosis_report": ["[2026-03-01 11:08:30 UTC][ERROR] Receptor unreachable."]}
+    assert mock_execute.call_count == 3
+    second_command, second_args = mock_execute.call_args_list[2][0]
+    assert second_command == "runXQLQuery"
+    assert second_args["execution_id"] == "exec-1"
+    mock_sleep.assert_called_once_with(2)
+
+
+def test_diagnose_syslog_collector_xql_polling_timeout(mocker):
+    """
+    Given: runXQLQuery keeps returning an in-progress polling entry
+    When: diagnose_syslog_collector is called
+    Then: Polling stops at timeout_in_seconds and a clear wrapped timeout error is raised
+    """
+    from DiagnoseSyslogCollector import diagnose_syslog_collector
+
+    broker_response = [{"Type": 1, "EntryContext": {BROKER_SELECTOR_KEY: [ACTIVE_BROKER]}}]
+    polling_entry = build_xql_polling_entry()
+    polling_entry["PollingArgs"]["timeout_in_seconds"] = 6
+    mock_execute = mocker.patch.object(demisto, "executeCommand", side_effect=[broker_response] + [[polling_entry]] * 10)
+    mock_sleep = mocker.patch("DiagnoseSyslogCollector.time.sleep")
+
+    with pytest.raises(DemistoException) as e:
+        diagnose_syslog_collector("test-broker", "24 hours")
+
+    assert str(e.value) == (
+        "Internal error while trying to query collection_auditing. "
+        "XQL query did not complete within 6 seconds (execution_id: exec-1)."
+    )
+    assert mock_sleep.call_count == 3
+    assert mock_execute.call_count == 5  # getBrokers + 4 runXQLQuery calls
+
+
 def test_extract_broker_list_defensive_parsing():
     """
     Given: getBrokers responses in different shapes

@@ -98,8 +98,10 @@ def test_run_platform_query_success(mocker):
 
     from SearchIndicatorInEvents import run_platform_query
 
-    command_results = run_platform_query(PLATFORM_ARGS)
+    poll_result = run_platform_query(PLATFORM_ARGS)
+    command_results = poll_result.response
 
+    assert poll_result.continue_to_poll is False
     mock_execute.assert_called_once_with(
         "runXQLQuery",
         {
@@ -134,7 +136,7 @@ def test_run_platform_query_custom_polling_args_and_escaping(mocker):
 
     from SearchIndicatorInEvents import run_platform_query
 
-    command_results = run_platform_query(args)
+    command_results = run_platform_query(args).response
 
     sent_args = mock_execute.call_args[0][1]
     assert sent_args["query"] == 'search "a\\"b\\\\c" dataset = xdr_data'
@@ -266,6 +268,120 @@ def test_run_dispatches_to_legacy_query_off_platform(mocker):
 
     assert mock_execute.call_count == 1
     assert mock_execute.call_args[1]["command"] == "xdr-xql-generic-query"
+
+
+def build_xql_polling_entry(execution_id: str = "exec-1", timeout: int = 600) -> dict:
+    """Builds the in-progress entry runXQLQuery returns to a script (real tenant shape)."""
+    return {
+        "Type": 1,
+        "Contents": "",
+        "HumanReadable": "Running XQL query:",
+        "EntryContext": {},
+        "Metadata": {"polling": True, "pollingCommand": "runXQLQuery"},
+        "NextRun": "30",
+        "PollingCommand": "runXQLQuery",
+        "PollingItemsRemaining": 0,
+        "PollingArgs": {
+            "execution_id": execution_id,
+            "interval_in_seconds": 30,
+            "is_manual_flow": "true",
+            "max_limit": "1000",
+            "query": 'search "1.2.3.4" dataset = xdr_data',
+            "query_name": "Test Query",
+            "timeframe": "7 days",
+            "timeout_in_seconds": timeout,
+            "wait_for_results": "true",
+        },
+    }
+
+
+def test_run_platform_query_polling_then_success(mocker):
+    """
+    Given:
+    - runXQLQuery first returns an in-progress polling entry, then SUCCESS (selector-suffixed GenericXQLQuery key).
+
+    When:
+    - Executing run_platform_query, then re-running it with the rescheduled args (as the polling scheduler does).
+
+    Then:
+    - Ensure the first run reschedules the script with the execution_id (query_id) and identity markers.
+    - Ensure the second run passes the execution_id to runXQLQuery (no re-submission).
+    - Ensure the results are returned under PaloAltoNetworksXQL.
+    """
+    results = [{"agent_hostname": "host1", "action_local_ip": "1.2.3.4"}]
+    success_response = [
+        {
+            "Type": 1,
+            "EntryContext": {
+                "GenericXQLQuery(val.execution_id && val.execution_id == obj.execution_id)": {
+                    "execution_id": "exec-1",
+                    "status": "SUCCESS",
+                    "results": results,
+                }
+            },
+        }
+    ]
+    mock_execute = mocker.patch(
+        "SearchIndicatorInEvents.demisto.executeCommand", side_effect=[[build_xql_polling_entry()], success_response]
+    )
+    mocker.patch("SearchIndicatorInEvents.time.time", return_value=1000)
+
+    from SearchIndicatorInEvents import run_platform_query
+
+    first_poll = run_platform_query(PLATFORM_ARGS)
+
+    assert first_poll.continue_to_poll is True
+    assert first_poll.args_for_next_run == PLATFORM_ARGS | {
+        "query_id": "exec-1",
+        "is_manual_flow": "true",
+        "polling_started_at": 1000,
+    }
+    assert "execution_id" not in mock_execute.call_args_list[0][0][1]
+
+    second_poll = run_platform_query(first_poll.args_for_next_run)
+
+    assert mock_execute.call_count == 2
+    second_command, second_args = mock_execute.call_args_list[1][0]
+    assert second_command == "runXQLQuery"
+    assert second_args["execution_id"] == "exec-1"
+    assert second_args["is_manual_flow"] == "true"
+    assert second_poll.continue_to_poll is False
+    command_results = second_poll.response
+    assert command_results.outputs == results
+    assert command_results.outputs_prefix == "PaloAltoNetworksXQL"
+    assert "host1" in command_results.readable_output
+
+
+def test_run_platform_query_polling_timeout(mocker):
+    """
+    Given:
+    - runXQLQuery keeps returning an in-progress polling entry, and timeout_in_seconds=60.
+
+    When:
+    - Executing run_platform_query repeatedly with the rescheduled args while the clock advances.
+
+    Then:
+    - Ensure the script keeps rescheduling before the timeout and raises a clear timeout error once it is reached.
+    """
+    import pytest
+    from CommonServerPython import DemistoException
+
+    mock_execute = mocker.patch(
+        "SearchIndicatorInEvents.demisto.executeCommand", side_effect=[[build_xql_polling_entry(timeout=60)]] * 3
+    )
+    mocker.patch("SearchIndicatorInEvents.time.time", side_effect=[1000, 1030, 1060])
+
+    from SearchIndicatorInEvents import run_platform_query
+
+    args = PLATFORM_ARGS | {"timeout_in_seconds": "60"}
+    for _ in range(2):
+        poll_result = run_platform_query(args)
+        assert poll_result.continue_to_poll is True
+        args = poll_result.args_for_next_run
+
+    with pytest.raises(DemistoException, match=r"XQL query did not complete within 60 seconds \(execution_id: exec-1\)\."):
+        run_platform_query(args)
+    assert mock_execute.call_count == 3
 
 
 def test_extract_xql_outputs_missing_context():

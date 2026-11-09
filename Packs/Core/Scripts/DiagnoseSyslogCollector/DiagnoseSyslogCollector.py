@@ -1,8 +1,13 @@
+import time
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 BROKER_CONTEXT_KEY = "Core.Broker"
 XQL_CONTEXT_KEY = "GenericXQLQuery"
+XQL_FINAL_STATUSES = ("SUCCESS", "FAIL")
+XQL_DEFAULT_INTERVAL = 2  # runXQLQuery default interval_in_seconds
+XQL_DEFAULT_TIMEOUT = 180  # runXQLQuery default timeout_in_seconds
 
 
 def get_context_value(entry_result: list, context_key: str) -> Any:
@@ -37,6 +42,56 @@ def extract_xql_outputs(xql_result: list) -> dict:
     """
     outputs = get_context_value(xql_result, XQL_CONTEXT_KEY)
     return outputs if isinstance(outputs, dict) else {}
+
+
+def get_xql_polling_args(xql_result: list) -> dict:
+    """
+    Returns the PollingArgs of a runXQLQuery in-progress (polling) entry, or an empty dict if there are none.
+    """
+    entry = xql_result[0] if isinstance(xql_result, list) and xql_result else {}
+    if not isinstance(entry, dict):
+        return {}
+    polling_args = entry.get("PollingArgs") or (entry.get("Metadata") or {}).get("pollingArgs") or {}
+    return polling_args if isinstance(polling_args, dict) else {}
+
+
+def run_xql_query(xql_args: dict) -> list:
+    """
+    Runs the runXQLQuery built-in command and waits for a final status.
+    When called from a script, runXQLQuery returns an in-progress polling entry instead of blocking.
+    In that case it is called again with the returned PollingArgs (which carry the execution_id, so the
+    query is not re-submitted and only its results are fetched) until the status is SUCCESS / FAIL,
+    an error is returned, or the timeout is reached.
+    """
+    next_args = dict(xql_args)
+    waited = 0
+    while True:
+        xql_result = demisto.executeCommand("runXQLQuery", next_args)
+        outputs = extract_xql_outputs(xql_result)
+        status = outputs.get("status")
+        polling_args = get_xql_polling_args(xql_result)
+        demisto.debug(f"runXQLQuery returned status={status}, polling={bool(polling_args)}, waited={waited}s")
+
+        if is_error(xql_result) or status in XQL_FINAL_STATUSES:
+            return xql_result
+
+        if polling_args:
+            next_args = polling_args
+        elif outputs.get("execution_id"):
+            next_args = next_args | {"execution_id": outputs["execution_id"]}
+        execution_id = next_args.get("execution_id")
+        if not execution_id:
+            # Nothing to poll on, let the caller handle the unexpected response.
+            return xql_result
+
+        interval = arg_to_number(next_args.get("interval_in_seconds")) or XQL_DEFAULT_INTERVAL
+        timeout = arg_to_number(next_args.get("timeout_in_seconds")) or XQL_DEFAULT_TIMEOUT
+        if waited >= timeout:
+            raise DemistoException(f"XQL query did not complete within {timeout} seconds (execution_id: {execution_id}).")
+        # Bounded wait (capped by runXQLQuery's timeout_in_seconds): this non-polling script must block until
+        # the built-in returns a final status, since runXQLQuery does not block when called from a script.
+        time.sleep(interval)  # pylint: disable=E9003
+        waited += interval
 
 
 def diagnose_syslog_collector(broker_vm_name: str, timeframe: str) -> CommandResults:
@@ -133,15 +188,12 @@ dataset = collection_auditing
                 }
 
                 demisto.debug(f"Executing XQL query with args: {xql_args}")
-                xql_result = demisto.executeCommand("runXQLQuery", xql_args)
-
-                demisto.debug(f"XQL query result: {xql_result}")
+                xql_result = run_xql_query(xql_args)
 
                 if not xql_result or not isinstance(xql_result, list):
                     raise DemistoException("Failed to execute XQL query")
 
                 xql_outputs = extract_xql_outputs(xql_result)
-                demisto.debug(f"XQL outputs: {xql_outputs}")
 
                 # A FAILed query is returned as an error entry that still holds the query outputs.
                 if is_error(xql_result) and xql_outputs.get("status") != "FAIL":
