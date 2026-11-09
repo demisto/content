@@ -52,6 +52,14 @@ def client() -> Client:
     return Client(base_url=BASE_URL, verify=True, proxy=False)
 
 
+def assert_client_logged(capfd, message):
+    """ContentClient logs each failed request to stdout as a JSON line; the content test suite fails a
+    test that leaves anything in stdout, so tests of the error paths read it and check what was logged."""
+    out, err = capfd.readouterr()
+    assert f'"message": "{message}"' in out
+    assert not err
+
+
 def test_api_key_header():
     """The key is sent as API-KEY, and no header is sent without one."""
     assert Client(base_url=BASE_URL, verify=True, proxy=False, api_key="k1")._headers["API-KEY"] == "k1"
@@ -77,7 +85,7 @@ def test_test_module(client, respx_mock):
     assert SoChain.test_module(client) == "ok"
 
 
-def test_bad_api_key(respx_mock):
+def test_bad_api_key(respx_mock, capfd):
     """A 401 names the key as the problem."""
     mock_get(
         respx_mock,
@@ -87,9 +95,10 @@ def test_bad_api_key(respx_mock):
     )
     with pytest.raises(DemistoException, match="rejected the API key"):
         SoChain.test_module(Client(base_url=BASE_URL, verify=True, proxy=False, api_key="bad"))
+    assert_client_logged(capfd, "Authentication error")
 
 
-def test_rate_limited(client, respx_mock):
+def test_rate_limited(client, respx_mock, capfd):
     """A 429 passes on Retry-After and where to get a key, at once: it is not retried."""
     route = mock_get(
         respx_mock,
@@ -101,9 +110,10 @@ def test_rate_limited(client, respx_mock):
     with pytest.raises(DemistoException, match="Retry after 120 seconds.*sochain.com/dashboard"):
         address_summary_command(client, {"address": GENESIS, "network": "BTC"})
     assert route.call_count == 1
+    assert_client_logged(capfd, "Rate limit error")
 
 
-def test_server_error_retried(client, respx_mock, mocker):
+def test_server_error_retried(client, respx_mock, mocker, capfd):
     """A 5xx is retried (3 attempts in all), then reported with SoChain's message."""
     mocker.patch("ContentClientApiModule.anyio.sleep", new=AsyncMock())
     route = mock_get(
@@ -115,6 +125,7 @@ def test_server_error_retried(client, respx_mock, mocker):
     with pytest.raises(DemistoException, match=r"SoChain API error \(503\): Try again soon"):
         address_summary_command(client, {"address": GENESIS, "network": "BTC"})
     assert route.call_count == 3
+    assert_client_logged(capfd, "Service error")
 
 
 def test_address_summary_detects_network(client, respx_mock):
@@ -196,7 +207,7 @@ def test_crypto_lookalikes_found_is_not_bad(client, respx_mock):
     assert "Look-alike addresses" in result.readable_output
 
 
-def test_crypto_network_without_check(client, respx_mock):
+def test_crypto_network_without_check(client, respx_mock, capfd):
     """A 404 from the poisoning check (a network without it) still enriches the address."""
     address = "tmTestAddress0000000000000000000000"
     mock_get(respx_mock, f"address_summary/ZECTEST/{address}", json=util_load_json("test_data/address_summary.json"))
@@ -207,6 +218,7 @@ def test_crypto_network_without_check(client, respx_mock):
     assert result.outputs["Poisoning"] is None
     assert result.indicator.address_type == "zcash"
     assert result.indicator.dbot_score.message == "The address poisoning check is not available for this network."
+    assert_client_logged(capfd, "Service error")
 
 
 def test_crypto_unused_address(client, respx_mock):
@@ -234,7 +246,7 @@ def test_crypto_unused_address(client, respx_mock):
     assert result.outputs["FirstActiveTime"] is None
 
 
-def test_crypto_invalid_address(client, respx_mock):
+def test_crypto_invalid_address(client, respx_mock, capfd):
     """A string that isn't an address on any network gets an Unknown score and no SoChain context."""
     for network in ("BTC", "LTC", "DOGE", "ZEC"):
         mock_get(respx_mock, f"is_valid_address/{network}/nope", json=INVALID)
@@ -250,6 +262,7 @@ def test_crypto_invalid_address(client, respx_mock):
     assert [r.indicator.dbot_score.score for r in results] == [Common.DBotScore.NONE, Common.DBotScore.NONE]
     assert [r.indicator.dbot_score.message for r in results] == ["No results found.", "No results found."]
     assert all(r.outputs is None for r in results)
+    assert_client_logged(capfd, "Service error")
 
 
 def test_transaction(client, respx_mock):
