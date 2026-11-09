@@ -2,15 +2,18 @@
     "msft_azure_firewall_raw": {
         "resourceId": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The ID of the Azure resource."
         },
         "category": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The category of the log."
         },
         "properties": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The properties of the event."
         }
     }
 }

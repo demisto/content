@@ -1,14 +1,18 @@
 {
     "radware_access_logs_raw": {
+        "dataset_description": "Access logs collected from Radware Cloud Services.",
         "_raw_log": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The raw access log."
         }
     },
     "radware_appwall_raw": {
+        "dataset_description": "AppWall security logs collected from Radware Cloud Services.",
         "_raw_log": {
           "type": "string",
-          "is_array": false
+          "is_array": false,
+          "field_description": "The raw AppWall log."
         }
       }
 }
