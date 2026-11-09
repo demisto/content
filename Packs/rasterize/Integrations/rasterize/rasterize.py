@@ -98,9 +98,10 @@ DEFAULT_RETRY_WAIT_IN_SECONDS = 3
 # Startup wait for a freshly launched Chrome. Script workers have a small CPU quota, and a cold
 # Chrome start there was observed taking 30s+ under load.
 try:
-    CHROME_STARTUP_TIMEOUT_SECONDS = int(os.getenv("CHROME_STARTUP_TIMEOUT_SECONDS", "90"))
-except Exception as e:
-    demisto.info(f"Exception trying to parse CHROME_STARTUP_TIMEOUT_SECONDS, {e}")
+    # arg_to_number raises on a non-numeric value, so keep the fallback to avoid failing at import time.
+    CHROME_STARTUP_TIMEOUT_SECONDS = arg_to_number(os.getenv("CHROME_STARTUP_TIMEOUT_SECONDS")) or 90
+except ValueError as e:
+    demisto.info(f"Exception trying to parse CHROME_STARTUP_TIMEOUT_SECONDS, {e}\nTrace:{traceback.format_exc()}")
     CHROME_STARTUP_TIMEOUT_SECONDS = 90
 CHROME_STARTUP_POLL_INTERVAL_SECONDS = 1
 CHROME_STARTUP_POLL_REQUEST_TIMEOUT_SECONDS = 5
@@ -1278,8 +1279,9 @@ def wait_for_started_chrome(port: str, process: subprocess.Popen) -> pychrome.Br
     """
     browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
     start_time = time.monotonic()
+    deadline = start_time + CHROME_STARTUP_TIMEOUT_SECONDS
     attempt = 0
-    while True:
+    while time.monotonic() < deadline:
         attempt += 1
         elapsed = time.monotonic() - start_time
         returncode = process.poll()
@@ -1293,13 +1295,13 @@ def wait_for_started_chrome(port: str, process: subprocess.Popen) -> pychrome.Br
             return browser
         except requests.exceptions.RequestException as exp:
             demisto.debug(f"Chrome on port {port} not ready yet, {elapsed=:.1f}s, {attempt=}: {type(exp).__name__}")
-        if time.monotonic() - start_time >= CHROME_STARTUP_TIMEOUT_SECONDS:
-            demisto.debug(
-                f"Chrome on port {port} (pid {process.pid}) is still running but did not accept connections "
-                f"within {CHROME_STARTUP_TIMEOUT_SECONDS}s, giving up."
-            )
-            return None
         time.sleep(CHROME_STARTUP_POLL_INTERVAL_SECONDS)  # pylint: disable=E9003
+
+    demisto.debug(
+        f"Chrome on port {port} (pid {process.pid}) is still running but did not accept connections "
+        f"within {CHROME_STARTUP_TIMEOUT_SECONDS}s, giving up."
+    )
+    return None
 
 
 def close_orphaned_tabs(browser: pychrome.Browser, max_allowed_tabs: int = MAX_CHROME_TABS_COUNT) -> int:
