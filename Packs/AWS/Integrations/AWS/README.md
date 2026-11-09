@@ -7343,6 +7343,41 @@ Retrieves a list of the public and private hosted zones that are associated with
 | AWS.Route53.HostedZones.LinkedService.Description | String | If the hosted zone was created by another service, an optional description provided by that service. |
 | AWS.Route53.HostedZonesNextToken | String | The token to use in the next_token argument to retrieve the next page of hosted zones. Null when there are no more results. |
 
+#### Command example
+
+```!aws-route53-hosted-zones-list account_id=123456789012 region=us-east-1 limit=1```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "Route53": {
+            "HostedZones": [
+                {
+                    "Config": {
+                        "Comment": "Example zone b",
+                        "PrivateZone": false
+                    },
+                    "Id": "/hostedzone/Z00737611B2SHHCSMDAAY",
+                    "Name": "example-b.com.",
+                    "ResourceRecordSetCount": 2
+                }
+            ],
+            "HostedZonesNextToken": "Z00737611B2SHHCSMDAAY"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS Route53 Hosted Zones
+>
+>|Id|Name|Resource Record Set Count|Private Zone|Comment|
+>|---|---|---|---|---|
+>| /hostedzone/Z00737611B2SHHCSMDAAY | example-b.com. | 2 | false | Example zone b |
+
 ### aws-route53-hosted-zones-by-name-list
 
 ***
@@ -7376,6 +7411,42 @@ Retrieves a list of the hosted zones associated with the AWS account, sorted in 
 | AWS.Route53.HostedZones.LinkedService.Description | String | If the hosted zone was created by another service, an optional description provided by that service. |
 | AWS.Route53.HostedZonesNextDNSName | String | The DNS name to use in the dns_name argument to retrieve the next page of hosted zones. Null when there are no more results. |
 | AWS.Route53.HostedZonesNextHostedZoneId | String | The hosted zone ID to use in the hosted_zone_id argument to retrieve the next page of hosted zones. Null when there are no more results. |
+
+#### Command example
+
+```!aws-route53-hosted-zones-by-name-list account_id=123456789012 region=us-east-1 dns_name=example-a.com limit=1```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "Route53": {
+            "HostedZones": [
+                {
+                    "Config": {
+                        "Comment": "Example zone a",
+                        "PrivateZone": false
+                    },
+                    "Id": "/hostedzone/Z0527756206C7VMRR9ARB",
+                    "Name": "example-a.com.",
+                    "ResourceRecordSetCount": 8
+                }
+            ],
+            "HostedZonesNextDNSName": "example-b.com.",
+            "HostedZonesNextHostedZoneId": "Z00737611B2SHHCSMDAAY"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS Route53 Hosted Zones By Name
+>
+>|Id|Name|Resource Record Set Count|Private Zone|Comment|
+>|---|---|---|---|---|
+>| /hostedzone/Z0527756206C7VMRR9ARB | example-a.com. | 8 | false | Example zone a |
 
 ### aws-route53-resource-record-sets-list
 
@@ -7423,6 +7494,57 @@ Lists the resource record sets in a specified hosted zone. Route53 is a global s
 | AWS.Route53.RecordSetsNextRecordIdentifier | String | The set identifier to use in the start_record_identifier argument to retrieve the next page. Null when there are no more results or the next record has no set identifier. |
 | AWS.Route53.RecordSetsIsTruncated | Boolean | Whether more resource record sets are available. |
 
+#### Command example
+
+```!aws-route53-resource-record-sets-list account_id=123456789012 region=us-east-1 hosted_zone_id=Z0527756206C7VMRR9ARB limit=2```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "Route53": {
+            "RecordSets": [
+                {
+                    "HostedZoneId": "Z0527756206C7VMRR9ARB",
+                    "Name": "example-a.com.",
+                    "ResourceRecords": [
+                        {"Value": "ns-1328.awsdns-38.org."},
+                        {"Value": "ns-1590.awsdns-06.co.uk."},
+                        {"Value": "ns-5.awsdns-00.com."},
+                        {"Value": "ns-812.awsdns-37.net."}
+                    ],
+                    "TTL": 172800,
+                    "Type": "NS"
+                },
+                {
+                    "HostedZoneId": "Z0527756206C7VMRR9ARB",
+                    "Name": "example-a.com.",
+                    "ResourceRecords": [
+                        {"Value": "ns-1328.awsdns-38.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"}
+                    ],
+                    "TTL": 900,
+                    "Type": "SOA"
+                }
+            ],
+            "RecordSetsIsTruncated": true,
+            "RecordSetsNextRecordIdentifier": null,
+            "RecordSetsNextRecordName": "alias.example-a.com.",
+            "RecordSetsNextRecordType": "A"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS Route53 Record Sets in hosted zone Z0527756206C7VMRR9ARB
+>
+>|Name|Type|TTL|Values|
+>|---|---|---|---|
+>| example-a.com. | NS | 172800 | ns-1328.awsdns-38.org., ns-1590.awsdns-06.co.uk., ns-5.awsdns-00.com., ns-812.awsdns-37.net. |
+>| example-a.com. | SOA | 900 | ns-1328.awsdns-38.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400 |
+
 ### aws-route53-resource-record-sets-change
 
 ***
@@ -7458,3 +7580,32 @@ Creates, updates (UPSERT), or deletes a single resource record set in a hosted z
 | AWS.Route53.RecordSetsChange.Status | String | The current state of the request. PENDING indicates that the request has not yet been applied to all Route53 DNS servers. |
 | AWS.Route53.RecordSetsChange.SubmittedAt | Date | The date and time that the change request was submitted. |
 | AWS.Route53.RecordSetsChange.Comment | String | The comment that was specified for the change request. |
+
+#### Command example
+
+```!aws-route53-resource-record-sets-change account_id=123456789012 region=us-east-1 hosted_zone_id=Z0527756206C7VMRR9ARB action=CREATE name=new.example-a.com type=A ttl=300 values=192.0.2.30,192.0.2.31 comment="example create"```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "Route53": {
+            "RecordSetsChange": {
+                "Comment": "example create",
+                "Id": "/change/C0074801Q6AQED8TYW4C",
+                "Status": "PENDING",
+                "SubmittedAt": "2026-11-09T11:42:43"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS Route53 CREATE request submitted for record new.example-a.com (A)
+>
+>|Id|Status|Submitted At|Comment|
+>|---|---|---|---|
+>| /change/C0074801Q6AQED8TYW4C | PENDING | 2026-11-09T11:42:43 | example create |
