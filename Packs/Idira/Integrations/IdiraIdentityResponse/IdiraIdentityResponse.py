@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
@@ -23,10 +25,19 @@ INTEGRATION_NAME = "Idira Identity Response"
 
 
 class Config:
-    """Global static configuration (telemetry vendor fields, token defaults)."""
+    """Global static configuration (Feature Adoption reporting fields, token defaults)."""
     INTEGRATION_VERSION = "1.0"
-    INTEGRATION_TYPE = "SOAR"
     VENDOR_NAME = "Palo Alto Networks"
+
+    # Feature Adoption service (metric_key = <service_code>.<master_feature_name>.<metric_name>).
+    ADOPTION_SERVICE_CODE = "IDIINT"
+    ADOPTION_FEATURE_NAME = "cortex_idira_identity_response"
+    ADOPTION_METRIC_NAME = "integration_executed"
+    ADOPTION_IDIRA_SERVICE = "Idira ISPSS"
+    ADOPTION_TRIGGERED_BY = "BE"  # allowed: "BE", "UI", "N/A"
+    ADOPTION_ENDPOINT_PATH = "/api/feature-adoption"
+    ADOPTION_HOST_PREFIX = "us-east-1-featureadopt.featureadopt"
+    ADOPTION_TIMEOUT_SECONDS = 10
 
     # Token default settings
     DEFAULT_TOKEN_TTL_SECONDS = 6 * 60 * 60  # 6 hours
@@ -53,21 +64,35 @@ POLICY_STATUS_ENABLED = "Enabled"
 # region Helpers
 
 
-def generate_telemetry_header() -> str:
-    """Build the base64-encoded ``x-cybr-telemetry`` header value.
+def build_adoption_event() -> dict[str, Any]:
+    """Build the Feature Adoption event body (authenticated-user schema).
 
-    Format: ampersand-delimited key=value pairs
-    ``in=<name>&it=<type>&iv=<version>&vn=<vendor>``.
+    ``user_id`` is intentionally omitted: for authenticated callers the service
+    extracts it from the JWT. Tag keys must be snake_case alphanumeric strings.
     """
-    telemetry_data = (
-        f"in={INTEGRATION_NAME}&"
-        f"it={Config.INTEGRATION_TYPE}&"
-        f"iv={Config.INTEGRATION_VERSION}&"
-        f"vn={Config.VENDOR_NAME}"
-    )
-    encoded = base64.b64encode(telemetry_data.encode()).decode()
-    demisto.debug(f"[Telemetry] Generated header: {telemetry_data}")
-    return encoded
+    return {
+        "metric_key": f"{Config.ADOPTION_SERVICE_CODE}.{Config.ADOPTION_FEATURE_NAME}.{Config.ADOPTION_METRIC_NAME}",
+        "number_of_events": 1,
+        "triggered_by": Config.ADOPTION_TRIGGERED_BY,
+        "tags": {
+            "vendor_name": Config.VENDOR_NAME,
+            "integration_version": Config.INTEGRATION_VERSION,
+            "idira_service": Config.ADOPTION_IDIRA_SERVICE,
+        },
+    }
+
+
+def get_adoption_url(identity_url: str) -> str:
+    """Derive the Feature Adoption API URL from the tenant Identity URL.
+
+    ``https://<tenant>.id.<root domain>`` -> ``https://us-east-1-featureadopt.featureadopt.<root domain>/api/feature-adoption``.
+    Returns an empty string if the root domain cannot be determined.
+    """
+    host = urlparse(identity_url).hostname or ""
+    _, separator, root_domain = host.partition(".id.")
+    if not separator or not root_domain:
+        return ""
+    return f"https://{Config.ADOPTION_HOST_PREFIX}.{root_domain}{Config.ADOPTION_ENDPOINT_PATH}"
 
 
 def _extract_user_id(response: dict[str, Any]) -> str:
@@ -136,7 +161,6 @@ class Client(BaseClient):
         # token, so a single _get_access_token() serves every request wrapper.
         self.privilege_cloud_url = privilege_cloud_url.rstrip("/")
         self.sia_url = sia_url.rstrip("/")
-        self.telemetry_header = generate_telemetry_header()
 
     def _get_access_token(self) -> str:
         """Get or refresh the OAuth2 client_credentials token with caching."""
@@ -212,7 +236,6 @@ class Client(BaseClient):
         access_token = self._get_access_token()
         headers = {
             "Authorization": f"Bearer {access_token}",
-            "x-cybr-telemetry": self.telemetry_header,
             "Content-Type": "application/json",
         }
 
@@ -270,6 +293,30 @@ class Client(BaseClient):
         except ValueError:
             demisto.debug(f"[HTTP Error] Non-JSON response. Status: {status_code}, Body: {http_response.text[:200]}")
             raise DemistoException(f"API returned non-JSON response with status {status_code}")
+
+    def report_adoption_event(self) -> None:
+        """Report an ``integration_executed`` event to the Feature Adoption service.
+
+        Best effort: a single attempt with a short timeout. Any failure is logged
+        and swallowed so telemetry can never break a response action.
+        """
+        adoption_url = get_adoption_url(self.identity_url)
+        if not adoption_url:
+            demisto.debug(f"[Adoption] Could not derive the Feature Adoption URL from {self.identity_url}; skipping.")
+            return
+        try:
+            self._http_request(
+                method="POST",
+                full_url=adoption_url,
+                json_data=build_adoption_event(),
+                headers={"Authorization": f"Bearer {self._get_access_token()}", "Content-Type": "application/json"},
+                resp_type="response",
+                ok_codes=(200, 202),
+                timeout=Config.ADOPTION_TIMEOUT_SECONDS,
+            )
+            demisto.debug("[Adoption] Event reported.")
+        except Exception as error:
+            demisto.debug(f"[Adoption] Failed to report event (ignored): {error}")
 
     def identity_request(
         self,
@@ -730,7 +777,9 @@ def main() -> None:
         if command == "test-module":
             return_results(test_module(client))
         elif command in COMMAND_MAP:
-            return_results(COMMAND_MAP[command](client, demisto.args()))
+            results = COMMAND_MAP[command](client, demisto.args())
+            client.report_adoption_event()  # only reached when the command succeeded
+            return_results(results)
         else:
             raise NotImplementedError(f"Command '{command}' is not implemented")
 

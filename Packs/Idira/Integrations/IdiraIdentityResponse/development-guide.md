@@ -36,7 +36,6 @@ BASE HOSTS (SaaS):
 - Secure Infrastructure Access (SIA): https://<subdomain>.dpa.cyberark.cloud/api/<path>
 - EPM: https://<EPM_Server>.epm.cyberark.com/EPM/API/<Version>/<path>
 
-TELEMETRY: Required on all Idira API requests — x-cybr-telemetry header, Base64url-encoded key=value pairs. it reflects the partner platform category (SOAR / SIEM / XDR).
 SANDBOX: C3 Integrations Platform — https://c3.cyberark.cloud
 CONTACT: cybr-bizdevtech@paloaltonetworks.com
 
@@ -229,26 +228,6 @@ If the endpoint containment action is in scope, EPM uses OAuth through Identity 
 
 ---
 
-## 6. Telemetry Header (Required)
-
-Every Idira API request must include the `x-cybr-telemetry` header, Base64 URL-encoded, as ampersand-delimited key=value pairs:
-
-```
-in=<IntegrationName>&it=<IntegrationType>&iv=<version>&vn=<VendorName>
-```
-
-| Field | Key | Required | Example |
-|:---|:---|:---:|:---|
-| Integration Name | `in` | Yes | `in=<Partner> Identity Response` |
-| Integration Type | `it` | Yes | `it=SOAR` (or `SIEM` / `XDR` — reflect the partner platform category) |
-| Integration Version | `iv` | Yes | `iv=1.0` |
-| Vendor Name | `vn` | Yes | `vn=<Partner>` (for example `Palo Alto Networks`, `Google`, `Splunk`) |
-| Vendor Version | `vv` | No | `vv=<platform version>` |
-
-Set `in`, `vn`, and `it` to values that describe your platform. Confirm the final values with your Idira TAM before certification.
-
----
-
 ## 7. Core API Operations
 
 > Each action follows the same two-step shape: resolve the target entity, then run the action. Every method and path below was read from live Idira (CyberArk) documentation or the published OpenAPI spec. Replace `<tenant>`, `<subdomain>`, `<EPM_Server>` with your environment values. All hosts are Idira SaaS services.
@@ -262,7 +241,6 @@ curl -X POST \
   "https://<tenant>.id.cyberark.cloud/CDirectoryService/GetUserByName" \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
   -H "Content-Type: application/json" \
-  -H "x-cybr-telemetry: <telemetry>" \
   -d '{"name": "<username@suffix>"}'
 ```
 
@@ -279,8 +257,7 @@ Rotate and verify calls require the internal account ID.
 ```bash
 curl -X GET \
   "https://<subdomain>.privilegecloud.cyberark.cloud/PasswordVault/API/Accounts?search=<term>&searchType=contains&safeName=<safe>&limit=50" \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  -H "x-cybr-telemetry: <telemetry>"
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 
 | Query param | Description |
@@ -299,8 +276,7 @@ Resolve the session GUID to act on a live session.
 ```bash
 curl -X GET \
   "https://<subdomain>.privilegecloud.cyberark.cloud/PasswordVault/API/LiveSessions?Search=<username>&Limit=25" \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  -H "x-cybr-telemetry: <telemetry>"
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 
 **Response — relevant fields:** each session carries `SessionGuid` (use this to terminate/suspend, not the numeric `SessionID`), plus `User`, `AccountUsername`, `AccountAddress`, `RemoteMachine`, `Protocol`, `RiskScore`, and the capability flags `CanTerminate`, `CanSuspend`, `CanMonitor`. Filter params include `Search`, `Safe`, `FromTime`, `ToTime`, `Activities`, `Limit`, `Offset`, `Sort`.
@@ -318,7 +294,6 @@ curl -X POST \
   "https://<tenant>.id.cyberark.cloud/CDirectoryService/SetUserState" \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
   -H "Content-Type: application/json" \
-  -H "x-cybr-telemetry: <telemetry>" \
   -d '{"ID": "<user-unique-id>", "State": "Locked"}'
 ```
 
@@ -336,7 +311,6 @@ curl -X POST \
   "https://<tenant>.id.cyberark.cloud/UserMgmt/SignOutEverywhere" \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
   -H "Content-Type: application/json" \
-  -H "x-cybr-telemetry: <telemetry>" \
   -d '{"<userIdKey>": "<user-unique-id>"}'
 ```
 
@@ -349,7 +323,6 @@ curl -X POST \
   "https://<tenant>.id.cyberark.cloud/CDirectoryService/ChangeUser" \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
   -H "Content-Type: application/json" \
-  -H "x-cybr-telemetry: <telemetry>" \
   -d '{"Name": "<username>", "ForcePasswordChangeNext": true}'
 ```
 
@@ -362,7 +335,6 @@ curl -X POST \
   "https://<tenant>.id.cyberark.cloud/SaasManage/RemoveUsersAndGroupsFromRole" \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
   -H "Content-Type: application/json" \
-  -H "x-cybr-telemetry: <telemetry>" \
   -d '{"Name": "<role-unique-id>", "Users": ["<user-unique-id>"]}'
 ```
 
@@ -410,7 +382,6 @@ curl -X POST \
   "https://<subdomain>.privilegecloud.cyberark.cloud/PasswordVault/API/Accounts/<AccountID>/Change/" \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
   -H "Content-Type: application/json" \
-  -H "x-cybr-telemetry: <telemetry>" \
   -d '{"ChangeCredsForGroup": false}'
 ```
 
@@ -425,8 +396,7 @@ curl -X POST \
 ```bash
 curl -X POST \
   "https://<subdomain>.privilegecloud.cyberark.cloud/PasswordVault/API/Accounts/<AccountID>/Verify/" \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  -H "x-cybr-telemetry: <telemetry>"
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 
 No request body. To confirm the result, poll `GET /PasswordVault/API/Accounts/<AccountID>` and read `lastVerifiedDateTime`, `lastModifiedDateTime`, and `lastReconciledDateTime`.
@@ -438,7 +408,6 @@ curl -X POST \
   "https://<subdomain>.privilegecloud.cyberark.cloud/PasswordVault/API/Accounts" \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
   -H "Content-Type: application/json" \
-  -H "x-cybr-telemetry: <telemetry>" \
   -d '{
         "platformId": "<PlatformID>",
         "safeName": "<SafeName>",
@@ -580,7 +549,6 @@ Because v1 is stateless execution, the partner playbook owns sequencing, rollbac
 - [ ] `[TBD]` field-name items confirmed against your tenant Swagger: `SignOutEverywhere` body key, `GetUserByName` key casing, Privilege Cloud session-termination permission model
 - [ ] Reversible actions (unlock, resume, re-add role) tested where the playbook offers rollback
 - [ ] Idempotency handled (409 on already-locked / already-member)
-- [ ] Telemetry header values (`in`, `it`, `vn`) set to describe the partner platform and agreed with the Idira TAM
 - [ ] Logging captures target ID, action, alert ID, and API response per step
 
 ---

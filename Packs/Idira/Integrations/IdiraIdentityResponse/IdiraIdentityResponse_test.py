@@ -4,8 +4,6 @@ Pytest unit tests; all test function names must start with "test_".
 More details: https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
-import base64
-
 import pytest
 from CommonServerPython import DemistoException
 
@@ -13,13 +11,14 @@ import IdiraIdentityResponse
 from IdiraIdentityResponse import (
     Client,
     _extract_user_id,
+    build_adoption_event,
     disable_access_policy_command,
     disable_user_command,
     expire_password_command,
     force_logout_command,
-    generate_telemetry_header,
     get_account_command,
     get_account_details_command,
+    get_adoption_url,
     get_user_by_name_command,
     list_sessions_command,
     lock_user_command,
@@ -68,6 +67,22 @@ def identity_only_client() -> Client:
 
 
 @pytest.fixture(autouse=True)
+def _block_network(mocker):
+    """Fail any test that would send a real HTTP request (e.g. a real Feature Adoption event).
+
+    Every test must mock ``Client._http_request`` (or a higher-level method). Anything that reaches
+    the underlying ``requests`` session is blocked, and the teardown assertion fails the test even if
+    production code swallowed the raised error (``report_adoption_event`` catches all exceptions).
+    """
+    session_request = mocker.patch(
+        "requests.sessions.Session.request",
+        side_effect=AssertionError("Unmocked network call attempted in a unit test"),
+    )
+    yield session_request
+    assert session_request.call_count == 0, f"Unmocked network call(s) attempted: {session_request.call_args_list}"
+
+
+@pytest.fixture(autouse=True)
 def _mock_context(mocker):
     """Isolate integration-context reads/writes in every test."""
     store: dict = {}
@@ -96,13 +111,73 @@ class _Resp:
 # ========================================
 
 
-def test_generate_telemetry_header():
-    """The telemetry header base64-decodes to the expected key=value pairs."""
-    decoded = base64.b64decode(generate_telemetry_header()).decode()
-    assert "in=Idira Identity Response" in decoded
-    assert "it=SOAR" in decoded
-    assert "iv=1.0" in decoded
-    assert "vn=Palo Alto Networks" in decoded
+def test_requests_do_not_send_telemetry_header(mocker, client):
+    """Regular API calls no longer carry the legacy x-cybr-telemetry header."""
+    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    http = mocker.patch.object(client, "_http_request", return_value=_Resp(json_data={"success": True}))
+    client.identity_request("/UserMgmt/SetUserState", json_data={})
+    headers = http.call_args.kwargs["headers"]
+    assert "x-cybr-telemetry" not in headers
+    assert headers["Authorization"] == f"Bearer {MOCK_ACCESS_TOKEN}"
+
+
+def test_build_adoption_event():
+    """The event matches the Feature Adoption authenticated-user schema (no user_id)."""
+    event = build_adoption_event()
+    assert event == {
+        "metric_key": "IDIINT.cortex_idira_identity_response.integration_executed",
+        "number_of_events": 1,
+        "triggered_by": "BE",
+        "tags": {
+            "vendor_name": "Palo Alto Networks",
+            "integration_version": "1.0",
+            "idira_service": "Idira ISPSS",
+        },
+    }
+    assert "user_id" not in event
+
+
+@pytest.mark.parametrize(
+    "identity_url, expected",
+    [
+        (
+            "https://tenant.id.cyberark.cloud",
+            "https://us-east-1-featureadopt.featureadopt.cyberark.cloud/api/feature-adoption",
+        ),
+        (
+            "https://tenant.id.integration-cyberark.cloud/",
+            "https://us-east-1-featureadopt.featureadopt.integration-cyberark.cloud/api/feature-adoption",
+        ),
+        ("https://custom-vanity-host.example.com", ""),
+        ("", ""),
+    ],
+)
+def test_get_adoption_url(identity_url, expected):
+    assert get_adoption_url(identity_url) == expected
+
+
+def test_report_adoption_event_posts_with_bearer_token(mocker, client):
+    mocker.patch.object(Client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    http = mocker.patch.object(Client, "_http_request", return_value=_Resp(202))
+    client.report_adoption_event()
+    kwargs = http.call_args.kwargs
+    assert kwargs["method"] == "POST"
+    assert kwargs["full_url"] == "https://us-east-1-featureadopt.featureadopt.cyberark.cloud/api/feature-adoption"
+    assert kwargs["json_data"] == build_adoption_event()
+    assert kwargs["headers"]["Authorization"] == f"Bearer {MOCK_ACCESS_TOKEN}"
+
+
+def test_report_adoption_event_swallows_errors(mocker, client):
+    mocker.patch.object(Client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    mocker.patch.object(Client, "_http_request", side_effect=DemistoException("400 invalid metric"))
+    client.report_adoption_event()  # must not raise
+
+
+def test_report_adoption_event_skipped_without_derivable_url(mocker):
+    custom_client = Client(identity_url="https://custom.example.com", client_id="c", client_secret="s", verify=False, proxy=False)
+    http = mocker.patch.object(Client, "_http_request")
+    custom_client.report_adoption_event()
+    http.assert_not_called()
 
 
 @pytest.mark.parametrize(
