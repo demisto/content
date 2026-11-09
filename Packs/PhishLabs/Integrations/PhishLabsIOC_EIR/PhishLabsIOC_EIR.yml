@@ -248,7 +248,7 @@ script:
       name: incident_id
       required: true
     - auto: PREDEFINED
-      defaultvalue: 'false'
+      defaultValue: 'false'
       description: Whether the attachment list should also contain screenshot and submission attachment types (if available).
       name: extend_attachments
       predefined:
