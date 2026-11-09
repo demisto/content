@@ -1764,7 +1764,6 @@ script:
         (e.g. "Cortex", "SCOM", "Nagios"). Maps to xdm.asset.name.
         Defaults to "Cortex".
       name: source
-      required: true
     - description: >-
         Node (hostname or asset name) where the event occurred. Maps to
         xdm.asset.name (e.g. "web-server-01").
