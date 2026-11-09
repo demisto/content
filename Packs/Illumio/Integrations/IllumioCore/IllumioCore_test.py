@@ -9,6 +9,7 @@ from illumio import (
     EnforcementBoundary,
     IllumioException,
     IPList,
+    Label,
     PolicyComputeEngine,
     PolicyVersion,
     Rule,
@@ -21,15 +22,19 @@ from illumio import (
 from IllumioCore import (
     VALID_POLICY_DECISIONS,
     VALID_PROTOCOLS,
+    WORKLOAD_UPDATE_NO_FIELDS_ERROR,
+    WORKLOAD_UPDATE_STRING_FIELDS,
     InvalidValueError,
     command_test_module,
     enforcement_boundary_create_command,
     ip_list_get_command,
     ip_lists_get_command,
+    labels_get_command,
     object_provision_command,
     prepare_enforcement_boundary_create_output,
     prepare_ip_list_get_output,
     prepare_ip_lists_get_output,
+    prepare_labels_get_output,
     prepare_object_provision_output,
     prepare_rule_create_output,
     prepare_ruleset_create_output,
@@ -46,6 +51,10 @@ from IllumioCore import (
     update_enforcement_mode_command,
     virtual_service_create_command,
     workload_get_command,
+    build_workload_href,
+    build_workload_update_body,
+    format_hr_date,
+    workload_update_command,
     workloads_list_command,
 )
 
@@ -1448,3 +1457,293 @@ def test_rule_create_command_success_hr(rule_create_success, rule_create_success
     """
     resp = prepare_rule_create_output(rule_create_success)
     assert resp == rule_create_success_hr
+
+
+@pytest.fixture(scope="module")
+def labels_get_success():
+    """Retrieve the json response for labels get."""
+    return util_load_json(os.path.join(TEST_DATA_DIRECTORY, "labels_get_success_response.json"))
+
+
+@pytest.fixture(scope="module")
+def labels_get_success_hr():
+    """Retrieve the human-readable for labels get."""
+    with open(os.path.join(TEST_DATA_DIRECTORY, "labels_get_success_response_hr.md")) as file:
+        return file.read()
+
+
+def test_labels_get_command_success(mock_client, labels_get_success, monkeypatch):
+    """
+    Test case scenario for successful execution of labels-get command.
+
+    Given:
+        - labels_get_success response and filter arguments
+    When:
+        - Calling `labels_get_command` function
+    Then:
+        - Returns the labels as outputs and sends only the provided filters with the default max_results
+    """
+    captured_kwargs: dict = {}
+
+    def mock_get(*args, **kwargs):
+        captured_kwargs.update(kwargs)
+        return [Label.from_json(label) for label in labels_get_success]
+
+    monkeypatch.setattr(illumio.pce.PolicyComputeEngine._PCEObjectAPI, "get", mock_get)
+
+    resp = labels_get_command(mock_client, {"key": "role", "include_deleted": "false", "usage": "True"})
+
+    assert resp.raw_response == labels_get_success
+    assert resp.outputs_prefix == "Illumio.Labels"
+    assert resp.outputs_key_field == "href"
+    assert captured_kwargs["params"] == {"key": "role", "include_deleted": "false", "usage": "true", "max_results": 50}
+
+
+def test_labels_get_command_human_readable(labels_get_success, labels_get_success_hr):
+    """
+    Test case scenario for the human-readable output of labels-get command.
+
+    Given:
+        - labels_get_success response
+    When:
+        - Calling `prepare_labels_get_output` function
+    Then:
+        - Returns a valid human-readable output
+    """
+    assert prepare_labels_get_output(labels_get_success) == labels_get_success_hr
+
+
+@pytest.mark.parametrize(
+    "args, err_msg",
+    [
+        ({"max_results": "0"}, "0 is an invalid value for max_results. Max results must be positive integer."),
+        ({"max_results": "abc"}, NOT_VALID_NUMBER_EXCEPTION_MESSAGE.format("max_results", "abc")),
+        ({"usage": "maybe"}, INVALID_BOOLEAN_EXCEPTION_MESSAGE),
+    ],
+)
+def test_labels_get_command_invalid_arguments(mock_client, args, err_msg):
+    """
+    Test case scenario for execution of labels-get command with invalid arguments.
+
+    Given:
+        - Invalid command arguments
+    When:
+        - Calling `labels_get_command` function
+    Then:
+        - Raises a valid error message
+    """
+    with pytest.raises(Exception) as err:
+        labels_get_command(mock_client, args)
+    assert err_msg in str(err.value)
+
+
+@pytest.mark.parametrize(
+    "workload_id, expected_href",
+    [
+        ("dummy", "/orgs/1/workloads/dummy"),
+        ("/orgs/1/workloads/dummy", "/orgs/1/workloads/dummy"),
+    ],
+)
+def test_workload_update_command_success(mock_client, workload_get_success, monkeypatch, workload_id, expected_href):
+    """
+    Test case scenario for successful execution of workload-update command.
+
+    Given:
+        - A workload ID (UUID or HREF) and fields to update
+    When:
+        - Calling `workload_update_command` function
+    Then:
+        - Sends a single update request with the expected body and returns the updated workload
+    """
+    captured: dict = {}
+
+    def mock_update(self, reference, body, **kwargs):
+        captured["reference"] = reference
+        captured["body"] = body
+
+    monkeypatch.setattr(illumio.pce.PolicyComputeEngine._PCEObjectAPI, "update", mock_update)
+    monkeypatch.setattr(
+        illumio.pce.PolicyComputeEngine._PCEObjectAPI,
+        "get_by_reference",
+        lambda *a, **k: Workload.from_json(workload_get_success),
+    )
+    args = {
+        "workload_id": workload_id,
+        "labels": "/orgs/1/labels/1,/orgs/1/labels/7",
+        "enforcement_mode": "Visibility_Only",
+        "name": "new-name",
+        "datacenter_nat_1to1": "false",
+    }
+
+    resp = workload_update_command(mock_client, args)
+
+    assert captured["reference"] == expected_href
+    assert captured["body"] == {
+        "name": "new-name",
+        "labels": [{"href": "/orgs/1/labels/1"}, {"href": "/orgs/1/labels/7"}],
+        "enforcement_mode": "visibility_only",
+        "datacenter_nat_1to1": False,
+    }
+    assert resp.readable_output == f"The workload {workload_id} was successfully updated."
+    assert resp.outputs_prefix == "Illumio.Workloads"
+    assert resp.raw_response == workload_get_success
+
+
+@pytest.mark.parametrize(
+    "args, err_msg",
+    [
+        ({"workload_id": ""}, MISSING_REQUIRED_PARAM_EXCEPTION_MESSAGE.format("workload_id")),
+        ({"workload_id": "dummy"}, WORKLOAD_UPDATE_NO_FIELDS_ERROR),
+        (
+            {"workload_id": "dummy", "enforcement_mode": "invalid"},
+            "invalid is an invalid value for enforcement_mode.",
+        ),
+        ({"workload_id": "dummy", "datacenter_nat_1to1": "maybe"}, INVALID_BOOLEAN_EXCEPTION_MESSAGE),
+    ],
+)
+def test_workload_update_command_invalid_arguments(mock_client, monkeypatch, args, err_msg):
+    """
+    Test case scenario for execution of workload-update command with invalid arguments.
+
+    Given:
+        - Invalid command arguments
+    When:
+        - Calling `workload_update_command` function
+    Then:
+        - Raises a valid error message without calling the update API
+    """
+
+    def fail_update(*a, **k):
+        raise AssertionError("update should not be called")
+
+    monkeypatch.setattr(illumio.pce.PolicyComputeEngine._PCEObjectAPI, "update", fail_update)
+
+    with pytest.raises(Exception) as err:
+        workload_update_command(mock_client, args)
+    assert err_msg in str(err.value)
+
+
+def test_labels_get_command_forwards_all_filters(mock_client, monkeypatch):
+    """
+    Test case scenario for labels-get command filter forwarding.
+
+    Given:
+        - All supported filter arguments
+    When:
+        - Calling `labels_get_command` function
+    Then:
+        - Sends every provided filter to the API
+    """
+    captured_kwargs: dict = {}
+
+    def mock_get(*args, **kwargs):
+        captured_kwargs.update(kwargs)
+        return []
+
+    monkeypatch.setattr(illumio.pce.PolicyComputeEngine._PCEObjectAPI, "get", mock_get)
+    args = {
+        "key": "env",
+        "value": "Prod",
+        "include_deleted": "true",
+        "usage": "false",
+        "max_results": "10",
+        "external_data_set": "cmdb",
+        "external_data_reference": "env-prod",
+    }
+
+    labels_get_command(mock_client, args)
+
+    assert captured_kwargs["params"] == {
+        "key": "env",
+        "value": "Prod",
+        "include_deleted": "true",
+        "usage": "false",
+        "max_results": 10,
+        "external_data_set": "cmdb",
+        "external_data_reference": "env-prod",
+    }
+
+
+@pytest.mark.parametrize("value, expected", [(None, None), ("", None), ("2025-04-01T00:21:27Z", "01 Apr 2025, 12:21 AM")])
+def test_format_hr_date(value, expected):
+    """
+    Given:
+        - An empty or ISO formatted date
+    When:
+        - Calling `format_hr_date` function
+    Then:
+        - Returns None for empty values, otherwise the formatted date
+    """
+    assert format_hr_date(value) == expected
+
+
+@pytest.mark.parametrize(
+    "workload_id, expected_href",
+    [
+        ("abc", "/orgs/1/workloads/abc"),
+        ("/orgs/1/workloads/abc", "/orgs/1/workloads/abc"),
+        ("orgs/1/workloads/abc", "/orgs/1/workloads/abc"),
+        ("/api/v2/orgs/1/workloads/abc", "/orgs/1/workloads/abc"),
+    ],
+)
+def test_build_workload_href(mock_client, workload_id, expected_href):
+    """
+    Given:
+        - A workload UUID or a workload HREF in different formats
+    When:
+        - Calling `build_workload_href` function
+    Then:
+        - Returns the normalized workload HREF
+    """
+    assert build_workload_href(mock_client, workload_id) == expected_href
+
+
+@pytest.mark.parametrize(
+    "args, expected_body",
+    [
+        (
+            {"labels": "/orgs/1/labels/1,, /orgs/1/labels/2,"},
+            {"labels": [{"href": "/orgs/1/labels/1"}, {"href": "/orgs/1/labels/2"}]},
+        ),
+        ({"labels": ","}, {}),
+        ({"datacenter_nat_1to1": "false"}, {"datacenter_nat_1to1": False}),
+        (
+            {field: f"{field}-value" for field in WORKLOAD_UPDATE_STRING_FIELDS},
+            {field: f"{field}-value" for field in WORKLOAD_UPDATE_STRING_FIELDS},
+        ),
+    ],
+)
+def test_build_workload_update_body(args, expected_body):
+    """
+    Given:
+        - Workload update arguments, including label lists with empty entries
+    When:
+        - Calling `build_workload_update_body` function
+    Then:
+        - Returns a body with only the provided fields and without empty label entries
+    """
+    assert build_workload_update_body(args) == expected_body
+
+
+def test_workload_update_command_when_retrieval_fails(mock_client, monkeypatch):
+    """
+    Test case scenario for workload-update command when retrieving the updated workload fails.
+
+    Given:
+        - A successful update request and a failing retrieval request
+    When:
+        - Calling `workload_update_command` function
+    Then:
+        - Reports the successful update without outputs instead of raising an error
+    """
+    monkeypatch.setattr(illumio.pce.PolicyComputeEngine._PCEObjectAPI, "update", lambda *a, **k: None)
+
+    def fail_get(*a, **k):
+        raise IllumioException("403 Forbidden")
+
+    monkeypatch.setattr(illumio.pce.PolicyComputeEngine._PCEObjectAPI, "get_by_reference", fail_get)
+
+    resp = workload_update_command(mock_client, {"workload_id": "abc", "name": "new-name"})
+
+    assert resp.readable_output == "The workload abc was successfully updated."
+    assert resp.outputs is None
