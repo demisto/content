@@ -961,7 +961,7 @@ script:
     - contextPath: MicrosoftTeams.Conversation.UserIdentifier
       description: The original user identifier provided.
       type: String
-  dockerimage: demisto/teams:1.0.0.10133006
+  dockerimage: demisto/teams:1.0.0.14170433
   longRunning: true
   longRunningPort: true
   script: ''
