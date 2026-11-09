@@ -1,0 +1,37 @@
+{
+    "id": "incident_tlabdeliverymode",
+    "version": -1,
+    "modified": "2026-09-30T00:00:00Z",
+    "name": "tLab Delivery Mode",
+    "ownerOnly": false,
+    "description": "Which half of the integration created this incident. PUSH is the Go connector, PULL is this pack's fetch.",
+    "cliName": "tlabdeliverymode",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "tLab Anti-APT Verdict"
+    ],
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0",
+    "selectValues": [
+        "",
+        "PUSH",
+        "PULL"
+    ],
+    "openEnded": false
+}

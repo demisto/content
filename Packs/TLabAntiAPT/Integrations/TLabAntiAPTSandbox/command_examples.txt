@@ -1,0 +1,12 @@
+!tlab-submit-file entry_id=1@1
+!tlab-submit-url url=https://example.com/suspicious
+!tlab-get-submission-status access_code=acc-123 extended=true
+!tlab-detonate-file entry_id=1@1 research_time=120 env_preset=win10
+!tlab-detonate-url url=https://example.com/suspicious
+!tlab-get-report sample_report_id=412839
+!tlab-get-threat-indicators sample_report_id=412839 level=MALICIOUS
+!tlab-get-attack-matrix sample_report_id=412839
+!tlab-get-pcap dyn_report_id=777 format=pcap
+!tlab-get-report-pdf sample_report_id=412839
+!tlab-list-env-presets scope=global
+!tlab-list-sources

@@ -1,0 +1,118 @@
+id: tLab Anti-APT - Feed - Test
+version: -1
+name: tLab Anti-APT - Feed - Test
+description: 'Smoke test for the tLab Anti-APT Feed integration.
+
+
+  Deliberately submits nothing. A test that needs a malware sample needs one in the test environment too, and a build that fails for want of a sample teaches nobody anything. This exercises connectivity,
+  authentication and the command surface, which is what breaks in practice.
+
+
+  Uses the preview command rather than a fetch, so it creates no indicators and does not move the feed cursor.'
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: bef6fce5-e1ff-5cac-af5f-86d06bf86df5
+    type: start
+    task:
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+      id: bef6fce5-e1ff-5cac-af5f-86d06bf86df5
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '1'
+  '1':
+    id: '1'
+    taskid: f298dd60-1279-5c86-92c7-fa0caa7e7255
+    type: title
+    task:
+      name: tLab Anti-APT - Feed - Test
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: f298dd60-1279-5c86-92c7-fa0caa7e7255
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '2'
+  '2':
+    id: '2'
+    taskid: f4281c9f-c731-5e0f-b981-5a94608c6b59
+    type: regular
+    task:
+      name: Preview indicators
+      description: 'Exercises the whole extraction path: report listing, threat indicators and the value typer. An empty result is legitimate on a quiet installation, so this asserts the command succeeds
+        rather than that it found something.'
+      script: TLabAntiAPTFeed|||tlab-get-indicators
+      type: regular
+      iscommand: true
+      brand: TLabAntiAPTFeed
+      id: f4281c9f-c731-5e0f-b981-5a94608c6b59
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      limit:
+        simple: '5'
+    nexttasks:
+      '#none#':
+      - '3'
+  '3':
+    id: '3'
+    taskid: 466c54d8-6bc6-5648-8f64-9c0aa2a9f850
+    type: title
+    task:
+      name: Passed
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 466c54d8-6bc6-5648-8f64-9c0aa2a9f850
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 590\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 970,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 6.0.0

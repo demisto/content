@@ -1,0 +1,218 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: TLabAntiAPTFeed
+  version: -1
+name: TLabAntiAPTFeed
+display: tLab Anti-APT Feed
+description: Turn observables seen during tLab Anti-APT sandbox analysis into Threat Intel Management indicators.
+fromversion: 6.0.0
+configuration:
+- name: feed
+  display: Fetch indicators
+  defaultvalue: 'true'
+  type: 8
+  required: false
+- name: url
+  display: Server URL
+  additionalinfo: Base URL of the tLab Anti-APT sandbox API (tlab-server). Through the tLab web server use https://<tlab-host>/api; for a direct connection use http://<tlab-host>:8080.
+  defaultvalue: https://tlab.example.com/api
+  type: 0
+  required: true
+- name: auth_url
+  display: Auth server URL (tlab-auth)
+  additionalinfo: Used by the tLab account mode. Where the integration logs in to tlab-auth. Leave empty to use https://<Server URL host>:8002/api, the omni-center portal, which forwards /api to tlab-auth over TLS; if its certificate is self-signed, enable Trust any certificate. Not https://<host>/api, which is the sandbox API itself.
+  type: 0
+  required: false
+- name: auth_mode
+  display: Authentication mode
+  additionalinfo: 'tLab account (tlab-auth) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway (balancer) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when XSOAR runs on the tlab-server host itself.'
+  defaultvalue: tLab account (tlab-auth)
+  type: 15
+  required: true
+  options:
+  - tLab account (tlab-auth)
+  - Source key (Bearer)
+  - Username and password
+  - Internal token (localhost only)
+- name: credentials
+  display: Credentials
+  displaypassword: Password / source key / internal token
+  additionalinfo: 'Login and password of a tLab account (tLab account mode). This integration only reads, so a restricted account is sufficient. Turn off password expiry for this account: tlab-auth rejects an expired password and every command starts failing.'
+  type: 9
+  required: true
+- name: client_name
+  display: Client name
+  additionalinfo: Sent as the X-Client header.
+  defaultvalue: xsoar
+  type: 0
+  required: false
+- name: feedReputation
+  display: Indicator Reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  defaultvalue: None
+  type: 18
+  required: false
+  options: [None, Good, Suspicious, Bad]
+- name: feedReliability
+  display: Source Reliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  type: 15
+  required: true
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+- name: feedExpirationPolicy
+  display: ''
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options: [never, interval, indicatorType, suddenDeath]
+- name: feedExpirationInterval
+  display: ''
+  defaultvalue: '20160'
+  type: 1
+  required: false
+- name: feedFetchInterval
+  display: Feed Fetch Interval
+  defaultvalue: '60'
+  type: 19
+  required: false
+- name: feedBypassExclusionList
+  display: Bypass exclusion list
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  type: 8
+  required: false
+- name: feedTags
+  display: Tags
+  additionalinfo: Supports CSV values.
+  type: 0
+  required: false
+- name: tlp_color
+  display: Traffic Light Protocol Color
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  type: 15
+  required: false
+  options: [RED, AMBER, GREEN, WHITE]
+- name: feedIncremental
+  display: Incremental feed
+  additionalinfo: Fetches only reports that are new or were updated since the previous run, so this feed is incremental.
+  defaultvalue: 'true'
+  type: 8
+  hidden: true
+  required: false
+- name: min_indicator_level
+  display: Minimum threat indicator level
+  additionalinfo: Observables are only harvested from threat indicators at or above this level. INFO produces a large amount of benign noise and is rarely what you want.
+  defaultvalue: SUSPICIOUS
+  type: 15
+  required: false
+  options: [MALICIOUS, SUSPICIOUS, INFO]
+- name: max_reports_per_fetch
+  display: Reports per fetch
+  additionalinfo: Upper bound on sample reports processed per run. Each report costs one or two extra API calls, so raising this raises load on tlab-server proportionally.
+  defaultvalue: '50'
+  type: 0
+  required: false
+- name: first_report_id
+  display: First sample report id
+  additionalinfo: Lowest sample report id to fetch. Takes effect on the next fetch, also when fetching has already started - raise it to skip a backfill. Leave empty to start from the beginning of history, which on a long-running installation can be a very large backfill.
+  type: 0
+  required: false
+- name: maturation_lookback_hours
+  display: Late completion lookback (hours)
+  additionalinfo: 'The sandbox finishes analyses out of id order, so a report can complete after a higher-numbered one already did. Each run also re-scans reports updated within this window to catch them. Set to 0 to disable.'
+  defaultvalue: '24'
+  type: 0
+  required: false
+- name: include_partial
+  display: Include partially complete reports
+  additionalinfo: Off by default. A partial report's observables are a snapshot that will still change, so the indicators it yields can contradict the finished report minutes later.
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: fetch_attack_patterns
+  display: Fetch MITRE ATT&CK techniques
+  additionalinfo: Creates Attack Pattern indicators from the attack matrix. Costs one extra API call per report.
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: create_relationships
+  display: Create relationships
+  additionalinfo: Links each sample to the indicators observed with it. Requires XSOAR 6.2.0 or later; on older servers this is silently skipped.
+  defaultvalue: 'true'
+  type: 8
+  required: false
+- name: include_filenames
+  display: Record observed file names
+  additionalinfo: File names are not emitted as indicators, because nothing can match on them. When enabled they are attached to the sample indicator's Associated File Names field instead.
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: include_private_addresses
+  display: Include private and reserved addresses
+  additionalinfo: Off by default. A sandbox VM's traffic is mostly RFC1918, link-local and multicast noise, and publishing that as threat intel is actively harmful.
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: excluded_networks
+  display: Excluded networks
+  additionalinfo: CIDR blocks never emitted as indicators. Add the sandbox's own simulated network ranges here. Leave empty to use the built-in private and reserved list.
+  type: 0
+  required: false
+- name: score_threshold_suspicious
+  display: Suspicious score threshold
+  defaultvalue: '50'
+  type: 0
+  required: false
+- name: score_threshold_malicious
+  display: Malicious score threshold
+  defaultvalue: '85'
+  type: 0
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.15.14069087
+  feed: true
+  isfetch: false
+  longRunning: false
+  runonce: false
+  commands:
+  - name: tlab-get-indicators
+    description: Preview indicators without creating them in Threat Intel Management and without moving the fetch cursor. Use it to check filtering before enabling the feed.
+    arguments:
+    - name: limit
+      description: Maximum number of indicators to return.
+      defaultValue: '10'
+      required: false
+    outputs:
+    - contextPath: TLabAntiAPT.Indicator.value
+      description: The indicator value.
+      type: String
+    - contextPath: TLabAntiAPT.Indicator.type
+      description: The XSOAR indicator type.
+      type: String
+    - contextPath: TLabAntiAPT.Indicator.score
+      description: The DBot score assigned to the indicator.
+      type: Number
+  - name: tlab-feed-reset-cursor
+    description: Reset the fetch cursor so the next fetch starts over from the configured first sample report id. Indicators already in Threat Intel Management are not removed.
+    arguments: []
+    outputs: []
+tests:
+- tLab Anti-APT - Feed - Test

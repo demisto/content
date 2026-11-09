@@ -1,0 +1,59 @@
+{
+  "totalElements": 3,
+  "last": true,
+  "content": [
+    {
+      "sampleReportId": 412839,
+      "sampleReportType": "MAIN",
+      "sampleReportCompleteness": "COMPLETE",
+      "sampleReportStatus": "READY",
+      "analysisRequestId": 900123,
+      "accessCode": "ac-412839",
+      "sampleScoreExists": true,
+      "sampleScore": 91.5,
+      "maxSampleReportScore": 91.5,
+      "verdict": "MALICIOUS",
+      "uploadedFilename": "invoice.exe",
+      "whitelisted": false,
+      "createTime": 1774512000000,
+      "updateTime": 1774512600000,
+      "source": {"sourceId": 3, "sourceType": "Cortex XSOAR", "sourceUid": "inc-77"},
+      "malwareClassifierResult": {"primaryType": "Emotet", "confidence": 0.92, "multiStage": true},
+      "file": {
+        "fileId": 5,
+        "hashSha256": "aaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999",
+        "hashSha1": "aaaabbbbccccddddeeeeffff0000111122223333",
+        "hashMd5": "aaaabbbbccccddddeeeeffff00001111",
+        "size": 2048,
+        "fileType": "PE",
+        "mimeType": "application/x-dosexec",
+        "fileVerdict": "MALWARE"
+      }
+    },
+    {
+      "sampleReportId": 412840,
+      "sampleReportType": "MAIN",
+      "sampleReportCompleteness": "COMPLETE",
+      "sampleScoreExists": true,
+      "sampleScore": 61.0,
+      "verdict": "SUSPICIOUS",
+      "uploadedFilename": "macro.docm",
+      "createTime": 1774513000000,
+      "updateTime": 1774513100000,
+      "source": {"sourceType": "tLab Mail", "sourceUid": "mail-9"},
+      "file": {"hashSha256": "2222222222222222222222222222222222222222222222222222222222222222", "size": 512, "fileType": "OFFICE", "fileVerdict": "SUSPICIOUS"}
+    },
+    {
+      "sampleReportId": 412841,
+      "sampleReportType": "MAIN",
+      "sampleReportCompleteness": "COMPLETE",
+      "sampleScoreExists": true,
+      "sampleScore": 3.0,
+      "verdict": "OK",
+      "uploadedFilename": "readme.txt",
+      "createTime": 1774514000000,
+      "updateTime": 1774514100000,
+      "file": {"hashSha256": "3333333333333333333333333333333333333333333333333333333333333333", "fileType": "TEXT", "fileVerdict": "OK"}
+    }
+  ]
+}

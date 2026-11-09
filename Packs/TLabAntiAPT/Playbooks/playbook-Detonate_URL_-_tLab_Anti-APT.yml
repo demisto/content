@@ -1,0 +1,309 @@
+id: Detonate URL - tLab Anti-APT
+version: -1
+name: Detonate URL - tLab Anti-APT
+description: 'Detonates a URL in the tLab Anti-APT sandbox and waits for the verdict.
+
+
+  Follows the Detonate URL - Generic contract. The sandbox fetches the URL itself, so nothing in XSOAR ever downloads the target.'
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 0cbfafcc-e6f9-5cf7-acec-0207a09efd78
+    type: start
+    task:
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 0cbfafcc-e6f9-5cf7-acec-0207a09efd78
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '1'
+  '1':
+    id: '1'
+    taskid: 1fe6072d-946f-5bdb-a80e-53d31e6b3600
+    type: title
+    task:
+      name: Detonate URL - tLab Anti-APT
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 1fe6072d-946f-5bdb-a80e-53d31e6b3600
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '2'
+  '2':
+    id: '2'
+    taskid: 31a0c123-f3bd-5922-8e37-f257691302f8
+    type: condition
+    task:
+      name: Is there a URL to detonate?
+      description: A playbook that silently succeeds on no input is indistinguishable from one that ran.
+      type: condition
+      iscommand: false
+      brand: ''
+      id: 31a0c123-f3bd-5922-8e37-f257691302f8
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.URL
+                accessor: Data
+            iscontext: true
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '3'
+  '3':
+    id: '3'
+    taskid: 20d753a6-4022-5843-8bf5-623143caba79
+    type: regular
+    task:
+      name: Detonate the URL
+      description: Submits the URL and polls until the analysis finishes. An invalid URL, a disallowed protocol or a download timeout come back as a readable rejection.
+      script: TLabAntiAPTSandbox|||tlab-detonate-url
+      type: regular
+      iscommand: true
+      brand: TLabAntiAPTSandbox
+      id: 20d753a6-4022-5843-8bf5-623143caba79
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 590\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      url:
+        complex:
+          root: inputs.URL
+          accessor: Data
+          filters: []
+          transformers: []
+      interval_in_seconds:
+        complex:
+          root: inputs.Interval
+          filters: []
+          transformers: []
+      timeout_in_seconds:
+        complex:
+          root: inputs.Timeout
+          filters: []
+          transformers: []
+      enable_network:
+        complex:
+          root: inputs.EnableNetwork
+          filters: []
+          transformers: []
+      research_time:
+        complex:
+          root: inputs.ResearchTime
+          filters: []
+          transformers: []
+      env_preset:
+        complex:
+          root: inputs.EnvPreset
+          filters: []
+          transformers: []
+      early_verdict:
+        complex:
+          root: inputs.EarlyVerdict
+          filters: []
+          transformers: []
+    nexttasks:
+      '#none#':
+      - '4'
+    continueonerror: true
+  '4':
+    id: '4'
+    taskid: 80fbb004-0daf-4933-ab92-3a4c56a21907
+    type: condition
+    task:
+      name: Did the analysis produce a verdict?
+      description: A timeout and a rejection both leave the context empty, and so does a URL the sandbox refused. The two outcomes end on different tasks so that the run graph says which one happened
+        without anyone opening the context.
+      type: condition
+      iscommand: false
+      brand: ''
+      id: 80fbb004-0daf-4933-ab92-3a4c56a21907
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: TLabAntiAPT.Analysis
+                accessor: Verdict
+            iscontext: true
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '5'
+  '5':
+    id: '5'
+    taskid: ff1418dc-afa5-4508-a1a4-3206ae6b5f52
+    type: title
+    task:
+      name: Verdict received
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: ff1418dc-afa5-4508-a1a4-3206ae6b5f52
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 950\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 59b3d913-3d00-451d-86cf-13e85473be5f
+    type: title
+    task:
+      name: No verdict - nothing submitted, rejected, or timed out
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 59b3d913-3d00-451d-86cf-13e85473be5f
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1130\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1510,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      filters: []
+      transformers: []
+  required: false
+  description: The URL to detonate. Defaults to every URL in the incident.
+  playbookInputQuery: null
+- key: Interval
+  value:
+    simple: '60'
+  required: false
+  description: How often to poll for the verdict, in seconds.
+  playbookInputQuery: null
+- key: Timeout
+  value:
+    simple: '1800'
+  required: false
+  description: How long to wait before giving up, in seconds.
+  playbookInputQuery: null
+- key: EnableNetwork
+  value:
+    simple: 'true'
+  required: false
+  description: Whether the sandbox may reach the internet during analysis.
+  playbookInputQuery: null
+- key: ResearchTime
+  value: {}
+  required: false
+  description: Dynamic analysis duration in seconds. Empty uses the preset's own value.
+  playbookInputQuery: null
+- key: EnvPreset
+  value: {}
+  required: false
+  description: Analysis environment preset. Empty uses the instance default.
+  playbookInputQuery: null
+- key: EarlyVerdict
+  value:
+    simple: 'false'
+  required: false
+  description: Return as soon as a verdict is decided, without waiting for every stage.
+  playbookInputQuery: null
+outputs:
+- contextPath: TLabAntiAPT.Analysis
+  description: The analysis result.
+  type: Unknown
+- contextPath: TLabAntiAPT.Analysis.Verdict
+  description: Canonical verdict.
+  type: String
+- contextPath: TLabAntiAPT.Analysis.Score
+  description: Sandbox score from 0 to 100.
+  type: Number
+- contextPath: TLabAntiAPT.Analysis.SampleReportId
+  description: Sample report identifier.
+  type: Number
+- contextPath: TLabAntiAPT.Analysis.ReportUrl
+  description: Link to the full report.
+  type: String
+- contextPath: DBotScore
+  description: The DBot score object.
+  type: Unknown
+- contextPath: URL
+  description: The URL object.
+  type: Unknown
+fromversion: 6.0.0

@@ -1,0 +1,11 @@
+{
+  "analysisRequestStatus": "ACCEPTED",
+  "reports": [
+    {"sampleReportId": 11, "sampleReportType": "DROPPED", "parentReportId": 10,
+     "sampleReportCompleteness": "COMPLETE", "sampleScore": 95, "sampleScoreExists": true,
+     "verdict": "MALICIOUS", "file": {"fileVerdict": "MALWARE", "hashSha256": "dd"}},
+    {"sampleReportId": 10, "sampleReportType": "MAIN",
+     "sampleReportCompleteness": "COMPLETE", "sampleScore": 20, "sampleScoreExists": true,
+     "verdict": "OK", "uploadedFilename": "archive.zip", "file": {"fileVerdict": "OK", "hashSha256": "cc"}}
+  ]
+}

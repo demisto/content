@@ -1,0 +1,43 @@
+{
+  "totalElements": 2,
+  "last": true,
+  "content": [
+    {
+      "sampleReportId": 412839,
+      "sampleReportCompleteness": "COMPLETE",
+      "sampleScoreExists": true,
+      "sampleScore": 91.5,
+      "verdict": "MALICIOUS",
+      "uploadedFilename": "invoice.exe",
+      "createTime": 1774512000000,
+      "updateTime": 1774512600000,
+      "malwareClassifierResult": {"primaryType": "Emotet"},
+      "file": {
+        "fileId": 5,
+        "hashSha256": "aaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999",
+        "hashSha1": "aaaabbbbccccddddeeeeffff0000111122223333",
+        "hashMd5": "aaaabbbbccccddddeeeeffff00001111",
+        "size": 2048,
+        "fileType": "PE",
+        "fileVerdict": "MALWARE"
+      }
+    },
+    {
+      "sampleReportId": 412840,
+      "sampleReportCompleteness": "COMPLETE",
+      "sampleScoreExists": true,
+      "sampleScore": 12.0,
+      "verdict": "OK",
+      "uploadedFilename": "readme.txt",
+      "createTime": 1774513000000,
+      "updateTime": 1774513100000,
+      "file": {
+        "fileId": 6,
+        "hashSha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "size": 64,
+        "fileType": "TEXT",
+        "fileVerdict": "OK"
+      }
+    }
+  ]
+}

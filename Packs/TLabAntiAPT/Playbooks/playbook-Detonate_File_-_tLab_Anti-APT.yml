@@ -1,0 +1,326 @@
+id: Detonate File - tLab Anti-APT
+version: -1
+name: Detonate File - tLab Anti-APT
+description: 'Detonates a file in the tLab Anti-APT sandbox and waits for the verdict.
+
+
+  Follows the Detonate File - Generic contract, so it can be dropped into any playbook that already calls a detonation sub-playbook. The polling is handled inside the command rather than by a loop here:
+  on XSOAR 6.2.0 and later it suspends the task and resumes on a schedule, which does not hold a worker for the length of an analysis.'
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 705ade62-853c-5995-8aed-f10a57faabc0
+    type: start
+    task:
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 705ade62-853c-5995-8aed-f10a57faabc0
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '1'
+  '1':
+    id: '1'
+    taskid: df650e57-b042-5d74-afeb-5990b56f2ac0
+    type: title
+    task:
+      name: Detonate File - tLab Anti-APT
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: df650e57-b042-5d74-afeb-5990b56f2ac0
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '2'
+  '2':
+    id: '2'
+    taskid: 727c0617-3e6a-54fc-bfdb-b19ad17375e1
+    type: condition
+    task:
+      name: Is there a file to detonate?
+      description: A playbook that silently succeeds on no input is indistinguishable from one that ran.
+      type: condition
+      iscommand: false
+      brand: ''
+      id: 727c0617-3e6a-54fc-bfdb-b19ad17375e1
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.File
+                accessor: EntryID
+            iscontext: true
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '3'
+  '3':
+    id: '3'
+    taskid: f0264993-9de3-576b-8b69-62ce1adf9518
+    type: regular
+    task:
+      name: Detonate the file
+      description: Submits the file and polls until the analysis finishes. Rejections such as a whitelisted sample or an unsupported file type come back as a readable error rather than a failure.
+      script: TLabAntiAPTSandbox|||tlab-detonate-file
+      type: regular
+      iscommand: true
+      brand: TLabAntiAPTSandbox
+      id: f0264993-9de3-576b-8b69-62ce1adf9518
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 590\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      entry_id:
+        complex:
+          root: inputs.File
+          accessor: EntryID
+          filters: []
+          transformers: []
+      file_name:
+        complex:
+          root: inputs.File
+          accessor: Name
+          filters: []
+          transformers: []
+      interval_in_seconds:
+        complex:
+          root: inputs.Interval
+          filters: []
+          transformers: []
+      timeout_in_seconds:
+        complex:
+          root: inputs.Timeout
+          filters: []
+          transformers: []
+      enable_network:
+        complex:
+          root: inputs.EnableNetwork
+          filters: []
+          transformers: []
+      research_time:
+        complex:
+          root: inputs.ResearchTime
+          filters: []
+          transformers: []
+      env_preset:
+        complex:
+          root: inputs.EnvPreset
+          filters: []
+          transformers: []
+      archive_password:
+        complex:
+          root: inputs.ArchivePassword
+          filters: []
+          transformers: []
+      early_verdict:
+        complex:
+          root: inputs.EarlyVerdict
+          filters: []
+          transformers: []
+    nexttasks:
+      '#none#':
+      - '4'
+    continueonerror: true
+  '4':
+    id: '4'
+    taskid: 8f73db27-5848-598f-b9fb-451a78e42c8b
+    type: condition
+    task:
+      name: Did the analysis produce a verdict?
+      description: A timeout and a rejection both leave the context empty, and so does a sample the sandbox refused. The two outcomes end on different tasks so that the run graph says which one happened
+        without anyone opening the context.
+      type: condition
+      iscommand: false
+      brand: ''
+      id: 8f73db27-5848-598f-b9fb-451a78e42c8b
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: TLabAntiAPT.Analysis
+                accessor: Verdict
+            iscontext: true
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '5'
+  '5':
+    id: '5'
+    taskid: 470035a1-e61c-5f10-9c7f-b0cd78596b84
+    type: title
+    task:
+      name: Verdict received
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 470035a1-e61c-5f10-9c7f-b0cd78596b84
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 950\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 8555aaa9-2288-580b-ae5f-b476735d3a79
+    type: title
+    task:
+      name: No verdict - nothing submitted, rejected, or timed out
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 8555aaa9-2288-580b-ae5f-b476735d3a79
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1130\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1510,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+      filters: []
+      transformers: []
+  required: false
+  description: The file to detonate. Defaults to every file in the incident.
+  playbookInputQuery: null
+- key: Interval
+  value:
+    simple: '60'
+  required: false
+  description: How often to poll for the verdict, in seconds.
+  playbookInputQuery: null
+- key: Timeout
+  value:
+    simple: '1800'
+  required: false
+  description: How long to wait before giving up, in seconds.
+  playbookInputQuery: null
+- key: EnableNetwork
+  value:
+    simple: 'true'
+  required: false
+  description: Whether the sandbox may reach the internet during analysis.
+  playbookInputQuery: null
+- key: ResearchTime
+  value: {}
+  required: false
+  description: Dynamic analysis duration in seconds. Empty uses the preset's own value.
+  playbookInputQuery: null
+- key: EnvPreset
+  value: {}
+  required: false
+  description: Analysis environment preset. Empty uses the instance default.
+  playbookInputQuery: null
+- key: ArchivePassword
+  value: {}
+  required: false
+  description: Password for a protected archive.
+  playbookInputQuery: null
+- key: EarlyVerdict
+  value:
+    simple: 'false'
+  required: false
+  description: Return as soon as a verdict is decided, without waiting for every stage to finish.
+  playbookInputQuery: null
+outputs:
+- contextPath: TLabAntiAPT.Analysis
+  description: The analysis result.
+  type: Unknown
+- contextPath: TLabAntiAPT.Analysis.Verdict
+  description: Canonical verdict.
+  type: String
+- contextPath: TLabAntiAPT.Analysis.Score
+  description: Sandbox score from 0 to 100.
+  type: Number
+- contextPath: TLabAntiAPT.Analysis.SampleReportId
+  description: Sample report identifier.
+  type: Number
+- contextPath: TLabAntiAPT.Analysis.ReportUrl
+  description: Link to the full report.
+  type: String
+- contextPath: DBotScore
+  description: The DBot score object.
+  type: Unknown
+- contextPath: File
+  description: The file object.
+  type: Unknown
+fromversion: 6.0.0

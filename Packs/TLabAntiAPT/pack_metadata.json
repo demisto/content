@@ -1,0 +1,47 @@
+{
+    "name": "tLab Anti-APT",
+    "description": "Detonate files and URLs in the tLab Anti-APT malware sandbox, enrich file reputation from its verdicts, ingest sandbox verdicts as incidents, and pull sandbox-derived indicators into Threat Intel Management.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "tLab Technologies",
+    "url": "https://tlab.kz/",
+    "email": "info@tlab.kz",
+    "created": "2026-09-30T00:00:00Z",
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
+    "tags": [
+        "Sandbox",
+        "Malware Analysis",
+        "Threat Intelligence Management",
+        "Relationships"
+    ],
+    "useCases": [
+        "Malware",
+        "Phishing",
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "tLab",
+        "tLab Anti-APT",
+        "tLab Technologies",
+        "sandbox",
+        "detonation",
+        "malware",
+        "APT",
+        "dynamic analysis"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "xsoar_saas"
+    ],
+    "dependencies": {},
+    "githubUser": [
+        "elzhantlab"
+    ],
+    "devEmail": [
+        "info@tlab.kz"
+    ],
+    "hidden": false,
+    "serverMinVersion": "6.0.0"
+}

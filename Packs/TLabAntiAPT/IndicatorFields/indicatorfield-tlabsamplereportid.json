@@ -1,0 +1,31 @@
+{
+    "id": "indicator_tlabsamplereportid",
+    "version": -1,
+    "modified": "2026-09-30T00:00:00Z",
+    "name": "tLab Sample Report ID",
+    "ownerOnly": false,
+    "description": "Identifier of the sample report this indicator came from.",
+    "cliName": "tlabsamplereportid",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "File"
+    ],
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,14 @@
+{
+  "sampleReportId": 412839,
+  "sampleReportType": "MAIN",
+  "sampleReportCompleteness": "COMPLETE",
+  "sampleScoreExists": true,
+  "sampleScore": 91.5,
+  "verdict": "MALICIOUS",
+  "uploadedFilename": "invoice.exe",
+  "analysisTypes": ["STAT_ANALYSIS", "DYN_ANALYSIS"],
+  "completedAnalyzes": ["STAT_ANALYSIS"],
+  "dynReportSummary": {"dynReportId": 777},
+  "statReportSummary": {"staticAnalysisReportId": 888},
+  "file": {"fileVerdict": "MALWARE", "hashSha256": "aa", "fileType": "PE"}
+}
