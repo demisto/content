@@ -91,7 +91,7 @@ def url_enrichment_script(
 def main():  # pragma: no cover
     if is_xdr_tenant():
         demisto.debug("URLEnrichment is not supported on Cortex XDR tenants, returning empty results.")
-        return_results(CommandResults())
+        return_results(CommandResults(readable_output="The url-enrichment script is not supported on this tenant."))
         return
 
     args = demisto.args()
