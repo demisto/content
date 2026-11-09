@@ -6253,7 +6253,10 @@ def test_elasticbeanstalk_create_environment_success(mocker):
     assert result.outputs["DateCreated"] == "2024-01-15T10:30:00"
     assert result.outputs["DateUpdated"] == "2024-01-15T10:31:00"
     assert "ResponseMetadata" not in result.outputs
-    assert "my-prefix.us-east-1.elasticbeanstalk.com" in result.readable_output
+    cname = result.outputs["CNAME"]
+    assert cname == EB_ENVIRONMENT_RESPONSE["CNAME"]
+    table_cells = [cell.strip() for line in result.readable_output.splitlines() for cell in line.split("|")]
+    assert cname in table_cells
     assert result.readable_output.endswith(
         "Environment creation was initiated and is in progress (Status: Launching). "
         "Use aws-elasticbeanstalk-environments-describe to track its status."
