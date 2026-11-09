@@ -1,5 +1,4 @@
-Amazon Web Services Web Application Firewall (WAF).
-This integration was integrated and tested with version xx of AWS-WAF.
+Amazon Web Services Web Application Firewall (WAF)
 
 ## Configure AWS-WAF in Cortex
 
@@ -54,6 +53,32 @@ Create a new IP set.
 | AWS.Waf.IpSet.LockToken | String | The IP set lock token. |
 | AWS.Waf.IpSet.ARN | String | The IP set Amazon Resource Name. |
 
+#### Command example
+
+```!aws-waf-ip-set-create ip_version=IPV4 name=name addresses="1.1.1.1/32"```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "Waf": {
+            "IpSet": {
+                "ARN": "arn",
+                "Description": "",
+                "Id": "id",
+                "LockToken": "lockToken",
+                "Name": "name"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>AWS Waf ip set with id id was created successfully
+
 ### aws-waf-ip-set-get
 
 ***
@@ -82,6 +107,39 @@ Get a specific IP set.
 | AWS.Waf.IpSet.IPAddressVersion | String | The IP set IP version. |
 | AWS.Waf.IpSet.Addresses | String | The IP set IP addresses. |
 | AWS.Waf.IpSet.ARN | String | The IP set Amazon Resource Name. |
+
+#### Command example
+
+```!aws-waf-ip-set-get id=id name=name```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "Waf": {
+            "IpSet": {
+                "ARN": "arn",
+                "Addresses": [
+                    "1.1.2.2/32"
+                ],
+                "Description": "",
+                "IPAddressVersion": "IPV4",
+                "Id": "id",
+                "Name": "name"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### IP Set
+>
+>|ARN|Addresses|Description|IPAddressVersion| Id  | Name |
+>|---|---|---|-----|------|---|
+>| arn | 1.1.2.2/32 |  | IPV4 | id  | name |
 
 ### aws-waf-ip-set-update
 
@@ -137,6 +195,47 @@ Lists IP sets.
 | AWS.Waf.IpSet.ARN | unknown | The IP set Amazon Resource Name. |
 | AWS.Waf.IpSetNextToken | String | The token for the next page. |
 
+#### Command example
+
+```!aws-waf-ip-set-list```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "Waf": {
+            "IpSet": [
+                {
+                    "ARN": "arn",
+                    "Description": "",
+                    "Id": "id",
+                    "LockToken": "lockToken",
+                    "Name": "name"
+                },
+                {
+                    "ARN": "arn",
+                    "Description": "",
+                    "Id": "id1",
+                    "LockToken": "lockToken1",
+                    "Name": "name1"
+                }
+            ],
+            "IpSetNextToken": "sdf"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### List IP Sets
+>
+>|Name|Id|ARN|Description|
+>|---|---|---|---|
+>| name | id| arn |  |
+>| name1 | id1 | arn |  |
+
 ### aws-waf-ip-set-delete
 
 ***
@@ -190,6 +289,32 @@ Create a new regex set.
 | AWS.Waf.RegexSet.LockToken | String | The regex set lock token. |
 | AWS.Waf.RegexSet.ARN | String | The regex set Amazon Resource Name. |
 
+#### Command example
+
+```!aws-waf-regex-set-create name=name regex_pattern="pattern"```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "Waf": {
+            "RegexSet": {
+                "ARN": "arn",
+                "Description": "",
+                "Id": "id",
+                "LockToken": "lockToken",
+                "Name": "name"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>AWS Waf regex set with id id was created successfully
+
 ### aws-waf-regex-set-get
 
 ***
@@ -217,6 +342,40 @@ Get a specific regex set.
 | AWS.Waf.RegexSet.Description | String | The regex set description. |
 | AWS.Waf.RegexSet.RegularExpressionList | String | The regex set patterns list. |
 | AWS.Waf.RegexSet.ARN | String | The regex set Amazon Resource Name. |
+
+#### Command example
+
+```!aws-waf-regex-set-get id=id name=name```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "Waf": {
+            "RegexSet": {
+                "ARN": "arn",
+                "Description": "",
+                "Id": "id",
+                "Name": "name",
+                "RegularExpressionList": [
+                    {
+                        "RegexString": "^dog"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Regex Set
+>
+>|ARN|Description| Id  |Name|RegularExpressionList|
+>|---|-----|---|---|---|
+>| arn |  | id  | name | {'RegexString': '^dog'} |
 
 ### aws-waf-regex-set-update
 
@@ -272,6 +431,47 @@ Lists regex sets.
 | AWS.Waf.RegexSet.RegexPatternSets.ARN | unknown | The regex set Amazon Resource Name. |
 | AWS.Waf.RegexSetNextToken | String | The token for the next page. |
 
+#### Command example
+
+```!aws-waf-regex-set-list```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "Waf": {
+            "RegexSet": [
+                {
+                    "ARN": "arn",
+                    "Description": "",
+                    "Id": "id",
+                    "LockToken": "lockToken",
+                    "Name": "name"
+                },
+                {
+                    "ARN": "arn",
+                    "Description": "",
+                    "Id": "id1",
+                    "LockToken": "lockToken1",
+                    "Name": "name1"
+                }
+            ],
+            "RegexSetNextToken": "name"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### List regex Sets
+>
+>|Name|Id|ARN|Description|
+>|---|---|---|---|
+>| name | id | arn |  |
+>| name1 | id1 | arn |  |
+
 ### aws-waf-regex-set-delete
 
 ***
@@ -323,6 +523,47 @@ Lists rule groups.
 | AWS.Waf.RuleGroup.ARN | unknown | The rule group Amazon Resource Name. |
 | AWS.Waf.RuleGroupNextToken | String | The token for the next page. |
 
+#### Command example
+
+```!aws-waf-rule-group-list```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "Waf": {
+            "RuleGroup": [
+                {
+                    "ARN": "arn",
+                    "Description": "",
+                    "Id": "id",
+                    "LockToken": "lockToken",
+                    "Name": "name"
+                },
+                {
+                    "ARN": "arn",
+                    "Description": "",
+                    "Id": "id1",
+                    "LockToken": "lockToken1",
+                    "Name": "name1"
+                }
+            ],
+            "RuleGroupNextToken": "name"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### List rule groups
+>
+>|Name|Id|ARN|Description|
+>|---|---|---|---|
+>| name | id | arn |  |
+>| name1 | id1 | arn |  |
+
 ### aws-waf-rule-group-get
 
 ***
@@ -350,6 +591,182 @@ Get a specific rule group.
 | AWS.Waf.RuleGroup.Description | String | The rule group description. |
 | AWS.Waf.RuleGroup.Rules | String | The rule group rules. |
 | AWS.Waf.RuleGroup.ARN | String | The rule group Amazon Resource Name. |
+
+#### Command example
+
+```!aws-waf-rule-group-get id=id name=name```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "Waf": {
+            "RuleGroup": {
+                "ARN": "arn",
+                "Capacity": 1500,
+                "Description": "",
+                "Id": "id",
+                "LabelNamespace": "LabelNamespace",
+                "Name": "name",
+                "Rules": [
+                    {
+                        "Action": {
+                            "Allow": {}
+                        },
+                        "Name": "name",
+                        "Priority": 1,
+                        "Statement": {
+                            "AndStatement": {
+                                "Statements": [
+                                    {
+                                        "ByteMatchStatement": {
+                                            "FieldToMatch": {
+                                                "Body": {
+                                                    "OversizeHandling": "CONTINUE"
+                                                }
+                                            },
+                                            "PositionalConstraint": "CONTAINS_WORD",
+                                            "SearchString": "ssss",
+                                            "TextTransformations": [
+                                                {
+                                                    "Priority": 0,
+                                                    "Type": "BASE64_DECODE_EXT"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "ByteMatchStatement": {
+                                            "FieldToMatch": {
+                                                "Body": {
+                                                    "OversizeHandling": "CONTINUE"
+                                                }
+                                            },
+                                            "PositionalConstraint": "CONTAINS_WORD",
+                                            "SearchString": "fyfyu",
+                                            "TextTransformations": [
+                                                {
+                                                    "Priority": 0,
+                                                    "Type": "BASE64_DECODE_EXT"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "VisibilityConfig": {
+                            "CloudWatchMetricsEnabled": true,
+                            "MetricName": "Hey_Test",
+                            "SampledRequestsEnabled": true
+                        }
+                    },
+                    {
+                        "Action": {
+                            "Allow": {}
+                        },
+                        "Name": "name1",
+                        "Priority": 2,
+                        "Statement": {
+                            "AndStatement": {
+                                "Statements": [
+                                    {
+                                        "IPSetReferenceStatement": {
+                                            "ARN": "arn"
+                                        }
+                                    },
+                                    {
+                                        "IPSetReferenceStatement": {
+                                            "ARN": "arn"
+                                        }
+                                    },
+                                    {
+                                        "IPSetReferenceStatement": {
+                                            "ARN": "arn"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "VisibilityConfig": {
+                            "CloudWatchMetricsEnabled": true,
+                            "MetricName": "name",
+                            "SampledRequestsEnabled": true
+                        }
+                    },
+                    {
+                        "Action": {
+                            "Allow": {}
+                        },
+                        "Name": "Name1",
+                        "Priority": 3,
+                        "Statement": {
+                            "ByteMatchStatement": {
+                                "FieldToMatch": {
+                                    "UriPath": {}
+                                },
+                                "PositionalConstraint": "CONTAINS",
+                                "SearchString": "sdf",
+                                "TextTransformations": [
+                                    {
+                                        "Priority": 0,
+                                        "Type": "NONE"
+                                    }
+                                ]
+                            }
+                        },
+                        "VisibilityConfig": {
+                            "CloudWatchMetricsEnabled": true,
+                            "MetricName": "Name1",
+                            "SampledRequestsEnabled": true
+                        }
+                    },
+                    {
+                        "Action": {
+                            "Allow": {}
+                        },
+                        "Name": "Name11",
+                        "Priority": 4,
+                        "Statement": {
+                            "RegexPatternSetReferenceStatement": {
+                                "ARN": "arn",
+                                "FieldToMatch": {
+                                    "UriPath": {}
+                                },
+                                "TextTransformations": [
+                                    {
+                                        "Priority": 0,
+                                        "Type": "NONE"
+                                    }
+                                ]
+                            }
+                        },
+                        "VisibilityConfig": {
+                            "CloudWatchMetricsEnabled": true,
+                            "MetricName": "name",
+                            "SampledRequestsEnabled": true
+                        }
+                    }
+                ],
+                "VisibilityConfig": {
+                    "CloudWatchMetricsEnabled": true,
+                    "MetricName": "name",
+                    "SampledRequestsEnabled": true
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Rule group
+>
+>|Id|Name|Description|
+>|---|---|---|
+>| Id | name |  |
 
 ### aws-waf-rule-group-delete
 
@@ -406,6 +823,32 @@ Create a new rule group.
 | AWS.Waf.RuleGroup.Description | String | The rule group description. |
 | AWS.Waf.RuleGroup.LockToken | String | The rule group lock token. |
 | AWS.Waf.RuleGroup.ARN | String | The rule group Amazon Resource Name. |
+
+#### Command example
+
+```!aws-waf-rule-group-create capacity=1500 name=name```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "Waf": {
+            "RuleGroup": {
+                "ARN": "arn",
+                "Description": "",
+                "Id": "id",
+                "LockToken": "lockToken",
+                "Name": "name"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>AWS Waf rule group with id id was created successfully
 
 ### aws-waf-ip-rule-create
 
@@ -977,7 +1420,8 @@ Lists resources associated with a web ACL.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Waf.WebACL.ResourceArns | Unknown | The ARNs of resources associated with the web ACL. |
+| AWS.Waf.WebACLResource.WebACLArn | String | The ARN of the web ACL the resources are associated with. |
+| AWS.Waf.WebACLResource.ARN | String | The ARN of a resource associated with the web ACL. |
 
 #### Command example
 
@@ -989,11 +1433,12 @@ Lists resources associated with a web ACL.
 {
     "AWS": {
         "Waf": {
-            "WebACL": {
-                "ResourceArns": [
-                    "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890"
-                ]
-            }
+            "WebACLResource": [
+                {
+                    "ARN": "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890",
+                    "WebACLArn": "arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4"
+                }
+            ]
         }
     }
 }
@@ -1003,9 +1448,9 @@ Lists resources associated with a web ACL.
 
 >### Resources for Web ACL
 >
->|ARN|
->|---|
->| arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890 |
+>|WebACLArn|ARN|
+>|---|---|
+>| arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4 | arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890 |
 
 ### aws-waf-web-acl-for-resource-get
 

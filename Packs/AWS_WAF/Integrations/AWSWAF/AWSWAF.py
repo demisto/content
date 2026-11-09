@@ -1115,7 +1115,7 @@ def update_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
         "VisibilityConfig": current_visibility_config,
     }
 
-    if description := args.get("description"):
+    if description := args.get("description") or web_acl.get("Description"):
         kwargs["Description"] = description
 
     json_config_params = {
@@ -1191,16 +1191,18 @@ def list_resources_for_web_acl_command(client: "WAFV2Client", args: dict) -> Com
     if resource_type := args.get("resource_type"):
         kwargs |= {"ResourceType": resource_type}
 
+    web_acl_arn = args.get("web_acl_arn", "")
     response = client.list_resources_for_web_acl(**kwargs)
     resource_arns = response.get("ResourceArns", [])
-    outputs = [{"ARN": arn} for arn in resource_arns]
-    readable_output = tableToMarkdown("Resources for Web ACL", outputs, headers=["ARN"])
+    outputs = [{"WebACLArn": web_acl_arn, "ARN": arn} for arn in resource_arns]
+    readable_output = tableToMarkdown("Resources for Web ACL", outputs, headers=["WebACLArn", "ARN"])
 
     return CommandResults(
         readable_output=readable_output,
-        outputs=resource_arns,
+        outputs=outputs,
         raw_response=response,
-        outputs_prefix=f"{OUTPUT_PREFIX}.WebACL.ResourceArns",
+        outputs_prefix=f"{OUTPUT_PREFIX}.WebACLResource",
+        outputs_key_field="WebACLArn",
     )
 
 
