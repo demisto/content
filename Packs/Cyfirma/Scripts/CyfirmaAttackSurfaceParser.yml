@@ -1,0 +1,54 @@
+commonfields:
+  id: a873bbdb-3533-484d-81f0-4ef0cd36f5cf
+  version: 7
+vcShouldKeepItemLegacyProdMachine: false
+name: CyfirmaAttackSurfaceParser
+script: '-'
+type: python
+tags: []
+enabled: true
+outputs:
+- contextPath: Cyfirma.Alert.Alertid
+  description: Alert ID
+  type: string
+- contextPath: Cyfirma.Alert.Severity
+  description: Severity
+  type: string
+- contextPath: Cyfirma.Alert.Category
+  description: Category
+  type: string
+- contextPath: Cyfirma.Alert.Subcategory
+  description: Subcategory
+  type: string
+- contextPath: Cyfirma.Alert.Description
+  description: Description
+  type: string
+- contextPath: Cyfirma.Alert.Ip
+  description: IP address
+  type: string
+- contextPath: Cyfirma.Alert.Domain
+  description: Domain
+  type: string
+- contextPath: Cyfirma.Alert.Subdomain
+  description: Subdomain
+  type: string
+- contextPath: Cyfirma.Alert.CVEs
+  type: unknown
+- contextPath: Cyfirma.Alert.NetworkAttributes
+  description: Network Attributes
+  type: unknown
+- contextPath: Cyfirma.Alert.Vulnerabilities
+  type: unknown
+- contextPath: Cyfirma.Alert.Objectid
+  description: Object ID
+  type: string
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.12.14.13919218
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
+restrictioncenter: {}
+signature: ""

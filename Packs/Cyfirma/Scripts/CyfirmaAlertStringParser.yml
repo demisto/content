@@ -1,0 +1,26 @@
+commonfields:
+  id: a1716f65-3ddc-4d58-8498-fb95409ec20b
+  version: 8
+vcShouldKeepItemLegacyProdMachine: false
+name: CyfirmaAlertStringParser
+script: '-'
+type: python
+tags: []
+enabled: true
+args:
+- name: data
+  required: true
+  type: keyValue
+outputs:
+- contextPath: Cyfirma.Alert.Jira.Description
+  type: string
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.12.15.14069087
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
+restrictioncenter: {}
+signature: ""

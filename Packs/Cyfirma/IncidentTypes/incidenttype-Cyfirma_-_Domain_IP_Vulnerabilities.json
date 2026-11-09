@@ -1,0 +1,55 @@
+{
+    "id": "CYFIRMA - Domain IP Vulnerabilities",
+    "version": 8,
+    "cacheVersn": 0,
+    "sequenceNumber": 16404085,
+    "primaryTerm": 3,
+    "modified": "2026-11-01T08:31:51.934163622Z",
+    "sizeInBytes": 1071,
+    "packID": "",
+    "packName": "",
+    "itemVersion": "",
+    "fromServerVersion": "",
+    "toServerVersion": "",
+    "definitionId": "",
+    "isOverridable": false,
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "commitMessage": "",
+    "shouldCommit": false,
+    "locked": false,
+    "name": "CYFIRMA - Domain IP Vulnerabilities",
+    "prevName": "CYFIRMA - Domain IP Vulnerabilities",
+    "color": "#CD034C",
+    "sla": 336,
+    "playbookId": "3d13bba8-8632-4062-85c1-7692dde1bc36",
+    "hours": 0,
+    "days": 0,
+    "weeks": 2,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "preProcessingScript": "",
+    "closureScript": "",
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "bb39b629-02e3-4ca8-852f-6c0c5e4d21fb",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "cyfirmavulnerabilities": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "cveRep"
+                ]
+            }
+        }
+    }
+}
