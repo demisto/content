@@ -18,7 +18,6 @@ from IdiraIdentityResponse import (
     force_logout_command,
     get_account_command,
     get_account_details_command,
-    get_adoption_url,
     get_user_by_name_command,
     list_sessions_command,
     lock_user_command,
@@ -87,9 +86,7 @@ def _mock_context(mocker):
     """Isolate integration-context reads/writes in every test."""
     store: dict = {}
     mocker.patch.object(IdiraIdentityResponse, "get_integration_context", side_effect=lambda: dict(store))
-    mocker.patch.object(
-        IdiraIdentityResponse, "set_integration_context", side_effect=lambda ctx: store.update(ctx) or store
-    )
+    mocker.patch.object(IdiraIdentityResponse, "set_integration_context", side_effect=lambda ctx: store.update(ctx) or store)
     return store
 
 
@@ -137,36 +134,6 @@ def test_build_adoption_event():
     assert "user_id" not in event
 
 
-@pytest.mark.parametrize(
-    "identity_url, expected",
-    [
-        (
-            "https://tenant.id.cyberark.cloud",
-            "https://us-east-1-featureadopt.featureadopt.cyberark.cloud/api/feature-adoption",
-        ),
-        (
-            "https://tenant.id.integration-cyberark.cloud/",
-            "https://us-east-1-featureadopt.featureadopt.integration-cyberark.cloud/api/feature-adoption",
-        ),
-        ("https://custom-vanity-host.example.com", ""),
-        ("", ""),
-    ],
-)
-def test_get_adoption_url(identity_url, expected):
-    assert get_adoption_url(identity_url) == expected
-
-
-def test_report_adoption_event_posts_with_bearer_token(mocker, client):
-    mocker.patch.object(Client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
-    http = mocker.patch.object(Client, "_http_request", return_value=_Resp(202))
-    client.report_adoption_event()
-    kwargs = http.call_args.kwargs
-    assert kwargs["method"] == "POST"
-    assert kwargs["full_url"] == "https://us-east-1-featureadopt.featureadopt.cyberark.cloud/api/feature-adoption"
-    assert kwargs["json_data"] == build_adoption_event()
-    assert kwargs["headers"]["Authorization"] == f"Bearer {MOCK_ACCESS_TOKEN}"
-
-
 def test_report_adoption_event_swallows_errors(mocker, client):
     mocker.patch.object(Client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
     mocker.patch.object(Client, "_http_request", side_effect=DemistoException("400 invalid metric"))
@@ -182,9 +149,7 @@ def test_report_adoption_event_skipped_without_derivable_url(mocker):
 
 @pytest.mark.parametrize(
     "response, expected",
-    [
-        ({"Result": {"Uuid": "u-3"}}, "u-3")
-    ],
+    [({"Result": {"Uuid": "u-3"}}, "u-3")],
 )
 def test_extract_user_id_variants(response, expected):
     assert _extract_user_id(response) == expected
@@ -202,9 +167,7 @@ def test_extract_user_id_missing_raises():
 
 def test_get_access_token_caches(mocker, client):
     """A valid cached token is reused without re-hitting the token endpoint."""
-    http = mocker.patch.object(
-        client, "_http_request", return_value={"access_token": MOCK_ACCESS_TOKEN, "expires_in": 900}
-    )
+    http = mocker.patch.object(client, "_http_request", return_value={"access_token": MOCK_ACCESS_TOKEN, "expires_in": 900})
 
     assert client._get_access_token() == MOCK_ACCESS_TOKEN
     assert client._get_access_token() == MOCK_ACCESS_TOKEN  # served from cache

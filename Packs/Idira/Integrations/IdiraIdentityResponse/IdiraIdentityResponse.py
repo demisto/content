@@ -26,6 +26,7 @@ INTEGRATION_NAME = "Idira Identity Response"
 
 class Config:
     """Global static configuration (Feature Adoption reporting fields, token defaults)."""
+
     INTEGRATION_VERSION = "1.0"
     VENDOR_NAME = "Palo Alto Networks"
 
@@ -85,7 +86,7 @@ def build_adoption_event() -> dict[str, Any]:
 def get_adoption_url(identity_url: str) -> str:
     """Derive the Feature Adoption API URL from the tenant Identity URL.
 
-    ``https://<tenant>.id.<root domain>`` -> ``https://us-east-1-featureadopt.featureadopt.<root domain>/api/feature-adoption``.
+    The root domain is taken from the ``<tenant>.id.<root domain>`` Identity host.
     Returns an empty string if the root domain cannot be determined.
     """
     host = urlparse(identity_url).hostname or ""
@@ -127,6 +128,7 @@ def _identity_success(response: dict[str, Any]) -> bool:
     if response.get("status_code") == 409:
         return True
     return bool(response.get("success"))
+
 
 # endregion
 
@@ -389,7 +391,7 @@ def test_module(client: Client) -> str:
 def get_user_by_name_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Resolve a username to its user unique ID."""
     username = args["username"]
-    response = client.identity_request("/CDirectoryService/GetUserByName", {'username': username})
+    response = client.identity_request("/CDirectoryService/GetUserByName", {"username": username})
     user_id = _extract_user_id(response)
 
     outputs = {"ID": user_id, "Username": username}
@@ -433,7 +435,7 @@ def unlock_user_command(client: Client, args: dict[str, Any]) -> CommandResults:
 def force_logout_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """End all of a user's sessions/cookies"""
     user_id = args["user_id"]
-    response = client.identity_request("/UserMgmt/SignOutEverywhere", {'ID': user_id})
+    response = client.identity_request("/UserMgmt/SignOutEverywhere", {"ID": user_id})
 
     outputs = {"ID": user_id, "Success": True}
     return CommandResults(
@@ -448,9 +450,7 @@ def force_logout_command(client: Client, args: dict[str, Any]) -> CommandResults
 def expire_password_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Require the user to set a new password at next login."""
     username = args["username"]
-    response = client.identity_request(
-        "/CDirectoryService/ChangeUser", {"Name": username, "ForcePasswordChangeNext": True}
-    )
+    response = client.identity_request("/CDirectoryService/ChangeUser", {"Name": username, "ForcePasswordChangeNext": True})
 
     success = _identity_success(response)
     outputs = {"Name": username, "ForcePasswordChangeNext": True, "Success": success}
@@ -467,9 +467,7 @@ def remove_role_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Strip standing privilege by removing users from a role."""
     role_id = args["role_id"]
     user_ids = argToList(args["user_ids"])
-    response = client.identity_request(
-        "/SaasManage/RemoveUsersAndGroupsFromRole", {"Name": role_id, "Users": user_ids}
-    )
+    response = client.identity_request("/SaasManage/RemoveUsersAndGroupsFromRole", {"Name": role_id, "Users": user_ids})
     success = _identity_success(response)
     outputs = {"RoleId": role_id, "Users": user_ids, "Success": success}
     return CommandResults(
@@ -616,9 +614,7 @@ def rotate_credential_command(client: Client, args: dict[str, Any]) -> CommandRe
     """Trigger an immediate CPM credential change on an account."""
     account_id = args["account_id"]
     change_for_group = argToBoolean(args.get("change_creds_for_group", False))
-    response = client.privilege_cloud_request(
-        f"/Accounts/{account_id}/Change/", {"ChangeCredsForGroup": change_for_group}
-    )
+    response = client.privilege_cloud_request(f"/Accounts/{account_id}/Change/", {"ChangeCredsForGroup": change_for_group})
 
     outputs = {"AccountId": account_id, "Action": "Rotate", "Success": True}
     return CommandResults(
@@ -662,9 +658,7 @@ def vault_account_command(client: Client, args: dict[str, Any]) -> CommandResult
         if value not in (None, ""):
             body[body_key] = value
     if "automatic_management_enabled" in args:
-        body["secretManagement"] = {
-            "automaticManagementEnabled": argToBoolean(args["automatic_management_enabled"])
-        }
+        body["secretManagement"] = {"automaticManagementEnabled": argToBoolean(args["automatic_management_enabled"])}
 
     response = client.privilege_cloud_request("/Accounts", body)
 

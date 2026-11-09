@@ -83,7 +83,6 @@ Ends all of the user's active sessions and cookies, forcing them to sign in agai
 
 **Context Output**: `IdiraIdentityResponse.ForceLogout` (`ID`, `Success`).
 
-
 ### idira-identity-response-remove-role
 
 Strips standing privilege by removing one or more users from a role. Reversible by re-adding the user to the role.
