@@ -703,6 +703,8 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
                 if "file" in entry and entry.get("file"):
                     file_entry_content = client.get_file_entry(entry.get("id"))  # type: ignore
                     file_result = fileResult(entry["file"], file_entry_content)
+                    if entry_tags := entry.get("tags"):
+                        file_result["Tags"] = entry_tags  # keep the remote entry tags on the mirrored file
 
                     formatted_entries.append(file_result)
                 else:

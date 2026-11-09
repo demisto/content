@@ -221,6 +221,9 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
+      IAMUserDomain:
+        complex:
+          root: inputs.IAMUserDomain
       Tag:
         simple: XSIAM alert - ${alert.id}
       UserVerification:
@@ -283,6 +286,11 @@ inputs:
   description: |-
     Possible values:True/False. Default:True.
     Specify if User Verification is required to disable users.
+  playbookInputQuery:
+- key: IAMUserDomain
+  value: {}
+  required: false
+  description: The IAM users domain. The domain will be appended to the username. E.g., username@IAMUserDomain.
   playbookInputQuery:
 outputs:
 - contextPath: Blocklist.Final
