@@ -1441,7 +1441,7 @@ Retrieves the list of labels based on the provided filters.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| key | Label key by which to filter (e.g., role, app, env, loc). | Optional |
+| key | The label key by which to filter (e.g., role, app, env, loc). | Optional |
 | value | Label value on which to filter. Supports partial matches. | Optional |
 | include_deleted | Whether to include deleted labels in the results. Possible values are: true, false. | Optional |
 | usage | Whether to include label usage flags in each result. Possible values are: true, false. | Optional |
@@ -1459,8 +1459,8 @@ Retrieves the list of labels based on the provided filters.
 | Illumio.Labels.deleted | Boolean | Whether the label has been deleted. |
 | Illumio.Labels.external_data_set | String | The data source from which the label originates. |
 | Illumio.Labels.external_data_reference | String | A unique identifier within the external data source. |
-| Illumio.Labels.created_at | Date | Time stamp when the label was first created. |
-| Illumio.Labels.updated_at | Date | Time stamp when the label was last updated. |
+| Illumio.Labels.created_at | Date | The timestamp when the label was first created in ISO 8601 format (e.g., 2025-04-01T00:21:27Z). |
+| Illumio.Labels.updated_at | Date | The timestamp when the label was last updated in ISO 8601 format (e.g., 2025-04-01T00:21:27Z). |
 | Illumio.Labels.created_by.href | String | The URI of the user who created the label. |
 | Illumio.Labels.updated_by.href | String | The URI of the user who last updated the label. |
 | Illumio.Labels.usage.label_group | Boolean | Whether the label is used in a label group. |
@@ -1474,6 +1474,45 @@ Retrieves the list of labels based on the provided filters.
 #### Command example
 
 ```!illumio-labels-get key=role max_results=2```
+
+#### Context Example
+
+```json
+{
+    "Illumio": {
+        "Labels": [
+            {
+                "href": "/orgs/1/labels/1",
+                "key": "role",
+                "value": "Web",
+                "deleted": false,
+                "created_at": "2025-04-01T00:21:27Z",
+                "updated_at": "2025-04-01T00:21:27Z",
+                "created_by": {
+                    "href": "/users/1"
+                },
+                "updated_by": {
+                    "href": "/users/1"
+                }
+            },
+            {
+                "href": "/orgs/1/labels/2",
+                "key": "role",
+                "value": "Database",
+                "deleted": false,
+                "created_at": "2025-04-01T00:21:27Z",
+                "updated_at": "2025-04-01T00:21:27Z",
+                "created_by": {
+                    "href": "/users/1"
+                },
+                "updated_by": {
+                    "href": "/users/1"
+                }
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
@@ -1509,7 +1548,7 @@ Updates a single workload, for example to apply labels to it. At least one field
 | agent_to_pce_certificate_authentication_id | PKI certificate identifier used by the PCE to authenticate the VEN. | Optional |
 | external_data_set | External data set identifier. | Optional |
 | external_data_reference | External data reference identifier. | Optional |
-| datacenter_nat_1to1 | Datacenter NAT 1-to-1 mode. Enforces creation of a pseudo public interface. Possible values are: true, false. | Optional |
+| datacenter_nat_1to1 | Whether datacenter NAT 1-to-1 mode is enabled. Enforces creation of a pseudo public interface. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -1518,7 +1557,7 @@ Updates a single workload, for example to apply labels to it. At least one field
 | Illumio.Workloads.href | String | URI of workload. |
 | Illumio.Workloads.deleted | Boolean | Whether this workload has been deleted or not. |
 | Illumio.Workloads.delete_type | String | Workload deletion type. |
-| Illumio.Workloads.name | String | Interface name. |
+| Illumio.Workloads.name | String | The name of the workload. |
 | Illumio.Workloads.description | String | The description of this workload. |
 | Illumio.Workloads.managed | Boolean | True if the workload is managed, else false. |
 | Illumio.Workloads.hostname | String | The hostname of this workload. |
@@ -1592,7 +1631,7 @@ Updates a single workload, for example to apply labels to it. At least one field
 | Illumio.Workloads.agent.status.uptime_seconds | Number | How long since the last reboot of this server. Recorded in DB at the time of the last heartbeat. |
 | Illumio.Workloads.agent.status.agent_version | String | Agent software version string. |
 | Illumio.Workloads.agent.status.managed_since | Date | The time \(rfc3339 timestamp\) at which this workload became managed by a VEN. |
-| Illumio.Workloads.agent.status.fw_config_current | Boolean | If this workload's firewall config is up to string'. |
+| Illumio.Workloads.agent.status.fw_config_current | Boolean | Whether this workload's firewall config is up to date. |
 | Illumio.Workloads.agent.status.firewall_rule_count | Number | DEPRECATED WITH NO REPLACEMENT: Number of firewall rules currently installed. |
 | Illumio.Workloads.agent.status.security_policy_refresh_at | Date | DEPRECATED AND REPLACED \(USE security_policy_applied_at and security_policy_received_at INSTEAD\). |
 | Illumio.Workloads.agent.status.security_policy_applied_at | Date | Last reported time when policy was applied \(UTC\). |
@@ -1625,6 +1664,129 @@ Updates a single workload, for example to apply labels to it. At least one field
 #### Command example
 
 ```!illumio-workload-update workload_id=dummy labels=/orgs/1/labels/1,/orgs/1/labels/7```
+
+#### Context Example
+
+```json
+{
+    "Illumio": {
+        "Workload": {
+            "agent": {
+                "config": {
+                    "log_traffic": false,
+                    "mode": "illuminated",
+                    "security_policy_update_mode": "adaptive",
+                    "visibility_level": "flow_summary"
+                },
+                "href": "/orgs/1/agents/dummy",
+                "secure_connect": {
+                    "matching_issuer_name": ""
+                },
+                "status": {
+                    "agent_version": "20.2.0",
+                    "firewall_rule_count": 0,
+                    "fw_config_current": false,
+                    "last_heartbeat_on": "2020-10-22T01:27:43.213Z",
+                    "managed_since": "2020-10-22T01:27:42.228Z",
+                    "security_policy_sync_state": "syncing",
+                    "status": "active",
+                    "uptime_seconds": 0
+                },
+                "type": "Host",
+                "unpair_allowed": true
+            },
+            "blocked_connection_action": "drop",
+            "caps": [
+                "write"
+            ],
+            "containers_inherit_host_policy": false,
+            "created_at": "2020-10-22T01:27:42.201Z",
+            "created_by": {
+                "href": "/orgs/1/agents/dummy"
+            },
+            "deleted": false,
+            "enforcement_mode": "visibility_only",
+            "hostname": "perf-workload-56770",
+            "href": "/orgs/1/workloads/b0426bc0-dummy",
+            "interfaces": [
+                {
+                    "address": "0.0.0.0",
+                    "cidr_block": 64,
+                    "loopback": false,
+                    "name": "eth0",
+                    "network": {
+                        "href": "/orgs/1/networks/04ac9819-dummy"
+                    },
+                    "network_detection_mode": "single_private_brn"
+                },
+                {
+                    "address": "127.0.0.1",
+                    "cidr_block": 8,
+                    "default_gateway_address": "127.0.0.1",
+                    "loopback": false,
+                    "name": "eth0",
+                    "network": {
+                        "href": "/orgs/1/networks/6736f2b5-dummy"
+                    },
+                    "network_detection_mode": "single_private_brn"
+                }
+            ],
+            "online": false,
+            "os_detail": "4.4.0-97-generic #120-Ubuntu SMP Tue Sep 19 17:28:18 UTC 2017 (Ubuntu 16.04.1 LTS)",
+            "os_id": "ubuntu-x86_64-xenial",
+            "public_ip": "127.0.0.1",
+            "services": {
+                "open_service_ports": [
+                    {
+                        "address": "0.0.0.0",
+                        "port": 161,
+                        "process_name": "snmpd",
+                        "protocol": 6,
+                        "user": "root"
+                    },
+                    {
+                        "address": "0.0.0.0",
+                        "port": 53,
+                        "process_name": "bind",
+                        "protocol": 6,
+                        "user": "root"
+                    },
+                    {
+                        "address": "0.0.0.0",
+                        "port": 5432,
+                        "process_name": "postgres",
+                        "protocol": 6,
+                        "user": "root"
+                    },
+                    {
+                        "address": "0.0.0.0",
+                        "port": 67,
+                        "process_name": "dhcpd",
+                        "protocol": 17,
+                        "user": "root"
+                    },
+                    {
+                        "address": "0.0.0.0",
+                        "port": 80,
+                        "process_name": "httpd",
+                        "protocol": 6,
+                        "user": "root"
+                    }
+                ],
+                "uptime_seconds": 120708
+            },
+            "updated_at": "2022-10-03T11:28:39.203Z",
+            "updated_by": {
+                "href": "/users/68"
+            },
+            "ven": {
+                "href": "/orgs/1/vens/b0426bc0-dummy"
+            },
+            "visibility_level": "flow_summary"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 

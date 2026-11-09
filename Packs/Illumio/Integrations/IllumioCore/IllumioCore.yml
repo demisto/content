@@ -1402,7 +1402,7 @@ script:
       description: Consumers resolve labels.
       type: String
   - arguments:
-    - description: Label key by which to filter (e.g., role, app, env, loc).
+    - description: The label key by which to filter (e.g., role, app, env, loc).
       name: key
     - description: Label value on which to filter. Supports partial matches.
       name: value
@@ -1447,10 +1447,10 @@ script:
       description: A unique identifier within the external data source.
       type: String
     - contextPath: Illumio.Labels.created_at
-      description: Time stamp when the label was first created.
+      description: The timestamp when the label was first created in ISO 8601 format (e.g., 2025-04-01T00:21:27Z).
       type: Date
     - contextPath: Illumio.Labels.updated_at
-      description: Time stamp when the label was last updated.
+      description: The timestamp when the label was last updated in ISO 8601 format (e.g., 2025-04-01T00:21:27Z).
       type: Date
     - contextPath: Illumio.Labels.created_by.href
       description: The URI of the user who created the label.
@@ -1517,7 +1517,7 @@ script:
     - description: External data reference identifier.
       name: external_data_reference
     - auto: PREDEFINED
-      description: Datacenter NAT 1-to-1 mode. Enforces creation of a pseudo public interface.
+      description: Whether datacenter NAT 1-to-1 mode is enabled. Enforces creation of a pseudo public interface.
       name: datacenter_nat_1to1
       predefined:
       - 'true'
@@ -1536,7 +1536,7 @@ script:
       description: Workload deletion type.
       type: String
     - contextPath: Illumio.Workloads.name
-      description: Interface name.
+      description: The name of the workload.
       type: String
     - contextPath: Illumio.Workloads.description
       description: The description of this workload.
@@ -1758,7 +1758,7 @@ script:
       description: The time (rfc3339 timestamp) at which this workload became managed by a VEN.
       type: Date
     - contextPath: Illumio.Workloads.agent.status.fw_config_current
-      description: If this workload's firewall config is up to string'.
+      description: Whether this workload's firewall config is up to date.
       type: Boolean
     - contextPath: Illumio.Workloads.agent.status.firewall_rule_count
       description: 'DEPRECATED WITH NO REPLACEMENT: Number of firewall rules currently installed.'

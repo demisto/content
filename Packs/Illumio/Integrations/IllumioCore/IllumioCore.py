@@ -1171,6 +1171,7 @@ def workload_update_command(client: PolicyComputeEngine, args: dict[str, Any]) -
     try:
         updated_workload = client.workloads.get_by_reference(workload_href)  # type: ignore[call-overload]
     except Exception as e:
+        demisto.debug(traceback.format_exc())
         demisto.debug(f"Workload {workload_href} was updated, but retrieving its updated details failed: {e}")
         return CommandResults(readable_output=readable_output)
 
