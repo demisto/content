@@ -2,7 +2,7 @@ commonfields:
   id: XSOARIncidentExporter
   version: -1
 name: XSOARIncidentExporter
-display: XSOAR Incident Exporter
+display: Xporter
 category: Utilities
 provider: Open Source
 description: Pushes Cortex XSOAR 6 or Cortex XSOAR 8 incidents to Cortex XSIAM as parsed alerts using the Insert Parsed Alerts API.

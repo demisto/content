@@ -1,6 +1,6 @@
 Pushes Cortex XSOAR 6 or Cortex XSOAR 8 incidents to Cortex XSIAM as parsed alerts using the Insert Parsed Alerts API.
 
-## Configure XSOAR Incident Exporter in Cortex
+## Configure Xporter in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -163,3 +163,29 @@ Syncs War Room entries from a Cortex XSOAR incident to the matching Cortex XSIAM
 | XSOARExporter.WarRoom.ErrorCount | Number | The number of entries that failed to sync. |
 | XSOARExporter.WarRoom.TotalEntries | Number | The total number of War Room entries in the Cortex XSOAR incident. |
 | XSOARExporter.WarRoom.FilteredEntries | Number | The number of entries after filtering empty and category filters. |
+
+#### Command example
+
+```!xsoar-exporter-sync-war-room incident_id="100"```
+
+#### Context Example
+
+```json
+{
+    "XSOARExporter": {
+        "WarRoom": {
+            "ErrorCount": 0,
+            "FilteredEntries": 3,
+            "IncidentID": "100",
+            "SkippedCount": 0,
+            "SyncedCount": 3,
+            "TotalEntries": 5,
+            "XSIAMAlertID": "199895"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Synced 3 War Room entries from XSOAR incident 100 to XSIAM alert 199895
