@@ -70,6 +70,7 @@ filter _raw_log ~= "Veeam_MP|Veeam_Security"
     xdm.target.host.hostname      = _target_vm,
     xdm.session_context_id        = _session_id,
     xdm.source.user.username      = _initiator_name,
+    xdm.source.identity.username  = _initiator_name,
     xdm.source.cloud.project_id   = _enterprise_id;
 
 filter _raw_log ~= "veeamdcs-alarm"
