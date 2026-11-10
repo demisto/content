@@ -23,7 +23,7 @@ Vega integration for fetching alerts and incidents from the Vega platform.
 | Incident User Statuses to fetch | The analyst user statuses by which to filter incidents. If empty, all user statuses are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
 | Incident Investigation Statuses to fetch | The Vega investigation statuses by which to filter incidents. If empty, all investigation statuses are fetched. NEW is shown as Pending in Vega. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
 | Incident Verdicts to fetch | Filter incidents by verdict. If empty, all verdicts are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
-| Include alert metadata on incidents | Whether to store full related-alert metadata on each incident. This can make incidents large. | True |
+| Include alert metadata on incidents | Whether to store full related-alert metadata on each incident. This can make incidents large. | False |
 | Fetch alerts and incidents by ID | Whether to fetch alerts and incidents by ID. When selected, other Collect filters are ignored and only the IDs below are fetched. An ID already in Cortex XSOAR is created again. | False |
 | Alert IDs to fetch | A comma-separated list of alert UUIDs \(id-1,id-2\) to re-fetch missed records. Used only when Fetch alerts and incidents by ID is selected. | False |
 | Incident IDs to fetch | A comma-separated list of incident UUIDs \(id-1,id-2\) to re-fetch missed records. Used only when Fetch alerts and incidents by ID is selected. | False |

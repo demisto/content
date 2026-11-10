@@ -36,16 +36,16 @@ configuration:
   type: 8
   section: Collect
   required: false
-  defaultvalue: "true"
+  defaultvalue: 'true'
 - name: incidentFetchInterval
   type: 19
   display: Incidents Fetch Interval
-  defaultvalue: "5"
+  defaultvalue: '5'
   required: true
   section: Collect
 - name: max_fetch
   display: Maximum incidents per fetch
-  defaultvalue: "50"
+  defaultvalue: '50'
   type: 0
   section: Collect
   required: true
@@ -57,7 +57,7 @@ configuration:
   type: 0
   section: Collect
   required: true
-  defaultvalue: "5"
+  defaultvalue: '5'
   additionalinfo: >-
     The number of minutes the query window is shifted backwards on each fetch cycle to catch  alerts and incidents that were indexed late on the Vega side. Deduplication prevents  re-ingestion. Valid range is 1-60.
 - display: Vega Entities to fetch
@@ -78,7 +78,7 @@ configuration:
   type: 1
   section: Collect
   required: true
-  defaultvalue: "30"
+  defaultvalue: '30'
 - display: Incident Mirroring Direction
   additionalinfo: >-
     The direction to mirror the incident: Incoming (from Vega to Cortex XSOAR),
@@ -89,7 +89,7 @@ configuration:
   type: 15
   section: Mirroring
   required: true
-  defaultvalue: "Incoming"
+  defaultvalue: 'Incoming'
   options:
   - None
   - Incoming
@@ -166,9 +166,9 @@ configuration:
   section: Collect
   required: true
   options:
-  - "Yes"
-  - "No"
-  defaultvalue: "Yes,No"
+  - 'Yes'
+  - 'No'
+  defaultvalue: 'Yes,No'
 - display: Incident Severities to fetch
   additionalinfo: >-
     Filter incidents by severity. If empty, all severities are fetched.
@@ -235,7 +235,7 @@ configuration:
   advanced: true
   additionalinfo: >-
     Whether to store full related-alert metadata on each incident. This can make incidents large.
-  defaultvalue: "true"
+  defaultvalue: 'true'
 - display: Fetch alerts and incidents by ID
   name: incident_reconciliation
   required: false
@@ -245,7 +245,7 @@ configuration:
   additionalinfo: >-
     Whether to fetch alerts and incidents by ID. When selected, other Collect filters are ignored and only the IDs below are fetched.
     An ID already in Cortex XSOAR is created again.
-  defaultvalue: "false"
+  defaultvalue: 'false'
 - display: Alert IDs to fetch
   additionalinfo: >-
     A comma-separated list of alert UUIDs (id-1,id-2) to re-fetch missed records.
@@ -303,10 +303,10 @@ script:
       required: false
     - name: limit
       description: The number of alert events to display per page. Also used as the Vega API batch size when fetching all events.
-      defaultValue: "200"
+      defaultValue: '200'
     - name: offset
       description: The pagination offset for alert events.
-      defaultValue: "0"
+      defaultValue: '0'
     description: >-
       Fetch aggregated alert events for up to 10 Vega alerts using internal API pagination,
       then return the requested display page as a markdown table and CustomFields for the Alert Events layout section.
