@@ -187,81 +187,247 @@ def create_time_difference_string(days=0, hours=0):
     return datetime.strftime(datetime_freezed - timedelta(days=days, hours=hours), McAfeeESMClient.demisto_format)
 
 
+FETCH_PARAMS = {
+    "url": "https://example.com",
+    "insecure": True,
+    "credentials": {"identifier": "TEST", "password": "TEST"},
+    "version": "11.6.11",
+    "fetchTime": "3 days",
+    "startingFetchID": 0,
+    "fetchLimitAlarms": 50,
+}
+
+
+def run_fetch(mocker, last_run: dict, raw_alarms, params: dict | None = None):
+    """Runs fetch-incidents with the given lastRun and raw ESM alarms response, and returns the fetch_alarms spy,
+    the incidents and the new lastRun."""
+    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__set_session", return_value={})
+    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__request", return_value=raw_alarms)
+    mocker.patch.object(demisto, "args", return_value={})
+    fetch_alarms_mock = mocker.spy(McAfeeESMClient, "fetch_alarms")
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "incidents")
+    client = McAfeeESMClient(params or FETCH_PARAMS)
+    client.fetch_incidents(params=params or FETCH_PARAMS)
+    return fetch_alarms_mock, demisto.incidents.call_args[0][0], demisto.setLastRun.call_args[0][0]["alarms"]
+
+
 @freeze_time(MOCK_CURRENT_TIME)
-@pytest.mark.filterwarnings("ignore::pytest.PytestUnraisableExceptionWarning")
-def test_alarm_to_incidents(mocker):
+def test_fetch_alarms_empty_response_moves_window_forward(mocker):
     """
     Given:
-    - An integration instance configured to fetch incidents.
-
+    - A lastRun from the current fetch logic, 3 days in the past.
     When:
-    - Running two intervals of fetch-incidents command, and:
-       1. No alarms exist in the 3rd-party until the first run
-       2. Two alarms are created in the 3rd-party between the first and the second run.
-
+    - ESM returns an empty response ({}) for the fetch window.
     Then:
-    - Make sure the `time` field of the lastRun object that is sent as
-       the start time of the alarms query is not updated after the first run.
-    - Make sure two incidents are returned on the second run.
-    - Make sure the `time` field of the lastRun object is updated correctly after
-       the second run.
-
+    - The query window is bounded to the maximum fetch window (1 hour).
+    - The next start time moves forward to the window end minus the lookback, instead of staying the same.
     """
+    last_run = {"alarms": {"id": 10, "time": create_time_difference_string(days=3), "version": 2}}
+    fetch_alarms_mock, incidents, new_last_run = run_fetch(mocker, last_run, raw_alarms={})
 
-    params = {
-        "url": "https://example.com",
-        "insecure": True,
-        "credentials": {"identifier": "TEST", "password": "TEST"},
-        "version": "11.6.11",
-        "fetchTime": create_time_difference_string(days=3, hours=6),
-        "startingFetchID": 0,
-    }
-    alarms = [
-        {"id": 1, "triggeredDate": create_time_difference_string(hours=6)},
-        {"id": 2, "triggeredDate": create_time_difference_string(hours=5)},
+    assert fetch_alarms_mock.call_args.kwargs["start_time"] == create_time_difference_string(days=3)
+    assert fetch_alarms_mock.call_args.kwargs["end_time"] == create_time_difference_string(days=3, hours=-1)
+    assert incidents == []
+    assert new_last_run == {"id": 10, "time": "2022-10-15T17:36:25Z", "version": 2}
+
+
+@freeze_time(MOCK_CURRENT_TIME)
+def test_fetch_alarms_window_ends_at_now(mocker):
+    """
+    Given:
+    - A lastRun 5 minutes in the past.
+    When:
+    - Fetching, and ESM returns no alarms.
+    Then:
+    - The window ends at the current time, and the next start time does not move backwards.
+    """
+    start_time = "2022-10-18T16:41:25Z"
+    last_run = {"alarms": {"id": 10, "time": start_time, "version": 2}}
+    fetch_alarms_mock, _, new_last_run = run_fetch(mocker, last_run, raw_alarms=[])
+
+    assert fetch_alarms_mock.call_args.kwargs["end_time"] == MOCK_CURRENT_TIME
+    assert new_last_run["time"] == start_time
+
+
+@freeze_time(MOCK_CURRENT_TIME)
+def test_fetch_alarms_all_new_alarms_returned(mocker):
+    """
+    Given:
+    - A lastRun 30 minutes in the past with ID 10.
+    When:
+    - ESM returns an old alarm (ID 10) and two new alarms, within the fetch limit.
+    Then:
+    - Two incidents are returned, the last run ID is the newest alarm ID, and the window moves forward.
+    """
+    last_run = {"alarms": {"id": 10, "time": "2022-10-18T16:16:25Z", "version": 2}}
+    raw_alarms = [
+        {"id": 10, "triggeredDate": "2022/10/18 16:17:00"},
+        {"id": 11, "triggeredDate": "2022/10/18 16:20:00"},
+        {"id": 12, "triggeredDate": "2022/10/18 16:30:00"},
     ]
-
-    def mock_fetch_alarams(since: str = None, start_time: str = None, end_time: str = None, raw: bool = False):
-        if type(start_time) is str:
-            start_time = datetime.strptime(start_time, McAfeeESMClient.demisto_format)
-        all_alarms = [
-            alarm
-            for alarm in alarms
-            if datetime.strptime(alarm.get("triggeredDate"), McAfeeESMClient.demisto_format) > start_time
-        ]
-        return None, None, all_alarms
-
-    def mock_fetch_alarm_without_results(client):
-        mocker.patch.object(McAfeeESMClient, "fetch_alarms", return_value=(None, None, []))
-        try:
-            client.fetch_incidents(params=params)
-        except Exception:
-            pass
-        return demisto.setLastRun.call_args[0][0]
-
-    mocker.patch("McAfee_ESM_v2.parse_date_range", return_value=["", ""])
-    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__set_session", return_value={})
-    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__request", return_value={})
-    mocker.patch.object(demisto, "getLastRun", return_value={"alarms": {"time": create_time_difference_string(days=3)}})
-    mocker.patch.object(demisto, "setLastRun")
-
-    try:
-        client = McAfeeESMClient(params)
-
-        last_run = mock_fetch_alarm_without_results(client)
-        assert last_run.get("alarms").get("time") == create_time_difference_string(days=3)
-
-        mocker.patch.object(demisto, "getLastRun", return_value=last_run)
-        mocker.patch.object(McAfeeESMClient, "fetch_alarms", side_effect=mock_fetch_alarams)
-        mocker.patch.object(demisto, "incidents")
-        client.fetch_incidents(params=params)
-    except Exception:
-        pass
-    incidents = demisto.incidents.call_args[0][0]
-    last_run = demisto.setLastRun.call_args[0][0]
+    _, incidents, new_last_run = run_fetch(mocker, last_run, raw_alarms)
 
     assert len(incidents) == 2
-    assert last_run.get("alarms").get("time") == create_time_difference_string(hours=5)
+    assert new_last_run == {"id": 12, "time": "2022-10-18T16:36:25Z", "version": 2}
+
+
+@freeze_time(MOCK_CURRENT_TIME)
+def test_fetch_alarms_limit_reached_continues_from_newest_alarm(mocker):
+    """
+    Given:
+    - A fetch limit of 1.
+    When:
+    - ESM returns two new alarms.
+    Then:
+    - The alarm with the lower ID is returned, and the next start time is its triggered time.
+    """
+    params = FETCH_PARAMS | {"fetchLimitAlarms": 1}
+    last_run = {"alarms": {"id": 10, "time": "2022-10-18T16:16:25Z", "version": 2}}
+    raw_alarms = [
+        {"id": 12, "triggeredDate": "2022/10/18 16:30:00"},
+        {"id": 11, "triggeredDate": "2022/10/18 16:20:00"},
+    ]
+    _, incidents, new_last_run = run_fetch(mocker, last_run, raw_alarms, params)
+
+    assert len(incidents) == 1
+    assert new_last_run == {"id": 11, "time": "2022-10-18T16:20:00Z", "version": 2}
+
+
+@freeze_time("2026-11-03T08:05:35Z")
+def test_fetch_alarms_day_first_esm_does_not_get_stuck(mocker):
+    """
+    Given:
+    - The lastRun from XSUP-80724: written by the previous fetch logic with a day/month swapped time
+      (2026-03-11, which is November 3 on a day-first ESM).
+    - The ESM date format parameter set to DD/MM/YYYY, and a fetch limit of 1.
+    When:
+    - Fetching, and ESM returns two new alarms with day-first dates.
+    Then:
+    - The fetch starts from the first fetch time instead of March 11.
+    - The alarm dates are parsed as November 3, and the next start time is the returned alarm time.
+    """
+    params = FETCH_PARAMS | {"dateFormat": "DD/MM/YYYY", "fetchTime": "1 hour", "fetchLimitAlarms": 1}
+    last_run = {"alarms": {"id": 760346, "time": "2026-03-11T07:59:37Z"}}
+    raw_alarms = [
+        {"id": 760348, "triggeredDate": "03/11/2026 07:30:00"},
+        {"id": 760347, "triggeredDate": "03/11/2026 07:20:00"},
+    ]
+    fetch_alarms_mock, incidents, new_last_run = run_fetch(mocker, last_run, raw_alarms, params)
+
+    assert fetch_alarms_mock.call_args.kwargs["start_time"] == "2026-11-03T07:05:35Z"
+    assert len(incidents) == 1
+    assert new_last_run == {"id": 760347, "time": "2026-11-03T07:20:00Z", "version": 2}
+
+
+@freeze_time(MOCK_CURRENT_TIME)
+@pytest.mark.parametrize(
+    "alarms_last_run, expected",
+    [
+        pytest.param({}, "2022-10-15T16:46:25Z", id="no last run"),
+        pytest.param({"id": 1, "time": "2022-10-17T00:00:00Z"}, "2022-10-17T00:00:00Z", id="legacy, after first fetch"),
+        pytest.param({"id": 1, "time": "2022-03-10T00:00:00Z"}, "2022-10-15T16:46:25Z", id="legacy, before first fetch"),
+        pytest.param({"id": 1, "time": "2022-03-10T00:00:00Z", "version": 2}, "2022-03-10T00:00:00Z", id="current, old"),
+        pytest.param({"id": 1, "time": "2022-12-10T00:00:00Z", "version": 2}, "2022-10-15T16:46:25Z", id="in the future"),
+        pytest.param({"id": 1, "time": "10/12/2022"}, "2022-10-15T16:46:25Z", id="invalid format"),
+    ],
+)
+def test_get_alarms_fetch_start_time(alarms_last_run, expected):
+    """
+    Given:
+    - An alarms lastRun object.
+    When:
+    - Calculating the start time of the fetch window, with a first fetch time of 3 days ago.
+    Then:
+    - Legacy times before the first fetch time, future times and invalid times fall back to the first fetch time.
+    """
+    assert get_alarms_fetch_start_time(alarms_last_run, "2022-10-15T16:46:25Z") == expected
+
+
+def test_get_fetch_window_end_rejects_non_positive_window():
+    """
+    Given:
+    - A maximum fetch window of 0 hours.
+    When:
+    - Calculating the fetch window end.
+    Then:
+    - An error is raised.
+    """
+    with pytest.raises(DemistoException, match="must be a positive number"):
+        get_fetch_window_end("2022-10-18T16:00:00Z", datetime.utcnow(), 0)
+
+
+def test_get_next_alarms_fetch_start_ignores_alarm_time_outside_window():
+    """
+    Given:
+    - A fetch window that was not consumed, and a newest alarm time outside the window (a misparsed date).
+    When:
+    - Calculating the next start time.
+    Then:
+    - The start time stays on the current window.
+    """
+    assert (
+        get_next_alarms_fetch_start("2026-11-03T07:00:00Z", "2026-11-03T08:00:00Z", "2026-03-11T07:30:00Z", False)
+        == "2026-11-03T07:00:00Z"
+    )
+
+
+@pytest.mark.parametrize(
+    "date_format, esm_time, expected",
+    [
+        pytest.param("Auto detect", "03/11/2026 08:21:18", "2026-03-11T08:21:18Z", id="auto, ambiguous is month first"),
+        pytest.param("Auto detect", "13/11/2026 08:21:18", "2026-11-13T08:21:18Z", id="auto, day greater than 12"),
+        pytest.param("Auto detect", "2026/11/03 08:21:18", "2026-11-03T08:21:18Z", id="auto, year first"),
+        pytest.param("DD/MM/YYYY", "03/11/2026 08:21:18", "2026-11-03T08:21:18Z", id="day first"),
+        pytest.param("MM/DD/YYYY", "11/03/2026 08:21:18", "2026-11-03T08:21:18Z", id="month first"),
+        pytest.param("DD/MM/YYYY", "03-11-2026 08:21:18", "2026-11-03T08:21:18Z", id="dashes"),
+    ],
+)
+def test_time_format_with_date_format(date_format, esm_time, expected):
+    """
+    Given:
+    - The ESM date format parameter, and a date returned by ESM.
+    When:
+    - Converting the date to the demisto format.
+    Then:
+    - The date is parsed according to the date format.
+    """
+    set_esm_date_format(date_format)
+    try:
+        assert time_format(esm_time) == expected
+    finally:
+        set_esm_date_format("Auto detect")
+
+
+def test_time_format_month_first_rejects_day_greater_than_12():
+    """
+    Given:
+    - The ESM date format parameter set to MM/DD/YYYY.
+    When:
+    - Converting a date whose first part is greater than 12.
+    Then:
+    - An error is raised instead of guessing the format.
+    """
+    set_esm_date_format("MM/DD/YYYY")
+    try:
+        with pytest.raises(ValueError, match="does not match the time format"):
+            time_format("13/11/2026 08:21:18")
+    finally:
+        set_esm_date_format("Auto detect")
+
+
+def test_set_esm_date_format_rejects_invalid_value():
+    """
+    Given:
+    - An invalid ESM date format value.
+    When:
+    - Setting the date format.
+    Then:
+    - An error is raised.
+    """
+    with pytest.raises(DemistoException, match="Invalid ESM date format"):
+        set_esm_date_format("YYYY.MM.DD")
 
 
 # testing if can upload

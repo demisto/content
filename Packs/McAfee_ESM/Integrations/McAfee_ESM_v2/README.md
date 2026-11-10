@@ -22,6 +22,8 @@ Starting with ESM 11.6.11, the login API requires the username and password to b
 | Fetch cases limit |  | False |
 | First fetch timestamp | The first fetch timestamp, in the format &lt;number&gt; &lt;time unit&gt; \(e.g. `12 hours`, `7 days`, `3 months`, `1 year`\). | False |
 | Fetch alarms limit |  | False |
+| Maximum fetch window (hours) | The maximum time range, in hours, that a single fetch queries for alarms. ESM may return no alarms for a wide time range, so the fetch walks through larger gaps one window at a time. Decrease this value if the ESM generates a large number of alarms. | False |
+| ESM date format | The date format configured for the ESM user. Select `DD/MM/YYYY` if the ESM shows dates with the day first \(for example, 03/11/2026 for November 3\). `Auto detect` assumes the month comes first when a date is ambiguous. | False |
 | McAfee ESM Timezone in hours | The ESM timezone offset in hours \(e.g. if the ESM timezone is \+0300, enter 3\). | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
