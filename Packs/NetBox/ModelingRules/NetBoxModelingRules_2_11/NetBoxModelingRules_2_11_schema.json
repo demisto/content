@@ -1,56 +1,70 @@
 {
   "netbox_irm_raw": {
+    "dataset_description": "NetBox is an open-source infrastructure resource modeling (IRM) and IP address management (IPAM) platform.",
     "user": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The NetBox user who made the change."
     },
     "comments": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The free-text content of the NetBox journal entry written by the user."
     },
     "kind": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The kind of the NetBox journal entry."
     },
     "assigned_object": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The NetBox object the journal entry is attached to."
     },
     "assigned_object_type": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The content type of the attached NetBox object, in app_label.model format."
     },
     "request_id": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The ID of the NetBox request in which the object change was made, in UUID format."
     },
     "display": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The human-readable label of the NetBox record."
     },
     "action": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The type of change made to the NetBox object."
     },
     "changed_object_id": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The ID of the NetBox object that the change was made to."
     },
     "changed_object": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The NetBox object that was changed."
     },
     "changed_object_type": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The content type of the NetBox object that was changed, in app_label.model format."
     },
     "prechange_data": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The attributes of the NetBox object before the change."
     },
     "user_name": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The username of the account that made the change to the object."
     }
   }
 }

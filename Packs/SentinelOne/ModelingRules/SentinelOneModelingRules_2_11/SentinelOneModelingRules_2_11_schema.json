@@ -1,108 +1,135 @@
 {
   "sentinelone_xdr_raw": {
+    "dataset_description": "SentinelOne Singularity is an AI-powered platform that protects endpoints, cloud workloads and identities from threats.",
     "eventType": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The event type of the SentinelOne record."
     },
     "agentDetectionInfo": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The SentinelOne agent and its host at detection time."
     },
     "agentId": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The ID of the SentinelOne agent on the endpoint related to the activity."
     },
     "userId": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The ID of the user who initiated the activity."
     },
     "indicators": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The behavioral indicators SentinelOne observed for the threat."
     },
     "id": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The ID SentinelOne assigns to the activity or threat record."
     },
     "accountId": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The ID of the SentinelOne account the activity belongs to."
     },
     "containerInfo": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The container involved in the SentinelOne detection."
     },
     "accountName": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The name of the SentinelOne account the activity belongs to."
     },
     "threatId": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The ID of the SentinelOne threat related to the activity."
     },
     "sourceProcessInfo": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The source process that triggered the SentinelOne alert."
     },
     "agentUpdatedVersion": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The version a SentinelOne agent was updated to as part of the activity."
     },
     "primaryDescription": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The primary human-readable summary of the SentinelOne activity."
     },
     "ruleInfo": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The SentinelOne detection rule that generated the alert."
     },
     "mitigationStatus": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The mitigation actions SentinelOne performed on the threat."
     },
     "targetProcessInfo": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The target process and file of the SentinelOne alert."
     },
     "groupName": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The name of the SentinelOne agent group related to the activity."
     },
     "threatInfo": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The SentinelOne threat related to the record."
     },
     "osFamily": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The operating system family of the endpoint related to the activity."
     },
     "alertInfo": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The SentinelOne alert related to the record."
     },
     "agentRealtimeInfo": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The real-time state of the SentinelOne agent and its endpoint."
     },
     "sourceParentProcessInfo": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The parent of the source process that triggered the alert."
     },
     "data": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "Additional details specific to the SentinelOne activity type."
     },
     "activityType": {
       "type": "int",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The numeric code of the SentinelOne activity type."
     },
     "activityUuid": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The unique ID of the activity within SentinelOne."
     },
     "description": {
       "type": "string",
-      "is_array": false
+      "is_array": false,
+      "field_description": "The free-text description of the SentinelOne activity."
     }
   }
 }
