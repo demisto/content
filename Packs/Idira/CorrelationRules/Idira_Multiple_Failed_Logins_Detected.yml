@@ -1,0 +1,27 @@
+alert_category: CREDENTIAL_ACCESS
+alert_description: A user had 5 or more failed login attempts from the same source IP within 10 minutes.
+alert_fields:
+  userid: xdm.source.user.identifier
+  actor_effective_username: xdm.source.user.username
+  xdm_source_identity_username: xdm.source.user.username
+  action_local_ip: xdm.source.ipv4
+alert_name: Idira - Multiple Failed Logins Detected
+crontab: '*/10 * * * *'
+dataset: alerts
+description: This rule triggers when 5 or more failed authentication events occur for a single user from the same source IP during a 10 minute timeframe. MFA summary events are excluded, as they are covered by the Idira - MFA Failure Detected rule.
+drilldown_query_timeframe: ALERT
+execution_mode: SCHEDULED
+global_rule_id: 0df92a8f-17c8-417f-a0ed-040569f84cf0
+investigation_query_link: ''
+mapping_strategy: CUSTOM
+mitre_defs: {}
+name: Idira - Multiple Failed Logins Detected
+search_window: 10 minutes
+severity: SEV_040_HIGH
+suppression_duration: null
+suppression_enabled: false
+suppression_fields: null
+user_defined_category: null
+user_defined_severity: null
+xql_query: "datamodel dataset = cyberark_isp_raw\n| filter xdm.event.type = \"authentication\" and lowercase(xdm.event.outcome) = \"failed\"\n| filter xdm.event.original_event_type != \"cloud.core.mfasummary\"\n| comp count() as failed_attempts by xdm.source.user.username, xdm.source.user.identifier, xdm.source.ipv4\n| filter failed_attempts >= 5"
+fromversion: 8.4.0

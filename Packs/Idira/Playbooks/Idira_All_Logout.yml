@@ -1,0 +1,133 @@
+id: Idira - All Logout
+version: -1
+name: Idira - All Logout
+description: Ends all of the user's active sessions and cookies in the Idira Identity Security Platform, forcing them to sign in again.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 879c78c5-d213-4f68-9007-505bc311b223
+    type: start
+    task:
+      id: 879c78c5-d213-4f68-9007-505bc311b223
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 6c8c8651-f19a-49b9-8bf9-c986c94bc7c7
+    type: regular
+    task:
+      id: 6c8c8651-f19a-49b9-8bf9-c986c94bc7c7
+      version: -1
+      name: Log out all user sessions
+      description: Ends all of the user's active sessions and cookies, forcing them to sign in again.
+      script: IdiraIdentityResponse|||idira-identity-response-force-logout
+      type: regular
+      iscommand: true
+      brand: IdiraIdentityResponse
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      user_id:
+        simple: ${inputs.UserID}
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: a58ac264-07b2-46f2-939c-e2937fc78206
+    type: title
+    task:
+      id: a58ac264-07b2-46f2-939c-e2937fc78206
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 450,
+        "y": -110
+      }
+    }
+  }
+inputs:
+- key: UserID
+  value:
+    simple: ${issue.userid}
+  required: true
+  description: The Idira Identity user unique ID. Defaults to the user ID of the issue. Use the idira-identity-response-get-user-by-name command to resolve a username to its unique ID.
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - UserID
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform
+fromversion: 8.11.0
