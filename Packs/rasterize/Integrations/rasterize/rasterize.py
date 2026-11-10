@@ -94,6 +94,17 @@ TAB_CLOSE_WAIT_TIME = 1
 # Used it in several places
 DEFAULT_RETRIES_COUNT = 4
 DEFAULT_RETRY_WAIT_IN_SECONDS = 3
+
+# Startup wait for a freshly launched Chrome. Script workers have a small CPU quota, and a cold
+# Chrome start there was observed taking 30s+ under load.
+try:
+    # arg_to_number raises on a non-numeric value, so keep the fallback to avoid failing at import time.
+    CHROME_STARTUP_TIMEOUT_SECONDS = arg_to_number(os.getenv("CHROME_STARTUP_TIMEOUT_SECONDS")) or 90
+except ValueError as e:
+    demisto.info(f"Exception trying to parse CHROME_STARTUP_TIMEOUT_SECONDS, {e}\nTrace:{traceback.format_exc()}")
+    CHROME_STARTUP_TIMEOUT_SECONDS = 90
+CHROME_STARTUP_POLL_INTERVAL_SECONDS = 1
+CHROME_STARTUP_POLL_REQUEST_TIMEOUT_SECONDS = 5
 PAGES_LIMITATION = 20
 SCREENSHOT_TIMEOUT = 60
 
@@ -1251,6 +1262,48 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
     return None
 
 
+def wait_for_started_chrome(port: str, process: subprocess.Popen) -> pychrome.Browser | None:
+    """Waits for a Chrome process that was just launched to accept DevTools connections.
+
+    On CPU-limited script workers (e.g. lightweight mode, where every command cold-starts Chrome)
+    Chrome can take 30s+ to open its DevTools port. A fixed retry budget kills a Chrome that is
+    still booting, so instead keep polling for as long as the process is alive, up to
+    CHROME_STARTUP_TIMEOUT_SECONDS, and fail fast if the process exits.
+
+    Args:
+        port (str): The remote debugging port Chrome was launched with.
+        process (subprocess.Popen): The launched Chrome process.
+
+    Returns:
+        pychrome.Browser | None: The connected browser, or None if Chrome exited or did not come up in time.
+    """
+    browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
+    start_time = time.monotonic()
+    deadline = start_time + CHROME_STARTUP_TIMEOUT_SECONDS
+    attempt = 0
+    while time.monotonic() < deadline:
+        attempt += 1
+        elapsed = time.monotonic() - start_time
+        returncode = process.poll()
+        if returncode is not None:
+            demisto.debug(f"Chrome on port {port} exited during startup, {returncode=}, {elapsed=:.1f}s, {attempt=}")
+            return None
+        try:
+            browser = pychrome.Browser(url=browser_url)
+            tabs_count = len(browser.list_tab(timeout=CHROME_STARTUP_POLL_REQUEST_TIMEOUT_SECONDS))
+            demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs after {elapsed:.1f}s, {attempt=}")
+            return browser
+        except requests.exceptions.RequestException as exp:
+            demisto.debug(f"Chrome on port {port} not ready yet, {elapsed=:.1f}s, {attempt=}: {type(exp).__name__}")
+        time.sleep(CHROME_STARTUP_POLL_INTERVAL_SECONDS)  # pylint: disable=E9003
+
+    demisto.debug(
+        f"Chrome on port {port} (pid {process.pid}) is still running but did not accept connections "
+        f"within {CHROME_STARTUP_TIMEOUT_SECONDS}s, giving up."
+    )
+    return None
+
+
 def close_orphaned_tabs(browser: pychrome.Browser, max_allowed_tabs: int = MAX_CHROME_TABS_COUNT) -> int:
     """Closes tabs that were leaked by previous executions.
 
@@ -1442,7 +1495,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
 
         if process:
             demisto.debug(f"New Chrome session active on {chrome_port=}: {chrome_options=} {chrome_options=}")
-            browser = get_chrome_browser(chrome_port)
+            browser = wait_for_started_chrome(chrome_port, process)
             if browser:
                 new_chrome_instance = {
                     chrome_port: {INSTANCE_ID: instance_id, CHROME_INSTANCE_OPTIONS: chrome_options, RASTERIZATION_COUNT: 0}
