@@ -4,7 +4,7 @@ Amazon Web Services Guard Duty Service Event Collector integration for Cortex XS
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| AWS Default Region | The AWS Region for this instance of the integration. For example, us-west-2 | True |
+| AWS Default Region | The AWS Region for this instance of the integration. For example, us-west-2. Enter all to collect from every region enabled for the account (requires the ec2:DescribeRegions permission). | True |
 | Role ARN | The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required. | False |
 | Role Session Name | A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION | False |
 | Role Session Duration | The maximum length of each session in seconds. Default: 900 seconds. The Cortex XSOAR integration will have the permissions assigned only when the session is initiated and for the defined duration. | False |
@@ -12,16 +12,38 @@ Amazon Web Services Guard Duty Service Event Collector integration for Cortex XS
 | Secret Key | The secret key used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False |
 | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout preceded by a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
 | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+| PrivateLink service URL. | Not supported when AWS Default Region is all. To collect from all regions, leave empty and use private DNS for your VPC endpoints, or create one instance per region. | False |
+| Region For Region Discovery | Used only when AWS Default Region is all. The region in which the enabled regions are discovered (ec2:DescribeRegions). Default is us-east-1. | False |
 | First fetch time | First fetch query `<number> <time unit>`, e.g., `7 days`. Default `3 days`. | False |
-| Number of events to fetch per fetch. | Default is 10. | False |
+| Number of events to fetch per fetch. | Default is 1000. When AWS Default Region is all, the limit applies per region (for example, 1,000 x 17 regions = up to 17,000 events per fetch). | False |
 | Guard Duty Severity level | The severity level or higher of findings to be fetched: Low, Medium, or High. For example, if you set the severity level to Medium, only findings with severity level Medium or High will be fetched. | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
+| Create issues from events |  | False |
+
+When AWS Default Region is all, the enabled regions are discovered once a day. A region without a GuardDuty detector is skipped, and a region that fails is skipped and logged for that fetch cycle.
 
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### aws-gd-sync-regions
+
+***
+Re-discovers the regions enabled for the account now, instead of waiting for the daily refresh. Relevant when AWS Default Region is all.
+
+#### Base Command
+
+`aws-gd-sync-regions`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
 
 ### aws-gd-get-events
 

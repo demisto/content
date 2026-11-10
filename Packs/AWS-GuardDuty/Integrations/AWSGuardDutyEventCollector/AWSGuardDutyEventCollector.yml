@@ -10,7 +10,7 @@ commonfields:
   version: -1
 configuration:
 - display: AWS Default Region
-  additionalinfo: The AWS region for this instance of the integration. For example, us-west-2
+  additionalinfo: The AWS region for this instance of the integration. For example, us-west-2. Enter all to collect from every region enabled for the account (requires the ec2:DescribeRegions permission).
   name: defaultRegion
   required: true
   type: 0
@@ -58,6 +58,15 @@ configuration:
   advanced: true
 - display: PrivateLink service URL.
   name: endpoint_url
+  additionalinfo: Not supported when AWS Default Region is all. To collect from all regions, leave empty and use private DNS for your VPC endpoints, or create one instance per region.
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Region For Region Discovery
+  name: discovery_region
+  additionalinfo: Used only when AWS Default Region is all. The region in which the enabled regions are discovered (ec2:DescribeRegions). Default is us-east-1.
+  defaultvalue: us-east-1
   type: 0
   section: Connect
   advanced: true
@@ -85,6 +94,7 @@ configuration:
   section: Collect
 - display: Number of events to fetch per fetch.
   name: limit
+  additionalinfo: When AWS Default Region is all, the limit applies per region.
   type: 0
   defaultvalue: 1000
   required: false
@@ -119,6 +129,13 @@ configuration:
   defaultvalue: 'false'
   additionalinfo: When selected, findings that have been archived in GuardDuty (including those archived by suppression rules) are not fetched.
   section: Collect
+- display: Create issues from events
+  name: create_issues_from_events
+  type: 8
+  required: false
+  defaultvalue: 'false'
+  section: Collect
+  advanced: true
 - display: Fetch Events
   name: isFetchEvents
   type: 8
@@ -164,6 +181,9 @@ script:
       name: limit
     description: Manual command used to fetch events and display them.
     name: aws-gd-get-events
+  - description: Re-discovers the regions enabled for the account now, instead of waiting for the daily refresh. Relevant when AWS Default Region is all.
+    name: aws-gd-sync-regions
+    arguments: []
   dockerimage: demisto/boto3py3:1.0.0.12887184
   isfetchevents: true
   subtype: python3

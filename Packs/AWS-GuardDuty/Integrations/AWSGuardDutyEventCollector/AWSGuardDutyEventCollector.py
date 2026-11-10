@@ -1,4 +1,5 @@
 import json
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta, UTC
 from typing import TYPE_CHECKING
 
@@ -25,6 +26,22 @@ STALE_BOUNDARY_MARGIN = timedelta(minutes=2)
 
 PRODUCT = "guardduty"
 VENDOR = "aws"
+
+# Multi-region ("all") support.
+ALL_REGIONS = "all"
+EC2_SERVICE = "ec2"
+DEFAULT_DISCOVERY_REGION = "us-east-1"
+ENABLED_REGION_OPT_IN_STATUSES = ("opt-in-not-required", "opted-in")
+REGIONS_CACHE_TTL = timedelta(hours=24)
+# Stop starting new regions once a fetch cycle has run this long, so the cycle ends (and saves its
+# progress) before the execution timeout. Remaining regions are processed first on the next cycle.
+ALL_REGIONS_FETCH_TIME_BUDGET = timedelta(minutes=3)
+# Regions are fetched concurrently. GuardDuty rate limits are per region, so regions don't compete.
+ALL_REGIONS_MAX_WORKERS = 10
+PRIVATELINK_WITH_ALL_REGIONS_ERROR = (
+    "PrivateLink service URL can't be used with region 'all'. "
+    "Use a single region per instance, or rely on private DNS for your VPC endpoints."
+)
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -384,6 +401,240 @@ def get_events(
     return events, new_last_ids, new_collect_from
 
 
+def is_all_regions(region: Optional[str]) -> bool:
+    """Return True when the region parameter asks for every enabled region (case-insensitive)."""
+    return str(region or "").strip().lower() == ALL_REGIONS
+
+
+def validate_all_regions_params(region: Optional[str], endpoint_url: Optional[str]) -> None:
+    """Reject a PrivateLink service URL together with region 'all' (one endpoint can't serve every region)."""
+    if is_all_regions(region) and endpoint_url:
+        raise DemistoException(PRIVATELINK_WITH_ALL_REGIONS_ERROR)
+
+
+def discover_enabled_regions(ec2_client: Any, discovery_region: str) -> list[str]:
+    """Return the account's enabled regions (API 0 - EC2 DescribeRegions).
+
+    Raises:
+        DemistoException: naming the ec2:DescribeRegions permission when the call fails.
+    """
+    try:
+        response = ec2_client.describe_regions()
+    except Exception as e:
+        raise DemistoException(
+            f"Failed to discover the account's enabled regions with ec2:DescribeRegions in Region For Region Discovery "
+            f"'{discovery_region}'. Make sure the IAM identity has the ec2:DescribeRegions permission. Error: {e}"
+        ) from e
+    return sorted(
+        region["RegionName"]
+        for region in response.get("Regions", [])
+        if region.get("RegionName") and region.get("OptInStatus", "opt-in-not-required") in ENABLED_REGION_OPT_IN_STATUSES
+    )
+
+
+def get_enabled_regions(aws_client: "AWSClient", discovery_region: str, force_refresh: bool = False) -> list[str]:
+    """Return the enabled regions, re-discovering them at most once every REGIONS_CACHE_TTL.
+
+    The cache lives in the integration context so both fetch and aws-gd-sync-regions can update it.
+    """
+    now = datetime.now(UTC)
+    context = get_integration_context()
+    cached_regions = context.get("regions")
+    updated_at = context.get("regions_updated_at")
+    if not force_refresh and cached_regions and updated_at and now - datetime.fromisoformat(updated_at) < REGIONS_CACHE_TTL:
+        demisto.debug(f"AWSGuardDutyEventCollector - Using cached regions from {updated_at}: {cached_regions}")
+        return cached_regions
+
+    ec2_client = aws_client.aws_session(service=EC2_SERVICE, region=discovery_region)
+    regions = discover_enabled_regions(ec2_client, discovery_region)
+    demisto.debug(f"AWSGuardDutyEventCollector - Discovered enabled regions: {regions}")
+    context.update({"regions": regions, "regions_updated_at": now.isoformat()})
+    set_integration_context(context)
+    return regions
+
+
+def _format_region_errors(region_errors: dict[str, str]) -> str:
+    return "\n".join(f"{region}: {error}" for region, error in region_errors.items())
+
+
+def get_events_all_regions(
+    aws_client: "AWSClient",
+    regions: list[str],
+    collect_from: dict,
+    collect_from_default: Optional[datetime],
+    last_ids: dict,
+    severity: str,
+    limit: int = MAX_RESULTS,
+    exclude_archived: bool = False,
+    next_region: Optional[str] = None,
+    time_budget: Optional[timedelta] = None,
+) -> tuple[list, dict, dict, Optional[str]]:
+    """Run get_events in every region concurrently. The limit applies per region (per detector, as in get_events).
+
+    Fetch progress stays keyed by detector id, so each region progresses independently and a detector's
+    progress carries over between single-region and 'all'. A region that fails is skipped and logged;
+    the cycle fails only when every attempted region fails.
+
+    Args:
+        next_region: Region to start from (the first region not processed by the previous cycle).
+        time_budget: Don't start a region once this much time has passed. The first region always runs.
+
+    Returns:
+        (events, new_last_ids, new_collect_from, next_region) where next_region is the first region
+        not processed this cycle, or None when every region was processed.
+    """
+    if next_region in regions:
+        start = regions.index(next_region)
+        regions = regions[start:] + regions[:start]
+    deadline = datetime.now(UTC) + time_budget if time_budget is not None else None
+    region_errors: dict[str, str] = {}
+
+    # boto3.client() uses boto3's shared default session, which is not thread-safe, so the clients are
+    # created here. The clients themselves are thread-safe.
+    region_clients: dict[str, Any] = {}
+    for region in regions:
+        try:
+            region_clients[region] = aws_client.aws_session(service=CLIENT_SERVICE, region=region)
+        except Exception as e:
+            region_errors[region] = str(e)
+
+    def fetch_region(region: str) -> Optional[tuple[list, dict, dict]]:
+        if deadline and region != regions[0] and datetime.now(UTC) >= deadline:
+            return None
+        # get_events only reads collect_from/last_ids and returns updated copies, so sharing them is safe.
+        return get_events(
+            aws_client=region_clients[region],
+            collect_from=collect_from,
+            collect_from_default=collect_from_default,
+            last_ids=last_ids,
+            severity=severity,
+            limit=limit,
+            exclude_archived=exclude_archived,
+        )
+
+    with ThreadPoolExecutor(max_workers=min(ALL_REGIONS_MAX_WORKERS, len(region_clients)) or 1) as executor:
+        futures = {region: executor.submit(fetch_region, region) for region in region_clients}
+
+    events: list = []
+    skipped_regions: list[str] = []
+    new_collect_from, new_last_ids = dict(collect_from), dict(last_ids)
+    for region, future in futures.items():
+        try:
+            result = future.result()
+        except Exception as e:
+            region_errors[region] = str(e)
+            continue
+        if result is None:
+            skipped_regions.append(region)
+            continue
+        region_events, region_last_ids, region_collect_from = result
+        demisto.debug(f"AWSGuardDutyEventCollector - Region {region} returned {len(region_events)} events.")
+        events += region_events
+        # Keep only the entries this region changed: its own detectors.
+        new_collect_from.update({key: value for key, value in region_collect_from.items() if collect_from.get(key) != value})
+        new_last_ids.update({key: value for key, value in region_last_ids.items() if last_ids.get(key) != value})
+
+    for region, error in region_errors.items():
+        demisto.error(f"AWSGuardDutyEventCollector - Skipping region {region} this cycle. Error: {error}")
+    if skipped_regions:
+        demisto.info(f"AWSGuardDutyEventCollector - Time budget reached. Deferred regions: {skipped_regions}")
+    if region_errors and len(region_errors) == len(regions) - len(skipped_regions):
+        raise DemistoException(f"Failed to fetch events from every region:\n{_format_region_errors(region_errors)}")
+    return events, new_last_ids, new_collect_from, skipped_regions[0] if skipped_regions else None
+
+
+def all_regions_test_module(
+    aws_client: "AWSClient", regions: list[str], collect_from_default: Optional[datetime], severity: str
+) -> str:
+    """Pass when the existing test (limit 1) succeeds in at least one region."""
+    if not regions:
+        raise DemistoException("ec2:DescribeRegions returned no enabled regions.")
+    region_errors: dict[str, str] = {}
+    for region in regions:
+        try:
+            get_events(
+                aws_client=aws_client.aws_session(service=CLIENT_SERVICE, region=region),
+                collect_from={},
+                collect_from_default=collect_from_default,
+                last_ids={},
+                severity=severity,
+                limit=1,
+                detectors_num=1,
+            )
+            return "ok"
+        except Exception as e:
+            region_errors[region] = str(e)
+    raise DemistoException(f"The test failed in every region:\n{_format_region_errors(region_errors)}")
+
+
+def sync_regions_command(aws_client: "AWSClient", discovery_region: str) -> CommandResults:
+    """Re-discover the enabled regions now instead of waiting for the daily refresh."""
+    previous_regions = set(get_integration_context().get("regions") or [])
+    regions = get_enabled_regions(aws_client, discovery_region, force_refresh=True)
+    rows = [{"Region": region, "New": bool(previous_regions) and region not in previous_regions} for region in regions]
+    return CommandResults(
+        readable_output=tableToMarkdown("AWS GuardDuty Enabled Regions", rows, headers=["Region", "New"]),
+        raw_response=regions,
+    )
+
+
+def run_all_regions_command(
+    command: str,
+    aws_client: "AWSClient",
+    discovery_region: str,
+    first_fetch: Optional[datetime],
+    severity: str,
+    limit: int,
+    exclude_archived: bool,
+) -> None:
+    """Dispatch test-module / aws-gd-get-events / fetch-events when AWS Default Region is 'all'."""
+    if command == "test-module":
+        regions = get_enabled_regions(aws_client, discovery_region, force_refresh=True)
+        return_results(all_regions_test_module(aws_client, regions, first_fetch, severity))
+
+    elif command == "aws-gd-get-events":
+        args = demisto.args()
+        command_limit = arg_to_number(args.get("limit", limit))
+        events, _, _, _ = get_events_all_regions(
+            aws_client=aws_client,
+            regions=get_enabled_regions(aws_client, discovery_region),
+            collect_from={},
+            collect_from_default=arg_to_datetime(args.get("collect_from", demisto.params().get("first_fetch"))),
+            last_ids={},
+            severity=args.get("severity", severity),
+            limit=command_limit or MAX_RESULTS,
+            exclude_archived=exclude_archived,
+        )
+        return_results(
+            CommandResults(
+                readable_output=tableToMarkdown("AWSGuardDuty Logs", events, headerTransform=pascalToSpace),
+                raw_response=events,
+            )
+        )
+        if argToBoolean(args.get("should_push_events", "true")):
+            send_events_to_xsiam(events, VENDOR, PRODUCT)
+
+    elif command == "fetch-events":
+        last_run = demisto.getLastRun()
+        events, new_last_ids, new_collect_from, next_region = get_events_all_regions(
+            aws_client=aws_client,
+            regions=get_enabled_regions(aws_client, discovery_region),
+            collect_from=last_run.get("collect_from", {}),
+            collect_from_default=first_fetch,
+            last_ids=last_run.get("last_ids", {}),
+            severity=severity,
+            limit=limit,
+            exclude_archived=exclude_archived,
+            next_region=last_run.get("next_region"),
+            time_budget=ALL_REGIONS_FETCH_TIME_BUDGET,
+        )
+        send_events_to_xsiam(events, VENDOR, PRODUCT)
+        demisto.setLastRun({"collect_from": new_collect_from, "last_ids": new_last_ids, "next_region": next_region})
+
+    else:
+        raise NotImplementedError(f"Command {command} is not implemented.")
+
+
 def main():  # pragma: no cover
     params = demisto.params()
     aws_default_region = params.get("defaultRegion")
@@ -402,13 +653,16 @@ def main():  # pragma: no cover
     sts_endpoint_url = params.get("sts_endpoint_url") or None
     endpoint_url = params.get("endpoint_url") or None
     exclude_archived = argToBoolean(params.get("exclude_archived", False))
+    discovery_region = params.get("discovery_region") or DEFAULT_DISCOVERY_REGION
+    all_regions = is_all_regions(aws_default_region)
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id, aws_secret_access_key)
+        validate_all_regions_params(aws_default_region, endpoint_url)
 
         # proxy is being handled in AWSClient.
         aws_client = AWSClient(
-            aws_default_region,
+            discovery_region if all_regions else aws_default_region,
             aws_role_arn,
             aws_role_session_name,
             aws_role_session_duration,
@@ -420,11 +674,25 @@ def main():  # pragma: no cover
             retries,
             sts_endpoint_url=sts_endpoint_url,
             endpoint_url=endpoint_url,
+            # With 'all', sign every STS call for the discovery region. Otherwise a GovCloud discovery region
+            # pins the STS endpoint while each region's call is signed for that region, and assume-role fails.
+            sts_region=discovery_region if all_regions else None,
         )
+
+        command = demisto.command()
+        if command == "aws-gd-sync-regions":
+            return_results(sync_regions_command(aws_client, discovery_region))
+            return
+        if all_regions:
+            # Regions are fetched in threads, and demisto.* calls share one channel to the server.
+            support_multithreading()
+            run_all_regions_command(
+                command, aws_client, discovery_region, first_fetch, aws_gd_severity, limit or MAX_RESULTS, exclude_archived
+            )
+            return
 
         client: GuardDutyClient = aws_client.aws_session(service=CLIENT_SERVICE, region=aws_default_region)
 
-        command = demisto.command()
         if command == "test-module":
             get_events(
                 aws_client=client,
