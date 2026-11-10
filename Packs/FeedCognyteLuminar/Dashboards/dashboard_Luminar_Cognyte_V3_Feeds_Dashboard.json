@@ -445,6 +445,6 @@
             "reflectDimensions": true
         }
     ],
-    "shouldPublish": false,
-    "shouldCommit": false
+    "description": "Summary of the Cognyte Luminar V3 feed: indicators by type, ingestion over time, Luminar Incident threat-score distribution, IOC confidence distribution, and leaked credentials by leak source.",
+    "isPredefined": true
 }

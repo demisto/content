@@ -34,8 +34,8 @@
         "Email",
         "File",
         "Registry Key",
-        "MUTEX",
-        "AS",
+        "Mutex",
+        "ASN",
         "Host",
         "Account",
         "CVE"

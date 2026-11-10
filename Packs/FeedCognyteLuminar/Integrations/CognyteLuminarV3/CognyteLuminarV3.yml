@@ -92,7 +92,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
 - name: feedExpirationInterval
   display: ''
   type: 1
@@ -243,7 +242,7 @@ script:
       type: String
   - name: luminar-v3-reset-fetch-indicators
     description: Resets your fetch history.
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.15.14069087
   feed: true
   runonce: false
   script: '-'
