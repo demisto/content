@@ -3063,17 +3063,19 @@ class TestHandleFetchedEventsNextRunLogging:
 
 
 class TestSequentialFailureKeepsProgress:
-    def test_alerts_progress_saved_when_activities_fails(self, mocker, dummy_client):
+    def test_alerts_progress_kept_when_activities_fails(self, mocker, dummy_client):
         """
         Given: Alerts and Activities fetched in the same cycle (sequential path), and the Activities
                request fails with an API error after the alerts were already fetched.
         When:  fetch_events runs as the periodic fetch (streaming enabled).
-        Then:  the error is still raised, and the last run is saved first with the new alerts cursor
-               and the unchanged activities cursor, so the alerts are not re-sent next cycle.
+        Then:  no error is raised, so the cycle completes and the last run can be saved. The returned
+               next_run has the new alerts cursor and the unchanged activities cursor, so the alerts
+               are not re-sent and no activities are skipped in the next cycle.
         """
         last_run = {
             "alerts_last_fetch_time": "2026-11-04T13:08:45",
             "activity_last_fetch_time": "2026-11-03T17:31:34",
+            "activity_last_fetch_ids": ["id-1"],
             "activity_last_fetch_next_field": 0,
         }
 
@@ -3084,25 +3086,24 @@ class TestSequentialFailureKeepsProgress:
             raise DemistoException("Error in API call [500] - Internal Server Error")
 
         mocker.patch("ArmisEventCollector.fetch_by_event_type", side_effect=fake_fetch_by_event_type)
-        mock_set_last_run = mocker.patch("ArmisEventCollector.demisto.setLastRun")
 
-        with pytest.raises(DemistoException, match="500"):
-            fetch_events(
-                client=dummy_client,
-                max_fetch=10,
-                devices_max_fetch=10,
-                last_run=last_run,
-                fetch_start_time=None,
-                event_types_to_fetch=["Alerts", "Activities"],
-                device_fetch_interval=None,
-                use_multithreading=True,
-                context_manager=IntegrationContextManager(),
-                enable_streaming=True,
-            )
+        _, next_run = fetch_events(
+            client=dummy_client,
+            max_fetch=10,
+            devices_max_fetch=10,
+            last_run=last_run,
+            fetch_start_time=None,
+            event_types_to_fetch=["Alerts", "Activities"],
+            device_fetch_interval=None,
+            use_multithreading=True,
+            context_manager=IntegrationContextManager(),
+            enable_streaming=True,
+        )
 
-        saved = mock_set_last_run.call_args.args[0]
-        assert saved["alerts_last_fetch_time"] == "2026-11-04T14:13:02"
-        assert saved["activity_last_fetch_time"] == "2026-11-03T17:31:34"
+        assert next_run["alerts_last_fetch_time"] == "2026-11-04T14:13:02"
+        assert next_run["activity_last_fetch_time"] == "2026-11-03T17:31:34"
+        assert next_run["activity_last_fetch_ids"] == ["id-1"]
+        assert next_run["activity_last_fetch_next_field"] == 0
 
     def test_last_run_not_touched_for_manual_get_events(self, mocker, dummy_client):
         """
