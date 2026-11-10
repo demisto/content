@@ -11,7 +11,7 @@ HashiCorp Terraform is an Infrastructure as Code (IaC) tool designed to streamli
 
 ## Data normalization capabilities
 
-* Rules for modeling HashiCorp Terraform audit trail logs that are ingested via the API into Cortex XSIAM.
-  * The ingested HashiCorp Terraform audit trail logs can be queried in XQL Search using the *`hashicorp_terraform_raw`* dataset.
+- Rules for modeling HashiCorp Terraform audit trail logs that are ingested via the API into Cortex XSIAM.
+  - The ingested HashiCorp Terraform audit trail logs can be queried in XQL Search using the *`hashicorp_terraform_raw`* dataset.
 
 </~XSIAM>
