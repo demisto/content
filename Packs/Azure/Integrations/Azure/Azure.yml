@@ -5048,6 +5048,9 @@ script:
       - contextPath: Azure.VirtualNetworks.SecurityGroups.etag
         description: The security group's ETag.
         type: String
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.originalETag
+        description: The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc").
+        type: String
       - contextPath: Azure.VirtualNetworks.SecurityGroups.type
         description: The resource type.
         type: String
@@ -5106,6 +5109,9 @@ script:
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityGroups.etag
       description: The security group's ETag.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityGroups.originalETag
+      description: The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc").
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityGroups.tags
       description: The security group's tags.
@@ -5226,6 +5232,9 @@ script:
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.etag
       description: The rule's ETag.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.originalETag
+      description: The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc").
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.type
       description: The rule's type.
@@ -5555,6 +5564,9 @@ script:
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.etag
       description: The rule's ETag.
+      type: String
+    - contextPath: Azure.VirtualNetworks.SecurityRules.originalETag
+      description: The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc").
       type: String
     - contextPath: Azure.VirtualNetworks.SecurityRules.type
       description: The rule's type.
@@ -6086,6 +6098,9 @@ script:
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.etag
       description: The ETag of the network interface.
       type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.originalETag
+      description: The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc").
+      type: String
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.location
       description: The location of the network interface.
       type: String
@@ -6140,6 +6155,9 @@ script:
       type: String
     - contextPath: Azure.VirtualNetworks.VirtualNetworks.etag
       description: The virtual network's ETag.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.originalETag
+      description: The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc").
       type: String
     - contextPath: Azure.VirtualNetworks.VirtualNetworks.type
       description: The resource type.
@@ -6332,6 +6350,9 @@ script:
       type: String
     - contextPath: Azure.VirtualNetworks.PublicIPAddresses.etag
       description: The public IP address's ETag.
+      type: String
+    - contextPath: Azure.VirtualNetworks.PublicIPAddresses.originalETag
+      description: The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc").
       type: String
     - contextPath: Azure.VirtualNetworks.PublicIPAddresses.properties.provisioningState
       description: The public IP address's provisioning state.
@@ -6699,6 +6720,9 @@ script:
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.etag
       description: A unique read-only string that changes whenever the network interface resource is updated.
       type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.originalETag
+      description: The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc").
+      type: String
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.kind
       description: The type of the network interface resource, used for Azure internal classification.
       type: String
@@ -6878,6 +6902,9 @@ script:
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.etag
       description: A unique read-only string that changes whenever the network interface resource is updated.
       type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.originalETag
+      description: The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc").
+      type: String
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.type
       description: The resource type.
       type: String
@@ -7040,6 +7067,9 @@ script:
         type: String
       - contextPath: Azure.VirtualNetworks.PublicIPAddresses.etag
         description: The public IP address's ETag.
+        type: String
+      - contextPath: Azure.VirtualNetworks.PublicIPAddresses.originalETag
+        description: The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc").
         type: String
       - contextPath: Azure.VirtualNetworks.PublicIPAddresses.properties.provisioningState
         description: The public IP address's provisioning state.

@@ -5388,6 +5388,18 @@ def format_rule(rule_json: dict | list, security_rule_name: str):
     return CommandResults(outputs_prefix="Azure.NSGRule", outputs_key_field="id", outputs=rule_json, readable_output=hr)
 
 
+def set_etag_fields(resource: dict[str, Any]) -> None:
+    """
+    Keeps the original ETag of a resource under the "originalETag" key, and cleans up the "etag" key
+    by removing the weak validator prefix ("W/") and the surrounding quotes (kept for backward compatibility).
+    Args:
+        resource: The resource returned from the Azure API. Updated in place.
+    """
+    original_etag = resource.get("etag") or ""
+    resource["originalETag"] = original_etag
+    resource["etag"] = original_etag[3:-1]
+
+
 def extract_azure_resource_info(resource_id: str) -> tuple[str | None, str | None, str | None]:
     """Extract subscription ID, resource group, and account name from Azure resource ID.
 
@@ -8330,8 +8342,7 @@ def nsg_security_group_create_command(client: AzureClient, params: dict[str, Any
     )
     demisto.debug(f"Created network security group {response=}")
 
-    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
-    response["etag"] = response.get("etag", "")[3:-1]
+    set_etag_fields(response)
 
     hr = tableToMarkdown(
         name=f"The network security group {security_group_name} was created successfully",
@@ -8366,11 +8377,10 @@ def nsg_security_groups_list_command(client: AzureClient, params: dict[str, Any]
     response = client.list_network_security_groups(subscription_id=subscription_id, resource_group_name=resource_group_name)
     network_groups = response.get("value", [])
 
-    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
     for group in network_groups:
-        group["etag"] = group.get("etag", "")[3:-1]
+        set_etag_fields(group)
         for rule in group.get("defaultSecurityRules", []):
-            rule["etag"] = rule.get("etag", "")[3:-1]
+            set_etag_fields(rule)
 
     hr = tableToMarkdown(
         name="Network Security Groups",
@@ -8416,8 +8426,7 @@ def nsg_security_rule_get_command(client: AzureClient, params: dict[str, Any], a
         resource_group_name=resource_group_name,
     )
 
-    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
-    rule["etag"] = rule.get("etag", "")[3:-1]
+    set_etag_fields(rule)
 
     hr = tableToMarkdown(
         name=f"Rule {security_rule_name}",
@@ -8552,8 +8561,7 @@ def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any]
         resource_group_name=resource_group_name,
     )
 
-    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
-    rule["etag"] = rule.get("etag", "")[3:-1]
+    set_etag_fields(rule)
 
     hr = tableToMarkdown(
         name=f"The security rule {security_rule_name} was created successfully",
@@ -9910,9 +9918,8 @@ def nsg_network_interfaces_list_command(client: AzureClient, params: dict[str, A
     if not all_results:
         data_from_response = data_from_response[:limit]
 
-    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
     for data in data_from_response:
-        data["etag"] = data.get("etag", "")[3:-1]
+        set_etag_fields(data)
 
     readable_output = tableToMarkdown(
         name="Network Interfaces List",
@@ -9956,9 +9963,8 @@ def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, 
     if not all_results:
         data_from_response = data_from_response[:limit]
 
-    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
     for output in data_from_response:
-        output["etag"] = output.get("etag", "")[3:-1]
+        set_etag_fields(output)
 
     readable_output = tableToMarkdown(
         name="Public IP Addresses List",
@@ -10005,9 +10011,8 @@ def virtual_networks_list_command(client: AzureClient, params: dict[str, Any], a
     if not data_from_response:
         return CommandResults(readable_output=f"No virtual networks were found in resource group '{resource_group_name}'.")
 
-    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
     for data in data_from_response:
-        data["etag"] = data.get("etag", "")[3:-1]
+        set_etag_fields(data)
 
     # The token is always written, as null on the last page, so a stale token is cleared from the context.
     outputs = {
@@ -10615,9 +10620,9 @@ def get_network_interface_command(client: AzureClient, params: dict[str, Any], a
         name=title, t=human_readable_network_config, headers=table_headers, removeNull=True, headerTransform=pascalToSpace
     )
 
-    response["etag"] = response.get("etag", "")[3:-1]
+    set_etag_fields(response)
     for ip_configuration in response.get("properties", {}).get("ipConfigurations", []):
-        ip_configuration["etag"] = ip_configuration.get("etag", "")[3:-1]
+        set_etag_fields(ip_configuration)
 
     command = demisto.command()
     outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.VirtualNetworks.NetworkInterfaces")
@@ -10690,10 +10695,9 @@ def network_interface_update_command(client: AzureClient, params: dict[str, Any]
         network_interface_data=nic,
     )
 
-    # Clean up etag format
-    response["etag"] = response.get("etag", "")[3:-1]
+    set_etag_fields(response)
     for ip_configuration in response.get("properties", {}).get("ipConfigurations", []):
-        ip_configuration["etag"] = ip_configuration.get("etag", "")[3:-1]
+        set_etag_fields(ip_configuration)
 
     updated_properties = response.get("properties", {})
 
@@ -10784,7 +10788,7 @@ def get_public_ip_details_command(client: AzureClient, params: dict[str, Any], a
         address_id = response.get("id")
         resource_group_name = address_id.split("resourceGroups/")[1].split("/providers")[0]
 
-    response["etag"] = response.get("etag", "")[3:-1]
+    set_etag_fields(response)
     properties = response.get("properties")
 
     human_readable_ip_config = {

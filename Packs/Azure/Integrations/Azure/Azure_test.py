@@ -2908,6 +2908,34 @@ def test_get_monitor_log_profile_error_handling(mocker, client):
     )
 
 
+@pytest.mark.parametrize(
+    "resource, expected_etag, expected_original_etag",
+    [
+        ({"etag": 'W/"12345"'}, "12345", 'W/"12345"'),
+        (
+            {"etag": 'W/"00000000-0000-0000-0000-000000000000"'},
+            "00000000-0000-0000-0000-000000000000",
+            'W/"00000000-0000-0000-0000-000000000000"',
+        ),
+        ({}, "", ""),
+        ({"etag": None}, "", ""),
+    ],
+)
+def test_set_etag_fields(resource, expected_etag, expected_original_etag):
+    """
+    Given: An Azure resource with a weak ETag (W/"..."), a null ETag, or without an ETag.
+    When: set_etag_fields is called.
+    Then: The "etag" key holds the cleaned-up ETag (backward compatible), and the "originalETag" key
+          holds the original ETag exactly as returned by Azure.
+    """
+    from Azure import set_etag_fields
+
+    set_etag_fields(resource)
+
+    assert resource["etag"] == expected_etag
+    assert resource["originalETag"] == expected_original_etag
+
+
 def test_format_rule():
     """
     Given: rule data and rule name
@@ -4850,6 +4878,7 @@ def test_get_network_interface_command(mocker):
     assert result.outputs["properties"]["ipConfigurations"][0]["properties"]["privateIPAddress"] == "10.0.0.4"
     assert result.outputs["properties"]["ipConfigurations"][0]["properties"]["publicIPAddress"]["id"] == "public-ip-id"
     assert result.outputs["properties"]["ipConfigurations"][0]["etag"] == "12345"  # etag cleaned
+    assert result.outputs["properties"]["ipConfigurations"][0]["originalETag"] == 'W/"12345"'
     assert "nic1" in result.readable_output
 
 
@@ -4963,6 +4992,7 @@ def test_get_public_ip_details_command_with_resource_group(mocker):
     assert result.outputs["properties"]["publicIPAddressVersion"] == "IPv4"
     assert result.outputs["properties"]["publicIPAllocationMethod"] == "Static"
     assert result.outputs["etag"] == "12345"
+    assert result.outputs["originalETag"] == 'W/"12345"'
     assert "ip1" in result.readable_output
 
 
@@ -5056,6 +5086,7 @@ def test_get_public_ip_details_command_without_resource_group(mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs["properties"]["ipAddress"] == "5.6.7.8"
     assert result.outputs["etag"] == "999"
+    assert result.outputs["originalETag"] == 'W/"999"'
     assert "ip1" in result.readable_output
     assert "rg1" in result.readable_output
 
@@ -5934,6 +5965,7 @@ def test_nsg_security_group_create_command(mocker, client, mock_params):
         "location": "eastus",
         "type": "Microsoft.Network/networkSecurityGroups",
         "etag": "test-etag",
+        "originalETag": 'W/"test-etag"',
         "properties": {},
     }
     assert "The network security group test-nsg was created successfully" in result.readable_output
@@ -6045,6 +6077,7 @@ def test_network_interface_update_command_success(mocker):
         "name": "test-nic",
         "location": "eastus",
         "etag": "etag-value",
+        "originalETag": 'W/"etag-value"',
         "properties": {
             "enableIPForwarding": True,
             "enableAcceleratedNetworking": True,

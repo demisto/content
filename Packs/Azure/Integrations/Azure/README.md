@@ -2110,6 +2110,7 @@ Creates a network security group. Required Permissions: Microsoft.Network/networ
 | Azure.VirtualNetworks.SecurityGroups.name | String | The security group's name. |
 | Azure.VirtualNetworks.SecurityGroups.id | String | The security group's ID. |
 | Azure.VirtualNetworks.SecurityGroups.etag | String | The security group's ETag. |
+| Azure.VirtualNetworks.SecurityGroups.originalETag | String | The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc"). |
 | Azure.VirtualNetworks.SecurityGroups.type | String | The resource type. |
 | Azure.VirtualNetworks.SecurityGroups.location | String | The resource location. |
 | Azure.VirtualNetworks.SecurityGroups.properties.provisioningState | String | The provisioning state of the network security group resource. |
@@ -2381,6 +2382,7 @@ Gets network interfaces in a resource group. Required permissions: Microsoft.Net
 | Azure.VirtualNetworks.NetworkInterfaces.id | String | The network interface's ID. |
 | Azure.VirtualNetworks.NetworkInterfaces.kind | String | The kind of the network interface. |
 | Azure.VirtualNetworks.NetworkInterfaces.etag | String | The ETag of the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.originalETag | String | The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc"). |
 | Azure.VirtualNetworks.NetworkInterfaces.location | String | The location of the network interface. |
 | Azure.VirtualNetworks.NetworkInterfaces.managedBy | String | The entity that manages the network interface. |
 | Azure.VirtualNetworks.NetworkInterfaces.tags | String | The tags associated with the network interface. |
@@ -2418,6 +2420,7 @@ Gets public IP addresses in a resource group. Required permissions: Microsoft.Ne
 | Azure.VirtualNetworks.PublicIPAddresses.sku | String | The public IP address's SKU. |
 | Azure.VirtualNetworks.PublicIPAddresses.type | String | The type of the public IP address. |
 | Azure.VirtualNetworks.PublicIPAddresses.etag | String | The public IP address's ETag. |
+| Azure.VirtualNetworks.PublicIPAddresses.originalETag | String | The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc"). |
 | Azure.VirtualNetworks.PublicIPAddresses.properties.provisioningState | String | The public IP address's provisioning state. |
 | Azure.VirtualNetworks.PublicIPAddresses.properties.publicIPAddressVersion | String | The public IP address's version. |
 | Azure.VirtualNetworks.PublicIPAddresses.properties.ipAddress | String | The public IP address's IP address. |
@@ -2452,6 +2455,7 @@ List all network security groups. Required permissions: Microsoft.Network/networ
 | Azure.VirtualNetworks.SecurityGroups.type | String | The security group's type. |
 | Azure.VirtualNetworks.SecurityGroups.location | String | The security group's location. |
 | Azure.VirtualNetworks.SecurityGroups.etag | String | The security group's ETag. |
+| Azure.VirtualNetworks.SecurityGroups.originalETag | String | The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc"). |
 | Azure.VirtualNetworks.SecurityGroups.tags | String | The security group's tags. |
 | Azure.VirtualNetworks.SecurityGroups.properties.defaultSecurityRules | List | The default security rules. |
 | Azure.VirtualNetworks.SecurityGroups.properties.networkInterfaces | List | The network interfaces. |
@@ -2493,6 +2497,7 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 | Azure.VirtualNetworks.SecurityRules.name | String | The rule's name. |
 | Azure.VirtualNetworks.SecurityRules.id | String | The rule's ID. |
 | Azure.VirtualNetworks.SecurityRules.etag | String | The rule's ETag. |
+| Azure.VirtualNetworks.SecurityRules.originalETag | String | The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc"). |
 | Azure.VirtualNetworks.SecurityRules.type | String | The rule's type. |
 | Azure.VirtualNetworks.SecurityRules.properties.provisioningState | String | The rule's provisioning state. |
 | Azure.VirtualNetworks.SecurityRules.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
@@ -2579,6 +2584,7 @@ Updates a network interface. Required Permissions: Microsoft.Network/networkInte
 | Azure.VirtualNetworks.NetworkInterfaces.name | String | The network interface name. |
 | Azure.VirtualNetworks.NetworkInterfaces.location | String | The Azure region where the network interface is deployed. |
 | Azure.VirtualNetworks.NetworkInterfaces.etag | String | A unique read-only string that changes whenever the network interface resource is updated. |
+| Azure.VirtualNetworks.NetworkInterfaces.originalETag | String | The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc"). |
 | Azure.VirtualNetworks.NetworkInterfaces.type | String | The resource type. |
 | Azure.VirtualNetworks.NetworkInterfaces.tags | Unknown | The resource tags. |
 | Azure.VirtualNetworks.NetworkInterfaces.extendedLocation | Unknown | The extended location of the network interface. |
@@ -2654,6 +2660,7 @@ Get a specific rule. Required permissions: Microsoft.Network/networkSecurityGrou
 | Azure.VirtualNetworks.SecurityRules.id | String | The rule's ID. |
 | Azure.VirtualNetworks.SecurityRules.location | String | The rule's location. |
 | Azure.VirtualNetworks.SecurityRules.etag | String | The rule's ETag. |
+| Azure.VirtualNetworks.SecurityRules.originalETag | String | The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc"). |
 | Azure.VirtualNetworks.SecurityRules.type | String | The rule's type. |
 | Azure.VirtualNetworks.SecurityRules.properties.provisioningState | String | The rule's provisioning state. |
 | Azure.VirtualNetworks.SecurityRules.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
@@ -2776,6 +2783,7 @@ Gets the properties of a given network interface. Required permissions: Microsof
 | Azure.VirtualNetworks.NetworkInterfaces.location | String | The interface location. |
 | Azure.VirtualNetworks.NetworkInterfaces.id | String | The interface ID. |
 | Azure.VirtualNetworks.NetworkInterfaces.etag | String | A unique read-only string that changes whenever the network interface resource is updated. |
+| Azure.VirtualNetworks.NetworkInterfaces.originalETag | String | The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc"). |
 | Azure.VirtualNetworks.NetworkInterfaces.kind | String | The type of the network interface resource, used for Azure internal classification. |
 | Azure.VirtualNetworks.NetworkInterfaces.properties.tapConfigurations | String | The list of tap configurations attached to the network interface for traffic mirroring. |
 | Azure.VirtualNetworks.NetworkInterfaces.properties.allowPort25Out | String | Indicates whether outbound traffic on port 25 \(SMTP\) is allowed from this network interface. |
@@ -2811,6 +2819,7 @@ Gets the properties of a given public IP address. Permissions required: Microsof
 | Azure.VirtualNetworks.PublicIPAddresses.sku | String | The public IP address's SKU. |
 | Azure.VirtualNetworks.PublicIPAddresses.type | String | The type of the public IP address. |
 | Azure.VirtualNetworks.PublicIPAddresses.etag | String | The public IP address's ETag. |
+| Azure.VirtualNetworks.PublicIPAddresses.originalETag | String | The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc"). |
 | Azure.VirtualNetworks.PublicIPAddresses.properties.provisioningState | String | The public IP address's provisioning state. |
 | Azure.VirtualNetworks.PublicIPAddresses.properties.publicIPAddressVersion | String | The public IP address's version. |
 | Azure.VirtualNetworks.PublicIPAddresses.properties.ipAddress | String | The public IP address's IP address. |
@@ -5094,6 +5103,7 @@ Gets virtual networks in a resource group. Required permissions: Microsoft.Netwo
 | Azure.VirtualNetworks.VirtualNetworks.name | String | The virtual network's name. |
 | Azure.VirtualNetworks.VirtualNetworks.id | String | The virtual network's ID. |
 | Azure.VirtualNetworks.VirtualNetworks.etag | String | The virtual network's ETag. |
+| Azure.VirtualNetworks.VirtualNetworks.originalETag | String | The original ETag as returned by Azure, including the weak validator prefix and the quotes (for example, W/"abc"). |
 | Azure.VirtualNetworks.VirtualNetworks.type | String | The resource type. |
 | Azure.VirtualNetworks.VirtualNetworks.location | String | The virtual network's location. |
 | Azure.VirtualNetworks.VirtualNetworks.tags | Unknown | The tags associated with the virtual network. |
