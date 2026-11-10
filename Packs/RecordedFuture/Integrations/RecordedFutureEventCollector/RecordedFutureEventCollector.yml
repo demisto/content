@@ -36,6 +36,17 @@ configuration:
   type: 0
   section: Collect
   required: false
+- defaultvalue: legacy
+  display: Debug cursor mode (XSUP-80326)
+  additionalinfo: 'legacy - original behaviour (cursor taken from the first event in the response). newest - cursor taken from the newest event in the response.'
+  name: debug_cursor_mode
+  type: 15
+  options:
+  - legacy
+  - newest
+  section: Collect
+  advanced: true
+  required: false
 description: This integration fetches alerts from Recorded Future.
 display: Recorded Future Event Collector
 name: RecordedFutureEventCollector
@@ -56,6 +67,33 @@ script:
       name: limit
     description: Gets events from Recorded Future.
     name: recorded-future-get-events
+  - arguments:
+    - description: The time to start from (e.g. "3 days", "2026-11-06T06:00:00Z"). Defaults to the stored last run time.
+      name: start_time
+    - description: Maximum number of results to request. Defaults to the max_fetch parameter.
+      name: limit
+    description: 'XSUP-80326 debug: dry run of a fetch round. Calls the API exactly like fetch-events and shows the returned events and the next run each cursor mode would compute. Does not send events or change the last run.'
+    name: recorded-future-debug-fetch
+    outputs:
+    - contextPath: RecordedFutureEventCollector.DebugFetch.EventsReturned
+      description: Number of events returned by the API.
+      type: Number
+    - contextPath: RecordedFutureEventCollector.DebugFetch.ResponseOrder
+      description: Order of the returned events by log.triggered (asc, desc, unsorted, n/a).
+      type: String
+  - arguments: []
+    description: 'XSUP-80326 debug: shows the stored last run object and any pending start-time override.'
+    name: recorded-future-debug-get-last-run
+    outputs:
+    - contextPath: RecordedFutureEventCollector.LastRun.LastRun
+      description: The stored last run object.
+      type: Unknown
+  - arguments:
+    - description: The time the next fetch-events run should start from (e.g. "3 days", "2026-11-06T06:00:00Z").
+      name: start_time
+      required: true
+    description: 'XSUP-80326 debug: makes the next fetch-events run start from the given time. Applied once; that run overwrites the last run with its own result and clears the override.'
+    name: recorded-future-debug-set-fetch-start
   dockerimage: demisto/python3:3.12.13.10116658
   isfetchevents: true
   script: '-'
