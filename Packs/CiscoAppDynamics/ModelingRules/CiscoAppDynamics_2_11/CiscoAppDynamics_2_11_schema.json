@@ -1,0 +1,40 @@
+{
+    "cisco_appdynamics_raw": {
+      "objectId": {
+          "type": "int",
+          "is_array": false
+        },
+      "changes": {
+          "type": "string",
+          "is_array": false
+        },
+      "userName": {
+          "type": "string",
+          "is_array": false
+        },
+      "objectName": {
+          "type": "string",
+          "is_array": false
+        },
+      "objectType": {
+          "type": "string",
+          "is_array": false
+        },
+      "description": {
+          "type": "string",
+          "is_array": false
+        },
+      "applicationName": {
+          "type": "string",
+          "is_array": false
+        },
+      "securityProviderType": {
+          "type": "string",
+          "is_array": false
+        },
+      "action": {
+          "type": "string",
+          "is_array": false
+        }                
+    }
+}

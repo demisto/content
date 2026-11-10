@@ -1700,7 +1700,7 @@ def main():  # pragma: no cover
         base_url += "/helix/id"
     base_url += f"/{params.get('h_id_creds', {}).get('identifier') or params.get('h_id')}"
     verify_ssl = not params.get("insecure", False)
-    proxy = params.get("proxy")
+    proxy = params.get("proxy", False)
     headers = {
         "accept": "application/json",
         "x-fireeye-api-key": params.get("h_id_creds", {}).get("password") or params.get("token"),
@@ -1738,13 +1738,13 @@ def main():  # pragma: no cover
     }
     try:
         if command == "test-module":
-            fetch_time = params.get("fetch_time")
-            is_fetch = params.get("isFetch")
+            fetch_time = params.get("fetch_time", "3 days")
+            is_fetch = params.get("isFetch", False)
             last_run = demisto.getLastRun()
             readable_output, outputs, raw_response = test_module(client, bool(is_fetch), fetch_time, last_run)
             return_outputs(readable_output, outputs, raw_response)
         elif command == "fetch-incidents":
-            fetch_time = params.get("fetch_time")
+            fetch_time = params.get("fetch_time", "3 days")
             incidents, last_run = fetch_incidents(client, fetch_time, last_run=demisto.getLastRun())  # type: ignore
             demisto.incidents(incidents)
             demisto.setLastRun(last_run)

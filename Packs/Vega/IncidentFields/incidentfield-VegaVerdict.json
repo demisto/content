@@ -1,0 +1,39 @@
+{
+    "id": "incident_vegaverdict",
+    "version": -1,
+    "name": "Vega Verdict",
+    "ownerOnly": false,
+    "description": "The verdict assigned to the Vega alert or incident.",
+    "cliName": "vegaverdict",
+    "type": "singleSelect",
+    "selectValues": [
+        "MALICIOUS",
+        "SUSPICIOUS",
+        "BENIGN",
+        "INCONCLUSIVE",
+        "NA"
+    ],
+    "openEnded": false,
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Vega Alert",
+        "Vega Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

@@ -1,0 +1,56 @@
+{
+  "netbox_irm_raw": {
+    "user": {
+      "type": "string",
+      "is_array": false
+    },
+    "comments": {
+      "type": "string",
+      "is_array": false
+    },
+    "kind": {
+      "type": "string",
+      "is_array": false
+    },
+    "assigned_object": {
+      "type": "string",
+      "is_array": false
+    },
+    "assigned_object_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "request_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "display": {
+      "type": "string",
+      "is_array": false
+    },
+    "action": {
+      "type": "string",
+      "is_array": false
+    },
+    "changed_object_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "changed_object": {
+      "type": "string",
+      "is_array": false
+    },
+    "changed_object_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "prechange_data": {
+      "type": "string",
+      "is_array": false
+    },
+    "user_name": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

@@ -473,7 +473,7 @@ tasks:
           accessor: id
           root: incident
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ""
       description: |-

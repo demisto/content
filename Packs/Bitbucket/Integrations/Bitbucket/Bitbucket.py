@@ -1,3 +1,5 @@
+import time
+
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from requests import Response
@@ -10,16 +12,86 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+TOKEN_URL = "https://bitbucket.org/site/oauth2/access_token"  # The OAuth 2.0 token endpoint, a different host than the API.
+TOKEN_SAFETY_MARGIN = 60  # Seconds subtracted from the token expiration time, to avoid using an almost expired token.
 
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
-    def __init__(self, workspace: str, server_url: str, auth: tuple, repository: str, proxy: bool = False, verify: bool = True):
+    def __init__(
+        self,
+        workspace: str,
+        server_url: str,
+        auth: tuple | None = None,
+        repository: str = "",
+        proxy: bool = False,
+        verify: bool = True,
+        client_id: str = "",
+        client_secret: str = "",
+    ):
+        """Bitbucket API client, supporting either basic authentication or OAuth 2.0 client credentials.
+        Args:
+            workspace: str - The Bitbucket workspace.
+            server_url: str - The Bitbucket API base URL.
+            auth: tuple | None - (user name, API token) for basic authentication. Not used in OAuth mode.
+            repository: str - The default repository.
+            proxy: bool - Whether to use the system proxy settings.
+            verify: bool - Whether to verify the certificate.
+            client_id: str - The OAuth consumer key. Given together with client_secret to use OAuth mode.
+            client_secret: str - The OAuth consumer secret. Given together with client_id to use OAuth mode.
+        """
         self.repository = repository
         self.workspace = workspace
         self.server_url = server_url
-        super().__init__(base_url=server_url, auth=auth, proxy=proxy, verify=verify)
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.use_oauth = bool(client_id and client_secret)
+        super().__init__(base_url=server_url, auth=auth, proxy=proxy, verify=verify, headers={"Accept": "application/json"})
+
+    def get_access_token(self) -> str:
+        """Returns a valid OAuth 2.0 access token, reusing the cached one while it is still valid.
+        Returns:
+            The access token to use in the Authorization header.
+        """
+        integration_context = get_integration_context()
+        access_token = integration_context.get("access_token")
+        valid_until = integration_context.get("valid_until")
+        cached_client_id = integration_context.get("client_id")
+        now = int(time.time())
+        if access_token and valid_until and now < valid_until and cached_client_id == self.client_id:
+            demisto.debug("Using cached OAuth access token.")
+            return access_token
+
+        response = super()._http_request(
+            method="POST",
+            full_url=TOKEN_URL,
+            auth=(self.client_id, self.client_secret),
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            data={"grant_type": "client_credentials"},
+        )
+        access_token = response.get("access_token", "")
+        expires_in = arg_to_number(response.get("expires_in")) or 0
+        valid_until = now + expires_in - TOKEN_SAFETY_MARGIN
+        set_integration_context({"access_token": access_token, "valid_until": valid_until, "client_id": self.client_id})
+        demisto.debug(f"Generated a new OAuth access token, expires at {valid_until}.")
+        return access_token
+
+    def _http_request(self, *args: Any, **kwargs: Any) -> Any:
+        """Adds an up to date Authorization Bearer header when using OAuth, and performs the request.
+        Args:
+            args: The positional arguments of BaseClient._http_request.
+            kwargs: The keyword arguments of BaseClient._http_request.
+        Returns:
+            The response of BaseClient._http_request.
+        """
+        if self.use_oauth:
+            kwargs["headers"] = {
+                **(self._headers or {}),
+                **(kwargs.get("headers") or {}),
+                "Authorization": f"Bearer {self.get_access_token()}",
+            }
+        return super()._http_request(*args, **kwargs)
 
     def get_full_url(self, full_url: str) -> dict:
         """Makes a general GET request according to the given full_url.
@@ -1467,19 +1539,50 @@ def workspace_member_list_command(client: Client, args: dict) -> CommandResults:
 
 
 def main() -> None:  # pragma: no cover
-    workspace = demisto.params().get("workspace")
-    server_url = demisto.params().get("server_url")
-    user_name = demisto.params().get("credentials", {}).get("identifier", "")
-    app_password = demisto.params().get("credentials", {}).get("password", "")
-    repository = demisto.params().get("repository", "")
-    verify_certificate = not demisto.params().get("insecure", False)
-    proxy = demisto.params().get("proxy", False)
-    auth = (user_name, app_password)
+    params = demisto.params()
+    workspace = params.get("workspace")
+    server_url = params.get("server_url")
+    user_name = params.get("credentials", {}).get("identifier", "")
+    api_token = params.get("credentials", {}).get("password", "")
+    client_id = params.get("client_credentials", {}).get("identifier", "")
+    client_secret = params.get("client_credentials", {}).get("password", "")
+    repository = params.get("repository", "")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
+
+    basic_auth_given = bool(user_name or api_token)
+    oauth_given = bool(client_id or client_secret)
+    use_basic_auth = bool(user_name and api_token)
+    use_oauth = bool(client_id and client_secret)
+
+    if basic_auth_given and oauth_given:
+        return_error(
+            "Both authentication methods were configured. Please configure only one method, either "
+            "User Name + API Token, or Client ID + Client Secret."
+        )
+    if not basic_auth_given and not oauth_given:
+        return_error(
+            "No authentication method was configured. Please configure either User Name + API Token, "
+            "or Client ID + Client Secret."
+        )
+    if basic_auth_given and not use_basic_auth:
+        missing_field = "API Token" if user_name else "User Name"
+        return_error(f"The API Token authentication method is missing the {missing_field}. Please configure it.")
+    if oauth_given and not use_oauth:
+        missing_field = "Client Secret" if client_id else "Client ID"
+        return_error(f"The OAuth 2.0 authentication method is missing the {missing_field}. Please configure it.")
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
         client = Client(
-            workspace=workspace, server_url=server_url, auth=auth, proxy=proxy, verify=verify_certificate, repository=repository
+            workspace=workspace,
+            server_url=server_url,
+            auth=(user_name, api_token) if use_basic_auth else None,
+            proxy=proxy,
+            verify=verify_certificate,
+            repository=repository,
+            client_id=client_id if use_oauth else "",
+            client_secret=client_secret if use_oauth else "",
         )
 
         if demisto.command() == "test-module":

@@ -71,5 +71,9 @@
   },
   "manualMapping": null,
   "fileHashesPriority": null,
-  "layout": "emailRep"
+  "layout": "emailRep",
+  "supportedModules": [
+    "agentix",
+    "xsiam"
+  ]
 }

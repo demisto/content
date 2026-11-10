@@ -3461,7 +3461,7 @@ tasks:
       quarantine:
         simple: "true"
       scan_inclusions:
-        simple: '*'
+        simple: '**\Downloads\**'
       schedule_interval:
         simple: daily
       schedule_start_timestamp:

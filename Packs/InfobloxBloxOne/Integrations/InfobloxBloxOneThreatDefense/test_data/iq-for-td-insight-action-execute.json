@@ -1,0 +1,11 @@
+{
+  "results": [
+    {
+      "action": "block",
+      "status": "succeeded",
+      "audit_entry_id": "dummy-audit-entry-1",
+      "reason": "applied",
+      "message": ""
+    }
+  ]
+}

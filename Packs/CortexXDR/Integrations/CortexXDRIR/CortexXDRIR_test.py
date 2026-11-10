@@ -1082,6 +1082,138 @@ def test_test_module(capfd, custom_mapping, direction, should_raise_error):
                 pytest.fail(f"Unexpected exception raised for input {input}: {e}")
 
 
+@pytest.mark.parametrize(
+    "configured_url, local_server_url",
+    [
+        ("https://tenant.xdr.pan.local", "https://tenant.xdr.pan.local"),
+        # Scheme and trailing slash differences.
+        ("http://tenant.xdr.pan.local/", "https://tenant.xdr.pan.local"),
+        # Path suffix differences (e.g. the integration appends /public_api/v1).
+        ("https://tenant.xdr.pan.local/public_api/v1", "https://tenant.xdr.pan.local"),
+        # Port differences.
+        ("https://tenant.xdr.pan.local:443", "https://tenant.xdr.pan.local:8443"),
+        # api- prefix differences (API host vs. UI host of the same tenant).
+        ("https://api-tenant.xdr.pan.local", "https://tenant.xdr.pan.local"),
+        # api. prefix differences.
+        ("https://api.tenant.xdr.pan.local", "https://tenant.xdr.pan.local"),
+        # Case sensitivity.
+        ("https://TENANT.xdr.pan.local", "https://tenant.xdr.pan.local"),
+    ],
+    ids=["identical", "scheme-and-slash", "path-suffix", "port", "api-dash-prefix", "api-dot-prefix", "case-insensitive"],
+)
+def test_check_self_pointing_url_raises_on_platform(mocker, configured_url, local_server_url):
+    """
+    Given:
+        - Running on the Cortex Platform.
+        - A configured Cortex XDR server URL that resolves to the same host as the local tenant,
+          possibly differing only by scheme, trailing slash, path, port, api- prefix, or casing.
+    When:
+        - check_self_pointing_url is called.
+    Then:
+        - A DemistoException is raised.
+    """
+    from CortexXDRIR import check_self_pointing_url
+
+    mocker.patch("CortexXDRIR.is_platform", return_value=True)
+
+    with pytest.raises(DemistoException, match="points to the tenant this integration instance is running on"):
+        check_self_pointing_url(configured_url, local_server_url)
+
+
+@pytest.mark.parametrize(
+    "configured_url, local_server_url",
+    [
+        ("https://tenant-a.xdr.pan.local", "https://tenant-b.xdr.pan.local"),
+        ("", "https://tenant.xdr.pan.local"),
+        ("https://tenant.xdr.pan.local", ""),
+        ("", ""),
+    ],
+    ids=["different-hosts", "empty-configured-url", "empty-local-url", "both-empty"],
+)
+def test_check_self_pointing_url_passes_on_platform(mocker, configured_url, local_server_url):
+    """
+    Given:
+        - Running on the Cortex Platform.
+        - A configured Cortex XDR server URL that resolves to a different host than the local tenant,
+          or either URL is missing/empty (e.g. running on an engine).
+    When:
+        - check_self_pointing_url is called.
+    Then:
+        - No exception is raised.
+    """
+    from CortexXDRIR import check_self_pointing_url
+
+    mocker.patch("CortexXDRIR.is_platform", return_value=True)
+
+    check_self_pointing_url(configured_url, local_server_url)
+
+
+def test_check_self_pointing_url_not_enforced_outside_platform(mocker):
+    """
+    Given:
+        - Not running on the Cortex Platform (e.g. Cortex XSOAR).
+        - A configured Cortex XDR server URL that resolves to the same host as the local tenant.
+    When:
+        - check_self_pointing_url is called.
+    Then:
+        - No exception is raised, since this check is only relevant on the Cortex Platform.
+    """
+    from CortexXDRIR import check_self_pointing_url
+
+    mocker.patch("CortexXDRIR.is_platform", return_value=False)
+
+    check_self_pointing_url("https://tenant.xdr.pan.local", "https://tenant.xdr.pan.local")
+
+
+def test_client_init_blocks_self_pointing_url_on_platform(mocker):
+    """
+    Given:
+        - Running on the Cortex Platform.
+        - A Client configured with a url that points back to the local tenant.
+    When:
+        - The Client is instantiated (as done once in main(), before any command is dispatched).
+    Then:
+        - A DemistoException is raised, so every command (not only test-module) is blocked.
+    """
+    from CortexXDRIR import Client
+
+    mocker.patch("CortexXDRIR.is_platform", return_value=True)
+    mocker.patch.object(demisto, "demistoUrls", return_value={"server": "https://tenant.xdr.pan.local"})
+
+    with pytest.raises(DemistoException, match="points to the tenant this integration instance is running on"):
+        Client(
+            base_url="https://tenant.xdr.pan.local/public_api/v1",
+            proxy=False,
+            verify=False,
+            timeout=120,
+            params={"url": "https://tenant.xdr.pan.local"},
+        )
+
+
+def test_client_init_allows_self_pointing_url_outside_platform(mocker):
+    """
+    Given:
+        - Not running on the Cortex Platform (e.g. Cortex XSOAR).
+        - A Client configured with a url that happens to match the local tenant's URL.
+    When:
+        - The Client is instantiated.
+    Then:
+        - No exception is raised, since this check is only relevant on the Cortex Platform.
+    """
+    from CortexXDRIR import Client
+
+    mocker.patch("CortexXDRIR.is_platform", return_value=False)
+    mocker.patch.object(demisto, "demistoUrls", return_value={"server": "https://tenant.xdr.pan.local"})
+
+    Client(
+        base_url="https://tenant.xdr.pan.local/public_api/v1",
+        proxy=False,
+        verify=False,
+        timeout=120,
+        params={"url": "https://tenant.xdr.pan.local"},
+    )
+
+
 @freeze_time("1997-10-05 15:00:00 GMT")
 def test_convert_datetime_to_epoch():
     """
@@ -4256,7 +4388,7 @@ def test_create_issue_command_invalid_json():
     [
         (
             {"issue_id": "100", "status": "new"},
-            {"status_progress": "New"},
+            {"status": "New"},
         ),
         (
             {"issue_id": "200", "severity": "high"},
@@ -4270,14 +4402,14 @@ def test_create_issue_command_invalid_json():
                 "resolve_comment": "Not a real issue",
             },
             {
-                "status_progress": "Resolved",
+                "status": "Resolved",
                 "status_resolution_reason": "resolved - false positive",
                 "status_resolution_comment": "Not a real issue",
             },
         ),
         (
             {"issue_id": "400", "status": "in_progress", "severity": "low"},
-            {"severity": "LOW", "status_progress": "In Progress"},
+            {"severity": "LOW", "status": "In Progress"},
         ),
         (
             {
@@ -4320,7 +4452,9 @@ def test_normalize_case_data_record_maps_fields_and_nests_data():
     Then:
         - Incident fields are renamed to their case-shaped equivalents (e.g. incident_id -> case_id).
         - Nested alerts/artifacts are surfaced under Issues/FileArtifacts/NetworkArtifacts.
+        - Each nested issue record's alert_id is renamed to the documented issue_id.
         - Each nested record inherits the parent case_id when one is not already set.
+        - Each nested issue record gets a host_ip_list derived from host_ip.
     """
     from CortexXDRIR import normalize_case_data_record
 
@@ -4350,10 +4484,10 @@ def test_normalize_case_data_record_maps_fields_and_nests_data():
     assert case["description"] == "some description"
     assert "incident_id" not in case
 
-    # Nested data surfaced under the case-shaped keys.
+    # Nested data surfaced under the case-shaped keys, with alert_id renamed to issue_id.
     assert case["Issues"] == [
-        {"alert_id": "a1", "case_id": "100"},
-        {"alert_id": "a2", "case_id": "999"},
+        {"issue_id": "a1", "case_id": "100", "host_ip_list": []},
+        {"issue_id": "a2", "case_id": "999", "host_ip_list": []},
     ]
     assert case["FileArtifacts"] == [{"name": "file.exe", "case_id": "100"}]
     assert case["NetworkArtifacts"] == [{"ip": "1.2.3.4", "case_id": "100"}]
@@ -4377,6 +4511,40 @@ def test_normalize_case_data_record_flat_record_without_nested_data():
     assert "Issues" not in case
     assert "FileArtifacts" not in case
     assert "NetworkArtifacts" not in case
+
+
+def test_normalize_case_data_record_derives_host_ip_list():
+    """
+    Given:
+        - A raw record whose nested issues carry a single host_ip, a comma-separated
+          host_ip, an explicit null host_ip, and no host_ip key at all.
+    When:
+        - Running normalize_case_data_record (used by the xdr-case-list extra_data path).
+    Then:
+        - host_ip_list is derived from host_ip exactly as sort_incident_data derives it for
+          the legacy xdr-get-incident-extra-data output, so playbook inputs that read
+          PaloAltoNetworksXDR.Case.Issues.host_ip_list keep resolving after the migration.
+    """
+    from CortexXDRIR import normalize_case_data_record
+
+    incident_record = {
+        "incident": {"incident_id": "300"},
+        "alerts": {
+            "data": [
+                {"alert_id": "single", "host_ip": "192.0.2.26"},
+                {"alert_id": "multi", "host_ip": "10.0.0.1,10.0.0.2"},
+                {"alert_id": "null", "host_ip": None},
+                {"alert_id": "absent"},
+            ]
+        },
+    }
+
+    issues = normalize_case_data_record(incident_record)["Issues"]
+
+    assert issues[0]["host_ip_list"] == ["192.0.2.26"]
+    assert issues[1]["host_ip_list"] == ["10.0.0.1", "10.0.0.2"]
+    assert issues[2]["host_ip_list"] == []
+    assert issues[3]["host_ip_list"] == []
 
 
 def test_case_list_command_extra_data_returns_normalized_cases(mocker):
@@ -4427,7 +4595,7 @@ def test_case_list_command_extra_data_returns_normalized_cases(mocker):
     assert case["case_id"] == "100"
     assert case["case_name"] == "My Case"
     assert case["case_domain"] == "example.com"
-    assert case["Issues"] == [{"alert_id": "a1", "case_id": "100"}]
+    assert case["Issues"] == [{"issue_id": "a1", "host_ip_list": [], "case_id": "100"}]
     assert case["FileArtifacts"] == [{"name": "file.exe", "case_id": "100"}]
     assert case["NetworkArtifacts"] == [{"ip": "1.2.3.4", "case_id": "100"}]
 

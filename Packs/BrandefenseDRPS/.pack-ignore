@@ -1,0 +1,11 @@
+[file:Brandefense_test.py]
+ignore=auto-test
+
+[file:conftest.py]
+ignore=auto-test
+
+[file:Brandefense.py]
+ignore=E9003
+
+[file:Brandefense.yml]
+ignore=BA129

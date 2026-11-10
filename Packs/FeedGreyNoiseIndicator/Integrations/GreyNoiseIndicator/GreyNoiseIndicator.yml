@@ -133,7 +133,7 @@ script:
     - contextPath: GreyNoiseFeed.Indicators.Tags
       description: 'The GreyNoise tags associated with the indicator.'
       type: String
-  dockerimage: demisto/greynoise:1.0.0.3876899
+  dockerimage: demisto/greynoise:1.0.0.10133006
   feed: true
   runonce: false
   script: '-'

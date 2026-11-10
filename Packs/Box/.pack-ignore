@@ -19,3 +19,5 @@ ignore=MR108
 [file:BoxEventCollectorParsingRules.yml]
 ignore=PR101
 
+[file:BoxEventsCollector_2_11.yml]
+ignore=MR108

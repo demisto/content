@@ -60,3 +60,16 @@ Supported asset types include:
   - Spotlight
   - CNAPP Alerts
 - Spotlight asset and vulnerability collection retrieves only vulnerabilities updated within the last 100 days, keeping each collection focused on recent data.
+
+<~XSIAM>
+
+#### Long running instance for Spotlight vulnerabilities
+
+On large tenants a full Spotlight collection can take many hours - longer than the maximum execution time allowed for a single assets fetch. In such cases, the fetch is terminated before it completes. Enable the *Long running instance for Spotlight vulnerabilities* parameter (under the **Collect** section, **Advanced**) to run the Spotlight fetch in a long-running container instead, which is not bound by that execution time limit and lets a cycle run to completion. A new cycle starts every 24 hours, or immediately after the previous one ends if it ran longer.
+
+When using this parameter, note that:
+
+- **Only one collection mode per instance.** Do not enable *Fetch assets* on the same instance. Configure one instance for the long-running Spotlight fetch, and a separate instance for the regular assets fetch.
+- **Spotlight vulnerabilities only.** The *Asset types to fetch* selection is ignored in this mode, and CNAPP Alerts are not collected. To collect CNAPP Alerts, use a separate instance with the regular assets fetch.
+
+</~XSIAM>

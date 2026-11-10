@@ -9,7 +9,8 @@
         "email": "Doppel Alert Email",
         "mobile_apps": "Doppel Alert Mobile_Apps",
         "paid_ads": "Doppel Alert Paid_Ads",
-        "social_media": "Doppel Alert Social_Media"
+        "social_media": "Doppel Alert Social_Media",
+        "telco": "Doppel Alert Telco"
     },
     "name": "Doppel_Incident_Classifier",
     "propagationLabels": [
@@ -20,5 +21,9 @@
     },
     "type": "classification",
     "version": -1,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

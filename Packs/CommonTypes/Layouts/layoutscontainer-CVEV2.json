@@ -836,5 +836,9 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.10.0",
-    "description": "CVE Indicator Layout"
+    "description": "CVE Indicator Layout",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

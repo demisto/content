@@ -1,9 +1,9 @@
 This integration offers organizations the ability to track stolen credit card data across the web, providing comprehensive insight into compromised card information sourced from underground markets, dark web forums, and other malicious platforms.
 
-## Configure USTA Stolen Credit Cards on Cortex XSOAR
+## Configure USTAv4 Stolen Credit Cards in Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for USTA Stolen Credit Cards.
+2. Search for USTAv4 Stolen Credit Cards.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |

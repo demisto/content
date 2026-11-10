@@ -1,10 +1,10 @@
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
+import urllib3
 from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *  # noqa
-
-import urllib3
-from typing import Any
 
 """ IMPORTS """
 
@@ -37,23 +37,37 @@ API = {
 }
 LOGGING_PREFIX = "[CYBER-BLINDSPOT]"
 
+CBS_MODULE_DISPLAY_TO_TYPE = {
+    "Incidents": "incidents",
+    "Compromised Cards": "compromised_cards",
+    "Breached Credentials": "breached_credentials",
+    "Malware Logs": "malware_logs",
+    "Domain Infringement": "domain_infringement",
+    "Subdomain Infringement": "subdomain_infringement",
+    "Social Media Fraud": "social_media_fraud",
+    "Gambling Sites": "gambling_sites",
+    "Money Mules": "money_mules",
+}
+CBS_DEFAULT_MODULE_DISPLAY = "Incidents"
+CBS_DEFAULT_MODULE_TYPE = "incidents"
+
 DEFAULT_FIELDS = [
-    {"name": "first_seen", "description": "The creation date of the incident"},
-    {"name": "last_seen", "description": "The date the incident got last updated"},
-    {"name": "timestamp", "description": "The timestamp of when the record was created"},
-    {"name": "brand", "description": "The organization the incident belongs to"},
-    {"name": "status", "description": "Incident's current state of affairs"},
-    {"name": "severity", "description": "The severity of the incident"},
-    {"name": "remarks", "description": "Remarks about the incident"},
-    {"name": "type", "description": "Incident type"},
-    {"name": "id", "description": "Unique ID for the incident record"},
-    {"name": "external_link", "description": "External link to the remote platform"},
+    {"name": "first_seen", "description": "The creation date of the incident."},
+    {"name": "last_seen", "description": "The date the incident was last updated."},
+    {"name": "timestamp", "description": "The timestamp of when the record was created."},
+    {"name": "brand", "description": "The organization the incident belongs to."},
+    {"name": "status", "description": "The current state of affairs of the incident."},
+    {"name": "severity", "description": "The severity of the incident."},
+    {"name": "remarks", "description": "The remarks about the incident."},
+    {"name": "type", "description": "The incident type."},
+    {"name": "id", "description": "The unique ID for the incident record."},
+    {"name": "external_link", "description": "The external link to the remote platform."},
 ]
 CBS_INCIDENT_FIELDS = [
-    {"name": "subject", "description": "Asset or title of incident"},
-    {"name": "screenshots", "description": "The screenshot evidence if available"},
-    {"name": "class", "description": "Subject class"},
-    {"name": "coa", "description": "The possible course of action"},
+    {"name": "subject", "description": "The asset or title of the incident."},
+    {"name": "screenshots", "description": "The screenshot evidence if available."},
+    {"name": "class", "description": "The subject class."},
+    {"name": "coa", "description": "The possible course of action."},
     *DEFAULT_FIELDS,
 ]
 
@@ -67,7 +81,7 @@ CBS_CARD_FIELDS = [
 
 CBS_MALWARE_LOG_FIELDS = [
     {"name": "masked_password", "description": "The masked password related to the breached data."},
-    {"name": "password", "description": "Password found in the breached data or compromised account."},
+    {"name": "password", "description": "The password found in the breached data or compromised account."},
     {"name": "software", "description": "The software related to the breached data."},
     {"name": "user", "description": "The user related to the breached data."},
     {"name": "user_domain", "description": "The domain of the user related to the breached data."},
@@ -89,10 +103,10 @@ CBS_MALWARE_LOG_FIELDS = [
 CBS_CRED_FIELDS = [
     {"name": "breach_source", "description": "The source of breached data."},
     {"name": "domain", "description": "The domain related to the breached data."},
-    {"name": "email", "description": "Email found in the breached data."},
-    {"name": "username", "description": "Username found in the breached data."},
-    {"name": "executive_name", "description": "Executive member's name related to the breached data."},
-    {"name": "password", "description": "Password found in the breached data."},
+    {"name": "email", "description": "The email found in the breached data."},
+    {"name": "username", "description": "The username found in the breached data."},
+    {"name": "executive_name", "description": "The executive member's name related to the breached data."},
+    {"name": "password", "description": "The password found in the breached data."},
     *DEFAULT_FIELDS,
 ]
 
@@ -103,10 +117,63 @@ CBS_DOMAIN_INFRINGE_FIELDS = [
     *DEFAULT_FIELDS,
 ]
 
+CBS_SMF_FIELDS = [
+    {"name": "platform", "description": "The social network platform for social media fraud findings."},
+    {"name": "subject", "description": "The subject URL or profile link."},
+    {"name": "risk_score", "description": "The numeric risk score from CBS."},
+    {"name": "risks", "description": "The risk indicators associated with the finding."},
+    {"name": "incident_status", "description": "The platform-specific incident status."},
+    *DEFAULT_FIELDS,
+]
+
+CBS_MM_FIELDS = [
+    {"name": "money_mule_id", "description": "The CBS money mule finding ID."},
+    {"name": "account_identifier", "description": "The account identifier tied to the money mule."},
+    {"name": "suspect_names", "description": "The names associated with the money mule."},
+    {"name": "suspect_emails", "description": "The email addresses associated with the money mule."},
+    {"name": "suspect_phones", "description": "The phone numbers associated with the money mule."},
+    {"name": "transfer_amount", "description": "The transfer amount when present."},
+    {"name": "transfer_currency", "description": "The currency code for the transfer."},
+    {"name": "bank_account_holder_name", "description": "The name on the bank account."},
+    {"name": "bank_name", "description": "The bank name tied to the money mule."},
+    {"name": "bank_account_country", "description": "The country of the bank account."},
+    {"name": "bic", "description": "The Bank Identifier Code."},
+    *DEFAULT_FIELDS,
+]
+
+CBS_GS_FIELDS = [
+    {"name": "finding_id", "description": "The CBS gambling-site finding ID."},
+    {"name": "url", "description": "The primary gambling site URL."},
+    {"name": "submitted_url", "description": "The URL submitted to CBS for scanning."},
+    {"name": "landing_url", "description": "The landing page URL observed for the site."},
+    {"name": "title", "description": "The page title observed during scan."},
+    {"name": "resolving_ip", "description": "The resolved IP for the gambling site."},
+    {"name": "tags", "description": "The tags applied to the gambling site finding."},
+    {"name": "status_code", "description": "The HTTP status code from scan."},
+    {"name": "url_status", "description": "The URL reachability status."},
+    {"name": "scan_status", "description": "The scan completion status."},
+    {"name": "enrichment", "description": "The DNS enrichment payload."},
+    {"name": "external_links", "description": "The external links discovered on the gambling site."},
+    {"name": "internal_links", "description": "The internal links discovered on the gambling site."},
+    *DEFAULT_FIELDS,
+]
+
 
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}.get(
     demisto.params().get("mirror_direction", "None"), None
 )
+
+
+def resolve_cbs_module(module_to_use: str | None = None) -> str:
+    """Resolve API module_type from instance config.
+
+    Pre-upgrade instances may omit module_to_use; treat missing/blank/unknown as Incidents.
+    """
+    if module_to_use is None:
+        module_to_use = demisto.params().get("module_to_use", CBS_DEFAULT_MODULE_DISPLAY)
+    if not module_to_use or not str(module_to_use).strip():
+        return CBS_DEFAULT_MODULE_TYPE
+    return CBS_MODULE_DISPLAY_TO_TYPE.get(module_to_use, CBS_DEFAULT_MODULE_TYPE)
 
 
 class Instance:
@@ -125,26 +192,27 @@ class Instance:
                 self.mapping_fields = CBS_DOMAIN_INFRINGE_FIELDS
             case "subdomain_infringement":
                 self.mapping_fields = CBS_DOMAIN_INFRINGE_FIELDS
+            case "social_media_fraud":
+                self.mapping_fields = CBS_SMF_FIELDS
+            case "money_mules":
+                self.mapping_fields = CBS_MM_FIELDS
+            case "gambling_sites":
+                self.mapping_fields = CBS_GS_FIELDS
             case _:
                 self.mapping_fields = CBS_INCIDENT_FIELDS
 
 
-INSTANCE = Instance(
-    module={
-        "Incidents": "incidents",
-        "Compromised Cards": "compromised_cards",
-        "Breached Credentials": "breached_credentials",
-        "Malware Logs": "malware_logs",
-        "Domain Infringement": "domain_infringement",
-        "Subdomain Infringement": "subdomain_infringement",
-    }.get(demisto.params().get("module_to_use", "Incidents"), "incidents")
-)
+INSTANCE = Instance(module=resolve_cbs_module())
 
 
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 
 """ CLIENT CLASS """
+
+
+class CursorRejectedError(DemistoException):
+    """The API refused the stored search_after cursor, so the fetch must restart from a timestamp."""
 
 
 class Client(BaseClient):
@@ -194,6 +262,37 @@ class Client(BaseClient):
         log(DEBUG, f"{response=}")
         return response.get("results", []) or []  # Return empty list if results is None
 
+    def fetch_incident_page(self, params: dict[str, Any]) -> dict[str, Any]:
+        """Fetch one incidents page, including search_after cursor fields when the API sends them.
+
+        A 400 on a request that carries a cursor is the API refusing the token itself,
+        so it is not retried and is raised as CursorRejectedError for the caller to recover from.
+        """
+        cursor_request = bool(params.get("cursor"))
+        try:
+            response = self._http_request(
+                method="GET",
+                retries=MAX_RETRIES,
+                backoff_factor=10,
+                status_list_to_retry=[429, 500] if cursor_request else [400, 429, 500],
+                url_suffix=CBS_API_ENDPOINT + API.get("FETCH", ""),
+                params=params,
+            )
+        except DemistoException as error:
+            if cursor_request and getattr(error.res, "status_code", None) == 400:
+                raise CursorRejectedError(str(error), res=error.res) from error
+            raise
+        log(DEBUG, "at client's fetch function")
+        if response.get("statusCode") != 200:
+            raise DemistoException(f'Error received: {response.get("message")}')
+
+        return {
+            "hits": response.get("hits", []) or [],
+            "has_more": bool(response.get("has_more")),
+            "next_cursor": response.get("next_cursor"),
+            "cursor_mode": "has_more" in response or "next_cursor" in response,
+        }
+
     def fetch_incidents(self, params: dict[str, Any]) -> list[dict[str, Any]]:
         """Send request to fetch list of incidents
 
@@ -202,20 +301,7 @@ class Client(BaseClient):
         :return: List containing the incidents
         :rtype: List[dict[str, Any]]
         """
-        response = self._http_request(
-            method="GET",
-            retries=MAX_RETRIES,
-            backoff_factor=10,
-            status_list_to_retry=[400, 429, 500],
-            url_suffix=CBS_API_ENDPOINT + API.get("FETCH", ""),
-            params=params,
-        )
-        log(DEBUG, "at client's fetch function")
-        if response.get("statusCode") != 200:
-            raise DemistoException(f'Error received: {response.get("message")}')
-
-        incident_list = response.get("hits", [])
-        return incident_list
+        return self.fetch_incident_page(params)["hits"]
 
     def fetch_incident(self, params: dict[str, Any]) -> dict[str, Any]:
         """Send a request to fetch a certain incident
@@ -366,6 +452,28 @@ def convert_time_string(
         return ""
 
 
+def normalize_timestamp(value: Any) -> Any:
+    """Normalize CBS record timestamp to epoch milliseconds.
+
+    CBS modules may return timestamp as millis (int), numeric string, or ISO datetime string.
+    Fetch cursor logic requires a consistent numeric value for sorting and date_from.
+    """
+    if value is None or value == "":
+        return value
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, int | float):
+        return int(value)
+    if isinstance(value, str):
+        stripped = value.strip()
+        if stripped.isdigit():
+            return int(stripped)
+        parsed = convert_time_string(stripped, "", timestamp=True, is_utc=True)
+        if isinstance(parsed, int):
+            return parsed
+    return value
+
+
 def deduplicate_and_create_incidents(fetched_incidents: List, last_run_incident_identifiers: List[str]) -> tuple[list, list]:
     """De-duplicates the fetched incidents and creates a list of actionable incidents.
 
@@ -408,6 +516,7 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
     """
     unmapped_incident.pop("screenshots", "")
     incident_id: str = unmapped_incident.pop("id", "")
+    mapped_severity = convert_to_demisto_severity(unmapped_incident.pop("severity", "low"))
     mapped_incident = {
         "name": unmapped_incident.pop("remarks", ""),
         "occurred": convert_time_string(
@@ -415,7 +524,7 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
         ),
         "externalstatus": unmapped_incident.pop("status", "monitoring"),
         "externallink": unmapped_incident.pop("external_link", ""),
-        "severity": convert_to_demisto_severity(unmapped_incident.pop("severity", "low")),
+        "severity": mapped_severity,
         "CustomFields": {
             "cbs_type": unmapped_incident.pop("type", ""),
             "cbs_module": INSTANCE.module,
@@ -426,6 +535,8 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
             **unmapped_incident,
         },
     }
+    if "timestamp" in mapped_incident["CustomFields"]:
+        mapped_incident["CustomFields"]["timestamp"] = normalize_timestamp(mapped_incident["CustomFields"]["timestamp"])
     if MIRROR_DIRECTION:
         mapped_incident["xsoar_mirroring"] = {
             "mirror_direction": MIRROR_DIRECTION,
@@ -474,8 +585,6 @@ def test_module(client: Client, params) -> str:
         date_from = params.get("date_from", "")
         date_to = params.get("date_to", "")
         api_key = params.get("api_key", {}).get("password", "")
-        module_to_use = params.get("module_to_use", "")
-
         if mirror_direction not in ["None", "Incoming", "Outgoing", "Incoming And Outgoing"]:
             log(INFO, 'Invalid "Mirror Direction" Value')
             raise DemistoException('Invalid "Mirroring Direction" Value')
@@ -500,13 +609,11 @@ def test_module(client: Client, params) -> str:
         if not api_key:
             log(INFO, 'Invalid "API Key" Value')
             raise DemistoException('Invalid "API Key" Value')
-        if not module_to_use:
-            log(INFO, 'Invalid "Module" Value')
-            raise DemistoException('Invalid "Module" Value')
+        args["module_type"] = resolve_cbs_module(params.get("module_to_use"))
         incidents = client.test_configuration(args)
         if max_fetch and len(incidents) > max_fetch:
             log(INFO, f"Incidents fetched exceed the limit, removing the excess {len(incidents) - max_fetch} incidents.")
-            incidents = incidents[:: max_fetch - 1]
+            incidents = incidents[:max_fetch]
         message = "ok"
     except DemistoException as e:
         expected_words = [
@@ -543,12 +650,23 @@ def fetch_incidents(
     Returns:
         tuple[dict, list[dict]]: The next run object and the list of incidents minus incidents from last run
     """
-    incidents = client.fetch_incidents(params)
+    try:
+        page = client.fetch_incident_page(params)
+    except CursorRejectedError as error:
+        log(INFO, f"The API rejected the stored fetch cursor ({error}). Restarting from the last fetched timestamp.")
+        params = {key: value for key, value in params.items() if key != "cursor"}
+        restart_from = last_run.get("last_fetched_timestamp")
+        if restart_from not in ("", None):
+            params["date_from"] = normalize_timestamp(restart_from)
+        last_run = {key: value for key, value in last_run.items() if key not in ("query_date_from", "fetch_cursor")}
+        page = client.fetch_incident_page(params)
+    incidents = list(page.get("hits") or [])
 
-    max_fetch = arg_to_number(params.get("max_hits")) or MAX_FETCH
-    if max_fetch and len(incidents) > max_fetch:
-        log(INFO, f"Incidents fetched exceed the limit, removing the excess {len(incidents) - max_fetch} incidents.")
-        incidents = incidents[:: max_fetch - 1]
+    if not page.get("cursor_mode"):
+        max_fetch = arg_to_number(params.get("max_hits")) or MAX_FETCH
+        if max_fetch and len(incidents) > max_fetch:
+            log(INFO, f"Incidents fetched exceed the limit, removing the excess {len(incidents) - max_fetch} incidents.")
+            incidents = incidents[:max_fetch]
 
     if not incidents and not last_run:
         log(INFO, "No incidents returned, and no last run data was found")
@@ -558,12 +676,86 @@ def fetch_incidents(
     log(INFO, f"Received {len(incidents) - len(unique_incidents)} duplicates incidents to skip.")
     log(INFO, f"Calculated {len(incident_ids)} id(s).")
 
-    dates = sorted([d["CustomFields"]["timestamp"] for d in unique_incidents])
+    dates = sorted(
+        normalized
+        for incident in unique_incidents
+        if (normalized := normalize_timestamp(incident["CustomFields"].get("timestamp"))) not in (None, "")
+    )
     last_fetched_timestamp = dates[-1] if dates else last_run.get("last_fetched_timestamp")
 
     log(INFO, f"setting last fetched timestamp - {last_fetched_timestamp=}")
-    next_run = {"last_fetched_timestamp": last_fetched_timestamp, "last_fetch_ids": incident_ids}
+    next_run: dict[str, Any] = {"last_fetched_timestamp": last_fetched_timestamp, "last_fetch_ids": incident_ids}
+    if page.get("cursor_mode"):
+        query_date_from = last_run.get("query_date_from")
+        if query_date_from in ("", None):
+            query_date_from = params.get("date_from")
+        next_run["query_date_from"] = query_date_from
+        next_cursor = page.get("next_cursor")
+        if next_cursor:
+            next_run["fetch_cursor"] = next_cursor
+        elif last_run.get("fetch_cursor"):
+            next_run["fetch_cursor"] = last_run.get("fetch_cursor")
     return next_run, unique_incidents
+
+
+def severity_query_value(raw: Any) -> list[str]:
+    """Turn the multi-select instance parameter into repeated severity query values.
+
+    The API accepts one severity per query parameter. A single comma-separated
+    value is rejected.
+    """
+    if raw in (None, "", []):
+        return []
+    values = raw if isinstance(raw, list) else str(raw).split(",")
+    selected: list[str] = []
+    for value in values:
+        token = str(value).strip().lower()
+        if token and token not in selected:
+            selected.append(token)
+    return selected
+
+
+def build_fetch_params(demisto_params: dict[str, Any], last_run: dict[str, Any]) -> dict[str, Any]:
+    """Build API params for fetch-incidents."""
+    query_date_from = last_run.get("query_date_from")
+    last_fetched_timestamp = last_run.get("last_fetched_timestamp", "")
+    if last_fetched_timestamp not in ("", None):
+        last_fetched_timestamp = normalize_timestamp(last_fetched_timestamp)
+    first_fetch = demisto_params.get("first_fetch", "7 days")
+    try:
+        dateparser.parse(f"{first_fetch} UTC")
+    except Exception:
+        log(DEBUG, "first_fetch is not parsable, setting to `7 days`")
+        first_fetch = "7 days"
+
+    if query_date_from not in ("", None):
+        date_from = normalize_timestamp(query_date_from)
+    elif last_fetched_timestamp:
+        date_from = last_fetched_timestamp
+    else:
+        log(DEBUG, f"Fetch is set to fetch from the {first_fetch} ago.")
+        date_from = convert_time_string(f"{first_fetch} UTC", "", timestamp=True)
+
+    params: dict[str, Any] = {
+        "date_field": "@timestamp",
+        "order": "asc",
+        "max_hits": MAX_FETCH,
+        "module_type": INSTANCE.module,
+        "date_from": date_from,
+        "paginate": "search_after",
+        "t": datetime.now().timestamp() * 1000,
+    }
+    if last_run.get("fetch_cursor"):
+        params["cursor"] = last_run.get("fetch_cursor")
+    if INSTANCE.module == "incidents":
+        severity = severity_query_value(demisto_params.get("severity"))
+        if severity:
+            params["severity"] = severity
+    if "domain_infringement" in INSTANCE.module:
+        params["finding_status"] = demisto_params.get("finding_status", "")
+        params["risk_score_min"] = demisto_params.get("risk_score_min", "")
+        params["risk_score_max"] = demisto_params.get("risk_score_max", "")
+    return params
 
 
 def get_remote_data_command(client: Client, args: dict):
@@ -661,15 +853,29 @@ def get_modified_remote_data_command(client: Client, args):
     last_timestamp = convert_time_string(remote_args.last_update, "", timestamp=True)
     log(DEBUG, f"Performing get-modified-remote-data command with : {last_timestamp}({remote_args.last_update})")
 
-    params = {
-        "date_field": "last_seen",
-        "order": "asc",
-        "date_from": last_timestamp,
-        "max_hits": ABSOLUTE_MAX_FETCH,
-        "module_type": INSTANCE.module,
-        "t": datetime.now().timestamp() * 1000,
-    }
-    modified_incident_ids.extend(item["id"] for item in client.fetch_incidents(params))
+    cursor = None
+    while len(modified_incident_ids) < MIRROR_LIMIT:
+        params = {
+            "date_field": "last_seen",
+            "order": "asc",
+            "date_from": last_timestamp,
+            "max_hits": ABSOLUTE_MAX_FETCH,
+            "module_type": INSTANCE.module,
+            "paginate": "search_after",
+            "t": datetime.now().timestamp() * 1000,
+        }
+        if cursor:
+            params["cursor"] = cursor
+        page = client.fetch_incident_page(params)
+        hits = page.get("hits") or []
+        for item in hits:
+            if len(modified_incident_ids) >= MIRROR_LIMIT:
+                break
+            modified_incident_ids.append(item["id"])
+        next_cursor = page.get("next_cursor")
+        if not page.get("has_more") or not next_cursor or not hits:
+            break
+        cursor = next_cursor
     if len(modified_incident_ids) >= MIRROR_LIMIT:
         log(INFO, f"Warning: More than {MIRROR_LIMIT} incidents have been modified since the last update.")
     return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)
@@ -746,7 +952,7 @@ def ctm360_cbs_details_command(client: Client, args: dict[str, Any]) -> CommandR
     result = client.fetch_incident(params)
     log(INFO, f"Received {result}")
     if result.get("timestamp", ""):
-        result["timestamp"] = str(result["timestamp"])
+        result["timestamp"] = str(normalize_timestamp(result["timestamp"]))
 
     return CommandResults(
         outputs_prefix=INSTANCE.details_prefix,
@@ -899,50 +1105,17 @@ def main() -> None:
         }
 
         if demisto_command == "fetch-incidents":
-            log(DEBUG, "at fetch command")
+            log(DEBUG, "at fetch-incidents command")
             last_run = demisto.getLastRun()
-            last_fetched_timestamp = last_run.get("last_fetched_timestamp", "")
             last_fetch_ids = last_run.get("last_fetch_ids", [])
-            first_fetch = demisto_params.get("first_fetch", "7 days")
-            try:
-                dateparser.parse(f"{first_fetch} UTC")
-            except Exception:
-                log(DEBUG, "first_fetch is not parsable, setting to `7 days`")
-                first_fetch = "7 days"
+            params = build_fetch_params(demisto_params, last_run)
 
-            if not last_fetched_timestamp:
-                log(DEBUG, f"Fetch is set to fetch incidents from the {first_fetch} ago.")
-
-            params = {
-                "date_field": "@timestamp",
-                "order": "asc",
-                "max_hits": MAX_FETCH,
-                "module_type": INSTANCE.module,
-                "date_from": last_fetched_timestamp
-                if last_fetched_timestamp
-                else convert_time_string(f"{first_fetch} UTC", "", timestamp=True),
-                "t": datetime.now().timestamp() * 1000,
-            }
-
-            if "domain_infringement" in INSTANCE.module:
-                params["finding_status"] = demisto_params.get("finding_status", "")
-                params["risk_score_min"] = demisto_params.get("risk_score_min", "")
-                params["risk_score_max"] = demisto_params.get("risk_score_max", "")
-
-            log(DEBUG, f'{demisto_params.get("date_from")=}')
-
-            log(INFO, f"Will be fetching {MAX_FETCH} incidents.")
-
-            log(DEBUG, f'LastRun was {last_fetched_timestamp if last_fetched_timestamp else "NOT FOUND"}')
-            log(DEBUG, f'last run\'s calculated ids were {last_run.get("last_fetch_ids")}')
-
+            log(INFO, f"Will be fetching up to {MAX_FETCH} records.")
             log(DEBUG, f"Calling fetch with the following: {params=}")
             log(DEBUG, f"Mirroring set as: {MIRROR_DIRECTION}")
 
             next_run, incidents = fetch_incidents(client, last_fetch_ids, params, last_run)
-
-            log(DEBUG, "Setting incidents and last run")
-            log(DEBUG, f"Fetched {len(incidents)} incidents")
+            log(DEBUG, f"Fetched {len(incidents)} incidents, {next_run=}")
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif demisto_command == "test-module":

@@ -1,5 +1,6 @@
 import ipaddress
 import string
+import unicodedata
 import urllib.parse
 from base64 import urlsafe_b64decode
 from re import Match
@@ -51,6 +52,28 @@ class URLCheck:
     }
 
     no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=(), cache_dir=None)
+
+    @staticmethod
+    def _repercent_control_chars(url: str) -> str:
+        """
+        Re-encodes control characters (C0, DEL and C1) back to their percent-encoded form.
+
+        Decoding sequences such as %0D%0A into literal CRLF splits a single URL into several
+        lines, which downstream turns one indicator into multiple malformed ones.
+        Control characters are never legal raw in a URL, so re-encoding them is always safe.
+
+        urllib.parse.quote is used rather than formatting the code point directly, so the
+        non-ASCII C1 controls (U+0080-U+009F) are encoded as their UTF-8 bytes (e.g. "%C2%85")
+        and therefore survive a round trip through urllib.parse.unquote.
+
+        Args:
+            url: The URL after percent-decoding
+
+        Returns:
+            The URL with every control character percent-encoded again
+        """
+
+        return "".join(urllib.parse.quote(char) if unicodedata.category(char) == "Cc" else char for char in url)
 
     def __init__(self, original_url: str):
         """
@@ -125,12 +148,13 @@ class URLCheck:
         if not self.done and self.fragment:
             self.fragment_check()
 
-        while "%" in self.output:
-            unquoted = urllib.parse.unquote(self.output)
-            if unquoted != self.output:
-                self.output = unquoted
-            else:
-                break
+        # Decode exactly once. Repeated decoding is lossy: "%2520" is the correct encoding of the
+        # literal text "%20", but decoding twice turns it into a space, and "%252541" becomes "A" --
+        # inventing characters that were never in the URL. One pass is what the standard defines.
+        # Control characters are re-encoded so a single URL can never be split across lines.
+        self.output = self._repercent_control_chars(urllib.parse.unquote(self.output))
+
+        self.output = self.output.replace(" ", "%20")
 
     def __str__(self):
         return f"{self.output}"
@@ -489,6 +513,11 @@ class URLCheck:
         elif char == "\\":
             # Edge case of the url ending with an escape char
             return len(self.modified_url), part
+
+        elif char == " ":
+            # A space is not a valid URL character, encode it to %20 instead of failing
+            part += "%20"
+            index += 1
 
         elif not char.isalnum() and not self.check_codepoint_validity(char):
             raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")

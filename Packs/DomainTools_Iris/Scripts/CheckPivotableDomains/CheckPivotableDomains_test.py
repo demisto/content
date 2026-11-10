@@ -237,3 +237,116 @@ def test_check_pivotable_output(mocker):
     assert results[0]["Type"] == entryTypes["note"]
     assert results[0]["ContentsFormat"] == formats["json"]
     assert results[0]["Contents"] == expected_context
+
+
+def test_check_pivotable_null_fields(mocker):
+    """Script should not crash when hosting/identity/analytics fields are null."""
+    domaintools_data = {
+        "Name": "example.com",
+        "Analytics": {
+            "GoogleAdsenseTrackingCode": None,
+            "GoogleAnalyticTrackingCode": None,
+        },
+        "Identity": {
+            "RegistrantContact": None,
+            "Registrar": None,
+            "SOAEmail": None,
+        },
+        "Hosting": {
+            "NameServers": None,
+            "SSLCertificate": None,
+            "IPAddresses": None,
+            "MailServers": None,
+        },
+    }
+
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "domaintools_data": domaintools_data,
+            "max_name_server_host_count": "250",
+            "max_name_server_ip_count": "250",
+            "max_name_server_domain_count": "250",
+            "max_registrant_contact_name_count": "200",
+            "max_registrant_org_count": "200",
+            "max_registrar_count": "200",
+            "max_ssl_info_organization_count": "350",
+            "max_ssl_info_hash_count": "350",
+            "max_ssl_email_count": "350",
+            "max_ssl_subject_count": "350",
+            "max_soa_email_count": "200",
+            "max_ip_address_count": "200",
+            "max_mx_ip_count": "200",
+            "max_mx_host_count": "200",
+            "max_mx_domain_count": "200",
+            "max_google_adsense_count": "200",
+            "max_google_analytics_count": "200",
+        },
+    )
+    mocker.patch.object(demisto, "results")
+    main()
+
+    results = demisto.results.call_args[0]
+    assert results[0]["Contents"]["Name"] == "example.com"
+    assert all(not v.get("pivotable") for v in results[0]["Contents"].values() if isinstance(v, dict))
+
+
+def test_ssl_email_null(mocker):
+    """Script should not crash when SSLCertificate email field is null (key present, value null)."""
+    domaintools_data = {
+        "Name": "int-chase.com",
+        "Analytics": {
+            "GoogleAdsenseTrackingCode": {"count": 0, "value": ""},
+            "GoogleAnalyticTrackingCode": {"count": 0, "value": ""},
+        },
+        "Identity": {
+            "RegistrantContact": None,
+            "Registrar": None,
+            "SOAEmail": None,
+        },
+        "Hosting": {
+            "NameServers": None,
+            "SSLCertificate": [
+                {
+                    "hash": {"count": 1, "value": "abc123"},
+                    "subject": {"count": 1, "value": "CN=int-chase.com"},
+                    "organization": {"count": 0, "value": ""},
+                    "email": None,
+                }
+            ],
+            "IPAddresses": None,
+            "MailServers": None,
+        },
+    }
+
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "domaintools_data": domaintools_data,
+            "max_name_server_host_count": "250",
+            "max_name_server_ip_count": "250",
+            "max_name_server_domain_count": "250",
+            "max_registrant_contact_name_count": "200",
+            "max_registrant_org_count": "200",
+            "max_registrar_count": "200",
+            "max_ssl_info_organization_count": "350",
+            "max_ssl_info_hash_count": "350",
+            "max_ssl_email_count": "350",
+            "max_ssl_subject_count": "350",
+            "max_soa_email_count": "200",
+            "max_ip_address_count": "200",
+            "max_mx_ip_count": "200",
+            "max_mx_host_count": "200",
+            "max_mx_domain_count": "200",
+            "max_google_adsense_count": "200",
+            "max_google_analytics_count": "200",
+        },
+    )
+    mocker.patch.object(demisto, "results")
+    main()
+
+    results = demisto.results.call_args[0]
+    assert results[0]["Contents"]["Name"] == "int-chase.com"
+    assert results[0]["Contents"]["PivotableSslEmail"] == {"pivotable": False}

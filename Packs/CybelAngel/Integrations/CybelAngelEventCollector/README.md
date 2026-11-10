@@ -834,3 +834,13 @@ Retrieve comments from a report.
 |content|created_at|discussion_id|assigned|author_firstname|author_lastname|last_updated_at|
 |---|---|---|---|---|---|---|
 | This is a comment message | 2025-02-27T11:04:05Z | example-id-8:example-tenant-id | false | ExampleFirst | ExampleLast | 2025-02-27T11:04:05Z |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require the **Cortex XSIAM** license:
+
+- Fetch events
+
+</~PLATFORM>

@@ -11,7 +11,6 @@ from ReversingLabs.SDK.ticloud import (
     CustomerUsage,
     DomainThreatIntelligence,
     DynamicAnalysis,
-    ExpressionSearch,
     FileAnalysis,
     FileDownload,
     FileReputation,
@@ -109,6 +108,11 @@ def test_module_command():
 
     result = "ok"
     return_results(result)
+
+
+def normalize_url(url: str) -> str:
+    url = url.replace(" ", "%20")
+    return url
 
 
 def file_command():
@@ -614,37 +618,7 @@ def advanced_search_output(result_list):
 
 
 def expression_search_command():
-    expression_search = ExpressionSearch(
-        host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
-    )
-
-    query = demisto.getArg("query")
-    date = demisto.getArg("date")
-    limit = demisto.getArg("result_limit")
-    query_list = query.split(" ")
-
-    try:
-        result_list = expression_search.search_aggregated(query=query_list, date=date, max_results=int(limit))
-    except Exception as e:
-        return_error(str(e))
-
-    results, file_results = expression_search_output(result_list)
-
-    return_results([results, file_results])
-
-
-def expression_search_output(result_list):
-    results = CommandResults(
-        outputs_prefix="ReversingLabs",
-        outputs={"expression_search": result_list},
-        readable_output="Full report is returned in a downloadable file",
-    )
-
-    file_results = fileResult(
-        "Expression Search report file", json.dumps(result_list, indent=4), file_type=EntryType.ENTRY_INFO_FILE
-    )
-
-    return results, file_results
+    raise NotImplementedError("Command reversinglabs-titaniumcloud-expression-search is no longer available and can not be used.")
 
 
 def file_download_command():
@@ -697,6 +671,8 @@ def url_command():
     result_list = []
 
     for url in url_list:
+        url = normalize_url(url)
+
         try:
             response = url_ti.get_url_report(url_input=url)
         except Exception as e:
@@ -714,7 +690,7 @@ def url_report_command():
         host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
-    url = demisto.getArg("url")
+    url = normalize_url(demisto.getArg("url"))
 
     try:
         response = url_ti.get_url_report(url_input=url)
@@ -1382,7 +1358,7 @@ def url_downloaded_files_command():
         host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
     )
 
-    url = demisto.getArg("url")
+    url = normalize_url(demisto.getArg("url"))
     extended = argToBoolean(demisto.getArg("extended_results"))
     classification = demisto.getArg("classification")
     last_analysis = argToBoolean(demisto.getArg("last_analysis"))
@@ -1523,7 +1499,7 @@ def domain_command():
 
     for domain in domain_list:
         try:
-            response = domain_ti.get_domain_report(domain=domain)
+            response = domain_ti.get_domain_report(domain_input=domain)
         except NotFoundError:
             return_results("No results were found for this input.")
             return
@@ -1543,7 +1519,7 @@ def domain_report_command():
     domain = demisto.getArg("domain")
 
     try:
-        response = domain_ti.get_domain_report(domain=domain)
+        response = domain_ti.get_domain_report(domain_input=domain)
     except NotFoundError:
         return_results("No results were found for this input.")
         return
@@ -1799,7 +1775,7 @@ def ip_command():
 
     for ip in ip_list:
         try:
-            response = ip_ti.get_ip_report(ip_address=ip)
+            response = ip_ti.get_ip_report(ip_address_input=ip)
         except NotFoundError:
             return_results("No results were found for this input.")
             return
@@ -1819,7 +1795,7 @@ def ip_report_command():
     ip = demisto.getArg("ip")
 
     try:
-        response = ip_ti.get_ip_report(ip_address=ip)
+        response = ip_ti.get_ip_report(ip_address_input=ip)
     except NotFoundError:
         return_results("No results were found for this input.")
         return

@@ -1,12 +1,15 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+import html
 import re
+import traceback
 
 """ CONSTANTS """
 
 INTEGRATION_NAME = "ZscalerZIA"
-BASE_API_URL = "https://api.zsapi.net/zia/api/v1"
+DEFAULT_BASE_URL = "https://api.zsapi.net/zia/api/v1"
+ZIA_API_PATH = "/zia/api/v1"
 TOKEN_URL_TEMPLATE = "https://{server_url}/oauth2/v1/token"
 AUDIENCE = "https://api.zscaler.com"
 SUSPICIOUS_CATEGORIES = ["SUSPICIOUS_DESTINATION", "SPYWARE_OR_ADWARE"]
@@ -41,6 +44,75 @@ AUTO_ACTIVATE_CHANGES_COMMANDS = (
 handle_proxy()
 
 
+def _sanitize_url_entry(value: Any) -> Any:
+    """Decodes HTML entities in a URL entry for the Zscaler ZIA API.
+
+    Used as a fallback in update_url_category when Zscaler rejects a URL
+    category PUT with:
+        INVALID_INPUT_ARGUMENT: URLs must not contain HTML content
+    Zscaler now blocks any payload that contains HTML entity-encoded markup
+    (for example &amp;). Because update_url_category re-sends every existing
+    URL stored in the category, a single legacy entry already stored with such
+    an entity breaks every subsequent update until it is cleaned up.
+
+    Args:
+        value: A URL or IP range entry as a string.
+
+    Returns:
+        The decoded string, or the original value unchanged when it is not a string.
+    """
+    if not isinstance(value, str):
+        return value
+    prev = value
+    max_unescape_depth = 5
+    for _ in range(max_unescape_depth):
+        if (unescaped := html.unescape(prev)) == prev:
+            break
+        prev = unescaped
+    return prev
+
+
+def _sanitize_url_list(values: list | None) -> list:
+    if not values:
+        return []
+    return [_sanitize_url_entry(v) for v in values]
+
+
+def _merge_category_list(existing: list[str] | None, incoming: list[str] | None, action: str) -> list[str]:
+    """Merges an incoming list of category items with the existing list according to action."""
+    existing_list = existing or []
+    if not incoming:
+        return existing_list
+    if action == "ADD_TO_LIST":
+        return existing_list + [item for item in incoming if item not in existing_list]
+    if action == "REMOVE_FROM_LIST":
+        return [item for item in existing_list if item not in incoming]
+    return incoming
+
+
+def _is_html_content_error(exc: Exception) -> bool:
+    message = str(exc)
+    return "INVALID_INPUT_ARGUMENT" in message and "URLs must not contain HTML content" in message
+
+
+def build_api_base_url(base_url: str) -> str:
+    """Normalizes the configured ZIA API base URL.
+
+    Args:
+        base_url: The configured base URL. May omit the scheme, include a trailing
+            slash, or omit the /zia/api/v1 path. Empty means DEFAULT_BASE_URL.
+
+    Returns:
+        The normalized base URL ending with /zia/api/v1.
+    """
+    host = (base_url or "").strip().rstrip("/") or DEFAULT_BASE_URL
+    if not host.startswith(("http://", "https://")):
+        host = f"https://{host}"
+    if host.endswith(ZIA_API_PATH):
+        return host
+    return f"{host}{ZIA_API_PATH}"
+
+
 """ CLIENT CLASS """
 
 
@@ -69,6 +141,7 @@ class Client(BaseClient):
         reliability: str,
         auto_activate: bool,
         suspicious_categories: list[str],
+        base_url: str = DEFAULT_BASE_URL,
     ):
         """Initializes the Client.
 
@@ -81,8 +154,9 @@ class Client(BaseClient):
             reliability: Source reliability for DBotScore (e.g. "C - Fairly reliable").
             auto_activate: If True, activate ZIA changes after each write command.
             suspicious_categories: List of URL categories considered suspicious.
+            base_url: The ZIA API base URL. Defaults to DEFAULT_BASE_URL.
         """
-        super().__init__(base_url=BASE_API_URL, verify=verify, proxy=proxy)
+        super().__init__(base_url=build_api_base_url(base_url), verify=verify, proxy=proxy)
         self.server_url = server_url
         self.client_id = client_id
         self.client_secret = client_secret
@@ -166,7 +240,8 @@ class Client(BaseClient):
         if res.status_code in (401, 403):
             raise DemistoException(
                 f"Authentication/Authorization error ({res.status_code}): {res.text}. "
-                "Verify your Client ID, Client Secret, and Domain are correct."
+                "Verify your Client ID, Client Secret, and Domain are correct.",
+                res=res,
             )
         elif res.status_code == 400 and res.request.method == "PUT" and "/urlCategories/" in res.request.url:
             raise DemistoException(
@@ -196,7 +271,7 @@ class Client(BaseClient):
 
         Args:
             method: HTTP method string (e.g. "GET", "POST", "PUT", "DELETE").
-            url_suffix: The API path suffix appended to BASE_API_URL.
+            url_suffix: The API path suffix appended to the ZIA API base URL.
             data: Optional JSON-serializable body payload (dict or list).
             params: Optional URL query parameters dict.
             resp_type: Response parsing mode passed to _http_request.
@@ -236,7 +311,7 @@ class Client(BaseClient):
 
         Args:
             method: HTTP method string (e.g. "GET", "POST", "PUT", "DELETE").
-            url_suffix: The API path suffix appended to BASE_API_URL.
+            url_suffix: The API path suffix appended to the ZIA API base URL.
             data: Optional JSON-serializable body payload (dict or list).
             params: Optional URL query parameters dict.
             resp_type: Response parsing mode passed to _http_request
@@ -398,18 +473,11 @@ class Client(BaseClient):
         """
         # Fetch current category to merge
         current = self.api_request("GET", f"/urlCategories/{category_id}")
-        existing_urls = current.get("urls", [])
-        existing_ips = current.get("ipRanges", [])
+        existing_urls = current.get("urls") or []
+        existing_ips = current.get("ipRanges") or []
 
-        if action == "ADD_TO_LIST":
-            new_urls = existing_urls + [u for u in urls if u not in existing_urls]
-            new_ips = existing_ips + [ip for ip in ips if ip not in existing_ips]
-        elif action == "REMOVE_FROM_LIST":
-            new_urls = [u for u in existing_urls if u not in urls]
-            new_ips = [ip for ip in existing_ips if ip not in ips]
-        else:  # OVERWRITE
-            new_urls = urls
-            new_ips = ips
+        new_urls = _merge_category_list(existing_urls, urls, action)
+        new_ips = _merge_category_list(existing_ips, ips, action)
 
         payload: dict = {
             "id": category_id,
@@ -423,16 +491,41 @@ class Client(BaseClient):
             payload["superCategory"] = current["superCategory"]
         if description is not None:
             payload["description"] = description
-        if keywords is not None:
-            payload["keywords"] = keywords
-        if db_categorized_urls is not None:
-            payload["dbCategorizedUrls"] = db_categorized_urls
-        if keywords_retaining_parent_category is not None:
-            payload["keywordsRetainingParentCategory"] = keywords_retaining_parent_category
-        if ip_ranges_retaining_parent_category is not None:
-            payload["ipRangesRetainingParentCategory"] = ip_ranges_retaining_parent_category
+        elif current.get("description") is not None:
+            payload["description"] = current["description"]
+        if keywords is not None or "keywords" in current:
+            payload["keywords"] = _merge_category_list(current.get("keywords") or [], keywords, action)
+        if db_categorized_urls is not None or "dbCategorizedUrls" in current:
+            payload["dbCategorizedUrls"] = _merge_category_list(
+                current.get("dbCategorizedUrls") or [], db_categorized_urls, action
+            )
+        if keywords_retaining_parent_category is not None or "keywordsRetainingParentCategory" in current:
+            payload["keywordsRetainingParentCategory"] = _merge_category_list(
+                current.get("keywordsRetainingParentCategory") or [],
+                keywords_retaining_parent_category,
+                action,
+            )
+        if ip_ranges_retaining_parent_category is not None or "ipRangesRetainingParentCategory" in current:
+            payload["ipRangesRetainingParentCategory"] = _merge_category_list(
+                current.get("ipRangesRetainingParentCategory") or [],
+                ip_ranges_retaining_parent_category,
+                action,
+            )
 
-        self.api_request("PUT", f"/urlCategories/{category_id}", data=payload, resp_type="response")
+        try:
+            self.api_request("PUT", f"/urlCategories/{category_id}", data=payload, resp_type="response")
+        except DemistoException as e:
+            if not _is_html_content_error(e):
+                raise
+            demisto.debug(traceback.format_exc())
+            demisto.debug(
+                "Zscaler rejected the URL category update with 'URLs must not contain HTML content'. "
+                "Retrying once with HTML entities decoded in the URL lists."
+            )
+            payload["urls"] = _sanitize_url_list(payload["urls"])
+            if "dbCategorizedUrls" in payload:
+                payload["dbCategorizedUrls"] = _sanitize_url_list(payload["dbCategorizedUrls"])
+            self.api_request("PUT", f"/urlCategories/{category_id}", data=payload, resp_type="response")
 
     # ---- URL Quota ----
 
@@ -984,12 +1077,6 @@ def zia_category_update_command(client: Client, args: dict) -> CommandResults:
     urls = argToList(args.get("url", ""))
     ips = argToList(args.get("ip", ""))
     action = args.get("action", "")
-
-    if not urls and not ips:
-        raise DemistoException("At least one of 'url' or 'ip' arguments must be provided.")
-    if not action:
-        raise DemistoException("The 'action' argument is required.")
-
     keywords = argToList(args.get("keywords")) if args.get("keywords") else None
     description = args.get("description")
     db_categorized_urls = argToList(args.get("db_categorized_urls")) if args.get("db_categorized_urls") else None
@@ -999,6 +1086,29 @@ def zia_category_update_command(client: Client, args: dict) -> CommandResults:
     ip_ranges_retaining = (
         argToList(args.get("ip_ranges_retaining_parent_category")) if args.get("ip_ranges_retaining_parent_category") else None
     )
+
+    if not any(
+        (
+            urls,
+            ips,
+            keywords is not None,
+            description is not None,
+            db_categorized_urls is not None,
+            keywords_retaining is not None,
+            ip_ranges_retaining is not None,
+        )
+    ):
+        raise DemistoException(
+            "At least one of 'url', 'ip', 'keywords', 'description', 'db_categorized_urls', "
+            "'keywords_retaining_parent_category', or 'ip_ranges_retaining_parent_category' arguments must be provided."
+        )
+    if not action:
+        raise DemistoException("The 'action' argument is required.")
+    valid_actions = {"ADD_TO_LIST", "REMOVE_FROM_LIST", "OVERWRITE"}
+    if action not in valid_actions:
+        raise DemistoException(
+            f"Invalid action '{action}'. The 'action' argument must be one of: {', '.join(sorted(valid_actions))}."
+        )
 
     client.update_url_category(
         category_id=category_id,
@@ -1797,6 +1907,7 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
 
     server_url = params.get("server_url", "")
+    base_url = params.get("base_url") or DEFAULT_BASE_URL
     client_id = params.get("credentials", {}).get("identifier", "")
     client_secret = params.get("credentials", {}).get("password", "")
     verify = not params.get("insecure", False)
@@ -1821,6 +1932,7 @@ def main() -> None:  # pragma: no cover
         reliability=reliability,
         auto_activate=auto_activate,
         suspicious_categories=suspicious_categories,
+        base_url=base_url,
     )
 
     demisto.debug(f"Command is: {command}")

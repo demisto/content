@@ -1059,7 +1059,7 @@ def fetch_incidents(
 def test_module(client: Client, params: dict) -> str:
     try:
         client.get_processes(limit="5", allow_empty=True)
-        if params["isFetch"]:
+        if params.get("isFetch"):
             client.get_alerts(
                 status=params.get("alert_status", None),
                 feedname=params.get("alert_feed_name", None),

@@ -1,6 +1,8 @@
 import json
 import os
+import re
 import time
+from datetime import datetime
 from unittest import mock
 from unittest.mock import patch
 
@@ -68,7 +70,7 @@ def test_http_request_when_error_is_returned(mocker, requests_mock, client):
     requests_mock.get(BASE_URL + URL_SUFFIX["SYSTEM_STATUS"], json={"status": True}, status_code=401)
     with pytest.raises(DemistoException) as err:
         client.http_request(URL_SUFFIX["SYSTEM_STATUS"])
-    assert str(err.value) == "Authentication error: please provide valid Client ID and Client Secret."
+    assert str(err.value) == "Authentication error 401: please provide valid Client ID and Client Secret."
 
 
 def test_set_token_in_integration_context(client):
@@ -659,6 +661,203 @@ def test_validate_list_rule_args_when_valid_args_are_provided():
         "filter[rule_context]": "Phishing Tactic",
     }
     assert validate_list_rule_args(args) == params
+
+
+@patch(MOCKER_HTTP_METHOD)
+def test_cofense_playbook_list_command_when_valid_response_is_returned(mocker_http_request, client):
+    """Test case scenario for successful execution of cofense-playbook-list command."""
+    from CofenseTriagev3 import cofense_playbook_list_command
+
+    with open("test_data/playbook/playbook_list_response.json") as data:
+        mock_response = json.load(data)
+
+    with open("test_data/playbook/playbook_list_context.json") as data:
+        expected_res = json.load(data)
+
+    with open("test_data/playbook/playbook_list.md") as data:
+        expected_hr = data.read()
+
+    mocker_http_request.return_value = mock_response
+    args = {"page_size": "2"}
+
+    result = cofense_playbook_list_command(client, args)
+
+    assert result.raw_response == mock_response
+    assert result.outputs == expected_res
+    assert result.readable_output == expected_hr
+    assert result.outputs_prefix == "Cofense.Playbook"
+    assert result.outputs_key_field == "id"
+
+
+@patch(MOCKER_HTTP_METHOD)
+def test_cofense_playbook_list_command_when_fields_to_retrieve_is_provided(mocker_http_request, client):
+    """Test case scenario for cofense-playbook-list command when the 'fields_to_retrieve' argument is provided."""
+    from CofenseTriagev3 import cofense_playbook_list_command
+
+    with open("test_data/playbook/playbook_list_with_fields_to_retrieve_response.json") as data:
+        mock_response = json.load(data)
+
+    with open("test_data/playbook/playbook_list_with_fields_to_retrieve.md") as data:
+        expected_hr = data.read()
+
+    mocker_http_request.return_value = mock_response
+
+    result = cofense_playbook_list_command(client, {"fields_to_retrieve": "button_color, name"})
+
+    # The human readable must display the requested attributes only.
+    assert result.readable_output == expected_hr
+
+
+@patch(MOCKER_HTTP_METHOD)
+def test_cofense_playbook_list_command_when_id_is_provided(mocker_http_request, client):
+    """Test case scenario for successful execution of cofense-playbook-list command with the 'id' argument."""
+    from CofenseTriagev3 import URL_SUFFIX, cofense_playbook_list_command
+
+    with open("test_data/playbook/playbook_list_response.json") as data:
+        mock_response = json.load(data)
+
+    # The API returns a single object (not a list) when a specific resource is requested.
+    mocker_http_request.return_value = {"data": mock_response["data"][0]}
+
+    result = cofense_playbook_list_command(client, {"id": "1"})
+
+    mocker_http_request.assert_called_with(f"{URL_SUFFIX['PLAYBOOK']}/1", params={})
+    assert result.outputs[0]["id"] == "1"
+    assert result.outputs[0]["attributes"]["name"] == "Spam"
+
+
+@patch(MOCKER_HTTP_METHOD)
+def test_cofense_playbook_list_command_when_empty_response_is_returned(mocker_http_request, client):
+    """Test case scenario for successful execution of cofense-playbook-list command with an empty response."""
+    from CofenseTriagev3 import cofense_playbook_list_command
+
+    mocker_http_request.return_value = {}
+
+    args = {"page_size": "2"}
+
+    result = cofense_playbook_list_command(client, args)
+
+    assert result.readable_output == "No playbook(s) were found for the given argument(s)."
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.list_playbook_cmd_arg)
+def test_validate_list_playbook_args_when_invalid_args_are_provided(args, err_msg):
+    """Test case scenario when the arguments provided are not valid."""
+
+    from CofenseTriagev3 import validate_list_playbook_args
+
+    with pytest.raises(ValueError) as err:
+        validate_list_playbook_args(args)
+    assert str(err.value) == err_msg
+
+
+def test_validate_list_playbook_args_when_valid_args_are_provided():
+    """Test case scenario when the arguments provided are valid."""
+
+    from CofenseTriagev3 import validate_list_playbook_args
+
+    # Arguments to be passed
+    args = {
+        "page_size": "2",
+        "page_number": "1",
+        "sort_by": "-name, created_at",
+        "fields_to_retrieve": "name, description",
+        "name": "Spam",
+        "active": "true",
+        "trigger_only": "false",
+        "delete_report": "true",
+        "report_tags": "one, two",
+        "cluster_tags": "three",
+        "filter_by": '{"name":"Test","button_color_cont":"000"}',
+    }
+    # Expected response
+    params = {
+        "page[size]": 2,
+        "page[number]": 1,
+        "sort": "-name,created_at",
+        "fields[playbooks]": "name,description",
+        "filter[name]": "Spam",
+        "filter[active]": "true",
+        "filter[trigger_only]": "false",
+        "filter[delete_report]": "true",
+        "filter[report_tags_any]": "one,two",
+        "filter[cluster_tags_any]": "three",
+        "filter[button_color_cont]": "000",
+    }
+    assert validate_list_playbook_args(args) == params
+
+
+def test_validate_list_playbook_args_when_invalid_filter_by_is_provided():
+    """Test case scenario when the 'filter_by' argument is not a valid JSON."""
+
+    from CofenseTriagev3 import validate_list_playbook_args
+
+    with pytest.raises(ValueError, match=re.escape(MESSAGES["FILTER"])):
+        validate_list_playbook_args({"filter_by": '{"name_cont":'})
+
+
+@patch(MOCKER_HTTP_METHOD)
+def test_cofense_playbook_execute_command_when_valid_args_are_provided(mocker_http_request, client):
+    """Test case scenario for successful execution of cofense-playbook-execute command."""
+    from CofenseTriagev3 import DATE_FORMAT, OUTPUT_PREFIX, TYPE_HEADER, URL_SUFFIX, cofense_playbook_execute_command
+
+    mocker_http_request.return_value = None
+
+    args = {"report_ids": "1, 2, 3", "playbook_id": "3"}
+
+    result = cofense_playbook_execute_command(client, args)
+
+    mocker_http_request.assert_called_with(
+        URL_SUFFIX["PLAYBOOK_EXECUTION"],
+        method="POST",
+        headers={"Content-Type": TYPE_HEADER},
+        json_data={"data": {"report_ids": [1, 2, 3], "playbook_id": 3}},
+        resp_type="response",
+    )
+    assert result.readable_output == "Playbook with ID = 3 is executed successfully on the report(s) with ID = 1, 2, 3."
+    assert result.outputs_prefix == OUTPUT_PREFIX["PLAYBOOK_EXECUTION"]
+    assert result.outputs_key_field == "execution_key"
+    assert result.outputs["report_ids"] == [1, 2, 3]
+    assert result.outputs["playbook_id"] == 3
+    assert result.outputs["execution_key"] == f"1,2,3_3_{result.outputs['execution_time']}"
+    assert datetime.strptime(result.outputs["execution_time"], DATE_FORMAT)
+
+
+@patch(MOCKER_HTTP_METHOD)
+def test_cofense_playbook_execute_command_when_duplicate_and_unordered_report_ids_are_provided(mocker_http_request, client):
+    """Test case scenario for cofense-playbook-execute command when report IDs are duplicated or out of order."""
+    from CofenseTriagev3 import TYPE_HEADER, URL_SUFFIX, cofense_playbook_execute_command
+
+    mocker_http_request.return_value = None
+
+    args = {"report_ids": "3, 1, 2, 1", "playbook_id": "3"}
+
+    result = cofense_playbook_execute_command(client, args)
+
+    # The order provided by the user is preserved in the request body and in the context output.
+    mocker_http_request.assert_called_with(
+        URL_SUFFIX["PLAYBOOK_EXECUTION"],
+        method="POST",
+        headers={"Content-Type": TYPE_HEADER},
+        json_data={"data": {"report_ids": [3, 1, 2, 1], "playbook_id": 3}},
+        resp_type="response",
+    )
+    assert result.readable_output == "Playbook with ID = 3 is executed successfully on the report(s) with ID = 3, 1, 2, 1."
+    assert result.outputs["report_ids"] == [3, 1, 2, 1]
+
+    # The execution key is canonical, so equivalent executions map to a single context entry.
+    assert result.outputs["execution_key"] == f"1,2,3_3_{result.outputs['execution_time']}"
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.execute_playbook_cmd_arg)
+def test_validate_execute_playbook_args_when_invalid_args_are_provided(args, err_msg):
+    """Test case scenario when the arguments provided are not valid."""
+
+    from CofenseTriagev3 import validate_execute_playbook_args
+
+    with pytest.raises(ValueError) as err:
+        validate_execute_playbook_args(args)
+    assert str(err.value) == err_msg
 
 
 def test_cofense_threat_indicator_create_command_when_valid_response_is_returned(mocked_client):

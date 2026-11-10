@@ -16,7 +16,7 @@ def test_get_delete_reported_email_integrations(mocker):
 
     mock_modules = {
         "instanceName1": {"state": "active", "brand": "EWSO365"},
-        "instanceName2": {"state": "disabled", "brand": "SecurityAndCompliance"},
+        "instanceName2": {"state": "disabled", "brand": "Gmail"},
     }
     mocker.patch.object(demisto, "getModules", return_value=mock_modules)
     assert get_delete_reported_email_integrations() == ["EWSO365"]

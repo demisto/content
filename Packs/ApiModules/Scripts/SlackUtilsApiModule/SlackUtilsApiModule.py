@@ -60,6 +60,10 @@ class SlackAssistantMessages(AssistantMessages):
 # Slack requires at least one element in a rich_text_section; a single space is the minimal placeholder.
 EMPTY_RICH_TEXT_ELEMENTS: list[dict] = [{"type": "text", "text": " "}]
 
+# Slack allows at most 50 blocks per message (and per attachment).
+# https://docs.slack.dev/reference/methods/chat.postMessage
+SLACK_MAX_BLOCKS_PER_MESSAGE = 50
+
 
 def parse_md_to_rich_text_elements(text: str) -> list[dict]:
     """
@@ -105,8 +109,10 @@ def parse_md_to_rich_text_elements(text: str) -> list[dict]:
     BOLD_PATTERN = r"\*\*.*?\*\*"  # **text**
     CODE_PATTERN = r"`[^`]+`"  # `text`
     STRIKE_PATTERN = r"~~.*?~~"  # ~~text~~
-    ITALIC_DOUBLE_PATTERN = r"__.*?__"  # __text__
-    ITALIC_SINGLE_PATTERN = r"_.*?_"  # _text_
+    # Italic underscores are boundary-aware: a delimiter adjacent to a word char is NOT emphasis,
+    # so intraword underscores (e.g. "run__script", "first_name") stay literal.
+    ITALIC_DOUBLE_PATTERN = r"(?<!\w)__(?!\s).+?(?<!\s)__(?!\w)"  # __text__
+    ITALIC_SINGLE_PATTERN = r"(?<!\w)_(?!\s).+?(?<!\s)_(?!\w)"  # _text_
 
     # Combine all patterns with alternation (|) - each in its own capture group
     # This allows us to identify which pattern matched
@@ -149,12 +155,17 @@ def parse_md_to_rich_text_elements(text: str) -> list[dict]:
         elif re.match(STRIKE_PATTERN, part):
             content = part[2:-2]  # Remove ~~ from both sides
             style["strike"] = True
-        elif re.match(ITALIC_DOUBLE_PATTERN, part):
+        elif re.fullmatch(ITALIC_DOUBLE_PATTERN, part):
             content = part[2:-2]  # Remove __ from both sides
             style["italic"] = True
-        elif re.match(ITALIC_SINGLE_PATTERN, part):
+        elif re.fullmatch(ITALIC_SINGLE_PATTERN, part):
             content = part[1:-1]  # Remove _ from both sides
             style["italic"] = True
+
+        # Empty delimiters (e.g. "__"/"****") -> keep the original chars as literal text; Slack rejects an empty "text".
+        if not content:
+            content = part
+            style = {}
 
         # Create text element with optional style
         element = {"type": "text", "text": content}
@@ -480,7 +491,7 @@ def format_md_to_slack_message(message: str, message_type: str) -> tuple[list, l
         AssistantMessageType(message_type)
     except ValueError:
         error_msg = (
-            f"Invalid message_type: '{message_type}'. " f"Must be one of: {', '.join([t.value for t in AssistantMessageType])}"
+            f"Invalid message_type: '{message_type}'. Must be one of: {', '.join([t.value for t in AssistantMessageType])}"
         )
         demisto.error(error_msg)
         raise ValueError(error_msg)
@@ -541,6 +552,28 @@ def format_md_to_slack_message(message: str, message_type: str) -> tuple[list, l
 
     # Model/Final responses: return blocks directly (no attachment)
     return blocks, attachments
+
+
+def split_blocks_into_chunks(blocks: list, max_blocks: int = SLACK_MAX_BLOCKS_PER_MESSAGE) -> list[list]:
+    """
+    Splits a flat list of Slack blocks into chunks that respect Slack's per-message block limit.
+
+    This is used to recover from the msg_blocks_too_long error by sending an oversized
+    response across several messages instead of a single one.
+
+    Args:
+        blocks: The full list of Slack block dictionaries.
+        max_blocks: Maximum number of blocks per chunk (defaults to Slack's limit of 50).
+
+    Returns:
+        A list of block chunks, each with at most max_blocks blocks. Returns an empty list
+        when there are no blocks to send.
+    """
+    if not blocks:
+        return []
+    if max_blocks < 1:
+        max_blocks = 1
+    return [blocks[i : i + max_blocks] for i in range(0, len(blocks), max_blocks)]
 
 
 def prepare_slack_merged_step_messages(step_contents: list[str]) -> tuple[list, list]:

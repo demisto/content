@@ -1,0 +1,168 @@
+{
+    "vmware_carbon_black_cloud_raw": {
+            "org_key": {
+                "type": "string",
+                "is_array": false
+        },
+            "alert_url": {
+                "type": "string",
+                "is_array": false
+        },
+            "id": {
+                "type": "string",
+                "is_array": false
+        },
+            "type": {
+                "type": "string",
+                "is_array": false
+        },
+            "severity": {
+                "type": "int",
+                "is_array": false
+        },
+            "reason": {
+                "type": "string",
+                "is_array": false
+        },
+            "threat_id": {
+                "type": "string",
+                "is_array": false
+        },
+            "primary_event_id": {
+                "type": "string",
+                "is_array": false
+        },
+            "policy_applied": {
+                "type": "string",
+                "is_array": false
+        },
+            "run_state": {
+                "type": "string",
+                "is_array": false
+        },
+            "sensor_action": {
+                "type": "string",
+                "is_array": false
+        },
+            "device_id": {
+                "type": "int",
+                "is_array": false
+        },
+            "device_name": {
+                "type": "string",
+                "is_array": false
+        },
+            "device_target_value": {
+                "type": "string",
+                "is_array": false
+        },
+            "device_policy": {
+                "type": "string",
+                "is_array": false
+        },
+            "device_policy_id": {
+                "type": "int",
+                "is_array": false
+        },
+            "device_os": {
+                "type": "string",
+                "is_array": false
+        },
+            "device_os_version": {
+                "type": "string",
+                "is_array": false
+        },
+            "device_username": {
+                "type": "string",
+                "is_array": false
+        },
+            "device_external_ip": {
+                "type": "string",
+                "is_array": false
+        },
+            "device_internal_ip": {
+                "type": "string",
+                "is_array": false
+        },
+            "report_id": {
+                "type": "string",
+                "is_array": false
+        },
+            "report_name": {
+                "type": "string",
+                "is_array": false
+        },
+            "report_description": {
+                "type": "string",
+                "is_array": false
+        },
+            "report_link": {
+                "type": "string",
+                "is_array": false
+        },
+            "process_pid": {
+                "type": "int",
+                "is_array": false
+        },
+            "process_name": {
+                "type": "string",
+                "is_array": false
+        },
+            "process_sha256": {
+                "type": "string",
+                "is_array": false
+        },
+            "process_md5": {
+                "type": "string",
+                "is_array": false
+        },
+            "process_cmdline": {
+                "type": "string",
+                "is_array": false
+        },
+            "process_username": {
+                "type": "string",
+                "is_array": false
+        },
+            "process_issuer": {
+                "type": "string",
+                "is_array": false
+        },     
+            "parent_pid": {
+                "type": "int",
+                "is_array": false
+        },
+            "ml_classification_final_verdict": {
+                "type": "string",
+                "is_array": false
+        },
+            "description": {
+                "type": "string",
+                "is_array": false
+        },
+            "orgName": {
+                "type": "string",
+                "is_array": false
+        },
+            "requestUrl": {
+                "type": "string",
+                "is_array": false
+        },
+            "loginName": {
+                "type": "string",
+                "is_array": false
+        },
+            "clientIp": {
+                "type": "string",
+                "is_array": false
+        },
+            "eventId": {
+                "type": "string",
+                "is_array": false
+        },
+            "flagged": {
+                "type": "boolean",
+                "is_array": false
+        }    
+    }   
+}

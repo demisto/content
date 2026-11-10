@@ -1,0 +1,31 @@
+{
+    "id": "incident_devicesecurityservicenowrecordid",
+    "version": -1,
+    "name": "Device Security ServiceNow Record ID",
+    "ownerOnly": false,
+    "description": "The ServiceNow record system ID",
+    "cliName": "devicesecurityservicenowrecordid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Device Security Alert",
+        "Device Security Vulnerability"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": false,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

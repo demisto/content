@@ -53,7 +53,7 @@ tags:
 - zoom
 timeout: '0'
 type: python
-dockerimage: demisto/fastapi:0.125.0.10158186
+dockerimage: demisto/fastapi:0.162.0.14169403
 tests:
 - no test - Untestable
 dependson:

@@ -1,0 +1,32 @@
+{
+    "id": "incident_infobloxcloudtimesavedseconds",
+    "version": -1,
+    "modified": "2026-07-07T00:00:00.000000000+05:30",
+    "name": "Infoblox Cloud Time Saved Seconds",
+    "ownerOnly": false,
+    "description": "The estimated analyst time, in seconds, saved by the Infoblox Cloud IQ for TD Insight.",
+    "cliName": "infobloxcloudtimesavedseconds",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Infoblox Cloud IQ for TD Insight"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

@@ -4,8 +4,8 @@ display: DeCYFIR
 category: Data Enrichment & Threat Intelligence
 provider: CYFIRMA
 sectionorder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 commonfields:
   id: decyfir
   version: -1
@@ -14,6 +14,13 @@ configuration:
   name: incidentType
   type: 13
   section: Connect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - defaultvalue: https://decyfir.cyfirma.com
   display: DeCYFIR Server URL (e.g. https://decyfir.cyfirma.com)
   name: url
@@ -76,7 +83,6 @@ script:
       required: true
       description: The ID of the alert for which to initiate the take down request.
     outputs:
-    
   - deprecated: false
     description: Get take down list.
     execution: false
@@ -149,7 +155,7 @@ script:
     - contextPath: DeCYFIR.Takedown.URLStatusUpdatedBy
       description: User who updated the URL status.
       type: String
-  dockerimage: demisto/python3:3.12.13.8428455
+  dockerimage: demisto/python3:3.12.13.10116658
   feed: false
   isfetch: true
   runonce: false

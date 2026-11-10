@@ -166,7 +166,14 @@ def fetch_indicators_command(
             client.last_fetched_indicator__modified if client.last_fetched_indicator__modified else added_after
         )
 
-    indicators = filter_previously_fetched_indicators(indicators, last_run_ctx)
+    if not fetch_full_feed:
+        # In incremental mode, skip indicators that were already ingested and not modified since the last fetch.
+        # In full feed mode, all fetched indicators must be passed to demisto.createIndicators() on every cycle
+        # so that the suddenDeath expiration policy can accurately track what is still present in the feed.
+        demisto.debug("Incremental feed mode: filtering previously fetched indicators.")
+        indicators = filter_previously_fetched_indicators(indicators, last_run_ctx)
+    else:
+        demisto.debug(f"Full feed mode: skipping deduplication filter. Passing all {len(indicators)} fetched indicators.")
     demisto.debug(f"{indicators=}")
     return indicators, last_run_ctx
 

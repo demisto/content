@@ -1,0 +1,285 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: ThreatMon Threat Feed
+  version: -1
+name: ThreatMon Threat Feed
+display: ThreatMon Threat Feed
+provider: ThreatMon
+description: Fetches Indicators of Compromise (IOCs) from the ThreatMon TAXII 2.1 server and ingests them into Cortex as indicators.
+sectionorder:
+- Connect
+- Collect
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: https://ioc.threatmonit.io
+  type: 0
+  required: true
+  section: Connect
+- display: Company Name
+  displaypassword: API Token
+  additionalinfo: The ThreatMon API token. The company name (username) is optional.
+  name: credentials
+  type: 9
+  required: true
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+- display: Fetch indicators
+  name: feed
+  defaultvalue: 'true'
+  type: 8
+  required: false
+  section: Connect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Collections
+  additionalinfo: The ThreatMon TAXII collections to fetch. The collections are not subsets of each other, so keep all of them selected to receive every IOC.
+  name: collections
+  defaultvalue: All Threat Indicators,IP Address Indicators,IP Address Indicators with Ports,URL Indicators,Domain Name Indicators,File Hash Indicators,C2 Server Indicators
+  type: 16
+  options:
+  - All Threat Indicators
+  - IP Address Indicators
+  - IP Address Indicators with Ports
+  - URL Indicators
+  - Domain Name Indicators
+  - File Hash Indicators
+  - C2 Server Indicators
+  required: false
+  section: Collect
+- display: Data Type to Fetch (Deprecated)
+  additionalinfo: Deprecated. Use the Collections parameter instead.
+  name: data_type
+  defaultvalue: all
+  type: 15
+  options:
+  - all
+  - ip
+  - domain
+  - url
+  required: false
+  advanced: true
+  section: Collect
+- display: Maximum number of indicators per fetch (Deprecated)
+  additionalinfo: Deprecated. Use the Maximum pages per fetch parameter instead.
+  name: limit
+  defaultvalue: '500'
+  type: 0
+  required: false
+  advanced: true
+  section: Collect
+- display: Additional Collection IDs
+  additionalinfo: The optional comma-separated list of additional TAXII collection IDs to fetch.
+  name: collection_ids
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+- display: First Fetch Time
+  additionalinfo: The time range to look back when fetching indicators on the first run, for example "7 days", "12 hours" or "2026-10-01".
+  name: first_fetch
+  defaultvalue: '7 days'
+  type: 0
+  required: false
+  section: Collect
+- display: Look-back Window (minutes)
+  additionalinfo: The number of minutes before the previous crawl started to re-read on each crawl, so indicators published late are not missed. Re-read indicators are de-duplicated.
+  name: lookback_minutes
+  defaultvalue: '180'
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+- display: Maximum pages per fetch
+  additionalinfo: The maximum number of TAXII pages (500 indicators each) read in a single fetch run. If more data is available, the next run continues from the same position.
+  name: max_pages_per_fetch
+  defaultvalue: '300'
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: Bad
+  type: 18
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- additionalinfo: Reliability of the source providing the intelligence data.
+  display: Source Reliability
+  name: feedReliability
+  defaultvalue: A - Completely reliable
+  type: 15
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. If not set, the TLP marking published by ThreatMon is used.
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex, all indicators coming from these feeds are labeled new or modified.
+  display: Incremental Feed
+  name: feedIncremental
+  defaultvalue: 'true'
+  type: 8
+  hidden: true
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: ''
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  options:
+  - never
+  - interval
+  - indicatorType
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: ''
+  name: feedExpirationInterval
+  defaultvalue: '20160'
+  type: 1
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: '60'
+  type: 19
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- name: feedTags
+  display: Tags
+  type: 0
+  additionalinfo: The tags to apply to indicators. Supports CSV values. The "ThreatMon" tag is always added.
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.15.14069087
+  feed: true
+  runonce: false
+  commands:
+  - name: threatmon-get-indicators
+    description: Gets a sample of indicators from a ThreatMon collection. This command is used for testing and debugging. It does not create indicators and does not change the fetch state.
+    arguments:
+    - name: limit
+      description: The maximum number of indicators to return (up to 500).
+      defaultValue: '10'
+    - name: collection
+      description: The collection to sample.
+      auto: PREDEFINED
+      defaultValue: All Threat Indicators
+      predefined:
+      - All Threat Indicators
+      - IP Address Indicators
+      - IP Address Indicators with Ports
+      - URL Indicators
+      - Domain Name Indicators
+      - File Hash Indicators
+      - C2 Server Indicators
+    outputs: []
+  - name: threatmon-get-fetch-state
+    description: Shows the fetch checkpoint of every collection, for troubleshooting.
+    arguments: []
+    outputs:
+    - contextPath: ThreatMon.FetchState.Collection
+      description: The collection name.
+      type: String
+    - contextPath: ThreatMon.FetchState.AddedAfter
+      description: The point in time the current or next crawl of the collection starts from (e.g., 2026-11-03T08:00:00.000000Z).
+      type: Date
+    - contextPath: ThreatMon.FetchState.CrawlInProgress
+      description: Whether a crawl of the collection is in progress and will continue in the next run.
+      type: Boolean
+    - contextPath: ThreatMon.FetchState.LastCompletedCrawl
+      description: The time the last complete crawl of the collection started (e.g., 2026-11-03T08:00:00.000000Z).
+      type: Date
+  - name: threatmon-get-collections
+    description: Lists the collections published by the ThreatMon TAXII server, and whether the integration fetches them by default.
+    arguments: []
+    outputs:
+    - contextPath: ThreatMon.Collection.ID
+      description: The collection ID.
+      type: String
+    - contextPath: ThreatMon.Collection.Title
+      description: The collection title.
+      type: String
+    - contextPath: ThreatMon.Collection.Description
+      description: The collection description.
+      type: String
+    - contextPath: ThreatMon.Collection.CanRead
+      description: Whether the API token can read the collection.
+      type: Boolean
+    - contextPath: ThreatMon.Collection.KnownByIntegration
+      description: Whether the collection is one of the predefined collections of the integration. Unknown collections can be fetched with the Additional Collection IDs parameter.
+      type: Boolean
+  - name: threatmon-reset-fetch-state
+    description: Resets the fetch state, so the next fetch starts again from the First Fetch Time. Indicators that already exist are updated, not duplicated.
+    arguments: []
+    outputs: []
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

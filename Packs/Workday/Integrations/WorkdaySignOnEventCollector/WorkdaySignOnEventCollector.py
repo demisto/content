@@ -535,7 +535,7 @@ def main() -> None:  # pragma: no cover
             last_run = demisto.getLastRun()
             demisto.debug(f"[Main] Starting new fetch with last_run as {last_run}")
             sign_on_events, new_last_run = fetch_sign_on_events_command(client=client, max_fetch=max_fetch, last_run=last_run)
-            demisto.debug(f"[Main] Done fetching events, sending to XSIAM. - {sign_on_events}")
+            demisto.debug(f"[Main] Done fetching events, sending to XSIAM {len(sign_on_events)} events.")
             send_events_to_xsiam(sign_on_events, vendor=VENDOR, product=PRODUCT)
             if new_last_run:
                 # saves next_run for the time fetch-events is invoked

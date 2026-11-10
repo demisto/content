@@ -643,6 +643,9 @@ switch (command) {
     case 'core-api-put':
         var body = JSON.parse(args.body);
         return sendRequest('PUT',args.uri, args.body);
+    case 'core-api-patch':
+        var body = JSON.parse(args.body);
+        return sendRequest('PATCH',args.uri, args.body);
     case 'demisto-api-delete':
     case 'core-api-delete':
         return sendRequest('DELETE',args.uri);

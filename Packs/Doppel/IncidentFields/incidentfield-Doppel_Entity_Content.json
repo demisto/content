@@ -1,13 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Doppel Alert Crypto",
-        "Doppel Alert Domains",
-        "Doppel Alert Ecommerce",
-        "Doppel Alert Email",
-        "Doppel Alert Mobile_Apps",
-        "Doppel Alert Paid_Ads",
-        "Doppel Alert Social_Media"
+        "Doppel Alert Domains"
     ],
     "caseInsensitive": true,
     "cliName": "doppelentitycontent",
@@ -144,5 +138,9 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

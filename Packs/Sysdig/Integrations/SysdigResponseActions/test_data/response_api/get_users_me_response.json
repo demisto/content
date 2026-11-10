@@ -1,0 +1,12 @@
+{
+    "user": {
+        "id": 12345,
+        "username": "sysdig-xsoar-service",
+        "customer": {
+            "id": 55001,
+            "name": "Acme Corp"
+        },
+        "customerId": 55001,
+        "customerName": "Acme Corp"
+    }
+}

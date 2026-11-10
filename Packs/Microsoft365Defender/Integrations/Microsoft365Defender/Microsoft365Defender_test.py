@@ -733,6 +733,25 @@ def test_get_meta_data_empty_incident():
     assert metadata["comments"] == []
 
 
+def test_get_meta_data_for_incident_user_entity():
+    """
+    Given:
+      - A raw incident containing a User entity with accountName, domainName and userPrincipalName
+        (reproduces XSUP-72109 "User login from a domain not seen in 60 days").
+    When:
+      - Extracting metadata from the incident.
+    Then:
+      - Ensure the full user identity is retained (userPrincipalName with the domain),
+        instead of only the domain name.
+    """
+    from Microsoft365Defender import _get_meta_data_for_incident
+
+    raw_incident = util_load_json("./test_data/raw_incident_with_user.json")
+    metadata = _get_meta_data_for_incident(raw_incident)
+
+    assert metadata["Impacted entities"] == ["username@domain (BOQDEVUSER.LOCAL)"]
+
+
 def test_fetch_modified_incident(mocker):
     """
     Given:

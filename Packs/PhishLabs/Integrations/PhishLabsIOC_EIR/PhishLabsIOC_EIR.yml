@@ -43,6 +43,13 @@ configuration:
   type: 13
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - defaultvalue: '1 hours'
   section: Collect
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
@@ -240,6 +247,13 @@ script:
     - description: The ID of the incident.
       name: incident_id
       required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether the attachment list should also contain screenshot and submission attachment types (if available).
+      name: extend_attachments
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns a single Incident based on the given ID.
     name: phishlabs-ioc-eir-get-incident-by-id
     outputs:
@@ -363,7 +377,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: String
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.15.14069087
   isfetch: true
   runonce: false
   script: '-'

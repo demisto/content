@@ -105,6 +105,7 @@ MSG_A = {
     "id": "msg-a",
     "phishmlReport": None,
     "pipelineStatus": "PROCESSED",
+    "reportedAt": "2024-01-01T09:59:55Z",
     "severity": "UNKNOWN_SEVERITY",
     "subject": "Message A",
     "tags": [],
@@ -121,6 +122,7 @@ MSG_B = {
     "id": "msg-b",
     "phishmlReport": None,
     "pipelineStatus": "PROCESSED",
+    "reportedAt": "2024-01-01T10:04:55Z",
     "severity": "UNKNOWN_SEVERITY",
     "subject": "Message B",
     "tags": [],
@@ -315,6 +317,65 @@ def test_fetch_incidents_query_uses_window(mocker):
     call_arg = spy.call_args[0][0]
     assert "reported_at:{2024-01-01T10:30:00Z TO 2024-01-01T11:00:00Z}" in call_arg
     assert "TO *" not in call_arg
+
+
+@freeze_time("2024-01-01T11:00:00Z")
+def test_fetch_incidents_cursor_uses_reported_at(mocker):
+    """
+    Given:
+    - A message with reportedAt earlier than its CREATED event createdAt
+
+    When:
+    - fetch_incidents is called
+
+    Then:
+    - created_at_cursor is set to reportedAt, not createdAt, keeping the
+      cursor coherent with the reported_at Lucene query field
+    """
+    last_run = {"time": "2024-01-01T09:00:00Z", "found_incident_ids": {}}
+    mocker.patch.object(client, "phisher_gql_request", return_value=_gql_response([MSG_A]))
+    next_run, incidents = phisher.fetch_incidents(client, last_run, "7 days", 50)
+    assert len(incidents) == 1
+    raw = json.loads(incidents[0]["rawJSON"])
+    assert raw["created_at_cursor"] == "2024-01-01T09:59:55Z"  # reportedAt, not createdAt (10:00:00Z)
+
+
+@freeze_time("2024-01-01T11:00:00Z")
+def test_test_module_returns_ok_when_no_messages(mocker):
+    """
+    Given:
+    - A valid connection to PhishER that returns zero messages
+
+    When:
+    - test-module is called (e.g. from XSOAR integration config)
+
+    Then:
+    - "ok" is returned — empty inbox is not a failure
+    """
+    mocker.patch.object(client, "phisher_gql_request", return_value=_gql_response([]))
+    mocker.patch("knowbe4Phisher.demisto").getLastRun.return_value = {}
+    mocker.patch.object(client, "max_fetch", 50)
+    result = phisher.test_module(client)
+    assert result == "ok"
+
+
+@freeze_time("2024-01-01T11:00:00Z")
+def test_test_module_returns_ok_when_messages_exist(mocker):
+    """
+    Given:
+    - A valid connection to PhishER that returns messages
+
+    When:
+    - test-module is called
+
+    Then:
+    - "ok" is returned
+    """
+    mocker.patch.object(client, "phisher_gql_request", return_value=_gql_response([MSG_A]))
+    mocker.patch("knowbe4Phisher.demisto").getLastRun.return_value = {}
+    mocker.patch.object(client, "max_fetch", 50)
+    result = phisher.test_module(client)
+    assert result == "ok"
 
 
 def test_time_creation():

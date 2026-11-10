@@ -882,5 +882,9 @@
     "name": "IP Indicator",
     "system": false,
     "version": -1,
-    "description": "IP Indicator Layout"
+    "description": "IP Indicator Layout",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

@@ -1,0 +1,69 @@
+{
+    "defaultIncidentType": "LumuSecops",
+    "description": "Classifies Lumu SecOps incidents",
+    "feed": false,
+    "id": "LumuSecops",
+    "keyTypeMap": {
+        "lumusecops": "LumuSecops"
+    },
+    "name": "LumuSecops",
+    "transformer": {
+        "complex": {
+            "filters": [
+                [
+                    {
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "simple": "lumu_secops_source_name"
+                            }
+                        },
+                        "operator": "isEqualString",
+                        "right": {
+                            "value": {
+                                "simple": "lumusecops"
+                            }
+                        }
+                    }
+                ],
+                [
+                    {
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "simple": "lumu_secops_source_name"
+                            }
+                        },
+                        "operator": "isEqualString",
+                        "right": {
+                            "value": {
+                                "simple": "LumuSecops"
+                            }
+                        }
+                    }
+                ],
+                [
+                    {
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "simple": "lumu_secops_source_name"
+                            }
+                        },
+                        "operator": "isEqualString",
+                        "right": {
+                            "value": {
+                                "simple": "LUMUSECOPS"
+                            }
+                        }
+                    }
+                ]
+            ],
+            "root": "lumu_secops_source_name",
+            "transformers": []
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

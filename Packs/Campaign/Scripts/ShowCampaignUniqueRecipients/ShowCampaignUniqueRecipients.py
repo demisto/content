@@ -17,11 +17,11 @@ try:
     }
 
     html = (
-        f"<div style='font-size:17px; text-align:center; padding-top: 20px;'> Unique Recipients "
-        f"<div style='font-size:32px;'> <div> {len(unique_recipients)} </div></div>"
+        f"<div style='font-size:17px; text-align:center; padding: 8px;'>"
+        f"Unique Recipients<div style='font-size:24px;'>{len(unique_recipients)}</div></div>"
     )
 except Exception:
-    html = "<div style='text-align:center; padding-top: 20px;'> <div> No recipients </div>"
+    html = "<div style='font-size:17px; text-align:center; padding: 8px;'>Unique Recipients<div>No recipients</div></div>"
 
 # Return the data to the layout:
 demisto.results({"ContentsFormat": EntryFormat.HTML, "Type": EntryType.NOTE, "Contents": html})

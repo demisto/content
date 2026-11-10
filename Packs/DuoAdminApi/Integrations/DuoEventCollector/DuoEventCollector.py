@@ -28,12 +28,12 @@ class Params(BaseModel):
     """
 
     mintime: dict
-    limit: str = "1000"
-    retries: str = Field(default="5")
+    limit: int = 1000
+    retries: int = Field(default=5)
     host: str
     integration_key: str
     secret_key: dict
-    fetch_delay: str = "0"
+    fetch_delay: int = 0
     end_window: datetime
 
     def set_next_offset_value(self, mintime: Any, log_type: LogType) -> None:
@@ -57,7 +57,7 @@ class Client:
         returns a tuple (events:list, metadata:dict|None) the metadata part is relevant only to the V2 endpoints,
         And should be None for the V1 end points.
         """
-        retries = int(self.params.retries)
+        retries = self.params.retries
         response_metadata = None
         while retries != 0:
             try:
@@ -96,7 +96,7 @@ class Client:
         """
         demisto.debug(f"check_window_before_call {mintime=}")
         mintime_dt = datetime.fromtimestamp(mintime)
-        if self.params.fetch_delay != "0" and self.params.end_window - timedelta(seconds=5) <= mintime_dt:
+        if self.params.fetch_delay != 0 and self.params.end_window - timedelta(seconds=5) <= mintime_dt:
             demisto.debug(
                 f"check_window_before_call, don't perform API call {self.params.fetch_delay=} and "
                 f"{(self.params.end_window - timedelta(seconds=5))=} <= {mintime_dt=}"
@@ -125,7 +125,7 @@ class Client:
             response = self.admin_api.get_authentication_log(
                 mintime=mintime,
                 api_version=2,
-                limit=str(min(int(self.params.limit), int("1000"))),
+                limit=str(min(self.params.limit, 1000)),
                 sort="ts:asc",
                 maxtime=maxtime,
             )
@@ -140,7 +140,7 @@ class Client:
                 next_offset=next_offset,
                 mintime=mintime,
                 api_version=2,
-                limit=str(min(int(self.params.limit), int("1000"))),
+                limit=str(min(self.params.limit, 1000)),
                 sort="ts:asc",
                 maxtime=maxtime,
             )
@@ -173,7 +173,7 @@ class Client:
                 return [], {}
             demisto.debug(f"handle_telephony_logs_v2, no next_offset {mintime=} {maxtime=}")
             response = self.admin_api.get_telephony_log(
-                mintime=mintime, api_version=2, limit=str(min(int(self.params.limit), 1000)), sort="ts:asc", maxtime=maxtime
+                mintime=mintime, api_version=2, limit=str(min(self.params.limit, 1000)), sort="ts:asc", maxtime=maxtime
             )
 
         else:
@@ -186,7 +186,7 @@ class Client:
                 next_offset=next_offset,
                 mintime=mintime,
                 api_version=2,
-                limit=str(min(int(self.params.limit), 1000)),
+                limit=str(min(self.params.limit, 1000)),
                 sort="ts:asc",
                 maxtime=maxtime,
             )
@@ -246,7 +246,7 @@ class GetEvents:
     def make_sdk_call(self) -> tuple:
         events, metadata = self.client.call(self.request_order)
         demisto.debug(f"make_sdk_call {len(events)=}")
-        events = events[: int(self.client.params.limit)]
+        events = events[: self.client.params.limit]
         demisto.debug(f"make_sdk_call after update {len(events)=}")
         return events, metadata
 
@@ -264,10 +264,7 @@ class GetEvents:
             tuple[list[dict], bool]: The list of events, bool represents whether we reached the end of the fetch window.
         """
         # if 1
-        if (
-            self.client.params.fetch_delay == "0"
-            or datetime.fromtimestamp(events[-1]["timestamp"]) < self.client.params.end_window
-        ):
+        if self.client.params.fetch_delay == 0 or datetime.fromtimestamp(events[-1]["timestamp"]) < self.client.params.end_window:
             demisto.debug(
                 f"events_in_window, all events in the fetch window {events[-1]['timestamp']=} < "
                 f"{self.client.params.end_window.timestamp()=}"
@@ -332,13 +329,13 @@ class GetEvents:
         for events in self._iter_events():
             demisto.debug(f"Got {len(events)}, events for {self.request_order[0]} logs")
             stored_events.extend(events)
-            if len(stored_events) >= int(self.client.params.limit) or not events:
+            if len(stored_events) >= self.client.params.limit or not events:
                 return stored_events
             demisto.debug(
                 f"updating the limit current value is {self.client.params.limit} the new value will be "
-                f"{int(self.client.params.limit) - len(stored_events)}"
+                f"{self.client.params.limit - len(stored_events)}"
             )
-            self.client.params.limit = str(int(self.client.params.limit) - len(stored_events))
+            self.client.params.limit = self.client.params.limit - len(stored_events)
         return stored_events
 
     def get_last_run(self):

@@ -1,32 +1,68 @@
-import demistomock as demisto
-from CommonServerPython import *
+import json
+from datetime import UTC, datetime, timedelta
 
 from anyrun import RunTimeException
 from anyrun.connectors import SandboxConnector
 from anyrun.connectors.sandbox.base_connector import BaseSandboxConnector
 from anyrun.connectors.sandbox.operation_systems import (
-    WindowsConnector,
-    LinuxConnector,
     AndroidConnector,
+    LinuxConnector,
+    WindowsConnector,
 )
 
+import demistomock as demisto
+from CommonServerPython import *
 
-VERSION = "PA-XSOAR:2.3.0"
+VERSION = "PA-XSOAR:2.5.0"
 
 SCORE_TO_VERDICT = {0: "Unknown", 1: "Suspicious", 2: "Malicious"}
+XDR_REPUTATION = {0: "UNKNOWN", 1: "SUSPICIOUS", 2: "BAD"}
+XDR_ALLOWED_IOC_REPUTATIONS = (1, 2)  # Only Suspicious and Malicious IOCs are pushed to Cortex XDR
+XDR_SEVERITY = {0: "INFO", 1: "MEDIUM", 2: "HIGH"}
+
+SCORE_BY_REPUTATION = {
+    0: Common.DBotScore.NONE,
+    1: Common.DBotScore.SUSPICIOUS,
+    2: Common.DBotScore.BAD,
+}
 
 ANYRUN_TO_SOAR_INDICATOR = {
     "ip": "IP",
     "url": "URL",
     "domain": "Domain",
+    "md5": "File MD5",
+    "sha1": "File SHA-1",
     "sha256": "File SHA-256",
 }
+
+ANYRUN_TO_XDR_INDICATOR = {
+    "ip": "IP",
+    "url": "URL",
+    "domain": "DOMAIN_NAME",
+    "md5": "HASH",
+    "sha1": "HASH",
+    "sha256": "HASH",
+}
+
+XDR_INDICATOR_CLASS = {
+    "IP": "IP",
+    "URL": "URL",
+    "DOMAIN_NAME": "Domain",
+    "HASH": "Malware",
+}
+
+DEFAULT_ROOT_URL = "any.run"
+IOC_EXPIRATION_DAYS = 30
 
 
 def test_module(params: dict) -> str:  # pragma: no cover
     """Performs ANY.RUN API call to verify integration is operational"""
     try:
-        with BaseSandboxConnector(get_authentication(params), trust_env=argToBoolean(params.get("proxy", False))) as connector:
+        with BaseSandboxConnector(
+            get_authentication(params),
+            trust_env=argToBoolean(params.get("proxy", False)),
+            root_url=params.get("root_url") or DEFAULT_ROOT_URL,
+        ) as connector:
             connector.check_authorization()
             return "ok"
     except RunTimeException as exception:
@@ -76,6 +112,7 @@ def build_context_path(analysis_type: str, connector: WindowsConnector | LinuxCo
 
 
 def start_analyse(
+    params: dict,
     args: dict,
     analysis_type: str,
     connector: WindowsConnector | LinuxConnector | AndroidConnector,
@@ -83,6 +120,7 @@ def start_analyse(
     """
     Process Sandbox analysis
 
+    :param params: Demisto params
     :param args: Demisto args
     :param analysis_type: ANY.RUN Sandbox submission type
     :param connector: ANY.RUN connector instance
@@ -94,20 +132,21 @@ def start_analyse(
     else:
         task_uuid = connector.run_url_analysis(**args)
 
-    return_results(
-        CommandResults(
-            outputs_prefix="ANYRUN.SandboxURL",
-            outputs=f"Link to the interactive analysis: https://app.any.run/tasks/{task_uuid}",
-            ignore_auto_extract=True,
-        )
-    )
+    root_url = params.get("root_url") or DEFAULT_ROOT_URL
 
     return_results(
-        CommandResults(
-            outputs_prefix=build_context_path(analysis_type, connector),
-            outputs=task_uuid,
-            ignore_auto_extract=True,
-        )
+        [
+            CommandResults(
+                outputs_prefix="ANYRUN.SandboxURL",
+                outputs=f"Link to the interactive analysis: https://app.{root_url}/tasks/{task_uuid}",
+                ignore_auto_extract=True,
+            ),
+            CommandResults(
+                outputs_prefix=build_context_path(analysis_type, connector),
+                outputs=task_uuid,
+                ignore_auto_extract=True,
+            ),
+        ]
     )
 
 
@@ -116,9 +155,10 @@ def detonate_entity_windows(params: dict, args: dict, analysis_type: str) -> Non
         get_authentication(params),
         integration=VERSION,
         trust_env=argToBoolean(params.get("proxy", False)),
-        verify_ssl=not params.get("insecure"),
+        verify_ssl=not argToBoolean(params.get("insecure", False)),
+        root_url=params.get("root_url") or DEFAULT_ROOT_URL,
     ) as connector:
-        start_analyse(args, analysis_type, connector)
+        start_analyse(params, args, analysis_type, connector)
 
 
 def detonate_entity_linux(params: dict, args: dict, analysis_type: str) -> None:  # pragma: no cover
@@ -126,9 +166,10 @@ def detonate_entity_linux(params: dict, args: dict, analysis_type: str) -> None:
         get_authentication(params),
         integration=VERSION,
         trust_env=argToBoolean(params.get("proxy", False)),
-        verify_ssl=not params.get("insecure"),
+        verify_ssl=not argToBoolean(params.get("insecure", False)),
+        root_url=params.get("root_url") or DEFAULT_ROOT_URL,
     ) as connector:
-        start_analyse(args, analysis_type, connector)
+        start_analyse(params, args, analysis_type, connector)
 
 
 def detonate_entity_android(params: dict, args: dict, analysis_type: str) -> None:  # pragma: no cover
@@ -136,16 +177,17 @@ def detonate_entity_android(params: dict, args: dict, analysis_type: str) -> Non
         get_authentication(params),
         integration=VERSION,
         trust_env=argToBoolean(params.get("proxy", False)),
-        verify_ssl=not params.get("insecure"),
+        verify_ssl=not argToBoolean(params.get("insecure", False)),
+        root_url=params.get("root_url") or DEFAULT_ROOT_URL,
     ) as connector:
-        start_analyse(args, analysis_type, connector)
+        start_analyse(params, args, analysis_type, connector)
 
 
-def detonate_file_widows(params: dict, args: dict) -> None:  # pragma: no cover
+def detonate_file_windows(params: dict, args: dict) -> None:  # pragma: no cover
     detonate_entity_windows(params, args, "file")
 
 
-def detonate_url_widows(params: dict, args: dict) -> None:  # pragma: no cover
+def detonate_url_windows(params: dict, args: dict) -> None:  # pragma: no cover
     detonate_entity_windows(params, args, "url")
 
 
@@ -173,6 +215,7 @@ def delete_task(params: dict, args: dict) -> None:  # pragma: no cover
         integration=VERSION,
         trust_env=argToBoolean(params.get("proxy", False)),
         verify_ssl=not params.get("insecure"),
+        root_url=params.get("root_url") or DEFAULT_ROOT_URL,
     ) as connector:
         connector.delete_task(task_uuid)
 
@@ -187,10 +230,12 @@ def download_analysis_sample(params: dict, args: dict, download_type: str) -> No
         integration=VERSION,
         trust_env=argToBoolean(params.get("proxy", False)),
         verify_ssl=not params.get("insecure"),
+        root_url=params.get("root_url") or DEFAULT_ROOT_URL,
     ) as connector:
         if download_type == "pcap":
             return_results(fileResult(f"{task_uuid}_traffic_dump.pcap", connector.download_pcap(task_uuid)))
-        return_results(fileResult(f"{task_uuid}_sample.zip", connector.download_file_sample(task_uuid)))
+        else:
+            return_results(fileResult(f"{task_uuid}_sample.zip", connector.download_file_sample(task_uuid)))
 
 
 def get_analysis_verdict(params: dict, args: dict) -> None:  # pragma: no cover
@@ -201,6 +246,7 @@ def get_analysis_verdict(params: dict, args: dict) -> None:  # pragma: no cover
         integration=VERSION,
         trust_env=argToBoolean(params.get("proxy", False)),
         verify_ssl=not params.get("insecure"),
+        root_url=params.get("root_url") or DEFAULT_ROOT_URL,
     ) as connector:
         for _ in connector.get_task_status(task_uuid):
             pass
@@ -222,6 +268,7 @@ def get_user_limits(params: dict) -> None:  # pragma: no cover
         integration=VERSION,
         trust_env=argToBoolean(params.get("proxy", False)),
         verify_ssl=not params.get("insecure"),
+        root_url=params.get("root_url") or DEFAULT_ROOT_URL,
     ) as connector:
         user_limits = connector.get_user_limits()
 
@@ -240,6 +287,7 @@ def get_analysis_history(params: dict, args: dict) -> None:  # pragma: no cover
         integration=VERSION,
         trust_env=argToBoolean(params.get("proxy", False)),
         verify_ssl=not params.get("insecure"),
+        root_url=params.get("root_url") or DEFAULT_ROOT_URL,
     ) as connector:
         analysis_history = connector.get_analysis_history(**args)
 
@@ -252,97 +300,166 @@ def get_analysis_history(params: dict, args: dict) -> None:  # pragma: no cover
     )
 
 
-def create_indicators(report: dict, task_uuid: str) -> None:  # pragma: no cover
+def create_indicators(
+    report: list, task_uuid: str, root_url: str, create_xdr_iocs: bool = False
+) -> tuple[list[dict], str, str]:  # pragma: no cover
     """
     Excludes IOCs from the analysis report. Sends them to Threat Intel
 
     :param report: Analysis report
+    :param task_uuid: ANY.RUN task UUID
+    :param create_xdr_iocs: Whether to also build XDR IOC objects (needed by the XDR playbooks only).
+        Unknown reputation IOCs are never included.
+    :return XDR IOCDetails, readable output, comma-separated IOC values
     """
     output: list[dict[str, str]] = []
     indicators: list[dict] = []
+    ioc_details: list[dict] = []
+    ioc_values: list[str] = []
+
+    expiration_date = int((datetime.now(UTC) + timedelta(days=IOC_EXPIRATION_DAYS)).timestamp() * 1000)
 
     for indicator in report:
         reputation = indicator.get("reputation")
+        indicator_value = indicator.get("ioc")
+        anyrun_indicator_type = indicator.get("type")
+        xsoar_indicator_type = ANYRUN_TO_SOAR_INDICATOR.get(anyrun_indicator_type)
+        verdict = SCORE_TO_VERDICT.get(reputation)
+        score = SCORE_BY_REPUTATION.get(reputation)
 
-        if reputation == 0:
-            score = Common.DBotScore.NONE
-        elif reputation == 1:
-            score = Common.DBotScore.SUSPICIOUS
-        elif reputation == 2:
-            score = Common.DBotScore.BAD
-        else:
+        xdr_indicator_type = ANYRUN_TO_XDR_INDICATOR.get(anyrun_indicator_type, "")
+        xdr_severity = XDR_SEVERITY.get(reputation, "HIGH")
+        xdr_reputation = XDR_REPUTATION.get(reputation, "UNKNOWN")
+        _xdr_indicator_class = XDR_INDICATOR_CLASS.get(xdr_indicator_type)
+
+        if reputation is None or not indicator_value or not xsoar_indicator_type or score is None or verdict is None:
             continue
-
-        indicator_type = ANYRUN_TO_SOAR_INDICATOR.get(indicator.get("type"), "")
 
         indicators.append(
             {
-                "type": indicator_type,
-                "value": indicator.get("ioc"),
+                "type": xsoar_indicator_type,
+                "value": indicator_value,
                 "score": score,
                 "fields": {
                     "vendor": "ANY.RUN",
                     "service": "ANY.RUN Cloud Sandbox",
-                    "description": f"https://app.any.run/tasks/{task_uuid}",
+                    "description": f"https://app.{root_url}/tasks/{task_uuid}",
                 },
             }
         )
 
         output.append(
             {
-                "type": indicator_type,
-                "value": indicator.get("ioc"),
-                "verdict": SCORE_TO_VERDICT.get(reputation, ""),
+                "type": xsoar_indicator_type,
+                "value": indicator_value,
+                "verdict": verdict,
             }
         )
 
-    demisto.createIndicators(indicators)
+        ioc_values.append(indicator_value)
 
-    return_results(
-        CommandResults(
-            readable_output=tableToMarkdown(
-                "Indicators from ANY.RUN Cloud Sandbox",
-                output,
-                headers=["type", "value", "verdict"],
-                headerTransform=string_to_table_header,
-            ),
-            ignore_auto_extract=True,
+        if (
+            not create_xdr_iocs
+            or not xdr_indicator_type
+            or not _xdr_indicator_class
+            or reputation not in XDR_ALLOWED_IOC_REPUTATIONS
+        ):
+            continue
+
+        ioc_object = {
+            "indicator": indicator_value,
+            "type": xdr_indicator_type,
+            "severity": xdr_severity,
+            "expiration_date": expiration_date,
+            "comment": f"ANY.RUN Cloud Sandbox | https://app.{root_url}/tasks/{task_uuid}",
+            "reputation": xdr_reputation,
+            "reliability": "A",
+            "class": _xdr_indicator_class,
+            "vendors": [
+                {
+                    "vendor_name": "ANY.RUN",
+                    "reputation": xdr_reputation,
+                    "reliability": "A",
+                }
+            ],
+        }
+
+        ioc_details.append(
+            {
+                "ioc_object": json.dumps(ioc_object),
+            }
         )
+
+    if indicators:
+        demisto.createIndicators(indicators)
+
+    readable_output = tableToMarkdown(
+        "Indicators from ANY.RUN Cloud Sandbox",
+        output,
+        headers=["type", "value", "verdict"],
+        headerTransform=string_to_table_header,
     )
+
+    ioc_values = ",".join(ioc_values)
+
+    return ioc_details, readable_output, ioc_values
 
 
 def get_analysis_report(params: dict, args: dict) -> None:  # pragma: no cover
     task_uuid = args.get("task_uuid", "")
-    report_format = args.get("report_format")
+    report_format = args.get("report_format", "summary")
+    root_url = params.get("root_url") or DEFAULT_ROOT_URL
+    create_xdr_iocs = argToBoolean(args.get("create_xdr_iocs", False))
 
     with SandboxConnector.windows(
         get_authentication(params),
         integration=VERSION,
         trust_env=argToBoolean(params.get("proxy", False)),
         verify_ssl=not params.get("insecure"),
+        root_url=root_url,
     ) as connector:
+        if report_format == "summary":
+            report_format = "json"
+
         report = connector.get_analysis_report(task_uuid, report_format=report_format)
 
         if report_format == "html":
             return_results(fileResult(f"anyrun_report_{task_uuid}.html", report))
-        elif report_format == "summary":
-            return_results(
-                CommandResults(
-                    outputs_prefix="ANYRUN.SandboxAnalysis",
-                    outputs=report,
-                    ignore_auto_extract=True,
+        elif report_format == "json":
+            return_results(fileResult(f"anyrun_report_{task_uuid}.json", json.dumps(report)))
+        elif report_format == "ioc":
+            ioc_details, readable_output, ioc_values = create_indicators(report or [], task_uuid, root_url, create_xdr_iocs)
+
+            if not ioc_values:
+                return_results(
+                    CommandResults(
+                        readable_output="No IOCs found",
+                        outputs_prefix="ANYRUN",
+                        ignore_auto_extract=True,
+                    )
                 )
-            )
-        elif report_format == "ioc" and report:
-            create_indicators(report, task_uuid)
+                return
 
             return_results(
                 CommandResults(
+                    readable_output=ioc_values,
                     outputs_prefix="ANYRUN.IOCs",
-                    outputs=",".join(indicator.get("ioc") for indicator in report) if report else "",
+                    outputs=ioc_values,
                     ignore_auto_extract=True,
                 )
             )
+
+            if create_xdr_iocs:
+                return_results(
+                    CommandResults(
+                        readable_output=readable_output,
+                        outputs_prefix="ANYRUN",
+                        outputs={
+                            "IOCDetails": ioc_details,
+                        },
+                        ignore_auto_extract=True,
+                    )
+                )
 
 
 def main():  # pragma: no cover
@@ -367,9 +484,9 @@ def main():  # pragma: no cover
         elif demisto.command() == "anyrun-get-analysis-history":
             get_analysis_history(params, args)
         elif demisto.command() == "anyrun-detonate-file-windows":
-            detonate_file_widows(params, args)
+            detonate_file_windows(params, args)
         elif demisto.command() == "anyrun-detonate-url-windows":
-            detonate_url_widows(params, args)
+            detonate_url_windows(params, args)
         elif demisto.command() == "anyrun-detonate-file-linux":
             detonate_file_linux(params, args)
         elif demisto.command() == "anyrun-detonate-url-linux":
@@ -377,6 +494,7 @@ def main():  # pragma: no cover
         elif demisto.command() == "anyrun-detonate-file-android":
             detonate_file_android(params, args)
         elif demisto.command() == "anyrun-detonate-url-android":
+            args.pop("obj_ext_browser", None)
             detonate_url_android(params, args)
         elif demisto.command() == "anyrun-get-analysis-report":
             get_analysis_report(params, args)
@@ -387,6 +505,11 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"Command {demisto.command()} is not implemented")
     except RunTimeException as exception:
         return_error(exception.description, error=str(exception.json))
+    except Exception as e:
+        return_error(
+            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}",
+            error=traceback.format_exc(),
+        )
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

@@ -433,7 +433,15 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: news or mail
+                  simple: news
+            - operator: notContainsString
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: mail
           - - operator: isNotEqualString
               left:
                 value:

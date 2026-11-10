@@ -1,22 +1,46 @@
-## ⚠️ Important: Microsoft Graph Security Legacy Alerts Deprecation
+# Microsoft Graph Security
 
-> **Note:** Microsoft has announced the deprecation of the **Legacy Alerts** API on **April 10, 2026**.
-
-According to [Microsoft documentation](https://learn.microsoft.com/fi-fi/graph/api/resources/alert?view=graph-rest-beta), the Legacy Alerts option will be fully deprecated on **April 10, 2026**.
-
-* **Impact:** After this date, configuring this integration to use the "Legacy Alerts" option will stop returning data.
-* **Action Required:** Users currently utilizing Legacy Alerts must migrate to the new **Alerts v2** API option to ensure continued data ingestion.
-
-__________________________________________________________________________________________________
 The eDiscovery APIs in Microsoft Graph only work with eDiscovery (Premium) cases.
-The legacy content search solution has been retired; you can now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery).
+The legacy content search solution has been deprecated. You can now search by [case](https://learn.microsoft.com/en-us/purview/ediscovery).
+
+# Fetch
+Use the **Fetch incidents type** parameter to control what this integration ingests. You can select **Alerts**, **Incidents**, or both:
+
+* **Alerts** - Each Microsoft Graph Security alert is fetched individually.
+* **Incidents** - Each Microsoft Graph Security incident is fetched individually, with all associated alerts embedded within it and stored as raw JSON. This provides a single grouped incident containing its underlying alerts, rather than multiple separate alerts.
+
+You can narrow what is fetched using the **Alerts Filter** and **Incidents Filter** parameters. These accept an OData `$filter` expression, for example `severity eq 'medium' and status eq 'active'`. For the supported syntax and operators, see [Microsoft query parameters](https://learn.microsoft.com/en-us/graph/query-parameters?tabs=http).
+
+<~XSOAR>
+
+# Mirroring
+Mirroring is controlled by the **Incident Mirroring Direction** parameter. The optional **Close Mirrored Cortex XSOAR Incident** and **Close Mirrored Microsoft Alert/Incident** parameters control closing.
+
+**Incident Mirroring Direction**: Select **Incoming**, **Outgoing** or **Incoming And Outgoing**. **None** turns off mirroring.
+* **Incoming**: Microsoft field changes and comments are mirrored in. Comments are added with the **Comment Entry Tag (from Microsoft)** tag.
+* **Outgoing**: Cortex XSOAR field changes are mirrored out. Only entries with the **Comment Entry Tag (to Microsoft)** tag are sent as comments.
+
+### Closing (optional)
+
+These options only control closing. You don't need them to mirror comments or field changes.
+* **Close Mirrored Cortex XSOAR Incident** (incoming): Closes the Cortex XSOAR incident when the Microsoft alert or incident is Resolved. Incidents also close when Redirected. The Cortex XSOAR incident reopens when the Microsoft alert or incident is reopened.
+* **Close Mirrored Microsoft Alert/Incident** (outgoing): Resolves the Microsoft alert or incident when you close the Cortex XSOAR incident, and sets it back to active/new when you reopen it. Redirected Microsoft incidents keep their status.
+
+### Setup
+* Select **Fetch incidents**, the **Graph Security Classifier**, and the **Graph Security Mapper - Incoming** and **Graph Security Mapper - Outgoing** mappers.
+* When mirroring is enabled, **Comment Entry Tag (to Microsoft)** and **Comment Entry Tag (from Microsoft)** must both be set and must be different.
+* Outgoing mirroring needs the `SecurityIncident.ReadWrite.All` and `SecurityAlert.ReadWrite.All` permissions.
+
+For details, see [Configure Incident Mirroring](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph#configure-incident-mirroring).
+
+</~XSOAR>
 
 # Authentication
 You can authenticate either by Entra ID applications or by Azure Managed Identities.
 
 ### Authentication Based on Entra ID Applications
 
-Microsoft integrations (Graph and Azure) in Cortex XSOAR use Entra ID applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard compliant authentication services, which use an application to sign in or delegate authentication. For more information, see the Microsoft identity platform overview.
+Microsoft integrations (Graph and Azure) in Cortex use Entra ID applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard compliant authentication services, which use an application to sign in or delegate authentication. For more information, see the Microsoft identity platform overview.
 
 There are two application authentication methods available:
 
@@ -25,8 +49,8 @@ There are two application authentication methods available:
 
 Depending on the authentication method that you use, the integration parameters might change.
 
-To use the **Cortex XSOAR application** and allow Cortex XSOAR access to Microsoft Graph Security an administrator has to approve our app using an admin consent flow by clicking this **[link](https://oproxy.demisto.ninja/ms-graph-security)**.
-After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key which should be inserted in the integration instance settings fields.
+To use the integration and grant Cortex access to Microsoft Graph Security, an administrator must approve the application through the admin consent flow by clicking this **[link](https://oproxy.demisto.ninja/ms-graph-security)**.
+After authorizing the Cortex app, you will get an ID, Token, and Key which should be inserted in the integration instance settings fields.
 If you previously had an API V1 configured based on the credentials obtained from this method, refer to the link above to gain new credentials with the relevant permissions.
 
 ### Important

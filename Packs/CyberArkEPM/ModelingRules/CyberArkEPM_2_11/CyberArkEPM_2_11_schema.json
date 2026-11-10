@@ -1,0 +1,176 @@
+{
+    "cyberark_epm_raw": {
+        "Description": {
+            "type": "string",
+            "is_array": false
+        },
+        "PermissionDescription": {
+            "type": "string",
+            "is_array": false
+        },
+        "Role": {
+            "type": "string",
+            "is_array": false
+        },
+        "SetName": {
+            "type": "string",
+            "is_array": false
+        },
+        "Administrator": {
+            "type": "string",
+            "is_array": false
+        },
+        "InternalSessionId": {
+            "type": "int",
+            "is_array": false
+        },
+        "Feature": {
+            "type": "string",
+            "is_array": false
+        },
+        "LoggedFrom": {
+            "type": "string",
+            "is_array": false
+        },
+        "accessAction": {
+            "type": "string",
+            "is_array": false
+        },
+        "userName": {
+            "type": "string",
+            "is_array": false
+        },
+        "operatingSystemType": {
+            "type": "string",
+            "is_array": false
+        },
+        "winEventType": {
+            "type": "int",
+            "is_array": false
+        },
+        "fileName": {
+            "type": "string",
+            "is_array": false
+        },
+        "packageName": {
+            "type": "string",
+            "is_array": false
+        },
+        "policyName": {
+            "type": "string",
+            "is_array": false
+        },
+        "publisher": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventType": {
+            "type": "string",
+            "is_array": false
+        },
+        "filePath": {
+            "type": "string",
+            "is_array": false
+        },
+        "runAsUsername": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourceProcessUsername": {
+            "type": "string",
+            "is_array": false
+        },
+        "fileSize": {
+            "type": "int",
+            "is_array": false
+        },
+        "threatProtectionAction": {
+            "type": "string",
+            "is_array": false
+        },
+        "productName": {
+            "type": "string",
+            "is_array": false
+        },
+        "bundleName": {
+            "type": "string",
+            "is_array": false
+        },
+        "productVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "bundleVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "originUserUID": {
+            "type": "string",
+            "is_array": false
+        },
+        "accessTargetType": {
+            "type": "string",
+            "is_array": false
+        },
+        "accessTargetName": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourceProcessCommandLine": {
+            "type": "string",
+            "is_array": false
+        },
+        "processCommandLine": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourceProcessHash": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourceProcessSigner": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourceWSName": {
+            "type": "string",
+            "is_array": false
+        },
+        "computerName": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourceWSIp": {
+            "type": "string",
+            "is_array": false
+        },
+        "winEventRecordId": {
+            "type": "int",
+            "is_array": false
+        },
+        "agentId": {
+            "type": "string",
+            "is_array": false
+        },
+        "logonAttemptTypeId": {
+            "type": "int",
+            "is_array": false
+        },
+        "logonStatusId": {
+            "type": "int",
+            "is_array": false
+        },
+        "policyAction": {
+            "type": "string",
+            "is_array": false
+        },
+        "commandInfo": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

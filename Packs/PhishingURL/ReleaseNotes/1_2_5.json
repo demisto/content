@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"The *urls* argument of the ***DBotPredictURLPhishing*** script is now parsed using the ***argToList*** utility, which splits on commas by default. If you previously relied on space-separated URLs without commas, make sure to separate them with commas or pass them as a list."}

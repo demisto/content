@@ -1,3 +1,6 @@
+import time
+import traceback
+
 import urllib3
 from enum import Enum
 from typing import Any
@@ -20,6 +23,38 @@ API_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # Format for API requests
 DEFAULT_PAGE_SIZE = 100
 DEFAULT_MAX_FETCH = 1000
 CLIENT_NAME = "Halcyon"
+
+# Events lookback. The Halcyon events API indexes events late: an event can become queryable
+# minutes after its occurredAt. Every cycle re-reads [now - lookback, now] and drops the events
+# already sent (tracked in a dedup cache), so late-indexed events are still collected without
+# re-sending the ones we already have. In busy hours Halcyon delivers events up to ~5 minutes
+# after occurredAt and the API can lag a few minutes more. On a customer tenant some events became
+# queryable ~10 minutes after occurredAt. The lookback is the fetch interval + EVENTS_LOOKBACK_EXTRA
+# (see ``get_events_lookback``): an event indexed up to 10 minutes late is first visible to the cycle
+# that runs up to one fetch interval after it was indexed, so that cycle must still cover it.
+EVENTS_LOOKBACK_EXTRA = timedelta(minutes=10)
+# Default "Events Fetch Interval" (minutes) when the parameter is empty or invalid.
+DEFAULT_EVENTS_FETCH_INTERVAL_MINUTES = 1
+# Extra time dedup IDs are kept beyond the window (like SailPoint's lookback + 1 minute), so a query
+# that starts slightly earlier than expected (API rounding of occurredAfter, clock skew between
+# engines) does not re-send events whose IDs were already dropped.
+EVENTS_DEDUP_CACHE_MARGIN = timedelta(minutes=1)
+# When an events fetch reaches max_fetch, run the next fetch after this many seconds instead of
+# waiting for the full fetch interval, so a burst drains quickly (like Code42's NEXT_TRIGGER_VALUE).
+EVENTS_NEXT_TRIGGER_SECONDS = "1"
+# Every events log line starts with this prefix, so one search shows the whole lookback flow.
+EVENTS_LOG_PREFIX = "HALCYON-EVENTS"
+# Maximum number of individual events listed per log line (late-indexed / future-dated).
+EVENTS_LOG_MAX_SAMPLES = 20
+# Events last-run keys.
+EVENTS_WATERMARK_KEY = "last_fetch_events"  # Everything up to this time was processed. Same key as the legacy format.
+EVENTS_DEDUP_CACHE_KEY = "events_dedup_cache"  # {eventId: occurredAt} of events already sent.
+EVENTS_FLOOR_KEY = "events_fetch_floor"  # Never query before this time (first fetch start or legacy watermark).
+# The dedup cache holds every sent event ID from this time on. Queries never start before it, so a
+# longer lookback (the fetch interval was increased) does not re-send events whose IDs were dropped.
+# Missing in last runs written before this key existed; it is then ignored and written by the cycle.
+EVENTS_CACHE_COVERAGE_KEY = "events_dedup_cache_from"
+LEGACY_EVENTS_IDS_KEY = "previous_ids_events"  # Legacy dedup list, replaced by EVENTS_DEDUP_CACHE_KEY.
 
 """ LOG TYPE ENUM """
 
@@ -536,6 +571,393 @@ def deduplicate_events(
     return unique_events, last_timestamp_ids, last_timestamp
 
 
+def normalize_timestamp(time_value: str | None) -> str | None:
+    """Convert a Halcyon timestamp to one fixed-width UTC format (``DATE_FORMAT``).
+
+    The API returns timestamps with and without fractional seconds. A single fixed-width
+    format makes plain string comparison equal to time comparison.
+
+    Args:
+        time_value: The raw timestamp string (may be None).
+
+    Returns:
+        The timestamp in ``DATE_FORMAT``, or None if it is empty or cannot be parsed.
+    """
+    if not time_value:
+        return None
+    for known_format in (DATE_FORMAT, "%Y-%m-%dT%H:%M:%SZ"):
+        try:
+            return datetime.strptime(time_value, known_format).strftime(DATE_FORMAT)
+        except ValueError:
+            continue
+    parsed = dateparser.parse(time_value, settings={"TIMEZONE": "UTC", "TO_TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": False})
+    if parsed:
+        return parsed.strftime(DATE_FORMAT)
+    demisto.debug(f"Could not parse timestamp {time_value!r}.")
+    return None
+
+
+def migrate_events_last_run(last_run: dict) -> dict:
+    """Convert a legacy events last run to the lookback format. Does nothing if already migrated.
+
+    Legacy format: ``last_fetch_events`` (watermark) and ``previous_ids_events`` (IDs of the
+    events at exactly that watermark). The IDs become the dedup cache. The legacy watermark
+    becomes a floor: the old code did not remember which events before it were sent, so the
+    first lookback cycles must not query before it, or they would send those events again.
+
+    Args:
+        last_run: The last run dictionary.
+
+    Returns:
+        The last run dictionary in the lookback format.
+    """
+    legacy_watermark = last_run.get(EVENTS_WATERMARK_KEY)
+    if EVENTS_DEDUP_CACHE_KEY in last_run or not legacy_watermark:
+        last_run.pop(LEGACY_EVENTS_IDS_KEY, None)
+        return last_run
+
+    watermark = normalize_timestamp(legacy_watermark) or legacy_watermark
+    legacy_ids = last_run.pop(LEGACY_EVENTS_IDS_KEY, None) or []
+    last_run[EVENTS_WATERMARK_KEY] = watermark
+    last_run[EVENTS_DEDUP_CACHE_KEY] = {str(event_id): watermark for event_id in legacy_ids}
+    last_run[EVENTS_FLOOR_KEY] = watermark
+    log_events_info(
+        f"{EVENTS_LOG_PREFIX} migrated the legacy last run: watermark and migration floor={watermark}, "
+        f"{len(legacy_ids)} legacy IDs moved to the dedup cache. Queries will not start before the floor "
+        f"until the lookback window passes it."
+    )
+    return last_run
+
+
+def get_events_lookback(fetch_interval_minutes: int | None) -> timedelta:
+    """Return the events lookback: the fetch interval + ``EVENTS_LOOKBACK_EXTRA``.
+
+    Args:
+        fetch_interval_minutes: The "Events Fetch Interval" in minutes. Empty or non-positive
+            values fall back to ``DEFAULT_EVENTS_FETCH_INTERVAL_MINUTES``.
+
+    Returns:
+        How far back every events cycle re-reads.
+    """
+    if not fetch_interval_minutes or fetch_interval_minutes <= 0:
+        fetch_interval_minutes = DEFAULT_EVENTS_FETCH_INTERVAL_MINUTES
+    return timedelta(minutes=fetch_interval_minutes) + EVENTS_LOOKBACK_EXTRA
+
+
+def get_events_query_start(
+    watermark: str | None,
+    floor: str | None,
+    cycle_start: datetime,
+    lookback: timedelta,
+    cache_coverage: str | None = None,
+) -> tuple[str, str | None]:
+    """Return where this cycle's events query starts, and the floor to keep for later cycles.
+
+    Normally the query starts at ``cycle_start - lookback`` to catch late-indexed events.
+    If the previous cycle stopped before reaching that point (``max_fetch`` reached), it starts
+    from the watermark instead, so the backlog is drained without gaps. It never starts before
+    the dedup cache coverage (relevant when the lookback grew) or the migration floor. The floor
+    is dropped once the lookback window has moved past it.
+
+    Args:
+        watermark: Everything up to this time was processed (None on the first run).
+        floor: The migration floor (None when not migrating).
+        cycle_start: When this fetch cycle started.
+        lookback: How far back the cycle re-reads (see ``get_events_lookback``).
+        cache_coverage: The dedup cache holds every sent ID from this time on (None if unknown).
+
+    Returns:
+        A tuple of (query start, floor to store or None).
+    """
+    window_start = (cycle_start - lookback).strftime(DATE_FORMAT)
+    query_start = min(watermark, window_start) if watermark else window_start
+    # cache_coverage <= watermark always, so this never skips an undrained backlog.
+    if cache_coverage and cache_coverage > query_start:
+        query_start = cache_coverage
+    if floor and floor > window_start:
+        return max(query_start, floor), floor
+    return query_start, None
+
+
+def log_events_info(message: str) -> None:
+    """Write an info log line for the events flow. Never raises, so logging can never fail the fetch.
+
+    Args:
+        message: The log line.
+    """
+    try:
+        demisto.info(message)
+    except Exception:  # noqa: S110 - a logging failure must not fail the fetch
+        pass
+
+
+def describe_query_start(
+    query_start: str,
+    watermark: str | None,
+    floor: str | None,
+    cycle_start: datetime,
+    lookback: timedelta,
+    cache_coverage: str | None = None,
+) -> str:
+    """Explain, for the log, why the events query starts where it does.
+
+    Args:
+        query_start: Where the query starts.
+        watermark: The watermark from the previous cycle (None on the first run).
+        floor: The migration floor (None when not migrating).
+        cycle_start: When this fetch cycle started.
+        lookback: How far back the cycle re-reads.
+        cache_coverage: The dedup cache holds every sent ID from this time on (None if unknown).
+
+    Returns:
+        A short human-readable reason.
+    """
+    window_start = (cycle_start - lookback).strftime(DATE_FORMAT)
+    if floor and floor > window_start and query_start == floor:
+        return "migration floor: not querying before the legacy watermark, to avoid re-sending events"
+    if watermark and watermark < window_start and query_start == watermark:
+        return "resuming a backlog from the watermark (the previous fetch reached max_fetch or fetching was paused)"
+    if cache_coverage and cache_coverage > window_start and query_start == cache_coverage:
+        return "dedup cache coverage: the lookback grew (fetch interval increased); not querying before the remembered IDs"
+    if not watermark:
+        return f"first fetch: last {lookback.total_seconds():.0f}s"
+    return f"lookback window: last {lookback.total_seconds():.0f}s"
+
+
+def seconds_from_cycle_start(event_time: str, cycle_start: datetime) -> float:
+    """Return how many seconds ``event_time`` is after ``cycle_start`` (negative when it is before).
+
+    Args:
+        event_time: An event time in ``DATE_FORMAT``.
+        cycle_start: When this fetch cycle started.
+
+    Returns:
+        The offset in seconds.
+    """
+    return (datetime.strptime(event_time, DATE_FORMAT).replace(tzinfo=timezone.utc) - cycle_start).total_seconds()
+
+
+def format_event_samples(samples: list[tuple[str, str]], cycle_start: datetime) -> str:
+    """Format events for the log as ``id@occurredAt(offset from the cycle start)``, up to ``EVENTS_LOG_MAX_SAMPLES``.
+
+    Args:
+        samples: (event ID, occurredAt) pairs.
+        cycle_start: When this fetch cycle started.
+
+    Returns:
+        The formatted list.
+    """
+    shown = [
+        f"{event_id}@{event_time}({seconds_from_cycle_start(event_time, cycle_start):+.0f}s)"
+        for event_id, event_time in samples[:EVENTS_LOG_MAX_SAMPLES]
+    ]
+    extra = len(samples) - EVENTS_LOG_MAX_SAMPLES
+    return ", ".join(shown) + (f" ... and {extra} more" if extra > 0 else "")
+
+
+def collect_new_events(
+    client: Client, query_start: str, cycle_start: str, dedup_cache: dict[str, str], max_fetch: int
+) -> tuple[list[dict], str, dict[str, Any]]:
+    """Page through events from ``query_start`` to ``cycle_start`` and keep only unseen ones.
+
+    Pages until a short page (everything up to ``cycle_start`` was read) or until ``max_fetch``
+    new events were collected. Events already in ``dedup_cache`` are skipped and do not count
+    toward ``max_fetch``. Events dated after ``cycle_start`` (the API returns some with a future
+    occurredAt) are skipped too: they are not sent and do not move the watermark, so a later
+    cycle collects them. Events without an ID cannot be deduplicated and are skipped, as before.
+    New events are added to ``dedup_cache``.
+
+    Args:
+        client: The Halcyon client.
+        query_start: The occurredAfter value (inclusive).
+        cycle_start: When this cycle started, in ``DATE_FORMAT``.
+        dedup_cache: {eventId: occurredAt} of events already sent. Updated in place.
+        max_fetch: Maximum number of new events to return.
+
+    Returns:
+        A tuple of (new events, the time up to which all events were processed, counters for the log).
+    """
+    new_events: list[dict] = []
+    processed_through = query_start
+    stats: dict[str, Any] = {"pages": 0, "rows": 0, "duplicates": 0, "no_id": 0, "future": [], "stop_reason": ""}
+    page = 0
+    has_more_pages = True
+    while has_more_pages:
+        page += 1
+        response = client.get_events(
+            occurred_after=query_start, occurred_before=cycle_start, page=page, page_size=DEFAULT_PAGE_SIZE
+        )
+        rows = response.get("data", response.get("items", response.get("results", [])))
+        stats["pages"] = page
+        stats["rows"] += len(rows)
+        new_before_page = len(new_events)
+        for event in rows:
+            event_time = normalize_timestamp(event.get(LogType.EVENTS.time_field))
+            event_id = get_event_id(event, LogType.EVENTS)
+            if event_time and event_time > cycle_start:
+                stats["future"].append((event_id or "<no id>", event_time))  # Held back to a later cycle.
+                continue
+            if not event_id:
+                stats["no_id"] += 1
+                demisto.debug(f"{EVENTS_LOG_PREFIX} skipping an event with no recognizable ID field. Keys: {sorted(event)}")
+            elif event_id in dedup_cache:
+                stats["duplicates"] += 1
+            else:
+                dedup_cache[event_id] = event_time or cycle_start
+                new_events.append(event)
+            processed_through = max(processed_through, event_time or processed_through)
+            if len(new_events) >= max_fetch:
+                stats["stop_reason"] = f"reached max_fetch={max_fetch} on page {page}"
+                return new_events, processed_through, stats
+        demisto.debug(f"{EVENTS_LOG_PREFIX} page {page}: {len(rows)} rows, {len(new_events) - new_before_page} new")
+        has_more_pages = len(rows) >= DEFAULT_PAGE_SIZE  # A short page means everything up to cycle_start was read.
+
+    stats["stop_reason"] = f"page {page} was the last page ({len(rows)} rows): read everything up to the cycle start"
+    return new_events, cycle_start, stats
+
+
+def log_events_cycle(cycle_start: datetime, new_events: list[dict], stats: dict[str, Any], summary: dict[str, Any]) -> None:
+    """Log this cycle's late-indexed and future-dated events, then a one-line summary. Never raises.
+
+    A late-indexed event is a new event whose occurredAt is before the previous cycle's watermark:
+    the previous version of this collector would have missed it.
+
+    Args:
+        cycle_start: When this fetch cycle started.
+        new_events: The events sent this cycle.
+        stats: Counters from ``collect_new_events``.
+        summary: Values computed in ``fetch_events_with_lookback`` for the summary line.
+    """
+    try:
+        previous_watermark = summary["watermark_before"]
+        late: list[tuple[str, str]] = []
+        for event in new_events:
+            event_time = normalize_timestamp(event.get(LogType.EVENTS.time_field))
+            if previous_watermark and event_time and event_time < previous_watermark:
+                late.append((get_event_id(event, LogType.EVENTS) or "<no id>", event_time))
+
+        if late:
+            demisto.debug(
+                f"{EVENTS_LOG_PREFIX} LATE-INDEXED events caught by the lookback (occurred before the previous "
+                f"watermark {previous_watermark}): {len(late)}: {format_event_samples(late, cycle_start)}"
+            )
+            oldest_age = max(-seconds_from_cycle_start(event_time, cycle_start) for _, event_time in late)
+            lookback_seconds = summary["lookback"].total_seconds()
+            if oldest_age >= 0.8 * lookback_seconds:
+                demisto.debug(
+                    f"{EVENTS_LOG_PREFIX} WARNING the oldest late-indexed event occurred {oldest_age:.0f}s before the "
+                    f"cycle start, close to the {lookback_seconds:.0f}s lookback. Events indexed later than the "
+                    f"lookback are missed; consider a longer lookback."
+                )
+        if stats["future"]:
+            demisto.debug(
+                f"{EVENTS_LOG_PREFIX} FUTURE-DATED events held back for a later cycle: {len(stats['future'])}: "
+                f"{format_event_samples(stats['future'], cycle_start)}"
+            )
+
+        demisto.debug(
+            f"{EVENTS_LOG_PREFIX} SUMMARY cycle_start={cycle_start.strftime(DATE_FORMAT)} | "
+            f"query {summary['query_start']} -> {cycle_start.strftime(DATE_FORMAT)} [{summary['query_reason']}] | "
+            f"pages={stats['pages']} rows={stats['rows']} new={len(new_events)} duplicates={stats['duplicates']} "
+            f"late_indexed={len(late)} future_held_back={len(stats['future'])} no_id_skipped={stats['no_id']} | "
+            f"stop: {stats['stop_reason']} | watermark {previous_watermark} -> {summary['watermark_after']} | "
+            f"migration_floor={summary['floor']} | dedup cache loaded={summary['cache_loaded']} "
+            f"after_fetch={summary['cache_after_fetch']} saved={summary['cache_saved']} "
+            f"(keeps IDs from {summary['keep_from']}) | "
+            f"next fetch: {summary['next_fetch']} | took {summary['took_seconds']:.1f}s"
+        )
+    except Exception as e:
+        demisto.debug(f"{EVENTS_LOG_PREFIX} logging failed, the fetch continues: {e}\n{traceback.format_exc()}")
+
+
+def fetch_events_with_lookback(
+    client: Client, last_run: dict, max_fetch: int, cycle_start: datetime, lookback: timedelta
+) -> tuple[list[dict], dict]:
+    """Fetch events by re-reading the last ``lookback`` every cycle and dropping duplicates.
+
+    Args:
+        client: The Halcyon client.
+        last_run: The last run dictionary (legacy or lookback format).
+        max_fetch: Maximum number of new events to return.
+        cycle_start: When this fetch cycle started.
+        lookback: How far back the cycle re-reads (fetch interval + 10 minutes).
+
+    Returns:
+        A tuple of (new events, updated last run).
+    """
+    started = time.monotonic()
+    last_run = migrate_events_last_run(last_run)
+    cycle_start_str = cycle_start.strftime(DATE_FORMAT)
+    watermark_before = last_run.get(EVENTS_WATERMARK_KEY)
+    floor_before = last_run.get(EVENTS_FLOOR_KEY)
+    coverage_before = last_run.get(EVENTS_CACHE_COVERAGE_KEY)
+    dedup_cache: dict[str, str] = dict(last_run.get(EVENTS_DEDUP_CACHE_KEY) or {})
+    cache_loaded = len(dedup_cache)
+    query_start, floor = get_events_query_start(watermark_before, floor_before, cycle_start, lookback, coverage_before)
+    query_reason = describe_query_start(query_start, watermark_before, floor_before, cycle_start, lookback, coverage_before)
+    demisto.debug(
+        f"{EVENTS_LOG_PREFIX} START query {query_start} -> {cycle_start_str} [{query_reason}] | "
+        f"max_fetch={max_fetch} | lookback={lookback.total_seconds():.0f}s | watermark={watermark_before} | "
+        f"dedup cache {cache_loaded} keys"
+    )
+
+    new_events, processed_through, stats = collect_new_events(client, query_start, cycle_start_str, dedup_cache, max_fetch)
+
+    # The next cycle never queries before min(processed_through, its own window start), and its
+    # window start is at least cycle_start - lookback. Older cache entries can never match again,
+    # except when that query starts slightly earlier than expected, which the margin covers.
+    next_earliest_start = min(processed_through, (cycle_start - lookback).strftime(DATE_FORMAT))
+    keep_from = (datetime.strptime(next_earliest_start, DATE_FORMAT) - EVENTS_DEDUP_CACHE_MARGIN).strftime(DATE_FORMAT)
+    last_run[EVENTS_DEDUP_CACHE_KEY] = {
+        event_id: occurred_at for event_id, occurred_at in dedup_cache.items() if occurred_at >= keep_from
+    }
+    # IDs before coverage_before were dropped earlier, so coverage never moves back, even if the lookback grew.
+    last_run[EVENTS_CACHE_COVERAGE_KEY] = max(next_earliest_start, coverage_before or next_earliest_start)
+    last_run[EVENTS_WATERMARK_KEY] = processed_through
+    if floor:
+        last_run[EVENTS_FLOOR_KEY] = floor
+    else:
+        last_run.pop(EVENTS_FLOOR_KEY, None)
+
+    reached_max_fetch = len(new_events) >= max_fetch
+    if reached_max_fetch:
+        last_run["nextTrigger"] = EVENTS_NEXT_TRIGGER_SECONDS
+    else:
+        last_run.pop("nextTrigger", None)
+
+    summary = {
+        "lookback": lookback,
+        "watermark_before": watermark_before,
+        "watermark_after": processed_through,
+        "query_start": query_start,
+        "query_reason": query_reason,
+        "floor": floor,
+        "cache_loaded": cache_loaded,
+        "cache_after_fetch": len(dedup_cache),
+        "cache_saved": len(last_run[EVENTS_DEDUP_CACHE_KEY]),
+        "keep_from": keep_from,
+        "next_fetch": f"in {EVENTS_NEXT_TRIGGER_SECONDS}s (reached max_fetch)" if reached_max_fetch else "regular interval",
+        "took_seconds": time.monotonic() - started,
+    }
+    log_events_cycle(cycle_start, new_events, stats, summary)
+    return enrich_events(new_events, LogType.EVENTS), last_run
+
+
+def summarize_last_run(last_run: dict) -> dict:
+    """Return a copy of the last run that is safe to log: the dedup cache is replaced by its size.
+
+    Args:
+        last_run: The last run dictionary.
+
+    Returns:
+        The last run with ``events_dedup_cache`` shown as a key count.
+    """
+    summary = {key: value for key, value in last_run.items() if key != EVENTS_DEDUP_CACHE_KEY}
+    if EVENTS_DEDUP_CACHE_KEY in last_run:
+        summary[EVENTS_DEDUP_CACHE_KEY] = f"<{len(last_run[EVENTS_DEDUP_CACHE_KEY])} keys>"
+    return summary
+
+
 def get_max_timestamp_from_events(events: list[dict], log_type: LogType) -> str | None:
     """Get the maximum timestamp from a list of events.
 
@@ -562,18 +984,34 @@ def fetch_events_for_log_type(
     log_type: LogType,
     last_run: dict,
     max_fetch: int,
+    cycle_start: datetime | None = None,
+    fetch_interval_minutes: int | None = DEFAULT_EVENTS_FETCH_INTERVAL_MINUTES,
 ) -> tuple[list[dict], dict]:
     """Fetches events for a specific log type.
+
+    Events use the lookback mechanism (see ``fetch_events_with_lookback``). Alerts keep the
+    watermark-only logic below.
 
     Args:
         client: The Halcyon client.
         log_type: The LogType to fetch.
         last_run: The last run dictionary.
         max_fetch: Maximum number of events to fetch.
+        cycle_start: When the fetch cycle started. Defaults to now.
+        fetch_interval_minutes: The "Events Fetch Interval" in minutes; the events lookback is this + 10 minutes.
 
     Returns:
         A tuple of (events, updated_last_run).
     """
+    if log_type == LogType.EVENTS:
+        return fetch_events_with_lookback(
+            client,
+            last_run,
+            max_fetch,
+            cycle_start or datetime.now(timezone.utc),
+            get_events_lookback(fetch_interval_minutes),
+        )
+
     # Get last run state for this log type
     last_fetch_key = f"last_fetch_{log_type.type_string}"
     previous_ids_key = f"previous_ids_{log_type.type_string}"
@@ -794,6 +1232,7 @@ def fetch_events_command(
     last_run: dict,
     log_types: list[LogType],
     max_fetch: int,
+    fetch_interval_minutes: int | None = DEFAULT_EVENTS_FETCH_INTERVAL_MINUTES,
 ) -> tuple[list[dict], dict]:
     """Fetches events for all specified log types from Halcyon.
 
@@ -802,11 +1241,14 @@ def fetch_events_command(
         last_run: The last run dictionary.
         log_types: List of log types to fetch.
         max_fetch: Maximum events to fetch per type.
+        fetch_interval_minutes: The "Events Fetch Interval" in minutes; the events lookback is this + 10 minutes.
 
     Returns:
         A tuple of (all_events, updated_last_run).
     """
     all_events: list[dict] = []
+    # Taken once, before any API call: the end of the events query and the future-dated cut-off.
+    cycle_start = datetime.now(timezone.utc)
 
     for log_type in log_types:
         demisto.debug(f"Fetching {log_type.type_string} with max_fetch={max_fetch}")
@@ -816,6 +1258,8 @@ def fetch_events_command(
             log_type=log_type,
             last_run=last_run,
             max_fetch=max_fetch,
+            cycle_start=cycle_start,
+            fetch_interval_minutes=fetch_interval_minutes,
         )
 
         demisto.debug(f"Fetched {len(events)} {log_type.type_string}")
@@ -844,6 +1288,7 @@ def main() -> None:  # pragma: no cover
     proxy = params.get("proxy", False)
 
     max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+    fetch_interval_minutes = arg_to_number(params.get("eventFetchInterval")) or DEFAULT_EVENTS_FETCH_INTERVAL_MINUTES
 
     event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Alerts", "Events"]))
     log_types_to_fetch = get_log_types_from_titles(event_types_to_fetch)
@@ -874,13 +1319,14 @@ def main() -> None:  # pragma: no cover
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
-            demisto.debug(f"Starting fetch with last_run: {last_run}")
+            demisto.debug(f"Starting fetch with last_run: {summarize_last_run(last_run)}")
 
             events, next_run = fetch_events_command(
                 client=client,
                 last_run=last_run,
                 log_types=log_types_to_fetch,
                 max_fetch=max_fetch,
+                fetch_interval_minutes=fetch_interval_minutes,
             )
 
             demisto.debug(f"Fetched {len(events)} total events")
@@ -889,7 +1335,7 @@ def main() -> None:  # pragma: no cover
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
             if next_run:
-                demisto.debug(f"Setting new last_run: {next_run}")
+                demisto.debug(f"Setting new last_run: {summarize_last_run(next_run)}")
                 demisto.setLastRun(next_run)
 
         else:

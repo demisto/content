@@ -54,6 +54,13 @@ configuration:
   type: 13
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: 'First Incident Fetch: Time Range'
   name: first_fetch
   defaultvalue: "24 hours"
@@ -123,7 +130,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.7090913
+  dockerimage: demisto/python3:3.12.13.10116658
   commands:
   - name: recordedfuture-identity-search
     description: Search for identities in Recorded Future Identity Dataset.
@@ -783,8 +790,8 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-        - never
-        - significant_updates
+      - never
+      - significant_updates
     outputs:
     - contextPath: IdentityRecordedFuture.PlaybookAlerts.playbook_alert_id
       description: Unique id of the playbook alert in Recorded Future.

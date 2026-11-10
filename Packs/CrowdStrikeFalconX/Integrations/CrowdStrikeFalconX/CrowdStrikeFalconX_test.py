@@ -1,6 +1,8 @@
 import pytest
 from CommonServerPython import *
 from CrowdStrikeFalconX import (
+    DEFAULT_RELATIONSHIPS_LIMIT,
+    DEFAULT_SANDBOX_ARRAY_LIMIT,
     Client,
     DBotScoreReliability,
     arrange_args_for_upload_func,
@@ -12,11 +14,13 @@ from CrowdStrikeFalconX import (
     get_report_summary_command,
     is_new_polling_search,
     parse_indicator,
+    parse_indicator_relationships,
     pop_polling_related_args,
     remove_polling_related_args,
     run_polling_command,
     send_uploaded_file_to_sandbox_analysis_command,
     send_url_to_sandbox_analysis_command,
+    truncate_sandbox_arrays,
     upload_file_with_polling_command,
 )
 from test_data.context import (
@@ -880,3 +884,158 @@ def test_parse_indicator_bug_fix():
         "version_info": [{"id": "xxx"}],
     }
     assert parse_indicator(sandbox, DBotScoreReliability.A_PLUS)
+
+
+def test_parse_indicator_relationships_capped_to_limit():
+    """
+    Test that the number of relationships built for a file indicator is capped to relationships_limit.
+
+    Given:
+        - A sandbox with more DNS requests and contacted hosts than the configured limit.
+    When:
+        - Calling parse_indicator_relationships with a small custom limit.
+    Then:
+        - The returned list length equals the limit, not the full number of parsed relationships.
+    """
+    custom_limit = 3
+    sandbox = {
+        "dns_requests": [{"address": f"1.1.1.{i}", "domain": f"example{i}.com"} for i in range(20)],
+        "contacted_hosts": [{"address": f"2.2.2.{i}"} for i in range(20)],
+    }
+
+    relationships = parse_indicator_relationships(
+        sandbox, indicator_value="sha256", reliability=DBotScoreReliability.B, relationships_limit=custom_limit
+    )
+
+    assert len(relationships) == custom_limit
+
+
+def test_parse_indicator_relationships_below_limit_unchanged():
+    """
+    Test that relationships are returned unchanged when their count is within the limit.
+
+    Given:
+        - A sandbox with fewer relationships than the configured limit.
+    When:
+        - Calling parse_indicator_relationships.
+    Then:
+        - All parsed relationships are returned (no truncation).
+    """
+    sandbox = {
+        "dns_requests": [{"address": "1.1.1.1", "domain": "example.com"}],
+        "contacted_hosts": [{"address": "2.2.2.2"}],
+    }
+
+    relationships = parse_indicator_relationships(
+        sandbox, indicator_value="sha256", reliability=DBotScoreReliability.B, relationships_limit=DEFAULT_RELATIONSHIPS_LIMIT
+    )
+
+    # 2 from dns_requests (address + domain) + 1 from contacted_hosts
+    assert len(relationships) == 3
+
+
+def test_truncate_sandbox_arrays_caps_large_arrays():
+    """
+    Test that truncate_sandbox_arrays caps each large array to max_length while leaving other fields intact.
+
+    Given:
+        - A sandbox outputs dict where the large arrays exceed max_length and a scalar field is present.
+    When:
+        - Calling truncate_sandbox_arrays with a small max_length.
+    Then:
+        - Each large array is truncated to max_length; the scalar field is untouched; the input dict is not mutated.
+    """
+    max_length = 2
+    original = {
+        "processes": list(range(10)),
+        "http_requests": list(range(10)),
+        "dns_requests": list(range(10)),
+        "contacted_hosts": list(range(10)),
+        "extracted_files": list(range(10)),
+        "file_size": 123,
+    }
+
+    result = truncate_sandbox_arrays(original, max_length)
+
+    for field in ("processes", "http_requests", "dns_requests", "contacted_hosts", "extracted_files"):
+        assert len(result[field]) == max_length
+    assert result["file_size"] == 123
+    # original untouched
+    assert len(original["processes"]) == 10
+
+
+def test_truncate_sandbox_arrays_below_limit_unchanged():
+    """
+    Test that arrays shorter than or equal to max_length are returned unchanged.
+
+    Given:
+        - A sandbox outputs dict where the arrays are within max_length.
+    When:
+        - Calling truncate_sandbox_arrays.
+    Then:
+        - The arrays are returned unchanged.
+    """
+    original = {"processes": [1, 2], "http_requests": [1]}
+
+    result = truncate_sandbox_arrays(original, DEFAULT_SANDBOX_ARRAY_LIMIT)
+
+    assert result["processes"] == [1, 2]
+    assert result["http_requests"] == [1]
+
+
+def test_get_full_report_command_truncates_sandbox_arrays(mocker):
+    """
+    Test that get_full_report_command truncates the large sandbox arrays in the context output
+    using the client's sandbox_array_limit, while the raw_response keeps the full data.
+
+    Given:
+        - A client with a small sandbox_array_limit.
+        - A full report response whose sandbox contains large arrays.
+    When:
+        - Calling get_full_report_command.
+    Then:
+        - The context outputs arrays are truncated to the limit, but raw_response retains the full arrays.
+    """
+    custom_limit = 2
+    mocker.patch.object(Client, "_get_access_token")
+    client = Client(
+        server_url="https://api.crowdstrike.com/",
+        username="user1",
+        password="12345",
+        use_ssl=False,
+        proxy=False,
+        reliability=DBotScoreReliability.B,
+        sandbox_array_limit=custom_limit,
+    )
+
+    response = {
+        "resources": [
+            {
+                "id": "report-id",
+                "verdict": "malicious",
+                "sandbox": [
+                    {
+                        "sha256": "sha256",
+                        "submission_type": "file",
+                        "processes": [{"pid": i} for i in range(10)],
+                        "http_requests": [{"url": f"http://x/{i}"} for i in range(10)],
+                        "dns_requests": [{"address": f"1.1.1.{i}"} for i in range(10)],
+                        "contacted_hosts": [{"address": f"2.2.2.{i}"} for i in range(10)],
+                        "extracted_files": [{"name": f"f{i}"} for i in range(10)],
+                    }
+                ],
+            }
+        ]
+    }
+    mocker.patch.object(Client, "get_full_report", return_value=response)
+
+    command_results, _ = get_full_report_command(client, ids="report-id")
+
+    outputs = command_results[0].outputs
+    for field in ("processes", "http_requests", "dns_requests", "contacted_hosts", "extracted_files"):
+        assert len(outputs[field]) == custom_limit
+        assert len(outputs["sandbox"][field]) == custom_limit
+
+    # full data remains in raw_response
+    raw_sandbox = command_results[0].raw_response["resources"][0]["sandbox"][0]
+    assert len(raw_sandbox["processes"]) == 10

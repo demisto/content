@@ -34,10 +34,6 @@
                     "complex": null,
                     "simple": "id"
                 },
-                "Wiz Issue Note": {
-                    "complex": null,
-                    "simple": "note"
-                },
                 "Wiz Issue Projects": {
                     "complex": {
                         "accessor": "",

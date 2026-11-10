@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: ForcepointSWG_ModelingRule
+name: ForcepointSWG Modeling Rule
+rules: ''
+schema: ''
+tags: Forcepoint Secure Web Gateway
+supportedModules:
+- xsiam

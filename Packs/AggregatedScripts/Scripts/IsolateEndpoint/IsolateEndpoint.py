@@ -14,6 +14,7 @@ class Brands(StrEnum):
     FIREEYE_HX_V2 = "FireEyeHX v2"
     CROWDSTRIKE_FALCON = "CrowdstrikeFalcon"
     CORTEX_CORE_IR = "Cortex Core - IR"
+    BUILTIN = "Builtin"
     MICROSOFT_DEFENDER_ADVANCED_THREAT_PROTECTION = "Microsoft Defender Advanced Threat Protection"
 
     @classmethod
@@ -55,9 +56,9 @@ def initialize_commands() -> list:
     """
     commands = [
         Command(
-            # Can be used only in XSIAM
-            brand=Brands.CORTEX_CORE_IR,
-            name="core-isolate-endpoint",
+            # On platform, we use the built-in commands and brand Builtin
+            brand=Brands.BUILTIN if is_platform() else Brands.CORTEX_CORE_IR,
+            name="isolateEndpoint" if is_platform() else "core-isolate-endpoint",
             arg_mapping={"endpoint_id": "endpoint_id"},
         ),
         Command(

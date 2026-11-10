@@ -376,13 +376,68 @@ def test_horizontal_to_vertical_md_table_no_pipe():
     Then: assert that fields are extracted as expected.
     """
     horizontal_md_table = (
-        "### Possible Campaign Detected\n"
-        "|field1|name|field3|\n"
-        "|--|-|--|\n"
-        "| value_field1 | value_field2:text | value_field3 |\n"
+        "### Possible Campaign Detected\n|field1|name|field3|\n|--|-|--|\n| value_field1 | value_field2:text | value_field3 |\n"
     )
     expected_value = (
         "\n| | |\n|---|---|\n|**field1**| value_field1 |\n|**name**| value_field2:text |\n|**field3**| value_field3 |"
     )
     result = horizontal_to_vertical_md_table(horizontal_md_table)
     assert expected_value == result
+
+
+@pytest.mark.parametrize(
+    "is_platform_res, version_ge, incident_id, expected_link",
+    [
+        (True, True, "997329", "[997329](/issue-view/997329)"),
+        (True, False, "997329", "[997329](/issue-view/997329)"),
+        (False, True, "997329", "[997329](/Details/997329)"),
+        (False, False, "997329", "[997329](#/Details/997329)"),
+    ],
+)
+def test_get_incident_link_creator(mocker, is_platform_res, version_ge, incident_id, expected_link):
+    """
+    Given:
+        - An incident ID.
+        - Case 1: Unified Cortex platform (XSIAM v3 / XSOAR on platform) -> issue-view URL.
+        - Case 2: Unified Cortex platform takes precedence regardless of demisto version.
+        - Case 3: Cortex XSOAR 8.x (version >= 8.4.0) -> path-based URL.
+        - Case 4: Cortex XSOAR 6.x (version < 8.4.0) -> legacy hash-based URL.
+    When:
+        - Calling the incident link creator used by the "Involved Incidents" entry.
+    Then:
+        - Ensure the correct link format is produced for each platform (XSUP-78154).
+    """
+    import FindEmailCampaign
+
+    mocker.patch.object(FindEmailCampaign, "is_platform", return_value=is_platform_res)
+    mocker.patch.object(FindEmailCampaign, "is_demisto_version_ge", return_value=version_ge)
+
+    assert FindEmailCampaign.get_incident_link_creator()(incident_id) == expected_link
+
+
+@pytest.mark.parametrize(
+    "is_platform_res, is_saas_res, indicator_id, expected_link",
+    [
+        (True, False, "24", "[24](/indicator/24)"),
+        (False, True, "24", "[24](/indicator/24)"),
+        (False, False, "24", "[24](#/indicator/24)"),
+    ],
+)
+def test_get_indicator_link_creator(mocker, is_platform_res, is_saas_res, indicator_id, expected_link):
+    """
+    Given:
+        - An indicator ID.
+        - Case 1: Unified Cortex platform (XSIAM v3 / XSOAR on platform) -> path-based URL.
+        - Case 2: Cortex XSOAR 8.x SaaS -> path-based URL.
+        - Case 3: Cortex XSOAR 6.x (on-prem) -> legacy hash-based URL.
+    When:
+        - Calling the indicator link creator used by the "Mutual Indicators" entry.
+    Then:
+        - Ensure the correct link format is produced for each platform (XSUP-78154).
+    """
+    import FindEmailCampaign
+
+    mocker.patch.object(FindEmailCampaign, "is_platform", return_value=is_platform_res)
+    mocker.patch.object(FindEmailCampaign, "is_xsoar_saas", return_value=is_saas_res)
+
+    assert FindEmailCampaign.get_indicator_link_creator()(indicator_id) == expected_link

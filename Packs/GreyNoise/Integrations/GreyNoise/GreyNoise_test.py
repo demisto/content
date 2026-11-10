@@ -70,6 +70,7 @@ def test_test_module(api_key, api_response, status_code, expected_output, mocker
         proxy="proxy",
         use_cache=False,
         integration_name="dummy_integration",
+        psychic=False,
     )
     client = GreyNoise.Client(api_config)
     if isinstance(api_key, str) and api_key == "true_key":
@@ -96,6 +97,7 @@ def test_ip_reputation_command(args, test_scenario, api_response, status_code, e
         proxy="proxy",
         use_cache=False,
         integration_name="dummy_integration",
+        psychic=False,
     )
     client = GreyNoise.Client(api_config)
     reliability = "B - Usually reliable"
@@ -150,6 +152,7 @@ def test_ip_quick_check_command(args, test_scenario, api_response, status_code, 
         proxy="proxy",
         use_cache=False,
         integration_name="dummy_integration",
+        psychic=False,
     )
     client = GreyNoise.Client(api_config)
 
@@ -226,6 +229,7 @@ def test_query_command(args, test_scenario, api_response, status_code, expected_
         proxy="proxy",
         use_cache=False,
         integration_name="dummy_integration",
+        psychic=False,
     )
     client = GreyNoise.Client(api_config)
 
@@ -280,6 +284,7 @@ def test_stats_command(args, test_scenario, api_response, status_code, expected_
         proxy="proxy",
         use_cache=False,
         integration_name="dummy_integration",
+        psychic=False,
     )
     client = GreyNoise.Client(api_config)
 
@@ -334,6 +339,7 @@ def test_riot_command(mocker, test_scenario, status_code, input_data, expected):
         proxy="proxy",
         use_cache=False,
         integration_name="dummy_integration",
+        psychic=False,
     )
     client = GreyNoise.Client(api_config)
     reliability = "B - Usually reliable"
@@ -379,6 +385,7 @@ def test_context_command(mocker, args, test_scenario, api_response, status_code,
         proxy="proxy",
         use_cache=False,
         integration_name="dummy_integration",
+        psychic=False,
     )
     client = GreyNoise.Client(api_config)
     reliability = "B - Usually reliable"
@@ -522,6 +529,7 @@ def test_get_api_key(mocker, demisto_params_result, expected_result):
     """
     mocker.patch.object(demisto, "params", return_value=demisto_params_result)
     mock_api_config = mocker.patch("GreyNoise.APIConfig")
+    mocker.patch("GreyNoise.Client")  # Also mock Client to prevent real instantiation
     # Call main()
     GreyNoise.main()
 

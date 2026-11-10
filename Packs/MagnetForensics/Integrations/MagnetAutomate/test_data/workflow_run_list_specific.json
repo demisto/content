@@ -1,0 +1,61 @@
+{
+  "id": 23,
+  "evidence": {
+    "id": 12,
+    "path": "C:\\data\\evidence1",
+    "evidenceNumber": "EV_001",
+    "evidenceType": "Image",
+    "evidenceSource": {
+      "image": {
+        "size": 213588448
+      }
+    },
+    "customFields": [
+      {
+        "name": "CheckBox",
+        "value": "true",
+        "description": "A checkbox field",
+        "variableName": "EVIDENCE_CHECK_BOX",
+        "type": "CustomFieldCheckbox"
+      }
+    ],
+    "selectedPlatform": "Windows"
+  },
+  "status": "Processing",
+  "workflowId": 1,
+  "workflowName": "Process Workflow - Image",
+  "currentStage": {
+    "applicationDisplayName": "AXIOM Process",
+    "status": "Copying"
+  },
+  "outputPath": "C:\\cases",
+  "runOutputPath": "C:\\cases\\CASE_001\\EV_011\\1",
+  "startDateTime": "2021-01-29T12:05:30.0000000",
+  "endDateTime": "2021-01-29T17:35:40.0000000",
+  "automateVersion": "TEST_VERSION",
+  "createdBy": {
+    "id": 1,
+    "name": "admin"
+  },
+  "duration": 19810,
+  "completedStages": [
+    {
+      "applicationDisplayName": "AXIOM Process computer image with keywords",
+      "applicationName": "AXIOM Process",
+      "applicationVersion": "4.10.0",
+      "nodeName": "NODE_001",
+      "exitStatus": "Success",
+      "startDateTime": "2021-01-29T12:05:30.0000000",
+      "endDateTime": "2021-01-29T17:35:40.0000000"
+    },
+    {
+      "applicationDisplayName": "AXIOM Post Processing Timeline",
+      "applicationName": "AXIOM Post Processing",
+      "applicationVersion": "4.10.0",
+      "nodeName": "NODE_002",
+      "exitStatus": "Success",
+      "startDateTime": "2021-01-29T14:05:30.0000000",
+      "endDateTime": "2021-01-29T16:35:40.0000000"
+    }
+  ]
+}

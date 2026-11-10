@@ -1,0 +1,11 @@
+[
+  {
+    "id": 11,
+    "path": "C:\\testdata\\sampleoutput\\caseNumber\\ExhibitA\\1",
+    "version": 1,
+    "caseId": 10,
+    "caseTypeId": 3,
+    "basePath": "C:\\testdata\\output",
+    "automateVersion": "TEST_VERSION"
+  }
+]

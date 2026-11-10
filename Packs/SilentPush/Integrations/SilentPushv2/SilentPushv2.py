@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import ipaddress
 from enum import Enum
 
@@ -8,9 +10,6 @@ import traceback
 from typing import Any
 import ast
 
-import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -2943,7 +2942,7 @@ metadata_collector = YMLMetadataCollector(
         ),
         ConfKey(
             name="threat-check-key",
-            display="The Threat Check key",
+            display="Threat Check Access Key",
             required=False,
             key_type=ParameterTypes.AUTH,
         ),
@@ -2990,7 +2989,7 @@ class Client(BaseClient):
         self._headers = {
             "X-API-Key": api_key,
             "Content-Type": "application/json",
-            "User-Agent": "Cortex/2.0 (PaloAlto XSOAR Integration)",
+            "User-Agent": "Cortex/2.0.1 (PaloAlto XSOAR Integration)",
         }
 
     def _http_request(
@@ -3513,8 +3512,9 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
     try:
-        resp = client._http_request("GET", V1 + "me")
-        if resp.get("status_code") != 200:
+        resp = client._http_request("GET", V1 + "me/")
+        demisto.debug(f"resp: {resp}")
+        if resp.get("username") is None:
             return f"Connection failed :- {resp.get('errors')}"
         return "ok"
     except DemistoException as e:
@@ -4618,6 +4618,8 @@ def main() -> None:
     try:
         params = demisto.params()
         api_key = params.get("credentials", {}).get("password")
+        if not api_key:
+            return_error("API Key is required. Please provide a valid API Key in the integration configuration.")
         threat_check_key = params.get("threat-check-key", {}).get("password")
         base_url = params.get("url", "https://api.silentpush.com")
         verify_ssl = not params.get("insecure", False)

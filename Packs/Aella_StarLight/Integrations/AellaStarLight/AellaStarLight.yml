@@ -32,6 +32,13 @@ configuration:
   type: 13
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Fetching interval in minutes (default is 15, minimum is 15 )
   name: fetch_interval
   section: Collect

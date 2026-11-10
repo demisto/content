@@ -392,18 +392,18 @@ class StixDecode:
 
         package = BeautifulSoup(content, "xml")
 
-        if package.contents[0].name != "STIX_Package":
+        if package.contents[0].name != "STIX_Package":  # type: ignore[attr-defined]
             return None, []
 
         package = package.contents[0]
 
-        timestamp = package.get("timestamp", None)
+        timestamp = package.get("timestamp", None)  # type: ignore[attr-defined]
         if timestamp is not None:
             timestamp = StixDecode._parse_stix_timestamp(timestamp)
 
         pprops = package_extract_properties(package)
 
-        indicators = package.find_all("Indicator")
+        indicators = package.find_all("Indicator")  # type: ignore[attr-defined]
 
         for ind in indicators:
             observables = ind.find_all("Observable")

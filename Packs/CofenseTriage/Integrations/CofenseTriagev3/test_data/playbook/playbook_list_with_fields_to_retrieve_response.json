@@ -1,0 +1,26 @@
+{
+    "data": [
+        {
+            "id": "1",
+            "type": "playbooks",
+            "links": {
+                "self": "https://triage.example.com/api/public/v2/playbooks/1"
+            },
+            "attributes": {
+                "name": "Spam",
+                "button_color": "#000000"
+            }
+        },
+        {
+            "id": "2",
+            "type": "playbooks",
+            "links": {
+                "self": "https://triage.example.com/api/public/v2/playbooks/2"
+            },
+            "attributes": {
+                "name": "Phishing",
+                "button_color": "#ff0000"
+            }
+        }
+    ]
+}

@@ -642,5 +642,9 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "description": "Software Indicator Layout"
+    "description": "Software Indicator Layout",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

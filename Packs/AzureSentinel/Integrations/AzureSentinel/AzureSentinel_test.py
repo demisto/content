@@ -2294,7 +2294,7 @@ def test_max_limit_argument_in_fetch_and_list_incident_commands(mocker):
     assert client.http_request.call_args_list[0][1] == {"params": {"$top": 200, "$orderby": "properties/createdTimeUtc asc"}}
     assert client.http_request.call_args_list[1][1] == {
         "params": {
-            "$top": 20,
+            "$top": 50,
             "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z",
             "$orderby": "properties/createdTimeUtc asc",
         }
@@ -2359,6 +2359,37 @@ def test_lower_then_default_limit_argument_in_fetch_and_list_incident_commands(m
     assert client.http_request.call_args_list[1][1] == {
         "params": {
             "$top": 20,
+            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z",
+            "$orderby": "properties/createdTimeUtc asc",
+        }
+    }
+
+
+def test_fetch_limit_above_default_within_max(mocker):
+    """
+    Given:
+        - A fetch limit parameter set to a value above the default (20) but within the max (50).
+
+    When:
+        - Executing the fetch-incidents command.
+
+    Then:
+        - Ensure the configured value is honored (not clamped down to the old hard-coded 20).
+    """
+    # prepare
+    mocker.patch("AzureSentinel.demisto.params", return_value={"limit": "50"})
+    last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
+    client = mock_client()
+    mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
+    mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
+
+    # execute
+    fetch_incidents(client, last_run, "3 days", "Informational")
+
+    # validate
+    assert client.http_request.call_args_list[0][1] == {
+        "params": {
+            "$top": 50,
             "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z",
             "$orderby": "properties/createdTimeUtc asc",
         }
@@ -2457,6 +2488,46 @@ def test_statuses_to_fetch_parameter_multiple_statuses(mocker):
     expected_filter = (
         "properties/createdTimeUtc ge 2022-03-16T13:01:08Z  and "
         "(properties/status eq 'New' or properties/status eq 'Active' or properties/status eq 'Closed')"
+    )
+    assert client.http_request.call_args_list[0][1] == {
+        "params": {
+            "$top": 20,
+            "$filter": expected_filter,
+            "$orderby": "properties/createdTimeUtc asc",
+        }
+    }
+
+
+def test_odata_filter_parameters(mocker):
+    """
+    Given:
+        - Multiple filter parameters.
+
+    When:
+        - Execute the fetch-incidents command.
+
+    Then:
+        - Ensure the filter query contains all the provided filter parameters.
+    """
+    # prepare
+    last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
+    client = mock_client()
+    mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
+    mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    params = {
+        "titles_to_not_fetch": ["test_title"],
+        "alert_product_names_to_not_fetch": ["test_alert_product_name"],
+    }
+
+    # execute
+    fetch_incidents_command(client, params)
+
+    # validate
+    expected_filter = (
+        "properties/createdTimeUtc ge 2022-03-16T13:01:08Z and "
+        "(not properties/additionalData/alertProductNames/any(x:x eq 'test_alert_product_name')) and "
+        "((contains(properties/title, 'test_title') ne true))"
     )
     assert client.http_request.call_args_list[0][1] == {
         "params": {

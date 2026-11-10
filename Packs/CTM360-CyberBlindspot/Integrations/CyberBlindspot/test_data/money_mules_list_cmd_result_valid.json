@@ -1,0 +1,104 @@
+[
+    {
+        "name": "MM-C7FDB1092",
+        "occurred": "2022-03-01T13:02:00+00:00",
+        "externalstatus": "addressed",
+        "externallink": "https://platform.ctm360.com/cbs/online_anti_fraud/money_mules/?filters=[]&searchQuery=MM-C7FDB1092&selectedSearchField=finding_id",
+        "severity": 1,
+        "CustomFields": {
+            "cbs_type": "Advance Fee Fraud",
+            "cbs_module": "money_mules",
+            "cbs_coa": "",
+            "cbs_updated_date": "2025-05-27T08:06:48+00:00",
+            "money_mule_id": "MM-C7FDB1092",
+            "brand": "JAX Labs",
+            "timestamp": 1646139720000,
+            "account_identifier": "123543351324124.0",
+            "suspect_names": [
+                "Suspect One",
+                "Suspect Two",
+                "Suspect Three"
+            ],
+            "suspect_emails": [
+                "suspect.one@example.local",
+                "suspect.two@example.local"
+            ],
+            "suspect_phones": [
+                "(555) 111-0001",
+                "(555) 111-0002",
+                "(555) 111-0003"
+            ],
+            "transfer_amount": null,
+            "transfer_currency": null,
+            "bank_account_holder_name": null,
+            "bank_name": "JAX Labs",
+            "bank_account_country": null,
+            "bic": null
+        }
+    },
+    {
+        "name": "MM-A12BC3456",
+        "occurred": "2023-06-15T09:30:00+00:00",
+        "externalstatus": "new",
+        "externallink": "https://platform.ctm360.com/cbs/online_anti_fraud/money_mules/?filters=[]&searchQuery=MM-A12BC3456&selectedSearchField=finding_id",
+        "severity": 1,
+        "CustomFields": {
+            "cbs_type": "Advance Fee Fraud",
+            "cbs_module": "money_mules",
+            "cbs_coa": "",
+            "cbs_updated_date": "2024-08-20T14:15:00+00:00",
+            "money_mule_id": "MM-A12BC3456",
+            "brand": "JAX Labs",
+            "timestamp": 1686814200000,
+            "account_identifier": "987654321098765.0",
+            "suspect_names": [
+                "Jane Doe"
+            ],
+            "suspect_emails": [
+                "jane.doe@example.local"
+            ],
+            "suspect_phones": [
+                "(555) 123-4567"
+            ],
+            "transfer_amount": 1500.0,
+            "transfer_currency": "USD",
+            "bank_account_holder_name": "Jane Doe",
+            "bank_name": "Example Bank",
+            "bank_account_country": "US",
+            "bic": "EXAMUS33"
+        }
+    },
+    {
+        "name": "MM-D78EF9012",
+        "occurred": "2024-01-10T11:00:00+00:00",
+        "externalstatus": "monitoring",
+        "externallink": "https://platform.ctm360.com/cbs/online_anti_fraud/money_mules/?filters=[]&searchQuery=MM-D78EF9012&selectedSearchField=finding_id",
+        "severity": 1,
+        "CustomFields": {
+            "cbs_type": "Advance Fee Fraud",
+            "cbs_module": "money_mules",
+            "cbs_coa": "",
+            "cbs_updated_date": "2024-01-10T11:00:00+00:00",
+            "money_mule_id": "MM-D78EF9012",
+            "brand": "JAX Labs",
+            "timestamp": 1704884400000,
+            "account_identifier": "555123456789012.0",
+            "suspect_names": [
+                "John Smith",
+                "Alice Brown"
+            ],
+            "suspect_emails": [
+                "john@example.local"
+            ],
+            "suspect_phones": [
+                "(555) 222-0199"
+            ],
+            "transfer_amount": null,
+            "transfer_currency": null,
+            "bank_account_holder_name": null,
+            "bank_name": "Regional Credit Union",
+            "bank_account_country": "GB",
+            "bic": null
+        }
+    }
+]

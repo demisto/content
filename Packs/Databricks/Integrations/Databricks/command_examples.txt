@@ -1,0 +1,74 @@
+!databricks-cluster-list
+!databricks-cluster-get cluster_id=0831-000000-abcdefgh
+!databricks-cluster-create cluster_name="test-cluster" spark_version="14.3.x-scala2.12" node_type_id="i3.xlarge" num_workers="2"
+!databricks-cluster-delete cluster_id=0831-000000-abcdefgh
+!databricks-cluster-start cluster_id=0831-000000-abcdefgh
+!databricks-cluster-restart cluster_id=0831-000000-abcdefgh
+!databricks-cluster-pin cluster_id=0831-000000-abcdefgh
+!databricks-cluster-unpin cluster_id=0831-000000-abcdefgh
+!databricks-cluster-list-zones
+!databricks-cluster-policy-list
+!databricks-cluster-policy-get policy_id=ABC123
+!databricks-instance-pool-list
+!databricks-instance-pool-get instance_pool_id=0831-pool-1
+!databricks-library-all-cluster-statuses
+!databricks-library-cluster-status cluster_id=0831-000000-abcdefgh
+!databricks-job-list
+!databricks-job-get job_id=12345
+!databricks-job-create name="my-job" tasks='[{"task_key":"t1","notebook_task":{"notebook_path":"/test"}}]'
+!databricks-job-run-now job_id=12345
+!databricks-job-delete job_id=12345
+!databricks-pipeline-list
+!databricks-pipeline-get pipeline_id=abc-123-def
+!databricks-dbfs-list path=/
+!databricks-dbfs-get-status path=/tmp
+!databricks-dbfs-mkdirs path=/tmp/test
+!databricks-workspace-list path=/
+!databricks-workspace-get-status path=/Shared
+!databricks-workspace-export path=/Shared/notebook format=SOURCE
+!databricks-git-credential-list
+!databricks-repo-list
+!databricks-warehouse-list
+!databricks-warehouse-get warehouse_id=abc123
+!databricks-warehouse-start warehouse_id=abc123
+!databricks-warehouse-stop warehouse_id=abc123
+!databricks-sql-statement-execute warehouse_id=abc123 statement="SELECT 1"
+!databricks-sql-query-list
+!databricks-sql-query-get query_id=abc-123
+!databricks-sql-alert-list
+!databricks-sql-alert-get alert_id=abc-123
+!databricks-sql-query-history-list
+!databricks-serving-endpoint-list
+!databricks-serving-endpoint-get name=my-endpoint
+!databricks-vector-search-endpoint-list
+!databricks-vector-search-endpoint-get endpoint_name=my-vs-endpoint
+!databricks-mlflow-model-list
+!databricks-mlflow-model-get name=my-model
+!databricks-catalog-list
+!databricks-catalog-get name=main
+!databricks-schema-list catalog_name=main
+!databricks-schema-get full_name=main.default
+!databricks-table-list catalog_name=main schema_name=default
+!databricks-table-get full_name=main.default.my_table
+!databricks-table-exists full_name=main.default.my_table
+!databricks-table-summaries catalog_name=main
+!databricks-volume-list catalog_name=main schema_name=default
+!databricks-grant-get securable_type=catalog full_name=main
+!databricks-user-list
+!databricks-user-get user_id=12345
+!databricks-group-list
+!databricks-group-get group_id=12345
+!databricks-service-principal-list
+!databricks-service-principal-get sp_id=12345
+!databricks-permissions-get object_type=clusters object_id=abc123
+!databricks-token-list
+!databricks-token-create comment="test token" lifetime_seconds=86400
+!databricks-secret-scope-list
+!databricks-secret-scope-create scope=my-scope
+!databricks-secret-list scope=my-scope
+!databricks-secret-acl-list scope=my-scope
+!databricks-dashboard-list
+!databricks-dashboard-get dashboard_id=abc123
+!databricks-global-init-script-list
+!databricks-global-init-script-get script_id=abc123
+!databricks-ip-access-list-list

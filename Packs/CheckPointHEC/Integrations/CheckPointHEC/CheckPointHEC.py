@@ -13,6 +13,7 @@ AVANAN_DLP_SAAS_NAME = "avanan_dlp"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 FETCH_INTERVAL_DEFAULT = 1
 MAX_FETCH_DEFAULT = 10
+MAX_LOOK_BACK_DAYS = 1
 SAAS_NAMES = ["office365_emails", "google_mail"]
 SAAS_APPS_TO_SAAS_NAMES = {"Microsoft Exchange": "office365_emails", "Gmail": "google_mail"}
 SEVERITY_VALUES = {"critical": 5, "high": 4, "medium": 3, "low": 2, "very low": 1}
@@ -163,8 +164,13 @@ class Client(BaseClient):
         return self._call_api("GET", url_suffix="scopes")
 
     def restore_requests(
-        self, start_date: str, saas: str, include_denied: Optional[bool], include_accepted: Optional[bool]
-    ) -> dict[str, Any]:
+        self,
+        start_date: str,
+        saas: str,
+        include_denied: Optional[bool],
+        include_accepted: Optional[bool],
+        min_results: int,
+    ) -> list[dict[str, Any]]:
         denied_attr_op = "is" if include_denied else "isNot"
         accepted_attr_op = "is" if include_accepted else "isNot"
         fifteen_days_ago = (datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=15)).isoformat()
@@ -182,8 +188,23 @@ class Client(BaseClient):
                 {"saasAttrName": "entityPayload.isRestored", "saasAttrOp": accepted_attr_op, "saasAttrValue": "true"},
             ],
         }
-        payload = {"requestData": request_data}
-        return self._call_api("POST", url_suffix="search/query", json_data=payload)
+
+        entries: list[dict[str, Any]] = []
+        for _ in range(20):
+            result = self._call_api("POST", url_suffix="search/query", json_data={"requestData": request_data})
+            entries.extend(result.get("responseData") or [])
+
+            envelope = result.get("responseEnvelope") or {}
+            scroll_id = envelope.get("scrollId")
+            total = envelope.get("recordsNumber") or 0
+            # The same scroll id is returned for every page, so it cannot be used to detect the end of the scroll.
+            if not scroll_id or len(entries) >= total or len(entries) >= min_results:
+                break
+            request_data["scrollId"] = scroll_id
+        else:
+            demisto.debug(f"Stopped paging restore requests for {saas} after 20 pages")
+
+        return entries
 
     def query_events(
         self,
@@ -628,6 +649,11 @@ def fetch_incidents(client: Client, params: dict):
     counter = 0
     incidents: List[dict[str, Any]] = []
 
+    demisto.debug(
+        f"fetch-incidents window {last_fetch} -> {now_15.isoformat()} | saas={saas_apps} states={states} "
+        f"severities={severities} threat_types={threat_types} max_fetch={max_fetch}"
+    )
+
     result = client.query_events(
         start_date=last_fetch,
         end_date=now_15.isoformat(),
@@ -637,6 +663,7 @@ def fetch_incidents(client: Client, params: dict):
         threat_types=threat_types,
     )
     events = result["responseData"]
+    demisto.debug(f"fetch-incidents query returned {len(events)} events")
 
     for event in events:
         if (occurred := event.get("eventCreated")) <= last_fetch:
@@ -666,6 +693,11 @@ def fetch_incidents(client: Client, params: dict):
     else:
         last_run["last_fetch"] = (now_15 - timedelta(minutes=fetch_interval)).isoformat()
 
+    demisto.debug(
+        f"fetch-incidents created {len(incidents)} incidents from {len(events)} events "
+        f"(truncated={counter == max_fetch}) | next last_fetch={last_run['last_fetch']}"
+    )
+
     demisto.setLastRun(last_run)
     demisto.incidents(incidents)
 
@@ -674,56 +706,78 @@ def fetch_restore_requests(client: Client, params: dict):
     first_fetch: str = params.get("first_fetch", "1 hour")
     saas_apps: List[str] = [SAAS_APPS_TO_SAAS_NAMES[x] for x in argToList(params.get("saas_apps"))] or SAAS_NAMES
     max_fetch: int = arg_to_number(params.get("max_fetch")) or MAX_FETCH_DEFAULT
-    fetch_interval: int = arg_to_number(params.get("incidentFetchInterval")) or FETCH_INTERVAL_DEFAULT
+    max_lookup_time = (datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=MAX_LOOK_BACK_DAYS)).isoformat()
 
-    now = datetime.now(timezone.utc).replace(tzinfo=None)  # We get current time before processing
+    if not (first_fetch_dt := dateparser.parse(first_fetch, date_formats=[DATE_FORMAT])):
+        raise DemistoException("Could not get last restore request fetch")
+    default_cursor = first_fetch_dt.isoformat()
+
     last_run = demisto.getLastRun()
-    if not (last_fetch := last_run.get("last_rr_fetch")):
-        if last_fetch := dateparser.parse(first_fetch, date_formats=[DATE_FORMAT]):
-            last_fetch = last_fetch.isoformat()
-        else:
-            raise DemistoException("Could not get last restore request fetch")
-
-    counter = 0
-    incidents: List[dict[str, Any]] = []
+    stored_cursor = last_run.get("last_rr_fetch")
+    # Pre-1.1.16 instances stored a single cursor shared by every saas app; seed each one from it on upgrade.
+    if isinstance(stored_cursor, str):
+        cursors: dict[str, str] = dict.fromkeys(saas_apps, stored_cursor)
+    else:
+        cursors = dict(stored_cursor or {})
 
     include_denied_rr: Optional[bool] = arg_to_bool(params.get("include_denied_requests"))
     include_accepted_rr: Optional[bool] = arg_to_bool(params.get("include_accepted_requests"))
+
+    demisto.debug(
+        f"fetch restore-requests cursors={ {saas: cursors.get(saas) for saas in saas_apps} } max_fetch={max_fetch} "
+        f"include_denied={include_denied_rr} include_accepted={include_accepted_rr}"
+    )
+
+    candidates: List[tuple[str, str, dict, dict]] = []
     for saas in saas_apps:
-        result = client.restore_requests(last_fetch, saas, include_denied_rr, include_accepted_rr)
-        for restore_request in result["responseData"]:
-            entity_info = restore_request.get("entityInfo")
-            entity_payload = restore_request.get("entityPayload")
+        saas_cursor = max(cursors.get(saas) or default_cursor, max_lookup_time)
+
+        for restore_request in client.restore_requests(saas_cursor, saas, include_denied_rr, include_accepted_rr, max_fetch):
+            entity_info = restore_request.get("entityInfo") or {}
+            entity_payload = restore_request.get("entityPayload") or {}
 
             if entity_payload.get("emailSplit") == "split":
                 # is master email, skipping
                 continue
 
-            if (occurred := entity_payload.get("restoreRequestTime")) <= last_fetch:
+            occurred = entity_payload.get("restoreRequestTime")
+            if not occurred or occurred <= saas_cursor:
                 continue
 
-            count_field = "count_restore_request"
-            count = last_run.get(count_field, 0) + 1
-            last_run[count_field] = count
+            candidates.append((occurred, saas, entity_info, entity_payload))
 
-            entity_payload["entityId"] = entity_info.get("entityId")
-            incidents.append(
-                {
-                    "dbotMirrorId": entity_info.get("entityId"),
-                    "details": entity_payload.get("restoreCommentary"),
-                    "name": f"Threat: Restore Request {count}",
-                    "occurred": occurred,
-                    "rawJSON": json.dumps(entity_payload),
-                }
-            )
+    # Every response is ascending on its own, so this merges the per saas streams to keep the oldest records on
+    # truncation and to make the last incident the newest one.
+    candidates.sort(key=lambda candidate: candidate[0])
 
-            if max_fetch == (counter := counter + 1):
-                break
+    incidents: List[dict[str, Any]] = []
+    count_field = "count_restore_request"
+    count = last_run.get(count_field, 0)
+    for occurred, saas, entity_info, entity_payload in candidates[:max_fetch]:
+        count += 1
+        entity_payload["entityId"] = entity_info.get("entityId")
+        incidents.append(
+            {
+                "dbotMirrorId": entity_info.get("entityId"),
+                "details": entity_payload.get("restoreCommentary"),
+                "name": f"Threat: Restore Request {count}",
+                "occurred": occurred,
+                "rawJSON": json.dumps(entity_payload),
+            }
+        )
+        # Candidates are ascending, so the final write per saas app is that app's newest emitted record. Saas apps
+        # that emitted nothing keep their previous cursor instead of being dragged forward by a busier app.
+        cursors[saas] = occurred
 
     if incidents:
-        last_run["last_rr_fetch"] = incidents[-1]["occurred"]
-    else:
-        last_run["last_rr_fetch"] = (now - timedelta(minutes=fetch_interval)).isoformat()
+        last_run[count_field] = count
+
+    last_run["last_rr_fetch"] = cursors
+
+    demisto.debug(
+        f"fetch restore-requests created {len(incidents)} incidents from {len(candidates)} candidates "
+        f"(truncated={len(candidates) > max_fetch}) | next cursors={cursors}"
+    )
 
     demisto.setLastRun(last_run)
     demisto.incidents(incidents)

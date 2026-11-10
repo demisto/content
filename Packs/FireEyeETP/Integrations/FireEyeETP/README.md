@@ -85,6 +85,7 @@ We support two different authentication methods depending on the endpoint domain
 | Client ID (OAuth) | Use the Client ID and Client Secret for the Trellix base URL. |  |
 | Client Secret (OAuth) |  |  |
 | OAuth Scopes (OAuth) | Space-separated list of OAuth scopes. Note: Only include scopes that your application's Client ID has already been authorized to use. | False |
+| Token URL | Override the OAuth 2.0 token endpoint base URL. Leave empty to use the default Trellix IAM endpoint. For Trellix GovCloud tenants, set to `https://iam.us.trellix-gov.com`. | False |
 | API Key | Use the Api key for the FireEye base URL. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
