@@ -10,7 +10,6 @@ This integration was integrated and tested with the CyberArk EPM API.
 | Web App ID | The Application ID of the OAuth2 Server web app configured in Identity Administration.            | True |
 | Client ID | Service username \(configured as OAuth confidential client\).                                     | True |
 | Client Secret | Service user password for OAuth2 authentication.                                                  | True |
-| Disable usage reporting | When selected, the integration does not send usage events \(command executed, integration version\) to Palo Alto Networks. | False |
 
 ## Commands
 

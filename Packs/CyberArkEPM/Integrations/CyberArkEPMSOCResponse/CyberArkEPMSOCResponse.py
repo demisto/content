@@ -1,5 +1,3 @@
-from urllib.parse import urlparse
-
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -22,54 +20,6 @@ VALID_UNTIL = "valid_until"
 DEFAULT_TOKEN_TTL_SECONDS = 6 * 60 * 60
 CACHE_BUFFER_SECONDS = 60
 
-# Feature Adoption service (metric_key = <service_code>.<master_feature_name>.<metric_name>).
-# The metric key must be enrolled in the Developer Portal or the service rejects the event.
-INTEGRATION_VERSION = "1.0"
-VENDOR_NAME = "Palo Alto Networks"
-ADOPTION_SERVICE_CODE = "IDIINT"
-ADOPTION_FEATURE_NAME = "cortex_epm_soc_response"
-ADOPTION_METRIC_NAME = "integration_executed"
-ADOPTION_IDIRA_SERVICE = "Idira EPM"
-ADOPTION_TRIGGERED_BY = "BE"  # allowed: "BE", "UI", "N/A"; commands run in the backend, not the UI
-ADOPTION_ENDPOINT_PATH = "/api/feature-adoption"
-ADOPTION_HOST_PREFIX = "us-east-1-featureadopt.featureadopt"
-ADOPTION_TIMEOUT_SECONDS = 10
-PLATFORM_TOKEN_PATH = "/oauth2/platformtoken"
-
-""" ADOPTION HELPERS """
-
-
-def build_adoption_event() -> dict[str, Any]:
-    """Build the Feature Adoption event body (authenticated-user schema).
-
-    ``user_id`` is intentionally omitted: for authenticated callers the service
-    extracts it from the JWT. Tag keys must be snake_case alphanumeric strings.
-    """
-    return {
-        "metric_key": f"{ADOPTION_SERVICE_CODE}.{ADOPTION_FEATURE_NAME}.{ADOPTION_METRIC_NAME}",
-        "number_of_events": 1,
-        "triggered_by": ADOPTION_TRIGGERED_BY,
-        "tags": {
-            "vendor_name": VENDOR_NAME,
-            "integration_version": INTEGRATION_VERSION,
-            "idira_service": ADOPTION_IDIRA_SERVICE,
-        },
-    }
-
-
-def get_adoption_url(identity_url: str) -> str:
-    """Derive the Feature Adoption API URL from the tenant Identity URL.
-
-    The root domain is taken from the ``<tenant>.id.<root domain>`` Identity host.
-    Returns an empty string if the root domain cannot be determined.
-    """
-    host = urlparse(identity_url or "").hostname or ""
-    _, separator, root_domain = host.partition(".id.")
-    if not separator or not root_domain:
-        return ""
-    return f"https://{ADOPTION_HOST_PREFIX}.{root_domain}{ADOPTION_ENDPOINT_PATH}"
-
-
 """ CLIENT CLASS """
 
 
@@ -83,10 +33,8 @@ class Client(BaseClient):
         web_app_id: str,
         verify: bool = True,
         proxy: bool = False,
-        usage_reporting_enabled: bool = True,
     ):
         super().__init__(base_url="", verify=verify, proxy=proxy)
-        self.usage_reporting_enabled = usage_reporting_enabled
         self.identity_url = identity_url
         self.client_id = client_id
         self.client_secret = client_secret
@@ -186,58 +134,6 @@ class Client(BaseClient):
 
         return tenant_url
 
-    def _get_platform_token(self) -> str:
-        """Fetch an Identity platform token for the Feature Adoption service.
-
-        The EPM web-app token (``/oauth2/token/<web_app_id>``) is scoped to the EPM app and is rejected by the
-        adoption service (401), which requires a platform token. It is fetched on demand and deliberately not
-        cached, so it cannot collide with the EPM token cache.
-        """
-        token_response = self._http_request(
-            method="POST",
-            full_url=f"{self.identity_url.rstrip('/')}{PLATFORM_TOKEN_PATH}",
-            data={
-                "grant_type": GRANT_TYPE_CLIENT_CREDENTIALS,
-                "client_id": self.client_id,
-                "client_secret": self.client_secret,
-            },
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
-            resp_type="json",
-            timeout=ADOPTION_TIMEOUT_SECONDS,
-        )
-        platform_token = token_response.get(ACCESS_TOKEN)
-        if not platform_token:
-            raise DemistoException("Platform token response is missing access_token.")
-        return platform_token
-
-    def report_adoption_event(self) -> None:
-        """Report an ``integration_executed`` event to the Feature Adoption service.
-
-        Best effort: a single attempt with a short timeout. Any failure is logged
-        and swallowed so telemetry can never break a response action.
-        Skipped entirely (no token request either) when the user disabled usage reporting.
-        """
-        if not self.usage_reporting_enabled:
-            demisto.debug("[Adoption] Usage reporting is disabled in the instance configuration; skipping.")
-            return
-        adoption_url = get_adoption_url(self.identity_url)
-        if not adoption_url:
-            demisto.debug(f"[Adoption] Could not derive the Feature Adoption URL from {self.identity_url}; skipping.")
-            return
-        try:
-            self._http_request(
-                method="POST",
-                full_url=adoption_url,
-                json_data=build_adoption_event(),
-                headers={"Authorization": f"Bearer {self._get_platform_token()}", "Content-Type": "application/json"},
-                resp_type="response",
-                ok_codes=(200, 202),
-                timeout=ADOPTION_TIMEOUT_SECONDS,
-            )
-            demisto.debug("[Adoption] Event reported.")
-        except Exception as error:
-            demisto.debug(f"[Adoption] Failed to report event (ignored): {error}")
-
     def http_request(
         self,
         method: str,
@@ -253,6 +149,7 @@ class Client(BaseClient):
             "authorization": f"Bearer {access_token}",
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "x-cybr-telemetry": "aW49RVBNIFNPQyBSZXNwb25zZSZpdj0xLjAmdm49UGFsbyBBbHRvJml0PUVQTQ==",
         }
         demisto.debug(f"[HTTP Call] {method} {url_suffix}")
         full_url = f"{tenant_url}/epm/api/{url_suffix}"
@@ -455,7 +352,6 @@ def main():
     client_secret = params.get("credentials").get("password")
     proxy = argToBoolean(params.get("proxy", False))
     verify_certificate = not argToBoolean(params.get("insecure", False))
-    usage_reporting_enabled = not argToBoolean(params.get("disable_usage_reporting", False))
 
     try:
         result: Any = None
@@ -467,11 +363,9 @@ def main():
             web_app_id=web_app_id,
             verify=verify_certificate,
             proxy=proxy,
-            usage_reporting_enabled=usage_reporting_enabled,
         )
         if command == "test-module":
             return_results(test_module(client))
-            return  # connectivity test only: do not report adoption
         elif command == "cyberarkepm-activate-risk-plan":
             args["action"] = RISK_PLAN_ACTION_ADD
             result = change_risk_plan_command(client, args)
@@ -480,7 +374,6 @@ def main():
             result = change_risk_plan_command(client, args)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
-        client.report_adoption_event()  # only reached when the command succeeded
         return_results(result)
     # Log exceptions and return errors
     except Exception as e:
