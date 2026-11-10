@@ -13,7 +13,7 @@ import pytest
 import demistomock as demisto
 import TLabAntiAPTVerdicts as verdicts
 from CommonServerPython import DemistoException
-from TLabAntiAPTApiModule import AUTH_SOURCE_KEY, AUTH_TLAB_ACCOUNT, TLabClient
+from TLabAntiAPTVerdicts import AUTH_SOURCE_KEY, AUTH_TLAB_ACCOUNT, TLabClient
 
 BASE = "https://tlab.example.com"
 DATA = Path(__file__).parent / "test_data"

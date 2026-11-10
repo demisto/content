@@ -19,7 +19,7 @@ from CommonServerPython import (
     FeedIndicatorType,
     ThreatIntel,
 )
-from TLabAntiAPTApiModule import AUTH_SOURCE_KEY, AUTH_TLAB_ACCOUNT, TLabClient
+from TLabAntiAPTFeed import AUTH_SOURCE_KEY, AUTH_TLAB_ACCOUNT, TLabClient
 
 BASE = "https://tlab.example.com"
 DATA = Path(__file__).parent / "test_data"

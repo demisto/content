@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 import TLabAntiAPTLookup as lookup
-from TLabAntiAPTApiModule import AUTH_SOURCE_KEY, TLabClient
+from TLabAntiAPTLookup import AUTH_SOURCE_KEY, TLabClient
 
 BASE = "https://tlab.example.com"
 DATA = Path(__file__).parent / "test_data"
@@ -311,11 +311,3 @@ def test_sort_argument_warns_about_create_time():
     command = next(c for c in _yml()["script"]["commands"] if c["name"] == "tlab-search-reports")
     sort_arg = next(a for a in command["arguments"] if a["name"] == "sort")
     assert "createTime" in sort_arg["description"]
-
-
-def test_yml_pins_the_same_docker_image_as_the_api_module():
-    import yaml
-
-    module_path = Path(__file__).parents[3] / "ApiModules" / "Scripts" / "TLabAntiAPTApiModule" / "TLabAntiAPTApiModule.yml"
-    module = yaml.safe_load(module_path.read_text())
-    assert _yml()["script"]["dockerimage"] == module["dockerimage"]
