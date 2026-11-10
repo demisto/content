@@ -65,9 +65,6 @@ ignore=GR109,BA130
 [file:playbook-Issue_Exception_Approval.yml]
 ignore=PB106
 
-[file:playbook-AWS_IAM_User_Access_Investigation.yml]
-ignore=BA130
-
 [file:playbook-Identity_Analytics_-_Alert_Handling.yml]
 ignore=BA130
 
