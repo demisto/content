@@ -6,7 +6,7 @@ description: |-
   Enrich domains using one or more integrations.
   Domain enrichment includes:
   * Threat information
-  * Domain reputation using !domain command
+  * Domain reputation using !domain command.
 starttaskid: "0"
 tasks:
   "0":
@@ -22,13 +22,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "16"
+      - "36"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 60,
-          "y": 400
+          "y": 340
         }
       }
     note: false
@@ -41,12 +41,12 @@ tasks:
     skipunavailable: false
   "16":
     id: "16"
-    taskid: 86e8324e-34fa-4726-8cc0-2f61e6de5395
+    taskid: 954137c6-edfc-4af7-a81a-2c5f77557780
     type: condition
     task:
-      id: 86e8324e-34fa-4726-8cc0-2f61e6de5395
+      id: 954137c6-edfc-4af7-a81a-2c5f77557780
       version: -1
-      name: Is there a domain to enrich?
+      name: Are there domains to enrich?
       description: Checks whether the playbook's input contains at least one domain name to enrich.
       type: condition
       iscommand: false
@@ -61,10 +61,10 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.Domain
+              simple: DomainList
             iscontext: true
           right:
             value: {}
@@ -73,7 +73,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 530
+          "y": 620
         }
       }
     note: false
@@ -101,7 +101,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 1235
+          "y": 1295
         }
       }
     note: false
@@ -113,10 +113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 7b77b6ff-906f-46cc-8e96-fd9d02778d63
+    taskid: 29c85c86-bf9b-4f83-84dd-77559baa073e
     type: regular
     task:
-      id: 7b77b6ff-906f-46cc-8e96-fd9d02778d63
+      id: 29c85c86-bf9b-4f83-84dd-77559baa073e
       version: -1
       name: Get domain category
       description: Gets the category of the domain as found in Cisco Umbrella Investigation records.
@@ -130,7 +130,7 @@ tasks:
     scriptarguments:
       domain:
         complex:
-          root: inputs.Domain
+          root: DomainList
           transformers:
           - operator: uniq
     reputationcalc: 1
@@ -140,7 +140,7 @@ tasks:
       {
         "position": {
           "x": -200,
-          "y": 1060
+          "y": 1120
         }
       }
     note: false
@@ -204,7 +204,7 @@ tasks:
       {
         "position": {
           "x": -200,
-          "y": 855
+          "y": 915
         }
       }
     note: false
@@ -235,7 +235,7 @@ tasks:
       {
         "position": {
           "x": 320,
-          "y": 720
+          "y": 780
         }
       }
     note: false
@@ -266,7 +266,7 @@ tasks:
       {
         "position": {
           "x": -200,
-          "y": 720
+          "y": 780
         }
       }
     note: false
@@ -312,7 +312,7 @@ tasks:
       {
         "position": {
           "x": 320,
-          "y": 855
+          "y": 915
         }
       }
     note: false
@@ -324,10 +324,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 6feef606-9d2b-4ce9-8aa7-024b49568b13
+    taskid: 4e0803e9-b545-4271-a32e-b4bd615feab8
     type: regular
     task:
-      id: 6feef606-9d2b-4ce9-8aa7-024b49568b13
+      id: 4e0803e9-b545-4271-a32e-b4bd615feab8
       version: -1
       name: Check Reputation
       description: Checks the reputation of a domain.
@@ -340,15 +340,14 @@ tasks:
       - "24"
     scriptarguments:
       domain:
-        complex:
-          root: inputs.Domain
+        simple: ${DomainList}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 320,
-          "y": 1060
+          "y": 1120
         }
       }
     note: false
@@ -358,10 +357,57 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 21f8c3a2-8859-4426-a0fd-806a1370780c
+    type: regular
+    task:
+      id: 21f8c3a2-8859-4426-a0fd-806a1370780c
+      version: -1
+      name: Remove any empty domains
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key:
+        simple: DomainList
+      value:
+        complex:
+          root: inputs.Domain
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Domain
+                iscontext: true
+          transformers:
+          - operator: RemoveNullBytes
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "16_24_#default#": 0.13,
+      "16_24_#default#": 0.19,
       "30_24_#default#": 0.43,
       "30_29_yes": 0.5,
       "34_24_#default#": 0.41,
@@ -369,10 +415,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 900,
+        "height": 1015,
         "width": 900,
         "x": -200,
-        "y": 400
+        "y": 340
       }
     }
   }
@@ -380,10 +426,15 @@ inputs:
 - key: Domain
   value:
     complex:
-      root: Domain
-      accessor: Name
+      root: Domain.Name
       transformers:
       - operator: uniq
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
   required: false
   description: The domain name to enrich.
   playbookInputQuery:
@@ -419,13 +470,13 @@ outputs:
   description: The actual DBot score.
   type: number
 - contextPath: Domain.SecurityCategories
-  description: The Umbrella security category, or categories, that match this domain
+  description: The Umbrella security category, or categories, that match this domain.
   type: string
 - contextPath: Domain.ContentCategories
-  description: The Umbrella content category or categories that match this domain
+  description: The Umbrella content category or categories that match this domain.
   type: string
 - contextPath: Domain.Malicious.Description
-  description: For malicious domains, the reason for the vendor to make the decision
+  description: For malicious domains, the reason for the vendor to make the decision.
   type: string
 - contextPath: Domain.CreationDate
   description: The date on which the domain was created.
@@ -486,6 +537,47 @@ outputs:
   type: string
 tests:
 - Domain Enrichment - Generic v2 - Test
+contentitemexportablefields:
+  contentitemfields: {}
+inputSections:
+- inputs:
+  - Domain
+  - UseReputationCommand
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs:
+  - Domain
+  - DBotScore
+  - Domain.Name
+  - Domain.Malicious.Vendor
+  - DBotScore.Indicator
+  - DBotScore.Type
+  - DBotScore.Score
+  - Domain.SecurityCategories
+  - Domain.ContentCategories
+  - Domain.Malicious.Description
+  - Domain.CreationDate
+  - Domain.DomainStatus
+  - Domain.UpdatedDate
+  - Domain.ExpirationDate
+  - Domain.Umbrella.RiskScore
+  - Domain.Umbrella.SecureRank
+  - Domain.Umbrella.FirstQueriedTime
+  - Domain.Umbrella.ContentCategories
+  - Domain.Umbrella.MalwareCategories
+  - DBotScore.Vendor
+  - Domain.Admin.Country
+  - Domain.Admin.Email
+  - Domain.Admin.Name
+  - Domain.Admin.Phone
+  - Domain.Registrant.Country
+  - Domain.Registrant.Email
+  - Domain.Registrant.Name
+  - Domain.Registrant.Phone
+  - Domain.Registrar.Name
+  name: General (Outputs group)
+  description: Generic group for outputs
 marketplaces:
 - xsoar
 - marketplacev2
