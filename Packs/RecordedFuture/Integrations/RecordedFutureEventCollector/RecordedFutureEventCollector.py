@@ -27,6 +27,13 @@ DEBUG_CURSOR_MODE = CURSOR_MODE_LEGACY
 # To rewind again, set a different value and re-upload.
 DEBUG_FORCE_START_TIME: str | None = None
 APPLIED_FORCE_START_CONTEXT_KEY = "xsup_80326_applied_force_start_time"
+# When True, every fetch-events run makes a few extra read-only /alert/search calls around a second taken from the
+# response, and logs whether the API honours second precision (start and end) in the 'triggered' filter.
+# These calls only log; they never change what is sent to XSIAM or what is saved as the last run.
+DEBUG_PROBE_SECONDS = True
+# Kept short so the probe window stays under the API's 50-alert response cap.
+PROBE_WINDOW_SECONDS = 10
+SECONDS_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 """ CLIENT CLASS """
 
@@ -133,7 +140,7 @@ def get_events(client, params: dict) -> list:
         Retrieves events using the RecordedFuture API.
     Args:
         client (Client): RecordedFuture client to use.
-        params (dict): The params to send to the API basically contains the limit for example {'limit': '1000'}.
+        params (dict): The params to send to the API, for example {'limit': '1000', 'triggered': '[start,end]'}.
 
     Returns:
         list: (list) of events that will be created in XSIAM.
@@ -141,11 +148,94 @@ def get_events(client, params: dict) -> list:
 
     result = client.get_alerts(params)
     events = result.get("data", [])
+    counts = result.get("counts") or {}
 
-    hr = tableToMarkdown(name="Test Event", t=events)
+    summary = (
+        f"Request filter: {params.get('triggered', 'none')}\n"
+        f"API counts: total={counts.get('total')} returned={counts.get('returned')} (events in response: {len(events)})\n"
+        "The 'total' value is the number of alerts in Recorded Future that match the time range."
+    )
+    hr = summary + "\n\n" + tableToMarkdown(name="Test Event", t=events)
     return_results(CommandResults(readable_output=hr, raw_response=events))
 
     return events
+
+
+def build_get_events_params(args: dict) -> dict:
+    """Builds the /alert/search params for recorded-future-get-events from the command arguments.
+
+    start_time / end_time accept any arg_to_datetime value ("2026-11-09T00:00:00Z", "3 days", ...).
+    They are sent with second precision as triggered=[start,end]; an open side is left empty.
+    """
+    params: dict[str, Any] = {"limit": args.get("limit", 10)}
+    start_time = arg_to_datetime(args.get("start_time"), arg_name="start_time")
+    end_time = arg_to_datetime(args.get("end_time"), arg_name="end_time")
+    if start_time or end_time:
+        start = start_time.strftime(SECONDS_FORMAT) if start_time else ""
+        end = end_time.strftime(SECONDS_FORMAT) if end_time else ""
+        params.update({"triggered": f"[{start},{end}]", "orderby": "triggered", "direction": "asc"})
+    return params
+
+
+def summarize_probe(start: str, end: str, response: dict) -> dict:
+    """Summarizes one probe response and checks that every returned event is inside [start, end] (second precision)."""
+    events = response.get("data", [])
+    triggered_seconds = sorted(get_triggered(event) for event in events)
+    return {
+        "filter": f"[{start},{end}]",
+        "counts": response.get("counts"),
+        "returned": len(events),
+        "min_triggered": triggered_seconds[0] if triggered_seconds else None,
+        "max_triggered": triggered_seconds[-1] if triggered_seconds else None,
+        "all_ge_start": all(value >= start[:19] for value in triggered_seconds),
+        "all_le_end": all(value <= end[:19] for value in triggered_seconds),
+        "ids": [event.get("id") for event in events],
+    }
+
+
+def run_seconds_probe(client: Client, events: list) -> dict:
+    """Checks whether the API honours second precision in the 'triggered' filter.
+
+    Takes the oldest second T in the fetch response and asks for:
+      A: [T, T+10s]      -> must include the events at second T
+      B: [T+1s, T+10s]   -> must exclude the events at second T (start honoured at second precision)
+      C: [T.500Z, T+10s] -> informational, shows whether milliseconds in the start are honoured
+    Both A and B must return only events inside their window (start and end honoured).
+    Read-only: the result is only logged.
+    """
+    anchor = min(get_triggered(event) for event in events)
+    anchor_time = datetime.strptime(anchor, SECONDS_FORMAT)
+    end = (anchor_time + timedelta(seconds=PROBE_WINDOW_SECONDS)).strftime(SECONDS_FORMAT)
+    next_second = (anchor_time + timedelta(seconds=1)).strftime(SECONDS_FORMAT)
+    ids_at_anchor = sorted({event.get("id") for event in events if get_triggered(event) == anchor})
+
+    probes: dict[str, dict] = {}
+    for name, start in (("A", anchor), ("B", next_second), ("C", f"{anchor}.500Z")):
+        params = {"triggered": f"[{start},{end}]", "orderby": "triggered", "direction": "asc", "limit": 1000}
+        try:
+            probes[name] = summarize_probe(start, end, client.get_alerts(params))
+        except Exception as error:  # a probe must never break the fetch
+            probes[name] = {"filter": params["triggered"], "error": str(error)}
+        debug_log(f"seconds probe {name}: {json.dumps(probes[name])}")
+
+    verdict = evaluate_seconds_probe(ids_at_anchor, probes)
+    debug_log(f"seconds probe verdict (anchor={anchor}, ids at anchor={ids_at_anchor}): {json.dumps(verdict)}")
+    return verdict
+
+
+def evaluate_seconds_probe(ids_at_anchor: list, probes: dict) -> dict:
+    """Turns the probe summaries into yes/no answers."""
+    probe_a, probe_b = probes.get("A", {}), probes.get("B", {})
+    if "error" in probe_a or "error" in probe_b:
+        return {"result": "inconclusive", "reason": "probe request failed (see probe lines)"}
+    a_ids, b_ids = set(probe_a.get("ids", [])), set(probe_b.get("ids", []))
+    return {
+        "start_includes_anchor_second": all(event_id in a_ids for event_id in ids_at_anchor),
+        "start_honours_seconds": not any(event_id in b_ids for event_id in ids_at_anchor) and probe_b.get("all_ge_start"),
+        "end_bound_honoured": bool(probe_a.get("all_le_end") and probe_b.get("all_le_end")),
+        # If returned hit the 50 cap, the window had more alerts than the API returns and the check may be partial.
+        "hit_response_cap": max(probe_a.get("returned", 0), probe_b.get("returned", 0)) >= 50,
+    }
 
 
 def get_triggered(event: dict) -> str:
@@ -224,6 +314,8 @@ def fetch_events(client: Client, **kwargs) -> tuple[list, dict]:
     log_response_diagnostics(params, response, events)
 
     next_run: dict = {}
+    if events and DEBUG_PROBE_SECONDS:
+        run_seconds_probe(client, events)
     if events:
         next_run = compute_next_run(events, limit, cursor_mode)
         debug_log(f"computed next run ({cursor_mode}): {json.dumps(next_run)}")
@@ -307,14 +399,15 @@ def main() -> None:
             test_module(client)
 
         elif command == "recorded-future-get-events":
-            events = get_events(client, params={"limit": args.get("limit", 10)})
+            events = get_events(client, params=build_get_events_params(args))
             if argToBoolean(args.get("should_push_events", False)):
                 add_time_key_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == "fetch-events":
             debug_log(
-                f"debug build active: DEBUG_CURSOR_MODE={DEBUG_CURSOR_MODE}, DEBUG_FORCE_START_TIME={DEBUG_FORCE_START_TIME}"
+                f"debug build active: DEBUG_CURSOR_MODE={DEBUG_CURSOR_MODE}, DEBUG_FORCE_START_TIME={DEBUG_FORCE_START_TIME}, "
+                f"DEBUG_PROBE_SECONDS={DEBUG_PROBE_SECONDS}"
             )
             stored_last_run = demisto.getLastRun() or {}
             last_run = stored_last_run.get("last_run_time")

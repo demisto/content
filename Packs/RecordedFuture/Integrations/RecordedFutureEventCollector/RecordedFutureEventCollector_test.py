@@ -20,6 +20,12 @@ def mock_send_events_to_xsiam(events, vendor, product):
     return events, vendor, product
 
 
+@pytest.fixture(autouse=True)
+def disable_seconds_probe(mocker):
+    """The seconds probe makes extra API calls; tests that need it enable it explicitly."""
+    mocker.patch("RecordedFutureEventCollector.DEBUG_PROBE_SECONDS", False)
+
+
 """ TEST FUNCTIONS """
 
 
@@ -261,6 +267,156 @@ def test_fetch_events_default_is_legacy(mocker):
     """
     _, set_last_run = run_fetch_events_main(mocker, {}, {"last_run_time": "2026-11-06T03:00:00", "last_run_ids": []})
     assert set_last_run.call_args[0][0]["last_run_time"] == "2026-11-06T03:00:01"
+
+
+def fake_api_honouring_seconds(all_events: list):
+    """requests_mock callback that filters all_events by triggered=[start,end] at second precision (like a real API)."""
+
+    def callback(request, context):
+        start, end = request.qs["triggered"][0].upper().strip("[]").split(",")
+        start, end = start[:19], end[:19]
+        matched = [
+            event
+            for event in all_events
+            if (not start or event["log"]["triggered"][:19] >= start) and (not end or event["log"]["triggered"][:19] <= end)
+        ]
+        return {"data": matched, "counts": {"returned": len(matched), "total": len(matched)}}
+
+    return callback
+
+
+def test_seconds_probe_api_honours_seconds(mocker):
+    """
+    Given: An API that honours second precision for both start and end of the triggered filter.
+    When: The seconds probe runs.
+    Then: The verdict reports start and end are honoured, and the probe uses the oldest second of the response.
+    """
+    from RecordedFutureEventCollector import Client, run_seconds_probe
+
+    all_events = [*ASC_EVENTS, make_event("late", "2026-11-06T03:05:00.000Z")]
+    with requests_mock.Mocker() as m:
+        request = m.get(f"{BASE_URL}/alert/search", json=fake_api_honouring_seconds(all_events))
+        verdict = run_seconds_probe(Client(BASE_URL), ASC_EVENTS)
+
+    filters = [req.qs["triggered"][0].upper() for req in request.request_history]
+    assert filters[:2] == ["[2026-11-06T03:00:01,2026-11-06T03:00:11]", "[2026-11-06T03:00:02,2026-11-06T03:00:11]"]
+    assert verdict == {
+        "start_includes_anchor_second": True,
+        "start_honours_seconds": True,
+        "end_bound_honoured": True,
+        "hit_response_cap": False,
+    }
+
+
+def test_seconds_probe_api_ignores_seconds():
+    """
+    Given: An API that ignores the filter and always returns the same events (including one outside the window).
+    When: The seconds probe runs.
+    Then: The verdict reports that second precision and the end bound are not honoured.
+    """
+    from RecordedFutureEventCollector import Client, run_seconds_probe
+
+    response = {"data": [*ASC_EVENTS, make_event("late", "2026-11-06T03:05:00.000Z")]}
+    with requests_mock.Mocker() as m:
+        m.get(f"{BASE_URL}/alert/search", json=response)
+        verdict = run_seconds_probe(Client(BASE_URL), ASC_EVENTS)
+
+    assert verdict["start_honours_seconds"] is False
+    assert verdict["end_bound_honoured"] is False
+
+
+def test_seconds_probe_does_not_change_fetch_result(mocker):
+    """
+    Given: DEBUG_PROBE_SECONDS enabled.
+    When: fetch_events runs.
+    Then: The events and next run are the same as without the probe, and the verdict is logged.
+    """
+    import RecordedFutureEventCollector
+    from RecordedFutureEventCollector import Client, fetch_events
+
+    info = mocker.patch.object(demisto, "info")
+    kwargs = {"limit": 1000, "last_run": "2026-11-06T03:00:00", "previous_last_run": {}}
+    with requests_mock.Mocker() as m:
+        m.get(f"{BASE_URL}/alert/search", json=fake_api_honouring_seconds(ASC_EVENTS))
+        without_probe = fetch_events(Client(BASE_URL), **kwargs)
+        mocker.patch.object(RecordedFutureEventCollector, "DEBUG_PROBE_SECONDS", True)
+        with_probe = fetch_events(Client(BASE_URL), **kwargs)
+
+    assert with_probe == without_probe
+    assert "seconds probe verdict" in "\n".join(str(call.args[0]) for call in info.call_args_list)
+
+
+def test_seconds_probe_failure_does_not_break_fetch(mocker):
+    """
+    Given: DEBUG_PROBE_SECONDS enabled and the probe requests fail.
+    When: fetch_events runs.
+    Then: The fetch still returns its events and the verdict is inconclusive.
+    """
+    import RecordedFutureEventCollector
+    from RecordedFutureEventCollector import Client, fetch_events
+
+    mocker.patch.object(RecordedFutureEventCollector, "DEBUG_PROBE_SECONDS", True)
+    client = Client(BASE_URL)
+
+    def get_alerts(params: dict) -> dict:
+        if params["triggered"].endswith(",]"):  # the fetch request has an open end; probes always have an end bound
+            return {"data": ASC_EVENTS}
+        raise DemistoException("boom")
+
+    mocker.patch.object(client, "get_alerts", side_effect=get_alerts)
+    probe = mocker.spy(RecordedFutureEventCollector, "evaluate_seconds_probe")
+    events, _ = fetch_events(client, limit=1000, last_run="2026-11-06T03:00:00", previous_last_run={})
+
+    assert len(events) == 3
+    assert probe.spy_return == {"result": "inconclusive", "reason": "probe request failed (see probe lines)"}
+
+
+@pytest.mark.parametrize(
+    "args, expected",
+    [
+        ({"limit": 5}, {"limit": 5}),
+        (
+            {"limit": 5, "start_time": "2026-11-09T00:00:00Z", "end_time": "2026-11-09T23:59:59Z"},
+            {"limit": 5, "triggered": "[2026-11-09T00:00:00,2026-11-09T23:59:59]", "orderby": "triggered", "direction": "asc"},
+        ),
+        (
+            {"start_time": "2026-11-09T00:00:00.123Z"},
+            {"limit": 10, "triggered": "[2026-11-09T00:00:00,]", "orderby": "triggered", "direction": "asc"},
+        ),
+        (
+            {"end_time": "2026-11-09T12:00:00Z"},
+            {"limit": 10, "triggered": "[,2026-11-09T12:00:00]", "orderby": "triggered", "direction": "asc"},
+        ),
+    ],
+)
+def test_build_get_events_params(args, expected):
+    from RecordedFutureEventCollector import build_get_events_params
+
+    assert build_get_events_params(args) == expected
+
+
+def test_get_events_command_with_time_range_shows_api_counts(mocker):
+    """
+    Given: recorded-future-get-events with start_time and end_time.
+    When: The command runs.
+    Then: The request carries triggered=[start,end] and the output shows the API counts (total/returned).
+    """
+    from RecordedFutureEventCollector import main
+
+    mocker.patch.object(demisto, "command", return_value="recorded-future-get-events")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"should_push_events": "false", "start_time": "2026-11-09T00:00:00Z", "end_time": "2026-11-09T23:59:59Z"},
+    )
+    results = mocker.patch("RecordedFutureEventCollector.return_results")
+    with requests_mock.Mocker() as m:
+        request = m.get(f"{BASE_URL}/alert/search", json={"data": ASC_EVENTS, "counts": {"returned": 3, "total": 1291}})
+        main()
+
+    assert request.last_request.qs["triggered"][0].upper() == "[2026-11-09T00:00:00,2026-11-09T23:59:59]"
+    readable = results.call_args[0][0].readable_output
+    assert "total=1291 returned=3" in readable
 
 
 def test_main(mocker):
