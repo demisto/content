@@ -501,3 +501,56 @@ def test_disable_access_policy_requires_sia_url(mocker, identity_only_client):
     mocker.patch.object(identity_only_client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
     with pytest.raises(DemistoException, match="requires the Secure Infrastructure Access"):
         disable_access_policy_command(identity_only_client, {"policy_id": "p-1", "policy_name": "Prod SSH"})
+
+
+# ========================================
+# Usage reporting opt-out
+# ========================================
+
+
+def test_report_adoption_event_skipped_when_usage_reporting_disabled(mocker):
+    """With the opt-out checked, nothing is sent: no token request and no event POST."""
+    opted_out_client = Client(
+        identity_url=IDENTITY_URL,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        verify=False,
+        proxy=False,
+        usage_reporting_enabled=False,
+    )
+    token = mocker.patch.object(Client, "_get_access_token")
+    http = mocker.patch.object(Client, "_http_request")
+    opted_out_client.report_adoption_event()
+    token.assert_not_called()
+    http.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "disable_param, expected_enabled",
+    [
+        (None, True),  # parameter absent: instances created before the setting existed keep reporting
+        (False, True),
+        ("false", True),
+        (True, False),
+        ("true", False),
+    ],
+)
+def test_main_passes_usage_reporting_setting_to_client(disable_param, expected_enabled, mocker):
+    params = {
+        "identity_url": IDENTITY_URL,
+        "client_id": MOCK_CLIENT_ID,
+        "credentials": {"password": MOCK_CLIENT_SECRET},
+    }
+    if disable_param is not None:
+        params["disable_usage_reporting"] = disable_param
+    mocker.patch.object(IdiraIdentityResponse.demisto, "params", return_value=params)
+    mocker.patch.object(IdiraIdentityResponse.demisto, "args", return_value={"user_id": "u-1"})
+    mocker.patch.object(IdiraIdentityResponse.demisto, "command", return_value="idira-identity-response-unlock-user")
+    mocker.patch.dict(IdiraIdentityResponse.COMMAND_MAP, {"idira-identity-response-unlock-user": lambda client, args: "result"})
+    mocker.patch.object(IdiraIdentityResponse, "return_results")
+    seen: list[bool] = []
+    mocker.patch.object(
+        Client, "report_adoption_event", autospec=True, side_effect=lambda client: seen.append(client.usage_reporting_enabled)
+    )
+    IdiraIdentityResponse.main()
+    assert seen == [expected_enabled]

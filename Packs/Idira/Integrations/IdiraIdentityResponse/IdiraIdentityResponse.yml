@@ -57,6 +57,14 @@ configuration:
   section: Connect
   advanced: true
   additionalinfo: When selected, the integration will use the system proxy settings.
+- name: disable_usage_reporting
+  display: Disable usage reporting
+  required: false
+  type: 8
+  defaultvalue: "false"
+  section: Connect
+  advanced: true
+  additionalinfo: When selected, the integration does not send usage events (command executed, integration version) to Palo Alto Networks.
 script:
   commands:
   - name: idira-identity-response-get-user-by-name

@@ -153,8 +153,10 @@ class Client(BaseClient):
         proxy: bool,
         privilege_cloud_url: str = "",
         sia_url: str = "",
+        usage_reporting_enabled: bool = True,
     ):
         super().__init__(base_url=identity_url, verify=verify, proxy=proxy)
+        self.usage_reporting_enabled = usage_reporting_enabled
         self.identity_url = identity_url.rstrip("/")
         self.token_url = f"{self.identity_url}/oauth2/platformtoken"
         self.client_id = client_id
@@ -301,7 +303,11 @@ class Client(BaseClient):
 
         Best effort: a single attempt with a short timeout. Any failure is logged
         and swallowed so telemetry can never break a response action.
+        Skipped entirely (no request at all) when the user disabled usage reporting.
         """
+        if not self.usage_reporting_enabled:
+            demisto.debug("[Adoption] Usage reporting is disabled in the instance configuration; skipping.")
+            return
         adoption_url = get_adoption_url(self.identity_url)
         if not adoption_url:
             demisto.debug(f"[Adoption] Could not derive the Feature Adoption URL from {self.identity_url}; skipping.")
@@ -749,6 +755,7 @@ def main() -> None:
     sia_url = (params.get("sia_url") or "").strip().rstrip("/")
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
+    usage_reporting_enabled = not argToBoolean(params.get("disable_usage_reporting", False))
 
     try:
         if not identity_url:
@@ -766,6 +773,7 @@ def main() -> None:
             proxy=proxy,
             privilege_cloud_url=privilege_cloud_url,
             sia_url=sia_url,
+            usage_reporting_enabled=usage_reporting_enabled,
         )
 
         if command == "test-module":

@@ -19,6 +19,7 @@ The integration uses the OAuth 2.0 **client-credentials** flow against `https://
 | Secure Infrastructure Access (SIA) URL | The Idira SIA host (e.g., `https://abc1234.dpa.cyberark.cloud`). Required only for the disable-access-policy command. | False |
 | Trust any certificate (not secure) | | False |
 | Use system proxy settings | | False |
+| Disable usage reporting | When selected, the integration does not send usage events \(command executed, integration version\) to Palo Alto Networks. | False |
 
 All three hosts (Identity, Privilege Cloud, SIA) authenticate with the same ISPSS Bearer token, so a single service user with the appropriate rights is sufficient. The Privilege Cloud and SIA hosts are optional: commands that need them raise a clear error if the corresponding URL is not configured. Privilege Cloud actions require the relevant Safe permissions (List Accounts, Initiate CPM operations, Add account), and SIA policy actions require the `DpaAdmin` role.
 
