@@ -4995,11 +4995,33 @@ Creates a shared access signature (SAS) token for a container.
 ### azure-rg-list-operations
 
 ***
-Gets all Azure Resource Graph operations permissions and descriptions. Required permission: Microsoft.ResourceGraph/operations/read.
+Gets all Azure Resource Graph operations permissions and descriptions. Deprecated. Use the azure-rg-operations-list command instead. Required permission: Microsoft.ResourceGraph/operations/read.
 
 #### Base Command
 
 `azure-rg-list-operations`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ResourceGraph.Operations.Name | String | The name of the Azure Resource Graph operation. |
+| Azure.ResourceGraph.Operations.Display | Unknown | The display information of the Azure Resource Graph operation, including provider, resource, operation, and description. |
+
+### azure-rg-operations-list
+
+***
+Gets all Azure Resource Graph operations permissions and descriptions. Required permission: Microsoft.ResourceGraph/operations/read.
+
+#### Base Command
+
+`azure-rg-operations-list`
 
 #### Input
 

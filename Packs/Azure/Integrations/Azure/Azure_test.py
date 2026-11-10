@@ -14438,37 +14438,37 @@ def test_create_network_interface_command_omits_empty_security_group(mocker):
 # --- Azure Resource Graph (migrated from the AzureResourceGraph pack) ---
 
 
-def test_resource_graph_list_operations_command_success(mocker):
+def test_resource_graph_operations_list_command_success(mocker):
     """
     Given: An Azure client mock returning a list of Resource Graph operations.
-    When: resource_graph_list_operations_command is called.
+    When: resource_graph_operations_list_command is called.
     Then: It returns CommandResults with every operation returned by the API, since the API does not support paging.
     """
-    from Azure import resource_graph_list_operations_command
+    from Azure import resource_graph_operations_list_command
 
     operations_data = util_load_json("test_data/resource_graph_list_operations_response.json")
     mock_client = mocker.Mock()
     mock_client.resource_graph_list_operations.return_value = operations_data
 
-    result = resource_graph_list_operations_command(mock_client, {}, {})
+    result = resource_graph_operations_list_command(mock_client, {}, {})
 
     assert result.outputs_prefix == "Azure.ResourceGraph.Operations"
     assert len(result.outputs) == len(operations_data["value"])
     assert result.outputs[0]["Name"] == "Microsoft.ResourceGraph/operations/read"
 
 
-def test_resource_graph_list_operations_command_no_results(mocker):
+def test_resource_graph_operations_list_command_no_results(mocker):
     """
     Given: An Azure client mock returning an empty operations list.
-    When: resource_graph_list_operations_command is called.
+    When: resource_graph_operations_list_command is called.
     Then: It returns CommandResults with a "no operations found" readable output and no context.
     """
-    from Azure import resource_graph_list_operations_command
+    from Azure import resource_graph_operations_list_command
 
     mock_client = mocker.Mock()
     mock_client.resource_graph_list_operations.return_value = {"value": []}
 
-    result = resource_graph_list_operations_command(mock_client, {}, {})
+    result = resource_graph_operations_list_command(mock_client, {}, {})
 
     assert result.outputs is None
     assert result.readable_output == "No Azure Resource Graph operations were found."

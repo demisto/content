@@ -591,6 +591,98 @@ def test_get_chrome_browser_error(mocker: MockerFixture):
     )
 
 
+class _FakeClock:
+    """Simulated clock: time.sleep advances time.monotonic without actually sleeping."""
+
+    def __init__(self):
+        self.now = 0.0
+
+    def monotonic(self) -> float:
+        return self.now
+
+    def sleep(self, seconds: float) -> None:
+        self.now += seconds
+
+
+def _patch_startup_env(mocker: MockerFixture, ready_after_seconds: float | None, returncode_after: float | None = None):
+    """Patches the clock, the Chrome process and pychrome so Chrome accepts connections after `ready_after_seconds`."""
+    clock = _FakeClock()
+    mocker.patch.object(rasterize.time, "monotonic", side_effect=clock.monotonic)
+    mocker.patch.object(rasterize.time, "sleep", side_effect=clock.sleep)
+
+    process = MagicMock(pid=4)
+    process.poll.side_effect = lambda: 0 if returncode_after is not None and clock.now >= returncode_after else None
+
+    def fake_browser(url):
+        if ready_after_seconds is None or clock.now < ready_after_seconds:
+            raise requests.exceptions.ConnectionError("[Errno 111] Connection refused")
+        browser = MagicMock()
+        browser.list_tab.return_value = []
+        return browser
+
+    mocker.patch("pychrome.Browser", side_effect=fake_browser)
+    return clock, process
+
+
+def test_wait_for_started_chrome_slow_start(mocker: MockerFixture):
+    """
+    Given   A freshly launched Chrome that stays alive but refuses connections for 35s
+            (CPU-starved script worker in lightweight mode, XSUP-80469).
+    When    Waiting for it to start.
+    Then    Keep waiting while the process is alive and return the connected browser,
+            instead of giving up after the old ~29s retry budget.
+    """
+    clock, process = _patch_startup_env(mocker, ready_after_seconds=35)
+
+    browser = rasterize.wait_for_started_chrome("9301", process)
+
+    assert browser is not None
+    assert 35 <= clock.now < 37
+
+
+def test_wait_for_started_chrome_process_exited(mocker: MockerFixture):
+    """
+    Given   A freshly launched Chrome that exits during startup.
+    When    Waiting for it to start.
+    Then    Fail fast and log the return code, without waiting for the full timeout.
+    """
+    clock, process = _patch_startup_env(mocker, ready_after_seconds=None, returncode_after=3)
+    debug = mocker.patch.object(demisto, "debug")
+
+    assert rasterize.wait_for_started_chrome("9301", process) is None
+    assert clock.now < 5
+    assert "exited during startup, returncode=0" in debug.call_args[0][0]
+
+
+def test_wait_for_started_chrome_timeout(mocker: MockerFixture):
+    """
+    Given   A freshly launched Chrome that stays alive but never accepts connections.
+    When    Waiting for it to start.
+    Then    Give up after CHROME_STARTUP_TIMEOUT_SECONDS.
+    """
+    clock, process = _patch_startup_env(mocker, ready_after_seconds=None)
+
+    assert rasterize.wait_for_started_chrome("9301", process) is None
+    assert rasterize.CHROME_STARTUP_TIMEOUT_SECONDS <= clock.now <= rasterize.CHROME_STARTUP_TIMEOUT_SECONDS + 1
+
+
+def test_start_chrome_headless_kills_chrome_that_did_not_start(mocker: MockerFixture):
+    """
+    Given   Chrome that never becomes ready.
+    When    Starting Chrome headless.
+    Then    The process is killed, nothing is registered in the instances file, and (None, None) is returned.
+    """
+    process = MagicMock(pid=4, returncode=None)
+    mocker.patch("subprocess.Popen", return_value=process)
+    mocker.patch("builtins.open", mocker.mock_open())
+    mocker.patch.object(rasterize, "wait_for_started_chrome", return_value=None)
+    add_instance = mocker.patch.object(rasterize, "add_new_chrome_instance")
+
+    assert rasterize.start_chrome_headless("9301", "instance_id", "None") == (None, None)
+    process.kill.assert_called_once()
+    add_instance.assert_not_called()
+
+
 def test_backoff(mocker):
     """
     Given   Waiting for a process to complete.

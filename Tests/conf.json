@@ -5963,6 +5963,8 @@
         }
     ],
     "skipped_tests": {
+        "EWS V2 Send Mail Test 2": "Fails consistently in nightly - CIAC-15569",
+        "Rasterize Test": "Flaky, fails intermittently in nightly - CIAC-15572",
         "Mail Sender (New) Test": "Gmail CI service-account key is invalid (invalid_grant: Invalid signature for token) - CIAC-14453",
         "Zendesk V2 TEST": "Zendesk API returns 'Couldn't authenticate you' on the test instance (zendesk-user-list / zendesk-user-create), the credentials need to be fixed.",
         "Test XDR Playbook general commands": "xdr-get-endpoint-device-control-violations fails because no device-control violations exist on the XDR lab tenants — CRTX-261310",
