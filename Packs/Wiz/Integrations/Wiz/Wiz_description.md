@@ -18,7 +18,8 @@ There Are 2 integration flows:
     - **Issues** > `read:issues`, `read:threat_issues`
     - **Issues** > `write:issue_status`, `write:threat_issue_status`
     - **Issues** > `write:issue_ignore`
-    - **Issues** > `write:issue_comments`, `write:threat_issue_comments`
+    - **Comments** > `read:comments`, `write:comments`
+    - **Comments** > `admin:comments` (also required by `wiz-clear-issue-note` to delete other authors' comments; does not replace the read/write scopes)
     - **Issues** > `write:issue_due_at`, `write:threat_issue_due_at`
     - **Resources** > `admin:run_copy_resource_forensics` (only if you use `wiz-copy-to-forensics-account`)
 - In the Cortex XSOAR Integration instance configuration window:

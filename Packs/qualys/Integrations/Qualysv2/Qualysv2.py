@@ -3619,8 +3619,8 @@ def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, 
     send: every non-final batch carries ``items_count=1`` (unsealed) and only the final batch declares the
     cumulative total to seal the snapshot (one snapshot id per cycle, matching the previous single-send logic).
 
-    Errors are not caught here: the caller does not update the last run, so the next run retries the whole stage
-    with a new snapshot ID (see ``fetch_assets_and_vulnerabilities_by_date``).
+    On a recoverable error mid-stream (see ``RECOVERABLE_PAGE_ERRORS``) the stage is kept, the failure is counted, and
+    the next run starts immediately and retries the whole stage with a new snapshot ID. Other errors are raised.
 
     Args:
         client (Client): Qualys client.
@@ -3653,6 +3653,9 @@ def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, 
         total_sent += len(remainder)
         remainder, seal_count = close_snapshot_if_empty(remainder, total_sent, snapshot_id, "vulnerabilities")
         send_snapshot_batch(remainder, "vulnerabilities", snapshot_id, items_count=seal_count)
+    except RECOVERABLE_PAGE_ERRORS as e:  # pylint: disable=catching-non-exception
+        demisto.error(f"[Vulnerabilities] Run failed, the next run retries the stage. Error: {e}\n{traceback.format_exc()}")
+        return schedule_next_assets_run_immediately(count_assets_failure(last_run, str(e), e))
     finally:
         if raw_response is not None:
             raw_response.close()

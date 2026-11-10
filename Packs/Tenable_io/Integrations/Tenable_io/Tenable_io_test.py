@@ -28,6 +28,7 @@ with patch.object(demisto, "params", return_value=MOCK_PARAMS):
         export_vulnerabilities_build_command_result,
         export_vulnerabilities_command,
         fetch_events_command,
+        fetch_vulnerabilities,
         generate_assets_export_uuid,
         generate_export_uuid,
         get_asset_details_command,
@@ -40,12 +41,15 @@ with patch.object(demisto, "params", return_value=MOCK_PARAMS):
         get_vulnerabilities_export_status,
         get_vulnerability_details_command,
         handle_assets_chunks,
+        handle_vulns_chunk_not_found,
         handle_vulns_chunks,
         initiate_export_scan,
         is_retryable_xsiam_error,
+        is_vulns_fetch_in_progress,
         launch_scan_command,
         list_scan_filters_command,
         pause_scan_command,
+        persist_vulns_progress,
         relational_date_to_epoch_date_format,
         request_uuid_export_vulnerabilities,
         resume_scan_command,
@@ -755,6 +759,9 @@ def test_vulnerabilities_process(mocker, requests_mock):
     """
 
     mock_demisto(mocker)
+    mocker.patch.object(demisto, "setAssetsLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
+    send_mock = mocker.patch.object(Tenable_io, "send_data_to_xsiam_with_retry")
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
     requests_mock.post(f"{BASE_URL}/vulns/export", json=MOCK_UUID)
     requests_mock.get(f"{BASE_URL}/vulns/export/123/status", json=MOCK_CHUNKS_STATUS)
@@ -768,9 +775,10 @@ def test_vulnerabilities_process(mocker, requests_mock):
     assert status == "FINISHED"
     assert last_run.get("vulns_available_chunks")
 
-    vulnerabilities, last_run = handle_vulns_chunks(client, last_run)
+    vulnerabilities_sent, last_run = handle_vulns_chunks(client, last_run)
 
-    assert len(vulnerabilities) == 1
+    assert vulnerabilities_sent == 1
+    assert send_mock.call_count == 1
 
 
 def test_handle_vulns_chunks_preserves_snapshot_state(mocker, requests_mock):
@@ -786,6 +794,9 @@ def test_handle_vulns_chunks_preserves_snapshot_state(mocker, requests_mock):
           in main() after the snapshot has been sealed, not in handle_vulns_chunks().
     """
     mock_demisto(mocker)
+    mocker.patch.object(demisto, "setAssetsLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
+    mocker.patch.object(Tenable_io, "send_data_to_xsiam_with_retry")
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
     requests_mock.get(f"{BASE_URL}/vulns/export/123/chunks/1", json=MOCK_CHUNK_CONTENT)
 
@@ -798,15 +809,399 @@ def test_handle_vulns_chunks_preserves_snapshot_state(mocker, requests_mock):
         "total_assets": original_total_assets,
     }
 
-    vulnerabilities, last_run = handle_vulns_chunks(client, last_run)
+    vulnerabilities_sent, last_run = handle_vulns_chunks(client, last_run)
 
-    assert len(vulnerabilities) == 1
+    assert vulnerabilities_sent == 1
     # Verify vuln state is cleaned up
     assert "vuln_export_uuid" not in last_run
     assert "vulns_available_chunks" not in last_run
     # Verify snapshot state is PRESERVED (not popped)
     assert last_run.get("snapshot_id") == original_snapshot_id
     assert last_run.get("total_assets") == original_total_assets
+
+
+def test_handle_vulns_chunks_sends_and_persists_each_chunk(mocker, requests_mock):
+    """
+    Given:
+        - Three vulnerability chunks.
+    When:
+        - handle_vulns_chunks runs.
+    Then:
+        - Each chunk is sent separately with streaming, progress is saved after each one, and the count is returned.
+    """
+    mock_demisto(mocker)
+    mocker.patch.object(demisto, "updateModuleHealth")
+    persisted_chunks: list = []
+    mocker.patch.object(
+        demisto,
+        "setAssetsLastRun",
+        side_effect=lambda last_run: persisted_chunks.append(list(last_run.get("vulns_available_chunks", []))),
+    )
+    sent_batches: list = []
+
+    def fake_send(**kwargs):
+        sent_batches.append((len(kwargs["data"]), kwargs.get("use_streaming_send")))
+
+    mocker.patch.object(Tenable_io, "send_data_to_xsiam_with_retry", new=fake_send)
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    for chunk_id in (1, 2, 3):
+        requests_mock.get(f"{BASE_URL}/vulns/export/123/chunks/{chunk_id}", json=MOCK_CHUNK_CONTENT * chunk_id)
+    last_run = {"vuln_export_uuid": "123", "vulns_available_chunks": [1, 2, 3]}
+
+    vulnerabilities_sent, last_run = handle_vulns_chunks(client, last_run)
+
+    assert vulnerabilities_sent == 6
+    assert sent_batches == [(1, True), (2, True), (3, True)]
+    assert persisted_chunks == [[2, 3], [3], []]
+    assert "vulns_available_chunks" not in last_run
+    assert "vuln_export_uuid" not in last_run
+
+
+def test_handle_vulns_chunks_resumes_after_failure_mid_batch(mocker, requests_mock):
+    """
+    Given:
+        - Three vulnerability chunks, where sending the second chunk fails.
+    When:
+        - handle_vulns_chunks runs.
+    Then:
+        - The saved progress excludes the first chunk, so the next run resumes from chunk 2.
+    """
+    mock_demisto(mocker)
+    mocker.patch.object(demisto, "updateModuleHealth")
+    persisted_chunks: list = []
+    mocker.patch.object(
+        demisto,
+        "setAssetsLastRun",
+        side_effect=lambda last_run: persisted_chunks.append(list(last_run.get("vulns_available_chunks", []))),
+    )
+    mocker.patch.object(Tenable_io, "send_data_to_xsiam_with_retry", side_effect=[None, DemistoException("killed")])
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    for chunk_id in (1, 2, 3):
+        requests_mock.get(f"{BASE_URL}/vulns/export/123/chunks/{chunk_id}", json=MOCK_CHUNK_CONTENT)
+    last_run = {"vuln_export_uuid": "123", "vulns_available_chunks": [1, 2, 3]}
+
+    with pytest.raises(DemistoException):
+        handle_vulns_chunks(client, last_run)
+
+    assert persisted_chunks == [[2, 3]]
+    demisto.updateModuleHealth.assert_called_once_with({"eventsPulled": 1})
+
+
+def test_handle_vulns_chunks_404_after_some_chunks_were_sent(mocker, requests_mock):
+    """
+    Given:
+        - Three vulnerability chunks, where chunk 3 returns 404.
+    When:
+        - handle_vulns_chunks runs.
+    Then:
+        - Chunks 1 and 2 are counted and reported in the module health, and a new export is started.
+    """
+    mock_demisto(mocker)
+    mocker.patch.object(demisto, "updateModuleHealth")
+    mocker.patch.object(demisto, "setAssetsLastRun")
+    mocker.patch.object(Tenable_io, "send_data_to_xsiam_with_retry", new=lambda **kwargs: None)
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.get(f"{BASE_URL}/vulns/export/123/chunks/1", json=MOCK_CHUNK_CONTENT)
+    requests_mock.get(f"{BASE_URL}/vulns/export/123/chunks/2", json=MOCK_CHUNK_CONTENT * 2)
+    requests_mock.get(f"{BASE_URL}/vulns/export/123/chunks/3", status_code=404, json={"status": 404, "error": "Not Found"})
+    requests_mock.post(f"{BASE_URL}/vulns/export", json={"export_uuid": "456"})
+    last_run = {"vuln_export_uuid": "123", "vulns_available_chunks": [1, 2, 3]}
+
+    vulnerabilities_sent, last_run = handle_vulns_chunks(client, last_run)
+
+    assert vulnerabilities_sent == 3
+    demisto.updateModuleHealth.assert_called_once_with({"eventsPulled": 3})
+    assert last_run["vuln_export_uuid"] == "456"
+    assert last_run["vulns_404_retry_count"] == 1
+    assert "vulns_available_chunks" not in last_run
+
+
+def test_handle_vulns_chunks_sends_each_chunk_before_downloading_the_next(mocker):
+    """
+    Given:
+        - Three vulnerability chunks.
+    When:
+        - handle_vulns_chunks runs.
+    Then:
+        - Each chunk is downloaded, sent and persisted before the next chunk is downloaded,
+          and each send contains only that chunk's vulnerabilities.
+    """
+    mock_demisto(mocker)
+    mocker.patch.object(demisto, "updateModuleHealth")
+    events: list = []
+
+    def fake_download(self, export_uuid, chunk_id):
+        events.append(f"download:{chunk_id}")
+        return [{"id": f"{chunk_id}-{index}", "received": "2026-10-28T00:00:00Z"} for index in range(chunk_id)]
+
+    mocker.patch.object(Client, "download_vulnerabilities_chunk", new=fake_download)
+    mocker.patch.object(
+        Tenable_io,
+        "send_data_to_xsiam_with_retry",
+        new=lambda **kwargs: events.append(f"send:{[vuln['id'] for vuln in kwargs['data']]}"),
+    )
+    mocker.patch.object(
+        demisto,
+        "setAssetsLastRun",
+        side_effect=lambda last_run: events.append(f"persist:{last_run.get('vulns_available_chunks', [])}"),
+    )
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    last_run = {"vuln_export_uuid": "123", "vulns_available_chunks": [1, 2, 3]}
+
+    handle_vulns_chunks(client, last_run)
+
+    assert events == [
+        "download:1",
+        "send:['1-0']",
+        "persist:[2, 3]",
+        "download:2",
+        "send:['2-0', '2-1']",
+        "persist:[3]",
+        "download:3",
+        "send:['3-0', '3-1', '3-2']",
+        "persist:[]",
+    ]
+
+
+def test_handle_vulns_chunks_closes_export_with_zero_chunks(mocker):
+    """
+    Given:
+        - A FINISHED vulns export with no chunks (vulns_available_chunks=[]).
+    When:
+        - handle_vulns_chunks runs.
+    Then:
+        - Nothing is downloaded or sent, vuln_export_uuid is removed and the last run is saved,
+          so the vulns fetch is no longer in progress and the next cycle can fetch assets.
+        - The assets snapshot state is kept.
+    """
+    mock_demisto(mocker)
+    set_last_run_mock = mocker.patch.object(demisto, "setAssetsLastRun")
+    health_mock = mocker.patch.object(demisto, "updateModuleHealth")
+    send_mock = mocker.patch.object(Tenable_io, "send_data_to_xsiam_with_retry")
+    download_mock = mocker.patch.object(Client, "download_vulnerabilities_chunk")
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    last_run = {"vuln_export_uuid": "123", "vulns_available_chunks": [], "snapshot_id": "1", "total_assets": 5}
+
+    vulnerabilities_sent, returned_last_run = handle_vulns_chunks(client, last_run)
+
+    assert vulnerabilities_sent == 0
+    assert returned_last_run is last_run
+    assert "vuln_export_uuid" not in last_run
+    assert "vulns_available_chunks" not in last_run
+    assert last_run["snapshot_id"] == "1"
+    assert last_run["total_assets"] == 5
+    assert not is_vulns_fetch_in_progress(last_run)
+    set_last_run_mock.assert_called_once_with(last_run)
+    download_mock.assert_not_called()
+    send_mock.assert_not_called()
+    health_mock.assert_not_called()
+
+
+def test_fetch_vulnerabilities_finished_export_with_zero_chunks(mocker, requests_mock):
+    """
+    Given:
+        - An active vulns export that Tenable reports as FINISHED with no chunks.
+    When:
+        - fetch_vulnerabilities runs.
+    Then:
+        - The export is closed (vuln_export_uuid removed), so the next run does not poll it again.
+    """
+    mock_demisto(mocker)
+    mocker.patch.object(demisto, "setAssetsLastRun")
+    mocker.patch.object(demisto, "info")
+    requests_mock.get(f"{BASE_URL}/vulns/export/123/status", json={"status": "FINISHED", "chunks_available": []})
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    last_run = {"vuln_export_uuid": "123"}
+
+    vulnerabilities_sent = fetch_vulnerabilities(client, last_run)
+
+    assert vulnerabilities_sent == 0
+    assert not is_vulns_fetch_in_progress(last_run)
+
+
+def test_handle_vulns_chunks_sends_at_most_max_chunks_per_run(mocker, requests_mock):
+    """
+    Given:
+        - Ten vulnerability chunks, more than MAX_VULNS_CHUNKS_PER_FETCH (8).
+    When:
+        - handle_vulns_chunks runs.
+    Then:
+        - Only the first 8 chunks are sent, the last 2 remain for the next run,
+          the next run is scheduled in 30 seconds and the export UUID is kept.
+    """
+    mock_demisto(mocker)
+    mocker.patch.object(demisto, "setAssetsLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
+    send_mock = mocker.patch.object(Tenable_io, "send_data_to_xsiam_with_retry")
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    for chunk_id in range(1, 11):
+        requests_mock.get(f"{BASE_URL}/vulns/export/123/chunks/{chunk_id}", json=MOCK_CHUNK_CONTENT)
+    last_run = {"vuln_export_uuid": "123", "vulns_available_chunks": list(range(1, 11))}
+
+    vulnerabilities_sent, last_run = handle_vulns_chunks(client, last_run)
+
+    assert Tenable_io.MAX_VULNS_CHUNKS_PER_FETCH == 8
+    assert vulnerabilities_sent == 8
+    assert send_mock.call_count == 8
+    assert last_run["vulns_available_chunks"] == [9, 10]
+    assert last_run["nextTrigger"] == "30"
+    assert last_run["type"] == Tenable_io.FETCH_COMMAND.get("assets")
+    assert last_run["vuln_export_uuid"] == "123"
+
+
+def test_handle_vulns_chunk_not_found_gives_up_after_max_retries(mocker):
+    """
+    Given:
+        - A vulns export that already had MAX_404_RETRIES - 1 consecutive 404s.
+    When:
+        - handle_vulns_chunk_not_found handles another 404.
+    Then:
+        - The vulns export state is cleared, an error is logged, and no new export is started.
+    """
+    mock_demisto(mocker)
+    error_mock = mocker.patch.object(demisto, "error")
+    new_export_mock = mocker.patch.object(Client, "get_vuln_export_uuid")
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    last_run = {
+        "vuln_export_uuid": "123",
+        "vulns_available_chunks": [2, 3],
+        "vulns_404_retry_count": Tenable_io.MAX_404_RETRIES - 1,
+    }
+
+    handle_vulns_chunk_not_found(client, last_run)
+
+    assert "vuln_export_uuid" not in last_run
+    assert "vulns_available_chunks" not in last_run
+    assert "vulns_404_retry_count" not in last_run
+    error_mock.assert_called_once()
+    new_export_mock.assert_not_called()
+
+
+def test_persist_vulns_progress_with_remaining_chunks(mocker):
+    """
+    Given:
+        - Chunks that were not sent yet.
+    When:
+        - persist_vulns_progress runs.
+    Then:
+        - The remaining chunks are kept, the next run is scheduled and the last run is saved.
+    """
+    set_last_run_mock = mocker.patch.object(demisto, "setAssetsLastRun")
+    remaining_chunks = [4, 5]
+    last_run = {"vuln_export_uuid": "123", "vulns_available_chunks": [3, 4, 5]}
+
+    persist_vulns_progress(last_run, remaining_chunks)
+
+    assert last_run["vulns_available_chunks"] == [4, 5]
+    assert last_run["vulns_available_chunks"] is not remaining_chunks
+    assert last_run["nextTrigger"] == "30"
+    assert last_run["type"] == Tenable_io.FETCH_COMMAND.get("assets")
+    assert last_run["vuln_export_uuid"] == "123"
+    set_last_run_mock.assert_called_once_with(last_run)
+
+
+def test_persist_vulns_progress_with_no_remaining_chunks(mocker):
+    """
+    Given:
+        - No chunks left to send.
+    When:
+        - persist_vulns_progress runs.
+    Then:
+        - The vulns export state is removed, the assets snapshot state is kept and the last run is saved.
+    """
+    set_last_run_mock = mocker.patch.object(demisto, "setAssetsLastRun")
+    last_run = {"vuln_export_uuid": "123", "vulns_available_chunks": [5], "snapshot_id": "1", "total_assets": 5}
+
+    persist_vulns_progress(last_run, [])
+
+    assert "vulns_available_chunks" not in last_run
+    assert "vuln_export_uuid" not in last_run
+    assert last_run["snapshot_id"] == "1"
+    assert last_run["total_assets"] == 5
+    set_last_run_mock.assert_called_once_with(last_run)
+
+
+def test_send_data_to_xsiam_with_retry_streaming_retry_gets_full_data(mocker):
+    """
+    Given:
+        - A streaming send that empties its input and fails with a retryable error on the first attempt.
+    When:
+        - Sending with use_streaming_send=True.
+    Then:
+        - The retry receives the full data and the caller's list is not modified.
+    """
+    mocker.patch.object(Tenable_io.time, "sleep")
+    received_sizes: list = []
+
+    def fake_send_data_to_xsiam(*args, **kwargs):
+        received_sizes.append(len(kwargs["data"]))
+        kwargs["data"].clear()
+        if len(received_sizes) == 1:
+            raise requests.exceptions.ConnectionError("reset")
+
+    mocker.patch.object(Tenable_io, "send_data_to_xsiam", side_effect=fake_send_data_to_xsiam)
+    data = [{"id": "1"}, {"id": "2"}, {"id": "3"}]
+
+    send_data_to_xsiam_with_retry(data=data, vendor="tenable", product="io_vulnerabilities", use_streaming_send=True)
+
+    assert received_sizes == [3, 3]
+    assert len(data) == 3
+
+
+def test_send_data_to_xsiam_with_retry_streaming_copies_positional_data(mocker):
+    """
+    Given:
+        - Data passed positionally, and a streaming send that empties its input and fails on the first attempt.
+    When:
+        - Sending with use_streaming_send=True.
+    Then:
+        - The retry receives the full data and the caller's list is not modified.
+    """
+    mocker.patch.object(Tenable_io.time, "sleep")
+    received_sizes: list = []
+
+    def fake_send_data_to_xsiam(*args, **kwargs):
+        received_sizes.append(len(args[0]))
+        args[0].clear()
+        if len(received_sizes) == 1:
+            raise requests.exceptions.ConnectionError("reset")
+
+    mocker.patch.object(Tenable_io, "send_data_to_xsiam", new=fake_send_data_to_xsiam)
+    data = [{"id": "1"}, {"id": "2"}, {"id": "3"}]
+
+    send_data_to_xsiam_with_retry(data, vendor="tenable", product="io_vulnerabilities", use_streaming_send=True)
+
+    assert received_sizes == [3, 3]
+    assert len(data) == 3
+
+
+def test_send_data_to_xsiam_with_retry_streaming_non_retryable_error(mocker):
+    """
+    Given:
+        - A streaming send that empties its input and fails with a non-retryable error.
+    When:
+        - Sending with use_streaming_send=True.
+    Then:
+        - The error is raised after exactly one attempt, without sleeping, and the caller's list is not modified.
+    """
+    sleep_mock = mocker.patch.object(Tenable_io.time, "sleep")
+    mocker.patch.object(demisto, "debug")
+    attempts: list = []
+
+    def fake_send_data_to_xsiam(*args, **kwargs):
+        attempts.append(len(kwargs["data"]))
+        kwargs["data"].clear()
+        raise XSIAMSendError("bad request", status_code=400)
+
+    mocker.patch.object(Tenable_io, "send_data_to_xsiam", new=fake_send_data_to_xsiam)
+    data = [{"id": "1"}, {"id": "2"}, {"id": "3"}]
+
+    with pytest.raises(XSIAMSendError):
+        send_data_to_xsiam_with_retry(data=data, vendor="tenable", product="io_vulnerabilities", use_streaming_send=True)
+
+    assert attempts == [3]
+    assert data == [{"id": "1"}, {"id": "2"}, {"id": "3"}]
+    sleep_mock.assert_not_called()
 
 
 def test_fetch_audit_logs_no_duplications(mocker, requests_mock):
@@ -1132,10 +1527,6 @@ def test_fetch_assets_sends_assets_before_fetching_vulnerabilities(mocker):
         call_order.append("fetch_assets")
         return [{"id": "asset-1"}]
 
-    def fake_run_vulnerabilities_fetch(client, last_run):
-        call_order.append("fetch_vulns")
-        return [{"id": "vuln-1"}]
-
     def fake_send_data_to_xsiam(*args, **kwargs):
         product = kwargs.get("product", "")
         if "assets" in product:
@@ -1143,10 +1534,14 @@ def test_fetch_assets_sends_assets_before_fetching_vulnerabilities(mocker):
         elif "vulnerabilities" in product:
             call_order.append("send_vulns")
 
+    def fake_run_vulnerabilities_fetch(client, last_run):
+        call_order.append("fetch_vulns")
+        fake_send_data_to_xsiam(data=[{"id": "vuln-1"}], product="io_vulnerabilities")
+        return 1
+
     mocker.patch.object(Tenable_io, "run_assets_fetch", side_effect=fake_run_assets_fetch)
     mocker.patch.object(Tenable_io, "run_vulnerabilities_fetch", side_effect=fake_run_vulnerabilities_fetch)
     mocker.patch.object(Tenable_io, "send_data_to_xsiam", side_effect=fake_send_data_to_xsiam)
-    mocker.patch.object(Tenable_io, "parse_vulnerabilities", side_effect=lambda vulns: vulns)
 
     Tenable_io.main()
 
