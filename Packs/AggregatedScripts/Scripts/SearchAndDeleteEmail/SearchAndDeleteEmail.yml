@@ -1,58 +1,71 @@
+commonfields:
+  id: SearchAndDeleteEmail
+  version: -1
+name: SearchAndDeleteEmail
+script: '-'
+type: python
+subtype: python3
+tags:
+- email
+- Utility
+comment: |-
+  Searches for emails and optionally deletes them, using one or more of the supported mail integrations: Gmail, Microsoft Graph Mail, Microsoft Graph Security and EWS on-prem. The results of all vendors are normalized into the unified EmailData context path.
+
+  Supported scopes: Gmail, Microsoft Graph Security and EWS support searching all mailboxes. Microsoft Graph Mail supports only specific mailboxes.
+  Delete types: Gmail, Microsoft Graph Security and EWS support both soft and hard delete. Microsoft Graph Mail supports soft delete only.
+  Microsoft Graph Security and EWS honor only the date part of the time frame, so the effective search window can be up to 24 hours wider than requested.
+  The command may take a long time when searching thousands of mailboxes. It uses the built-in polling: every run advances the operation by one step and releases the worker until the next run, so it never blocks. The timeout argument is the overall time budget (in seconds) of the whole run.
+  When verify_deletion is true (relevant only for "Search & Delete"), the script verifies that the emails were really deleted instead of trusting that the delete command did not fail (the verification is polled for up to 120 seconds).
+  Microsoft Graph Security runs in a dedicated eDiscovery case that is created for the run and is always deleted at the end, together with its search, and returns a single aggregate record (counts only) instead of per-email details.
+enabled: true
 args:
-- description: A comma-separated list of one or more Internet Message IDs (the "Message-ID" email header) of the emails to search for. When specified, it is preferred over the subject and sender address.
-  name: internet_message_id
+- name: internet_message_id
+  description: One or more Internet Message IDs of the emails to search for or delete. When specified, it is preferred over subject and sender_address.
   isArray: true
-- description: The vendor-specific ID of the email (for example, the ItemID in EWS or the message ID in Gmail and Microsoft Graph Mail). When specified, the "target_mailbox" and "brands" arguments must also be specified (a single mailbox and a single brand). Not supported for Microsoft Graph Security.
-  name: object_id
-- description: The operation to perform. "Search Only" only searches for the emails, "Search & Delete" also deletes the emails that were found.
-  name: operation
+- name: object_id
+  description: The vendor specific ID of the email (for example, the ItemID in EWS). When specified, target_mailbox (a single mailbox) and a single brand must also be specified.
+- name: operation
+  description: |-
+    The operation to perform. "Search Only" searches for the emails and cleans up any search item that was created. "Search & Delete" also deletes the emails that were found.
   required: true
   auto: PREDEFINED
   predefined:
   - Search Only
   - Search & Delete
-- description: |-
-    The type of deletion, relevant only when the operation is "Search & Delete".
-    Soft - the email is moved to a recoverable location (for example, the trash or the recoverable items folder).
-    Hard - the email is permanently deleted, where the vendor supports it. Microsoft Graph Mail does not support a hard delete (the email is moved to Deleted Items).
-  name: delete_type
+- name: delete_type
+  description: 'The delete type to use when the operation is "Search & Delete": "soft" (the email is moved to the deleted items / trash and can be recovered) or "hard" (the email is permanently deleted). Microsoft Graph Mail supports soft delete only. Default is soft.'
   auto: PREDEFINED
   predefined:
-  - Soft
-  - Hard
-  defaultValue: Soft
-- description: 'The period to search in, for example "1 hour", "3 hours" or "7 days". Only emails received within this period are returned.'
-  name: time_frame
+  - soft
+  - hard
+  defaultValue: soft
+- name: time_frame
+  description: 'How far back to search, for example "7 days" or "3 hours". Supported units: minutes, hours, days, weeks and months. Microsoft Graph Security and EWS honor only the date part.'
   defaultValue: 1 hour
-- description: The subject of the emails to search for. Ignored when "internet_message_id" is specified.
-  name: subject
-- description: The sender address of the emails to search for. Can be combined with the subject. Ignored when "internet_message_id" is specified.
-  name: sender_address
-- description: Whether to retrieve the attachments of the found emails. The attachments are added to the "Attachments" key of the EmailData and returned as file entries (File context key). The attachments are retrieved before the emails are deleted.
-  name: retrieve_files
+- name: subject
+  description: One or more email subjects to search for. Ignored when internet_message_id is specified.
+  isArray: true
+- name: sender_address
+  description: The sender address to search for. Can be used together with subject. Ignored when internet_message_id is specified.
+- name: retrieve_files
+  description: Whether to retrieve the attachments of the emails before they are deleted. The files are added to the Attachments key of EmailData and returned as file entries. Not supported by Microsoft Graph Security.
   auto: PREDEFINED
   predefined:
-  - 'true'
-  - 'false'
-  defaultValue: 'false'
-- description: A comma-separated list of the mailboxes to search in (for example, user1@example.com,user2@example.com). Required when "mailbox_scope" is "Specific".
-  name: target_mailbox
+  - "true"
+  - "false"
+  defaultValue: "false"
+- name: target_mailbox
+  description: The mailbox(es) to search in. Required when mailbox_scope is "Specific". Ignored when mailbox_scope is "All".
   isArray: true
-- description: |-
-    The scope of the mailboxes to search in.
-    Specific - search only in the mailboxes specified in "target_mailbox".
-    All - search in all the mailboxes of the organization.
-  name: mailbox_scope
-  required: true
+- name: mailbox_scope
+  description: Whether to search specific mailboxes or all mailboxes. Microsoft Graph Mail does not support "All".
   auto: PREDEFINED
   predefined:
   - Specific
   - All
   defaultValue: Specific
-- description: |-
-    Specify the integration brands to run the command for. If not provided, the command runs for all the available (enabled) supported integrations.
-    For multi-select, provide a comma-separated list. For example: 'Gmail, EWS v2'.
-  name: brands
+- name: brands
+  description: The brands to run the operation on. If empty, all enabled instances of the supported brands are used.
   isArray: true
   auto: PREDEFINED
   predefined:
@@ -60,101 +73,109 @@ args:
   - MicrosoftGraphMail
   - Microsoft Graph
   - EWS v2
-- description: Whether to return additional email details (body, headers, labels and so on) in the "AdditionalFields" key of the EmailData.
-  name: verbose
+- name: verify_deletion
+  description: Whether to verify the deletion by searching again after the emails were deleted and checking that they no longer exist. Relevant only when the operation is "Search & Delete". Emails whose deletion cannot be verified are reported as failed. Default is false.
   auto: PREDEFINED
   predefined:
-  - 'true'
-  - 'false'
-  defaultValue: 'false'
-- description: Whether to verify with the vendor that the emails were deleted, by checking that they no longer exist. Not supported for Microsoft Graph Security - a warning is returned and the deletion is performed without verification.
-  name: verify_deletion
+  - "true"
+  - "false"
+  defaultValue: "false"
+- name: verbose
+  description: Whether to include the list of executed commands in the human readable output.
   auto: PREDEFINED
   predefined:
-  - 'true'
-  - 'false'
-  defaultValue: 'false'
-comment: Searches for emails (and optionally deletes them) across multiple email integrations - Gmail, Microsoft Graph Mail, Microsoft Graph Security and EWS v2 (on-premise). This script replaces the "Search And Delete Emails - Generic v2" and "Get Original Email - Generic v2" playbooks.
-commonfields:
-  id: search-and-delete-email
-  version: -1
-name: search-and-delete-email
+  - "true"
+  - "false"
+  defaultValue: "false"
+- name: timeout
+  description: The overall time budget of the whole run (all polling runs together), in seconds (a positive integer). It is not a per-operation timeout. When it is exhausted, vendors that were not started yet are reported as failed and the results collected so far are returned (the Microsoft Graph Security search and case are always cleaned up, which may take up to an additional 600 seconds grace period). Default is 1800.
+  defaultValue: "1800"
+- name: state
+  description: The state of the polling flow. Automatically filled by polling, should not be set by the user.
+  hidden: true
+- name: scheduled_timeout_in_seconds
+  description: The timeout of the scheduled polling command. Automatically filled by polling, should not be set by the user.
+  hidden: true
+- name: hide_polling_output
+  description: Whether to hide the polling message. Automatically filled by polling, should not be set by the user.
+  hidden: true
 outputs:
 - contextPath: EmailData
-  description: The emails that were found (or the failures that occurred), one item per email and brand.
+  description: The unified results of the search and delete operation.
   type: Unknown
-- contextPath: EmailData.Mailbox
-  description: The mailbox addresses of the email.
+- contextPath: EmailData.ID
+  description: The vendor specific ID of the email (for example the message ID in Microsoft Graph Mail or the item ID in EWS).
   type: String
+- contextPath: EmailData.Mailbox
+  description: The mailbox addresses in which the email was found.
+  type: Unknown
 - contextPath: EmailData.Subject
-  description: The subject of the email.
+  description: The email subject.
   type: String
 - contextPath: EmailData.From
-  description: The sender of the email.
+  description: The email sender.
   type: String
 - contextPath: EmailData.To
-  description: The recipients of the email.
-  type: String
+  description: The email recipients.
+  type: Unknown
 - contextPath: EmailData.CC
-  description: The CC recipients of the email.
-  type: String
+  description: The email CC recipients.
+  type: Unknown
 - contextPath: EmailData.BCC
-  description: The BCC recipients of the email.
-  type: String
-- contextPath: EmailData.HTML
+  description: The email BCC recipients.
+  type: Unknown
+- contextPath: EmailData.HTMLBody
   description: The HTML body of the email.
   type: String
 - contextPath: EmailData.Timestamp
-  description: The time the email was received.
+  description: The timestamp of the email.
   type: String
 - contextPath: EmailData.Attachments
-  description: The attachments of the email, as a dictionary of the attachment name to its SHA256 hash. Populated only when "retrieve_files" is true.
+  description: A dictionary of the attachment names and their hashes.
   type: Unknown
 - contextPath: EmailData.Success
-  description: Whether the operation succeeded for the email.
+  description: Whether the operation succeeded for this email (or for this vendor, when no email was found).
   type: Boolean
 - contextPath: EmailData.Reason
-  description: The failure reason, if the operation failed.
+  description: The reason for the failure, if any.
   type: String
 - contextPath: EmailData.Operation
-  description: The operation that was performed ("Search Only" or "Search & Delete").
+  description: The operation that was performed.
   type: String
 - contextPath: EmailData.Brand
-  description: The integration brand that was used.
+  description: The brand that was used.
   type: String
 - contextPath: EmailData.AdditionalFields
-  description: Additional details of the email (the object ID, the internet message ID, the deletion status and, when "verbose" is true, the body, headers and other vendor fields).
+  description: Additional vendor specific fields, such as the Internet Message ID and the instance name.
   type: Unknown
-- contextPath: TotalFound
-  description: The total number of emails that were found.
+- contextPath: EmailData.AdditionalFields.DeletionVerified
+  description: Whether the deletion was verified. Returned only when verify_deletion is true and the verification could be determined.
+  type: Boolean
+- contextPath: EmailData.AdditionalFields.Aggregate
+  description: True for the single aggregate record of a brand that returns counts only (Microsoft Graph Security), which has no per-email details.
+  type: Boolean
+- contextPath: EmailData.AdditionalFields.HTMLBodyTruncated
+  description: True when the HTML body of the email was truncated to keep the polling state small.
+  type: Boolean
+- contextPath: EmailData.TotalFound
+  description: The total number of emails that were found by the brand.
   type: Number
-- contextPath: TotalDeleted
-  description: The total number of emails that were deleted.
+- contextPath: EmailData.TotalDeleted
+  description: The total number of emails that were deleted by the brand.
   type: Number
-- contextPath: TotalFailed
-  description: The total number of emails (or integrations) for which the operation failed.
+- contextPath: EmailData.TotalFailed
+  description: The total number of emails that failed to be deleted by the brand.
   type: Number
 - contextPath: File.Name
-  description: The name of the retrieved attachment. Relevant only when "retrieve_files" is true.
+  description: The name of the retrieved attachment. Returned only when retrieve_files is true.
   type: String
 - contextPath: File.SHA256
-  description: The SHA256 hash of the retrieved attachment. Relevant only when "retrieve_files" is true.
+  description: The SHA256 of the retrieved attachment. Returned only when retrieve_files is true.
   type: String
-- contextPath: File.Size
-  description: The size of the retrieved attachment. Relevant only when "retrieve_files" is true.
-  type: Number
-- contextPath: File.Extension
-  description: The extension of the retrieved attachment. Relevant only when "retrieve_files" is true.
-  type: String
-script: '-'
-timeout: 2h0m0s
-type: python
-subtype: python3
 dockerimage: demisto/python3:3.12.14.13495286
+runas: DBotRole
+timeout: 3h0m0s
 fromversion: 6.10.0
-marketplaces:
-- xsoar
-- marketplacev2
-- platform
+polling: true
 tests:
 - No tests (auto formatted)
