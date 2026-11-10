@@ -2273,9 +2273,9 @@ script:
     - contextPath: AWS.Waf.WebACLResource.WebACLArn
       description: The ARN of the web ACL the resources are associated with.
       type: String
-    - contextPath: AWS.Waf.WebACLResource.ARN
-      description: The ARN of a resource associated with the web ACL.
-      type: String
+    - contextPath: AWS.Waf.WebACLResource.ResourceArns
+      description: The ARNs of the resources associated with the web ACL.
+      type: Unknown
   - arguments:
     - name: resource_arn
       description: The ARN of the resource whose web ACL you want to retrieve.

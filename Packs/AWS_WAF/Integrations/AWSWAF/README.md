@@ -1421,7 +1421,7 @@ Lists resources associated with a web ACL.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AWS.Waf.WebACLResource.WebACLArn | String | The ARN of the web ACL the resources are associated with. |
-| AWS.Waf.WebACLResource.ARN | String | The ARN of a resource associated with the web ACL. |
+| AWS.Waf.WebACLResource.ResourceArns | Unknown | The ARNs of the resources associated with the web ACL. |
 
 #### Command example
 
@@ -1433,12 +1433,12 @@ Lists resources associated with a web ACL.
 {
     "AWS": {
         "Waf": {
-            "WebACLResource": [
-                {
-                    "ARN": "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890",
-                    "WebACLArn": "arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4"
-                }
-            ]
+            "WebACLResource": {
+                "ResourceArns": [
+                    "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890"
+                ],
+                "WebACLArn": "arn:aws:wafv2:us-east-1:123456789012:regional/webacl/prod-web-acl/a1b2c3d4"
+            }
         }
     }
 }

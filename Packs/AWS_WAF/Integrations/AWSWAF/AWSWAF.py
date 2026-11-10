@@ -1186,20 +1186,20 @@ def disassociate_web_acl_command(client: "WAFV2Client", args: dict) -> CommandRe
 
 def list_resources_for_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
     """Command to list resources associated with a web ACL"""
-    kwargs: dict[str, Any] = {"WebACLArn": args.get("web_acl_arn", "")}
+    web_acl_arn = args.get("web_acl_arn", "")
+    kwargs: dict[str, Any] = {"WebACLArn": web_acl_arn}
 
     if resource_type := args.get("resource_type"):
         kwargs |= {"ResourceType": resource_type}
 
-    web_acl_arn = args.get("web_acl_arn", "")
     response = client.list_resources_for_web_acl(**kwargs)
     resource_arns = response.get("ResourceArns", [])
-    outputs = [{"WebACLArn": web_acl_arn, "ARN": arn} for arn in resource_arns]
-    readable_output = tableToMarkdown("Resources for Web ACL", outputs, headers=["WebACLArn", "ARN"])
+    table_rows = [{"WebACLArn": web_acl_arn, "ARN": arn} for arn in resource_arns]
+    readable_output = tableToMarkdown("Resources for Web ACL", table_rows, headers=["WebACLArn", "ARN"])
 
     return CommandResults(
         readable_output=readable_output,
-        outputs=outputs,
+        outputs={"WebACLArn": web_acl_arn, "ResourceArns": resource_arns},
         raw_response=response,
         outputs_prefix=f"{OUTPUT_PREFIX}.WebACLResource",
         outputs_key_field="WebACLArn",
