@@ -24,7 +24,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    nextTasks:
+    nexttasks:
       '#none#':
       - '10'
   '10':
@@ -48,7 +48,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    nextTasks:
+    nexttasks:
       '#default#':
       - '9'
       'yes':
@@ -76,7 +76,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    nextTasks:
+    nexttasks:
       '#default#':
       - '9'
       'yes':
@@ -111,7 +111,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    nextTasks:
+    nexttasks:
       '#none#':
       - '3'
     scriptarguments:
@@ -140,7 +140,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    nextTasks:
+    nexttasks:
       '#none#':
       - '4'
     scriptarguments:
@@ -168,7 +168,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    nextTasks:
+    nexttasks:
       '#default#':
       - '6'
       'yes':
@@ -206,7 +206,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    nextTasks:
+    nexttasks:
       'Yes':
       - '6'
       'No':
@@ -232,7 +232,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    nextTasks:
+    nexttasks:
       '#none#':
       - '7'
     scriptarguments:
@@ -262,7 +262,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    nextTasks:
+    nexttasks:
       '#none#':
       - '8'
     scriptarguments:
@@ -307,7 +307,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    nextTasks:
+    nexttasks:
       '#none#':
       - '8'
 view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1575,\n      \"width\": 880,\n      \"x\": 250,\n      \"y\": 50\n    }\n  }\n}"

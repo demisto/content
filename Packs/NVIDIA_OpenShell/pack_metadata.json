@@ -1,6 +1,6 @@
 {
-    "name": "NVIDIA OpenShell Response",
-    "description": "Respond to AI agent threats in NVIDIA OpenShell sandboxes: stop or suspend a sandbox, block its egress to a host, and detach its credentials.",
+    "name": "NVIDIA OpenShell",
+    "description": "Normalize NVIDIA OpenShell OCSF telemetry from AI agent sandboxes into XDM, and stop, suspend or block egress for an agent sandbox.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Nadav Kanon",
@@ -8,7 +8,7 @@
     "email": "",
     "created": "2026-11-05T00:00:00Z",
     "categories": [
-        "Endpoint"
+        "Analytics & SIEM"
     ],
     "tags": [],
     "useCases": [
@@ -17,6 +17,7 @@
     "keywords": [
         "nvidia",
         "openshell",
+        "ocsf",
         "ai agent",
         "sandbox",
         "containment"

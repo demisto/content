@@ -1,0 +1,4 @@
+[INGEST:vendor="nvidia", product="openshell", target_dataset="nvidia_openshell_raw", no_hit=keep]
+// Sets _time from the OCSF "time" field (epoch milliseconds).
+filter to_integer(time) != null
+| alter _time = to_timestamp(to_integer(time), "MILLIS");

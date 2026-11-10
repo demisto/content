@@ -71,7 +71,6 @@ configuration:
   advanced: true
   additionalinfo: The number of seconds to wait for each gateway call.
 description: 'Respond to AI agent threats in NVIDIA OpenShell sandboxes: stop or suspend a sandbox, block its egress to a host, and detach its credentials.'
-supportlevelheader: community
 script:
   commands:
   - name: openshell-gateway-info-get
@@ -625,7 +624,6 @@ script:
     execution: true
   dockerimage: demisto/openshell:1.0.0.0
   isfetch: false
-  autoUpdateDockerImage: false
   runonce: false
   script: ''
   subtype: python3
@@ -633,3 +631,4 @@ script:
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
+autoUpdateDockerImage: false
