@@ -17,7 +17,16 @@ PRODUCT = "Intelligence Cloud"
 DEBUG_PREFIX = "[XSUP-80326 DEBUG]"
 CURSOR_MODE_LEGACY = "legacy"  # original behaviour: cursor taken from events[0]
 CURSOR_MODE_NEWEST = "newest"  # candidate fix: cursor taken from the newest event in the response
-OVERRIDE_CONTEXT_KEY = "debug_override_last_run_time"
+
+# ---- Debug controls: set here and re-upload. No customer action is needed. ----
+# Which cursor logic fetch-events uses. Both are always computed and logged; this only decides which one is saved.
+DEBUG_CURSOR_MODE = CURSOR_MODE_LEGACY
+# Optional one-time rewind, e.g. "2026-11-08T00:00:00Z". None = no rewind.
+# Applied by the first fetch-events run after upload; that run then saves its own result as the last run, as usual.
+# The applied value is remembered in the integration context, so it is not applied again on later runs.
+# To rewind again, set a different value and re-upload.
+DEBUG_FORCE_START_TIME: str | None = None
+APPLIED_FORCE_START_CONTEXT_KEY = "xsup_80326_applied_force_start_time"
 
 """ CLIENT CLASS """
 
@@ -244,103 +253,22 @@ def fetch_events(client: Client, **kwargs) -> tuple[list, dict]:
     return events, next_run
 
 
-def debug_fetch_command(client: Client, args: dict, params: dict) -> CommandResults:
-    """Dry run of a fetch round: calls the API exactly like fetch-events, but does not send events or change the last run.
-
-    Args:
-        client (Client): RecordedFuture client to use.
-        args (dict): start_time (optional, defaults to the stored last_run_time), limit (optional).
-        params (dict): The integration parameters.
-
-    Returns:
-        CommandResults: The returned events and the next run each cursor mode would compute.
-    """
-    last_run = demisto.getLastRun() or {}
-    if args.get("start_time"):
-        start_time = arg_to_datetime(args["start_time"], arg_name="start_time").strftime(DATE_FORMAT)  # type: ignore[union-attr]
-    else:
-        # Use the stored cursor exactly as fetch-events would send it.
-        start_time = last_run.get("last_run_time") or arg_to_datetime(params.get("first_fetch", "3 days")).strftime(  # type: ignore[union-attr]
-            DATE_FORMAT
-        )
-    limit = int(args.get("limit") or params.get("max_fetch") or 1000)
-
-    request_params = {"triggered": f"[{start_time},]", "orderby": "triggered", "direction": "asc", "limit": limit}
-    response = client.get_alerts(request_params)
-    events = response.get("data", [])
-    log_response_diagnostics(request_params, response, events)
-
-    already_fetched_ids = set(last_run.get("last_run_ids") or [])
-    previous_sent_ids = set(last_run.get("debug_sent_ids") or [])
-    rows = [
-        {
-            "index": index,
-            "id": event.get("id"),
-            "triggered": demisto.get(event, "log.triggered"),
-            "in_last_run_ids": event.get("id") in already_fetched_ids,
-            "sent_by_previous_run": event.get("id") in previous_sent_ids,
-        }
-        for index, event in enumerate(events)
-    ]
-    summary: dict[str, Any] = {
-        "RequestParams": request_params,
-        "ResponseCounts": response.get("counts"),
-        "EventsReturned": len(events),
-        "ResponseOrder": get_response_order(events),
-        "StoredLastRun": last_run,
-        "NextRunLegacy": compute_next_run(events, limit, CURSOR_MODE_LEGACY),
-        "NextRunNewest": compute_next_run(events, limit, CURSOR_MODE_NEWEST),
-    }
-    readable = tableToMarkdown("Debug fetch summary (dry run - nothing was sent or saved)", summary) + tableToMarkdown(
-        "Events in API order", rows, headers=["index", "id", "triggered", "in_last_run_ids", "sent_by_previous_run"]
-    )
-    return CommandResults(
-        readable_output=readable,
-        outputs_prefix="RecordedFutureEventCollector.DebugFetch",
-        outputs={**summary, "Events": rows},
-        raw_response=response,
-    )
+def get_pending_force_start_time() -> str | None:
+    """Returns DEBUG_FORCE_START_TIME (formatted) if it is set and was not applied yet, otherwise None."""
+    if not DEBUG_FORCE_START_TIME:
+        return None
+    if get_integration_context().get(APPLIED_FORCE_START_CONTEXT_KEY) == DEBUG_FORCE_START_TIME:
+        debug_log(f"DEBUG_FORCE_START_TIME={DEBUG_FORCE_START_TIME} was already applied, ignoring it")
+        return None
+    return arg_to_datetime(DEBUG_FORCE_START_TIME).strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
 
-def debug_get_last_run_command() -> CommandResults:
-    """Shows the stored last run and any pending start-time override."""
-    last_run = demisto.getLastRun() or {}
-    override = get_integration_context().get(OVERRIDE_CONTEXT_KEY)
-    outputs = {"LastRun": last_run, "PendingOverrideStartTime": override}
-    return CommandResults(
-        readable_output=tableToMarkdown("Recorded Future collector last run", outputs),
-        outputs_prefix="RecordedFutureEventCollector.LastRun",
-        outputs=outputs,
-    )
-
-
-def debug_set_fetch_start_command(args: dict) -> CommandResults:
-    """Schedules the next fetch-events run to start from the given time (applied once, then cleared).
-
-    Optional - only needed if we want to re-fetch a past window. The override is stored in the integration context
-    because the last run object can only be changed by fetch-events. The next successful fetch-events run uses it
-    as its start time, overwrites the last run with its own result, and clears the override.
-    """
-    start_time = arg_to_datetime(args.get("start_time"), arg_name="start_time", required=True)
-    override = start_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
+def mark_force_start_time_applied() -> None:
+    """Remembers that DEBUG_FORCE_START_TIME was applied, so later runs do not rewind again."""
     integration_context = get_integration_context()
-    integration_context[OVERRIDE_CONTEXT_KEY] = override
+    integration_context[APPLIED_FORCE_START_CONTEXT_KEY] = DEBUG_FORCE_START_TIME
     set_integration_context(integration_context)
-    debug_log(f"next fetch-events run will start from override time {override}")
-    return CommandResults(readable_output=f"The next fetch-events run will start from {override} (applied once).")
-
-
-def get_override_start_time() -> str | None:
-    """Returns the pending start-time override, if any."""
-    return get_integration_context().get(OVERRIDE_CONTEXT_KEY)
-
-
-def clear_override_start_time() -> None:
-    """Removes the start-time override so it is applied only once."""
-    integration_context = get_integration_context()
-    if integration_context.pop(OVERRIDE_CONTEXT_KEY, None):
-        set_integration_context(integration_context)
-        debug_log("start-time override cleared")
+    debug_log(f"DEBUG_FORCE_START_TIME={DEBUG_FORCE_START_TIME} marked as applied")
 
 
 """ HELPER FUNCTIONS """
@@ -384,44 +312,38 @@ def main() -> None:
                 add_time_key_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
-        elif command == "recorded-future-debug-fetch":
-            return_results(debug_fetch_command(client, args, params))
-
-        elif command == "recorded-future-debug-get-last-run":
-            return_results(debug_get_last_run_command())
-
-        elif command == "recorded-future-debug-set-fetch-start":
-            return_results(debug_set_fetch_start_command(args))
-
         elif command == "fetch-events":
+            debug_log(
+                f"debug build active: DEBUG_CURSOR_MODE={DEBUG_CURSOR_MODE}, DEBUG_FORCE_START_TIME={DEBUG_FORCE_START_TIME}"
+            )
             stored_last_run = demisto.getLastRun() or {}
             last_run = stored_last_run.get("last_run_time")
-            if override := get_override_start_time():
-                debug_log(f"applying start-time override {override} (stored last_run_time was {last_run})")
-                last_run = override
-                stored_last_run = {}  # start clean from the override time
+            if force_start := get_pending_force_start_time():
+                debug_log(f"applying one-time rewind to {force_start} (stored last_run_time was {last_run})")
+                last_run = force_start
+                stored_last_run = {}  # start clean from the rewind time
             if not last_run:
                 last_run = arg_to_datetime(params.get("first_fetch", "3 days")).strftime(DATE_FORMAT)  # type: ignore
             events, next_run = fetch_events(
                 client=client,
                 limit=args.get("limit") or params.get("max_fetch") or 1000,
                 last_run=last_run,
-                cursor_mode=params.get("debug_cursor_mode") or CURSOR_MODE_LEGACY,
+                cursor_mode=DEBUG_CURSOR_MODE,
                 previous_last_run=stored_last_run,
             )
 
             add_time_key_to_events(events)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             debug_log(f"sent {len(events)} events to XSIAM")
-            if override and not next_run:
-                # Keep the rewound start time even if the window was empty, so the override is not lost.
-                next_run = {"last_run_time": override, "last_run_ids": []}
+            if force_start and not next_run:
+                # Keep the rewound start time even if the window was empty, so the rewind is not lost.
+                next_run = {"last_run_time": force_start, "last_run_ids": []}
             if next_run:
                 demisto.setLastRun(next_run)
                 debug_log(f"setLastRun: {json.dumps(next_run)}")
-            if override:
-                # Cleared only after a successful run, so a failed fetch retries from the override.
-                clear_override_start_time()
+            if force_start:
+                # Marked only after a successful run, so a failed fetch retries the rewind.
+                mark_force_start_time_applied()
 
     # Log exceptions and return errors
     except Exception as e:

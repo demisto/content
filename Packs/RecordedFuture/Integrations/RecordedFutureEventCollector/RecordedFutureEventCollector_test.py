@@ -197,64 +197,70 @@ def test_fetch_events_newest_mode_advances_cursor():
     assert [event["id"] for event in second_events] == ["d"]
 
 
-def test_set_fetch_start_override_applied_once(mocker):
-    """
-    Given: A start-time override set via recorded-future-debug-set-fetch-start.
-    When: fetch-events runs.
-    Then: The request starts from the override, the last run is overwritten by the fetch result, and the override is cleared.
-    """
-    from RecordedFutureEventCollector import OVERRIDE_CONTEXT_KEY, main
+def run_fetch_events_main(mocker, integration_context: dict, stored_last_run: dict):
+    """Runs main() as fetch-events with a mocked API, integration context and last run. Returns (request, setLastRun mock)."""
+    from RecordedFutureEventCollector import main
 
-    integration_context: dict = {}
     mocker.patch("RecordedFutureEventCollector.get_integration_context", side_effect=lambda: dict(integration_context))
     mocker.patch(
         "RecordedFutureEventCollector.set_integration_context",
         side_effect=lambda ctx: (integration_context.clear(), integration_context.update(ctx)),
     )
     mocker.patch.object(demisto, "params", return_value={"credentials": {"password": "x"}, "max_fetch": "1000"})
-
-    mocker.patch.object(demisto, "command", return_value="recorded-future-debug-set-fetch-start")
-    mocker.patch.object(demisto, "args", return_value={"start_time": "2026-11-03T00:00:00Z"})
-    mocker.patch("RecordedFutureEventCollector.return_results")
-    main()
-    assert integration_context[OVERRIDE_CONTEXT_KEY] == "2026-11-03T00:00:00.000000Z"
-
     mocker.patch.object(demisto, "command", return_value="fetch-events")
     mocker.patch.object(demisto, "args", return_value={})
-    mocker.patch.object(demisto, "getLastRun", return_value={"last_run_time": "2026-11-06T03:00:01", "last_run_ids": ["a"]})
+    mocker.patch.object(demisto, "getLastRun", return_value=stored_last_run)
     set_last_run = mocker.patch.object(demisto, "setLastRun")
     mocker.patch("RecordedFutureEventCollector.send_events_to_xsiam")
     with requests_mock.Mocker() as m:
         request = m.get(f"{BASE_URL}/alert/search", json={"data": ASC_EVENTS})
         main()
+    return request, set_last_run
 
+
+def test_force_start_time_applied_once(mocker):
+    """
+    Given: DEBUG_FORCE_START_TIME set in the code.
+    When: fetch-events runs twice.
+    Then: The first run starts from the forced time and saves its own result as the last run;
+        the second run ignores the forced time and continues from the stored last run.
+    """
+    import RecordedFutureEventCollector
+
+    mocker.patch.object(RecordedFutureEventCollector, "DEBUG_FORCE_START_TIME", "2026-11-03T00:00:00Z")
+    integration_context: dict = {}
+    stored_last_run = {"last_run_time": "2026-11-06T03:00:01", "last_run_ids": ["a"]}
+
+    request, set_last_run = run_fetch_events_main(mocker, integration_context, stored_last_run)
     assert request.last_request.qs.get("triggered")[0].upper() == "[2026-11-03T00:00:00.000000Z,]"
     assert set_last_run.call_args[0][0]["last_run_time"] == "2026-11-06T03:00:01"
-    assert OVERRIDE_CONTEXT_KEY not in integration_context
+    assert integration_context[RecordedFutureEventCollector.APPLIED_FORCE_START_CONTEXT_KEY] == "2026-11-03T00:00:00Z"
 
-
-def test_debug_fetch_is_dry_run(mocker):
-    """
-    Given: The recorded-future-debug-fetch command.
-    When: It runs.
-    Then: No events are sent and the last run is not changed, and both cursor modes are reported.
-    """
-    from RecordedFutureEventCollector import Client, debug_fetch_command
-
-    mocker.patch.object(demisto, "getLastRun", return_value={"last_run_time": "2026-11-06T03:00:01", "last_run_ids": ["a"]})
-    set_last_run = mocker.patch.object(demisto, "setLastRun")
-    send = mocker.patch("RecordedFutureEventCollector.send_events_to_xsiam")
-
-    with requests_mock.Mocker() as m:
-        request = m.get(f"{BASE_URL}/alert/search", json={"data": ASC_EVENTS})
-        result = debug_fetch_command(Client(BASE_URL), {}, {"max_fetch": "1000"})
-
+    request, _ = run_fetch_events_main(mocker, integration_context, set_last_run.call_args[0][0])
     assert request.last_request.qs.get("triggered")[0].upper() == "[2026-11-06T03:00:01,]"
-    assert result.outputs["NextRunLegacy"]["last_run_time"] == "2026-11-06T03:00:01"
-    assert result.outputs["NextRunNewest"]["last_run_time"] == "2026-11-06T03:00:09"
-    assert result.outputs["Events"][0]["in_last_run_ids"] is True
-    set_last_run.assert_not_called()
-    send.assert_not_called()
+
+
+def test_fetch_events_uses_debug_cursor_mode(mocker):
+    """
+    Given: DEBUG_CURSOR_MODE=newest set in the code (no customer configuration involved).
+    When: fetch-events runs.
+    Then: The saved last run uses the newest event.
+    """
+    import RecordedFutureEventCollector
+
+    mocker.patch.object(RecordedFutureEventCollector, "DEBUG_CURSOR_MODE", "newest")
+    _, set_last_run = run_fetch_events_main(mocker, {}, {"last_run_time": "2026-11-06T03:00:00", "last_run_ids": []})
+    assert set_last_run.call_args[0][0]["last_run_time"] == "2026-11-06T03:00:09"
+
+
+def test_fetch_events_default_is_legacy(mocker):
+    """
+    Given: The default debug controls (legacy mode, no forced start).
+    When: fetch-events runs.
+    Then: The behaviour matches the original code (cursor from events[0]).
+    """
+    _, set_last_run = run_fetch_events_main(mocker, {}, {"last_run_time": "2026-11-06T03:00:00", "last_run_ids": []})
+    assert set_last_run.call_args[0][0]["last_run_time"] == "2026-11-06T03:00:01"
 
 
 def test_main(mocker):
