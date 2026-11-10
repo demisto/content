@@ -391,6 +391,14 @@
 <td style="width: 267px;">URL.Tags </td>
 <td style="width: 454px;">Tags that are associated with the URL.</td>
 </tr>
+<tr>
+<td style="width: 267px;">URL.ResultPage </td>
+<td style="width: 454px;">Page in the URLScan UI displaying the scan result.</td>
+</tr>
+<tr>
+<td style="width: 267px;">URLScan.ResultPage </td>
+<td style="width: 454px;">Page in the URLScan UI displaying the scan result.</td>
+</tr>
 </tbody>
 </table>
 <h5> </h5>
