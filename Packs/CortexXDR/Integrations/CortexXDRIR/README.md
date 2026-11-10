@@ -1,6 +1,10 @@
 Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR.
 
+<~PLATFORM>
+**Note:** On the Cortex Platform, this integration is used to connect to a *different* Cortex XDR/XSIAM tenant. Configuring the **Server URL** parameter with the URL of the tenant this integration instance is running on is not supported - the integration will fail to run. For actions on the local tenant, use the built-in Cortex Platform commands instead.
+</~PLATFORM>
+
 ## Configure Palo Alto Networks Cortex XDR - Investigation and Response on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
