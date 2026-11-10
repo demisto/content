@@ -249,7 +249,7 @@ class RateLimiter:
         while self.history and current - self.history[0] >= self.window:
             self.history.popleft()
         if len(self.history) >= self.calls:
-            time.sleep(max(0.0, self.window - (current - self.history[0])))
+            time.sleep(max(0.0, self.window - (current - self.history[0])))  # pylint: disable=E9003
             self.history.popleft()
         self.history.append(time.monotonic())
 
@@ -317,14 +317,14 @@ class Client(BaseClient):
             except DemistoException as error:
                 if is_connection_error(error) and can_retry(delay):
                     demisto.debug(f"ThreatMon request failed ({error}), retrying in {delay} s.")
-                    time.sleep(delay)
+                    time.sleep(delay)  # pylint: disable=E9003
                     delay *= 2
                     continue
                 raise
             permanent = response.status_code == 500 and "not whitelisted" in (response.text or "").lower()
             if response.status_code in RETRY_STATUSES and not permanent and can_retry(delay):
                 demisto.debug(f"ThreatMon returned {response.status_code}, retrying in {delay} s.")
-                time.sleep(delay)
+                time.sleep(delay)  # pylint: disable=E9003
                 delay *= 2
                 continue
             if (
@@ -337,7 +337,7 @@ class Client(BaseClient):
             ):
                 # ThreatMon occasionally rejects a valid key once. Retry a single time before reporting it.
                 auth_retried = True
-                time.sleep(5)
+                time.sleep(5)  # pylint: disable=E9003
                 continue
             return response
 
@@ -675,7 +675,7 @@ def update_mirror_state(apply: Any) -> dict[str, Any]:
         except ValueError as error:
             if attempt == MIRROR_SAVE_ATTEMPTS:
                 raise DemistoException(f"Could not save the ThreatMon mirroring state: {error}") from error
-            time.sleep(0.05 * attempt)
+            time.sleep(0.05 * attempt)  # pylint: disable=E9003
     return {}  # pragma: no cover
 
 
@@ -1615,7 +1615,7 @@ def sandbox_submission_output(submission: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def sandbox_results(client: Client, sid: str, reliability: str, page: int = 0, size: int = 50) -> CommandResults:
+def sandbox_results(client: Client, sid: str, reliability: str, page: int = 0, size: int = 50) -> list[CommandResults]:
     submission = sandbox_data(client.get_json(f"/v1/sandbox/submission/{sid}/status", with_customer=False, retry=False)) or {}
     page_data = (
         sandbox_data(
@@ -1647,7 +1647,7 @@ def sandbox_results(client: Client, sid: str, reliability: str, page: int = 0, s
         }
         for row in rows
     ]
-    indicators = []
+    indicator_results = []
     for row in rows:
         if not row.get("sha256"):
             continue
@@ -1659,7 +1659,12 @@ def sandbox_results(client: Client, sid: str, reliability: str, page: int = 0, s
             reliability=reliability,
             malicious_description=row.get("malwareName") if str(row.get("rating")).lower() == "malicious" else None,
         )
-        indicators.append(Common.File(dbot_score=dbot, sha256=row["sha256"], sha1=row.get("sha1"), name=row.get("fileName")))
+        indicator_results.append(
+            CommandResults(
+                readable_output=f"ThreatMon sandbox verdict for {row.get('fileName') or row['sha256']}: {row.get('rating')}",
+                indicator=Common.File(dbot_score=dbot, sha256=row["sha256"], sha1=row.get("sha1"), name=row.get("fileName")),
+            )
+        )
     readable = tableToMarkdown(
         f"ThreatMon Sandbox Submission {output['SID']}: {output.get('OverallRating') or 'In progress'}",
         {k: v for k, v in output.items() if k != "Results"},
@@ -1673,14 +1678,14 @@ def sandbox_results(client: Client, sid: str, reliability: str, page: int = 0, s
         removeNull=True,
         headerTransform=nice_header,
     )
-    return CommandResults(
+    summary = CommandResults(
         outputs_prefix="ThreatMon.Sandbox",
         outputs_key_field="ID",
         outputs=output,
         readable_output=readable,
         raw_response={"submission": submission, "results": page_data},
-        indicators=indicators,
     )
+    return [summary, *indicator_results]
 
 
 def sandbox_finished(submission: dict[str, Any]) -> bool:
@@ -1842,7 +1847,7 @@ def sandbox_submission_list_command(client: Client, args: dict[str, Any]) -> Com
     )
 
 
-def sandbox_result_get_command(client: Client, args: dict[str, Any], reliability: str) -> CommandResults:
+def sandbox_result_get_command(client: Client, args: dict[str, Any], reliability: str) -> list[CommandResults]:
     sid = str(args.get("sid") or "").strip()
     if not sid:
         raise DemistoException("The sid argument is required.")

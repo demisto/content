@@ -207,7 +207,8 @@ def test_get_findings_tolerates_string_and_items_only():
 
 def test_fetch_first_run_applies_filters(client, server):
     base = datetime(2026, 11, 9, 1, 0, tzinfo=UTC)
-    server.put(make_alarm(100, base))
+    alarm_for_100 = make_alarm(100, base)
+    server.put(alarm_for_100)
     server.put(make_alarm(101, base + timedelta(minutes=1), status="Ignore"))
     server.put(make_alarm(102, base + timedelta(minutes=2), severity="Low"))
     server.put(make_alarm(103, base + timedelta(minutes=3), category="VIP Intelligence"))
@@ -226,7 +227,7 @@ def test_fetch_first_run_applies_filters(client, server):
     raw = json.loads(incident["rawJSON"])
     assert raw["mirror_id"] == "100"
     assert raw["findingIds"] == ["1000"]
-    assert "examp1e-100.com" in raw["findings"]
+    assert raw["findings"] == ThreatMon.findings_markdown(get_findings(alarm_for_100))
     assert raw["mirror_instance"] == "ThreatMon_instance_1"
 
 
@@ -1154,9 +1155,9 @@ def test_sandbox_submit_and_poll_until_verdict(client, requests_mock, sandbox_en
         },
     )
     done = ThreatMon.sandbox_submit_command(poll_args, client, RELIABILITY)
-    assert done.scheduled_command is None
-    assert done.outputs["OverallRating"] == "Malicious"
-    assert done.indicators[0].dbot_score.score == 3
+    assert isinstance(done, list)
+    assert done[0].outputs["OverallRating"] == "Malicious"
+    assert done[1].indicator.dbot_score.score == 3
     assert sum(1 for r in requests_mock.request_history if r.method == "POST") == 1  # Submitted once.
 
 
@@ -1177,7 +1178,7 @@ def test_sandbox_duplicate_submission_follows_earlier_one(client, requests_mock,
     requests_mock.get(f"{BASE}/v1/sandbox/submission/77/status", json={"code": 200, "data": earlier})
     requests_mock.get(f"{BASE}/v1/sandbox/submission/77/results", json={"code": 200, "data": {"content": []}})
     result = ThreatMon.sandbox_submit_command({"entry_id": "1@1", "polling": "true"}, client, RELIABILITY)
-    assert result.outputs["SID"] == "77"
+    assert result[0].outputs["SID"] == "77"
 
     requests_mock.get(f"{BASE}/v1/sandbox/submissions", json=sandbox_list([]))
     with pytest.raises(DemistoException, match="submitted before"):
@@ -1207,8 +1208,8 @@ def test_sandbox_list_and_result(client, requests_mock):
         json={"code": 200, "data": {"content": [{"sha256": "b" * 64, "rating": "Clean"}, {"fileName": "no-hash"}]}},
     )
     result = ThreatMon.sandbox_result_get_command(client, {"sid": "5"}, RELIABILITY)
-    assert len(result.indicators) == 1
-    assert result.indicators[0].dbot_score.score == 1
+    assert len(result) == 2  # The summary and one file verdict; the row without a hash has no indicator.
+    assert result[1].indicator.dbot_score.score == 1
     for bad in ({"sid": ""}, {"sid": "5", "limit": "500"}):
         with pytest.raises(DemistoException):
             ThreatMon.sandbox_result_get_command(client, bad, RELIABILITY)
@@ -1425,8 +1426,8 @@ def test_sandbox_follows_submission_outside_newest_rows(client, requests_mock, s
     requests_mock.get(f"{BASE}/v1/sandbox/submission/55/status", json={"code": 200, "data": done})
     requests_mock.get(f"{BASE}/v1/sandbox/submission/55/results", json={"code": 200, "data": {"content": []}})
     result = ThreatMon.sandbox_submit_command(args, client, RELIABILITY)
-    assert result.outputs["OverallRating"] == "Clean"
-    assert result.outputs["ID"] == 260
+    assert result[0].outputs["OverallRating"] == "Clean"
+    assert result[0].outputs["ID"] == 260
 
 
 def test_fetch_stops_at_deadline_instead_of_dropping_screenshots(client, server, mocker, files):
