@@ -2073,7 +2073,7 @@ def find_indicator(client: OpenCTIApiClient, value: str, indicator_type: str) ->
     """Find the OpenCTI STIX indicator whose pattern is exactly the one of this value.
 
     An indicator with another pattern (a composite pattern of several hashes, for example) is found through the
-    observable instead: see find_based_on_indicator.
+    observable instead: see find_based_on_indicators.
     """
     patterns = build_reputation_patterns(value, indicator_type)
     if not patterns:
@@ -2097,7 +2097,7 @@ def find_indicator(client: OpenCTIApiClient, value: str, indicator_type: str) ->
 
 
 def select_indicator(indicators: list[dict]) -> dict | None:
-    """Select the indicator that gives the reputation when several indicators are based on the same observable.
+    """Select the indicator that gives the reputation among the indicators found for a value.
 
     The indicators that are not revoked come first, then the highest OpenCTI score, then the latest update.
     When all of them are revoked, the latest updated one is returned.
@@ -2110,23 +2110,28 @@ def select_indicator(indicators: list[dict]) -> dict | None:
     return max(indicators, key=lambda indicator: indicator.get("updated_at") or "")
 
 
-def find_based_on_indicator(client: OpenCTIApiClient, observable_relationships: list[dict]) -> dict | None:
-    """Find the STIX indicator of an observable through their based-on relationships.
+def find_based_on_indicators(
+    client: OpenCTIApiClient, observable_relationships: list[dict], known_indicator_ids: set[str]
+) -> list[dict]:
+    """Find the STIX indicators of an observable through their based-on relationships.
 
     Args:
         client: OpenCTI Client object
         observable_relationships: the relationships of the observable (see get_entity_relationships)
+        known_indicator_ids: IDs of the indicators already read, which are not read again
 
     Returns:
-        The indicator selected by select_indicator, None when no STIX indicator is based on the observable.
+        The other STIX indicators based on the observable, read in one call (no call when there is none).
     """
     indicator_ids = [
         relationship["relatedEntityId"]
         for relationship in observable_relationships
-        if relationship.get("relationshipType") == "based-on" and relationship.get("relatedEntityType") == "Indicator"
+        if relationship.get("relationshipType") == "based-on"
+        and relationship.get("relatedEntityType") == "Indicator"
+        and relationship.get("relatedEntityId") not in known_indicator_ids
     ]
     if not indicator_ids:
-        return None
+        return []
     filters = {
         "mode": "and",
         "filters": [
@@ -2135,8 +2140,7 @@ def find_based_on_indicator(client: OpenCTIApiClient, observable_relationships: 
         ],
         "filterGroups": [],
     }
-    indicators = client.indicator.list(first=len(indicator_ids), withPagination=False, filters=filters)
-    return select_indicator(indicators or [])
+    return client.indicator.list(first=len(indicator_ids), withPagination=False, filters=filters) or []
 
 
 def build_observable_details(observable: dict | None, value: str, indicator_type: str, relationships: list[dict]) -> dict:
@@ -2291,11 +2295,14 @@ def reputation_result(
 ) -> CommandResults:
     """Check the reputation of one value in OpenCTI: its observable and its indicator, with their relationships."""
     observable = find_observable(client, value, indicator_type)
-    indicator = find_indicator(client, value, indicator_type)
+    exact_indicator = find_indicator(client, value, indicator_type)
     observable_id = observable.get("id") if observable else None
     observable_relationships = get_entity_relationships(client, observable_id) if observable_id else []
-    if not indicator:
-        indicator = find_based_on_indicator(client, observable_relationships)
+    # The indicator with the exact pattern and the indicators based on the observable are all candidates, so that a
+    # revoked or low-score exact indicator does not hide an active one (a composite pattern of several hashes, for example).
+    candidates = [exact_indicator] if exact_indicator else []
+    candidates += find_based_on_indicators(client, observable_relationships, {candidate["id"] for candidate in candidates})
+    indicator = select_indicator(candidates)
     indicator_id = indicator.get("id") if indicator else None
     # The based-on relationship only links the observable and the indicator already returned.
     observable_relationships = [

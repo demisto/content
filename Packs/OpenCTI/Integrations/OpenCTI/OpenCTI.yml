@@ -54,7 +54,7 @@ configuration:
   required: false
   type: 15
   section: Collect
-- additionalinfo: Used by the ip, domain, email, url and file commands. An indicator whose OpenCTI score (x_opencti_score) is above this threshold and not above the malicious score threshold is suspicious. An indicator whose score is not above this threshold is good. A value unknown to OpenCTI, or whose indicator is revoked, is unknown.
+- additionalinfo: Used by the ip, domain, email, url and file commands. An indicator whose OpenCTI score (x_opencti_score) is above this threshold and not above the malicious score threshold is suspicious. An indicator whose score is not above this threshold is good. A value unknown to OpenCTI, or whose indicators are all revoked, is unknown.
   defaultvalue: '20'
   display: Suspicious score threshold (0-100)
   name: reputation_suspicious_threshold
@@ -1033,7 +1033,7 @@ script:
       isArray: true
       name: ip
       required: true
-    description: Checks the reputation of an IP address in OpenCTI, using its observable and its indicator.
+    description: Checks the reputation of an IP address in OpenCTI, using its observable and its indicator. When several indicators match the value (with its exact pattern or based on its observable), the active indicator with the highest OpenCTI score is used.
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
@@ -1255,7 +1255,7 @@ script:
       isArray: true
       name: domain
       required: true
-    description: Checks the reputation of a domain in OpenCTI, using its observable and its indicator.
+    description: Checks the reputation of a domain in OpenCTI, using its observable and its indicator. When several indicators match the value (with its exact pattern or based on its observable), the active indicator with the highest OpenCTI score is used.
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -1477,7 +1477,7 @@ script:
       isArray: true
       name: email
       required: true
-    description: Checks the reputation of an email address in OpenCTI, using its observable and its indicator.
+    description: Checks the reputation of an email address in OpenCTI, using its observable and its indicator. When several indicators match the value (with its exact pattern or based on its observable), the active indicator with the highest OpenCTI score is used.
     name: email
     outputs:
     - contextPath: DBotScore.Indicator
@@ -1693,7 +1693,7 @@ script:
       isArray: true
       name: url
       required: true
-    description: Checks the reputation of a URL in OpenCTI, using its observable and its indicator.
+    description: Checks the reputation of a URL in OpenCTI, using its observable and its indicator. When several indicators match the value (with its exact pattern or based on its observable), the active indicator with the highest OpenCTI score is used.
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
@@ -1915,7 +1915,7 @@ script:
       isArray: true
       name: file
       required: true
-    description: Checks the reputation of a file hash in OpenCTI, using its observable and its indicator.
+    description: Checks the reputation of a file hash in OpenCTI, using its observable and its indicator. When several indicators match the value (with its exact pattern or based on its observable), the active indicator with the highest OpenCTI score is used.
     name: file
     outputs:
     - contextPath: DBotScore.Indicator

@@ -11,7 +11,7 @@ This integration was integrated and tested with OpenCTI 6.9.0 and 7.261103.0.
 | Use system proxy settings | Whether to use the system proxy settings to connect to the OpenCTI platform. | False |
 | Redirect stdout | Used for troubleshooting purposes. | False |
 | Source Reliability | The reliability of the source providing the intelligence data. | False |
-| Suspicious score threshold (0-100) | Used by the ip, domain, email, url and file commands. An indicator whose OpenCTI score \(x_opencti_score\) is above this threshold and not above the malicious score threshold is suspicious. An indicator whose score is not above this threshold is good. A value unknown to OpenCTI, or whose indicator is revoked, is unknown. | False |
+| Suspicious score threshold (0-100) | Used by the ip, domain, email, url and file commands. An indicator whose OpenCTI score \(x_opencti_score\) is above this threshold and not above the malicious score threshold is suspicious. An indicator whose score is not above this threshold is good. A value unknown to OpenCTI, or whose indicators are all revoked, is unknown. | False |
 | Malicious score threshold (0-100) | Used by the ip, domain, email, url and file commands. An indicator whose OpenCTI score \(x_opencti_score\) is above this threshold is malicious. Must not be below the suspicious score threshold. | False |
 | Create relationships | Whether to create relationships between indicators as part of enrichment. | False |
 
@@ -2332,7 +2332,7 @@ There is no context output for this command.
 ### ip
 
 ***
-Checks the reputation of an IP address in OpenCTI, using its observable and its indicator.
+Checks the reputation of an IP address in OpenCTI, using its observable and its indicator. When several indicators match the value (with its exact pattern or based on its observable), the active indicator with the highest OpenCTI score is used.
 
 #### Base Command
 
@@ -2572,7 +2572,7 @@ Checks the reputation of an IP address in OpenCTI, using its observable and its 
 ### domain
 
 ***
-Checks the reputation of a domain in OpenCTI, using its observable and its indicator.
+Checks the reputation of a domain in OpenCTI, using its observable and its indicator. When several indicators match the value (with its exact pattern or based on its observable), the active indicator with the highest OpenCTI score is used.
 
 #### Base Command
 
@@ -2730,7 +2730,7 @@ Checks the reputation of a domain in OpenCTI, using its observable and its indic
 ### email
 
 ***
-Checks the reputation of an email address in OpenCTI, using its observable and its indicator.
+Checks the reputation of an email address in OpenCTI, using its observable and its indicator. When several indicators match the value (with its exact pattern or based on its observable), the active indicator with the highest OpenCTI score is used.
 
 #### Base Command
 
@@ -2902,7 +2902,7 @@ Checks the reputation of an email address in OpenCTI, using its observable and i
 ### url
 
 ***
-Checks the reputation of a URL in OpenCTI, using its observable and its indicator.
+Checks the reputation of a URL in OpenCTI, using its observable and its indicator. When several indicators match the value (with its exact pattern or based on its observable), the active indicator with the highest OpenCTI score is used.
 
 #### Base Command
 
@@ -3078,7 +3078,7 @@ Checks the reputation of a URL in OpenCTI, using its observable and its indicato
 ### file
 
 ***
-Checks the reputation of a file hash in OpenCTI, using its observable and its indicator.
+Checks the reputation of a file hash in OpenCTI, using its observable and its indicator. When several indicators match the value (with its exact pattern or based on its observable), the active indicator with the highest OpenCTI score is used.
 
 #### Base Command
 

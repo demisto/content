@@ -1933,6 +1933,70 @@ def test_reputation_command_based_on_indicator(mocker):
     assert [r["relatedEntityId"] for r in observable_context["relationships"]] == ["revoked-id", "low-id"]
 
 
+def test_reputation_command_revoked_exact_indicator_does_not_hide_active_one(mocker):
+    """Tests reputation_command function
+    Given
+        an MD5 hash whose exact-pattern indicator is revoked, and whose observable is also the base of an active
+        indicator with a composite pattern and a score of 90
+    When
+        - Calling `reputation_command` for the file command
+    Then
+        - Ensure only the based-on indicator that is not the exact one is read.
+        - Ensure the active based-on indicator is returned: Malicious, not Unknown.
+    """
+    md5 = "35082029988399b9bb493563ce567fd5"
+    exact = {**REPUTATION_INDICATOR, "id": "exact-id", "pattern": f"[file:hashes.MD5 = '{md5}']", "revoked": True}
+    composite = {**REPUTATION_INDICATOR, "id": "composite-id", "pattern": f"[file:hashes.MD5 = '{md5}' OR x]"}
+    observable = {**REPUTATION_OBSERVABLE, "entity_type": "StixFile", "observable_value": md5}
+    client, _, indicator_list, _ = mock_reputation_lookups(
+        mocker, [observable], [[exact], [composite]], [[based_on("exact-id"), based_on("composite-id")], []]
+    )
+    context = reputation_command(client, {"file": md5}, "file", 70)[0].to_context()["EntryContext"]
+    id_filter = indicator_list.call_args_list[1].kwargs["filters"]["filters"][0]
+    assert id_filter["values"] == ["composite-id"]
+    assert context["OpenCTI.Indicator(val.id && val.id == obj.id)"]["id"] == "composite-id"
+    dbot_key = next(key for key in context if key.startswith("DBotScore("))
+    assert context[dbot_key][0]["Score"] == 3
+
+
+def test_reputation_command_low_score_exact_indicator(mocker):
+    """Tests reputation_command function
+    Given
+        an MD5 hash whose exact-pattern indicator is active with a score of 20, and whose observable is also the base
+        of an active indicator with a score of 80
+    When
+        - Calling `reputation_command` for the file command
+    Then
+        - Ensure the indicator with the highest score is returned: Malicious, not Good.
+    """
+    md5 = "35082029988399b9bb493563ce567fd5"
+    exact = {**REPUTATION_INDICATOR, "id": "exact-id", "x_opencti_score": 20}
+    composite = {**REPUTATION_INDICATOR, "id": "composite-id", "x_opencti_score": 80}
+    observable = {**REPUTATION_OBSERVABLE, "entity_type": "StixFile", "observable_value": md5}
+    client, _, _, _ = mock_reputation_lookups(
+        mocker, [observable], [[exact], [composite]], [[based_on("exact-id"), based_on("composite-id")], []]
+    )
+    context = reputation_command(client, {"file": md5}, "file", 70)[0].to_context()["EntryContext"]
+    assert context["OpenCTI.Indicator(val.id && val.id == obj.id)"]["id"] == "composite-id"
+
+
+def test_reputation_command_exact_indicator_only(mocker):
+    """Tests reputation_command function
+    Given
+        an IP whose only indicator has the exact pattern and is based on the observable
+    When
+        - Calling `reputation_command` for the ip command
+    Then
+        - Ensure the indicators are read only once: the based-on indicator is the exact one, already read.
+    """
+    client, _, indicator_list, _ = mock_reputation_lookups(
+        mocker, [REPUTATION_OBSERVABLE], [[REPUTATION_INDICATOR]], [[BASED_ON_RELATIONSHIP], []]
+    )
+    context = reputation_command(client, {"ip": "1.2.3.4"}, "ip", 70)[0].to_context()["EntryContext"]
+    assert indicator_list.call_count == 1
+    assert context["OpenCTI.Indicator(val.id && val.id == obj.id)"]["id"] == "indicator-id"
+
+
 @pytest.mark.parametrize(
     "indicators, expected_id",
     [
