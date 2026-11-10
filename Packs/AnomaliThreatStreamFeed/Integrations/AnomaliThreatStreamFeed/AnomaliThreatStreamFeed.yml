@@ -123,7 +123,15 @@ configuration:
   advanced: true
   required: false
   section: Collect
-- display: Create relationships 
+- additionalinfo: The maximum number of indicators to fetch in a single fetch cycle. Progress is saved after every batch, and any remaining indicators are fetched in the next cycle. Lower this value if the fetch fails with a timeout error.
+  defaultvalue: '50000'
+  display: Maximum indicators per fetch
+  name: maxIndicatorsPerFetch
+  type: 0
+  advanced: true
+  required: false
+  section: Collect
+- display: Create relationships
   defaultvalue: 'true'
   name: createRelationships
   type: 8

@@ -17,6 +17,7 @@ Use the Anomali ThreatStream Feed Integration to fetch indicators from the Anoma
 | Indicator Expiration Method | The method by which to expire indicators from this feed for this integration instance. | False |
 | Bypass exclusion list | Whether to ignore the exclusion list for indicators from this feed. If selected, indicators from this feed are added to the system even if they appear on the exclusion list. | False |
 | Tags | A comma-separated list of tags to add to every indicator fetched by this feed instance, in addition to the tags returned by ThreatStream. For example: anomali,threatstream. | False |
+| Maximum indicators per fetch | The maximum number of indicators to fetch in a single fetch cycle. Progress is saved after every batch, and any remaining indicators are fetched in the next cycle. Lower this value if the fetch fails with a timeout error. Default is 50000. | False |
 | Create relationships |  | False |
 | Trust any certificate (not secure) |  | False |
 
