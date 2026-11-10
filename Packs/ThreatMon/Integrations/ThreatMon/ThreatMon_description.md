@@ -24,5 +24,3 @@ CVE enrichment needs the Vulnerability Knowledge module, the sandbox needs the S
 
 ### MSSP
 Enter the exact sub company name in **Customer Name (MSSP)**. A name that does not match is rejected by ThreatMon like a wrong API key. ThreatMon currently rejects sub company names that contain a space.
-
-The ThreatMon Threat Feed pack ingests ThreatMon IOCs as indicators, with a separate IOC API key.

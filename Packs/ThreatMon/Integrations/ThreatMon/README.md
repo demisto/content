@@ -1006,10 +1006,10 @@ Submits a file to the ThreatMon sandbox for malware analysis and waits for the v
 | ThreatMon.Sandbox.SID | String | The submission ID. |
 | ThreatMon.Sandbox.FileName | String | The submitted file name. |
 | ThreatMon.Sandbox.OverallRating | String | The verdict, for example Clean or Malicious. |
-| ThreatMon.Sandbox.Results.SHA256 | String | The SHA-256 of an analysed file. |
-| ThreatMon.Sandbox.Results.Rating | String | The rating of an analysed file. |
+| ThreatMon.Sandbox.Results.SHA256 | String | The SHA-256 of an analyzed file. |
+| ThreatMon.Sandbox.Results.Rating | String | The rating of an analyzed file. |
 | ThreatMon.Sandbox.Results.MalwareName | String | The detected malware name. |
-| ThreatMon.Sandbox.Results.BehaviorData | Unknown | The behavior of the analysed file. |
+| ThreatMon.Sandbox.Results.BehaviorData | Unknown | The behavior of the analyzed file. |
 | File.SHA256 | String | The SHA-256 of the file. |
 | File.SHA1 | String | The SHA-1 of the file. |
 | File.Name | String | The file name. |
@@ -1066,7 +1066,7 @@ Submits a file to the ThreatMon sandbox for malware analysis and waits for the v
 >|---|---|---|---|---|---|---|
 >| 2026-11-10T12:20:45.230084 | invoice.txt | 70 | Clean | 8492267284349462431 | 2 | 1 |
 >
->### Analysed Files
+>### Analyzed Files
 >
 >|File Name|File Type|Rating|Malware Name|Rating Source|SHA256|
 >|---|---|---|---|---|---|
@@ -1135,7 +1135,7 @@ Lists the files submitted to the ThreatMon sandbox.
 ### threatmon-sandbox-result-get
 
 ***
-Gets the verdict and the analysed files of a ThreatMon sandbox submission.
+Gets the verdict and the analyzed files of a ThreatMon sandbox submission.
 
 #### Base Command
 
@@ -1146,7 +1146,7 @@ Gets the verdict and the analysed files of a ThreatMon sandbox submission.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sid | The submission ID (SID) from threatmon-sandbox-submission-list. A new submission gets its final SID when the analysis starts. | Required |
-| limit | The maximum number of analysed files to return (1-100). Default is 50. | Optional |
+| limit | The maximum number of analyzed files to return (1-100). Default is 50. | Optional |
 | page | The page to return, 0-based. Default is 0. | Optional |
 
 #### Context Output
@@ -1156,11 +1156,11 @@ Gets the verdict and the analysed files of a ThreatMon sandbox submission.
 | ThreatMon.Sandbox.ID | Number | The row ID of the submission. It does not change. |
 | ThreatMon.Sandbox.SID | String | The submission ID. |
 | ThreatMon.Sandbox.OverallRating | String | The verdict, for example Clean or Malicious. |
-| ThreatMon.Sandbox.Results.FileName | String | The name of an analysed file. |
-| ThreatMon.Sandbox.Results.SHA256 | String | The SHA-256 of an analysed file. |
-| ThreatMon.Sandbox.Results.Rating | String | The rating of an analysed file. |
+| ThreatMon.Sandbox.Results.FileName | String | The name of an analyzed file. |
+| ThreatMon.Sandbox.Results.SHA256 | String | The SHA-256 of an analyzed file. |
+| ThreatMon.Sandbox.Results.Rating | String | The rating of an analyzed file. |
 | ThreatMon.Sandbox.Results.MalwareName | String | The detected malware name. |
-| ThreatMon.Sandbox.Results.BehaviorData | Unknown | The behavior of the analysed file. |
+| ThreatMon.Sandbox.Results.BehaviorData | Unknown | The behavior of the analyzed file. |
 | File.SHA256 | String | The SHA-256 of the file. |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Type | String | The indicator type. |
@@ -1221,7 +1221,7 @@ Gets the verdict and the analysed files of a ThreatMon sandbox submission.
 >|---|---|---|
 >| report.doc | Malicious | 8049628341845326322 |
 >
->### Analysed Files
+>### Analyzed Files
 >
 >|File Name|File Type|Rating|Malware Name|Rating Source|SHA256|
 >|---|---|---|---|---|---|

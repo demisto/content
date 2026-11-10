@@ -1703,7 +1703,7 @@ def sandbox_results(client: Client, sid: str, reliability: str, page: int = 0, s
         headerTransform=nice_header,
     )
     readable += tableToMarkdown(
-        "Analysed Files",
+        "Analyzed Files",
         output["Results"],
         headers=["FileName", "FileType", "Rating", "MalwareName", "RatingSource", "SHA256"],
         removeNull=True,
@@ -1767,7 +1767,7 @@ def resolve_submission(client: Client, args: dict[str, Any]) -> dict[str, Any] |
     name="threatmon-sandbox-file-submit",
     interval=60,
     timeout=1800,
-    poll_message="The ThreatMon sandbox is analysing the file:",
+    poll_message="The ThreatMon sandbox is analyzing the file:",
 )
 def sandbox_submit_command(args: dict[str, Any], client: Client, reliability: str) -> PollResult:
     """Submits a file to the ThreatMon sandbox once, then polls the submission until a verdict is available."""
@@ -1828,7 +1828,7 @@ def sandbox_submit_command(args: dict[str, Any], client: Client, reliability: st
                 outputs_prefix="ThreatMon.Sandbox",
                 outputs_key_field="ID",
                 outputs=output or None,
-                readable_output=f"The ThreatMon sandbox is still analysing {args.get('file_name')}.",
+                readable_output=f"The ThreatMon sandbox is still analyzing {args.get('file_name')}.",
             ),
             continue_to_poll=True,
             args_for_next_run=args,

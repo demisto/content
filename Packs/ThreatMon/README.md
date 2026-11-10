@@ -21,7 +21,7 @@ This pack brings ThreatMon into Cortex XSOAR and Cortex XSIAM.
 
 - Enriches CVEs with **ThreatMon Vulnerability Knowledge** through the standard `cve` command: CVSS, the ThreatMon risk scores, EPSS, exploits and proofs of concept, the CISA KEV entry, the affected company assets and an AI analyst brief with response steps.
 - Searches CVEs by period, severity, vendor, product and exploitation signals, and lists the CVEs of the products the company follows.
-- Analyses files in the **ThreatMon sandbox** and returns the verdict as a file reputation.
+- Analyzes files in the **ThreatMon sandbox** and returns the verdict as a file reputation.
 - Lists the **attack surface** that ThreatMon discovered: IP addresses, domains, subdomains, websites, certificates, technologies, DNS records and cloud buckets.
 - Returns the **CISO Dashboard**: the Brainify Risk Score, the module scores, the alert statistics and the AI risk report.
 

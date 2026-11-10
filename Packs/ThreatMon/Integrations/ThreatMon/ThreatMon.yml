@@ -435,10 +435,10 @@ script:
       description: The CVSS score of the CVE.
       type: Number
     - contextPath: CVE.Published
-      description: The date the CVE was published.
+      description: The date the CVE was published (e.g., 2024-04-12T08:15:06Z).
       type: Date
     - contextPath: CVE.Modified
-      description: The date the CVE was last modified.
+      description: The date the CVE was last modified (e.g., 2025-11-04T16:49:20Z).
       type: Date
     - contextPath: CVE.Description
       description: The description of the CVE.
@@ -677,7 +677,7 @@ script:
       description: The product ID.
       type: Number
     - contextPath: ThreatMon.CVESubscription.subscribedAt
-      description: The time of the subscription.
+      description: The time of the subscription (e.g., 2026-09-01T10:00:00Z).
       type: Date
     - contextPath: ThreatMon.CVESubscription.recipients
       description: The recipients of the CVE e-mails.
@@ -775,7 +775,7 @@ script:
       description: The asset the record belongs to (WHOIS, SSL Certificate and Technology assets).
       type: String
     - contextPath: ThreatMon.Asset.expireDate
-      description: The expiry date of the certificate (SSL Certificate assets).
+      description: The expiry date of the certificate, for SSL Certificate assets (e.g., 2027-01-13).
       type: Date
     - contextPath: ThreatMon.Asset.productName
       description: The technology name (Technology assets).
@@ -891,16 +891,16 @@ script:
       description: The verdict, for example Clean or Malicious.
       type: String
     - contextPath: ThreatMon.Sandbox.Results.SHA256
-      description: The SHA-256 of an analysed file.
+      description: The SHA-256 of an analyzed file.
       type: String
     - contextPath: ThreatMon.Sandbox.Results.Rating
-      description: The rating of an analysed file.
+      description: The rating of an analyzed file.
       type: String
     - contextPath: ThreatMon.Sandbox.Results.MalwareName
       description: The detected malware name.
       type: String
     - contextPath: ThreatMon.Sandbox.Results.BehaviorData
-      description: The behavior of the analysed file.
+      description: The behavior of the analyzed file.
       type: Unknown
     - contextPath: File.SHA256
       description: The SHA-256 of the file.
@@ -952,16 +952,16 @@ script:
       description: The verdict, for example Clean or Malicious.
       type: String
     - contextPath: ThreatMon.Sandbox.CreatedAt
-      description: The time of the submission.
+      description: The time of the submission (e.g., 2026-11-10T12:20:45.230084).
       type: Date
   - name: threatmon-sandbox-result-get
-    description: Gets the verdict and the analysed files of a ThreatMon sandbox submission.
+    description: Gets the verdict and the analyzed files of a ThreatMon sandbox submission.
     arguments:
     - name: sid
       required: true
       description: The submission ID (SID) from threatmon-sandbox-submission-list. A new submission gets its final SID when the analysis starts.
     - name: limit
-      description: The maximum number of analysed files to return (1-100).
+      description: The maximum number of analyzed files to return (1-100).
       defaultValue: "50"
     - name: page
       description: The page to return, 0-based.
@@ -977,19 +977,19 @@ script:
       description: The verdict, for example Clean or Malicious.
       type: String
     - contextPath: ThreatMon.Sandbox.Results.FileName
-      description: The name of an analysed file.
+      description: The name of an analyzed file.
       type: String
     - contextPath: ThreatMon.Sandbox.Results.SHA256
-      description: The SHA-256 of an analysed file.
+      description: The SHA-256 of an analyzed file.
       type: String
     - contextPath: ThreatMon.Sandbox.Results.Rating
-      description: The rating of an analysed file.
+      description: The rating of an analyzed file.
       type: String
     - contextPath: ThreatMon.Sandbox.Results.MalwareName
       description: The detected malware name.
       type: String
     - contextPath: ThreatMon.Sandbox.Results.BehaviorData
-      description: The behavior of the analysed file.
+      description: The behavior of the analyzed file.
       type: Unknown
     - contextPath: File.SHA256
       description: The SHA-256 of the file.
@@ -1031,7 +1031,7 @@ script:
       description: The monitoring keywords.
       type: String
     - contextPath: ThreatMon.Customer.ContractEndDate
-      description: The end of the contract.
+      description: The end of the contract (e.g., 2027-12-31T23:59:59Z).
       type: Date
   - name: threatmon-customer-create
     description: Creates a customer in a ThreatMon MSSP account. The change is applied at once. Requires the API key of the MSSP administrator account.
@@ -1332,5 +1332,6 @@ script:
 defaultmapperin: ThreatMon - Incoming Mapper
 defaultmapperout: ThreatMon - Outgoing Mapper
 fromversion: 6.10.0
+supportlevelheader: community
 tests:
 - No tests (auto formatted)
