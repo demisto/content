@@ -211,6 +211,26 @@ tasks:
       - '6'
       'No':
       - '8'
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: 'Approval needed: stop OpenShell sandbox ${inputs.SandboxName}'
+      body:
+        simple: 'Review the sandbox state and recent logs in incident ${incident.id}, then answer whether to stop the OpenShell sandbox ${inputs.SandboxName}.'
+      methods: []
+      format: ''
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - 'Yes'
+      - 'No'
   '6':
     id: '6'
     taskid: 0b9d7c3e-0006-4c1a-9e5f-0a1b2c3d4e5f
@@ -235,12 +255,16 @@ tasks:
     nexttasks:
       '#none#':
       - '7'
+      '#error#':
+      - '9'
     scriptarguments:
       name: *id001
       wait:
         simple: 'true'
       timeout_seconds:
         simple: '120'
+    continueonerror: true
+    continueonerrortype: errorPath
   '7':
     id: '7'
     taskid: 0b9d7c3e-0007-4c1a-9e5f-0a1b2c3d4e5f
@@ -295,7 +319,7 @@ tasks:
       id: 0b9d7c3e-0009-4c1a-9e5f-0a1b2c3d4e5f
       version: -1
       name: Contain the sandbox manually
-      description: Checks the NVIDIA OpenShell instance, runs openshell-sandbox-list to find the sandbox, and runs openshell-sandbox-stop.
+      description: The sandbox could not be stopped automatically (no enabled instance, no sandbox name, or the stop failed or timed out). Check the NVIDIA OpenShell instance, run openshell-sandbox-list to find the sandbox, run openshell-sandbox-stop, and confirm with openshell-sandbox-get. If the sandbox still does not stop, remove its egress with openshell-egress-block-host or openshell-policy-rule-remove.
       type: regular
       iscommand: false
       brand: ''
@@ -326,10 +350,7 @@ inputs:
 outputs:
 - contextPath: OpenShell.Sandbox.Phase
   description: The sandbox phase after the playbook ran.
-  type: string
-- contextPath: OpenShell.Sandbox.Action
-  description: The action that was performed on the sandbox.
-  type: string
+  type: String
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0

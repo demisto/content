@@ -20,6 +20,7 @@ from NVIDIAOpenShell import (
     egress_block_host_command,
     format_error,
     gateway_info_get_command,
+    host_matches_pattern,
     normalize_pem,
     phase_name,
     policy_binary_remove_command,
@@ -377,18 +378,69 @@ def test_policy_binary_remove(client):
     assert operation.remove_binary.binary_path == "/usr/bin/curl"
 
 
-def test_egress_block_host_removes_every_port(client):
+def test_egress_block_host_single_atomic_update(client):
     """
-    Given: a policy that allows a host on two ports.
+    Given: a policy that allows a host on two ports in one rule and on one port in another rule.
     When: openshell-egress-block-host runs with the host in a different case.
-    Then: both host and port entries are removed.
+    Then: one UpdateConfig call removes the host from both rules on all ports (port 0), so the change
+          creates one policy version or none.
+    """
+    policy = make_policy()
+    policy.network_policies["model_api"].endpoints.add(host="files.example.com", port=443)
+    client.stub.GetSandboxConfig.return_value = sandbox_pb2.GetSandboxConfigResponse(policy=policy, version=4)
+    client.stub.UpdateConfig.return_value = openshell_pb2.UpdateConfigResponse(version=5)
+    result = egress_block_host_command(client, {"name": "agent-1", "host": "FILES.example.com"})
+    client.stub.UpdateConfig.assert_called_once()
+    operations = client.stub.UpdateConfig.call_args.args[0].merge_operations
+    removed = sorted((op.remove_endpoint.rule_name, op.remove_endpoint.host, op.remove_endpoint.port) for op in operations)
+    assert removed == [("agent_egress", "files.example.com", 0), ("model_api", "files.example.com", 0)]
+    assert result.outputs["NewVersion"] == 5
+    assert result.outputs["RemovedFromRules"] == ["agent_egress", "model_api"]
+    assert result.outputs["WildcardMatches"] == []
+
+
+def test_egress_block_host_failure_changes_nothing(client):
+    """
+    Given: a gateway that rejects the policy update.
+    When: openshell-egress-block-host runs.
+    Then: the error is raised after a single call, so no partial policy change is left behind.
     """
     client.stub.GetSandboxConfig.return_value = sandbox_pb2.GetSandboxConfigResponse(policy=make_policy(), version=4)
+    client.stub.UpdateConfig.side_effect = RuntimeError("rejected")
+    with pytest.raises(RuntimeError):
+        egress_block_host_command(client, {"name": "agent-1", "host": "files.example.com"})
+    client.stub.UpdateConfig.assert_called_once()
+
+
+def test_egress_block_host_reports_wildcard(client):
+    """
+    Given: a policy that allows the host exactly and also through a wildcard entry.
+    When: openshell-egress-block-host runs.
+    Then: the exact entry is removed, the wildcard entry is not, and the output warns that the host is still allowed.
+    """
+    policy = make_policy()
+    policy.network_policies["broad"].endpoints.add(host="*.example.com", port=443)
+    client.stub.GetSandboxConfig.return_value = sandbox_pb2.GetSandboxConfigResponse(policy=policy, version=4)
     client.stub.UpdateConfig.return_value = openshell_pb2.UpdateConfigResponse(version=5)
-    results = egress_block_host_command(client, {"name": "agent-1", "host": "FILES.example.com"})
-    assert len(results) == 2
-    ports = sorted(c.args[0].merge_operations[0].remove_endpoint.port for c in client.stub.UpdateConfig.call_args_list)
-    assert ports == [443, 8443]
+    result = egress_block_host_command(client, {"name": "agent-1", "host": "files.example.com"})
+    operations = client.stub.UpdateConfig.call_args.args[0].merge_operations
+    assert [op.remove_endpoint.rule_name for op in operations] == ["agent_egress"]
+    assert result.outputs["WildcardMatches"][0]["Host"] == "*.example.com"
+    assert "still allowed by wildcard" in result.readable_output
+
+
+def test_egress_block_host_only_wildcard(client):
+    """
+    Given: a policy where the host is allowed only through a wildcard entry.
+    When: openshell-egress-block-host runs.
+    Then: no policy change is made and the output says the host is still allowed by the wildcard.
+    """
+    policy = sandbox_pb2.SandboxPolicy()
+    policy.network_policies["broad"].endpoints.add(host="*.example.com", port=443)
+    client.stub.GetSandboxConfig.return_value = sandbox_pb2.GetSandboxConfigResponse(policy=policy)
+    result = egress_block_host_command(client, {"name": "agent-1", "host": "files.example.com"})
+    client.stub.UpdateConfig.assert_not_called()
+    assert "still allowed by a wildcard entry" in result.readable_output
 
 
 def test_egress_block_host_not_allowed(client):
@@ -398,9 +450,41 @@ def test_egress_block_host_not_allowed(client):
     Then: no policy change is made.
     """
     client.stub.GetSandboxConfig.return_value = sandbox_pb2.GetSandboxConfigResponse(policy=make_policy())
-    results = egress_block_host_command(client, {"name": "agent-1", "host": "other.example.com"})
-    assert "Nothing to remove" in results[0].readable_output
+    result = egress_block_host_command(client, {"name": "agent-1", "host": "other.example.com"})
+    assert "not allowed by any rule" in result.readable_output
     client.stub.UpdateConfig.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "host, pattern, expected",
+    [
+        ("files.example.com", "*.example.com", True),
+        ("a.b.example.com", "*.example.com", False),
+        ("example.com", "*.example.com", False),
+        ("files.example.com", "files.example.com", False),
+        ("files.example.com", "*.EXAMPLE.com", True),
+    ],
+)
+def test_host_matches_pattern(host, pattern, expected):
+    """
+    Given: a host and an allow-entry pattern.
+    When: host_matches_pattern is called.
+    Then: only wildcard patterns that cover the host match.
+    """
+    assert host_matches_pattern(host, pattern) is expected
+
+
+def test_client_tls_without_certificates_uses_system_roots(mocker):
+    """
+    Given: TLS (not plaintext) and no certificates, as for a bearer-token gateway behind a public CA.
+    When: the client is created.
+    Then: the SDK gets an empty TlsConfig, which uses the system trust store.
+    """
+    sdk_cls = mocker.patch.object(integration, "SandboxClient")
+    Client(endpoint="gw:443", workspace="ws", timeout=5, bearer_token="tok")
+    tls = sdk_cls.call_args.kwargs["tls"]
+    assert tls is not None
+    assert (tls.ca_path, tls.cert_path, tls.key_path) == (None, None, None)
 
 
 def test_provider_list(client):

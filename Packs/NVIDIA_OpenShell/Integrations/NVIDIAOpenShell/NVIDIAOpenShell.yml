@@ -10,11 +10,39 @@ commonfields:
 configuration:
 - display: Gateway endpoint (host:port)
   name: gateway_endpoint
-  defaultvalue: 127.0.0.1:17670
   type: 0
   required: true
   section: Connect
-  additionalinfo: The OpenShell gateway gRPC endpoint. The gateway is usually private, so run this integration on an engine that can reach it.
+  additionalinfo: The OpenShell gateway gRPC endpoint, for example openshell-gateway.example.com:17670. The gateway is usually private, so run this integration on an engine that can reach it.
+- name: ca_cert
+  type: 9
+  displaypassword: Gateway CA certificate
+  hiddenusername: true
+  required: false
+  section: Connect
+  additionalinfo: The PEM CA certificate that signed the gateway certificate (ca.crt). Leave empty to use the system trust store.
+- name: client_cert
+  type: 9
+  displaypassword: Client certificate
+  hiddenusername: true
+  required: false
+  section: Connect
+  additionalinfo: The PEM client certificate for mutual TLS (tls.crt).
+- name: client_key
+  type: 9
+  displaypassword: Client private key
+  hiddenusername: true
+  required: false
+  section: Connect
+  additionalinfo: The PEM private key of the client certificate (tls.key).
+- name: bearer_token
+  type: 9
+  displaypassword: OIDC bearer token
+  hiddenusername: true
+  required: false
+  section: Connect
+  additionalinfo: An OIDC access token, only for gateways configured for OIDC authentication. The token is not refreshed, so use a long-lived token and update this field before it expires.
+  advanced: true
 - display: Workspace
   name: workspace
   defaultvalue: default
@@ -22,39 +50,6 @@ configuration:
   required: false
   section: Connect
   additionalinfo: The default OpenShell workspace for commands that do not specify one.
-- display: Gateway CA certificate
-  name: ca_cert
-  type: 9
-  displaypassword: Gateway CA certificate
-  hiddenusername: true
-  required: false
-  section: Connect
-  additionalinfo: The PEM CA certificate that signed the gateway certificate (ca.crt).
-- display: Client certificate
-  name: client_cert
-  type: 9
-  displaypassword: Client certificate
-  hiddenusername: true
-  required: false
-  section: Connect
-  additionalinfo: The PEM client certificate for mutual TLS (tls.crt).
-- display: Client private key
-  name: client_key
-  type: 9
-  displaypassword: Client private key
-  hiddenusername: true
-  required: false
-  section: Connect
-  additionalinfo: The PEM private key of the client certificate (tls.key).
-- display: OIDC bearer token
-  name: bearer_token
-  type: 9
-  displaypassword: OIDC bearer token
-  hiddenusername: true
-  required: false
-  section: Connect
-  additionalinfo: The OIDC access token. Only for gateways configured for OIDC authentication.
-  advanced: true
 - display: Plaintext gateway (no TLS)
   name: plaintext
   type: 8
@@ -357,7 +352,7 @@ script:
       description: The sandbox name.
       type: String
     - contextPath: OpenShell.Log.Time
-      description: The event time.
+      description: The event time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: OpenShell.Log.Level
       description: The log level.
@@ -438,10 +433,10 @@ script:
       description: The load error, if the revision failed to load.
       type: String
     - contextPath: OpenShell.PolicyRevision.Created
-      description: The time the revision was created.
+      description: The time the revision was created in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: openshell-egress-block-host
-    description: Removes every allow entry for a host from the sandbox network policy, so the agent can no longer reach that host. The sandbox keeps running.
+    description: Removes every exact allow entry for a host, on all ports and across all network rules, in one atomic policy update, so the agent can no longer reach that host. The sandbox keeps running. Wildcard entries that also cover the host (for example *.example.com) are not removed but are listed in the output.
     arguments:
     - name: name
       description: The sandbox name.
@@ -467,7 +462,19 @@ script:
       description: The hash of the new policy.
       type: String
     - contextPath: OpenShell.PolicyChange.Change
-      description: A summary of the change.
+      description: The summary of the change.
+      type: String
+    - contextPath: OpenShell.PolicyChange.Host
+      description: The blocked host.
+      type: String
+    - contextPath: OpenShell.PolicyChange.RemovedFromRules
+      description: The network rules the host was removed from.
+      type: String
+    - contextPath: OpenShell.PolicyChange.WildcardMatches.Rule
+      description: The network rule of a wildcard entry that still allows the host.
+      type: String
+    - contextPath: OpenShell.PolicyChange.WildcardMatches.Host
+      description: The wildcard entry that still allows the host.
       type: String
     execution: true
   - name: openshell-policy-rule-remove
@@ -497,7 +504,7 @@ script:
       description: The hash of the new policy.
       type: String
     - contextPath: OpenShell.PolicyChange.Change
-      description: A summary of the change.
+      description: The summary of the change.
       type: String
     execution: true
   - name: openshell-policy-endpoint-remove
@@ -534,7 +541,7 @@ script:
       description: The hash of the new policy.
       type: String
     - contextPath: OpenShell.PolicyChange.Change
-      description: A summary of the change.
+      description: The summary of the change.
       type: String
     execution: true
   - name: openshell-policy-binary-remove
@@ -567,7 +574,7 @@ script:
       description: The hash of the new policy.
       type: String
     - contextPath: OpenShell.PolicyChange.Change
-      description: A summary of the change.
+      description: The summary of the change.
       type: String
     execution: true
   - name: openshell-provider-list

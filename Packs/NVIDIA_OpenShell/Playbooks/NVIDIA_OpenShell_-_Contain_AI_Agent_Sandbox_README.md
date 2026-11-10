@@ -1,4 +1,4 @@
-Contains an AI agent running in an NVIDIA OpenShell sandbox. Gets the sandbox state and recent logs, optionally waits for analyst approval, stops the sandbox and verifies that it stopped.
+Contains an AI agent running in an NVIDIA OpenShell sandbox. Gets the sandbox state and recent logs, optionally waits for analyst approval, stops the sandbox and verifies that it stopped. If the stop fails or times out, the playbook continues to a manual containment task.
 
 ## Dependencies
 
@@ -37,8 +37,7 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| OpenShell.Sandbox.Phase | The sandbox phase after the playbook ran. | string |
-| OpenShell.Sandbox.Action | The action that was performed on the sandbox. | string |
+| OpenShell.Sandbox.Phase | The sandbox phase after the playbook ran. | String |
 
 ## Playbook Image
 

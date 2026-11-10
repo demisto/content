@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 import os
 import re
 import tempfile
+import traceback
 import uuid
 from pathlib import Path
 from typing import Any
@@ -16,7 +17,6 @@ from openshell._proto import datamodel_pb2, openshell_pb2, sandbox_pb2
 """ CONSTANTS """
 
 PREFIX = "OpenShell"
-DEFAULT_ENDPOINT = "127.0.0.1:17670"
 DEFAULT_WORKSPACE = "default"
 DEFAULT_TIMEOUT = 30
 
@@ -40,10 +40,15 @@ def normalize_pem(content: str) -> str:
 
 
 def write_secret_file(directory: str, content: str, filename: str) -> Path:
-    """Write a PEM credential to a file readable only by the integration, inside a directory removed on close."""
+    """Write a PEM credential for the SDK, which only accepts file paths.
+
+    The file is created with mode 0600 (never readable by other users, even briefly) inside a private
+    temporary directory that is removed as soon as the gRPC channel is built.
+    """
     path = Path(directory) / filename
-    path.write_text(normalize_pem(content))
-    os.chmod(path, 0o600)
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(fd, "w") as handle:
+        handle.write(normalize_pem(content))
     return path
 
 
@@ -78,7 +83,7 @@ def sandbox_to_dict(ref: Any) -> dict:
     }
 
 
-def workspace_scope(workspace: str):
+def workspace_scope(workspace: str) -> datamodel_pb2.WorkspaceSelector:
     return datamodel_pb2.WorkspaceSelector(workspace=workspace)
 
 
@@ -125,7 +130,7 @@ class Client:
         bearer_token: str = "",
         plaintext: bool = False,
     ):
-        self.endpoint = re.sub(r"^https?://", "", endpoint or DEFAULT_ENDPOINT).rstrip("/")
+        self.endpoint = re.sub(r"^https?://", "", endpoint).rstrip("/")
         self.workspace = workspace or DEFAULT_WORKSPACE
         self.timeout = timeout
         # The SDK reads the TLS files once while it builds the channel, so they are deleted right after.
@@ -324,10 +329,15 @@ def policy_history_command(client: Client, args: dict) -> CommandResults:
 
 
 def merge_policy(client: Client, args: dict, operation: Any, summary: str) -> CommandResults:
+    return merge_policy_operations(client, args, [operation], summary)
+
+
+def merge_policy_operations(client: Client, args: dict, operations: list, summary: str) -> CommandResults:
+    """Apply all operations in one UpdateConfig call, so they create one policy version or none."""
     req = openshell_pb2.UpdateConfigRequest(
         workspace_scope=workspace_scope(client.ws(args)),
         sandbox=args["name"],
-        merge_operations=[operation],
+        merge_operations=operations,
         request_id=str(uuid.uuid4()),
         annotations={"cortex.reason": (args.get("reason") or "Cortex response")[:250]},
     )
@@ -361,17 +371,49 @@ def policy_binary_remove_command(client: Client, args: dict) -> CommandResults:
     return merge_policy(client, args, op, f"Binary {args['binary_path']} removed from rule {args['rule_name']}.")
 
 
-def egress_block_host_command(client: Client, args: dict) -> list[CommandResults]:
-    """Remove every allow entry for a host, across all network rules of the sandbox."""
+def host_matches_pattern(host: str, pattern: str) -> bool:
+    """Return True if an allow entry with a wildcard pattern (for example *.example.com) covers the host."""
+    pattern = pattern.lower()
+    if "*" not in pattern:
+        return False
+    regex = "^" + re.escape(pattern).replace(r"\*", "[^.]+") + "$"
+    return re.match(regex, host) is not None
+
+
+def egress_block_host_command(client: Client, args: dict) -> CommandResults:
+    """Remove every exact allow entry for a host, across all network rules, in one atomic policy update.
+
+    Wildcard entries that also cover the host are not removed, because that would block other hosts too.
+    They are reported, so the analyst knows the host can still be reached through them.
+    """
     host = args["host"].lower()
-    hits = [r for r in policy_rows(get_sandbox_config(client, args).policy) if r["Host"].lower() == host]
-    if not hits:
-        return [CommandResults(readable_output=f"{host} is not allowed by any rule on {args['name']}. Nothing to remove.")]
-    results = []
-    for row in hits:
-        for port in row["Ports"] or [0]:
-            results.append(policy_endpoint_remove_command(client, dict(args, rule_name=row["Rule"], port=port)))
-    return results
+    rows = policy_rows(get_sandbox_config(client, args).policy)
+    exact_rules = sorted({r["Rule"] for r in rows if r["Host"].lower() == host})
+    wildcard_rows = [r for r in rows if host_matches_pattern(host, r["Host"])]
+    wildcard_note = ""
+    if wildcard_rows:
+        entries = ", ".join(f"{r['Host']} (rule {r['Rule']})" for r in wildcard_rows)
+        wildcard_note = (
+            f"\n**Warning:** {host} is still allowed by wildcard entries: {entries}. "
+            "Remove them with openshell-policy-endpoint-remove, or stop the sandbox."
+        )
+    if not exact_rules:
+        status = "still allowed by a wildcard entry" if wildcard_rows else "not allowed by any rule"
+        return CommandResults(
+            outputs_prefix=f"{PREFIX}.PolicyChange",
+            outputs_key_field=["Sandbox", "Host"],
+            outputs={"Sandbox": args["name"], "Host": host, "RemovedFromRules": [], "WildcardMatches": wildcard_rows},
+            readable_output=f"### No exact allow entry for {host} on {args['name']}\n{host} is {status}.{wildcard_note}",
+        )
+    operations = [
+        openshell_pb2.PolicyMergeOperation(remove_endpoint=openshell_pb2.RemoveNetworkEndpoint(rule_name=rule, host=host, port=0))
+        for rule in exact_rules
+    ]
+    result = merge_policy_operations(
+        client, args, operations, f"Removed {host} (all ports) from rules: {', '.join(exact_rules)}.{wildcard_note}"
+    )
+    result.outputs.update({"Host": host, "RemovedFromRules": exact_rules, "WildcardMatches": wildcard_rows})
+    return result
 
 
 def provider_list_command(client: Client, args: dict) -> CommandResults:
@@ -443,8 +485,11 @@ def main() -> None:  # pragma: no cover
     demisto.debug(f"Command being called is {command}")
     client = None
     try:
+        endpoint = params.get("gateway_endpoint") or ""
+        if not endpoint.strip():
+            raise DemistoException("Gateway endpoint (host:port) is required.")
         client = Client(
-            endpoint=params.get("gateway_endpoint") or DEFAULT_ENDPOINT,
+            endpoint=endpoint,
             workspace=params.get("workspace") or DEFAULT_WORKSPACE,
             timeout=float(arg_to_number(params.get("timeout"), arg_name="Timeout") or DEFAULT_TIMEOUT),
             ca_cert=get_secret(params, "ca_cert"),
@@ -460,7 +505,8 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{format_error(e)}")
+        demisto.debug(traceback.format_exc())
+        return_error(f"Failed to execute {command} command.\nError:\n{format_error(e)}", error=e)
     finally:
         if client:
             client.close()

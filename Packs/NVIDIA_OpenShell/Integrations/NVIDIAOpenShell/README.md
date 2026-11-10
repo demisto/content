@@ -6,14 +6,20 @@ This integration was integrated and tested with version 0.1.6 of NVIDIA OpenShel
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Gateway endpoint (host:port) | The OpenShell gateway gRPC endpoint. The gateway is usually private, so run this integration on an engine that can reach it. | True |
-| Workspace | The default OpenShell workspace for commands that do not specify one. | False |
-| Gateway CA certificate | The PEM CA certificate that signed the gateway certificate \(ca.crt\). | False |
+| Gateway endpoint (host:port) | The OpenShell gateway gRPC endpoint, for example openshell-gateway.example.com:17670. The gateway is usually private, so run this integration on an engine that can reach it. | True |
+| Gateway CA certificate | The PEM CA certificate that signed the gateway certificate \(ca.crt\). Leave empty to use the system trust store. | False |
 | Client certificate | The PEM client certificate for mutual TLS \(tls.crt\). | False |
 | Client private key | The PEM private key of the client certificate \(tls.key\). | False |
-| OIDC bearer token | The OIDC access token. Only for gateways configured for OIDC authentication. | False |
+| OIDC bearer token | An OIDC access token, only for gateways configured for OIDC authentication. The token is not refreshed, so use a long-lived token and update this field before it expires. | False |
+| Workspace | The default OpenShell workspace for commands that do not specify one. | False |
 | Plaintext gateway (no TLS) | Whether to connect without TLS. Not secure. Use only for test gateways that do not use TLS. | False |
 | Timeout (seconds) | The number of seconds to wait for each gateway call. | False |
+
+## Safety
+
+- `openshell-sandbox-delete` and `openshell-provider-detach` cannot be undone and require `confirm=yes`.
+- Policy changes are recorded as new policy revisions on the gateway. Use `openshell-policy-history` to review them.
+- `openshell-egress-block-host` applies all removals in one policy update, so it either fully succeeds or changes nothing. It does not remove wildcard entries (for example `*.example.com`), because that would block other hosts too; it lists them so you can remove them with `openshell-policy-endpoint-remove` or stop the sandbox.
 
 ## Commands
 
@@ -31,8 +37,7 @@ Returns the OpenShell gateway version and information.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -263,7 +268,7 @@ Returns recent sandbox log lines, such as network decisions, process and policy 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | OpenShell.Log.Sandbox | String | The sandbox name. | 
-| OpenShell.Log.Time | Date | The event time. | 
+| OpenShell.Log.Time | Date | The event time in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). | 
 | OpenShell.Log.Level | String | The log level. | 
 | OpenShell.Log.Source | String | The log source. | 
 | OpenShell.Log.Target | String | The log target. | 
@@ -325,12 +330,12 @@ Returns the policy revisions of a sandbox, newest first.
 | OpenShell.PolicyRevision.Status | String | The revision status. | 
 | OpenShell.PolicyRevision.Hash | String | The policy hash. | 
 | OpenShell.PolicyRevision.LoadError | String | The load error, if the revision failed to load. | 
-| OpenShell.PolicyRevision.Created | Date | The time the revision was created. | 
+| OpenShell.PolicyRevision.Created | Date | The time the revision was created in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). | 
 
 ### openshell-egress-block-host
 
 ***
-Removes every allow entry for a host from the sandbox network policy, so the agent can no longer reach that host. The sandbox keeps running.
+Removes every exact allow entry for a host, on all ports and across all network rules, in one atomic policy update, so the agent can no longer reach that host. The sandbox keeps running. Wildcard entries that also cover the host (for example *.example.com) are not removed but are listed in the output.
 
 #### Base Command
 
@@ -352,7 +357,11 @@ Removes every allow entry for a host from the sandbox network policy, so the age
 | OpenShell.PolicyChange.Sandbox | String | The sandbox name. | 
 | OpenShell.PolicyChange.NewVersion | Number | The new policy version. | 
 | OpenShell.PolicyChange.PolicyHash | String | The hash of the new policy. | 
-| OpenShell.PolicyChange.Change | String | A summary of the change. | 
+| OpenShell.PolicyChange.Change | String | The summary of the change. | 
+| OpenShell.PolicyChange.Host | String | The blocked host. | 
+| OpenShell.PolicyChange.RemovedFromRules | String | The network rules the host was removed from. | 
+| OpenShell.PolicyChange.WildcardMatches.Rule | String | The network rule of a wildcard entry that still allows the host. | 
+| OpenShell.PolicyChange.WildcardMatches.Host | String | The wildcard entry that still allows the host. | 
 
 ### openshell-policy-rule-remove
 
@@ -379,7 +388,7 @@ Removes a network rule from the sandbox policy. All destinations of the rule are
 | OpenShell.PolicyChange.Sandbox | String | The sandbox name. | 
 | OpenShell.PolicyChange.NewVersion | Number | The new policy version. | 
 | OpenShell.PolicyChange.PolicyHash | String | The hash of the new policy. | 
-| OpenShell.PolicyChange.Change | String | A summary of the change. | 
+| OpenShell.PolicyChange.Change | String | The summary of the change. | 
 
 ### openshell-policy-endpoint-remove
 
@@ -408,7 +417,7 @@ Removes a single host and port from a network rule.
 | OpenShell.PolicyChange.Sandbox | String | The sandbox name. | 
 | OpenShell.PolicyChange.NewVersion | Number | The new policy version. | 
 | OpenShell.PolicyChange.PolicyHash | String | The hash of the new policy. | 
-| OpenShell.PolicyChange.Change | String | A summary of the change. | 
+| OpenShell.PolicyChange.Change | String | The summary of the change. | 
 
 ### openshell-policy-binary-remove
 
@@ -436,7 +445,7 @@ Removes a binary, for example /usr/bin/curl, from a network rule so it can no lo
 | OpenShell.PolicyChange.Sandbox | String | The sandbox name. | 
 | OpenShell.PolicyChange.NewVersion | Number | The new policy version. | 
 | OpenShell.PolicyChange.PolicyHash | String | The hash of the new policy. | 
-| OpenShell.PolicyChange.Change | String | A summary of the change. | 
+| OpenShell.PolicyChange.Change | String | The summary of the change. | 
 
 ### openshell-provider-list
 
