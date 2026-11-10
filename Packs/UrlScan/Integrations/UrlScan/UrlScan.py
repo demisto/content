@@ -65,6 +65,20 @@ class Client:
 """HELPER FUNCTIONS"""
 
 
+class URLScanURLIndicator(Common.URL):
+    """URL indicator that also emits the URLScan result page on the same URL context entry."""
+
+    def __init__(self, result_page: str | None = None, **kwargs):
+        super().__init__(**kwargs)
+        self.result_page = result_page
+
+    def to_context(self) -> dict:
+        context = super().to_context()
+        if self.result_page:
+            context[Common.URL.CONTEXT_PATH]["ResultPage"] = self.result_page
+        return context
+
+
 def detect_ip_type(indicator):
     """
     Helper function which detects wheather an IP is a IP or IPv6 by string
@@ -351,7 +365,9 @@ def format_results(client, uuid, use_url_as_name, scan_lists_attempts=True):
 
     feed_related_indicators = []
 
-    cont["ResultPage"] = client.base_url + f"result/{uuid}"
+    result_page = scan_tasks.get("reportURL") or f"{client.base_url}result/{uuid}/"
+    cont["ResultPage"] = result_page
+    human_readable["Report URL"] = result_page
 
     LIMIT = int(demisto.args().get("limit", 20))
     if "certificates" in scan_lists:
@@ -524,11 +540,12 @@ def format_results(client, uuid, use_url_as_name, scan_lists_attempts=True):
         reliability=dbot_score.get("Reliability"),
     )
 
-    url = Common.URL(
+    url = URLScanURLIndicator(
         url=url_cont.get("Data"),
         dbot_score=dbot_score,
         relationships=relationships,
         feed_related_indicators=url_cont.get("FeedRelatedIndicators"),
+        result_page=result_page,
     )
 
     command_result = CommandResults(
