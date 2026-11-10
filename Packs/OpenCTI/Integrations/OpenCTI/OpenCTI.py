@@ -2105,7 +2105,9 @@ def select_indicator(indicators: list[dict]) -> dict | None:
     active = [indicator for indicator in indicators if not indicator.get("revoked")]
     if active:
         return max(active, key=lambda indicator: (indicator.get("x_opencti_score") or 0, indicator.get("updated_at") or ""))
-    return max(indicators, key=lambda indicator: indicator.get("updated_at") or "", default=None)
+    if not indicators:
+        return None
+    return max(indicators, key=lambda indicator: indicator.get("updated_at") or "")
 
 
 def find_based_on_indicator(client: OpenCTIApiClient, observable_relationships: list[dict]) -> dict | None:
