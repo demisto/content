@@ -1939,7 +1939,13 @@ def test_azure_client_http_request_without_headers(mocker, mock_params):
 
     # Verify MicrosoftClient was used
     mock_ms_client.http_request.assert_called_once_with(
-        method="GET", url_suffix="/test", full_url=None, json_data=None, params={"api-version": "2022-09-01"}, resp_type="json"
+        method="GET",
+        url_suffix="/test",
+        full_url=None,
+        json_data=None,
+        params={"api-version": "2022-09-01"},
+        resp_type="json",
+        headers=None,
     )
 
 
@@ -2040,6 +2046,7 @@ def test_azure_client_http_request_with_microsoft_client(mocker):
         json_data={"key": "value"},
         params={"api-version": "2022-09-01"},
         resp_type="json",
+        headers=None,
     )
     assert result == {"result": "success"}
 
@@ -7953,6 +7960,531 @@ def test_ip_group_list_client_by_subscription(mocker, client):
     client.ip_group_list(subscription_id="sub-id", resource_group_name="", next_token="")
 
     assert mock_http_request.call_args.kwargs["full_url"].endswith("sub-id/providers/Microsoft.Network/ipGroups")
+
+
+# ---------------------------------------------------------------------------
+# Azure DNS commands
+# ---------------------------------------------------------------------------
+
+DNS_ZONE_RESPONSE = {
+    "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/dnsZones/zone1.com",
+    "etag": "00000000-0000-0000-0000-000000000000",
+    "location": "global",
+    "name": "zone1.com",
+    "type": "Microsoft.Network/dnsZones",
+    "properties": {
+        "maxNumberOfRecordSets": 5000,
+        "numberOfRecordSets": 2,
+        "nameServers": ["ns1-01.azure-dns.com", "ns2-01.azure-dns.net"],
+        "zoneType": "Public",
+    },
+    "tags": {"key1": "value1"},
+}
+
+DNS_RECORD_SET_RESPONSE = {
+    "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/dnsZones/zone1.com/CNAME/www",
+    "etag": "00000000-0000-0000-0000-000000000000",
+    "name": "www",
+    "type": "Microsoft.Network/dnsZones/CNAME",
+    "properties": {
+        "metadata": {"key1": "value1"},
+        "TTL": 3600,
+        "fqdn": "www.zone1.com.",
+        "provisioningState": "Succeeded",
+        "CNAMERecord": {"cname": "myapp.azurewebsites.net"},
+    },
+}
+
+DNS_RECORD_SET_ARGS = {"zone_name": "zone1.com", "relative_record_set_name": "www"}
+
+
+def test_dns_zones_list_command_success(mocker):
+    """
+    Given:
+        - An AzureClient returning a page of DNS zones together with a nextLink.
+    When:
+        - Calling dns_zones_list_command with a limit.
+    Then:
+        - The DNS zones and the next token are returned in the expected context structure.
+    """
+    from Azure import dns_zones_list_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.dns_zones_list.return_value = {"value": [DNS_ZONE_RESPONSE], "nextLink": "https://test.url"}
+
+    result = dns_zones_list_command(client=mock_client, params={"subscription_id": "sub-id"}, args={"limit": "10"})
+
+    assert result.outputs["Azure.DNS.Zones(val.id && val.id == obj.id)"] == [DNS_ZONE_RESPONSE]
+    assert result.outputs["Azure.DNS(true)"] == {"ZonesNextToken": "https://test.url"}
+    assert "DNS Zones List" in result.readable_output
+    assert DNS_ZONE_RESPONSE["name"] in result.readable_output
+    mock_client.dns_zones_list.assert_called_once_with(subscription_id="sub-id", limit=10, next_token="")
+
+
+def test_dns_zones_list_command_no_zones(mocker):
+    """
+    Given:
+        - An AzureClient returning an empty list of DNS zones.
+    When:
+        - Calling dns_zones_list_command.
+    Then:
+        - A message naming the subscription is returned and the next token is cleared from the context.
+    """
+    from Azure import dns_zones_list_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.dns_zones_list.return_value = {"value": []}
+
+    result = dns_zones_list_command(client=mock_client, params={"subscription_id": "sub-id"}, args={})
+
+    assert result.readable_output == "No DNS zones were found in subscription 'sub-id'."
+    assert result.outputs == {"Azure.DNS(true)": {"ZonesNextToken": None}}
+
+
+@pytest.mark.parametrize("limit", ["0", "-5", "1001"])
+def test_dns_zones_list_command_rejects_out_of_range_limit(mocker, limit):
+    """
+    Given:
+        - A limit argument that is zero, negative, or above the maximum page size.
+    When:
+        - Calling dns_zones_list_command.
+    Then:
+        - A DemistoException is raised and no request is sent.
+    """
+    from Azure import dns_zones_list_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+
+    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 1000"):
+        dns_zones_list_command(client=mock_client, params={"subscription_id": "sub-id"}, args={"limit": limit})
+
+    mock_client.dns_zones_list.assert_not_called()
+
+
+def test_dns_zones_list_client_builds_url_and_top(mocker, client):
+    """
+    Given:
+        - An AzureClient, a limit, and no next token.
+    When:
+        - Calling the dns_zones_list client method.
+    Then:
+        - The subscription-level DNS zones URL is requested with the DNS api-version and the $top parameter.
+    """
+    from Azure import DNS_API_VERSION
+
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.dns_zones_list(subscription_id="sub-id", limit=5, next_token="")
+
+    assert mock_http_request.call_args.kwargs["full_url"].endswith("sub-id/providers/Microsoft.Network/dnszones")
+    assert mock_http_request.call_args.kwargs["params"] == {"api-version": DNS_API_VERSION, "$top": 5}
+
+
+def test_dns_zones_list_client_omits_top_without_limit(mocker, client):
+    """
+    Given:
+        - An AzureClient and no limit.
+    When:
+        - Calling the dns_zones_list client method.
+    Then:
+        - The $top parameter is not sent, so Azure applies its default page size.
+    """
+    from Azure import DNS_API_VERSION
+
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.dns_zones_list(subscription_id="sub-id", limit=None, next_token="")
+
+    assert mock_http_request.call_args.kwargs["params"] == {"api-version": DNS_API_VERSION}
+
+
+def test_dns_zones_list_client_uses_next_token(mocker, client):
+    """
+    Given:
+        - An AzureClient and a next token pointing at the following page of results.
+    When:
+        - Calling the dns_zones_list client method with that token.
+    Then:
+        - The token is used as the full URL as is, with no extra params.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+    next_token = "https://management.azure.com/subscriptions/sub-id/providers/Microsoft.Network/dnsZones?api-version=2018-05-01&$skipToken=abc"
+
+    client.dns_zones_list(subscription_id="sub-id", limit=None, next_token=next_token)
+
+    assert mock_http_request.call_args.kwargs["full_url"] == next_token
+    assert mock_http_request.call_args.kwargs["params"] == {}
+
+
+def test_dns_zones_list_client_rejects_a_next_token_from_another_host(mocker, client):
+    """
+    Given:
+        - An AzureClient and a next token pointing at a host that is not the Azure management endpoint.
+    When:
+        - Calling the dns_zones_list client method with that token.
+    Then:
+        - A DemistoException is raised and no request is sent, so that the Azure access token is not leaked.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.dns_zones_list(subscription_id="sub-id", limit=None, next_token="https://attacker.example.com/next-page")
+
+    mock_http_request.assert_not_called()
+
+
+def test_dns_zones_list_client_error_handling(mocker, client):
+    """
+    Given:
+        - An AzureClient whose http_request raises a permission error.
+    When:
+        - Calling the dns_zones_list client method.
+    Then:
+        - handle_azure_error is invoked with the dns_zones_list API function name.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("403 Forbidden"))
+    mock_handle_error = mocker.patch.object(client, "handle_azure_error")
+
+    client.dns_zones_list(subscription_id="sub-id", limit=None, next_token="")
+
+    assert mock_handle_error.call_args.kwargs["api_function_name"] == "dns_zones_list"
+
+
+def test_dns_cname_record_set_get_command_success(mocker):
+    """
+    Given:
+        - An AzureClient whose dns_cname_record_set_get returns a CNAME record set.
+    When:
+        - Calling dns_cname_record_set_get_command.
+    Then:
+        - The record set is returned under Azure.DNS.RecordSets and the client receives the expected arguments.
+    """
+    from Azure import dns_cname_record_set_get_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.dns_cname_record_set_get.return_value = DNS_RECORD_SET_RESPONSE
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    result = dns_cname_record_set_get_command(client=mock_client, params=params, args=DNS_RECORD_SET_ARGS)
+
+    assert result.outputs_prefix == "Azure.DNS.RecordSets"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == DNS_RECORD_SET_RESPONSE
+    assert "DNS Record Set www" in result.readable_output
+    assert "www.zone1.com." in result.readable_output
+    mock_client.dns_cname_record_set_get.assert_called_once_with(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        zone_name="zone1.com",
+        relative_record_set_name="www",
+    )
+
+
+def test_dns_cname_record_set_get_command_not_found(mocker):
+    """
+    Given:
+        - An AzureClient whose dns_cname_record_set_get raises a not found error.
+    When:
+        - Calling dns_cname_record_set_get_command.
+    Then:
+        - The ValueError propagates to main() rather than being swallowed.
+    """
+    from Azure import dns_cname_record_set_get_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.dns_cname_record_set_get.side_effect = ValueError('DNS Record Set "zone1.com/CNAME/www" was not found.')
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    with pytest.raises(ValueError, match="was not found"):
+        dns_cname_record_set_get_command(client=mock_client, params=params, args=DNS_RECORD_SET_ARGS)
+
+
+def test_dns_cname_record_set_get_client_builds_url(mocker, client):
+    """
+    Given:
+        - An AzureClient and record set identifiers.
+    When:
+        - Calling the dns_cname_record_set_get client method.
+    Then:
+        - The record set URL is built from the zone, record type and relative name, with the DNS api-version.
+    """
+    from Azure import DNS_API_VERSION
+
+    mock_http_request = mocker.patch.object(client, "http_request", return_value=DNS_RECORD_SET_RESPONSE)
+
+    client.dns_cname_record_set_get(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        zone_name="zone1.com",
+        relative_record_set_name="www",
+    )
+
+    assert mock_http_request.call_args.kwargs["method"] == "GET"
+    assert mock_http_request.call_args.kwargs["full_url"].endswith(
+        "sub-id/resourceGroups/test-rg/providers/Microsoft.Network/dnsZones/zone1.com/CNAME/www"
+    )
+    assert mock_http_request.call_args.kwargs["params"] == {"api-version": DNS_API_VERSION}
+
+
+def test_dns_cname_record_set_get_client_error_handling(mocker, client):
+    """
+    Given:
+        - An AzureClient whose http_request raises a permission error.
+    When:
+        - Calling the dns_cname_record_set_get client method.
+    Then:
+        - handle_azure_error is invoked with the dns_cname_record_set_get API function name.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("403 Forbidden"))
+    mock_handle_error = mocker.patch.object(client, "handle_azure_error")
+
+    client.dns_cname_record_set_get(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        zone_name="zone1.com",
+        relative_record_set_name="www",
+    )
+
+    assert mock_handle_error.call_args.kwargs["api_function_name"] == "dns_cname_record_set_get"
+    assert mock_handle_error.call_args.kwargs["resource_name"] == "zone1.com/CNAME/www"
+
+
+def test_dns_cname_record_set_delete_command_success(mocker):
+    """
+    Given:
+        - An AzureClient whose dns_cname_record_set_delete returns a 200 OK response.
+    When:
+        - Calling dns_cname_record_set_delete_command.
+    Then:
+        - The readable output states the record set was deleted successfully.
+    """
+    from Azure import dns_cname_record_set_delete_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_client.dns_cname_record_set_delete.return_value = mock_response
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    result = dns_cname_record_set_delete_command(client=mock_client, params=params, args=DNS_RECORD_SET_ARGS)
+
+    assert result.readable_output == "DNS record set www of type CNAME in zone zone1.com was successfully deleted."
+    mock_client.dns_cname_record_set_delete.assert_called_once_with(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        zone_name="zone1.com",
+        relative_record_set_name="www",
+        etag=None,
+    )
+
+
+def test_dns_cname_record_set_delete_command_passes_etag(mocker):
+    """
+    Given:
+        - Command arguments that include an etag.
+    When:
+        - Calling dns_cname_record_set_delete_command.
+    Then:
+        - The etag is passed to the client method.
+    """
+    from Azure import dns_cname_record_set_delete_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_client.dns_cname_record_set_delete.return_value = mock_response
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    dns_cname_record_set_delete_command(client=mock_client, params=params, args={**DNS_RECORD_SET_ARGS, "etag": "etag-1"})
+
+    assert mock_client.dns_cname_record_set_delete.call_args.kwargs["etag"] == "etag-1"
+
+
+def test_dns_cname_record_set_delete_command_not_found(mocker):
+    """
+    Given:
+        - An AzureClient whose dns_cname_record_set_delete returns a 204 No Content response.
+    When:
+        - Calling dns_cname_record_set_delete_command.
+    Then:
+        - The readable output states the record set was not found.
+    """
+    from Azure import dns_cname_record_set_delete_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_response = mocker.Mock()
+    mock_response.status_code = 204
+    mock_client.dns_cname_record_set_delete.return_value = mock_response
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    result = dns_cname_record_set_delete_command(client=mock_client, params=params, args=DNS_RECORD_SET_ARGS)
+
+    assert "was not found" in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "command_name, client_method",
+    [
+        ("dns_cname_record_set_get_command", "dns_cname_record_set_get"),
+        ("dns_cname_record_set_delete_command", "dns_cname_record_set_delete"),
+    ],
+)
+@pytest.mark.parametrize(
+    "args",
+    [
+        {"zone_name": "zone1.com", "relative_record_set_name": "../A/www"},
+        {"zone_name": "zone1.com", "relative_record_set_name": "www/../../A/www"},
+        {"zone_name": "zone1.com", "relative_record_set_name": "www?api-version=1"},
+        {"zone_name": "zone1.com", "relative_record_set_name": "www#frag"},
+        {"zone_name": "zone1.com", "relative_record_set_name": "www\\A"},
+        {"zone_name": "zone1.com/A/www", "relative_record_set_name": "www"},
+    ],
+)
+def test_dns_cname_record_set_commands_reject_path_traversal(mocker, command_name, client_method, args):
+    """
+    Given:
+        - A zone_name or relative_record_set_name containing a path traversal or URL control sequence.
+    When:
+        - Calling the DNS CNAME record set get or delete command.
+    Then:
+        - A DemistoException is raised and no request is sent to Azure.
+    """
+    command = getattr(Azure, command_name)
+    mock_client = mocker.Mock(spec=AzureClient)
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    with pytest.raises(DemistoException, match="must not contain"):
+        command(client=mock_client, params=params, args=args)
+    getattr(mock_client, client_method).assert_not_called()
+
+
+@pytest.mark.parametrize("value", ["zone1.com", "www", "my-record", "_dmarc", "*", "a.b.c"])
+def test_validate_dns_name_accepts_valid_names(value):
+    """
+    Given:
+        - A DNS zone or record set name without any forbidden sequence.
+    When:
+        - Calling validate_dns_name.
+    Then:
+        - No exception is raised.
+    """
+    from Azure import validate_dns_name
+
+    validate_dns_name(value, "zone_name")
+
+
+@pytest.mark.parametrize("value", ["a/b", "a\\b", "a?b", "a#b", "a..b", "..", "/"])
+def test_validate_dns_name_rejects_forbidden_sequences(value):
+    """
+    Given:
+        - A DNS zone or record set name containing /, \\, ?, # or ..
+    When:
+        - Calling validate_dns_name.
+    Then:
+        - A DemistoException naming the argument and the value is raised.
+    """
+    from Azure import validate_dns_name
+
+    with pytest.raises(DemistoException) as excinfo:
+        validate_dns_name(value, "relative_record_set_name")
+
+    assert "The argument relative_record_set_name must not contain" in str(excinfo.value)
+    assert f"Currently the value is {value}." in str(excinfo.value)
+
+
+def test_dns_cname_record_set_delete_client_builds_request(mocker, client):
+    """
+    Given:
+        - An AzureClient and record set identifiers.
+    When:
+        - Calling the dns_cname_record_set_delete client method.
+    Then:
+        - A DELETE request is sent to the record set URL and the raw response is requested.
+    """
+    from Azure import DNS_API_VERSION
+
+    mock_http_request = mocker.patch.object(client, "http_request")
+
+    client.dns_cname_record_set_delete(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        zone_name="zone1.com",
+        relative_record_set_name="www",
+    )
+
+    assert mock_http_request.call_args.kwargs["method"] == "DELETE"
+    assert mock_http_request.call_args.kwargs["full_url"].endswith("/dnsZones/zone1.com/CNAME/www")
+    assert mock_http_request.call_args.kwargs["params"] == {"api-version": DNS_API_VERSION}
+    assert mock_http_request.call_args.kwargs["resp_type"] == "response"
+    assert mock_http_request.call_args.kwargs["headers"] is None
+
+
+def test_dns_cname_record_set_delete_client_sends_if_match(mocker, client):
+    """
+    Given:
+        - An AzureClient and an etag.
+    When:
+        - Calling the dns_cname_record_set_delete client method.
+    Then:
+        - The etag is sent in the If-Match header.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request")
+
+    client.dns_cname_record_set_delete(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        zone_name="zone1.com",
+        relative_record_set_name="www",
+        etag="etag-1",
+    )
+
+    assert mock_http_request.call_args.kwargs["headers"] == {"If-Match": "etag-1"}
+
+
+def test_dns_cname_record_set_delete_client_etag_mismatch(mocker, client):
+    """
+    Given:
+        - An AzureClient whose http_request fails with 412 Precondition Failed, and an etag.
+    When:
+        - Calling the dns_cname_record_set_delete client method.
+    Then:
+        - A DemistoException explains that the record set was modified, and handle_azure_error is not called.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("Error in API call [412] - Precondition Failed"))
+    mock_handle_error = mocker.patch.object(client, "handle_azure_error")
+
+    with pytest.raises(DemistoException, match="was modified after the ETag etag-1 was retrieved"):
+        client.dns_cname_record_set_delete(
+            subscription_id="sub-id",
+            resource_group_name="test-rg",
+            zone_name="zone1.com",
+            relative_record_set_name="www",
+            etag="etag-1",
+        )
+
+    mock_handle_error.assert_not_called()
+
+
+def test_dns_cname_record_set_delete_client_error_handling(mocker, client):
+    """
+    Given:
+        - An AzureClient whose http_request raises a permission error.
+    When:
+        - Calling the dns_cname_record_set_delete client method.
+    Then:
+        - handle_azure_error is invoked with the dns_cname_record_set_delete API function name.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("403 Forbidden"))
+    mock_handle_error = mocker.patch.object(client, "handle_azure_error")
+
+    client.dns_cname_record_set_delete(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        zone_name="zone1.com",
+        relative_record_set_name="www",
+    )
+
+    assert mock_handle_error.call_args.kwargs["api_function_name"] == "dns_cname_record_set_delete"
 
 
 # ---------------------------------------------------------------------------
