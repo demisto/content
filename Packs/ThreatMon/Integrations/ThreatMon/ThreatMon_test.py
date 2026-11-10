@@ -553,10 +553,12 @@ def test_outgoing_not_changed_or_invalid(client, server, context):
     assert server.patches == []
 
 
-def test_outgoing_error_is_raised(client, requests_mock, context):
+def test_outgoing_error_is_raised(client, requests_mock, context, mocker):
     requests_mock.patch(f"{BASE}/v1/incident/status", status_code=400, text='{"error":"bad"}')
+    error_log = mocker.patch.object(ThreatMon.demisto, "error")
     with pytest.raises(DemistoException, match="400"):
         update_remote_system_command(client, update_args(delta={"status": "Open"}), MIRROR_PARAMS)
+    assert "outgoing mirroring failed for alarm 42" in error_log.call_args[0][0]
 
 
 def test_get_mapping_fields():
@@ -1471,3 +1473,77 @@ def test_sandbox_keeps_polling_while_queued_or_running(client, requests_mock, sa
     args = {"polling": "true", "submitted_at": "1", "file_name": "sample.txt", "submission_id": "260"}
     requests_mock.get(f"{BASE}/v1/sandbox/submissions", json=sandbox_list([{**SUBMISSION_ROW, "status": status}]))
     assert ThreatMon.sandbox_submit_command(args, client, RELIABILITY).scheduled_command is not None
+
+
+# ---------------------------------------------------------------- reviewer (MosheEichler) regressions
+
+
+def test_alarm_list_raw_response_is_masked(client, server):
+    alarm = make_alarm(90, datetime(2026, 11, 9, 1, 0, tzinfo=UTC))
+    alarm["details"] = [{"findingId": 1, "Password": "Secret123"}]
+    server.put(alarm)
+    result = list_alarms_command(client, {"limit": "1"})
+    assert "Secret123" not in json.dumps(result.raw_response)
+    assert "Secret123" not in json.dumps(result.outputs)
+
+
+def test_unknown_fetch_status_is_an_error(client):
+    with pytest.raises(DemistoException, match="unknown values: Closed"):
+        fetch_incidents(client, {**PARAMS, "fetch_statuses": "Open,Closed"}, {})
+    assert ThreatMon.get_fetch_statuses({"fetch_statuses": "open, inprogress"}) == ["Open", "In Progress"]
+    assert ThreatMon.get_fetch_statuses({}) == ["Open", "In Progress"]
+
+
+def test_test_module_reports_unknown_fetch_status(client, requests_mock):
+    requests_mock.get(f"{BASE}/v1/alarm/status", json={"Open": "1"})
+    with pytest.raises(DemistoException, match="unknown values"):
+        module_test(client, {"isFetch": "true", "fetch_statuses": "Done"})
+
+
+def test_lookback_zero_is_used_by_mirroring(client, server, context):
+    get_modified_remote_data_command(client, {"lastUpdate": iso(NOW)}, {"lookback_minutes": "0"})
+    assert server.requests[-1]["lastupdatestartdate"] == iso(NOW)
+    assert ThreatMon.get_lookback_minutes({"lookback_minutes": "0"}) == 0
+    assert ThreatMon.get_lookback_minutes({}) == 30
+    with pytest.raises(DemistoException):
+        ThreatMon.get_lookback_minutes({"lookback_minutes": "-1"})
+
+
+def test_mappers_get_the_normalized_status(client, server, context):
+    server.put(make_alarm(91, datetime(2026, 11, 9, 1, 0, tzinfo=UTC), status="InProgress"))
+    incidents, _ = fetch_incidents(client, PARAMS, {})
+    assert json.loads(incidents[0]["rawJSON"])["status"] == "In Progress"
+    server.put(make_alarm(91, NOW - timedelta(minutes=1), status="InProgress"))
+    get_modified_remote_data_command(client, {"lastUpdate": iso(NOW)}, MIRROR_PARAMS)
+    response = get_remote_data_command({"id": "91", "lastUpdate": iso(NOW)}, MIRROR_PARAMS)
+    assert response.mirrored_object["status"] == "In Progress"
+
+
+def test_echo_guard_releases_a_real_change_made_right_after_ours(client, server, context, mocker):
+    """A ThreatMon user changes the status a few seconds after the integration did. It is mirrored after the guard."""
+    update_remote_system_command(client, update_args(delta={"status": "In Progress"}), MIRROR_PARAMS)
+    server.put(make_alarm(42, NOW + timedelta(seconds=5), status="Resolved"))  # The real change, within the skew.
+    get_modified_remote_data_command(client, {"lastUpdate": iso(NOW)}, MIRROR_PARAMS)
+    assert get_remote_data_command({"id": "42", "lastUpdate": iso(NOW)}, MIRROR_PARAMS).mirrored_object == {}
+
+    # Once the guard has ended, get-remote-data no longer holds the change back.
+    after_guard = NOW + timedelta(seconds=ThreatMon.ECHO_GUARD_SECONDS + 60)
+    mocker.patch.object(ThreatMon, "now_utc", return_value=after_guard)
+    assert get_remote_data_command({"id": "42", "lastUpdate": iso(NOW)}, MIRROR_PARAMS).mirrored_object["status"] == "Resolved"
+
+
+def test_echo_guard_release_reports_alarms_outside_the_modified_window(client, server, context, mocker):
+    update_remote_system_command(client, update_args(delta={"status": "In Progress"}), MIRROR_PARAMS)
+    server.put(make_alarm(42, NOW + timedelta(seconds=5), status="Resolved"))
+    get_modified_remote_data_command(client, {"lastUpdate": iso(NOW)}, MIRROR_PARAMS)
+
+    later = NOW + timedelta(hours=2)  # The change is far outside the look-back window now.
+    mocker.patch.object(ThreatMon, "now_utc", return_value=later)
+    modified = get_modified_remote_data_command(client, {"lastUpdate": iso(later)}, MIRROR_PARAMS)
+    assert modified.modified_incident_ids == ["42"]
+    assert "42" not in context["context"]["mirror"]["set"]
+    response = get_remote_data_command({"id": "42", "lastUpdate": iso(later)}, MIRROR_PARAMS)
+    assert "changed from In Progress to Resolved" in response.entries[0]["Contents"]
+    assert response.entries[1]["Contents"]["dbotIncidentClose"] is True
+    again = get_modified_remote_data_command(client, {"lastUpdate": iso(later)}, MIRROR_PARAMS)
+    assert again.modified_incident_ids == []  # Released once.

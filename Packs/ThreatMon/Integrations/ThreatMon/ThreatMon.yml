@@ -1331,6 +1331,6 @@ script:
   dockerimage: demisto/python3:3.12.15.14069087
 defaultmapperin: ThreatMon - Incoming Mapper
 defaultmapperout: ThreatMon - Outgoing Mapper
-fromversion: 5.0.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

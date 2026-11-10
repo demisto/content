@@ -35,6 +35,7 @@ RETRY_STATUSES = {429, 500, 502, 503, 504}
 MAX_RETRIES = 4
 REQUEST_TIMEOUT = 60.0
 ECHO_SKEW_SECONDS = 30  # Allowed clock difference between Cortex and ThreatMon for the echo guard.
+ECHO_GUARD_SECONDS = 600  # Longer than the change index lag (1-6 minutes). After it, the alarm is mirrored again.
 MIRROR_SAVE_ATTEMPTS = 5
 
 STATUSES = ["Open", "In Progress", "Resolved", "Ignore"]
@@ -481,19 +482,36 @@ def raise_api_error(response: requests.Response, customer_name: str | None = Non
 """ FETCH """
 
 
-def get_fetch_settings(params: dict[str, Any]) -> dict[str, Any]:
-    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
-    if not 1 <= max_fetch <= MAX_FETCH_LIMIT:
-        raise DemistoException(f"Maximum number of incidents per fetch must be between 1 and {MAX_FETCH_LIMIT}.")
+def get_lookback_minutes(params: dict[str, Any]) -> int:
+    """Returns the Look-back Window (minutes) parameter. Fetch and mirroring use the same value, including 0."""
     lookback = arg_to_number(params.get("lookback_minutes"))
     lookback = DEFAULT_LOOKBACK_MINUTES if lookback is None else lookback
     if not 0 <= lookback <= 1440:
         raise DemistoException("Look-back Window (minutes) must be between 0 and 1440.")
+    return lookback
+
+
+def get_fetch_statuses(params: dict[str, Any]) -> list[str]:
+    """Returns the Alarm Statuses to Fetch parameter. An unknown status is an error, so the fetch never stops silently."""
+    values = [v for v in argToList(params.get("fetch_statuses")) if str(v).strip()]
+    unknown = [v for v in values if canonical_status(v) is None]
+    if unknown:
+        raise DemistoException(
+            f"Alarm Statuses to Fetch contains unknown values: {', '.join(unknown)}. Use {', '.join(STATUSES)}."
+        )
+    return [canonical_status(v) for v in values] or ["Open", "In Progress"]  # type: ignore[misc]
+
+
+def get_fetch_settings(params: dict[str, Any]) -> dict[str, Any]:
+    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+    if not 1 <= max_fetch <= MAX_FETCH_LIMIT:
+        raise DemistoException(f"Maximum number of incidents per fetch must be between 1 and {MAX_FETCH_LIMIT}.")
+    lookback = get_lookback_minutes(params)
     first_fetch = arg_to_datetime(params.get("first_fetch") or DEFAULT_FIRST_FETCH, arg_name="First Fetch Time")
     if first_fetch is None:
         raise DemistoException("Invalid First Fetch Time parameter.")
     min_rank = severity_rank(params.get("min_severity") or "Information")
-    statuses = [canonical_status(s) for s in argToList(params.get("fetch_statuses"))] or ["Open", "In Progress"]
+    statuses = get_fetch_statuses(params)
     return {
         "max_fetch": max_fetch,
         "lookback": timedelta(minutes=lookback),
@@ -557,6 +575,7 @@ def build_incident(alarm: dict[str, Any], settings: dict[str, Any]) -> dict[str,
     code = to_int(alarm.get("alarmCode"))
     findings = get_findings(raw)
     raw["alarmCode"] = code
+    raw["status"] = canonical_status(alarm.get("status")) or alarm.get("status")
     raw["findings"] = findings_markdown(findings)
     raw["findingIds"] = [str(f["findingId"]) for f in findings if f.get("findingId") is not None]
     raw["mirror_id"] = str(code)
@@ -714,7 +733,7 @@ def get_modified_remote_data_command(
     """
     remote_args = GetModifiedRemoteDataArgs(args)
     current = now_utc()
-    lookback = timedelta(minutes=arg_to_number(params.get("lookback_minutes")) or DEFAULT_LOOKBACK_MINUTES)
+    lookback = timedelta(minutes=get_lookback_minutes(params))
     last_update = arg_to_datetime(remote_args.last_update) or current - lookback
     last_update = last_update.astimezone(UTC) if last_update.tzinfo else last_update.replace(tzinfo=UTC)
 
@@ -743,15 +762,25 @@ def get_modified_remote_data_command(
             moved = True
             newest = max(newest, alarm_pos)
             entry = {key: alarm.get(key) for key in MIRRORED_FIELDS}
+            entry["status"] = canonical_status(entry.get("status")) or entry.get("status")
             if newer_alarm(seen.get(str(alarm_pos[1])), entry):
                 seen[str(alarm_pos[1])] = entry
         if len(alarms) < PAGE_SIZE or not moved:
             break
 
     changed: set[str] = set()
+    released: set[str] = set()
 
     def apply(latest: dict[str, Any]) -> None:
         changed.clear()
+        released.clear()
+        # When the echo guard of an own change ends, report the alarm again, so a change that a ThreatMon user
+        # made right after the integration's change is mirrored even if it is outside the modified window.
+        for code, entry in list(latest["set"].items()):
+            if current.timestamp() >= entry.get("at", 0) + ECHO_GUARD_SECONDS:
+                if code in latest["alarms"]:
+                    released.add(code)
+                del latest["set"][code]
         for code, entry in seen.items():
             cached = latest["alarms"].get(code)
             # An older version of the alarm from the lagging change index never replaces a newer one.
@@ -768,6 +797,7 @@ def get_modified_remote_data_command(
     since = last_update - lookback
     modified = sorted(
         changed
+        | released
         | {code for code, alarm in state["alarms"].items() if (parse_api_date(alarm.get("lastUpdateDate")) or current) >= since},
         key=lambda code: to_int(code) or 0,
     )
@@ -792,11 +822,12 @@ def get_remote_data_command(args: dict[str, Any], params: dict[str, Any]) -> Get
         and updated
         and status_key(status) != status_key(own_change.get("status"))
         and updated.timestamp() <= own_change.get("at", 0) + ECHO_SKEW_SECONDS
+        and now_utc().timestamp() < own_change.get("at", 0) + ECHO_GUARD_SECONDS
     ):
         # The lagging change index still returns the alarm from before this integration changed its status.
         return GetRemoteDataResponse({}, [])
 
-    mirrored = {"alarmCode": to_int(code), **alarm, "id": code}
+    mirrored = {"alarmCode": to_int(code), **alarm, "status": status, "id": code}
     entries: list[dict[str, Any]] = []
     previous = state["delivered"].get(code, {}).get("status")
     if previous != status:
@@ -935,7 +966,7 @@ def list_alarms_command(client: Client, args: dict[str, Any]) -> CommandResults:
         outputs_key_field="AlarmCode",
         outputs=outputs,
         readable_output=readable,
-        raw_response=alarms,
+        raw_response=[mask_secrets(alarm) for alarm in alarms],
     )
 
 
