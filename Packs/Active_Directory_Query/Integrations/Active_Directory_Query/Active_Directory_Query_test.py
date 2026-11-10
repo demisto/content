@@ -1218,3 +1218,263 @@ def test_update_user_with_byte_attribute(mocker):
     sent_value = mock_conn.last_modification["logonHours"][0][1]
     assert isinstance(sent_value, bytes), f"Expected bytes, got {type(sent_value)}"
     assert sent_value == bytes(21)
+
+
+""" LDAP filter special characters handling """
+
+SPECIAL_CHARS_VALUE = "*)(distinguishedName=CN=Administrator,CN=Users,DC=corp,DC=local"
+ESCAPED_SPECIAL_CHARS_VALUE = r"\2a\29\28distinguishedName=CN=Administrator,CN=Users,DC=corp,DC=local"
+
+
+class FilterCapturingEntry:
+    def __init__(self, dn: str = "CN=jdoe,DC=corp,DC=local", user_account_control: int = 512):
+        self.dn = dn
+        self.user_account_control = user_account_control
+
+    def entry_to_json(self) -> str:
+        return json.dumps({"dn": self.dn, "attributes": {"userAccountControl": [self.user_account_control]}})
+
+
+class FilterCapturingConnection:
+    """Mock ldap3 connection that records every search filter and modified DN."""
+
+    def __init__(self, entries: list | None = None):
+        self.entries = entries or []
+        self.filters: list[str] = []
+        self.modified_dns: list[str] = []
+        self.result: dict = {"description": "success", "result": 0}
+
+    def search(self, *args, **kwargs) -> bool:
+        self.filters.append(kwargs.get("search_filter") or args[1])
+        return True
+
+    def modify(self, dn, modification) -> bool:
+        self.modified_dns.append(dn)
+        return True
+
+
+@pytest.mark.parametrize(
+    "sam_account_name, expected_filter",
+    [
+        (SPECIAL_CHARS_VALUE, f"(&(objectClass=user)(sAMAccountName={ESCAPED_SPECIAL_CHARS_VALUE}))"),
+        ("*", r"(&(objectClass=user)(sAMAccountName=\2a))"),
+        ("jdoe(1)", r"(&(objectClass=user)(sAMAccountName=jdoe\281\29))"),
+        ("CORP\\jdoe", "(&(objectClass=user)(sAMAccountName=jdoe))"),
+        ("jdoe", "(&(objectClass=user)(sAMAccountName=jdoe))"),
+    ],
+)
+def test_user_dn_escapes_filter_characters(mocker, sam_account_name, expected_filter):
+    """
+    Given:
+        A sAMAccountName containing LDAP filter special characters, a bare wildcard, a name with parentheses,
+        a DOMAIN\\user name, or a regular name.
+    When:
+        Running user_dn.
+    Then:
+        The LDAP filter sent to the server treats the value as a literal (metacharacters escaped),
+        and the domain prefix is still stripped before escaping.
+    """
+    from Active_Directory_Query import user_dn
+
+    connection = FilterCapturingConnection(entries=[FilterCapturingEntry()])
+    mocker.patch("Active_Directory_Query.connection", connection)
+
+    user_dn(sam_account_name, "DC=corp,DC=local")
+
+    assert connection.filters == [expected_filter]
+
+
+def test_user_dn_special_chars_value_does_not_resolve(mocker):
+    """
+    Given:
+        A username containing LDAP filter special characters, and a directory with no user literally named that.
+    When:
+        Running user_dn.
+    Then:
+        No DN is resolved and an exception is raised (instead of resolving a different object).
+    """
+    from Active_Directory_Query import user_dn
+
+    mocker.patch("Active_Directory_Query.connection", FilterCapturingConnection(entries=[]))
+
+    with pytest.raises(Exception, match="Could not get full DN for user"):
+        user_dn(SPECIAL_CHARS_VALUE, "DC=corp,DC=local")
+
+
+@pytest.mark.parametrize(
+    "computer_name, expected_filter",
+    [
+        ("*)(cn=DC01", r"(&(objectClass=user)(objectCategory=computer)(name=\2a\29\28cn=DC01))"),
+        ("WS-01", "(&(objectClass=user)(objectCategory=computer)(name=WS-01))"),
+    ],
+)
+def test_computer_dn_escapes_filter_characters(mocker, computer_name, expected_filter):
+    """
+    Given:
+        A computer name containing LDAP filter special characters, or a regular computer name.
+    When:
+        Running computer_dn.
+    Then:
+        The LDAP filter treats the computer name as a literal value.
+    """
+    from Active_Directory_Query import computer_dn
+
+    connection = FilterCapturingConnection(entries=[FilterCapturingEntry()])
+    mocker.patch("Active_Directory_Query.connection", connection)
+
+    computer_dn(computer_name, "DC=corp,DC=local")
+
+    assert connection.filters == [expected_filter]
+
+
+def test_disable_user_special_chars_value_modifies_nothing(mocker):
+    """
+    Given:
+        ad-disable-account called with a username containing LDAP filter special characters.
+    When:
+        Running disable_user.
+    Then:
+        The lookup is escaped, nothing is resolved, an exception is raised and no object is modified.
+    """
+    from Active_Directory_Query import disable_user
+
+    connection = FilterCapturingConnection(entries=[])
+    mocker.patch("Active_Directory_Query.connection", connection)
+    mocker.patch.object(demisto, "args", return_value={"username": SPECIAL_CHARS_VALUE})
+
+    with pytest.raises(Exception, match="Could not get full DN for user"):
+        disable_user("DC=corp,DC=local", 100)
+
+    assert connection.modified_dns == []
+    assert ESCAPED_SPECIAL_CHARS_VALUE in connection.filters[0]
+
+
+def test_set_password_not_expire_no_double_escape(mocker):
+    """
+    Given:
+        ad-modify-password-never-expire called with a sAMAccountName that contains parentheses.
+    When:
+        Running set_password_not_expire.
+    Then:
+        Every LDAP filter contains the name escaped exactly once (no '\\5c' from double escaping),
+        and the resolved user is modified.
+    """
+    from Active_Directory_Query import set_password_not_expire
+
+    connection = FilterCapturingConnection(entries=[FilterCapturingEntry()])
+    mocker.patch("Active_Directory_Query.connection", connection)
+    mocker.patch.object(demisto, "args", return_value={"username": "jdoe(1)", "value": "true"})
+    mocker.patch.object(demisto, "results")
+
+    set_password_not_expire("DC=corp,DC=local")
+
+    assert len(connection.filters) == 3
+    for search_filter in connection.filters:
+        assert r"sAMAccountName=jdoe\281\29" in search_filter
+        assert r"\5c" not in search_filter
+    assert connection.modified_dns == ["CN=jdoe,DC=corp,DC=local"]
+
+
+def test_lookup_helpers_escape_filter_characters(mocker):
+    """
+    Given:
+        Values containing LDAP filter special characters passed to the internal lookup helpers used by the IAM commands.
+    When:
+        Running check_if_user_exists_by_attribute, get_user_activity_by_samaccountname and get_user_dn_by_email.
+    Then:
+        Each LDAP filter treats the value as a literal.
+    """
+    from Active_Directory_Query import (
+        check_if_user_exists_by_attribute,
+        get_user_activity_by_samaccountname,
+        get_user_dn_by_email,
+    )
+
+    connection = FilterCapturingConnection(entries=[])
+    mocker.patch("Active_Directory_Query.connection", connection)
+
+    check_if_user_exists_by_attribute("DC=corp,DC=local", "sAMAccountName", SPECIAL_CHARS_VALUE)
+    get_user_activity_by_samaccountname("DC=corp,DC=local", SPECIAL_CHARS_VALUE)
+    # get_user_dn_by_email() uses the part before "@" (the whole value when there is no "@") as the sAMAccountName
+    get_user_dn_by_email("DC=corp,DC=local", "*)(cn=Administrator")
+
+    assert connection.filters == [
+        f"(&(objectClass=User)(objectCategory=person)(sAMAccountName={ESCAPED_SPECIAL_CHARS_VALUE}))",
+        f"(&(objectClass=User)(objectCategory=person)(sAMAccountName={ESCAPED_SPECIAL_CHARS_VALUE}))",
+        r"(&(objectClass=User)(objectCategory=person)(sAMAccountName=\2a\29\28cn=Administrator))",
+    ]
+
+
+@pytest.mark.parametrize(
+    "args, expected_filter",
+    [
+        ({"name": "*)(cn=DC01"}, r"(&(objectClass=user)(objectCategory=computer)(name=\2a\29\28cn=DC01))"),
+        (
+            {"dn": "CN=WS(1),DC=corp,DC=local"},
+            r"(&(objectClass=user)(objectCategory=computer)(distinguishedName=CN=WS\281\29,DC=corp,DC=local))",
+        ),
+        (
+            {"custom-field-type": "description", "custom-field-data": "x)(cn=*"},
+            r"(&(objectClass=user)(objectCategory=computer)(description=x\29\28cn=\2a))",
+        ),
+    ],
+)
+def test_search_computers_escapes_filter_characters(mocker, args, expected_filter):
+    """
+    Given:
+        ad-get-computer arguments containing LDAP filter metacharacters.
+    When:
+        Running search_computers.
+    Then:
+        The LDAP filter treats each argument as a literal value.
+    """
+    from Active_Directory_Query import search_computers
+
+    connection = FilterCapturingConnection(entries=[])
+    mocker.patch("Active_Directory_Query.connection", connection)
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch("Active_Directory_Query.return_results")
+
+    search_computers("DC=corp,DC=local", 100)
+
+    assert connection.filters == [expected_filter]
+
+
+@pytest.mark.parametrize(
+    "account_name, expected_account_filter",
+    [
+        ("*", "(sAMAccountName=*)"),
+        ("*)(cn=Administrator", r"(sAMAccountName=\2a\29\28cn=Administrator)"),
+    ],
+)
+def test_search_group_members_escapes_filter_characters(mocker, account_name, expected_account_filter):
+    """
+    Given:
+        ad-get-group-members called with the documented '*' default sAMAccountName,
+        or with a value containing LDAP filter special characters.
+    When:
+        Running search_group_members.
+    Then:
+        The '*' default still matches all members, while any other value is escaped and treated as a literal.
+    """
+    from Active_Directory_Query import search_group_members
+
+    connection = FilterCapturingConnection(entries=[])
+    mocker.patch("Active_Directory_Query.connection", connection)
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "member-type": "person",
+            "group-dn": "CN=Admins,DC=corp,DC=local",
+            "sAMAccountName": account_name,
+            "time_limit": "1",
+        },
+    )
+    mocker.patch.object(demisto, "results")
+
+    search_group_members("DC=corp,DC=local", 100)
+
+    assert len(connection.filters) == 1
+    assert connection.filters[0].endswith(f"{expected_account_filter})")
+    assert "=CN=Admins,DC=corp,DC=local)" in connection.filters[0]

@@ -2,6 +2,17 @@
 
 Agentless cloud security platform for detecting and addressing cloud issues, detections, and threats.
 
+## Prerequisites
+
+Threat comments are stored as Wiz Issue comments. The service account needs the following scopes:
+
+| Operation | Scope |
+| --- | --- |
+| `wiz-defend-set-threat-comment`, note arguments of `wiz-defend-resolve-threat` / `wiz-defend-reopen-threat` | `write:comments` |
+| `wiz-defend-clear-threat-comments` | `read:comments` + `write:comments` + `admin:comments` (to delete other authors' comments) |
+
+`admin:comments` does not replace `read:comments` or `write:comments`. Without it, clearing other authors' comments can fail after some comments have already been deleted.
+
 ## Configure WizDefend on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

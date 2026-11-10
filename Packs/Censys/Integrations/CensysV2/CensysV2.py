@@ -1,5 +1,4 @@
 from collections.abc import Callable
-from itertools import zip_longest
 from typing import Any
 
 import demistomock as demisto
@@ -15,7 +14,7 @@ STATUS_CODE_TO_RETRY = (429, *(status_code for status_code in requests.status_co
 OK_CODES = (200, 201)
 BACKOFF_FACTOR = 7.5  # Sleep for [0s, 15s, 30s, 60s] between retries.
 DATE_FORMAT: str = "%Y-%m-%dT%H:%M:%S.000Z"
-PACK_VERSION = get_pack_version() or "3.2.0"
+PACK_VERSION = get_pack_version() or "3.2.2"
 DEMISTO_XSOAR_VERSION = get_demisto_version_as_str().split("-")[0]
 CONNECTOR_NAME_VERSION = f"CensysXSOAR/{PACK_VERSION} (XSOAR/{DEMISTO_XSOAR_VERSION}; ts={int(time.time())})"
 
@@ -102,6 +101,7 @@ DEFAULT_PORTS = [80, 443]
 DEFAULT_TRANSPORT_PROTOCOL = "Unknown"
 MIN_PORT = 1
 MAX_PORT = 65535
+IP_INFO_SOURCE = "IPINFO"
 
 VALID_IOC_TYPE = {"service": "Service", "web property": "Web Property"}
 VALID_TRANSPORT_PROTOCOL = {"unknown": "Unknown", "tcp": "TCP", "udp": "UDP", "icmp": "ICMP", "quic": "QUIC"}
@@ -753,6 +753,22 @@ def validate_related_infra_command_args(ioc_type: str, ioc_value: str) -> None:
         validate_port_argument(port)
 
 
+def find_first_by_source(items: list[dict], source: str) -> dict:
+    """Find the first item reported by the given source.
+
+    Args:
+        items: The list of items, each containing a "source" key
+        source: The source to match
+
+    Returns:
+        The first item whose source matches, else an empty dictionary
+    """
+    for item in items:
+        if item.get("source") == source:
+            return item
+    return {}
+
+
 def prepare_hr_for_greynoise(resource: dict) -> str:
     """Prepare human-readable output for the GreyNoise data of a host resource.
 
@@ -784,28 +800,23 @@ def prepare_hr_for_ip_info(resource: dict) -> str:
     Returns:
         Human-readable output string for the IP information section
     """
-    networks: list[dict] = resource.get("network") or []
-    privacies: list[dict] = resource.get("privacy") or []
-    if not networks and not privacies:
+    # Only the first entry reported by the IPINFO source is considered.
+    network = find_first_by_source(resource.get("network") or [], IP_INFO_SOURCE)
+    privacy = find_first_by_source(resource.get("privacy") or [], IP_INFO_SOURCE)
+    if not network and not privacy:
         return ""
 
-    hr_data = []
-    empty_entry: dict = {}
-
-    # The network and the privacy data are reported as parallel lists, one entry per source.
-    for network, privacy in zip_longest(networks, privacies, fillvalue=empty_entry):
-        hr_data.append(
-            {
-                "Network Hosting": network.get("hosting"),
-                "Network Mobile": network.get("mobile"),
-                "Network Satellite": network.get("satellite"),
-                "Privacy Anonymous": privacy.get("anonymous"),
-                "Privacy Tor": privacy.get("tor"),
-                "Privacy Proxy": privacy.get("proxy"),
-                "Privacy Relay": privacy.get("relay"),
-                "Privacy VPN": privacy.get("vpn"),
-            }
-        )
+    # A flag missing from the IPINFO entry is reported as False.
+    hr_data = {
+        "Network Hosting": network.get("hosting", False),
+        "Network Mobile": network.get("mobile", False),
+        "Network Satellite": network.get("satellite", False),
+        "Privacy Anonymous": privacy.get("anonymous", False),
+        "Privacy Tor": privacy.get("tor", False),
+        "Privacy Proxy": privacy.get("proxy", False),
+        "Privacy Relay": privacy.get("relay", False),
+        "Privacy VPN": privacy.get("vpn", False),
+    }
 
     headers = [
         "Network Hosting",
@@ -880,12 +891,81 @@ def prepare_hr_for_mallory(resource: dict) -> str:
     return tableToMarkdown("Mallory", hr_data, headers=headers, removeNull=True, sort_headers=False)
 
 
-def prepare_hr_for_ip_resource(resources: list[dict] | dict, table_name: str = "Enriched Host Data") -> str:
+def prepare_hr_for_reputation(resource: dict) -> str:
+    """Prepare human-readable output for the reputation data of a host resource.
+
+    Args:
+        resource: The host resource data from Censys API
+
+    Returns:
+        Human-readable output string for the reputation section
+    """
+    reputation = resource.get("reputation") or {}
+    if not reputation:
+        return ""
+
+    hr_output = tableToMarkdown(
+        "Reputation",
+        [
+            {"Field": "Label", "Value": reputation.get("label")},
+            # The API reports the score as a fraction, display it on a 0-100 scale.
+            {"Field": "Score", "Value": round((reputation.get("score") or 0) * 100, 2)},
+            {"Field": "Score Suppressed", "Value": reputation.get("score_suppressed", False)},
+        ],
+        headers=["Field", "Value"],
+        removeNull=True,
+        sort_headers=False,
+    )
+
+    class_probabilities = reputation.get("class_probabilities") or []
+    if class_probabilities:
+        probability_hr_data = [
+            {
+                "Label": class_probability.get("label"),
+                # The API reports the probability as a fraction, display it as a percentage.
+                "Probability (%)": round((class_probability.get("probability") or 0) * 100, 2),
+            }
+            for class_probability in class_probabilities
+        ]
+        hr_output += "\n" + tableToMarkdown(
+            "Class Probabilities",
+            probability_hr_data,
+            headers=["Label", "Probability (%)"],
+            removeNull=True,
+            sort_headers=False,
+        )
+
+    evidences = reputation.get("evidence") or []
+    if evidences:
+        evidence_hr_data = []
+        for evidence in evidences:
+            feature = evidence.get("feature") or {}
+            # The API reports the contribution as a fraction, display it as a signed percentage.
+            contribution = round((feature.get("contribution") or 0) * 100, 2)
+            evidence_hr_data.append(
+                {
+                    "Contribution (%)": f"{contribution:+}",
+                    "Feature": feature.get("name"),
+                    "Value": feature.get("value"),
+                    "Category": feature.get("category"),
+                }
+            )
+        hr_output += "\n" + tableToMarkdown(
+            "Top Signals",
+            evidence_hr_data,
+            headers=["Contribution (%)", "Feature", "Value", "Category"],
+            removeNull=True,
+            sort_headers=False,
+        )
+
+    return hr_output
+
+
+def prepare_hr_for_ip_resource(resources: list[dict] | dict) -> str:
     """Prepare human-readable output for IP resource(s).
 
     Args:
         resources: The host resource data from Censys API (single dict or list of dicts)
-        table_name: The title of the host data table. Defaults to "Enriched Host Data".
 
     Returns:
         Human-readable output string
@@ -987,7 +1067,10 @@ def prepare_hr_for_ip_resource(resources: list[dict] | dict, table_name: str = "
         }
         hr_data.append(hr_content)
 
-    human_readable = tableToMarkdown(table_name, hr_data, removeNull=True, sort_headers=False)
+    # The reputation section is displayed first, ahead of the host data table.
+    reputation_sections = [prepare_hr_for_reputation(resource) for resource in resources]
+    human_readable = "".join(f"{section}\n" for section in reputation_sections if section)
+    human_readable += tableToMarkdown("Enriched Host Data", hr_data, removeNull=True, sort_headers=False)
 
     for resource in resources:
         sections = [
@@ -1168,10 +1251,9 @@ def prepare_command_result_for_ip_resource(
     }
     indicator = Common.IP(dbot_score=dbot_score, **content)
 
-    hr_output = f"### Censys results for IP: {ip}\n\n"
-    table_name = "Enriched Host Data (Enrichment API)" if host_enrichment_used else "Enriched Host Data"
-
-    hr_output += prepare_hr_for_ip_resource(resource, table_name)
+    source_suffix = " (Enrichment API)" if host_enrichment_used else ""
+    hr_output = f"### Censys results for IP: {ip}{source_suffix}\n\n"
+    hr_output += prepare_hr_for_ip_resource(resource)
     outputs = {**resource, "HostEnrichmentUsed": host_enrichment_used}
     return CommandResults(
         outputs_prefix="Censys.IP",
@@ -1987,7 +2069,7 @@ def censys_rescan_command(client: Client, args: dict[str, Any]) -> CommandResult
     else:
         human_readable = prepare_hr_for_web_property_resource(resource)
 
-    hr_output = f"### Scan completed successfully for {ioc_value}:{port}.\n" + human_readable
+    hr_output = f"### Scan completed successfully for {ioc_value}:{port}.\n\n" + human_readable
     outputs.update({"enrichment_data": resource, "status": "completed", "is_completed": True})
 
     return CommandResults(

@@ -2,7 +2,6 @@
 !reversinglabs-titaniumcloud-analyze-url url="http://34.150.1.150/hBQ"
 !reversinglabs-titaniumcloud-av-scanners hash="21841b32c6165b27dddbd4d6eb3a672defe54271"
 !reversinglabs-titaniumcloud-certificate-analytics certificate_thumbprint="86900D438047F6D00ACE379C6E68A9461BA36ACD152C9E82EDDBE87B331F3E4A"
-!reversinglabs-titaniumcloud-expression-search query="threat_level>=3 status=malicious malware_family=CVE-2017-11882" result_limit="2"
 !reversinglabs-titaniumcloud-file-analysis hash="21841b32c6165b27dddbd4d6eb3a672defe54271"
 !reversinglabs-titaniumcloud-file-download hash="21841b32c6165b27dddbd4d6eb3a672defe54271"
 !reversinglabs-titaniumcloud-file-reputation hash="21841b32c6165b27dddbd4d6eb3a672defe54271"

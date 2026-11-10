@@ -16,9 +16,7 @@
     "group": 0,
     "hidden": false,
     "openEnded": false,
-    "associatedTypes": [
-        "Lumu"
-    ],
+    "associatedTypes": ["LumuSecops" ,"Lumu"],
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,

@@ -1028,6 +1028,8 @@ script:
       required: true
     - description: The PowerShell script code to run.
       name: raw
+    - description: The command-line arguments passed to the executed script. Use with the argument script_name only.
+      name: command_line
     - defaultValue: '30'
       description: Timeout for how long to wait for the request in seconds. Maximum is 600 (10 minutes).
       name: timeout
@@ -5386,7 +5388,7 @@ script:
     description: Performs an action (cancel or resume) on one or more workflow executions. Use cs-falcon-list-workflow-execution-results to find execution activity status.
     name: cs-falcon-workflow-execution-action
     outputs: []
-  dockerimage: demisto/py3-tools:1.0.0.13176850
+  dockerimage: demisto/py3-tools:1.0.0.13712671
   isfetch: true
   isfetch:marketplacev2: false
   isfetch:platform: true

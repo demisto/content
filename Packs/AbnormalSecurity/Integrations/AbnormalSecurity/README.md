@@ -10,7 +10,7 @@ This integration was integrated and tested with version 1.3.0 of Abnormal Securi
 | Trust any certificate (not secure) |                                                                                                                                   | False |
 | Use system proxy settings |                                                                                                                                   | False |
 | Fetch incidents | Retrieves incidents based on the customer's selection from three categories: Threats, Account Takeover Cases, and Abuse Campaigns | False |
-| Maximum incidents to fetch. | Maximum number of incidents per fetch. The default value is 200.                                                                  | False |
+| Maximum incidents to fetch. | The maximum number of incidents per fetch run, across all incident types. | False |
 | Fetch Threats |                                                                                                                                   | False |
 | Fetch Abuse Campaigns |                                                                                                                                   | False |
 | Fetch Account Takeover Cases |                                                                                                                                   | False |
@@ -19,6 +19,11 @@ This integration was integrated and tested with version 1.3.0 of Abnormal Securi
 | Incidents Fetch Interval |                                                                                                                                   | False |
 | Polling Lag Time (in minutes) | Time in minutes to subtract from polling time window for data consistency (Default : 2 mins)                                      | False |
 | Maximum incidents pages to fetch | Maximum number of pages to fetch for incidents                                                                                    | False |
+| Case fetch mode | The timestamp used to fetch Account Takeover cases. "Last modified time" creates a new incident each time a case is modified, resolved or reopened, as in earlier versions. "Created time" creates one incident per case. | False |
+| Fetch time budget (in seconds) | The maximum time a fetch run can spend calling the API before it saves its progress and stops. Keep this below the 3-minute fetch timeout. | False |
+| Maximum fetch window (in minutes) | The longest time range listed in one request. Windows with too many items to list at once are split automatically. | False |
+| Concurrent detail requests | The number of incident detail requests that run concurrently. | False |
+| Maximum requests per second | The maximum number of API requests per second during a fetch run, shared by all concurrent requests. | False |
 
 ## Commands
 

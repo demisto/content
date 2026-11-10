@@ -96,7 +96,9 @@ MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detec
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_SPOTLIGHT_ASSETS = 5000
 # Each severity also holds a prefetched page, so peak memory is MAX_CONCURRENT_SEVERITIES x 2 x this.
-SPOTLIGHT_PAGE_SIZE_LONG_RUNNING = 3000
+SPOTLIGHT_PAGE_SIZE_LONG_RUNNING = 2500
+# Large Spotlight pages can take over 60s; abandoning them invalidates the cursor.
+SPOTLIGHT_REQUEST_TIMEOUT_SECONDS = 120
 # Below the 5000 server-side maximum to keep payloads under XSOAR's auto-file threshold.
 MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE = 2500
 # Page sizes tried, in order, when a page fails: the same page is re-requested (same after token)
@@ -4819,6 +4821,7 @@ def create_spotlight_client(context_store: ContentClientContextStore) -> Content
         # to an out-of-memory failure. Keep it disabled so memory stays bounded.
         diagnostic_mode=False,
         client_name="FalconSpotlightAssetCollector",
+        timeout=SPOTLIGHT_REQUEST_TIMEOUT_SECONDS,
     )
 
 
@@ -7764,6 +7767,7 @@ def run_script_command():
     args = demisto.args()
     script_name = args.get("script_name")
     raw = args.get("raw")
+    command_line = args.get("command_line")
     host_ids = argToList(args.get("host_ids"))
     offline = argToBoolean(args.get("queue_offline", False))
     full_command = ""
@@ -7776,12 +7780,16 @@ def run_script_command():
     full_command = ""  # initialized variable here to avoid pylint errors
     if script_name and raw:
         raise ValueError("Only one of the arguments script_name or raw should be provided, not both.")
+    elif command_line and not script_name:
+        raise ValueError("The command_line argument can only be used together with the script_name argument.")
     elif not script_name and not raw:
         raise ValueError("One of the arguments script_name or raw must be provided, none given.")
     elif script_name:
         full_command = f"runscript -CloudFile={script_name}"
     elif raw:
         full_command = f"runscript -Raw=```{raw}```"
+    if command_line:
+        full_command += f" -CommandLine={command_line}"
     full_command += f" -Timeout={timeout}"
 
     command_type = "runscript"

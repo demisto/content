@@ -9,7 +9,6 @@ from CommonServerUserPython import *
 import pytest
 
 from Vega import (
-    ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN,
     _alert_events_command_results,
     _enrich_alert_event,
     _enrich_alert_events,
@@ -28,7 +27,6 @@ from Vega import (
     _build_vega_incident_custom_fields,
     _fetch_paginated_entities,
     _is_retryable_http_error,
-    _format_bullet_list,
     _format_key_findings_html,
     _format_raw_entity_for_xsoar,
     _format_recommended_actions_for_grid,
@@ -49,7 +47,6 @@ from Vega import (
     VEGA_VERDICT_FIELD,
     VEGA_INCIDENT_STATUS_FIELD,
     _normalize_vega_status_for_display,
-    _normalize_entity_id,
     _normalize_verdict_reasoning_for_display,
     _extract_verdict_reasoning_from_entity,
     _mirror_entity_type_from_args,
@@ -60,21 +57,25 @@ from Vega import (
     alert_to_incident,
     build_alert_events_custom_fields,
     fetch_alert_events_command,
+    get_alert_metadata_command,
     fetch_alert_events_page,
     fetch_incidents_command,
+    _fetch_alert_events_for_ids,
     _fetch_alert_events_for_ingest,
     set_detections_state_command,
     update_detections_command,
     incident_to_xsoar_incident,
+    _enrich_incident_alerts,
     parse_backfill_days,
     load_current_incident,
     resolve_alert_id_from_incident,
     resolve_incident_id_from_incident,
+    INCIDENT_ID_LOOKUP_FROM_TIME,
     update_alert_command,
     update_incident_command,
     _build_comment_war_room_entry,
+    _configured_mirror_direction,
     _get_mirroring_fields,
-    _is_xsoar_to_vega_mirroring_enabled,
     get_modified_remote_data_command,
     get_remote_data_command,
     update_remote_system_command,
@@ -112,7 +113,9 @@ from Vega import (
     filter_alert_verdicts,
     filter_incident_severities,
     filter_incident_statuses,
+    filter_incident_investigation_statuses,
     filter_incident_verdicts,
+    _build_incidents_query_variables,
     resolve_has_related_incidents,
     TEST_CONNECTION_ACCESS_KEY_ERROR,
     TEST_CONNECTION_ACCESS_KEY_ID_ERROR,
@@ -120,6 +123,21 @@ from Vega import (
     TEST_CONNECTION_URL_ERROR,
     test_module as vega_test_module,
     main as vega_main,
+    GET_ALERT_IDS_QUERY,
+    GET_INCIDENT_IDS_QUERY,
+    RECONCILE_PAGE_SIZE,
+    RECONCILE_COMPLETED_INCIDENTS_KEY,
+    RECONCILE_COMPLETED_ALERTS_KEY,
+    RECONCILE_NOT_FOUND_ALERTS_KEY,
+    RECONCILE_NOT_FOUND_INCIDENTS_KEY,
+    _parse_comma_separated_ids,
+    _parse_reconcile_window,
+    _collect_paged_ids,
+    _collect_xsoar_entity_ids,
+    _normalize_entity_id,
+    _xsoar_vega_entity_id,
+    reconcile_incidents_command,
+    fetch_reconciliation_incidents_command,
 )
 
 _VEGA_API_HOST = "api" + ".vega.com"
@@ -522,7 +540,7 @@ def test_fetch_paginated_entities_multiple_pages(mocker):
     }
     mock_get_alerts = mocker.Mock(side_effect=[page_one, page_two])
 
-    results, next_offset = _fetch_paginated_entities(
+    results, next_offset, api_total = _fetch_paginated_entities(
         mock_get_alerts,
         entities_key="alerts",
         from_time=FIRST_FETCH_TIME,
@@ -530,6 +548,7 @@ def test_fetch_paginated_entities_multiple_pages(mocker):
 
     assert len(results) == 2
     assert next_offset is None
+    assert api_total == 2
     assert results[0]["id"] == "1"
     assert results[1]["id"] == "2"
     assert mock_get_alerts.call_count == 2
@@ -559,7 +578,7 @@ def test_fetch_paginated_entities_fetches_beyond_single_page(mocker):
     }
     mock_get_alerts = mocker.Mock(side_effect=[page_one, page_two, page_three])
 
-    results, next_offset = _fetch_paginated_entities(
+    results, next_offset, api_total = _fetch_paginated_entities(
         mock_get_alerts,
         entities_key="alerts",
         from_time=FIRST_FETCH_TIME,
@@ -567,10 +586,53 @@ def test_fetch_paginated_entities_fetches_beyond_single_page(mocker):
 
     assert len(results) == 250
     assert next_offset is None
+    assert api_total == 250
     assert mock_get_alerts.call_count == 3
     assert mock_get_alerts.call_args_list[0].kwargs["limit"] == 100
     assert mock_get_alerts.call_args_list[0].kwargs["offset"] == 0
     assert mock_get_alerts.call_args_list[2].kwargs["offset"] == 200
+
+
+def test_fetch_incidents_command_logs_created_against_api_totals(mocker):
+    mocker.patch.object(demisto, "debug")
+    info = mocker.patch.object(demisto, "info")
+    mock_client = mocker.Mock()
+    mock_client.get_incident_timeline.return_value = {"events": []}
+    mock_client.get_incidents.return_value = {
+        "incidents": [
+            {"id": "inc-1", "name": "Inc 1", "severity": "LOW", "createdAt": TIMESTAMP_T1},
+            {"id": "inc-2", "name": "Inc 2", "severity": "LOW", "createdAt": TIMESTAMP_T1},
+        ],
+        "total": 2,
+    }
+    mock_client.get_alerts.return_value = {
+        "alerts": [
+            {"id": "alert-1", "name": "Alert 1", "severity": "LOW", "createdAt": TIMESTAMP_T2},
+        ],
+        "total": 10,
+    }
+
+    _, incidents = fetch_incidents_command(
+        client=mock_client,
+        last_run={},
+        fetch_alerts=True,
+        fetch_incidents=True,
+        alert_severities=None,
+        alert_statuses=None,
+        alert_verdicts=None,
+        has_related_incidents=None,
+        incident_severities=None,
+        incident_statuses=None,
+        incident_verdicts=None,
+        first_fetch_time=FIRST_FETCH_TIME,
+        max_fetch=3,
+    )
+
+    messages = [call.args[0] for call in info.call_args_list]
+    assert len(incidents) == 3
+    assert "Vega getIncidents total=2." in messages
+    assert "Vega getAlerts total=10." in messages
+    assert "Vega fetch cycle finished: 3 incidents created out of 12 (incidents total 2 + alerts total 10)." in messages
 
 
 def test_fetch_incidents_command_incidents_first_then_alerts(mocker):
@@ -964,17 +1026,47 @@ def test_filter_alert_statuses_maps_display_and_ignores_invalid():
 
 
 def test_filter_incident_statuses_maps_display_and_ignores_invalid():
-    assert filter_incident_statuses(["NEW", "ON HOLD", "UNDER REVIEW"]) == [
-        "NEW",
+    assert filter_incident_statuses(["OPEN", "IN REVIEW", "ON HOLD", "RESOLVED"]) == [
+        "OPEN",
+        "IN_REVIEW",
         "ON_HOLD",
-        "UNDER_REVIEW",
+        "RESOLVED",
     ]
-    assert filter_incident_statuses(["EXTERNAL_ESCALATION", "review recommended"]) == [
-        "EXTERNAL_ESCALATION",
-        "REVIEW_RECOMMENDED",
-    ]
-    assert filter_incident_statuses(["NEW", "invalid"]) == ["NEW"]
+    assert filter_incident_statuses(["IN_REVIEW", "on hold"]) == ["IN_REVIEW", "ON_HOLD"]
+    assert filter_incident_statuses(["OPEN", "invalid"]) == ["OPEN"]
+    assert filter_incident_statuses(["NEW", "INVESTIGATING"]) is None
     assert filter_incident_statuses([]) is None
+
+
+def test_filter_incident_investigation_statuses_maps_display_and_uses_all_when_empty():
+    assert filter_incident_investigation_statuses(["NEW", "PENDING", "INVESTIGATING", "COMPLETED", "FAILED"]) == [
+        "NEW",
+        "INVESTIGATING",
+        "COMPLETED",
+        "FAILED",
+    ]
+    assert filter_incident_investigation_statuses(["pending", "invalid"]) == ["NEW"]
+    assert filter_incident_investigation_statuses([]) is None
+    assert filter_incident_investigation_statuses(None) is None
+
+
+def test_build_incidents_query_variables_uses_user_and_investigation_status():
+    variables = _build_incidents_query_variables(
+        statuses=["OPEN", "RESOLVED"],
+        investigation_statuses=["NEW", "INVESTIGATING"],
+        offset=0,
+    )
+
+    assert variables["userStatuses"] == ["OPEN", "RESOLVED"]
+    assert variables["investigationStatuses"] == ["NEW", "INVESTIGATING"]
+    assert "statuses" not in variables
+
+
+def test_build_incidents_query_variables_omits_empty_status_filters():
+    variables = _build_incidents_query_variables(offset=0)
+
+    assert "userStatuses" not in variables
+    assert "investigationStatuses" not in variables
 
 
 def test_filter_severities_accepts_valid_and_ignores_invalid():
@@ -1062,7 +1154,7 @@ def test_normalize_vega_status_for_display_maps_api_values():
     assert _normalize_vega_status_for_display("PEER_REVIEW", "alert") == "PEER REVIEW"
     assert _normalize_vega_status_for_display("OPEN", "alert") == "OPEN"
     assert _normalize_vega_status_for_display("ON_HOLD", "incident") == "ON HOLD"
-    assert _normalize_vega_status_for_display("EXTERNAL_ESCALATION", "incident") == "EXTERNAL ESCALATION"
+    assert _normalize_vega_status_for_display("IN_REVIEW", "incident") == "IN REVIEW"
     assert _normalize_vega_status_for_display("IN PROGRESS", "alert") == "IN PROGRESS"
 
 
@@ -1071,9 +1163,14 @@ def test_format_raw_entity_for_xsoar_normalizes_status_for_dropdown():
     _format_raw_entity_for_xsoar(alert)
     assert alert["status"] == "IN PROGRESS"
 
-    incident = {"vegaEntityType": "Vega Incident", "status": "UNDER_REVIEW"}
+    incident = {
+        "vegaEntityType": "Vega Incident",
+        "userStatus": "IN_REVIEW",
+        "investigationStatus": "PENDING",
+    }
     _format_raw_entity_for_xsoar(incident)
-    assert incident["status"] == "UNDER REVIEW"
+    assert incident["status"] == "IN REVIEW"
+    assert incident["investigationStatus"] == "NEW"
 
 
 def test_validate_backfill_days_rejects_out_of_range():
@@ -1095,13 +1192,6 @@ def test_parse_backfill_days_defaults_when_none():
     parsed = datetime.strptime(result, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
     today_start = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0)
     assert (today_start - parsed).days == 30
-
-
-def test_format_bullet_list():
-    assert _format_bullet_list(["CloudTrail", "VPC Flow Logs"]) == "• CloudTrail\n• VPC Flow Logs"
-    assert _format_bullet_list([]) == []
-    assert _format_bullet_list(None) is None
-    assert _format_bullet_list("already formatted") == "already formatted"
 
 
 def test_format_recommended_actions_for_grid_empty_shows_placeholder():
@@ -1167,7 +1257,7 @@ def test_format_raw_entity_for_xsoar_alert():
     }
     _format_raw_entity_for_xsoar(alert)
 
-    assert alert["dataSources"] == "• CloudTrail\n• GuardDuty"
+    assert alert["dataSources"] == [{"value": "CloudTrail"}, {"value": "GuardDuty"}]
     assert alert["detectionDescription"] == "N/A"
     assert alert["detectionQuery"] == "N/A"
     assert alert["verdictReasoning"] == "N/A"
@@ -1224,16 +1314,13 @@ def test_format_raw_entity_for_xsoar_alert_empty_detection_fields():
 def test_format_mitre_attack():
     assert _format_mitre_attack(None) is None
     assert _format_mitre_attack({}) is None
-    assert (
-        _format_mitre_attack(
-            {
-                "mitreTactics": ["Discovery"],
-                "mitreTechniques": ["Cloud Infrastructure Discovery"],
-            }
-        )
-        == "• Discovery\n• Cloud Infrastructure Discovery"
-    )
-    assert _format_mitre_attack({"mitreTactics": "Discovery", "mitreTechniques": "T1526"}) == "• Discovery\n• T1526"
+    assert _format_mitre_attack(
+        {
+            "mitreTactics": ["Discovery"],
+            "mitreTechniques": ["Cloud Infrastructure Discovery"],
+        }
+    ) == ["Discovery", "Cloud Infrastructure Discovery"]
+    assert _format_mitre_attack({"mitreTactics": "Discovery", "mitreTechniques": "T1526"}) == ["Discovery", "T1526"]
 
 
 def test_format_raw_entity_for_xsoar_mitre_attack():
@@ -1243,7 +1330,7 @@ def test_format_raw_entity_for_xsoar_mitre_attack():
     }
     _format_raw_entity_for_xsoar(alert)
 
-    assert alert["vegaMitreAttack"] == "• Discovery\n• T1526"
+    assert alert["vegaMitreAttack"] == [{"value": "Discovery"}, {"value": "T1526"}]
 
 
 def test_format_mitre_attack_object_items():
@@ -1251,7 +1338,7 @@ def test_format_mitre_attack_object_items():
         "mitreTactics": [{"name": "Discovery", "id": "TA0007"}],
         "mitreTechniques": [{"techniqueName": "Cloud Infrastructure Discovery", "techniqueId": "T1526"}],
     }
-    assert _format_mitre_attack(mitre) == "• Discovery\n• Cloud Infrastructure Discovery"
+    assert _format_mitre_attack(mitre) == ["Discovery", "Cloud Infrastructure Discovery"]
 
 
 def test_alert_to_incident_sets_vega_mitre_attack():
@@ -1265,8 +1352,8 @@ def test_alert_to_incident_sets_vega_mitre_attack():
     xsoar_incident = alert_to_incident(alert)
     raw = json.loads(xsoar_incident["rawJSON"])
 
-    assert raw["vegaMitreAttack"] == "• Discovery\n• T1526"
-    assert xsoar_incident["CustomFields"]["vegamitreattack"] == "• Discovery\n• T1526"
+    assert raw["vegaMitreAttack"] == [{"value": "Discovery"}, {"value": "T1526"}]
+    assert xsoar_incident["CustomFields"]["vegamitreattack"] == [{"value": "Discovery"}, {"value": "T1526"}]
     assert xsoar_incident["CustomFields"]["vegacreatedat"] == TIMESTAMP_T1
 
 
@@ -1320,14 +1407,16 @@ def test_format_raw_entity_for_xsoar_incident():
         "id": "inc-1",
         "dataSources": ["CloudTrail"],
         "assets": ["i-12345"],
+        "typedAssets": [{"value": "i-12345", "type": "HOST"}],
         "observables": ["10.0.0.1"],
         "incidentFindings": ["Instance i-12345 connected to 10.0.0.1"],
     }
     _format_raw_entity_for_xsoar(incident)
 
-    assert incident["dataSources"] == "• CloudTrail"
-    assert incident["assets"] == "• i-12345"
-    assert incident["observables"] == "• 10.0.0.1"
+    assert incident["dataSources"] == [{"value": "CloudTrail"}]
+    assert incident["assets"] == ["i-12345"]
+    assert incident["typedAssets"] == [{"type": "HOST", "value": "i-12345"}]
+    assert incident["observables"] == [{"value": "10.0.0.1"}]
     assert "vegaIncidentFindings" in incident
     assert "background:#000000" in incident["vegaIncidentFindings"]
     assert "i-12345" in incident["vegaIncidentFindings"]
@@ -1335,7 +1424,7 @@ def test_format_raw_entity_for_xsoar_incident():
 
 
 def test_alert_to_incident_formats_raw_json(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "false"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming"})
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
     alert = {
         "id": "alert-1",
@@ -1347,7 +1436,7 @@ def test_alert_to_incident_formats_raw_json(mocker):
     xsoar_incident = alert_to_incident(alert, integration_url="https://api.vega.io")
     raw = json.loads(xsoar_incident["rawJSON"])
 
-    assert raw["dataSources"] == "• CloudTrail"
+    assert raw["dataSources"] == [{"value": "CloudTrail"}]
     assert raw["vegaEntityType"] == "Vega Alert"
     assert raw["link"] == "https://app.vega.io/incidents/alerts/investigation/alert-1"
     assert raw["detectionDescription"] == "N/A"
@@ -1370,6 +1459,8 @@ def test_alert_to_incident_formats_raw_json(mocker):
         "mirror_id",
     }
     assert raw["mirror_id"] == "alert:alert-1"
+    assert raw["mirror_direction"] == "In"
+    assert xsoar_incident["dbotMirrorDirection"] == "In"
     assert xsoar_incident["dbotMirrorId"] == "alert:alert-1"
 
 
@@ -1386,8 +1477,8 @@ def test_incident_to_xsoar_incident_formats_raw_json():
     xsoar_incident = incident_to_xsoar_incident(incident)
     raw = json.loads(xsoar_incident["rawJSON"])
 
-    assert raw["assets"] == "• host-1"
-    assert raw["observables"] == "• host-1"
+    assert raw["assets"] == ["host-1"]
+    assert raw["observables"] == [{"value": "host-1"}]
     assert "vegaIncidentFindings" in raw
     assert "Activity detected on" in raw["vegaIncidentFindings"]
     assert "host-1" in raw["vegaIncidentFindings"]
@@ -1455,6 +1546,8 @@ def test_format_raw_entity_for_xsoar_builds_vega_comments_html():
     assert "vegaComments" in incident
     assert "Reviewed in XSOAR" in incident["vegaComments"]
     assert "[{}]" not in incident["vegaComments"]
+    assert incident["VegaCommentsSource"] == incident["comments"]
+    assert _build_vega_incident_custom_fields(incident)["vegacommentssource"] == incident["comments"]
 
 
 def test_format_raw_entity_for_xsoar_builds_vega_alert_comments_html():
@@ -1479,6 +1572,8 @@ def test_format_raw_entity_for_xsoar_builds_vega_alert_comments_html():
     assert "vegaComments" in alert
     assert "Escalated for review" in alert["vegaComments"]
     assert "[{}]" not in alert["vegaComments"]
+    assert alert["VegaCommentsSource"] == alert["comments"]
+    assert _build_vega_alert_custom_fields(alert)["vegacommentssource"] == alert["comments"]
 
 
 def test_format_timeline_events_html_dark_theme_layout():
@@ -1548,8 +1643,10 @@ def test_incident_to_xsoar_incident_includes_timeline_events():
 
     assert raw["timelineEvents"] == timeline
     assert "vegaTimelineEvents" in raw
+    assert "VegaTimelineEventsSource" not in raw
     assert xsoar_incident["CustomFields"]["vegatimelineevents"]
     assert "Test event." in xsoar_incident["CustomFields"]["vegatimelineevents"]
+    assert "vegatimelineeventssource" not in xsoar_incident["CustomFields"]
 
 
 def test_fetch_incidents_command_fetches_timeline_details(mocker):
@@ -1609,6 +1706,362 @@ def test_fetch_incidents_command_fetches_timeline_details(mocker):
     assert raw["timelineEvents"][0]["summary"] == "Timeline summary."
 
 
+def _full_incident_alert(alert_id: str = "alert-1") -> dict:
+    return {
+        "id": alert_id,
+        "vegaAlertId": "VA-1",
+        "detectionId": "det-1",
+        "name": "Suspicious login",
+        "description": "Full alert description",
+        "severity": "HIGH",
+        "status": "OPEN",
+        "assignee": {"userId": "user-1", "displayName": "Ada Lovelace", "email": "ada@example.com"},
+        "assignees": [{"userId": "user-1", "displayName": "Ada Lovelace", "email": "ada@example.com"}],
+        "dataSources": ["CloudTrail", "Okta"],
+        "createdAt": TIMESTAMP_T1,
+        "updatedAt": TIMESTAMP_T2,
+        "mitre": {"mitreTactics": ["TA0001"], "mitreTechniques": ["T1078"]},
+        "relatedIncidents": [{"incidentId": "inc-9", "name": "Related"}],
+        "detectionSource": "Vega",
+        "detectionDescription": "Detects suspicious logins",
+        "detectionQuery": "event_type = login",
+        "eventCount": 4,
+        "isTestMode": False,
+        "verdict": "SUSPICIOUS",
+        "verdictReasoning": "Multiple failed logins",
+        "dedupCount": 2,
+        "comments": [{"text": "Review", "addedBy": "Ada", "addedAt": TIMESTAMP_T2}],
+    }
+
+
+def test_incident_to_xsoar_incident_enriches_alerts(mocker):
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock()
+    mock_client.get_alerts.return_value = {
+        "alerts": [_full_incident_alert()],
+        "total": 1,
+        "limit": 100,
+        "offset": 0,
+    }
+    incident = {
+        "id": "inc-1",
+        "name": "Test Incident",
+        "severity": "HIGH",
+        "createdAt": TIMESTAMP_T1,
+        "alerts": [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}],
+    }
+
+    xsoar_incident = incident_to_xsoar_incident(incident, client=mock_client, include_alert_metadata=True)
+    raw = json.loads(xsoar_incident["rawJSON"])
+    row = raw["alerts"][0]
+
+    mock_client.get_alerts.assert_called_once_with(
+        alert_ids=["alert-1"],
+        from_time="2026-05-31T10:00:00Z",
+        limit=1,
+        offset=0,
+    )
+    assert row["alertId"] == "alert-1"
+    assert row["id"] == "alert-1"
+    assert row["name"] == "Suspicious login"
+    assert row["severity"] == "HIGH"
+    assert row["status"] == "OPEN"
+    assert row["verdict"] == "SUSPICIOUS"
+    assert row["createdAt"] == TIMESTAMP_T1
+    assert row["dataSources"] == ["CloudTrail", "Okta"]
+    assert row["eventCount"] == "4"
+    assert row["isTestMode"] == "false"
+    assert row["assignee"] == _full_incident_alert()["assignee"]
+    assert row["assignees"] == _full_incident_alert()["assignees"]
+    assert row["mitre"] == _full_incident_alert()["mitre"]
+    assert row["comments"] == _full_incident_alert()["comments"]
+    assert row["labels"] == []
+    assert row["escalation"] is None
+    assert xsoar_incident["CustomFields"]["vegaalerts"] == raw["alerts"]
+
+
+def test_enrich_incident_alerts_falls_back_to_stub_when_lookup_fails(mocker):
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock()
+    mock_client.get_alerts.side_effect = DemistoException("API rate limit exceeded after maximum retries.")
+    stubs = [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}]
+
+    rows = _enrich_incident_alerts(mock_client, stubs)
+
+    assert rows == [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}]
+
+
+def test_enrich_incident_alerts_keeps_stub_for_missing_alert(mocker):
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock()
+    mock_client.get_alerts.return_value = {
+        "alerts": [_full_incident_alert("alert-1")],
+        "total": 1,
+        "limit": 100,
+        "offset": 0,
+    }
+    stubs = [
+        {"alertId": "alert-1", "name": "Found", "createdAt": TIMESTAMP_T1},
+        {"alertId": "alert-2", "name": "Missing", "createdAt": TIMESTAMP_T2},
+    ]
+
+    rows = _enrich_incident_alerts(mock_client, stubs)
+
+    assert rows[0]["alertId"] == "alert-1"
+    assert rows[0]["detectionId"] == "det-1"
+    assert rows[1] == {"alertId": "alert-2", "name": "Missing", "createdAt": TIMESTAMP_T2}
+
+
+def test_enrich_incident_alerts_batches_above_one_thousand(mocker):
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "info")
+    mock_client = mocker.Mock()
+    alert_ids = [f"alert-{index}" for index in range(1001)]
+
+    def alert_page(page_ids: list[str]) -> dict:
+        return {
+            "alerts": [{"id": alert_id, "name": "Alert", "createdAt": TIMESTAMP_T1} for alert_id in page_ids],
+            "total": len(page_ids),
+        }
+
+    mock_client.get_alerts.side_effect = [alert_page(alert_ids[:1000]), alert_page(alert_ids[1000:])]
+    stubs = [{"alertId": alert_id, "name": "Alert", "createdAt": TIMESTAMP_T1} for alert_id in alert_ids]
+
+    rows = _enrich_incident_alerts(mock_client, stubs)
+
+    assert len(rows) == 1001
+    assert mock_client.get_alerts.call_count == 2
+    assert mock_client.get_alerts.call_args_list[0].kwargs == {
+        "alert_ids": alert_ids[:1000],
+        "from_time": "2026-05-31T10:00:00Z",
+        "limit": 1000,
+        "offset": 0,
+    }
+    assert mock_client.get_alerts.call_args_list[1].kwargs["alert_ids"] == alert_ids[1000:]
+    assert mock_client.get_alerts.call_args_list[1].kwargs["limit"] == 1
+
+
+def test_fetch_incidents_command_enriches_incident_alerts(mocker):
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock()
+    mock_client.get_incidents.return_value = {
+        "incidents": [
+            {
+                "id": "inc-1",
+                "name": "Inc 1",
+                "severity": "HIGH",
+                "createdAt": TIMESTAMP_T1,
+                "alerts": [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}],
+            }
+        ],
+        "total": 1,
+        "limit": 200,
+        "offset": 0,
+    }
+    mock_client.get_incident_timeline.return_value = {"events": []}
+    mock_client.get_alerts.return_value = {
+        "alerts": [_full_incident_alert()],
+        "total": 1,
+        "limit": 100,
+        "offset": 0,
+    }
+
+    _, incidents = fetch_incidents_command(
+        client=mock_client,
+        last_run={},
+        fetch_alerts=False,
+        fetch_incidents=True,
+        alert_severities=None,
+        alert_statuses=None,
+        alert_verdicts=None,
+        has_related_incidents=None,
+        incident_severities=None,
+        incident_statuses=None,
+        incident_verdicts=None,
+        first_fetch_time=FIRST_FETCH_TIME,
+        include_incident_alert_metadata=True,
+    )
+
+    assert incidents[0]["CustomFields"]["vegaalerts"][0]["detectionId"] == "det-1"
+    mock_client.get_alerts.assert_called_once_with(
+        alert_ids=["alert-1"],
+        from_time="2026-05-31T10:00:00Z",
+        limit=1,
+        offset=0,
+    )
+
+
+def test_get_remote_data_command_mirrors_incident_alerts(mocker):
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_incident_for_mirror.return_value = {
+        "id": "inc-1",
+        "status": "INVESTIGATING",
+        "alerts": [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}],
+    }
+    mock_client.get_incident_by_id.return_value = {
+        "id": "inc-1",
+        "status": "INVESTIGATING",
+        "verdictReasoning": "Loaded from details",
+        "alerts": [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}],
+    }
+    mock_client.get_alerts.return_value = {
+        "alerts": [_full_incident_alert()],
+        "total": 1,
+        "limit": 100,
+        "offset": 0,
+    }
+
+    result = get_remote_data_command(
+        mock_client,
+        {
+            "id": "inc-1",
+            "lastUpdate": "2026-06-15T11:00:00Z",
+            "data": {"type": "Vega Incident"},
+        },
+        include_alert_metadata=True,
+    )
+
+    mirrored_alerts = result.mirrored_object["CustomFields"]["vegaalerts"]
+    assert mirrored_alerts[0]["alertId"] == "alert-1"
+    assert mirrored_alerts[0]["detectionQuery"] == "event_type = login"
+    assert mirrored_alerts[0]["comments"] == _full_incident_alert()["comments"]
+    assert result.mirrored_object["alerts"] == mirrored_alerts
+    mock_client.get_alerts.assert_called_once_with(
+        alert_ids=["alert-1"],
+        from_time="2026-05-31T10:00:00Z",
+        limit=1,
+        offset=0,
+    )
+
+
+def test_fetch_incidents_command_omits_alert_metadata_by_default(mocker):
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock()
+    mock_client.get_incidents.return_value = {
+        "incidents": [
+            {
+                "id": "inc-1",
+                "name": "Inc 1",
+                "severity": "HIGH",
+                "createdAt": TIMESTAMP_T1,
+                "alerts": [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1, "severity": "HIGH"}],
+            }
+        ],
+        "total": 1,
+        "limit": 200,
+        "offset": 0,
+    }
+    mock_client.get_incident_timeline.return_value = {"events": []}
+
+    _, incidents = fetch_incidents_command(
+        client=mock_client,
+        last_run={},
+        fetch_alerts=False,
+        fetch_incidents=True,
+        alert_severities=None,
+        alert_statuses=None,
+        alert_verdicts=None,
+        has_related_incidents=None,
+        incident_severities=None,
+        incident_statuses=None,
+        incident_verdicts=None,
+        first_fetch_time=FIRST_FETCH_TIME,
+    )
+
+    assert incidents[0]["CustomFields"]["vegaalerts"] == [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}]
+    mock_client.get_alerts.assert_not_called()
+
+
+def test_get_alert_metadata_command_uses_single_incident_id(mocker):
+    mocker.patch.object(demisto, "info")
+    mocker.patch("Vega.load_current_incident", return_value={})
+    mock_client = mocker.Mock()
+    mock_client.get_incident_by_id.return_value = {
+        "id": "inc-1",
+        "alerts": [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}],
+    }
+    mock_client.get_alerts.return_value = {"alerts": [_full_incident_alert()], "total": 1}
+
+    result = get_alert_metadata_command(mock_client, {"incident_id": "inc-1"})
+
+    assert set(result.outputs[0]) == {
+        "id",
+        "vegaAlertId",
+        "detectionId",
+        "name",
+        "severity",
+        "status",
+        "verdict",
+        "createdAt",
+        "dataSources",
+        "labels",
+    }
+    assert result.outputs[0]["id"] == "alert-1"
+    assert result.outputs[0]["detectionId"] == "det-1"
+    assert result.outputs[0]["dataSources"] == ["CloudTrail", "Okta"]
+    assert result.outputs[0]["labels"] is None
+    assert json.loads(result.readable_output) == result.outputs[0]
+    mock_client.get_incident_by_id.assert_called_once_with("inc-1", from_time=INCIDENT_ID_LOOKUP_FROM_TIME)
+    assert INCIDENT_ID_LOOKUP_FROM_TIME == "2024-01-01T00:00:00Z"
+
+
+def test_get_alert_metadata_command_rejects_multiple_incident_ids(mocker):
+    with pytest.raises(DemistoException, match="single Vega incident ID"):
+        get_alert_metadata_command(mocker.Mock(), {"incident_id": "inc-1,inc-2"})
+
+
+def test_get_alert_metadata_command_uses_related_alert_ids_from_incident(mocker):
+    mocker.patch.object(demisto, "info")
+    mocker.patch(
+        "Vega.load_current_incident",
+        return_value={
+            "id": "100",
+            "type": "Vega Incident",
+            "CustomFields": {
+                "vegaincidentid": "inc-1",
+                "vegaalerts": [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}],
+            },
+        },
+    )
+    mock_client = mocker.Mock()
+    mock_client.get_alerts.return_value = {"alerts": [_full_incident_alert()], "total": 1}
+
+    result = get_alert_metadata_command(mock_client, {})
+
+    mock_client.get_incident_by_id.assert_not_called()
+    assert mock_client.get_alerts.call_args.kwargs["alert_ids"] == ["alert-1"]
+    assert result.outputs[0]["name"] == "Suspicious login"
+
+
+def test_get_alert_metadata_command_uses_current_alert_id(mocker):
+    mocker.patch.object(demisto, "info")
+    mocker.patch(
+        "Vega.load_current_incident",
+        return_value={
+            "id": "200",
+            "type": "Vega Alert",
+            "CustomFields": {"alertid": "alert-1", "vegacreatedat": TIMESTAMP_T1},
+        },
+    )
+    mock_client = mocker.Mock()
+    mock_client.get_alerts.return_value = {"alerts": [_full_incident_alert()], "total": 1}
+
+    result = get_alert_metadata_command(mock_client, {})
+
+    mock_client.get_incident_by_id.assert_not_called()
+    assert mock_client.get_alerts.call_args.kwargs["alert_ids"] == ["alert-1"]
+    assert result.outputs[0]["id"] == "alert-1"
+
+
+def test_get_alert_metadata_command_requires_incident_id_outside_investigation(mocker):
+    mocker.patch("Vega.load_current_incident", return_value={})
+
+    with pytest.raises(DemistoException, match="incident_id is required"):
+        get_alert_metadata_command(mocker.Mock(), {})
+
+
 def test_format_raw_entity_for_xsoar_prefers_key_findings():
     incident = {
         "incidentFindings": ["List finding"],
@@ -1618,8 +2071,8 @@ def test_format_raw_entity_for_xsoar_prefers_key_findings():
     }
     _format_raw_entity_for_xsoar(incident)
 
-    assert incident["assets"] == "No assets present."
-    assert incident["observables"] == "No observables present."
+    assert incident["assets"] == []
+    assert incident["observables"] == []
     assert "Detail finding" in incident["vegaIncidentFindings"]
     assert "List finding" not in incident["vegaIncidentFindings"]
 
@@ -1835,7 +2288,7 @@ def test_expand_flat_raw_fields_expands_dotted_and_array_keys():
     assert expanded["userStates"] == [{"logonIp": "10.0.0.1", "userPrincipalName": "user@example.com"}]
 
 
-def test_promote_raw_into_fields_keeps_schema_and_promotes_splunk_raw():
+def test_promote_raw_into_fields_keeps_schema_and_promotes_dotted_raw():
     fields = {
         "app_uid": None,
         "http_response": {"code": None},
@@ -1850,7 +2303,7 @@ def test_promote_raw_into_fields_keeps_schema_and_promotes_splunk_raw():
                 "securityResources{}.resourceType": "attacked",
                 "userStates{}.logonIp": "10.0.0.1",
                 "userStates{}.userPrincipalName": "user@example.com",
-                "splunk_server": "idx-example.splunkcloud.com",
+                "source_server": "idx-example.example.com",
                 "risk_score": "should-not-overwrite",
             }
         ),
@@ -1865,7 +2318,7 @@ def test_promote_raw_into_fields_keeps_schema_and_promotes_splunk_raw():
     assert promoted["vendorInformation"] == {"provider": "ASC"}
     assert promoted["securityResources"] == [{"resourceType": "attacked"}]
     assert promoted["userStates"] == [{"logonIp": "10.0.0.1", "userPrincipalName": "user@example.com"}]
-    assert promoted["splunk_server"] == "idx-example.splunkcloud.com"
+    assert promoted["source_server"] == "idx-example.example.com"
     assert isinstance(promoted["_raw"], str)
     assert "date_year" in promoted["_raw"]
 
@@ -1947,7 +2400,7 @@ def test_fetch_alert_events_page_enriches_fields_from_raw(mocker):
         "total": 1,
         "results": [
             {
-                "catalog": "splunk_cloud__sandbox",
+                "catalog": "siem_cloud__sandbox",
                 "data_source": "microsoft_graph_events",
                 "fields": json.dumps(
                     {
@@ -2014,7 +2467,7 @@ def test_alert_to_incident_stores_enriched_alert_events(mocker):
         "total": 1,
         "results": [
             {
-                "catalog": "splunk_cloud__sandbox",
+                "catalog": "siem_cloud__sandbox",
                 "fields": json.dumps(
                     {
                         "risk_score": "medium",
@@ -2069,12 +2522,14 @@ def test_load_current_incident_handles_demisto_incident_failure(mocker):
         "Vega.demisto.incident",
         side_effect=TypeError("'NoneType' object is not subscriptable"),
     )
-    mocker.patch("Vega.demisto.incidents", return_value=[])
-    mocker.patch.object(demisto, "debug")
+    incidents = mocker.patch("Vega.demisto.incidents")
+    debug = mocker.patch.object(demisto, "debug")
 
     incident = load_current_incident()
 
     assert incident == {}
+    incidents.assert_not_called()
+    debug.assert_not_called()
 
 
 def test_resolve_alert_id_from_incident_uses_raw_json():
@@ -2159,7 +2614,118 @@ def test_fetch_alert_events_page(mocker):
     mock_client.get_alert_events.assert_called_once_with("alert-1", limit=50, offset=0)
 
 
-def test_fetch_alert_events_for_ingest_returns_not_available_for_bad_shape(mocker):
+def test_get_alert_events_sends_up_to_ten_alert_ids(requests_mock, mocker):
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch.object(demisto, "info")
+    requests_mock.post(f"{BASE_URL}/api/v1/login_machine", json=MOCK_JWT_RESPONSE)
+    requests_mock.post(
+        f"{BASE_URL}/api/v1/query",
+        json={
+            "data": {
+                "getAlertsEvents": {
+                    "alerts": [{"alertId": "alert-1", "total": 1, "results": [{"timestamp": "t1"}]}],
+                }
+            }
+        },
+    )
+    client = Client(
+        base_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        access_key="test-key",
+        access_key_id="test-key-id",
+    )
+
+    result = client.get_alert_events("alert-1", alert_ids=["alert-2"], limit=100, offset=0)
+
+    request_json = requests_mock.request_history[-1].json()
+    assert request_json["variables"] == {"alertIds": ["alert-2", "alert-1"], "limit": 100, "offset": 0}
+    assert "$alertIds: [ID!]" in request_json["query"]
+    assert "alerts {" in request_json["query"]
+    assert result["alerts"][0]["alertId"] == "alert-1"
+
+
+def test_get_alert_events_rejects_more_than_ten_ids():
+    client = Client(
+        base_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        access_key="test-key",
+        access_key_id="test-key-id",
+    )
+    with pytest.raises(DemistoException, match="maximum of 10"):
+        client.get_alert_events(alert_ids=[f"alert-{index}" for index in range(11)])
+
+
+def test_fetch_alert_events_page_reads_per_alert_results(mocker):
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_alert_events.return_value = {
+        "total": 2,
+        "results": [{"timestamp": "other", "source": "combined"}],
+        "alerts": [
+            {"alertId": "alert-1", "total": 1, "results": [{"timestamp": "t1", "source": "one"}]},
+            {"alertId": "alert-2", "total": 1, "results": [{"timestamp": "t2", "source": "two"}]},
+        ],
+    }
+
+    events, total = fetch_alert_events_page(mock_client, "alert-1", limit=50, offset=0)
+
+    assert total == 1
+    assert events[0]["timestamp"] == "t1"
+    assert events[0]["source"] == "one"
+
+
+def test_fetch_alert_events_for_ids_requests_in_batches_of_ten(mocker):
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock(spec=Client)
+    alert_ids = [f"alert-{index}" for index in range(12)]
+
+    def _page(*_args, **kwargs):
+        requested = kwargs.get("alert_ids") or []
+        return {
+            "alerts": [
+                {"alertId": alert_id, "total": 1, "results": [{"timestamp": alert_id, "source": "src"}]} for alert_id in requested
+            ]
+        }
+
+    mock_client.get_alert_events.side_effect = _page
+
+    fetched = _fetch_alert_events_for_ids(mock_client, alert_ids)
+
+    assert mock_client.get_alert_events.call_count == 2
+    assert mock_client.get_alert_events.call_args_list[0].kwargs["alert_ids"] == alert_ids[:10]
+    assert mock_client.get_alert_events.call_args_list[1].kwargs["alert_ids"] == alert_ids[10:]
+    assert fetched["alert-11"][1]["vegaalerteventsloadedfor"] == "alert-11"
+    assert "Alert Events (1)" in fetched["alert-11"][1]["vegaalertevents"]
+
+
+def test_fetch_alert_events_command_returns_one_result_per_alert_id(mocker):
+    mocker.patch("Vega.load_current_incident", return_value={})
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_alert_events.return_value = {
+        "alerts": [
+            {"alertId": "alert-1", "total": 1, "results": [{"timestamp": "t1", "source": "one"}]},
+            {"alertId": "alert-2", "total": 1, "results": [{"timestamp": "t2", "source": "two"}]},
+        ]
+    }
+
+    results = fetch_alert_events_command(mock_client, {"alert_ids": "alert-1,alert-2"})
+
+    assert [result.outputs["AlertId"] for result in results] == ["alert-1", "alert-2"]
+    assert results[0].outputs["Count"] == 1
+    assert results[1].outputs["Events"][0]["source"] == "two"
+    mock_client.get_alert_events.assert_called_once()
+    assert mock_client.get_alert_events.call_args.kwargs["alert_ids"] == ["alert-1", "alert-2"]
+
+
+def test_fetch_alert_events_command_rejects_more_than_ten_alert_ids(mocker):
+    mocker.patch("Vega.load_current_incident", return_value={})
+    with pytest.raises(DemistoException, match="maximum of 10"):
+        fetch_alert_events_command(mocker.Mock(), {"alert_ids": ",".join(f"alert-{index}" for index in range(11))})
+
+
+def test_fetch_alert_events_for_ingest_displays_vendor_raw_rows(mocker):
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alert_events.return_value = {
         "total": 1,
@@ -2168,8 +2734,12 @@ def test_fetch_alert_events_for_ingest_returns_not_available_for_bad_shape(mocke
 
     events, custom_fields = _fetch_alert_events_for_ingest(mock_client, "alert-1")
 
-    assert events == []
-    assert "No alert events found" in custom_fields["vegaalertevents"]
+    assert events[0]["cid"] == "123"
+    assert events[0]["eid"] == "118"
+    markdown = custom_fields["vegaalertevents"]
+    assert "|Timestamp|Source|Log|" in markdown
+    assert "Access from IP with bad reputation" in markdown
+    assert "No alert events found" not in markdown
     assert custom_fields["vegaalerteventsloadedfor"] == "alert-1"
 
 
@@ -2237,14 +2807,13 @@ def test_fetch_alert_events_command_fetches_all_and_slices_page(mocker):
     assert mock_client.get_alert_events.call_count == 4
 
 
-def test_fetch_alert_events_command_returns_not_available_for_vendor_parse_fields(
-    mocker,
-):
+def test_fetch_alert_events_command_displays_vendor_raw_rows(mocker):
     mocker.patch(
         "Vega.load_current_incident",
         return_value={"CustomFields": {"vegaalertid": "alert-1"}},
     )
     mock_client = mocker.Mock(spec=Client)
+    long_command = "powershell.exe " + ("A" * 400)
     mock_client.get_alert_events.return_value = {
         "total": 1,
         "results": [
@@ -2257,6 +2826,7 @@ def test_fetch_alert_events_command_returns_not_available_for_vendor_parse_field
                 "MitreAttack": [{"Tactic": "Initial Access", "TechniqueID": "T1078"}],
                 "SourceVendors": "CrowdStrike",
                 "SourceProducts": "Falcon Identity Protection",
+                "CommandLine": long_command,
                 "timestamp": 1774165347000,
             }
         ],
@@ -2264,12 +2834,22 @@ def test_fetch_alert_events_command_returns_not_available_for_vendor_parse_field
 
     result = fetch_alert_events_command(mock_client, {"alert_id": "alert-1"})
 
-    assert result.readable_output == ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN
-    assert result.outputs["Total"] == 0
-    assert result.outputs["Count"] == 0
-    assert result.outputs["HasAlertEvents"] is False
-    assert "does not have alert events" not in result.outputs["CustomFields"]["vegaalertevents"]
-    assert "No alert events found" in result.outputs["CustomFields"]["vegaalertevents"]
+    readable = result.readable_output
+    assert "|Timestamp|Source|Log|" in readable
+    assert "03/22/26 07:42:27" in readable
+    assert "CrowdStrike" in readable
+    assert "12345678901234567890123456789012" in readable
+    assert '"eid":"118"' in readable
+    assert "Falcon Identity Protection" in readable
+    assert "T1078" in readable
+    assert long_command in readable
+    assert "1774165347000" not in readable
+    assert '"SourceVendors"' not in readable
+    assert result.outputs["Total"] == 1
+    assert result.outputs["Count"] == 1
+    assert result.outputs["HasAlertEvents"] is True
+    assert result.outputs["Events"][0]["cid"] == "12345678901234567890123456789012"
+    assert "No alert events found" not in result.outputs["CustomFields"]["vegaalertevents"]
     mock_client.get_alert_events.assert_called_once()
 
 
@@ -2504,6 +3084,86 @@ def test_graphql_request_retries_on_graphql_rate_limit(mocker):
     assert client._rate_limit_wait_seconds == RATE_LIMIT_INITIAL_WAIT_SECONDS
 
 
+def _rate_limit_retry_client(mocker):
+    mocker.patch.object(demisto, "debug")
+    sleep_mock = mocker.patch("Vega.time.sleep")
+    client = Client(
+        base_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        access_key="test-key",
+        access_key_id="test-key-id",
+    )
+    mocker.patch.object(client, "_authenticate", return_value="jwt-token")
+    return client, sleep_mock
+
+
+def test_graphql_request_retries_on_rate_limit_message_without_extensions(mocker):
+    client, sleep_mock = _rate_limit_retry_client(mocker)
+    rate_limited_response = {
+        "errors": [{"message": "Rate limit exceeded. Please retry after a brief wait."}],
+        "data": None,
+    }
+    success_response = {"data": {"getAlertsEvents": {"total": 1, "results": [{"timestamp": "t1"}]}}}
+    http_mock = mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=[rate_limited_response, success_response],
+    )
+
+    response = client._graphql_request("query { getAlertsEvents(alertId: $alertId) { results } }", {"alertId": "alert-1"})
+
+    assert response == success_response
+    assert http_mock.call_count == 2
+    assert sleep_mock.call_args_list[0].args[0] == 2
+    assert client._rate_limit_wait_seconds == RATE_LIMIT_INITIAL_WAIT_SECONDS
+
+
+def test_graphql_request_retries_on_http_200_payload_rate_limit_message(mocker):
+    client, sleep_mock = _rate_limit_retry_client(mocker)
+    rate_limited_response = {
+        "data": {
+            "getAlertsEvents": {
+                "total": 0,
+                "results": None,
+                "error": {"code": "INTERNAL", "message": "Rate limit exceeded"},
+            }
+        }
+    }
+    success_response = {"data": {"getAlertsEvents": {"total": 0, "results": [], "error": None}}}
+    http_mock = mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=[rate_limited_response, success_response],
+    )
+
+    response = client._graphql_request("query { getAlertsEvents(alertId: $alertId) { results error { message } } }")
+
+    assert response == success_response
+    assert http_mock.call_count == 2
+    sleep_mock.assert_called_once_with(2)
+
+
+def test_graphql_request_does_not_retry_unrelated_payload_error(mocker):
+    client, sleep_mock = _rate_limit_retry_client(mocker)
+    payload_error_response = {
+        "data": {
+            "getAlertsEvents": {
+                "total": 0,
+                "results": [],
+                "error": {"code": "NOT_FOUND", "message": "Alert not found"},
+            }
+        }
+    }
+    http_mock = mocker.patch.object(client, "_http_request", return_value=payload_error_response)
+
+    response = client._graphql_request("query { getAlertsEvents(alertId: $alertId) { results error { message } } }")
+
+    assert response == payload_error_response
+    http_mock.assert_called_once()
+    sleep_mock.assert_not_called()
+
+
 def test_client_http_request_retries_on_429(mocker):
     mocker.patch.object(demisto, "debug")
     sleep_mock = mocker.patch("Vega.time.sleep")
@@ -2632,18 +3292,18 @@ def test_update_incident_command_no_args_uses_layout_fields(mocker):
             "type": "Vega Incident",
             "CustomFields": {
                 "vegaincidentid": "inc-1",
-                VEGA_INCIDENT_STATUS_FIELD: "UNDER REVIEW",
+                VEGA_INCIDENT_STATUS_FIELD: "IN REVIEW",
                 "vegaverdict": "SUSPICIOUS",
             },
         },
     )
     mock_client = mocker.Mock(spec=Client)
     mock_client.update_incidents.return_value = {
-        "incidents": [{"incidentId": "inc-1", "status": "UNDER_REVIEW", "verdict": "SUSPICIOUS"}]
+        "incidents": [{"incidentId": "inc-1", "userStatus": "IN_REVIEW", "verdict": "SUSPICIOUS"}]
     }
     mock_client.get_incident_by_id.return_value = {
         "id": "inc-1",
-        "status": "UNDER_REVIEW",
+        "userStatus": "IN_REVIEW",
         "verdict": "SUSPICIOUS",
     }
 
@@ -2652,7 +3312,7 @@ def test_update_incident_command_no_args_uses_layout_fields(mocker):
     mock_client.update_incidents.assert_called_once_with(
         {
             "incidentIds": ["inc-1"],
-            "status": "UNDER_REVIEW",
+            "userStatus": "IN_REVIEW",
             "verdict": {"value": "SUSPICIOUS", "reasoning": ""},
         }
     )
@@ -2816,7 +3476,7 @@ def test_update_incident_command_updates_multiple_incidents(mocker):
     mock_client.update_incidents.assert_called_once_with(
         {
             "incidentIds": ["inc-1", "inc-2"],
-            "status": "RESOLVED",
+            "userStatus": "RESOLVED",
             "verdict": {"value": "MALICIOUS", "reasoning": ""},
         }
     )
@@ -2841,7 +3501,7 @@ def test_update_incident_command_accepts_incident_id_alias(mocker):
         mock_client,
         {
             "incident_id": ["inc-1", "inc-2"],
-            "status": "INVESTIGATING",
+            "status": "IN REVIEW",
             "verdict": "SUSPICIOUS",
         },
     )
@@ -2849,7 +3509,7 @@ def test_update_incident_command_accepts_incident_id_alias(mocker):
     mock_client.update_incidents.assert_called_once_with(
         {
             "incidentIds": ["inc-1", "inc-2"],
-            "status": "INVESTIGATING",
+            "userStatus": "IN_REVIEW",
             "verdict": {"value": "SUSPICIOUS", "reasoning": ""},
         }
     )
@@ -2884,7 +3544,7 @@ def test_update_incident_command_updates_with_comment(mocker):
         mock_client,
         {
             "incident_ids": "inc-1",
-            "status": "INVESTIGATING",
+            "status": "IN REVIEW",
             "verdict": "SUSPICIOUS",
             "comment": "Reviewed in XSOAR",
         },
@@ -2893,7 +3553,7 @@ def test_update_incident_command_updates_with_comment(mocker):
     mock_client.update_incidents.assert_called_once_with(
         {
             "incidentIds": ["inc-1"],
-            "status": "INVESTIGATING",
+            "userStatus": "IN_REVIEW",
             "verdict": {"value": "SUSPICIOUS", "reasoning": ""},
             "comment": "Reviewed in XSOAR",
         }
@@ -2983,6 +3643,7 @@ def test_build_mirror_sync_object_includes_only_sync_fields():
         "verdict": "SUSPICIOUS",
         "userVerdict": {"value": "BENIGN"},
         "verdictReasoning": "Confirmed benign",
+        "lastUpdated": "2026-06-16T12:00:00Z",
         "incidentSummary": "Should not mirror",
         "assignee": {"displayName": "Analyst"},
         "comments": [{"text": "note", "addedAt": "2026-06-16T12:00:00Z", "addedBy": "a"}],
@@ -2998,6 +3659,7 @@ def test_build_mirror_sync_object_includes_only_sync_fields():
     assert sync_object["verdict"] == "BENIGN"
     assert sync_object["verdictReasoning"] == "Confirmed benign"
     assert sync_object["status"] == "INVESTIGATING"
+    assert sync_object["lastUpdated"] == "2026-06-16T12:00:00Z"
     assert sync_object["CustomFields"]["vegaincidentid"] == "inc-1"
     assert sync_object["CustomFields"]["vegaincidentstatus"] == "INVESTIGATING"
     assert sync_object["CustomFields"]["vegaseverity"] == "MEDIUM"
@@ -3006,6 +3668,8 @@ def test_build_mirror_sync_object_includes_only_sync_fields():
     assert "vegaComments" in sync_object
     assert "note" in sync_object["vegaComments"]
     assert sync_object["CustomFields"]["vegacomments"] == sync_object["vegaComments"]
+    assert sync_object["VegaCommentsSource"] == incident["comments"]
+    assert sync_object["CustomFields"]["vegacommentssource"] == incident["comments"]
     assert "incidentSummary" not in sync_object
     assert "assignee" not in sync_object
 
@@ -3023,6 +3687,7 @@ def test_build_mirror_sync_object_reflects_removed_comments():
     assert "vegaComments" in sync_object
     assert "No comments are available" in sync_object["vegaComments"]
     assert sync_object["CustomFields"]["vegacomments"] == sync_object["vegaComments"]
+    assert sync_object["CustomFields"]["vegacommentssource"] == []
     assert "vegaComments" not in sync_object or "Removed comment" not in sync_object["vegaComments"]
 
 
@@ -3057,8 +3722,8 @@ def test_normalize_verdict_reasoning_from_user_verdict():
     assert _extract_verdict_reasoning_from_entity(raw) is None
 
 
-def test_build_mirror_sync_object_refreshes_mirror_direction_each_cycle(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+def test_build_mirror_sync_object_does_not_rewrite_mirror_direction(mocker):
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
 
     sync_object = _build_mirror_sync_object(
@@ -3066,16 +3731,14 @@ def test_build_mirror_sync_object_refreshes_mirror_direction_each_cycle(mocker):
         MIRROR_ENTITY_SUFFIX_ALERT,
     )
 
-    assert sync_object["dbotMirrorDirection"] == "Both"
-    assert sync_object["mirror_direction"] == "Both"
+    assert "dbotMirrorDirection" not in sync_object
+    assert "mirror_direction" not in sync_object
     assert sync_object["dbotMirrorInstance"] == "Vega_instance_1"
     assert sync_object["dbotMirrorId"] == "alert:alert-1"
 
 
-def test_build_mirror_sync_object_sets_in_direction_when_outgoing_mirror_disabled(
-    mocker,
-):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "false"})
+def test_build_mirror_sync_object_keeps_direction_off_when_instance_is_incoming(mocker):
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming"})
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
 
     sync_object = _build_mirror_sync_object(
@@ -3083,8 +3746,8 @@ def test_build_mirror_sync_object_sets_in_direction_when_outgoing_mirror_disable
         MIRROR_ENTITY_SUFFIX_INCIDENT,
     )
 
-    assert sync_object["dbotMirrorDirection"] == "In"
-    assert sync_object["mirror_direction"] == "In"
+    assert "dbotMirrorDirection" not in sync_object
+    assert "mirror_direction" not in sync_object
 
 
 def test_build_mirror_sync_object_includes_alert_severity():
@@ -3094,6 +3757,7 @@ def test_build_mirror_sync_object_includes_alert_severity():
         "severity": "HIGH",
         "verdict": "SUSPICIOUS",
         "verdictReasoning": "Suspicious activity",
+        "updatedAt": "2026-06-15T12:00:00Z",
     }
 
     sync_object = _build_mirror_sync_object(alert, MIRROR_ENTITY_SUFFIX_ALERT)
@@ -3107,6 +3771,7 @@ def test_build_mirror_sync_object_includes_alert_severity():
     assert sync_object["CustomFields"]["alertid"] == "alert-1"
     assert sync_object["CustomFields"]["vegaalertseverity"] == "HIGH"
     assert sync_object["CustomFields"]["vegastatus"] == "OPEN"
+    assert sync_object["updatedAt"] == "2026-06-15T12:00:00Z"
 
 
 def test_build_mirror_sync_object_strips_prefixed_remote_id():
@@ -3214,7 +3879,7 @@ def test_get_remote_data_command_prefers_incident_detail_reasoning(mocker):
 
 
 def test_resolve_remote_entity_vega_alert_context_skips_incident_lookup(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alert_for_mirror.return_value = {
         "id": "alert-1",
@@ -3236,7 +3901,7 @@ def test_resolve_remote_entity_vega_alert_context_skips_incident_lookup(mocker):
 
 
 def test_resolve_remote_entity_falls_back_to_full_get_alerts(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alert_for_mirror.return_value = {}
     mock_client.get_alert_by_id.return_value = {
@@ -3280,11 +3945,12 @@ def test_get_mirroring_fields_uses_calling_context_fallback(mocker):
         "callingContext",
         {"context": {"IntegrationInstance": "Vega_prod"}},
     )
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
 
     fields = _get_mirroring_fields()
 
     assert fields["mirror_instance"] == "Vega_prod"
+    assert fields["mirror_direction"] == "Both"
 
 
 def test_build_effective_incident_update_args_field_change_updates_severity_only():
@@ -3395,11 +4061,26 @@ def test_update_incident_command_supports_assignee_emails(mocker):
     assert result.outputs["assignee"] == "lead@example.com"
 
 
-def test_get_mirroring_fields_autoclosure_enabled(mocker):
+@pytest.mark.parametrize(
+    ("selected", "expected"),
+    [
+        ("None", None),
+        ("Incoming", "In"),
+        ("Outgoing", "Out"),
+        ("Incoming And Outgoing", "Both"),
+        ("", None),
+        ("unexpected", None),
+    ],
+)
+def test_configured_mirror_direction(selected, expected):
+    assert _configured_mirror_direction({"mirror_direction": selected}) == expected
+
+
+def test_get_mirroring_fields_incoming_and_outgoing(mocker):
     mocker.patch.object(
         demisto,
         "params",
-        return_value={"autoclosure": "true"},
+        return_value={"mirror_direction": "Incoming And Outgoing"},
     )
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
 
@@ -3409,26 +4090,18 @@ def test_get_mirroring_fields_autoclosure_enabled(mocker):
     assert fields["mirror_instance"] == "Vega_instance_1"
 
 
-def test_get_mirroring_fields_autoclosure_disabled(mocker):
+def test_get_mirroring_fields_omits_direction_when_none(mocker):
     mocker.patch.object(
         demisto,
         "params",
-        return_value={"autoclosure": "false"},
+        return_value={"mirror_direction": "None"},
     )
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
 
     fields = _get_mirroring_fields()
 
-    assert fields["mirror_direction"] == "In"
+    assert "mirror_direction" not in fields
     assert fields["mirror_instance"] == "Vega_instance_1"
-
-
-def test_is_xsoar_to_vega_mirroring_disabled_when_autoclosure_false():
-    assert _is_xsoar_to_vega_mirroring_enabled({"autoclosure": "false"}) is False
-
-
-def test_is_xsoar_to_vega_mirroring_enabled_defaults_true():
-    assert _is_xsoar_to_vega_mirroring_enabled({}) is True
 
 
 def test_collect_outgoing_entry_comments_skips_mirror_tagged_notes():
@@ -3649,7 +4322,7 @@ def test_get_modified_remote_data_command_both_entities(mocker):
 
 def test_get_remote_data_command_alert_with_comment(mocker):
     mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
@@ -3687,6 +4360,9 @@ def test_get_remote_data_command_alert_with_comment(mocker):
     assert "vegaComments" in result.mirrored_object
     assert "Updated in Vega" in result.mirrored_object["vegaComments"]
     assert "Updated in Vega" in result.mirrored_object["CustomFields"]["vegacomments"]
+    assert (
+        result.mirrored_object["CustomFields"]["vegacommentssource"] == mock_client.get_alert_for_mirror.return_value["comments"]
+    )
     assert len(result.entries) >= 1
     assert result.entries[0]["Contents"].startswith("analyst@example.com")
     assert result.entries[0]["Tags"] == [VEGA_MIRROR_TAG_FROM_VEGA]
@@ -3694,7 +4370,7 @@ def test_get_remote_data_command_alert_with_comment(mocker):
 
 def test_get_remote_data_command_vega_alert_context_skips_incident_lookup(mocker):
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alert_for_mirror.return_value = {
         "id": "alert-1",
@@ -3736,7 +4412,7 @@ def test_get_remote_data_command_vega_alert_context_skips_incident_lookup(mocker
 def test_get_remote_data_command_uses_investigation_context_for_bare_alert_id(mocker):
     mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alert_for_mirror.return_value = {
@@ -3958,7 +4634,7 @@ def test_get_remote_data_command_preserves_incident_type_with_bare_id(mocker):
 
 
 def test_resolve_remote_entity_uses_prefixed_incident_id(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_incident_for_mirror.return_value = {
         "id": "inc-1",
@@ -4089,7 +4765,7 @@ def test_get_alert_for_mirror_passes_from_time_filter(mocker):
 
 
 def test_resolve_remote_entity_alert_uses_lookup_filters(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alert_for_mirror.return_value = {
         "id": "alert-1",
@@ -4125,7 +4801,7 @@ def test_mirror_field_value_reads_old_new_delta_from_custom_fields():
 
 
 def test_update_remote_system_command_updates_alert_from_old_new_delta(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alert_for_mirror.return_value = {"id": "alert-1", "status": "OPEN"}
@@ -4189,7 +4865,7 @@ def test_build_outgoing_alert_mirror_update_skips_unchanged_delta_fields():
 
 
 def test_update_remote_system_command_skips_incoming_mirror_echo_updates(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
@@ -4229,7 +4905,7 @@ def test_update_remote_system_command_skips_incoming_mirror_echo_updates(mocker)
 def test_update_remote_system_command_mirrors_war_room_comment_without_field_echo(
     mocker,
 ):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
@@ -4349,8 +5025,12 @@ def test_get_incident_for_mirror_passes_lookup_time_filters(mocker):
     }
 
 
+def test_resolve_mirror_entity_lookup_filters_matches_id_fetch_window():
+    assert _resolve_mirror_entity_lookup_filters() == {"from_time": INCIDENT_ID_LOOKUP_FROM_TIME}
+
+
 def test_get_remote_data_command_passes_last_update_to_incident_lookup(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_incident_for_mirror.return_value = {
         "id": "inc-1",
@@ -4379,11 +5059,14 @@ def test_get_remote_data_command_passes_last_update_to_incident_lookup(mocker):
 
 def test_suppress_noisy_http_integration_logs_filters_header_lines(mocker):
     import http.client as http_client
+    import logging
 
     mocker.patch("Vega.is_debug_mode", return_value=True)
     captured: list[str] = []
     integration_logger_write = LOG.write
     had_filter_flag = getattr(LOG, "_vega_http_log_filter_installed", False)
+    urllib3_logger = logging.getLogger("urllib3")
+    previous_urllib3_level = urllib3_logger.level
 
     def capture_write(msg):
         text = msg.decode(LOG.encoding) if isinstance(msg, bytes) else str(msg)
@@ -4401,9 +5084,11 @@ def test_suppress_noisy_http_integration_logs_filters_header_lines(mocker):
 
         assert captured == ["Vega mirror | stage=resolve-entity | lookup completed\n"]
         assert http_client.HTTPConnection.debuglevel == 0
+        assert urllib3_logger.level == logging.WARNING
     finally:
         LOG.write = integration_logger_write
         LOG._vega_http_log_filter_installed = had_filter_flag
+        urllib3_logger.setLevel(previous_urllib3_level)
 
 
 def test_get_remote_data_command_not_found_preserves_incident_type(mocker):
@@ -4500,9 +5185,13 @@ def test_mirror_entity_type_from_args_uses_investigation_context(mocker):
     )
 
 
-def test_update_remote_system_command_disabled(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "false"})
+def test_update_remote_system_command_pushes_when_platform_calls_it(mocker):
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "None"})
+    mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
+    mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
+    mock_client.get_alert_for_mirror.return_value = {"id": "alert-1", "status": "OPEN"}
+    mock_client.get_incident_for_mirror.return_value = {}
 
     remote_id = update_remote_system_command(
         mock_client,
@@ -4510,16 +5199,16 @@ def test_update_remote_system_command_disabled(mocker):
             "remoteId": "alert-1",
             "incidentChanged": "true",
             "delta": {"vegastatus": "RESOLVED"},
-            "data": {"vegastatus": "RESOLVED"},
+            "data": {"type": "Vega Alert", "vegastatus": "RESOLVED"},
         },
     )
 
     assert remote_id == "alert-1"
-    mock_client.update_alerts.assert_not_called()
+    mock_client.update_alerts.assert_called_once()
 
 
 def test_update_remote_system_command_updates_alert_severity(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alert_for_mirror.return_value = {
         "id": "alert-1",
@@ -4548,7 +5237,7 @@ def test_update_remote_system_command_updates_alert_severity(mocker):
 
 
 def test_update_remote_system_command_updates_alert(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
@@ -4580,7 +5269,7 @@ def test_update_remote_system_command_updates_alert(mocker):
 
 
 def test_update_remote_system_command_pushes_new_comment(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
@@ -4601,7 +5290,7 @@ def test_update_remote_system_command_pushes_new_comment(mocker):
 
 
 def test_update_remote_system_command_updates_incident_from_custom_fields_delta(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_incident_for_mirror.return_value = {
@@ -4617,14 +5306,14 @@ def test_update_remote_system_command_updates_incident_from_custom_fields_delta(
             "incidentChanged": "true",
             "delta": {
                 "CustomFields": {
-                    "vegaincidentstatus": "UNDER REVIEW",
+                    "vegaincidentstatus": "IN REVIEW",
                     "vegaverdict": "BENIGN",
                 }
             },
             "data": {
                 "type": "Vega Incident",
                 "CustomFields": {
-                    "vegaincidentstatus": "UNDER REVIEW",
+                    "vegaincidentstatus": "IN REVIEW",
                     "vegaverdict": "BENIGN",
                 },
             },
@@ -4634,15 +5323,24 @@ def test_update_remote_system_command_updates_incident_from_custom_fields_delta(
     mock_client.update_incidents.assert_called_once_with(
         {
             "incidentIds": ["inc-1"],
-            "status": "UNDER_REVIEW",
+            "userStatus": "IN_REVIEW",
             "verdict": {"value": "BENIGN", "reasoning": ""},
         }
     )
 
 
-def test_alert_to_incident_sets_mirror_metadata(mocker):
+@pytest.mark.parametrize(
+    ("selected", "expected_direction"),
+    [
+        ("None", None),
+        ("Incoming", "In"),
+        ("Outgoing", "Out"),
+        ("Incoming And Outgoing", "Both"),
+    ],
+)
+def test_alert_to_incident_sets_mirror_metadata(mocker, selected, expected_direction):
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": selected})
     alert = {
         "id": "alert-1",
         "name": "Test Alert",
@@ -4650,10 +5348,17 @@ def test_alert_to_incident_sets_mirror_metadata(mocker):
         "createdAt": TIMESTAMP_T1,
     }
     xsoar_incident = alert_to_incident(alert)
+    raw = json.loads(xsoar_incident["rawJSON"])
 
     assert xsoar_incident["dbotMirrorId"] == "alert:alert-1"
-    assert xsoar_incident["dbotMirrorDirection"] == "Both"
     assert xsoar_incident["dbotMirrorInstance"] == "Vega_instance_1"
+    assert raw["mirror_instance"] == "Vega_instance_1"
+    if expected_direction is None:
+        assert "dbotMirrorDirection" not in xsoar_incident
+        assert "mirror_direction" not in raw
+    else:
+        assert xsoar_incident["dbotMirrorDirection"] == expected_direction
+        assert raw["mirror_direction"] == expected_direction
 
 
 def test_get_alert_by_id_handles_null_get_alerts_response(mocker):
@@ -4688,7 +5393,7 @@ def test_update_alerts_handles_null_graphql_data(mocker):
 
 
 def test_update_remote_system_command_surfaces_api_error_instead_of_none_type(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "error")
@@ -4714,7 +5419,7 @@ def test_update_remote_system_command_surfaces_api_error_instead_of_none_type(mo
 
 
 def test_update_remote_system_command_updates_incident_from_delta_status_field(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch("Vega.load_current_incident", return_value={})
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
@@ -4729,15 +5434,15 @@ def test_update_remote_system_command_updates_incident_from_delta_status_field(m
         {
             "remoteId": "inc-1",
             "incidentChanged": "true",
-            "delta": {"vegaincidentstatus": "UNDER REVIEW"},
-            "data": {"CustomFields": {"vegaincidentstatus": "INVESTIGATING"}},
+            "delta": {"vegaincidentstatus": "IN REVIEW"},
+            "data": {"CustomFields": {"vegaincidentstatus": "OPEN"}},
         },
     )
 
     mock_client.update_incidents.assert_called_once_with(
         {
             "incidentIds": ["inc-1"],
-            "status": "UNDER_REVIEW",
+            "userStatus": "IN_REVIEW",
         }
     )
     mock_client.update_alerts.assert_not_called()
@@ -4746,7 +5451,7 @@ def test_update_remote_system_command_updates_incident_from_delta_status_field(m
 def test_update_remote_system_command_uses_api_fallback_without_investigation_context(
     mocker,
 ):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch(
         "Vega.demisto.incident",
         side_effect=TypeError("'NoneType' object is not subscriptable"),
@@ -4838,3 +5543,377 @@ def test_test_module_rejects_invalid_lookback_minutes(mocker):
         vega_test_module(client, backfill_days=30, max_fetch=50, lookback_minutes="abc")
         == 'Invalid number: "lookback_minutes"="abc"'
     )
+
+
+def test_id_queries_select_only_uuid():
+    assert "alerts { id }" in GET_ALERT_IDS_QUERY
+    assert "incidents { id }" in GET_INCIDENT_IDS_QUERY
+    assert "comments" not in GET_ALERT_IDS_QUERY
+    assert "comments" not in GET_INCIDENT_IDS_QUERY
+
+
+def test_parse_comma_separated_ids_trims_and_dedupes():
+    assert _parse_comma_separated_ids(" a-1, a-2,a-1 , ,a-3 ") == ["a-1", "a-2", "a-3"]
+
+
+def test_parse_reconcile_window_maps_dates_to_vega_from_and_to():
+    start_time, end_time = _parse_reconcile_window({"start_date": "2024-06-01", "end_date": "2024-06-02"})
+    assert start_time == "2024-06-01T00:00:00Z"
+    assert end_time == "2024-06-02T23:59:59Z"
+
+
+def test_parse_reconcile_window_rejects_inverted_range():
+    with pytest.raises(DemistoException, match="start_date must be before"):
+        _parse_reconcile_window({"start_date": "2024-06-03", "end_date": "2024-06-01"})
+
+
+def test_collect_paged_ids_follows_total():
+    pages = {
+        0: {"alerts": [{"id": f"a-{index}"} for index in range(RECONCILE_PAGE_SIZE)], "total": RECONCILE_PAGE_SIZE + 1},
+        RECONCILE_PAGE_SIZE: {"alerts": [{"id": "a-last"}], "total": RECONCILE_PAGE_SIZE + 1},
+    }
+
+    ids = _collect_paged_ids(lambda offset: pages[offset], "alerts", _normalize_entity_id)
+
+    assert ids[-1] == "a-last"
+    assert len(ids) == RECONCILE_PAGE_SIZE + 1
+
+
+def test_collect_paged_ids_continues_after_short_page_when_total_remains():
+    def fetch_page(offset: int) -> dict:
+        if offset == 0:
+            return {"alerts": [{"id": "a-1"}], "total": 2}
+        return {"alerts": [{"id": "a-2"}], "total": 2}
+
+    ids = _collect_paged_ids(fetch_page, "alerts", _normalize_entity_id)
+
+    assert ids == ["a-1", "a-2"]
+
+
+def test_collect_paged_ids_reads_past_the_former_page_cap():
+    page_count = 51
+    total = RECONCILE_PAGE_SIZE * page_count
+
+    def fetch_page(offset: int) -> dict:
+        return {
+            "alerts": [{"id": f"a-{offset + index}"} for index in range(RECONCILE_PAGE_SIZE)],
+            "total": total,
+        }
+
+    ids = _collect_paged_ids(fetch_page, "alerts", _normalize_entity_id)
+
+    assert len(ids) == total
+    assert ids[0] == "a-0"
+    assert ids[-1] == f"a-{total - 1}"
+
+
+def test_collect_xsoar_entity_ids_reads_every_vega_incident_and_alert(mocker):
+    page_count = 51
+    total = RECONCILE_PAGE_SIZE * page_count
+    pages_requested: dict[str, list[int]] = {"Vega Incident": [], "Vega Alert": []}
+
+    def search(_method, _uri, body=None):
+        payload = json.loads(body)
+        query = payload["filter"]["query"]
+        page = payload["filter"]["page"]
+        entity_type = "Vega Incident" if 'type:"Vega Incident"' in query else "Vega Alert"
+        suffix = "incident" if entity_type == "Vega Incident" else "alert"
+        pages_requested[entity_type].append(page)
+        start = page * RECONCILE_PAGE_SIZE
+        data = [{"dbotMirrorId": f"{suffix}:id-{start + index}", "type": entity_type} for index in range(RECONCILE_PAGE_SIZE)]
+        return {"statusCode": 200, "body": json.dumps({"data": data, "total": total})}
+
+    mocker.patch("Vega.demisto.internalHttpRequest", side_effect=search)
+
+    incident_ids = _collect_xsoar_entity_ids("Vega Incident", "incident", "2024-06-01T00:00:00Z", "2024-06-02T23:59:59Z")
+    alert_ids = _collect_xsoar_entity_ids("Vega Alert", "alert", "2024-06-01T00:00:00Z", "2024-06-02T23:59:59Z")
+
+    assert len(incident_ids) == total
+    assert len(alert_ids) == total
+    assert pages_requested["Vega Incident"] == list(range(page_count))
+    assert pages_requested["Vega Alert"] == list(range(page_count))
+    assert "id-0" in incident_ids
+    assert f"id-{total - 1}" in alert_ids
+
+
+def test_xsoar_vega_entity_id_uses_mirror_uuid_not_display_id():
+    incident = {
+        "dbotMirrorId": "alert:uuid-1",
+        "CustomFields": {"vegaalertid": "VEGA-1", "alertid": "other"},
+    }
+    assert _xsoar_vega_entity_id(incident, "alert") == "uuid-1"
+
+
+def test_reconcile_incidents_command_returns_missing_uuids(mocker):
+    client = mocker.Mock()
+    client.get_alert_ids.return_value = {"alerts": [{"id": "a-1"}, {"id": "a-2"}], "total": 2}
+    client.get_incident_ids.return_value = {"incidents": [{"id": "i-1"}, {"id": "i-2"}], "total": 2}
+
+    def search(_method, _uri, body=None):
+        payload = json.loads(body)
+        query = payload["filter"]["query"]
+        assert payload["filter"]["size"] == RECONCILE_PAGE_SIZE
+        if 'type:"Vega Alert"' in query:
+            data = [{"dbotMirrorId": "alert:a-1", "type": "Vega Alert"}]
+        else:
+            data = [{"CustomFields": {"vegaincidentid": "i-1"}, "type": "Vega Incident"}]
+        return {"statusCode": 200, "body": json.dumps({"data": data, "total": 1})}
+
+    mocker.patch("Vega.demisto.internalHttpRequest", side_effect=search)
+    result = reconcile_incidents_command(
+        client,
+        {
+            "start_date": "2024-06-01",
+            "end_date": "2024-06-02",
+            "vega_entities": "Alerts,Incidents",
+            "alert_severities": "HIGH",
+        },
+    )
+
+    assert result.outputs["MissingAlertIds"] == ["a-2"]
+    assert result.outputs["MissingIncidentIds"] == ["i-2"]
+    assert list(result.outputs).index("MissingIncidentIds") < list(result.outputs).index("MissingAlertIds")
+    assert "Truncated" not in result.outputs
+    assert result.readable_output.index("Missing Vega incident IDs") < result.readable_output.index("Missing Vega alert IDs")
+    assert "a-2" in result.readable_output
+    assert "i-2" in result.readable_output
+    assert client.get_alert_ids.call_args.kwargs["from_time"] == "2024-06-01T00:00:00Z"
+    assert client.get_alert_ids.call_args.kwargs["to_time"] == "2024-06-02T23:59:59Z"
+    assert client.get_alert_ids.call_args.kwargs["limit"] == RECONCILE_PAGE_SIZE
+    assert client.get_alert_ids.call_args.kwargs["severities"] == ["HIGH"]
+    assert "has_related_incidents" not in client.get_alert_ids.call_args.kwargs
+    assert "statuses" not in client.get_alert_ids.call_args.kwargs or client.get_alert_ids.call_args.kwargs["statuses"] is None
+
+
+def test_reconcile_incidents_command_skips_unselected_entity(mocker):
+    """Alert filters are ignored when Alerts is not selected."""
+    client = mocker.Mock()
+    client.get_incident_ids.return_value = {"incidents": [{"id": "i-1"}], "total": 1}
+    queries: list[str] = []
+
+    def search(_method, _uri, body=None):
+        query = json.loads(body)["filter"]["query"]
+        queries.append(query)
+        return {"statusCode": 200, "body": json.dumps({"data": [], "total": 0})}
+
+    mocker.patch("Vega.demisto.internalHttpRequest", side_effect=search)
+    result = reconcile_incidents_command(
+        client,
+        {
+            "start_date": "2024-06-01T12:00:00Z",
+            "end_date": "2024-06-02T18:30:00Z",
+            "vega_entities": "Incidents",
+            "alert_severities": "HIGH",
+        },
+    )
+
+    client.get_alert_ids.assert_not_called()
+    assert queries
+    assert all('type:"Vega Alert"' not in query for query in queries)
+    assert "MissingAlertIds" not in result.outputs
+    assert result.outputs["MissingIncidentIds"] == ["i-1"]
+    assert client.get_incident_ids.call_args.kwargs["from_time"] == "2024-06-01T12:00:00Z"
+    assert client.get_incident_ids.call_args.kwargs["to_time"] == "2024-06-02T18:30:00Z"
+
+
+def test_reconcile_incidents_command_requires_an_entity(mocker):
+    with pytest.raises(DemistoException, match="vega_entities"):
+        reconcile_incidents_command(mocker.Mock(), {"start_date": "2024-06-01", "end_date": "2024-06-02"})
+
+
+def _patch_reconciliation_runtime(mocker):
+    mocker.patch("Vega.demisto.params", return_value={})
+    mocker.patch("Vega.demisto.integrationInstance", return_value="reconcile")
+    mocker.patch("Vega.demisto.info")
+    mocker.patch("Vega._fetch_incident_timeline_events", return_value=[])
+    mocker.patch("Vega._fetch_alert_events_for_ids", return_value={})
+
+
+def test_fetch_reconciliation_uses_static_from_and_max_fetch(mocker):
+    _patch_reconciliation_runtime(mocker)
+    client = mocker.Mock()
+    client.get_incidents.return_value = {
+        "incidents": [{"id": "i-1", "name": "One", "createdAt": "2024-06-01T00:00:00Z", "severity": "LOW"}],
+        "total": 1,
+    }
+
+    next_run, incidents = fetch_reconciliation_incidents_command(
+        client,
+        last_run={"alerts_last_fetch": "keep-me"},
+        alert_ids=["a-1"],
+        incident_ids=["i-1", "i-2"],
+        max_fetch=1,
+        integration_url="https://vega.example",
+    )
+
+    client.get_incidents.assert_called_once_with(
+        incident_ids=["i-1"],
+        from_time=INCIDENT_ID_LOOKUP_FROM_TIME,
+        limit=1,
+        offset=0,
+    )
+    client.get_alerts.assert_not_called()
+    assert "severities" not in client.get_incidents.call_args.kwargs
+    assert next_run["alerts_last_fetch"] == "keep-me"
+    assert next_run[RECONCILE_COMPLETED_INCIDENTS_KEY] == ["i-1"]
+    assert len(incidents) == 1
+    assert incidents[0]["dbotMirrorId"] == "incident:i-1"
+
+
+def test_fetch_reconciliation_marks_missing_ids_and_does_not_retry(mocker):
+    _patch_reconciliation_runtime(mocker)
+    client = mocker.Mock()
+    client.get_incidents.return_value = {
+        "incidents": [{"id": "i-1", "name": "One", "createdAt": "2024-06-01T00:00:00Z", "severity": "LOW"}],
+        "total": 1,
+    }
+    client.get_alerts.return_value = {"alerts": [], "total": 0}
+
+    next_run, created = fetch_reconciliation_incidents_command(
+        client,
+        last_run={},
+        alert_ids=["a-missing"],
+        incident_ids=["i-1"],
+        max_fetch=50,
+        integration_url="https://vega.example",
+    )
+    assert next_run[RECONCILE_NOT_FOUND_ALERTS_KEY] == ["a-missing"]
+    assert next_run[RECONCILE_COMPLETED_ALERTS_KEY] == []
+    assert len(created) == 1
+
+    next_run, created_again = fetch_reconciliation_incidents_command(
+        client,
+        last_run=next_run,
+        alert_ids=["a-missing"],
+        incident_ids=["i-1"],
+        max_fetch=50,
+        integration_url="https://vega.example",
+    )
+
+    assert created_again == []
+    assert client.get_alerts.call_count == 1
+    assert client.get_incidents.call_count == 1
+
+
+def test_fetch_reconciliation_leaves_ids_pending_on_transient_error(mocker):
+    _patch_reconciliation_runtime(mocker)
+    mocker.patch("Vega.demisto.error")
+    client = mocker.Mock()
+    client.get_alerts.side_effect = DemistoException("connection timeout error")
+
+    next_run, created = fetch_reconciliation_incidents_command(
+        client,
+        last_run={},
+        alert_ids=["a-1"],
+        incident_ids=[],
+        max_fetch=50,
+    )
+
+    assert created == []
+    assert next_run[RECONCILE_NOT_FOUND_ALERTS_KEY] == []
+    assert next_run[RECONCILE_COMPLETED_ALERTS_KEY] == []
+
+
+def _invalid_uuid_exception(detail: str) -> DemistoException:
+    payload = {
+        "message": "Invalid request fields",
+        "extensions": {
+            "error_code": "E000000057",
+            "error_code_name": "INVALID_REQUEST_FIELDS",
+            "extra_args": {"error": detail},
+            "trace_id": 1,
+        },
+    }
+    return DemistoException(f"GraphQL error: {[payload]}")
+
+
+def test_fetch_reconciliation_skips_invalid_uuid_and_fetches_the_rest(mocker):
+    """One invalid UUID is logged and skipped. Valid IDs in the same list are still fetched."""
+    _patch_reconciliation_runtime(mocker)
+    info = mocker.patch("Vega.demisto.info")
+    error = mocker.patch("Vega.demisto.error")
+    good_id = "019e1b27-6d49-7ea1-a9d2-f30bf8c69165"
+    bad_incident_id = "sdfsdfsafasdfsdfsda"
+    bad_alert_id = "asdfsdf"
+    client = mocker.Mock()
+
+    def get_incidents(**kwargs):
+        if bad_incident_id in kwargs["incident_ids"]:
+            raise _invalid_uuid_exception(f'incidentIds entry "{bad_incident_id}" is not a valid UUID')
+        return {
+            "incidents": [{"id": good_id, "name": "One", "createdAt": "2024-06-01T00:00:00Z", "severity": "LOW"}],
+            "total": 1,
+        }
+
+    client.get_incidents.side_effect = get_incidents
+    client.get_alerts.side_effect = _invalid_uuid_exception(f'alertIds "{bad_alert_id}" is not a valid UUID')
+
+    next_run, created = fetch_reconciliation_incidents_command(
+        client,
+        last_run={},
+        alert_ids=[bad_alert_id],
+        incident_ids=[bad_incident_id, good_id],
+        max_fetch=50,
+        integration_url="https://vega.example",
+    )
+
+    assert [incident["dbotMirrorId"] for incident in created] == [f"incident:{good_id}"]
+    assert next_run[RECONCILE_COMPLETED_INCIDENTS_KEY] == [good_id]
+    assert next_run[RECONCILE_NOT_FOUND_INCIDENTS_KEY] == [bad_incident_id]
+    assert next_run[RECONCILE_NOT_FOUND_ALERTS_KEY] == [bad_alert_id]
+    error_lines = [call.args[0] for call in error.call_args_list]
+    assert f"Skipped incident ID '{bad_incident_id}' because it is not a valid UUID." in error_lines[0]
+    assert f"Skipped alert ID '{bad_alert_id}' because it is not a valid UUID." in error_lines[1]
+    assert all("GraphQL" not in line and "trace_id" not in line for line in error_lines)
+    assert "Fetched 1 Vega incident." in [call.args[0] for call in info.call_args_list]
+
+    info.reset_mock()
+    client.get_incidents.reset_mock()
+    client.get_alerts.reset_mock()
+    _, created_again = fetch_reconciliation_incidents_command(
+        client,
+        last_run=next_run,
+        alert_ids=[bad_alert_id],
+        incident_ids=[bad_incident_id, good_id],
+        max_fetch=50,
+        integration_url="https://vega.example",
+    )
+
+    assert created_again == []
+    client.get_incidents.assert_not_called()
+    client.get_alerts.assert_not_called()
+    assert "No Vega incidents or alerts were fetched." in [call.args[0] for call in info.call_args_list]
+
+
+def test_fetch_reconciliation_skips_uuid_error_that_uses_single_quotes(mocker):
+    _patch_reconciliation_runtime(mocker)
+    mocker.patch("Vega.demisto.error")
+    bad_id = "019e1b27-6d49-7ea1-a9d2-f30bf8c69165rtrtrfiyf t"
+    client = mocker.Mock()
+    client.get_incidents.side_effect = _invalid_uuid_exception(f"incidents entry '{bad_id}' is not valid UUID")
+
+    next_run, created = fetch_reconciliation_incidents_command(
+        client,
+        last_run={},
+        alert_ids=[],
+        incident_ids=[bad_id],
+        max_fetch=50,
+    )
+
+    assert created == []
+    assert next_run[RECONCILE_NOT_FOUND_INCIDENTS_KEY] == [bad_id]
+
+
+def test_fetch_reconciliation_still_fails_on_other_graphql_errors(mocker):
+    _patch_reconciliation_runtime(mocker)
+    client = mocker.Mock()
+    client.get_alerts.side_effect = DemistoException("GraphQL error: [{'message': 'Something else'}]")
+
+    with pytest.raises(DemistoException, match="Something else"):
+        fetch_reconciliation_incidents_command(
+            client,
+            last_run={},
+            alert_ids=["a-1"],
+            incident_ids=[],
+            max_fetch=50,
+        )
