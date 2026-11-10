@@ -24,6 +24,7 @@ def mock_send_events_to_xsiam(events, vendor, product):
 def disable_seconds_probe(mocker):
     """The seconds probe makes extra API calls; tests that need it enable it explicitly."""
     mocker.patch("RecordedFutureEventCollector.DEBUG_PROBE_SECONDS", False)
+    mocker.patch("RecordedFutureEventCollector.DEBUG_PROBE_REQUESTS", False)
 
 
 """ TEST FUNCTIONS """
@@ -417,6 +418,115 @@ def test_get_events_command_with_time_range_shows_api_counts(mocker):
     assert request.last_request.qs["triggered"][0].upper() == "[2026-11-09T00:00:00,2026-11-09T23:59:59]"
     readable = results.call_args[0][0].readable_output
     assert "total=1291 returned=3" in readable
+
+
+def fake_capped_api(all_events: list, cap: int = 50):
+    """Simulates the observed gw behaviour: honours limit up to a cap, honours 'from', picks the newest events
+    matching an open-ended start, sorts them by direction, and ignores closed ranges (falls back to everything)."""
+
+    def callback(request, context):
+        qs = request.qs
+        triggered = (qs.get("triggered") or [""])[0].upper()
+        limit = min(int((qs.get("limit") or [cap])[0]), cap)
+        offset = int((qs.get("from") or [0])[0])
+        start, _, end = triggered.strip("[]").partition(",")
+        matched = all_events if end else [e for e in all_events if e["log"]["triggered"][:19] >= start[:19]]
+        newest_first = sorted(matched, key=lambda e: e["log"]["triggered"], reverse=True)
+        page = newest_first[offset : offset + limit]
+        if (qs.get("direction") or ["asc"])[0] == "asc":
+            page = list(reversed(page))
+        return {"data": page, "counts": {"returned": len(page), "total": len(matched)}}
+
+    return callback
+
+
+def make_many_events(count: int) -> list:
+    return [make_event(f"e{i:03d}", f"2026-11-10T{10 + i // 60:02d}:{i % 60:02d}:00.000Z") for i in range(count)]
+
+
+@freeze_time("2026-11-11T00:00:00Z")
+def test_request_probe_logs_every_case_and_verdict(mocker):
+    """
+    Given: An API that caps at 50, honours limit below the cap and honours 'from'.
+    When: The request probe runs.
+    Then: Every case is logged with status and counts, and the verdict answers the limit / from / order questions.
+    """
+    from RecordedFutureEventCollector import Client, run_request_probe, build_request_probe_cases
+
+    info = mocker.patch.object(demisto, "info")
+    events = make_many_events(120)
+    with requests_mock.Mocker() as m:
+        m.get(f"{BASE_URL}/alert/search", json=fake_capped_api(events))
+        m.get("https://api.recordedfuture.com/v2/alert/search", status_code=401, json={"error": "unauthorized"})
+        verdict = run_request_probe(Client(BASE_URL))
+
+    logged = [str(call.args[0]) for call in info.call_args_list]
+    case_names = [case[0] for case in build_request_probe_cases("2026-11-10T00:00:00", "2026-11-11T00:00:00")]
+    for name in case_names:
+        assert any(f"request probe case {name}:" in line for line in logged), name
+    assert any("request probe verdict" in line for line in logged)
+    assert verdict["limit_table"][10]["returned"] == 10
+    assert verdict["limit_table"][1000]["returned"] == 50
+    assert verdict["limit_below_50_honoured"] is True
+    assert verdict["max_returned_seen"] == 50
+    assert verdict["from_moves_window_limit_50"] is True
+    assert verdict["from_moves_window_limit_10"] is True
+    assert verdict["asc_desc_common_ids"] == 50
+    assert verdict["statuses_not_200"]["v2_limit_100"] == 401
+
+
+def test_request_probe_errors_never_break_fetch(mocker):
+    """
+    Given: DEBUG_PROBE_REQUESTS enabled and every probe request raising.
+    When: fetch-events runs through main().
+    Then: The fetch still sends events and saves the last run.
+    """
+    import RecordedFutureEventCollector
+
+    mocker.patch.object(RecordedFutureEventCollector, "DEBUG_PROBE_REQUESTS", True)
+    mocker.patch.object(RecordedFutureEventCollector, "run_probe_case", side_effect=Exception("boom"))
+    _, set_last_run = run_fetch_events_main(mocker, {}, {"last_run_time": "2026-11-06T03:00:00", "last_run_ids": []})
+    assert set_last_run.call_args[0][0]["last_run_time"] == "2026-11-06T03:00:01"
+
+
+def test_request_probe_runs_once_per_interval(mocker):
+    """
+    Given: DEBUG_PROBE_REQUESTS enabled.
+    When: fetch-events runs twice within the interval, and again after the version is bumped.
+    Then: The probe runs on the first fetch only, and again after the version change.
+    """
+    import RecordedFutureEventCollector
+
+    mocker.patch.object(RecordedFutureEventCollector, "DEBUG_PROBE_REQUESTS", True)
+    probe = mocker.patch.object(RecordedFutureEventCollector, "run_request_probe", return_value={})
+    integration_context: dict = {}
+    last_run = {"last_run_time": "2026-11-06T03:00:00", "last_run_ids": []}
+
+    run_fetch_events_main(mocker, integration_context, last_run)
+    run_fetch_events_main(mocker, integration_context, last_run)
+    assert probe.call_count == 1
+
+    mocker.patch.object(RecordedFutureEventCollector, "DEBUG_REQUEST_PROBE_VERSION", "upload3-v2")
+    run_fetch_events_main(mocker, integration_context, last_run)
+    assert probe.call_count == 2
+
+
+def test_summarize_raw_probe_drops_sensitive_headers():
+    from RecordedFutureEventCollector import summarize_raw_probe
+
+    res = requests.Response()
+    res.status_code = 200
+    res.url = f"{BASE_URL}/alert/search?limit=1"
+    res.headers.update({"Set-Cookie": "secret", "Authorization": "secret", "X-RateLimit-Limit": "100", "Server": "gw"})
+    res._content = json.dumps({"data": ASC_EVENTS, "counts": {"returned": 3, "total": 3}}).encode()
+    summary = summarize_raw_probe("x", res, include_all_headers=True)
+
+    assert "Set-Cookie" not in summary["headers"]
+    assert "Authorization" not in summary["headers"]
+    assert summary["headers"]["X-RateLimit-Limit"] == "100"
+    assert summary["returned"] == 3
+    assert summary["order"] == "asc"
+    assert summary["ids"] == ["a", "b", "c"]
 
 
 def test_main(mocker):

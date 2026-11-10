@@ -1,6 +1,9 @@
 from CommonServerPython import *
 import json
+import time
 import urllib3
+import requests
+from datetime import UTC
 from typing import Any
 
 # Disable insecure warnings
@@ -30,10 +33,26 @@ APPLIED_FORCE_START_CONTEXT_KEY = "xsup_80326_applied_force_start_time"
 # When True, every fetch-events run makes a few extra read-only /alert/search calls around a second taken from the
 # response, and logs whether the API honours second precision (start and end) in the 'triggered' filter.
 # These calls only log; they never change what is sent to XSIAM or what is saved as the last run.
-DEBUG_PROBE_SECONDS = True
+# Answered by upload 2 (open-ended start honours seconds, closed ranges are ignored), so it is off now.
+DEBUG_PROBE_SECONDS = False
 # Kept short so the probe window stays under the API's 50-alert response cap.
 PROBE_WINDOW_SECONDS = 10
 SECONDS_FORMAT = "%Y-%m-%dT%H:%M:%S"
+# Upload 3: request-shape probe (limit / from / direction / orderby / triggered formats). Read-only, logs only.
+# Runs on the first fetch after upload, then at most once every DEBUG_REQUEST_PROBE_INTERVAL_MINUTES.
+DEBUG_PROBE_REQUESTS = True
+DEBUG_REQUEST_PROBE_INTERVAL_MINUTES = 15
+# Bump to force the probe to run on the next fetch after a re-upload.
+DEBUG_REQUEST_PROBE_VERSION = "upload3-v1"
+REQUEST_PROBE_CONTEXT_KEY = "xsup_80326_request_probe"
+# Responses with up to this many events log their full id list; bigger ones log the first/last ids only.
+PROBE_FULL_IDS_MAX = 100
+PROBE_EDGE_IDS = 10
+# Accept error statuses in probes so we can log what the API says instead of raising.
+PROBE_OK_CODES = (200, 400, 401, 403, 404, 405, 413, 422, 429, 500, 502, 503)
+PROBE_REQUEST_TIMEOUT_SECONDS = 20
+# Stop the probe if it has been running this long, so the fetch always has time to finish.
+PROBE_TIME_BUDGET_SECONDS = 150
 
 """ CLIENT CLASS """
 
@@ -58,6 +77,10 @@ class Client(BaseClient):
     def get_alerts(self, params: dict = None) -> dict[str, Any]:
         """Get alerts."""
         return self._call(url_suffix="/alert/search", params=params)
+
+    def get_alerts_raw(self, params: dict) -> requests.Response:
+        """Debug only: returns the raw response (status, headers, final URL), without raising on error statuses."""
+        return self._call(url_suffix="/alert/search", params=params, resp_type="response", ok_codes=PROBE_OK_CODES, retries=0)
 
 
 """ DEBUG HELPERS (XSUP-80326) """
@@ -345,6 +368,266 @@ def fetch_events(client: Client, **kwargs) -> tuple[list, dict]:
     return events, next_run
 
 
+""" REQUEST-SHAPE PROBE (XSUP-80326, upload 3) """
+
+V2_ALERT_SEARCH_URL = "https://api.recordedfuture.com/v2/alert/search"
+INTERESTING_HEADER_PARTS = ("limit", "rate", "retry", "remaining", "x-", "content-length", "server", "via")
+
+
+def extract_probe_events(body: Any) -> tuple[list, str]:
+    """Returns (events, data_type). The gw endpoint returns data as a list, v2 returns data.results."""
+    if not isinstance(body, dict):
+        return [], type(body).__name__
+    data = body.get("data")
+    if isinstance(data, dict):
+        return data.get("results") or [], "dict(results)"
+    if isinstance(data, list):
+        return data, "list"
+    return [], type(data).__name__
+
+
+def probe_event_triggered(event: dict) -> str:
+    return (event.get("log") or {}).get("triggered") or event.get("triggered") or ""
+
+
+def summarize_probe_ids(events: list) -> dict:
+    ids = [event.get("id") for event in events]
+    if len(ids) <= PROBE_FULL_IDS_MAX:
+        return {"ids": ids}
+    return {"first_ids": ids[:PROBE_EDGE_IDS], "last_ids": ids[-PROBE_EDGE_IDS:]}
+
+
+def summarize_raw_probe(name: str, res: requests.Response, include_all_headers: bool) -> dict:
+    """Builds a log-friendly summary of a raw probe response."""
+    headers = {k: v for k, v in res.headers.items() if "cookie" not in k.lower() and "auth" not in k.lower()}
+    if not include_all_headers:
+        headers = {k: v for k, v in headers.items() if any(part in k.lower() for part in INTERESTING_HEADER_PARTS)}
+    summary: dict[str, Any] = {
+        "name": name,
+        "url": res.url,
+        "status": res.status_code,
+        "elapsed_ms": int(res.elapsed.total_seconds() * 1000) if res.elapsed else None,
+        "headers": headers,
+    }
+    try:
+        body = res.json()
+    except ValueError:
+        summary["body_text"] = res.text[:500]
+        return summary
+    events, data_type = extract_probe_events(body)
+    triggered = [probe_event_triggered(event) for event in events]
+    summary.update(
+        {
+            "body_keys": list(body) if isinstance(body, dict) else None,
+            "extra_top_level": {k: v for k, v in body.items() if k not in ("data", "counts")} if isinstance(body, dict) else None,
+            "data_type": data_type,
+            "counts": body.get("counts") if isinstance(body, dict) else None,
+            "returned": len(events),
+            "order": order_of(triggered),
+            "first_triggered": triggered[0] if triggered else None,
+            "last_triggered": triggered[-1] if triggered else None,
+            "min_triggered": min(triggered) if triggered else None,
+            "max_triggered": max(triggered) if triggered else None,
+            **summarize_probe_ids(events),
+        }
+    )
+    if res.status_code != 200:
+        summary["body_text"] = res.text[:500]
+    return summary
+
+
+def order_of(values: list) -> str:
+    if len(values) < 2:
+        return "n/a"
+    if values == sorted(values):
+        return "asc"
+    if values == sorted(values, reverse=True):
+        return "desc"
+    return "unsorted"
+
+
+def build_request_probe_cases(start: str, end: str) -> list[tuple[str, dict | None, str | None]]:
+    """All request shapes to try: (name, params, full_url). Exactly one of params/full_url is set.
+
+    start/end are second-precision UTC strings (start = now-24h, end = now), so the windows hold far more than 50 alerts.
+    """
+    base: dict[str, Any] = {"triggered": f"[{start},]", "orderby": "triggered", "direction": "asc"}
+    start_date, end_date = start[:10], end[:10]
+    cases: list[tuple[str, dict | None, str | None]] = [
+        # limit: is it honoured below 50, where is the cap, what happens above it
+        ("limit_none", dict(base), None),
+        *[(f"limit_{n}", {**base, "limit": n}, None) for n in (1, 10, 49, 50, 51, 100, 200, 500, 1000, 1001)],
+        # paging: does 'from' (documented in the 2023 Postman collection) move the window
+        *[(f"limit_50_from_{n}", {**base, "limit": 50, "from": n}, None) for n in (0, 50, 100)],
+        *[(f"limit_10_from_{n}", {**base, "limit": 10, "from": n}, None) for n in (0, 10)],
+        ("from_50_no_limit", {**base, "from": 50}, None),
+        ("limit_50_offset_50", {**base, "limit": 50, "offset": 50}, None),
+        # ordering
+        ("desc_limit_50", {**base, "direction": "desc", "limit": 50}, None),
+        ("desc_limit_10", {**base, "direction": "desc", "limit": 10}, None),
+        ("no_direction_limit_50", {"triggered": base["triggered"], "orderby": "triggered", "limit": 50}, None),
+        ("no_orderby_no_direction_limit_50", {"triggered": base["triggered"], "limit": 50}, None),
+        ("direction_ASC_upper_limit_50", {**base, "direction": "ASC", "limit": 50}, None),
+        # triggered formats
+        ("no_triggered_limit_10", {"orderby": "triggered", "direction": "asc", "limit": 10}, None),
+        ("triggered_ms_Z_limit_10", {**base, "triggered": f"[{start}.000Z,]", "limit": 10}, None),
+        ("triggered_relative_24h_limit_10", {**base, "triggered": "[-24h,]", "limit": 10}, None),
+        ("triggered_relative_1h_limit_10", {**base, "triggered": "[-1h,]", "limit": 10}, None),
+        ("closed_seconds_limit_10", {**base, "triggered": f"[{start},{end}]", "limit": 10}, None),
+        ("closed_Z_limit_10", {**base, "triggered": f"[{start}Z,{end}Z]", "limit": 10}, None),
+        ("closed_ms_Z_limit_10", {**base, "triggered": f"[{start}.000Z,{end}.000Z]", "limit": 10}, None),
+        ("closed_date_only_limit_10", {**base, "triggered": f"[{start_date},{end_date}]", "limit": 10}, None),
+        ("closed_relative_limit_10", {**base, "triggered": "[-24h,-1h]", "limit": 10}, None),
+        ("end_only_limit_10", {**base, "triggered": f"[,{end}]", "limit": 10}, None),
+        # URL encoding: requests encodes [ , ] - send the same query unencoded
+        (
+            "unencoded_open_limit_100",
+            None,
+            f"{BASE_URL}/alert/search?triggered=[{start},]&orderby=triggered&direction=asc&limit=100",
+        ),
+        (
+            "unencoded_closed_limit_10",
+            None,
+            f"{BASE_URL}/alert/search?triggered=[{start},{end}]&orderby=triggered&direction=asc&limit=10",
+        ),
+        # Connect API v2 endpoint (the one in the 2023 Postman collection) with the same token
+        ("v2_limit_100", None, f"{V2_ALERT_SEARCH_URL}?triggered=[{start},]&orderby=triggered&direction=asc&limit=100"),
+        (
+            "v2_limit_50_from_50",
+            None,
+            f"{V2_ALERT_SEARCH_URL}?triggered=[{start},]&orderby=triggered&direction=asc&limit=50&from=50",
+        ),
+        ("v2_desc_limit_10", None, f"{V2_ALERT_SEARCH_URL}?triggered=[{start},]&orderby=triggered&direction=desc&limit=10"),
+    ]
+    return cases
+
+
+def run_probe_case(client: Client, name: str, params: dict | None, full_url: str | None, include_all_headers: bool) -> dict:
+    """Runs one probe request. Never raises: errors are returned in the summary."""
+    try:
+        request_kwargs: dict[str, Any] = {
+            "resp_type": "response",
+            "ok_codes": PROBE_OK_CODES,
+            "retries": 0,
+            "timeout": PROBE_REQUEST_TIMEOUT_SECONDS,
+        }
+        if full_url:
+            res = client._call(url_suffix="", full_url=full_url, **request_kwargs)
+        else:
+            res = client._call(url_suffix="/alert/search", params=params, **request_kwargs)
+        summary = summarize_raw_probe(name, res, include_all_headers)
+    except Exception as error:
+        summary = {"name": name, "error": str(error)[:500]}
+    summary["request_params"] = params
+    return summary
+
+
+def ids_of(summary: dict) -> list:
+    return summary.get("ids") or []
+
+
+def evaluate_request_probe(results: dict[str, dict]) -> dict:
+    """Turns the probe summaries into direct answers."""
+
+    def returned(name: str):
+        return results.get(name, {}).get("returned")
+
+    def total(name: str):
+        return (results.get(name, {}).get("counts") or {}).get("total")
+
+    limits = (1, 10, 49, 50, 51, 100, 200, 500, 1000, 1001)
+    limit_table = {n: {"returned": returned(f"limit_{n}"), "status": results.get(f"limit_{n}", {}).get("status")} for n in limits}
+    page_0, page_50 = set(ids_of(results.get("limit_50_from_0", {}))), set(ids_of(results.get("limit_50_from_50", {})))
+    small_0, small_10 = set(ids_of(results.get("limit_10_from_0", {}))), set(ids_of(results.get("limit_10_from_10", {})))
+    limit_100_ids = set(ids_of(results.get("limit_100", {})))
+    return {
+        "window_total": total("limit_50"),
+        "limit_table": limit_table,
+        "limit_below_50_honoured": returned("limit_10") == 10 and returned("limit_1") == 1,
+        "max_returned_seen": max((s.get("returned") or 0) for s in results.values()),
+        "from_moves_window_limit_50": bool(page_50) and not (page_0 & page_50),
+        "from_moves_window_limit_10": bool(small_10) and not (small_0 & small_10),
+        "from_pages_union_equals_limit_100": bool(limit_100_ids) and limit_100_ids == (page_0 | page_50),
+        "offset_param_moves_window": bool(ids_of(results.get("limit_50_offset_50", {})))
+        and not (page_0 & set(ids_of(results.get("limit_50_offset_50", {})))),
+        "asc_order": results.get("limit_50", {}).get("order"),
+        "asc_first_last": [results.get("limit_50", {}).get("first_triggered"), results.get("limit_50", {}).get("last_triggered")],
+        "desc_order": results.get("desc_limit_50", {}).get("order"),
+        "desc_first_last": [
+            results.get("desc_limit_50", {}).get("first_triggered"),
+            results.get("desc_limit_50", {}).get("last_triggered"),
+        ],
+        # If asc and desc return the same 50 ids, the API picks the newest 50 and only sorts within them.
+        "asc_desc_common_ids": len(set(ids_of(results.get("limit_50", {}))) & set(ids_of(results.get("desc_limit_50", {})))),
+        "asc_limit_50_min_max": [
+            results.get("limit_50", {}).get("min_triggered"),
+            results.get("limit_50", {}).get("max_triggered"),
+        ],
+        "asc_limit_10_min_max": [
+            results.get("limit_10", {}).get("min_triggered"),
+            results.get("limit_10", {}).get("max_triggered"),
+        ],
+        "totals_by_format": {
+            name: total(name)
+            for name in results
+            if name.startswith(("closed", "triggered_", "end_only", "no_triggered", "unencoded", "v2_"))
+        },
+        "statuses_not_200": {name: s.get("status") or s.get("error") for name, s in results.items() if s.get("status") != 200},
+    }
+
+
+def should_run_request_probe() -> bool:
+    if not DEBUG_PROBE_REQUESTS:
+        return False
+    state = get_integration_context().get(REQUEST_PROBE_CONTEXT_KEY) or {}
+    if state.get("version") != DEBUG_REQUEST_PROBE_VERSION:
+        return True
+    last_run_at = arg_to_datetime(state.get("last_run_at"))
+    if not last_run_at:
+        return True
+    return datetime.now(UTC) - last_run_at >= timedelta(minutes=DEBUG_REQUEST_PROBE_INTERVAL_MINUTES)
+
+
+def mark_request_probe_ran() -> None:
+    integration_context = get_integration_context()
+    integration_context[REQUEST_PROBE_CONTEXT_KEY] = {
+        "version": DEBUG_REQUEST_PROBE_VERSION,
+        "last_run_at": datetime.now(UTC).strftime(SECONDS_FORMAT) + "Z",
+    }
+    set_integration_context(integration_context)
+
+
+def run_request_probe(client: Client) -> dict:
+    """Runs every request shape once and logs one line per request plus a verdict. Read-only; never raises."""
+    now = datetime.now(UTC)
+    start = (now - timedelta(hours=24)).strftime(SECONDS_FORMAT)
+    end = now.strftime(SECONDS_FORMAT)
+    cases = build_request_probe_cases(start, end)
+    debug_log(f"request probe {DEBUG_REQUEST_PROBE_VERSION} starting: {len(cases)} requests, start={start} end={end}")
+    results: dict[str, dict] = {}
+    started = time.monotonic()
+    for index, (name, params, full_url) in enumerate(cases):
+        if time.monotonic() - started > PROBE_TIME_BUDGET_SECONDS:
+            debug_log(f"request probe time budget reached, skipped: {[case[0] for case in cases[index:]]}")
+            break
+        results[name] = run_probe_case(client, name, params, full_url, include_all_headers=index == 0)
+        debug_log(f"request probe case {name}: {json.dumps(results[name], default=str)}")
+    verdict = evaluate_request_probe(results)
+    debug_log(f"request probe verdict: {json.dumps(verdict, default=str)}")
+    return verdict
+
+
+def maybe_run_request_probe(client: Client) -> None:
+    """Runs the request probe when it is due. Any failure is logged and swallowed so the fetch is never affected."""
+    try:
+        if not should_run_request_probe():
+            return
+        run_request_probe(client)
+        mark_request_probe_ran()
+    except Exception as error:
+        debug_log(f"request probe failed: {error}")
+
+
 def get_pending_force_start_time() -> str | None:
     """Returns DEBUG_FORCE_START_TIME (formatted) if it is set and was not applied yet, otherwise None."""
     if not DEBUG_FORCE_START_TIME:
@@ -407,8 +690,10 @@ def main() -> None:
         elif command == "fetch-events":
             debug_log(
                 f"debug build active: DEBUG_CURSOR_MODE={DEBUG_CURSOR_MODE}, DEBUG_FORCE_START_TIME={DEBUG_FORCE_START_TIME}, "
-                f"DEBUG_PROBE_SECONDS={DEBUG_PROBE_SECONDS}"
+                f"DEBUG_PROBE_SECONDS={DEBUG_PROBE_SECONDS}, DEBUG_PROBE_REQUESTS={DEBUG_PROBE_REQUESTS} "
+                f"({DEBUG_REQUEST_PROBE_VERSION})"
             )
+            maybe_run_request_probe(client)
             stored_last_run = demisto.getLastRun() or {}
             last_run = stored_last_run.get("last_run_time")
             if force_start := get_pending_force_start_time():
