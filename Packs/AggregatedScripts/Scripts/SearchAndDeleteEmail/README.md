@@ -3,9 +3,9 @@ Searches for emails and optionally deletes them, using one or more of the suppor
 Supported scopes: Gmail, Microsoft Graph Security and EWS v2 support searching all mailboxes. Microsoft Graph Mail supports only specific mailboxes.
 Delete types: Gmail, Microsoft Graph Security and EWS v2 support both soft and hard delete. Microsoft Graph Mail supports soft delete only (the emails are moved to Deleted Items).
 Microsoft Graph Security and EWS v2 honor only the date part of the time frame, so the effective search window can be up to 24 hours wider than requested.
-The command may take a long time when searching thousands of mailboxes. It uses the built-in polling: every run advances the operation by one step and releases the worker until the next run, so it never blocks. The timeout argument is the overall time budget (in seconds) of the whole run.
+The command may take a long time when searching thousands of mailboxes. It uses the built-in polling: long waits (the Microsoft Graph Security eDiscovery operations and the deletion verification) are polled, while the search and delete commands of each run are executed synchronously within that run. The timeout argument is the overall time budget (in seconds) of the whole run.
 When verify_deletion is true (relevant only for "Search & Delete"), the script verifies that the emails were really deleted instead of trusting that the delete command did not fail (the verification is polled for up to 120 seconds). Verification is not supported for Microsoft Graph Security.
-Microsoft Graph Security runs in a dedicated eDiscovery case that is created for the run and is always deleted at the end, together with its search, and returns a single aggregate record (counts only) instead of per-email details.
+Microsoft Graph Security runs in a dedicated eDiscovery case that is created for the run and is always deleted at the end, together with its search, and returns a single aggregate record (counts only) instead of per-email details. "Search & Delete" with mailbox_scope "Specific" is refused for Microsoft Graph Security, because its search would also match the copies of the email in other mailboxes.
 
 ## Script Data
 
@@ -39,6 +39,7 @@ This script uses the following commands and scripts.
 * msg-list-case-operation
 * msg-delete-ediscovery-search
 * msg-delete-ediscovery-case
+* msg-list-ediscovery-cases
 * ews-search-mailboxes
 * ews-get-items
 * ews-get-attachment
@@ -88,11 +89,10 @@ This script uses the following commands and scripts.
 | EmailData.AdditionalFields | Additional vendor specific fields. | Unknown |
 | EmailData.AdditionalFields.ObjectID | The vendor specific ID of the email \(for example, the message ID in Microsoft Graph Mail or the item ID in EWS\). | String |
 | EmailData.AdditionalFields.InternetMessageID | The Internet Message ID of the email, when the vendor returns it. | String |
-| EmailData.AdditionalFields.Verified | Whether the deletion of the email was verified. Returned only when verify_deletion is true and the verification could be determined. | Boolean |
+| EmailData.AdditionalFields.Verified | Whether the deletion of the email was verified. Also returned in the aggregate record of Microsoft Graph Security, where it reflects the estimate that was calculated after the last purge. Returned only when verify_deletion is true and the verification could be determined. | Boolean |
 | EmailData.AdditionalFields.Instance | The name of the integration instance. Returned for records without an email and for every email when verbose is true. | String |
-| EmailData.AdditionalFields.HTMLBodyTruncated | True when the HTML body of the email was truncated to keep the polling state small. Returned only when verbose is true. | Boolean |
+| EmailData.AdditionalFields.HTMLBodyTruncated | True when the HTML body of the email was truncated to keep the polling state small. | Boolean |
 | EmailData.AdditionalFields.Aggregate | True for the single aggregate record of a brand that returns counts only \(Microsoft Graph Security\), which has no per-email details. | Boolean |
-| EmailData.AdditionalFields.DeletionVerified | Whether the deletion was verified. Returned only in the aggregate record of Microsoft Graph Security. | Boolean |
 | EmailData.AdditionalFields.Note | A note about the run of the brand instance, for example when the vendor capped the number of returned emails. Returned only in records without an email and in aggregate records. | String |
 | TotalFound | The total number of emails that were found across all brands. | Number |
 | TotalDeleted | The total number of emails that were deleted across all brands. | Number |
@@ -110,7 +110,7 @@ This script uses the following commands and scripts.
 | --- | --- | --- | --- | --- |
 | Gmail | Yes | Yes | Soft, Hard | Yes |
 | Microsoft Graph Mail | Yes | No | Soft only (moved to *Deleted Items*) | Yes |
-| Microsoft Graph Security | Yes (scoped by the KQL query) | Yes | Soft, Hard | No |
+| Microsoft Graph Security | Search only (scoped by the KQL query) | Yes | Soft, Hard (*All* scope only) | No |
 | EWS v2 | Yes | Yes | Soft, Hard | Yes |
 
 ### Notes and limits
@@ -118,14 +118,16 @@ This script uses the following commands and scripts.
 * **Safety**: at least one of `internet_message_id`, `object_id`, `subject` or `sender_address` is required, so a delete operation can never match every email in the time frame.
 * **Message ID is preferred**: when `internet_message_id` is specified, `subject` and `sender_address` are ignored.
 * **object_id**: requires exactly one `target_mailbox` and one brand, with `mailbox_scope` set to *Specific*. It is not supported for Microsoft Graph Security.
-* **Microsoft Graph Security**: for every run the script creates a dedicated eDiscovery case named `XSOAR Search And Delete Email <UTC timestamp>-<short id>` with a search in it, estimates the number of matching emails and, for *Search & Delete*, purges them (and re-estimates until nothing matches or 10 rounds were done). The search and the case are always deleted at the end of the run, also for *Search Only* and also on failure or timeout. For the *Specific* scope the mailboxes are matched using `recipients:` in the KQL query, so copies of the email in other mailboxes may match too. The API returns only totals, so a single aggregate record (`AdditionalFields.Aggregate=true`) is returned for the brand, and attachments cannot be retrieved.
+* **Microsoft Graph Security**: for every run the script creates a dedicated eDiscovery case named `XSOAR Search And Delete Email <UTC timestamp>-<short id>` with a search in it, estimates the number of matching emails and, for *Search & Delete*, purges them (and re-estimates until nothing matches or 10 rounds were done). The search and the case are always deleted at the end of the run, also for *Search Only* and also on failure or timeout. For the *Specific* scope the mailboxes are matched using `recipients:` in the KQL query over all tenant mailboxes, so every copy of the email (for example the sender's *Sent Items*) matches too. Therefore *Search & Delete* with the *Specific* scope is refused for Microsoft Graph Security (an error is reported for the brand and nothing is purged), while *Search Only* is allowed. To delete from specific mailboxes, use another brand. The API returns only totals, so a single aggregate record (`AdditionalFields.Aggregate=true`) is returned for the brand, and attachments cannot be retrieved.
 * **Microsoft Graph Mail** cannot search all mailboxes and cannot hard delete.
-* **Pagination**: result pages are followed, and when a vendor caps the number of returned emails the search is repeated after the deletion until no emails are left (up to 10 rounds).
+* **Gmail all mailboxes**: in a domain with more than 500 accounts, Gmail splits the all-mailboxes search into background sub-searches whose results are not available to this script. This is reported as an error for the brand. Use specific mailboxes or another brand.
+* **Pagination**: result pages are followed, and when a vendor caps the number of returned emails the search is repeated after the deletion until no emails are left (up to 10 rounds). A soft deleted Microsoft Graph Mail / EWS email is moved to *Deleted Items* under a new ID, so emails whose mailbox and Internet Message ID were already processed in an earlier round are skipped (they are not counted or deleted again).
+* **EWS email details**: only the first 50 emails that EWS returns are fetched in full (HTML body and attachments). The other emails are reported with the fields returned by the search.
 * **State size**: the polling state is kept below roughly 500 KB. When it grows beyond it, the largest HTML bodies are truncated and marked with `AdditionalFields.HTMLBodyTruncated=true`.
 
 ### Polling and timeout
 
-The script never sleeps or blocks. Every run advances the operation by one step and then either returns the final results or schedules the next run 20 seconds later. The state is passed between the runs in the hidden `state` argument. A short progress message is added to the War Room only when a vendor moves to a new stage.
+The script never sleeps. Long waits (the Microsoft Graph Security eDiscovery operations and the deletion verification) are polled: every run advances the operation by one step and then either returns the final results or schedules the next run 20 seconds later. The search and delete commands of a run are executed synchronously within that run. The state is passed between the runs in the hidden `state` argument. A short progress message is added to the War Room only when a vendor moves to a new stage.
 
 `timeout` is the overall time budget of the whole run, in seconds (default 1800), measured across all the polling runs. When it is exhausted, vendors that were not started yet are reported as failed, the results collected so far are returned, and the Microsoft Graph Security cleanup still runs (the scheduled command gets the remaining budget plus a 600 seconds grace period).
 
@@ -135,12 +137,12 @@ If the platform cancels the scheduled task before the cleanup ran, an eDiscovery
 
 When `verify_deletion` is `true` and the operation is *Search & Delete*:
 
-* **Gmail, Microsoft Graph Mail and EWS v2**: the same search is repeated after the deletion (once per polling run, for up to 120 seconds) and none of the deleted emails may be returned. Emails that are still found are reported with `Success=false` and `AdditionalFields.Verified=false` and are counted in `TotalFailed` instead of `TotalDeleted`. Verified emails have `AdditionalFields.Verified=true`.
-* **Microsoft Graph Security**: verification is not supported. A warning entry is returned and the deletion is performed without verification, except that the estimate that is calculated after the last purge is used to report remaining items as failed (`AdditionalFields.DeletionVerified`).
+* **Gmail, Microsoft Graph Mail and EWS v2**: the same search is repeated after the deletion (once per polling run, for up to 120 seconds) and none of the deleted emails may be returned. Emails that are still found are reported with `Success=false` and `AdditionalFields.Verified=false` and are counted in `TotalFailed` instead of `TotalDeleted`. Verified emails have `AdditionalFields.Verified=true`. When searching by `object_id`, a Gmail email with the `TRASH` label counts as deleted, and a "not found" response of Microsoft Graph Mail or EWS v2 counts as verified.
+* **Microsoft Graph Security**: verification is not supported. A warning entry is returned and the deletion is performed without verification, except that the estimate that is calculated after the last purge is used to report remaining items as failed (`AdditionalFields.Verified` of the aggregate record).
 
 ### Output
 
-The script returns a single War Room entry with the `EmailData` context, `TotalFound`, `TotalDeleted` and `TotalFailed`. The human readable output is a table titled `Search & Delete Email - <operation>` with the columns `Brand`, `Mailbox`, `ID`, `Subject`, `From`, `To`, `Timestamp`, `Operation`, `Success` and `Reason`, followed by a summary line (`Total found | Total deleted | Total failed`). When `verbose` is true, the list of executed commands is appended. When the operation failed for all the integrations, the entry is returned as an error entry with the reasons.
+The script returns a single War Room entry with the `EmailData` context, `TotalFound`, `TotalDeleted` and `TotalFailed`. The human readable output is a table titled `Search & Delete Email - <operation>` with the columns `Brand`, `Mailbox`, `ID`, `Subject`, `From`, `To`, `Timestamp`, `Operation`, `Success` and `Reason`, a line with the totals of every Microsoft Graph Security instance (which has no per-email rows), and a summary line (`Total found | Total deleted | Total failed`). When nothing was found, the table is replaced with "No emails were found.". When `verbose` is true, the list of executed commands is appended. When the operation failed for all the integrations, the entry is returned as an error entry with the reasons.
 
 ### Examples
 

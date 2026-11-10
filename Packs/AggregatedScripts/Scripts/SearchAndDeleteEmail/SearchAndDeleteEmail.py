@@ -1,28 +1,17 @@
-import json
-import re
-import time
-import traceback
-import uuid
-from collections.abc import Callable
-from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta, UTC
-from typing import Any
-
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
 """
 Search & Delete Email - aggregated command.
 
 Searches for emails (and optionally deletes them) using one or more of the supported mail integrations and
 normalizes the results of all vendors into the unified ``EmailData`` context path.
 
-Polling (the script never sleeps or blocks)
--------------------------------------------
+Polling (long waits are polled, the script never sleeps)
+--------------------------------------------------------
 The script uses the built-in XSOAR polling (``polling_function`` + ``PollResult``). Every run is ONE "tick" of a JSON state
 machine: it advances every vendor that is not done by one step and either returns the final results, or schedules the next
-run in ``POLL_INTERVAL_SECONDS`` and releases the worker. The state (``args_for_next_run["state"]``) holds the absolute
-deadline, the per-vendor stage, the per-vendor result (``VendorResult``) and vendor specific data.
+run in ``POLL_INTERVAL_SECONDS`` and releases the worker. The long waits (the Microsoft Graph Security eDiscovery
+operations and the deletion verification) are polled this way, while the search and delete commands of a run are
+executed synchronously within that run. The state (``args_for_next_run["state"]``) holds the absolute deadline, the
+per-vendor stage, the per-vendor result (``VendorResult``) and vendor specific data.
 
 * Per-email vendors (Gmail, Microsoft Graph Mail, EWS): ``start`` (search -> files -> delete, synchronously within one tick)
   -> ``verify`` (only with ``verify_deletion``: one search per tick) -> ``done``.
@@ -41,8 +30,11 @@ Arguments worth knowing
 
 Output
 ------
-Two War Room entries are returned: the first one holds the ``EmailData`` context and a single results table
-(``Search & Delete Email results``), the second one (no context) holds the ``Summary`` table with the totals.
+A single War Room entry is returned with the ``EmailData`` context, ``TotalFound``, ``TotalDeleted`` and ``TotalFailed``.
+Its human readable output is a table titled ``Search & Delete Email - <operation>``, a line with the totals of every
+Microsoft Graph Security instance (which has no per-email rows) and a summary line with the totals ("No emails were
+found." replaces the table when nothing was found). With ``verbose`` the executed commands are appended. When the
+operation failed for all the integrations the entry is an error entry with the reasons.
 
 Supported vendors and their capabilities
 ----------------------------------------
@@ -66,14 +58,22 @@ Vendor notes / limits
 * Microsoft Graph Security: a search has to be created inside an eDiscovery case, executed (estimate statistics),
   purged and finally deleted. A DEDICATED case (``XSOAR Search And Delete Email <timestamp>-<id>``) is created for every
   run and the search AND the case are ALWAYS deleted at the end (also for "Search Only" and also on failure or timeout).
-  Mailbox scoping for "Specific" is done through the KQL query (``recipients:``), which means that copies of the same
-  email in other recipients' mailboxes may match as well. The API does not return per-email details, so a single aggregate
-  record (``AdditionalFields.Aggregate=True``) with the totals is returned and attachments cannot be retrieved.
+  Mailbox scoping for "Specific" is done through the KQL query (``recipients:``) over all tenant mailboxes, which means
+  that every copy of the email (for example the sender's Sent Items) matches as well. That is why "Search & Delete" with
+  the "Specific" scope is refused for this vendor (search only is allowed). The API does not return per-email details,
+  so a single aggregate record (``AdditionalFields.Aggregate=True``) with the totals is returned and attachments cannot
+  be retrieved.
 * Microsoft Graph Security estimate: ``msg-get-last-estimate-statistics-operation`` returns the raw Graph object with
   lower-case keys (``status`` / ``totalItemCount``) as context only when the operation succeeded. Every other status
   (``running``, ``failed``, ``submissionFailed`` ...) comes back ONLY in the human readable text
   (``... (Status: <status>)``) without context, so the status is parsed from that text.
 * Microsoft Graph Mail only works on explicitly named mailboxes and cannot hard delete.
+* Gmail "All mailboxes": above 500 accounts Gmail splits the search into background scheduled sub-searches whose
+  results are not returned to this script, so that case is reported as an error.
+* A soft delete in Microsoft Graph Mail / EWS moves the item to "Deleted Items" under a new ID. Repeated search rounds
+  skip emails whose ``(mailbox, InternetMessageID)`` was already processed, so a moved copy is not counted or deleted
+  again.
+* EWS: only the first ``EWS_ENRICH_LIMIT`` emails are fetched in full (body and attachments).
 * Searching thousands of mailboxes is resource heavy. All long running steps are polled until the overall
   ``timeout`` budget is exhausted and every search is repeated after a deletion round until no more
   results are returned, so emails beyond a single page are not missed.
@@ -87,10 +87,25 @@ verifies that the deletion really happened instead of trusting that the vendor d
 * Gmail / Microsoft Graph Mail / EWS: after the deletion the same search is executed again (once per polling tick, for up to
   ``VERIFICATION_TIMEOUT_SECONDS``, since search indexes may lag) and none of the deleted ``(mailbox, ObjectID)`` pairs
   may be returned. Emails that are still found are reported as failed (``Success=false`` and
-  ``AdditionalFields.DeletionVerified=false``) and are not counted in ``TotalDeleted``.
+  ``AdditionalFields.Verified=false``) and are not counted in ``TotalDeleted``. When searching by ``object_id``, a Gmail
+  message that has the ``TRASH`` label counts as deleted, and a "not found" error of the Microsoft Graph Mail / EWS
+  lookup counts as an empty result (verified).
 * Microsoft Graph Security: the final estimate that is calculated after the last purge is used. Remaining items
-  are reported as failed and ``AdditionalFields.DeletionVerified`` of the vendor entry is false.
+  are reported as failed and ``AdditionalFields.Verified`` of the aggregate record is false.
 """
+
+import json
+import re
+import time
+import traceback
+import uuid
+from collections.abc import Callable
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timedelta, UTC
+from typing import Any
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 OPERATION_SEARCH_ONLY = "Search Only"
 OPERATION_SEARCH_AND_DELETE = "Search & Delete"
@@ -177,6 +192,28 @@ class UnsupportedError(DemistoException):
     """The requested operation / scope is not supported by the vendor."""
 
 
+class NotFoundError(VendorError):
+    """The email requested by ``object_id`` does not exist (raised only by the object_id lookups)."""
+
+
+# A "not found" error of an object_id lookup: Gmail / Graph return HTTP 404, EWS returns "not found/malformed".
+NOT_FOUND_ERROR = re.compile(r"\b404\b|not\s*found|ErrorItemNotFound", re.IGNORECASE)
+GMAIL_SPLIT_SEARCH_ERROR = (
+    "Gmail split the all-mailboxes search into background sub-searches (more than 500 accounts), "
+    "so the results are not available to this script. Use specific mailboxes or another brand."
+)
+# What gmail-search-all-mailboxes returns instead of emails when it splits the search (more than 500 accounts): one
+# entry per batch of accounts with this human readable and a scheduled command (``scheduled_commands_for_more_users``).
+GMAIL_SPLIT_SEARCH_TEXT = "Searching mailboxes, please wait"
+GMAIL_TRASH_LABEL = "TRASH"
+GRAPH_SECURITY_SPECIFIC_DELETE_ERROR = (
+    "Microsoft Graph Security can not delete from specific mailboxes: the eDiscovery search runs over all tenant "
+    "mailboxes and the recipients: filter also matches the other copies of the email (for example the sender's Sent "
+    "Items), so mailboxes that were not selected would be purged. Use 'Search Only', mailbox_scope 'All', or another "
+    "brand to delete from specific mailboxes."
+)
+
+
 @dataclass
 class SearchParams:
     """Parsed and validated command arguments."""
@@ -251,6 +288,11 @@ def escape_single_quotes(value: str) -> str:
     return value.replace("'", "''")
 
 
+def escape_quoted(value: str) -> str:
+    """Escapes a value for a double quoted query term (Gmail / KQL), so it can not break out of the quotes."""
+    return value.replace("\\", "\\\\").replace('"', '\\"')
+
+
 def as_list(value: Any) -> list[str]:
     """Converts a vendor value (None / CSV string / list of strings or address dicts) to a list of strings."""
     if not value:
@@ -317,6 +359,16 @@ def run_command(command: str, args: dict[str, Any], instance: str, *, enforce_ti
     if is_error(results):
         raise VendorError(f"{command} failed: {get_error(results)}")
     return results or []
+
+
+def object_id_lookup(command: str, args: dict[str, Any], instance: str) -> list[dict[str, Any]]:
+    """``run_command`` for a lookup by ``object_id``: a "not found" error is raised as ``NotFoundError``."""
+    try:
+        return run_command(command, args, instance)
+    except VendorError as exc:
+        if NOT_FOUND_ERROR.search(str(exc)):
+            raise NotFoundError(str(exc)) from exc
+        raise
 
 
 def context_values(results: list[dict[str, Any]], path: str) -> list[Any]:
@@ -417,6 +469,12 @@ def email_key(email: dict[str, Any]) -> tuple[str, str]:
     return ",".join(email["Mailbox"]), email["ObjectID"]
 
 
+def message_key(email: dict[str, Any]) -> tuple[str, str] | None:
+    """``(mailbox key, InternetMessageID)``, or None when the vendor did not return an InternetMessageID."""
+    message_id = email.get("InternetMessageID")
+    return (",".join(email["Mailbox"]), message_id) if message_id else None
+
+
 @dataclass
 class EmailOps:
     """The vendor specific callables of a per-email vendor (rebuilt from the params on every tick, never stored in the state)."""
@@ -451,6 +509,10 @@ def verify_step(vendor: dict[str, Any], result: VendorResult, search: Callable[[
     returned or ``VERIFICATION_TIMEOUT_SECONDS`` passed: what is still found is then reported as unverified. The overall
     deadline caps the window as well: once it passed, the search command is refused and the emails stay unverified.
 
+    When searching by ``object_id`` the lookup is not a search: Gmail's ``gmail-get-mail`` still returns a trashed
+    message (it has the ``TRASH`` label, which counts as deleted here), and Graph Mail / EWS return a "not found" error
+    for a deleted ID, which counts as an empty result (``NotFoundError``, raised only by the object_id lookups).
+
     A failure of the verification search itself does NOT mean the deletion failed: the emails keep ``Deleted=True``,
     ``DeletionVerified`` is left unset and the error is added to ``result.errors``.
     """
@@ -459,13 +521,15 @@ def verify_step(vendor: dict[str, Any], result: VendorResult, search: Callable[[
     deadline = vendor["data"]["verify_started"] + VERIFICATION_TIMEOUT_SECONDS
     try:
         emails, _ = search()
+    except NotFoundError:
+        emails = []  # The email requested by object_id no longer exists: it was deleted.
     except Exception as exc:
         if budget_exhausted():  # The overall budget ended: same as the end of the window, the emails stay unverified.
             mark_verification(result, deleted, pending)
         else:
             result.errors.append(f"Failed verifying the deletion: {exc}")
         return STAGE_DONE
-    remaining = {email_key(email) for email in emails} & pending
+    remaining = {email_key(email) for email in emails if not email.get("Trashed")} & pending
     if remaining and time.time() < deadline:
         return STAGE_VERIFY
     mark_verification(result, deleted, remaining)
@@ -485,7 +549,11 @@ def per_email_step(ops_factory: Callable[[SearchParams, str, VendorResult], Emai
         ops = ops_factory(params, vendor["instance"], result)
         if vendor["stage"] == STAGE_VERIFY:
             return verify_step(vendor, result, ops.search)
-        search_and_delete(params, result, ops.search, ops.delete, ops.get_files)
+        try:
+            search_and_delete(params, result, ops.search, ops.delete, ops.get_files)
+        except NotFoundError:
+            result.additional["NotFound"] = True  # The email requested by object_id does not exist (not a hard failure).
+            raise
         if params.delete and params.verify_deletion and any(email.get("Deleted") is True for email in result.emails):
             vendor["data"]["verify_started"] = time.time()
             return STAGE_VERIFY
@@ -507,19 +575,26 @@ def search_and_delete(
     ``search`` returns ``(emails, saturated)``. ``saturated`` is True when the vendor capped the number of returned
     emails, in which case the search is repeated (after the deletion) until nothing new is returned, so that
     no email is missed. Files are retrieved BEFORE the deletion, since afterwards they can not be fetched.
+
+    A soft delete in Graph Mail / EWS moves the item to "Deleted Items" under a NEW ID, so a later round would see the
+    moved copy as a new email (and delete it again, in effect a hard delete). Emails whose ``(mailbox,
+    InternetMessageID)`` was already processed in a previous round are therefore skipped as well.
     """
     seen: dict[tuple[str, str], dict[str, Any]] = {}
+    seen_message_ids: set[tuple[str, str] | None] = set()  # never holds None: emails without an InternetMessageID are not added
     exhausted = False
     try:
         for _ in range(MAX_ROUNDS if params.delete else 1):
             emails, saturated = search()
             exhausted = False
-            fresh = [email for email in emails if email_key(email) not in seen]
+            fresh = [email for email in emails if email_key(email) not in seen and message_key(email) not in seen_message_ids]
             if not fresh:
                 break
             for email in fresh:
                 seen[email_key(email)] = email
                 process_email(params, result, email, delete, get_files)
+            # Updated after the round: two copies of the same message in one mailbox found in the SAME round are both kept.
+            seen_message_ids.update(key for key in map(message_key, fresh) if key)
             if not saturated:
                 break
             exhausted = True
@@ -566,13 +641,15 @@ def build_gmail_query(params: SearchParams) -> str:
     """Message ID is preferred over subject / sender when it was provided."""
     clauses: list[str] = []
     if params.internet_message_ids:
-        ids = " OR ".join(f"rfc822msgid:{strip_brackets(message_id)}" for message_id in params.internet_message_ids)
+        ids = " OR ".join(
+            f'rfc822msgid:"{escape_quoted(strip_brackets(message_id))}"' for message_id in params.internet_message_ids
+        )
         clauses.append(f"({ids})")
     else:
         if params.subjects:
-            clauses.append("(" + " OR ".join(f'subject:"{subject}"' for subject in params.subjects) + ")")
+            clauses.append("(" + " OR ".join(f'subject:"{escape_quoted(subject)}"' for subject in params.subjects) + ")")
         if params.sender_address:
-            clauses.append(f"from:{params.sender_address}")
+            clauses.append(f'from:"{escape_quoted(params.sender_address)}"')
     clauses.append(f"after:{int(params.since.timestamp())}")
     return " ".join(clauses)
 
@@ -593,7 +670,23 @@ def gmail_to_email(item: dict[str, Any]) -> dict[str, Any]:
         attachments=attachments,
     )
     email["HasAttachments"] = bool(attachments)
+    # gmail-get-mail (object_id) also returns trashed messages: "Labels" is a list there and a CSV string in the search.
+    email["Trashed"] = GMAIL_TRASH_LABEL in as_list(item.get("Labels"))
     return email
+
+
+def gmail_split_search(results: list[dict[str, Any]]) -> bool:
+    """
+    Whether gmail-search-all-mailboxes split the search into background scheduled sub-searches (more than 500 accounts,
+    ``MAX_WITHOUT_POLLING`` in Gmail.py): it then returns "Searching mailboxes, please wait..." entries without emails.
+    """
+    for entry in results:
+        if not isinstance(entry, dict):
+            continue
+        texts = (entry.get("HumanReadable"), entry.get("Contents"))
+        if any(isinstance(text, str) and GMAIL_SPLIT_SEARCH_TEXT in text for text in texts):
+            return True
+    return False
 
 
 def gmail_search(params: SearchParams, instance: str) -> tuple[list[dict[str, Any]], bool]:
@@ -601,7 +694,9 @@ def gmail_search(params: SearchParams, instance: str) -> tuple[list[dict[str, An
     query = build_gmail_query(params)
     emails: list[dict[str, Any]] = []
     if params.object_id:
-        results = run_command("gmail-get-mail", {"user-id": params.target_mailboxes[0], "message-id": params.object_id}, instance)
+        results = object_id_lookup(
+            "gmail-get-mail", {"user-id": params.target_mailboxes[0], "message-id": params.object_id}, instance
+        )
         return [gmail_to_email(item) for item in context_values(results, "Gmail")], False
 
     command, mailboxes = (
@@ -616,9 +711,11 @@ def gmail_search(params: SearchParams, instance: str) -> tuple[list[dict[str, An
             else:
                 args["user-id"] = mailbox
             results = run_command(command, args, instance)
+            if params.all_mailboxes and gmail_split_search(results):
+                raise VendorError(GMAIL_SPLIT_SEARCH_ERROR)
             emails.extend(gmail_to_email(item) for item in context_values(results, "Gmail"))
-            # NOTE: for "all mailboxes" Gmail splits big domains into scheduled (polling) sub-searches; the
-            # page token below belongs to the *accounts* list, which is why it is followed here as well.
+            # NOTE: for "all mailboxes" the page token below belongs to the *accounts* list (more than 2500
+            # accounts), which is why it is followed here as well.
             page_token = find_in_results(results, "NextPageToken") or ""
             if not page_token:
                 break
@@ -678,7 +775,7 @@ def graph_mail_search(params: SearchParams, instance: str) -> tuple[list[dict[st
     saturated = False
     for mailbox in params.target_mailboxes:
         if params.object_id:
-            results = run_command(
+            results = object_id_lookup(
                 "msgraph-mail-get-email", {"user_id": mailbox, "message_id": params.object_id, "get_body": "true"}, instance
             )
             emails.extend(graph_mail_to_email(item) for item in context_values(results, "MSGraphMail"))
@@ -733,15 +830,17 @@ def graph_mail_ops(params: SearchParams, instance: str, result: VendorResult) ->
 def build_graph_security_kql(params: SearchParams) -> str:
     clauses: list[str] = []
     if params.internet_message_ids:
-        ids = " OR ".join(f'{GRAPH_SECURITY_MESSAGE_ID_FIELD}:"{with_brackets(i)}"' for i in params.internet_message_ids)
+        ids = " OR ".join(
+            f'{GRAPH_SECURITY_MESSAGE_ID_FIELD}:"{escape_quoted(with_brackets(i))}"' for i in params.internet_message_ids
+        )
         clauses.append(f"({ids})")
     else:
         if params.subjects:
-            clauses.append("(" + " OR ".join(f'subject:"{subject}"' for subject in params.subjects) + ")")
+            clauses.append("(" + " OR ".join(f'subject:"{escape_quoted(subject)}"' for subject in params.subjects) + ")")
         if params.sender_address:
-            clauses.append(f"from:{params.sender_address}")
+            clauses.append(f'from:"{escape_quoted(params.sender_address)}"')
     if not params.all_mailboxes:
-        clauses.append("(" + " OR ".join(f"recipients:{mailbox}" for mailbox in params.target_mailboxes) + ")")
+        clauses.append("(" + " OR ".join(f'recipients:"{escape_quoted(mailbox)}"' for mailbox in params.target_mailboxes) + ")")
     clauses.append(f"received>={params.since.strftime('%Y-%m-%d')}")
     return " AND ".join(clauses)
 
@@ -772,6 +871,8 @@ def graph_security_create(params: SearchParams, instance: str, data: dict[str, A
     """Stage ``create``: creates the dedicated case and the search in it (the ids are persisted immediately)."""
     if params.object_id:
         raise UnsupportedError("Microsoft Graph Security does not support searching by object_id.")
+    if params.delete and not params.all_mailboxes:
+        raise UnsupportedError(GRAPH_SECURITY_SPECIFIC_DELETE_ERROR)
     if params.retrieve_files:
         result.additional["Note"] = "Microsoft Graph Security does not return email content, files were not retrieved."
     data["case_name"] = graph_security_case_name()
@@ -915,15 +1016,59 @@ def graph_security_delete(command: str, args: dict[str, Any], instance: str, wha
         return False
 
 
+def graph_security_case_is_ours(case_id: str, instance: str) -> bool:
+    """
+    Whether ``case_id`` is a dedicated case of this script: its display name, as returned by Microsoft Graph Security,
+    starts with ``GRAPH_SECURITY_CASE_PREFIX``. The ``case_name`` in the state is never trusted (the state can be forged).
+    Raises when the lookup itself failed.
+    """
+    results = run_command("msg-list-ediscovery-cases", {"case_id": case_id}, instance, enforce_timeout=False)
+    cases = [case for case in context_values(results, "MsGraph.eDiscoveryCase") if isinstance(case, dict)]
+    case = next((case for case in cases if case.get("CaseId") == case_id), {})
+    return str(case.get("DisplayName") or "").startswith(GRAPH_SECURITY_CASE_PREFIX)
+
+
+def graph_security_verify_case(instance: str, data: dict[str, Any], errors: list[str]) -> bool | None:
+    """
+    Checks (once per run) that the case of the state may be deleted.
+
+    Returns True when it is ours, False when it is not (nothing may be deleted) and None when the lookup failed (retry).
+    """
+    if data.get("case_verified"):
+        return True
+    try:
+        owned = graph_security_case_is_ours(data["case_id"], instance)
+    except Exception as exc:
+        errors.append(f"Failed looking up eDiscovery case {data['case_id']} before deleting it: {exc}")
+        return None
+    data["case_verified"] = owned
+    return owned
+
+
 def graph_security_cleanup(params: SearchParams, instance: str, data: dict[str, Any], result: VendorResult) -> str:
     """
     The guaranteed final stage: deletes the search and then the dedicated case (each one only once, even when the other failed).
 
-    A cleanup that did not fully succeed is retried on the next tick up to ``MAX_CLEANUP_ATTEMPTS``; only the errors of
-    the last attempt are reported (an error that was fixed by a retry is not a failure).
+    Nothing is deleted unless the case is verified to be a dedicated case of this script (see
+    ``graph_security_case_is_ours``). A cleanup that did not fully succeed is retried on the next tick up to
+    ``MAX_CLEANUP_ATTEMPTS``; only the errors of the last attempt are reported (an error that was fixed by a retry is not
+    a failure).
     """
     errors: list[str] = []
     case_id, search_id = data["case_id"], data["search_id"]
+    if case_id and not data["case_deleted"]:
+        owned = graph_security_verify_case(instance, data, errors)
+        if owned is False:
+            result.errors.append(
+                f"Refused to delete eDiscovery case {case_id}: its name does not start with '{GRAPH_SECURITY_CASE_PREFIX}'."
+            )
+            return STAGE_DONE
+        if owned is None:
+            data["cleanup_attempts"] += 1
+            if data["cleanup_attempts"] < MAX_CLEANUP_ATTEMPTS:
+                return STAGE_CLEANUP
+            result.errors.extend(errors)
+            return STAGE_DONE
     if search_id and not data["search_deleted"]:
         data["search_deleted"] = graph_security_delete(
             "msg-delete-ediscovery-search",
@@ -1017,7 +1162,7 @@ def ews_to_email(item: dict[str, Any], mailbox: str = "") -> dict[str, Any]:
 
 def ews_search(params: SearchParams, instance: str) -> tuple[list[dict[str, Any]], bool]:
     if params.object_id:
-        results = run_command(
+        results = object_id_lookup(
             "ews-get-items", {"item-ids": params.object_id, "target-mailbox": params.target_mailboxes[0]}, instance
         )
         return [ews_to_email(item, params.target_mailboxes[0]) for item in context_values(results, "EWS.Items")], False
@@ -1183,6 +1328,20 @@ def new_state(params: SearchParams) -> dict[str, Any]:
     }
 
 
+def validate_state_vendors(vendors: Any) -> None:
+    """Rejects a state whose vendors have an unknown key or stage (the state is a script argument and can be forged)."""
+    if not isinstance(vendors, list):
+        raise DemistoException("The polling state is invalid: 'vendors' must be a list.")
+    for vendor in vendors:
+        if not isinstance(vendor, dict):
+            raise DemistoException("The polling state is invalid: every vendor must be an object.")
+        key, stage = vendor.get("key"), vendor.get("stage")
+        if key not in VENDORS and key != NO_INSTANCE_KEY:
+            raise DemistoException(f"The polling state is invalid: unknown vendor '{key}'.")
+        if stage not in STAGE_LABELS:
+            raise DemistoException(f"The polling state is invalid: unknown stage '{stage}' of vendor '{key}'.")
+
+
 def load_state(args: dict[str, Any]) -> dict[str, Any] | None:
     """The state passed by the previous tick (``None`` on the first tick)."""
     raw = args.get(STATE_ARG)
@@ -1191,6 +1350,7 @@ def load_state(args: dict[str, Any]) -> dict[str, Any] | None:
     state = json.loads(raw) if isinstance(raw, str) else raw
     if not isinstance(state, dict) or state.get("version") != STATE_VERSION:
         raise DemistoException("The polling state is invalid or was created by an incompatible version of the script.")
+    validate_state_vendors(state.get("vendors", []))
     return state
 
 
@@ -1377,6 +1537,9 @@ def build_email_data_entries(params: SearchParams, results: list[VendorResult]) 
     for result in results:
         # Handle vendors that return only aggregate data (e.g., Graph Security)
         if result.aggregate:
+            fields: dict[str, Any] = {"Aggregate": True, "Instance": result.instance, **result.additional}
+            if "DeletionVerified" in fields:  # the same output key as the per-email records
+                fields["Verified"] = fields.pop("DeletionVerified")
             email_data.append(
                 {
                     "Brand": result.brand or result.vendor,
@@ -1384,7 +1547,7 @@ def build_email_data_entries(params: SearchParams, results: list[VendorResult]) 
                     "Mailbox": ["All"] if params.all_mailboxes else params.target_mailboxes,
                     "Success": result.success,
                     "Reason": "; ".join(result.errors),
-                    "AdditionalFields": {"Aggregate": True, "Instance": result.instance, **result.additional},
+                    "AdditionalFields": fields,
                 }
             )
             continue
@@ -1394,10 +1557,10 @@ def build_email_data_entries(params: SearchParams, results: list[VendorResult]) 
             additional_fields = {"ObjectID": email["ObjectID"], "InternetMessageID": email["InternetMessageID"]}
             if email.get("DeletionVerified") is not None:
                 additional_fields["Verified"] = email["DeletionVerified"]
+            if email.get("HTMLBodyTruncated"):
+                additional_fields["HTMLBodyTruncated"] = True
             if params.verbose:
                 additional_fields["Instance"] = result.instance
-                if email.get("HTMLBodyTruncated"):
-                    additional_fields["HTMLBodyTruncated"] = True
 
             email_data.append(
                 {
@@ -1418,8 +1581,8 @@ def build_email_data_entries(params: SearchParams, results: list[VendorResult]) 
                 }
             )
 
-        # Handle a vendor that found nothing or failed
-        if not result.emails and not result.aggregate:
+        # Handle a vendor that found nothing or failed (also after partial results, so the errors are not lost)
+        if not result.emails or result.errors:
             email_data.append(
                 {
                     "Brand": result.brand or result.vendor,
@@ -1434,7 +1597,29 @@ def build_email_data_entries(params: SearchParams, results: list[VendorResult]) 
     return email_data
 
 
-def build_readable_output(email_data: list[dict[str, Any]], totals: dict[str, int], params: SearchParams) -> str:
+READABLE_HEADERS = ["Brand", "Mailbox", "ID", "Subject", "From", "To", "Timestamp", "Operation", "Success", "Reason"]
+
+
+def markdown_table(title: str, rows: list[dict[str, Any]], headers: list[str]) -> str:
+    """``tableToMarkdown`` that keeps the header row when there are no rows (instead of "No entries.")."""
+    if rows:
+        return tableToMarkdown(title, rows, headers=headers)
+    return f"### {title}\n|{'|'.join(headers)}|\n|{'|'.join(['---'] * len(headers))}|\n"
+
+
+def aggregate_summary_lines(results: list[VendorResult]) -> list[str]:
+    """One line with the totals of every aggregate (Microsoft Graph Security) instance, which has no table rows."""
+    return [
+        f"{result.vendor} ({result.instance}): found {result.total_found}, "
+        f"deleted {result.total_deleted}, failed {result.total_failed}"
+        for result in results
+        if result.aggregate
+    ]
+
+
+def build_readable_output(
+    email_data: list[dict[str, Any]], totals: dict[str, int], params: SearchParams, results: list[VendorResult]
+) -> str:
     rows = []
     for email in email_data:
         # Filter out empty aggregate rows or vendors that found nothing (for the table display)
@@ -1456,20 +1641,24 @@ def build_readable_output(email_data: list[dict[str, Any]], totals: dict[str, in
             }
         )
 
-    table = tableToMarkdown(
-        f"Search & Delete Email - {params.operation}",
-        rows,
-        headers=["Brand", "Mailbox", "ID", "Subject", "From", "To", "Timestamp", "Operation", "Success", "Reason"],
-        removeNull=True,
-    )
-
     summary = (
         f"**Total found:** {totals['TotalFound']} | "
         f"**Total deleted:** {totals['TotalDeleted']} | "
         f"**Total failed:** {totals['TotalFailed']}"
     )
+    aggregates = "".join(f"{line}\n\n" for line in aggregate_summary_lines(results))
+    if totals["TotalFound"] == 0:
+        return f"No emails were found.\n\n{aggregates}{summary}"
+    table = markdown_table(f"Search & Delete Email - {params.operation}", rows, READABLE_HEADERS)
+    return f"{table}\n{aggregates}{summary}"
 
-    return f"{table}\n{summary}" if rows else f"No emails were found.\n\n{summary}"
+
+def is_hard_failure(result: VendorResult) -> bool:
+    """
+    Whether a vendor failed without finding anything. An email that was requested by ``object_id`` and does not exist
+    (``additional["NotFound"]``, set only by the object_id lookups) is a successful search with no results.
+    """
+    return not (result.success or result.total_found > 0 or result.additional.get("NotFound"))
 
 
 def build_command_results(params: SearchParams, results: list[VendorResult]) -> list[CommandResults]:
@@ -1477,32 +1666,21 @@ def build_command_results(params: SearchParams, results: list[VendorResult]) -> 
     totals = compute_totals(results)
 
     outputs = {"EmailData": email_data, **totals}
-    readable_output = build_readable_output(email_data, totals, params)
+    readable_output = build_readable_output(email_data, totals, params, results)
 
     if params.verbose and COMMAND_TRACE:
         readable_output += "\n#### Executed commands\n" + "\n".join(f"* `{line}`" for line in COMMAND_TRACE)
 
-    # Checks if the integration had a hard failure (ignoring 404 "not found" errors)
-    def is_hard_failure(r: VendorResult) -> bool:
-        if r.success or r.total_found > 0:
-            return False
-        for err in r.errors:
-            err_lower = err.lower()
-            if "404" not in err_lower and "not found" not in err_lower:
-                return True  # This is a hard failure
-        return False  # The error is just a 404, so it is treated as a successful scan with 0 results
-
-    # all_failed will be True only if *all* integrations experienced a hard failure
+    # all_failed is True only if *all* integrations had a hard failure
     all_failed = bool(results) and all(is_hard_failure(r) for r in results)
 
     if all_failed:
-        error_reasons = []
-        for r in results:
-            if is_hard_failure(r) and r.errors:
-                error_reasons.append(f"**{r.brand or r.vendor}**: {'; '.join(r.errors)}")
-
+        error_reasons = [f"**{r.brand or r.vendor}**: {'; '.join(r.errors)}" for r in results if r.errors]
+        brands = ", ".join(dict.fromkeys(r.brand or r.vendor for r in results))
         error_text = "\n".join(error_reasons)
-        readable_output = f"The operation failed for all the integrations ({', '.join(params.brands)}).\n\n**Reason:**\n{error_text}\n\n---\n{readable_output}"
+        readable_output = (
+            f"The operation failed for all the integrations ({brands}).\n\n**Reason:**\n{error_text}\n\n---\n{readable_output}"
+        )
 
     return [
         CommandResults(
@@ -1524,6 +1702,12 @@ class InvalidArgumentsError(DemistoException):
 def scheduled_timeout(state: dict[str, Any]) -> int:
     """The platform level timeout of the scheduled command: the remaining overall budget plus the cleanup grace period."""
     return max(int(state["deadline"] - time.time()), 0) + CLEANUP_GRACE_SECONDS
+
+
+def warn_verification_unsupported(params: SearchParams, state: dict[str, Any]) -> None:
+    """First tick only: warns that verify_deletion is not supported when a Microsoft Graph Security instance is used."""
+    if params.verify_deletion and params.delete and any(vendor["key"] == "msgraph_security" for vendor in state["vendors"]):
+        return_results(CommandResults(readable_output=VERIFY_UNSUPPORTED_WARNING, entry_type=EntryType.WARNING))
 
 
 def failure_results(params: SearchParams, exc: Exception) -> list[CommandResults]:
@@ -1555,6 +1739,7 @@ def search_and_delete_email_tick(args: dict[str, Any]) -> PollResult:
     try:
         if state is None:
             state = new_state(params)
+            warn_verification_unsupported(params, state)
         state, done, messages = run_tick(params, state)
         if done:
             return PollResult(response=build_command_results(params, results_from_state(state)))
@@ -1587,18 +1772,6 @@ def search_and_delete_email(args: dict[str, Any]) -> Any:
 def main() -> None:  # pragma: no cover
     args = demisto.args()
     try:
-        if not args.get(STATE_ARG):
-            params = parse_args(args)
-            if params.verify_deletion and params.delete:
-                instances = resolve_instances(params.brands)
-                if any(key == "msgraph_security" for key, _, _ in instances):
-                    return_results(
-                        CommandResults(
-                            readable_output=VERIFY_UNSUPPORTED_WARNING,
-                            entry_type=EntryType.WARNING,
-                        )
-                    )
-
         return_results(search_and_delete_email(args))
     except InvalidArgumentsError as exc:
         return_error(f"Invalid arguments: {exc}")

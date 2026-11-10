@@ -14,9 +14,9 @@ comment: |-
   Supported scopes: Gmail, Microsoft Graph Security and EWS v2 support searching all mailboxes. Microsoft Graph Mail supports only specific mailboxes.
   Delete types: Gmail, Microsoft Graph Security and EWS v2 support both soft and hard delete. Microsoft Graph Mail supports soft delete only (the emails are moved to Deleted Items).
   Microsoft Graph Security and EWS v2 honor only the date part of the time frame, so the effective search window can be up to 24 hours wider than requested.
-  The command may take a long time when searching thousands of mailboxes. It uses the built-in polling: every run advances the operation by one step and releases the worker until the next run, so it never blocks. The timeout argument is the overall time budget (in seconds) of the whole run.
+  The command may take a long time when searching thousands of mailboxes. It uses the built-in polling: long waits (the Microsoft Graph Security eDiscovery operations and the deletion verification) are polled, while the search and delete commands of each run are executed synchronously within that run. The timeout argument is the overall time budget (in seconds) of the whole run.
   When verify_deletion is true (relevant only for "Search & Delete"), the script verifies that the emails were really deleted instead of trusting that the delete command did not fail (the verification is polled for up to 120 seconds). Verification is not supported for Microsoft Graph Security.
-  Microsoft Graph Security runs in a dedicated eDiscovery case that is created for the run and is always deleted at the end, together with its search, and returns a single aggregate record (counts only) instead of per-email details.
+  Microsoft Graph Security runs in a dedicated eDiscovery case that is created for the run and is always deleted at the end, together with its search, and returns a single aggregate record (counts only) instead of per-email details. "Search & Delete" with mailbox_scope "Specific" is refused for Microsoft Graph Security, because its search would also match the copies of the email in other mailboxes.
 enabled: true
 args:
 - name: internet_message_id
@@ -151,19 +151,16 @@ outputs:
   description: The Internet Message ID of the email, when the vendor returns it.
   type: String
 - contextPath: EmailData.AdditionalFields.Verified
-  description: Whether the deletion of the email was verified. Returned only when verify_deletion is true and the verification could be determined.
+  description: Whether the deletion of the email was verified. Also returned in the aggregate record of Microsoft Graph Security, where it reflects the estimate that was calculated after the last purge. Returned only when verify_deletion is true and the verification could be determined.
   type: Boolean
 - contextPath: EmailData.AdditionalFields.Instance
   description: The name of the integration instance. Returned for records without an email and for every email when verbose is true.
   type: String
 - contextPath: EmailData.AdditionalFields.HTMLBodyTruncated
-  description: True when the HTML body of the email was truncated to keep the polling state small. Returned only when verbose is true.
+  description: True when the HTML body of the email was truncated to keep the polling state small.
   type: Boolean
 - contextPath: EmailData.AdditionalFields.Aggregate
   description: True for the single aggregate record of a brand that returns counts only (Microsoft Graph Security), which has no per-email details.
-  type: Boolean
-- contextPath: EmailData.AdditionalFields.DeletionVerified
-  description: Whether the deletion was verified. Returned only in the aggregate record of Microsoft Graph Security.
   type: Boolean
 - contextPath: EmailData.AdditionalFields.Note
   description: A note about the run of the brand instance, for example when the vendor capped the number of returned emails. Returned only in records without an email and in aggregate records.
@@ -202,14 +199,18 @@ dependson:
   - Microsoft Graph|||msg-list-case-operation
   - Microsoft Graph|||msg-delete-ediscovery-search
   - Microsoft Graph|||msg-delete-ediscovery-case
+  - Microsoft Graph|||msg-list-ediscovery-cases
   - EWS v2|||ews-search-mailboxes
   - EWS v2|||ews-get-items
   - EWS v2|||ews-get-attachment
   - EWS v2|||ews-delete-items
 dockerimage: demisto/python3:3.12.14.13495286
-runas: DBotRole
-timeout: 3h0m0s
+timeout: 20m0s
 fromversion: 6.10.0
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
 polling: true
 tests:
 - No tests (auto formatted)
