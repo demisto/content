@@ -413,7 +413,6 @@ VERIFY_UNSUPPORTED_WARNING = (
 )
 
 
-
 def email_key(email: dict[str, Any]) -> tuple[str, str]:
     return ",".join(email["Mailbox"]), email["ObjectID"]
 
@@ -994,10 +993,9 @@ def build_ews_query(params: SearchParams) -> str:
         if params.sender_address:
             escaped_sender = params.sender_address.replace("\\", "\\\\").replace('"', '\\"')
             clauses.append(f'From:"{escaped_sender}"')
-            
+
     clauses.append(f"Received:>={params.since.strftime('%Y-%m-%d')}")
     return " AND ".join(clauses)
-
 
 
 def ews_to_email(item: dict[str, Any], mailbox: str = "") -> dict[str, Any]:
@@ -1328,7 +1326,7 @@ def parse_args(args: dict[str, Any], since: datetime | None = None) -> SearchPar
     # Safety: an empty filter would match (and delete) every email in the time frame.
     if not (object_id or message_ids or subjects or sender):
         raise DemistoException("At least one of internet_message_id, object_id, subject or sender_address must be specified.")
-        
+
     if object_id:
         if not target_mailboxes or not brands:
             raise DemistoException("When 'object_id' is specified, both 'target_mailbox' and 'brands' must be specified.")
@@ -1365,7 +1363,6 @@ def parse_args(args: dict[str, Any], since: datetime | None = None) -> SearchPar
     )
 
 
-
 def compute_totals(results: list[VendorResult]) -> dict[str, int]:
     return {
         "TotalFound": sum(result.total_found for result in results),
@@ -1373,22 +1370,25 @@ def compute_totals(results: list[VendorResult]) -> dict[str, int]:
         "TotalFailed": sum(result.total_failed for result in results),
     }
 
+
 def build_email_data_entries(params: SearchParams, results: list[VendorResult]) -> list[dict[str, Any]]:
     email_data: list[dict[str, Any]] = []
-    
+
     for result in results:
         # Handle vendors that return only aggregate data (e.g., Graph Security)
         if result.aggregate:
-            email_data.append({
-                "Brand": result.brand or result.vendor,
-                "Operation": params.operation,
-                "Mailbox": ["All"] if params.all_mailboxes else params.target_mailboxes,
-                "Success": result.success,
-                "Reason": "; ".join(result.errors),
-                "AdditionalFields": {"Aggregate": True, "Instance": result.instance, **result.additional},
-            })
+            email_data.append(
+                {
+                    "Brand": result.brand or result.vendor,
+                    "Operation": params.operation,
+                    "Mailbox": ["All"] if params.all_mailboxes else params.target_mailboxes,
+                    "Success": result.success,
+                    "Reason": "; ".join(result.errors),
+                    "AdditionalFields": {"Aggregate": True, "Instance": result.instance, **result.additional},
+                }
+            )
             continue
-            
+
         # Handle individual emails
         for email in result.emails:
             additional_fields = {"ObjectID": email["ObjectID"], "InternetMessageID": email["InternetMessageID"]}
@@ -1399,35 +1399,40 @@ def build_email_data_entries(params: SearchParams, results: list[VendorResult]) 
                 if email.get("HTMLBodyTruncated"):
                     additional_fields["HTMLBodyTruncated"] = True
 
-            email_data.append({
-                "Brand": result.brand or result.vendor,
-                "Mailbox": email["Mailbox"],
-                "Subject": email["Subject"],
-                "From": email["From"],
-                "To": email["To"],
-                "CC": email["CC"],
-                "BCC": email["BCC"],
-                "HTML": email["HTMLBody"],
-                "Timestamp": email["Timestamp"],
-                "Attachments": email["Attachments"],
-                "Success": email.get("Deleted", True),
-                "Reason": email.get("Reason", ""),
-                "Operation": params.operation,
-                "AdditionalFields": additional_fields,
-            })
-            
+            email_data.append(
+                {
+                    "Brand": result.brand or result.vendor,
+                    "Mailbox": email["Mailbox"],
+                    "Subject": email["Subject"],
+                    "From": email["From"],
+                    "To": email["To"],
+                    "CC": email["CC"],
+                    "BCC": email["BCC"],
+                    "HTML": email["HTMLBody"],
+                    "Timestamp": email["Timestamp"],
+                    "Attachments": email["Attachments"],
+                    "Success": email.get("Deleted", True),
+                    "Reason": email.get("Reason", ""),
+                    "Operation": params.operation,
+                    "AdditionalFields": additional_fields,
+                }
+            )
+
         # Handle a vendor that found nothing or failed
         if not result.emails and not result.aggregate:
-             email_data.append({
-                "Brand": result.brand or result.vendor,
-                "Mailbox": ["All"] if params.all_mailboxes else params.target_mailboxes,
-                "Success": result.success,
-                "Reason": "; ".join(result.errors),
-                "Operation": params.operation,
-                "AdditionalFields": {"Instance": result.instance, **result.additional},
-            })
-            
+            email_data.append(
+                {
+                    "Brand": result.brand or result.vendor,
+                    "Mailbox": ["All"] if params.all_mailboxes else params.target_mailboxes,
+                    "Success": result.success,
+                    "Reason": "; ".join(result.errors),
+                    "Operation": params.operation,
+                    "AdditionalFields": {"Instance": result.instance, **result.additional},
+                }
+            )
+
     return email_data
+
 
 def build_readable_output(email_data: list[dict[str, Any]], totals: dict[str, int], params: SearchParams) -> str:
     rows = []
@@ -1435,45 +1440,48 @@ def build_readable_output(email_data: list[dict[str, Any]], totals: dict[str, in
         # Filter out empty aggregate rows or vendors that found nothing (for the table display)
         if email.get("AdditionalFields", {}).get("Aggregate") or not email.get("Timestamp"):
             continue
-            
-        rows.append({
-            "Brand": email.get("Brand"),
-            "Mailbox": ", ".join(email.get("Mailbox", [])),
-            "ID": email.get("AdditionalFields", {}).get("ObjectID", ""),
-            "Subject": email.get("Subject"),
-            "From": email.get("From"),
-            "To": ", ".join(email.get("To", [])),
-            "Timestamp": email.get("Timestamp"),
-            "Operation": email.get("Operation"),
-            "Success": email.get("Success"),
-            "Reason": email.get("Reason"),
-        })
-        
+
+        rows.append(
+            {
+                "Brand": email.get("Brand"),
+                "Mailbox": ", ".join(email.get("Mailbox", [])),
+                "ID": email.get("AdditionalFields", {}).get("ObjectID", ""),
+                "Subject": email.get("Subject"),
+                "From": email.get("From"),
+                "To": ", ".join(email.get("To", [])),
+                "Timestamp": email.get("Timestamp"),
+                "Operation": email.get("Operation"),
+                "Success": email.get("Success"),
+                "Reason": email.get("Reason"),
+            }
+        )
+
     table = tableToMarkdown(
         f"Search & Delete Email - {params.operation}",
         rows,
         headers=["Brand", "Mailbox", "ID", "Subject", "From", "To", "Timestamp", "Operation", "Success", "Reason"],
         removeNull=True,
     )
-    
+
     summary = (
         f"**Total found:** {totals['TotalFound']} | "
         f"**Total deleted:** {totals['TotalDeleted']} | "
         f"**Total failed:** {totals['TotalFailed']}"
     )
-    
+
     return f"{table}\n{summary}" if rows else f"No emails were found.\n\n{summary}"
+
 
 def build_command_results(params: SearchParams, results: list[VendorResult]) -> list[CommandResults]:
     email_data = build_email_data_entries(params, results)
     totals = compute_totals(results)
-    
+
     outputs = {"EmailData": email_data, **totals}
     readable_output = build_readable_output(email_data, totals, params)
-    
+
     if params.verbose and COMMAND_TRACE:
         readable_output += "\n#### Executed commands\n" + "\n".join(f"* `{line}`" for line in COMMAND_TRACE)
-        
+
     # Checks if the integration had a hard failure (ignoring 404 "not found" errors)
     def is_hard_failure(r: VendorResult) -> bool:
         if r.success or r.total_found > 0:
@@ -1486,13 +1494,13 @@ def build_command_results(params: SearchParams, results: list[VendorResult]) -> 
 
     # all_failed will be True only if *all* integrations experienced a hard failure
     all_failed = bool(results) and all(is_hard_failure(r) for r in results)
-    
+
     if all_failed:
         error_reasons = []
         for r in results:
             if is_hard_failure(r) and r.errors:
                 error_reasons.append(f"**{r.brand or r.vendor}**: {'; '.join(r.errors)}")
-        
+
         error_text = "\n".join(error_reasons)
         readable_output = f"The operation failed for all the integrations ({', '.join(params.brands)}).\n\n**Reason:**\n{error_text}\n\n---\n{readable_output}"
 
@@ -1590,7 +1598,7 @@ def main() -> None:  # pragma: no cover
                             entry_type=EntryType.WARNING,
                         )
                     )
-                    
+
         return_results(search_and_delete_email(args))
     except InvalidArgumentsError as exc:
         return_error(f"Invalid arguments: {exc}")

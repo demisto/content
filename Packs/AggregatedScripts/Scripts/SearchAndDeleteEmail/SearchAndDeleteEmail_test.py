@@ -307,10 +307,10 @@ def test_ews_query_uses_message_id_with_brackets():
 def test_ews_query_escapes_quotes_and_wraps_in_parens_if_multiple():
     query = module.build_ews_query(make_params(subjects=["sub1", 'su"b2']))
     assert '(Subject:"sub1" OR Subject:"su\\"b2")' in query
-    
+
     query_single = module.build_ews_query(make_params(subjects=["sub1"]))
     assert 'Subject:"sub1"' in query_single
-    assert '(Subject' not in query_single
+    assert "(Subject" not in query_single
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -653,17 +653,17 @@ def test_graph_security_search_only_stages_and_cleanup_without_purge(mocker):
     assert not fake.called("msg-purge-ediscovery-data")
     assert not fake.called("msg-list-ediscovery-cases")
     assert_cleanup_last(fake)
-    
+
     outputs = get_outputs(params, run.results)
     assert outputs["TotalFound"] == 3
     assert outputs["EmailData"][0]["AdditionalFields"]["Aggregate"] is True
-    
+
     hr = get_hr(params, run.results)
     assert hr.startswith("|Brand|Mailbox|ID|Subject|From|To|Timestamp|Operation|Success|Reason|")
     # Table should be empty for MS Graph since it's an aggregate result
-    assert "Microsoft Graph" not in hr 
+    assert "Microsoft Graph" not in hr
     assert "**Total found:** 3" in hr
-    
+
     announced = [m for tick in run.messages for m in tick]
     assert announced.count("Microsoft Graph Security: estimate running") == 1
 
@@ -769,7 +769,7 @@ def test_all_vendors_fail_returns_hr_and_context(mocker):
     params = make_params(operation=OPERATION_SEARCH_ONLY)
     results = run_all(params)
     assert not any(r.success for r in results)
-    
+
     command_results = module.build_command_results(params, results)[0]
     hr = command_results.readable_output
     assert command_results.entry_type == entryTypes["error"]
@@ -777,7 +777,7 @@ def test_all_vendors_fail_returns_hr_and_context(mocker):
     assert "**Reason:**" in hr
     assert "g down" in hr
     assert "e down" in hr
-    
+
     outputs = command_results.outputs
     assert outputs["TotalFound"] == 0
     assert len(outputs["EmailData"]) == 2
@@ -814,10 +814,10 @@ def test_404_not_found_is_not_a_hard_failure_for_gmail(mocker):
     )
     params = make_params(operation=OPERATION_SEARCH_ONLY, object_id="nonexistent")
     results = run_all(params)
-    
+
     assert not results[0].success
     command_results = module.build_command_results(params, results)[0]
-    
+
     # It should be a NOTE, not an ERROR, since the 404 is ignored by `is_hard_failure`
     assert command_results.entry_type == entryTypes["note"]
     assert "The operation failed for all the integrations" not in command_results.readable_output
@@ -849,7 +849,7 @@ def test_verification_disabled_by_default_runs_no_verification_search(mocker):
     assert len(fake.called("gmail-search")) == 1
     assert "DeletionVerified" not in result.emails[0]
     assert (result.total_found, result.total_deleted, result.total_failed) == (1, 1, 0)
-    
+
     email_data = get_email_data(params, [result])
     assert "Verified" not in email_data[0]["AdditionalFields"]
 
@@ -862,7 +862,7 @@ def test_verification_gmail_verified(mocker):
     assert result.emails[0]["DeletionVerified"] is True
     assert (result.total_found, result.total_deleted, result.total_failed) == (1, 1, 0)
     assert result.success
-    
+
     email_data = get_email_data(params, [result])
     assert email_data[0]["Success"] is True
     assert email_data[0]["AdditionalFields"]["Verified"] is True
@@ -880,12 +880,12 @@ def test_verification_gmail_email_still_found_is_reported_as_failed(mocker):
     assert "could not be verified" in email["Reason"]
     assert (result.total_found, result.total_deleted, result.total_failed) == (1, 0, 1)
     assert not result.success
-    
+
     email_data = get_email_data(params, [result])[0]
     assert email_data["Success"] is False
     assert "could not be verified" in email_data["Reason"]
     assert email_data["AdditionalFields"]["Verified"] is False
-    
+
     outputs = get_outputs(params, [result])
     assert outputs["TotalDeleted"] == 0
     assert outputs["TotalFailed"] == 1
@@ -914,7 +914,7 @@ def test_verification_search_error_does_not_fail_the_emails(mocker):
     assert len(result.errors) == 1
     assert "Failed verifying the deletion" in result.errors[0]
     assert "search down" in result.errors[0]
-    
+
     email_data = get_email_data(params, [result])
     assert "Verified" not in email_data[0]["AdditionalFields"]
 
@@ -982,7 +982,7 @@ def test_verification_graph_security_final_estimate_zero_is_verified(mocker):
     assert result.additional["DeletionVerified"] is True
     assert (result.total_found, result.total_deleted, result.total_failed) == (3, 3, 0)
     assert len(fake.called("msg-get-last-estimate-statistics-operation")) == 2  # no additional API calls
-    
+
     email_data = get_email_data(params, [result])
     assert email_data[0]["AdditionalFields"]["Verified"] is True
 
@@ -994,7 +994,7 @@ def test_verification_graph_security_remaining_items_are_unverified(mocker):
     assert result.additional["DeletionVerified"] is False
     assert "could not be verified" in result.additional["Note"]
     assert (result.total_found, result.total_deleted, result.total_failed) == (3, 1, 2)
-    
+
     email_data = get_email_data(params, [result])
     assert email_data[0]["Success"] is False
     assert email_data[0]["AdditionalFields"]["Verified"] is False
@@ -1093,20 +1093,23 @@ def test_build_command_results_success():
     result = vendor_result(emails=[found_email()], total_found=1)
     params = make_params(operation=OPERATION_SEARCH_ONLY)
     entries = module.build_command_results(params, [result])
-    
+
     assert len(entries) == 1
     entry = entries[0]
-    
+
     # Check outputs context
     assert "EmailData" in entry.outputs
     assert entry.outputs["TotalFound"] == 1
     assert entry.outputs["TotalDeleted"] == 0
     assert entry.outputs["TotalFailed"] == 0
-    
+
     # Check table structure in readable output
     hr = entry.readable_output
     assert "|Brand|Mailbox|ID|Subject|From|To|Timestamp|Operation|Success|Reason|" in hr
-    assert "| Gmail | a@example.com | m1 | Invoice | bad@evil.com | a@example.com | Mon, 2 Jan 2026 03:04:05 +0000 | Search Only | true |  |" in hr
+    assert (
+        "| Gmail | a@example.com | m1 | Invoice | bad@evil.com | a@example.com | Mon, 2 Jan 2026 03:04:05 +0000 | Search Only | true |  |"
+        in hr
+    )
     assert "**Total found:** 1 | **Total deleted:** 0 | **Total failed:** 0" in hr
 
 
@@ -1114,21 +1117,21 @@ def test_build_command_results_aggregate_vendor():
     email = module.graph_mail_to_email(GRAPH_MAIL_ITEM)
     result_normal = vendor_result("Microsoft Graph Mail", "MicrosoftGraphMail", emails=[email], total_found=1)
     result_agg = vendor_result("Microsoft Graph Security", "Microsoft Graph", aggregate=True, total_found=3, total_deleted=3)
-    
+
     params = make_params(operation=OPERATION_SEARCH_AND_DELETE)
     entry = module.build_command_results(params, [result_normal, result_agg])[0]
-    
+
     # Aggregated totals
     assert entry.outputs["TotalFound"] == 4
     assert entry.outputs["TotalDeleted"] == 3
     assert entry.outputs["TotalFailed"] == 0
-    
+
     # The aggregate record should be in EmailData context but omitted from the visual table
     email_data = entry.outputs["EmailData"]
     assert len(email_data) == 2
     agg_record = next(item for item in email_data if item["Brand"] == "Microsoft Graph")
     assert agg_record["AdditionalFields"]["Aggregate"] is True
-    
+
     hr = entry.readable_output
     assert "MicrosoftGraphMail" in hr
     assert "Microsoft Graph Security" not in hr  # excluded from visual table
@@ -1139,7 +1142,7 @@ def test_build_command_results_nothing_found_visuals():
     result = vendor_result()
     params = make_params(operation=OPERATION_SEARCH_ONLY)
     entry = module.build_command_results(params, [result])[0]
-    
+
     # Should skip putting empty vendor in table, falling back to "No emails were found." string
     hr = entry.readable_output
     assert "No emails were found." in hr
@@ -1149,7 +1152,7 @@ def test_build_command_results_nothing_found_visuals():
 def test_context_has_object_id_in_additional_fields():
     result = vendor_result(emails=[found_email("m1")], total_found=1)
     entry = get_email_data(make_params(operation=OPERATION_SEARCH_ONLY), [result])[0]
-    
+
     assert "ObjectID" in entry["AdditionalFields"]
     assert entry["AdditionalFields"]["ObjectID"] == "m1"
     assert "InternetMessageID" in entry["AdditionalFields"]
@@ -1220,7 +1223,7 @@ def test_vendors_are_not_started_when_the_deadline_passed(mocker):
     assert not fake.calls
     assert [r.success for r in results] == [False, False]
     assert all("Timed out before this vendor was run: the 5 seconds timeout was reached." in r.errors[0] for r in results)
-    
+
     hr = get_hr(params, results)
     assert hr.count("Timed out before this vendor was run") == 2
     assert [r.brand for r in results] == ["Gmail", "EWS v2"]
@@ -1259,7 +1262,7 @@ def test_partial_results_survive_a_failing_second_search_round(mocker):
     assert result.emails[0]["Deleted"] is True
     assert (result.total_deleted, result.total_failed) == (1, 0)
     assert result.errors == ["Timed out: the 30 seconds timeout was reached."]
-    
+
     params = make_params()
     email_data = get_email_data(params, [result])
     # the deleted email + the failure row of the vendor
@@ -1340,7 +1343,7 @@ def test_graph_security_zero_results_is_a_successful_row_with_total_found_zero(m
     assert not fake.called("msg-purge-ediscovery-data")
     assert run.visited()[-2:] == ["cleanup", "done"]
     assert_cleanup_last(fake)
-    
+
     outputs = get_outputs(params, run.results)
     assert outputs["TotalFound"] == 0
     assert outputs["EmailData"][0]["Success"] is True
@@ -1721,10 +1724,10 @@ def test_graph_security_keeps_polling_while_gmail_is_done_and_gmail_is_preserved
     gmail, graph = run.results
     assert (gmail.total_found, gmail.aggregate, gmail.emails[0]["ObjectID"]) == (1, False, "m1")
     assert (graph.total_found, graph.aggregate) == (2, True)
-    
+
     outputs = get_outputs(params, run.results)
     assert outputs["TotalFound"] == 3
-    
+
     email_data = outputs["EmailData"]
     assert [(item["Brand"], item.get("AdditionalFields", {}).get("ObjectID", "")) for item in email_data] == [
         ("Gmail", "m1"),
@@ -1792,7 +1795,7 @@ def test_state_size_safeguard_marks_the_final_output_between_ticks(mocker):
     assert len(email["HTMLBody"]) == module.HTML_BODY_PREFIX_CHARS
     assert email["HTMLBodyTruncated"] is True
     assert email["DeletionVerified"] is True
-    
+
     email_data = get_email_data(params, run.results)[0]
     assert email_data["AdditionalFields"]["HTMLBodyTruncated"] is True
 
@@ -1947,7 +1950,7 @@ def test_entry_point_unexpected_failure_returns_the_failure_results_and_stops_po
     setup_demisto(mocker, {"Gmail": "Gmail"}, {})
     mocker.patch.object(module, "new_state", side_effect=module.DemistoException("boom"))
     result = module.search_and_delete_email(dict(ENTRY_ARGS))[0]
-    
+
     assert result.entry_type == entryTypes["error"]
     assert "boom" in result.readable_output
 
