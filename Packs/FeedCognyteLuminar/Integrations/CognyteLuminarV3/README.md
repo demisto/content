@@ -68,7 +68,7 @@ Gets Luminar indicators from the IOCs collection. Related objects' fields are ap
 
 #### Command example
 
-```!luminar-v3-get-indicators limit="3" from_date="7 days"```
+```!luminar-v3-get-indicators limit="1" from_date="7 days"```
 
 #### Context Example
 
@@ -79,13 +79,32 @@ Gets Luminar indicators from the IOCs collection. Related objects' fields are ap
             {
                 "Type": "IP",
                 "Value": "200.41.233.229",
-                "Occurred": "2026-01-01T00:00:00.000000Z",
-                "stixid": "indicator--8aa5f19e-1111-4aaa-bbbb-ccccddddeeee",
-                "confidence": "High",
-                "luminarscore": 65,
-                "malwarefamily": "Lumma",
-                "actor": "Example Threat Actor",
-                "tags": "feed_tag"
+                "Occurred": "2026-09-08T00:00:00.000Z",
+                "stixid": "indicator--73be9a1f-266b-5023-9c6d-a23c955b65cb",
+                "confidence": "90",
+                "creationdate": "2026-09-08T00:00:00.000Z",
+                "updateddate": "2026-09-09T00:00:58.072Z",
+                "reportedby": [
+                    "Luminar"
+                ],
+                "luminarcollectiondate": "2026-09-09T00:00:02.718Z",
+                "validfrom": "2026-09-08T00:00:00.000Z",
+                "tags": [
+                    "SuspiciousNetworkActivity",
+                    "Scanner",
+                    "phishing",
+                    "bruteforce",
+                    "bad_reputation"
+                ],
+                "luminarscore": 100,
+                "luminarvaliduntil": "2026-09-15T00:00:00.000Z",
+                "luminarconvictionreasons": "bad_reputation",
+                "luminarprotocols": "ssh",
+                "luminarthreattypes": "bruteforce",
+                "luminartargetedsystems": "Attack",
+                "luminarcloudprovider": false,
+                "asn": "10834",
+                "geocountry": "US"
             }
         ]
     }
@@ -94,13 +113,13 @@ Gets Luminar indicators from the IOCs collection. Related objects' fields are ap
 
 #### Human Readable Output
 
->### Luminar Indicators
+>### Luminar Indicator
 >
->|Type|Value|Occurred|confidence|luminarscore|malwarefamily|actor|
->|---|---|---|---|---|---|---|
->| IP | 200.41.233.229 | 2026-01-01T00:00:00.000000Z | High | 65 | Lumma | Example Threat Actor |
+>|Type|Value|Occurred|Confidence|Creation Date|Updated Date|Reported By|Luminar Collection Date|Valid From|Tags|Luminar Score|Luminar Valid Until|Luminar Conviction Reasons|Luminar Protocols|Luminar Threat Types|Luminar Targeted Systems|Luminar Cloud Provider|ASN|Geo Country|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| IP | 200.41.233.229 | 2026-09-08T00:00:00.000Z | 90 | 2026-09-08T00:00:00.000Z | 2026-09-09T00:00:58.072Z | Luminar | 2026-09-09T00:00:02.718Z | 2026-09-08T00:00:00.000Z | SuspiciousNetworkActivity,<br>Scanner,<br>phishing,<br>bruteforce,<br>bad_reputation | 100 | 2026-09-15T00:00:00.000Z | bad_reputation | ssh | bruteforce | Attack | false | 10834 | US |
 >
->**12 indicators saved to TIM.**
+>**13 indicators saved to TIM.**
 
 ### luminar-v3-get-leaked-records
 
@@ -141,7 +160,7 @@ Gets Luminar leaked records (leaked credentials) from the Leaked Records collect
 
 #### Command example
 
-```!luminar-v3-get-leaked-records limit="3" from_date="2026-01-01T00:00:00Z"```
+```!luminar-v3-get-leaked-records limit="1" from_date="2025-01-01T00:00:00Z"```
 
 #### Context Example
 
@@ -152,17 +171,38 @@ Gets Luminar leaked records (leaked credentials) from the Leaked Records collect
             {
                 "Type": "Account",
                 "Value": "john.doe@example.com",
-                "Occurred": "2026-01-01T00:00:00.000000Z",
-                "stixid": "user-account--1bb2cc33-4444-4ccc-dddd-eeeeffff0000",
+                "Occurred": "2025-04-01T00:00:00.000Z",
+                "stixid": "user-account--72bf90c1-9e95-55b9-afda-e6042d40a9f6",
+                "reportedby": [
+                    "Luminar"
+                ],
+                "tags": [
+                    "LEAKED CREDENTIAL",
+                    "Incident: Example_Leak_Bundle.zip"
+                ],
+                "category": "LEAKED CREDENTIAL",
                 "accounttype": "LEAKED CREDENTIAL",
                 "username": "john.doe@example.com",
+                "displayname": "john.doe@example.com",
                 "emailaddress": "john.doe@example.com",
-                "luminarleakedcredential": "P@ssw0rd!123",
-                "luminarleaksource": "stealer_log",
+                "luminarleakedcredential": "********",
+                "luminarleaksource": "telegram",
+                "luminarleakurl": "www.example.com/register",
+                "luminarmonitoringplanterms": "example.com",
+                "luminarcredentialisfresh": false,
+                "creationdate": "2025-04-01T00:00:00.000Z",
+                "updateddate": "2026-09-09T04:19:40.838Z",
                 "luminarincidentname": "Example_Leak_Bundle.zip",
+                "luminarincidentdescription": "The following credentials were shared on Telegram, channel id: 1234567890, on 2025-04-01. They were extracted from a file named \"Example Leak Bundle.zip\" with a size of 442.0 MB.",
                 "luminarthreatscore": 71,
-                "luminarcollectiondate": "2026-01-01T00:00:00.000000Z",
-                "tags": "LEAKED CREDENTIAL, Incident: Example_Leak_Bundle.zip"
+                "luminarcollectiondate": "2025-04-02T19:01:00.498Z",
+                "comment": "related-to - incident: Example_Leak_Bundle.zip",
+                "incident-Value": "Example_Leak_Bundle.zip",
+                "incident-stixid": "incident--4daf4333-8684-5158-82ba-8fc11a88fb93",
+                "incident-description": "The following credentials were shared on Telegram, channel id: 1234567890, on 2025-04-01. They were extracted from a file named \"Example Leak Bundle.zip\" with a size of 442.0 MB.",
+                "incident-luminarcollectiondate": "2025-04-02T19:01:00.498Z",
+                "incident-luminarthreatscore": "71",
+                "incident-relationship": "related-to"
             }
         ]
     }
@@ -173,11 +213,11 @@ Gets Luminar leaked records (leaked credentials) from the Leaked Records collect
 
 >### Luminar Leaked Record
 >
->|Type|Value|accounttype|username|luminarincidentname|luminarthreatscore|incident-name|
->|---|---|---|---|---|---|---|
->| Account | john.doe@example.com | LEAKED CREDENTIAL | john.doe@example.com | Example_Leak_Bundle.zip | 71 | Example_Leak_Bundle.zip |
+>|Type|Value|Occurred|Reported By|Tags|Category|Account Type|Username|Display Name|Email Address|Luminar Leaked Credential|Luminar Leak Source|Luminar Leak URL|Luminar Monitoring Plan Terms|Luminar Credential Is Fresh|Creation Date|Updated Date|Luminar Incident Name|Luminar Incident Description|Luminar Threat Score|Luminar Collection Date|Comment|Incident - Value|Incident - Description|Incident - Luminar Collection Date|Incident - Luminar Threat Score|Incident - Relationship|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Account | john.doe@example.com | 2025-04-01T00:00:00.000Z | Luminar | LEAKED CREDENTIAL,<br>Incident: Example_Leak_Bundle.zip | LEAKED CREDENTIAL | LEAKED CREDENTIAL | john.doe@example.com | john.doe@example.com | john.doe@example.com | ******** | telegram | www.example.com/register | example.com | false | 2025-04-01T00:00:00.000Z | 2026-09-09T04:19:40.838Z | Example_Leak_Bundle.zip | The following credentials were shared on Telegram, channel id: 1234567890, on 2025-04-01. They were extracted from a file named "Example Leak Bundle.zip" with a size of 442.0 MB. | 71 | 2025-04-02T19:01:00.498Z | related-to - incident: Example_Leak_Bundle.zip | Example_Leak_Bundle.zip | The following credentials were shared on Telegram, channel id: 1234567890, on 2025-04-01. They were extracted from a file named "Example Leak Bundle.zip" with a size of 442.0 MB. | 2025-04-02T19:01:00.498Z | 71 | related-to |
 >
->**42 indicators saved to TIM.**
+>**5 indicators saved to TIM.**
 
 ### luminar-v3-reset-fetch-indicators
 

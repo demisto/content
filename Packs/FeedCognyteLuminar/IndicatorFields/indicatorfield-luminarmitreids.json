@@ -1,9 +1,9 @@
 {
     "id": "indicator_luminarmitreids",
     "version": -1,
-    "name": "Luminar MITRE ATT&CK IDs",
+    "name": "Luminar MITRE ATT\u0026CK IDs",
     "ownerOnly": false,
-    "description": "MITRE ATT&CK technique IDs associated with this indicator by Luminar.",
+    "description": "MITRE ATT\u0026CK technique IDs associated with this indicator by Luminar.",
     "cliName": "luminarmitreids",
     "type": "shortText",
     "closeForm": false,
