@@ -7516,7 +7516,17 @@ class ElasticBeanstalk:
             "IncludeDeleted": arg_to_bool_or_none(args.get("include_deleted")),
             "IncludedDeletedBackTo": validate_iso8601_date(args.get("included_deleted_back_to")),
         }
-        kwargs.update(build_pagination_kwargs(args, next_token_name="NextToken", limit_name="MaxRecords"))
+        limit = args.get("limit")
+        pagination_args = {**args, "limit": DEFAULT_LIMIT_VALUE if limit in (None, "") else limit}
+        kwargs.update(
+            build_pagination_kwargs(
+                pagination_args,
+                minimum_limit=1,
+                max_limit=1000,
+                next_token_name="NextToken",
+                limit_name="MaxRecords",
+            )
+        )
         remove_nulls_from_dictionary(kwargs)
         return kwargs
 
@@ -7533,16 +7543,15 @@ class ElasticBeanstalk:
         Returns:
             str: The human-readable output.
         """
-        readable_output = tableToMarkdown(
+        metadata = f"EnvironmentsNextToken: {escape(next_token)}" if next_token else ""
+        return tableToMarkdown(
             title,
             environments,
             headers=ElasticBeanstalk.ENVIRONMENTS_HR_HEADERS,
             headerTransform=pascalToSpace,
             removeNull=True,
+            metadata=metadata,
         )
-        if next_token:
-            readable_output += f"\nTo get the next page of results, use next_token={next_token}"
-        return readable_output
 
     @staticmethod
     def create_environment_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
@@ -7559,7 +7568,11 @@ class ElasticBeanstalk:
             CommandResults: The description of the created environment.
         """
         kwargs = ElasticBeanstalk._build_create_environment_kwargs(args)
-        print_debug_logs(client, f"Creating Elastic Beanstalk environment with parameters: {kwargs.keys()}")
+        print_debug_logs(
+            client,
+            f"Creating Elastic Beanstalk environment with kwargs keys: {list(kwargs.keys())} "
+            f"and {kwargs.get('ApplicationName')=}, {kwargs.get('EnvironmentName')=}",
+        )
         response = client.create_environment(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -7596,7 +7609,11 @@ class ElasticBeanstalk:
             CommandResults: The environments descriptions and the next token for pagination.
         """
         kwargs = ElasticBeanstalk._build_describe_environments_kwargs(args)
-        print_debug_logs(client, f"Describing Elastic Beanstalk environments with parameters: {kwargs.keys()}")
+        print_debug_logs(
+            client,
+            f"Describing Elastic Beanstalk environments with kwargs keys: {list(kwargs.keys())} "
+            f"and {kwargs.get('MaxRecords')=}, {bool(kwargs.get('NextToken'))=}",
+        )
         response = client.describe_environments(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -7604,6 +7621,8 @@ class ElasticBeanstalk:
 
         serialized_response = serialize_response_with_datetime_encoding(response)
         environments = serialized_response.get("Environments", [])
+        if not environments:
+            return CommandResults(readable_output="No Elastic Beanstalk environments were found.")
         next_token = serialized_response.get("NextToken")
 
         outputs = {

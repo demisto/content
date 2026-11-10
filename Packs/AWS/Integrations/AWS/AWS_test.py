@@ -6238,7 +6238,6 @@ def test_elasticbeanstalk_create_environment_success(mocker):
 
     result = ElasticBeanstalk.create_environment_command(mock_client, args)
 
-    mock_client.create_environment.assert_called_once()
     mock_client.create_environment.assert_called_once_with(
         ApplicationName="my-app",
         EnvironmentName="my-env",
@@ -6418,7 +6417,6 @@ def test_elasticbeanstalk_describe_environments_filters_and_pagination(mocker):
 
     result = ElasticBeanstalk.describe_environments_command(mock_client, args)
 
-    mock_client.describe_environments.assert_called_once()
     mock_client.describe_environments.assert_called_once_with(
         ApplicationName="my-app",
         VersionLabel="v1",
@@ -6435,14 +6433,14 @@ def test_elasticbeanstalk_describe_environments_filters_and_pagination(mocker):
     assert environments[0]["EnvironmentId"] == "e-abc123"
     assert environments[0]["DateCreated"] == "2024-01-15T10:30:00"
     assert result.outputs["AWS.ElasticBeanstalk(true)"]["EnvironmentsNextToken"] == "next-123"
-    assert "next_token=next-123" in result.readable_output
+    assert "EnvironmentsNextToken: next-123" in result.readable_output
 
 
 def test_elasticbeanstalk_describe_environments_empty(mocker):
     """
     Given: No args.
     When: describe_environments_command is called and boto returns no environments.
-    Then: The default limit is sent, the outputs list is empty and there is no next token.
+    Then: The default limit is sent once, and only the "not found" message is returned without outputs or raw response.
     """
     from AWS import ElasticBeanstalk
 
@@ -6456,9 +6454,110 @@ def test_elasticbeanstalk_describe_environments_empty(mocker):
     result = ElasticBeanstalk.describe_environments_command(mock_client, {})
 
     mock_client.describe_environments.assert_called_once_with(MaxRecords=50)
-    assert result.outputs["AWS.ElasticBeanstalk.Environments(val.EnvironmentId && val.EnvironmentId == obj.EnvironmentId)"] == []
-    assert result.outputs["AWS.ElasticBeanstalk(true)"]["EnvironmentsNextToken"] is None
-    assert "next_token" not in result.readable_output
+    assert result.outputs is None
+    assert result.raw_response is None
+    assert result.readable_output == "No Elastic Beanstalk environments were found."
+
+
+def test_elasticbeanstalk_describe_environments_empty_limit_uses_default(mocker):
+    """
+    Given: An empty-string limit argument.
+    When: describe_environments_command is called.
+    Then: The default limit of 50 is sent as MaxRecords.
+    """
+    from AWS import ElasticBeanstalk
+
+    mock_client = mocker.Mock()
+    mock_client.describe_environments.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Environments": [],
+    }
+    mocker.patch("AWS.print_debug_logs")
+
+    ElasticBeanstalk.describe_environments_command(mock_client, {"limit": ""})
+
+    mock_client.describe_environments.assert_called_once_with(MaxRecords=50)
+
+
+def test_elasticbeanstalk_build_create_environment_kwargs_parses_tags():
+    """
+    Given: Args with a single source argument and tags in the key=...,value=... format.
+    When: _build_create_environment_kwargs is called.
+    Then: The tags are parsed into the AWS Key/Value format and empty values are removed.
+    """
+    from AWS import ElasticBeanstalk
+
+    kwargs = ElasticBeanstalk._build_create_environment_kwargs(
+        {"application_name": "my-app", "template_name": "tmpl", "tags": "key=env,value=prod;key=team,value=sec"}
+    )
+
+    assert kwargs == {
+        "ApplicationName": "my-app",
+        "TemplateName": "tmpl",
+        "Tags": [{"Key": "env", "Value": "prod"}, {"Key": "team", "Value": "sec"}],
+    }
+
+
+@pytest.mark.parametrize(
+    "source_args",
+    [
+        {},
+        {"template_name": "tmpl", "solution_stack_name": "stack"},
+    ],
+)
+def test_elasticbeanstalk_build_create_environment_kwargs_exactly_one_source(source_args):
+    """
+    Given: Args with no source argument or with two source arguments.
+    When: _build_create_environment_kwargs is called.
+    Then: A ValueError is raised.
+    """
+    from AWS import ElasticBeanstalk
+
+    with pytest.raises(ValueError, match="exactly one of the following arguments"):
+        ElasticBeanstalk._build_create_environment_kwargs({"application_name": "my-app", **source_args})
+
+
+def test_elasticbeanstalk_build_describe_environments_kwargs_include_deleted_false():
+    """
+    Given: include_deleted="false".
+    When: _build_describe_environments_kwargs is called.
+    Then: IncludeDeleted stays False (it is not removed as an empty value) and the default limit is used.
+    """
+    from AWS import ElasticBeanstalk
+
+    kwargs = ElasticBeanstalk._build_describe_environments_kwargs({"include_deleted": "false"})
+
+    assert kwargs == {"IncludeDeleted": False, "MaxRecords": 50}
+
+
+def test_elasticbeanstalk_build_describe_environments_kwargs_limit_validation():
+    """
+    Given: limit="0", and separately limit="" .
+    When: _build_describe_environments_kwargs is called.
+    Then: limit="0" raises a ValueError, while limit="" falls back to MaxRecords == 50.
+    """
+    from AWS import ElasticBeanstalk
+
+    with pytest.raises(ValueError, match="Limit must be at least 1"):
+        ElasticBeanstalk._build_describe_environments_kwargs({"limit": "0"})
+
+    assert ElasticBeanstalk._build_describe_environments_kwargs({"limit": ""})["MaxRecords"] == 50
+
+
+def test_elasticbeanstalk_format_environments_hr_next_token_placement():
+    """
+    Given: A list of environments, with and without a next token.
+    When: _format_environments_hr is called.
+    Then: The token is shown above the table when present, and is absent otherwise.
+    """
+    from AWS import ElasticBeanstalk
+
+    with_token = ElasticBeanstalk._format_environments_hr("Title", [{"EnvironmentId": "e-abc123"}], "tok-1")
+    without_token = ElasticBeanstalk._format_environments_hr("Title", [{"EnvironmentId": "e-abc123"}])
+
+    assert "EnvironmentsNextToken: tok-1" in with_token
+    assert with_token.index("EnvironmentsNextToken: tok-1") < with_token.index("e-abc123")
+    assert "EnvironmentsNextToken" not in without_token
 
 
 def test_elasticbeanstalk_describe_environments_invalid_date(mocker):

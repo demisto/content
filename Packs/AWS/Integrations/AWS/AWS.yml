@@ -10939,14 +10939,14 @@ script:
       type: unknown
 
   - name: aws-elasticbeanstalk-environment-create
-    description: "Starts launching an AWS Elastic Beanstalk environment for the specified application using the specified configuration. This command only initiates the environment creation and returns immediately, without waiting for the environment to finish launching (the returned Status is typically Launching). Use aws-elasticbeanstalk-environments-describe to track the progress and the final Status and Health of the environment. Can be used to recreate a deleted environment with the same CNAME prefix to prevent subdomain takeover. Note: This command creates real, billable AWS resources (for example, EC2 instances, Auto Scaling groups, load balancers and S3 objects). Exactly one of template_name, solution_stack_name or platform_arn must be provided. Required IAM permission: elasticbeanstalk:CreateEnvironment. Elastic Beanstalk also requires further permissions to provision the environment resources, such as CloudFormation, EC2, AutoScaling, Elastic Load Balancing, S3 and iam:PassRole."
+    description: "Starts creating an AWS Elastic Beanstalk environment. This command only starts the creation and does not wait for the environment to finish launching. Use aws-elasticbeanstalk-environments-describe to track its Status and Health. Can be used to recreate a deleted environment with the same CNAME prefix to prevent subdomain takeover. Note: This command creates real, billable AWS resources (for example, EC2 instances, Auto Scaling groups, load balancers, and S3 objects). Exactly one of template_name, solution_stack_name, or platform_arn must be provided. Required IAM permission: elasticbeanstalk:CreateEnvironment. Elastic Beanstalk also requires additional permissions to provision the environment resources, such as CloudFormation, EC2, AutoScaling, Elastic Load Balancing, S3, and iam:PassRole."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0), Cortex Cloud, and Cortex Agentix. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0), Cortex Cloud, and Cortex Agentix. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -10989,13 +10989,13 @@ script:
       description: The name of the application that is associated with this environment.
       required: true
     - name: environment_name
-      description: A unique name for the environment. Must be from 4 to 40 characters in length and can contain only letters, numbers, and hyphens. It can't start or end with a hyphen. If cname_prefix is not specified, the environment name is used as the CNAME prefix.
+      description: The name of the environment. Must be from 4 to 40 characters in length and can contain only letters, numbers, and hyphens. It can't start or end with a hyphen. If cname_prefix is not specified, the environment name becomes part of the CNAME.
       required: false
     - name: cname_prefix
-      description: If specified, the environment attempts to use this value as the prefix for the CNAME in the Elastic Beanstalk environment URL (for example, <cname_prefix>.<region>.elasticbeanstalk.com). If not specified, the CNAME is generated automatically by appending a random alphanumeric string to the environment name.
+      description: The prefix for the CNAME of the environment. The environment attempts to use this value as the prefix for the CNAME in the Elastic Beanstalk environment URL (for example, <cname_prefix>.<region>.elasticbeanstalk.com). If not specified, the CNAME is generated automatically by appending a random alphanumeric string to the environment name.
       required: false
     - name: description
-      description: Your description for this environment.
+      description: The description of the environment.
       required: false
     - name: tags
       description: 'The tags to apply to the environment, in the format: key=abc,value=123;key=fed,value=456.'
@@ -11035,10 +11035,10 @@ script:
       description: The name of the configuration template used to originally launch this environment.
       type: String
     - contextPath: AWS.ElasticBeanstalk.Environments.Description
-      description: Describes this environment.
+      description: The description of the environment.
       type: String
     - contextPath: AWS.ElasticBeanstalk.Environments.EndpointURL
-      description: For load-balanced, autoscaling environments, the URL to the LoadBalancer. For single-instance environments, the IP address of the instance.
+      description: The URL to the load balancer for load-balanced, autoscaling environments, or the IP address of the instance for single-instance environments.
       type: String
     - contextPath: AWS.ElasticBeanstalk.Environments.CNAME
       description: The URL to the CNAME for this environment.
@@ -11050,16 +11050,16 @@ script:
       description: The last modified date for this environment.
       type: Date
     - contextPath: AWS.ElasticBeanstalk.Environments.Status
-      description: The current operational status of the environment (for example, Launching, Updating, Ready, Terminating, Terminated).
+      description: The current operational status of the environment. Possible values are Aborting, Launching, Updating, LinkingFrom, LinkingTo, Ready, Terminating, or Terminated.
       type: String
     - contextPath: AWS.ElasticBeanstalk.Environments.AbortableOperationInProgress
-      description: Indicates if there is an in-progress environment configuration update or application version deployment that you can cancel.
+      description: Whether there is an in-progress environment configuration update or application version deployment that can be aborted.
       type: Boolean
     - contextPath: AWS.ElasticBeanstalk.Environments.Health
-      description: Describes the health status of the environment (Green, Yellow, Red, Grey).
+      description: The health status of the environment. Possible values are Green, Yellow, Red, or Grey.
       type: String
     - contextPath: AWS.ElasticBeanstalk.Environments.HealthStatus
-      description: Returns the health status of the application running in your environment.
+      description: The health status of the application running in the environment.
       type: String
     - contextPath: AWS.ElasticBeanstalk.Environments.Resources
       description: The description of the AWS resources used by this environment.
@@ -11074,7 +11074,7 @@ script:
       description: The version of this environment tier.
       type: String
     - contextPath: AWS.ElasticBeanstalk.Environments.EnvironmentLinks
-      description: A list of links to other environments in the same group.
+      description: The list of links to other environments in the same group.
       type: Unknown
     - contextPath: AWS.ElasticBeanstalk.Environments.OperationsRole
       description: The ARN of the environment's operations role.
@@ -11084,11 +11084,11 @@ script:
     description: "Returns descriptions for existing AWS Elastic Beanstalk environments. Required IAM permission: elasticbeanstalk:DescribeEnvironments."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0), Cortex Cloud, and Cortex Agentix. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0), Cortex Cloud, and Cortex Agentix. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -11128,17 +11128,17 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: application_name
-      description: If specified, returns only environments that are associated with this application.
+      description: The name of the application to filter by. If specified, returns only environments that are associated with this application.
       required: false
     - name: version_label
-      description: If specified, returns only environments that are associated with this application version.
+      description: The application version label to filter by. If specified, returns only environments that are associated with this application version.
       required: false
     - name: environment_ids
-      description: A comma-separated list of environment IDs. If specified, returns only the environments with these IDs.
+      description: The comma-separated list of environment IDs. If specified, returns only the environments with these IDs.
       required: false
       isArray: true
     - name: environment_names
-      description: A comma-separated list of environment names. If specified, returns only the environments with these names.
+      description: The comma-separated list of environment names. If specified, returns only the environments with these names.
       required: false
       isArray: true
     - name: include_deleted
@@ -11149,14 +11149,14 @@ script:
       - 'true'
       - 'false'
     - name: included_deleted_back_to
-      description: 'If include_deleted is true, only environments deleted after this date are included. Format: YYYY-MM-DDTHH:MM:SSZ (for example, 2024-01-15T10:30:00Z).'
+      description: 'The ISO 8601 date in the format YYYY-MM-DDTHH:MM:SSZ (for example, 2024-01-15T10:30:00Z). If include_deleted is true, only environments deleted after this date are included.'
       required: false
     - name: limit
-      description: The maximum number of environments to return. Maximum is 1000.
+      description: The maximum number of environments to return. Valid range is 1-1000.
       required: false
       defaultValue: '50'
     - name: next_token
-      description: The NextToken value returned from a previous paginated request. The next_token will be at AWS.ElasticBeanstalk.EnvironmentsNextToken.
+      description: The token for the next page of results. Use the value of AWS.ElasticBeanstalk.EnvironmentsNextToken from the previous response. Use the same filter arguments as in the previous request.
       required: false
     outputs:
     - contextPath: AWS.ElasticBeanstalk.Environments.EnvironmentName
@@ -11184,10 +11184,10 @@ script:
       description: The name of the configuration template used to originally launch this environment.
       type: String
     - contextPath: AWS.ElasticBeanstalk.Environments.Description
-      description: Describes this environment.
+      description: The description of the environment.
       type: String
     - contextPath: AWS.ElasticBeanstalk.Environments.EndpointURL
-      description: For load-balanced, autoscaling environments, the URL to the LoadBalancer. For single-instance environments, the IP address of the instance.
+      description: The URL to the load balancer for load-balanced, autoscaling environments, or the IP address of the instance for single-instance environments.
       type: String
     - contextPath: AWS.ElasticBeanstalk.Environments.CNAME
       description: The URL to the CNAME for this environment.
@@ -11199,16 +11199,16 @@ script:
       description: The last modified date for this environment.
       type: Date
     - contextPath: AWS.ElasticBeanstalk.Environments.Status
-      description: The current operational status of the environment (for example, Launching, Updating, Ready, Terminating, Terminated).
+      description: The current operational status of the environment. Possible values are Aborting, Launching, Updating, LinkingFrom, LinkingTo, Ready, Terminating, or Terminated.
       type: String
     - contextPath: AWS.ElasticBeanstalk.Environments.AbortableOperationInProgress
-      description: Indicates if there is an in-progress environment configuration update or application version deployment that you can cancel.
+      description: Whether there is an in-progress environment configuration update or application version deployment that can be aborted.
       type: Boolean
     - contextPath: AWS.ElasticBeanstalk.Environments.Health
-      description: Describes the health status of the environment (Green, Yellow, Red, Grey).
+      description: The health status of the environment. Possible values are Green, Yellow, Red, or Grey.
       type: String
     - contextPath: AWS.ElasticBeanstalk.Environments.HealthStatus
-      description: Returns the health status of the application running in your environment.
+      description: The health status of the application running in the environment.
       type: String
     - contextPath: AWS.ElasticBeanstalk.Environments.Resources
       description: The description of the AWS resources used by this environment.
@@ -11223,7 +11223,7 @@ script:
       description: The version of this environment tier.
       type: String
     - contextPath: AWS.ElasticBeanstalk.Environments.EnvironmentLinks
-      description: A list of links to other environments in the same group.
+      description: The list of links to other environments in the same group.
       type: Unknown
     - contextPath: AWS.ElasticBeanstalk.Environments.OperationsRole
       description: The ARN of the environment's operations role.
