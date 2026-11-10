@@ -14,7 +14,11 @@ from mcp.client.streamable_http import streamable_http_client
 from typing import Any
 import base64
 from base64 import b64encode
-import httpx
+
+# mcp 2.0 replaced its httpx dependency with httpx2. The two libraries are not
+# interchangeable at runtime, so the client handed to streamable_http_client must be an
+# httpx2 client. httpx2 is API-compatible with httpx, so it is used throughout.
+import httpx2
 
 from urllib.parse import urlparse, urlunparse
 
@@ -167,7 +171,7 @@ def get_client_metadata(redirect_uri: str) -> dict[str, Any]:
 class OAuthHandler:
     """
     Handles OAuth 2.0 flows, discovery, and client registration.
-    Uses httpx.AsyncClient for token operations.
+    Uses httpx2.AsyncClient for token operations.
     """
 
     def __init__(
@@ -190,7 +194,7 @@ class OAuthHandler:
         self.auth_code = auth_code
         self.redirect_uri = redirect_uri
         self.verify = verify
-        self.session = httpx.AsyncClient(timeout=5, verify=verify)
+        self.session = httpx2.AsyncClient(timeout=5, verify=verify)
         self.command_prefix = command_prefix
 
     async def close(self):
@@ -260,8 +264,7 @@ class OAuthHandler:
                 return client_id, client_secret
             else:
                 raise DemistoException(
-                    f"Failed to register OAuth client: Received status code {response.status_code}, "
-                    f"and response: {response.text}"
+                    f"Failed to register OAuth client: Received status code {response.status_code}, and response: {response.text}"
                 )
         except Exception as e:
             demisto.error(f"Error registering OAuth client: {str(e)}")
@@ -296,7 +299,7 @@ class OAuthHandler:
             # Add optional state parameter for CSRF protection
             params["state"] = state
 
-        query_string = str(httpx.QueryParams(params))
+        query_string = str(httpx2.QueryParams(params))
         authorization_url = f"{authorization_endpoint}?{query_string}"
         demisto.debug(f"Generated authorization URL: {authorization_url}")
         return authorization_url
@@ -408,7 +411,7 @@ class OAuthHandler:
             response = await self.session.post(token_endpoint, data=payload, headers=FORM_URLENCODED_HEADERS)
             response.raise_for_status()
             result = response.json()
-        except httpx.HTTPStatusError as e:
+        except httpx2.HTTPStatusError as e:
             error_details = f"HTTP Error: {e.response.status_code}. Response: {e.response.text}"
             demisto.error(error_details)
             raise DemistoException(f"Failed to obtain/refresh token. {error_details}")
@@ -571,17 +574,13 @@ class Client:
         """
         headers = await self._resolve_headers()
         async with (
-            httpx.AsyncClient(headers=headers, verify=self.verify) as custom_httpx_client,
-            streamable_http_client(url=self.base_url, http_client=custom_httpx_client) as (  # type: ignore[misc,arg-type]
-                read_stream,
-                write_stream,
-                _,
-            ),
+            httpx2.AsyncClient(headers=headers, verify=self.verify) as custom_httpx_client,
+            streamable_http_client(url=self.base_url, http_client=custom_httpx_client) as (read_stream, write_stream),
             ClientSession(read_stream, write_stream) as session,  # pylint: disable=E0601
         ):
             # Initialize the connection
             init = await session.initialize()
-            yield session, init.serverInfo.name  # type: ignore[attr-defined]
+            yield session, init.server_info.name
 
     async def test_connection(self, auth_test: bool = False):
         async with self._get_session():
@@ -599,7 +598,8 @@ class Client:
         readable_output = f"{server_name} has {len(tool_names)} available tools:\n{tool_names}"
         demisto.debug(f"Available tools: {tool_names}")
 
-        tools_dump = tools.model_dump(mode="json")
+        # by_alias keeps the camelCase wire names (inputSchema, not input_schema).
+        tools_dump = tools.model_dump(mode="json", by_alias=True)
         outputs = {"server_name": server_name, "Tools": tools_dump.get("tools", [])}
         return CommandResults(
             readable_output=readable_output,
@@ -616,17 +616,19 @@ class Client:
         async with self._get_session() as (session, server_name):
             result = await session.call_tool(tool_name, parsed_arguments)
 
-        result_dump = result.model_dump(mode="json")
+        # by_alias keeps the camelCase wire names (isError, not is_error).
+        result_dump = result.model_dump(mode="json", by_alias=True)
         result_content = result_dump.get("content", [])
+        is_error = result.is_error
         readable_output = tableToMarkdown(
-            f"Tool Execution on {server_name}: '{tool_name}'{' failed' if result.isError else ''}", result_content
+            f"Tool Execution on {server_name}: '{tool_name}'{' failed' if is_error else ''}", result_content
         )
 
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix="CallTool.Tool",
             outputs=result_content,
-            entry_type=EntryType.NOTE if not result.isError else EntryType.ERROR,
+            entry_type=EntryType.NOTE if not is_error else EntryType.ERROR,
         )
 
 

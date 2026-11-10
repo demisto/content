@@ -1,10 +1,10 @@
 {
-    "name": "Netskope v2",
-    "description": "Block URLs, domains and file hashes.",
+    "name": "Netskope - Direct to Zero Trust",
+    "description": "Manages Netskope policy enforcement with API v1/v2 commands, scripts, and playbooks for Zero Trust workflows.",
     "support": "community",
-    "currentVersion": "1.0.8",
-    "author": "randomizerxd",
-    "url": "",
+    "currentVersion": "1.1.0",
+    "author": "Cortex XSOAR Community",
+    "url": "https://github.com/demisto/content/tree/master/Packs/NetskopeV2",
     "email": "",
     "created": "2021-12-14T14:21:32Z",
     "categories": [
@@ -12,9 +12,21 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Netskope"
+    ],
     "githubUser": [
-        "randomizerxd"
+        "randomizerxd",
+        "Keshavm021"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts"
     ],
     "marketplaces": [
         "xsoar",

@@ -1,8 +1,10 @@
 {
-    "name": "CSCDomainManager",
-    "description": "CSCDomainManager is the world's first multilingual domain management tool, available in English, French, and German. It uses rules-based technology, customizable reporting, granular user management, and more to enable you to manage your domain.",
+    "name": "CSCDomainSecurity",
+    "description": "CSC is an enterprise-class domain registrar and domain security provider specializing in brand protection, domain takedowns, and enforcement. CSC enables organizations to manage and secure domains, DNS, and certificate infrastructure, while identifying and mitigating brand impersonation and phishing through continuous monitoring of domains, DNS, and the broader digital landscape—including social media, applications, and online content.",
+    "currentVersion": "2.0.0",
+    "created": "2026-4-01T00:00:00Z",
+    "githubUser": "schakradari",
     "support": "partner",
-    "currentVersion": "1.0.11",
     "author": "CSC",
     "url": "https://www.cscdbs.com",
     "email": "domain_api_support@cscglobal.com",
@@ -11,7 +13,7 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["CSC"],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

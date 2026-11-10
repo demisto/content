@@ -168,7 +168,10 @@ class RequestArguments:
         self.mwg_type = mwg_type
         self.category_default = category_default
         self.category_attribute = []  # type:List
-        self.fields_to_present = self.get_fields_to_present(fields_to_present)
+        # Keep the raw user input so it can be persisted and re-resolved after a refresh
+        # (e.g. "use_legacy_query" / "all" must survive to_context_json -> from_context_json).
+        self.raw_fields_to_present = fields_to_present or ""
+        self.fields_to_present = self.get_fields_to_present(self.raw_fields_to_present)
         self.csv_text = csv_text
         self.url_truncate = url_truncate
         self.maximum_cidr_size = maximum_cidr_size
@@ -193,7 +196,7 @@ class RequestArguments:
             self.CTX_MWG_TYPE: self.mwg_type,
             self.CTX_CATEGORY_DEFAULT: self.category_default,
             self.CTX_CATEGORY_ATTRIBUTE: self.category_attribute,
-            self.CTX_FIELDS_TO_PRESENT: self.fields_to_present,
+            self.CTX_FIELDS_TO_PRESENT: self.raw_fields_to_present,
             self.CTX_CSV_TEXT: self.csv_text,
             self.CTX_PROTOCOL_STRIP_KEY: self.url_protocol_stripping,
             self.CTX_URL_TRUNCATE_KEY: self.url_truncate,
@@ -229,9 +232,9 @@ class RequestArguments:
     def get_fields_to_present(self, fields_to_present: str) -> str:
         # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
 
-        # Fixes legacy query mode silently lost after the first refresh because
-        # `get_fields_to_present("")` returned "name,type" instead of ""
-        if fields_to_present == "use_legacy_query" or (not fields_to_present and self.out_format == FORMAT_TEXT):
+        # An empty value must NOT disable field filtering - doing so loads full indicator documents
+        # on the server and can exhaust its memory for large lists (XSUP-77883).
+        if fields_to_present == "use_legacy_query":
             return ""
 
         fields_for_format = {
