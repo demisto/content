@@ -30,7 +30,6 @@ Some commands need a ThreatMon module or permission:
 
 ## Configure ThreatMon Incident Management in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API URL | The ThreatMon External API URL. A URL that ends with /v1 also works. | True |
@@ -74,37 +73,40 @@ Lists ThreatMon alarms, ordered by alarm code, or by change time when updated_af
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of alarms to return (1-100). Default is 10. | Optional | 
-| page | The page to return, 0-based. Each page holds "limit" alarms. Default is 0. | Optional | 
-| severity | A comma-separated list of severities to return. Possible values are: Information, Low, Medium, High, Critical. | Optional | 
-| category | The category of the alarms to return, for example Brand Intelligence. | Optional | 
-| status | A comma-separated list of statuses to return. The filter is applied to the alarms of the requested page. Possible values are: Open, In Progress, Resolved, Ignore. | Optional | 
-| start_date | Return alarms created at or after this time, for example "7 days" or "2026-11-01T00:00:00Z". | Optional | 
-| end_date | Return alarms created before this time. | Optional | 
-| updated_after | Return alarms changed at or after this time, ordered by change time. | Optional | 
+| limit | The maximum number of alarms to return (1-100). Default is 10. | Optional |
+| page | The page to return, 0-based. Each page holds "limit" alarms. Default is 0. | Optional |
+| severity | A comma-separated list of severities to return. Possible values are: Information, Low, Medium, High, Critical. | Optional |
+| category | The category of the alarms to return, for example Brand Intelligence. | Optional |
+| status | A comma-separated list of statuses to return. The filter is applied to the alarms of the requested page. Possible values are: Open, In Progress, Resolved, Ignore. | Optional |
+| start_date | Return alarms created at or after this time, for example "7 days" or "2026-11-01T00:00:00Z". | Optional |
+| end_date | Return alarms created before this time. | Optional |
+| updated_after | Return alarms changed at or after this time, ordered by change time. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.Alarm.AlarmCode | Number | The alarm code. | 
-| ThreatMon.Alarm.Title | String | The alarm title. | 
-| ThreatMon.Alarm.AlarmType | String | The alarm type. | 
-| ThreatMon.Alarm.Category | String | The alarm category. | 
-| ThreatMon.Alarm.SubCategory | String | The alarm subcategory. | 
-| ThreatMon.Alarm.Severity | String | The alarm severity. | 
-| ThreatMon.Alarm.Status | String | The alarm status. | 
-| ThreatMon.Alarm.Source | String | The source that detected the alarm. | 
-| ThreatMon.Alarm.AlarmDate | Date | The time the alarm was created \(e.g., 2026-11-05T09:23:47.553Z\). | 
-| ThreatMon.Alarm.LastUpdateDate | Date | The time the alarm was last changed \(e.g., 2026-11-06T12:01:10.12Z\). | 
-| ThreatMon.Alarm.Description | String | The alarm description. | 
-| ThreatMon.Alarm.Mitigation | String | The recommended mitigation. | 
-| ThreatMon.Alarm.Findings | Unknown | The findings of the alarm. Secret values are masked. | 
-| ThreatMon.Alarm.FindingIDs | Number | The finding IDs of the alarm, used for takedown and data removal requests. | 
+| ThreatMon.Alarm.AlarmCode | Number | The alarm code. |
+| ThreatMon.Alarm.Title | String | The alarm title. |
+| ThreatMon.Alarm.AlarmType | String | The alarm type. |
+| ThreatMon.Alarm.Category | String | The alarm category. |
+| ThreatMon.Alarm.SubCategory | String | The alarm subcategory. |
+| ThreatMon.Alarm.Severity | String | The alarm severity. |
+| ThreatMon.Alarm.Status | String | The alarm status. |
+| ThreatMon.Alarm.Source | String | The source that detected the alarm. |
+| ThreatMon.Alarm.AlarmDate | Date | The time the alarm was created \(e.g., 2026-11-05T09:23:47.553Z\). |
+| ThreatMon.Alarm.LastUpdateDate | Date | The time the alarm was last changed \(e.g., 2026-11-06T12:01:10.12Z\). |
+| ThreatMon.Alarm.Description | String | The alarm description. |
+| ThreatMon.Alarm.Mitigation | String | The recommended mitigation. |
+| ThreatMon.Alarm.Findings | Unknown | The findings of the alarm. Secret values are masked. |
+| ThreatMon.Alarm.FindingIDs | Number | The finding IDs of the alarm, used for takedown and data removal requests. |
 
 #### Command example
+
 ```!threatmon-alarm-list limit=1 category="Brand Intelligence" status=Open```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -141,6 +143,7 @@ Lists ThreatMon alarms, ordered by alarm code, or by change time when updated_af
 #### Human Readable Output
 
 >### ThreatMon Alarms (Total Records: 29)
+>
 >|AlarmCode|Title|Severity|Status|Category|AlarmDate|LastUpdateDate|FindingIDs|
 >|---|---|---|---|---|---|---|---|
 >| 20377999 | Phishing Domain Detected | High | Open | Brand Intelligence | 2026-10-01T12:53:38.526462Z | 2026-10-01T12:53:38.564501Z | 21541113 |
@@ -158,22 +161,25 @@ Sets the status of one or more ThreatMon alarms.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alarm_ids | A comma-separated list of alarm codes. | Required | 
-| status | The new status. Possible values are: Open, In Progress, Resolved, Ignore. | Required | 
-| remarks | The remarks to save with the status change in ThreatMon. | Optional | 
-| assigned_email | The e-mail address of the ThreatMon user to assign the alarm to. | Optional | 
-| info_email_list | A comma-separated list of e-mail addresses that ThreatMon informs about the change. | Optional | 
+| alarm_ids | A comma-separated list of alarm codes. | Required |
+| status | The new status. Possible values are: Open, In Progress, Resolved, Ignore. | Required |
+| remarks | The remarks to save with the status change in ThreatMon. | Optional |
+| assigned_email | The e-mail address of the ThreatMon user to assign the alarm to. | Optional |
+| info_email_list | A comma-separated list of e-mail addresses that ThreatMon informs about the change. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.Alarm.AlarmCode | Number | The alarm code. | 
-| ThreatMon.Alarm.Status | String | The new alarm status. | 
+| ThreatMon.Alarm.AlarmCode | Number | The alarm code. |
+| ThreatMon.Alarm.Status | String | The new alarm status. |
 
 #### Command example
+
 ```!threatmon-alarm-status-update alarm_ids=20377999 status="In Progress" remarks="Investigating in Cortex."```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -204,20 +210,23 @@ Returns the number of ThreatMon alarms by status, severity and category.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from_date | Count alarms from this date, for example "30 days" or "2026-10-01". | Optional | 
-| to_date | Count alarms up to this date. | Optional | 
+| from_date | Count alarms from this date, for example "30 days" or "2026-10-01". | Optional |
+| to_date | Count alarms up to this date. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.AlarmStats.Status | Unknown | The number of alarms per status. | 
-| ThreatMon.AlarmStats.Severity | Unknown | The number of alarms per severity. | 
-| ThreatMon.AlarmStats.Category | Unknown | The number of alarms per category. | 
+| ThreatMon.AlarmStats.Status | Unknown | The number of alarms per status. |
+| ThreatMon.AlarmStats.Severity | Unknown | The number of alarms per severity. |
+| ThreatMon.AlarmStats.Category | Unknown | The number of alarms per category. |
 
 #### Command example
+
 ```!threatmon-alarm-stats from_date="30 days"```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -243,12 +252,14 @@ Returns the number of ThreatMon alarms by status, severity and category.
 #### Human Readable Output
 
 >### ThreatMon Alarms by Status
+>
 >|Name|Count|
 >|---|---|
 >| Open | 61 |
 >| Resolved | 5 |
 >
 >### ThreatMon Alarms by Severity
+>
 >|Name|Count|
 >|---|---|
 >| High | 32 |
@@ -256,6 +267,7 @@ Returns the number of ThreatMon alarms by status, severity and category.
 >| Information | 32 |
 >
 >### ThreatMon Alarms by Category
+>
 >|Name|Count|
 >|---|---|
 >| Brand Intelligence | 30 |
@@ -274,22 +286,25 @@ Submits a takedown request for a finding, such as a phishing domain, a rogue mob
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| finding_id | The finding ID, from the findings of the alarm. | Required | 
-| finding | The finding to take down, for example the phishing domain. | Required | 
+| finding_id | The finding ID, from the findings of the alarm. | Required |
+| finding | The finding to take down, for example the phishing domain. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.Takedown.FindingID | Number | The finding ID. | 
-| ThreatMon.Takedown.Finding | String | The finding. | 
-| ThreatMon.Takedown.Result | String | The result: Submitted, Already Requested, Not Eligible, Not Allowed or Not Found. | 
-| ThreatMon.Takedown.Submitted | Boolean | Whether a takedown request for the finding exists in ThreatMon. | 
-| ThreatMon.Takedown.Message | String | The explanation of the result. | 
+| ThreatMon.Takedown.FindingID | Number | The finding ID. |
+| ThreatMon.Takedown.Finding | String | The finding. |
+| ThreatMon.Takedown.Result | String | The result: Submitted, Already Requested, Not Eligible, Not Allowed or Not Found. |
+| ThreatMon.Takedown.Submitted | Boolean | Whether a takedown request for the finding exists in ThreatMon. |
+| ThreatMon.Takedown.Message | String | The explanation of the result. |
 
 #### Command example
+
 ```!threatmon-takedown-request finding_id=21541113 finding=examp1e-login.pages.dev```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -307,6 +322,7 @@ Submits a takedown request for a finding, such as a phishing domain, a rogue mob
 #### Human Readable Output
 
 >### ThreatMon Takedown
+>
 >**Submitted**: The request was submitted to ThreatMon. (findingId 21541113)
 
 ### threatmon-data-removal-request
@@ -322,22 +338,25 @@ Submits a Black Market Monitoring data removal request for a finding. Requires B
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| finding_id | The finding ID, from the findings of the alarm. | Required | 
-| finding | The URL or content identifier of the finding to remove. | Required | 
+| finding_id | The finding ID, from the findings of the alarm. | Required |
+| finding | The URL or content identifier of the finding to remove. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.DataRemoval.FindingID | Number | The finding ID. | 
-| ThreatMon.DataRemoval.Finding | String | The finding. | 
-| ThreatMon.DataRemoval.Result | String | The result: Submitted, Already Requested, Not Eligible, Not Allowed or Not Found. | 
-| ThreatMon.DataRemoval.Submitted | Boolean | Whether a data removal request for the finding exists in ThreatMon. | 
-| ThreatMon.DataRemoval.Message | String | The explanation of the result. | 
+| ThreatMon.DataRemoval.FindingID | Number | The finding ID. |
+| ThreatMon.DataRemoval.Finding | String | The finding. |
+| ThreatMon.DataRemoval.Result | String | The result: Submitted, Already Requested, Not Eligible, Not Allowed or Not Found. |
+| ThreatMon.DataRemoval.Submitted | Boolean | Whether a data removal request for the finding exists in ThreatMon. |
+| ThreatMon.DataRemoval.Message | String | The explanation of the result. |
 
 #### Command example
+
 ```!threatmon-data-removal-request finding_id=99999999 finding=https://market.example/item/1```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -355,6 +374,7 @@ Submits a Black Market Monitoring data removal request for a finding. Requires B
 #### Human Readable Output
 
 >### ThreatMon Data removal
+>
 >**Not Found**: The finding was not found in ThreatMon. (findingId 99999999)
 
 ### cve
@@ -370,35 +390,38 @@ Returns ThreatMon Vulnerability Knowledge about a CVE, with its CVSS, ThreatMon 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve | A comma-separated list of CVE IDs, for example CVE-2024-3400. | Required | 
+| cve | A comma-separated list of CVE IDs, for example CVE-2024-3400. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CVE.ID | String | The ID of the CVE. | 
-| CVE.CVSS.Score | Number | The CVSS score of the CVE. | 
-| CVE.Published | Date | The date the CVE was published. | 
-| CVE.Modified | Date | The date the CVE was last modified. | 
-| CVE.Description | String | The description of the CVE. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | The reliability of the source providing the intelligence data. | 
-| ThreatMon.CVE.cve | String | The CVE ID. | 
-| ThreatMon.CVE.severity | String | The severity of the newest CVSS version. | 
-| ThreatMon.CVE.tmvs | Number | The ThreatMon vulnerability score. | 
-| ThreatMon.CVE.brvs | Number | The Brainify Risk Vulnerability Score, the risk of the CVE for the company. | 
-| ThreatMon.CVE.epss | Number | The EPSS exploit probability. | 
-| ThreatMon.CVE.exploit | Boolean | Whether a known exploit exists. | 
-| ThreatMon.CVE.hasPoc | Boolean | Whether a public proof of concept exists. | 
-| ThreatMon.CVE.kev | Unknown | The CISA Known Exploited Vulnerabilities entry. | 
-| ThreatMon.CVE.affectedAssets | Unknown | The number of confirmed and potentially affected company assets. | 
+| CVE.ID | String | The ID of the CVE. |
+| CVE.CVSS.Score | Number | The CVSS score of the CVE. |
+| CVE.Published | Date | The date the CVE was published. |
+| CVE.Modified | Date | The date the CVE was last modified. |
+| CVE.Description | String | The description of the CVE. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | The reliability of the source providing the intelligence data. |
+| ThreatMon.CVE.cve | String | The CVE ID. |
+| ThreatMon.CVE.severity | String | The severity of the newest CVSS version. |
+| ThreatMon.CVE.tmvs | Number | The ThreatMon vulnerability score. |
+| ThreatMon.CVE.brvs | Number | The Brainify Risk Vulnerability Score, the risk of the CVE for the company. |
+| ThreatMon.CVE.epss | Number | The EPSS exploit probability. |
+| ThreatMon.CVE.exploit | Boolean | Whether a known exploit exists. |
+| ThreatMon.CVE.hasPoc | Boolean | Whether a public proof of concept exists. |
+| ThreatMon.CVE.kev | Unknown | The CISA Known Exploited Vulnerabilities entry. |
+| ThreatMon.CVE.affectedAssets | Unknown | The number of confirmed and potentially affected company assets. |
 
 #### Command example
+
 ```!cve cve=CVE-2024-3400```
+
 #### Context Example
+
 ```json
 {
     "CVE": {
@@ -438,6 +461,7 @@ Returns ThreatMon Vulnerability Knowledge about a CVE, with its CVSS, ThreatMon 
 #### Human Readable Output
 
 >### ThreatMon CVE CVE-2024-3400
+>
 >|Affected Assets|BRVS|CISA KEV|CVE|CVSS|EPSS|Exploit|Public PoC|Published|Ransomware Use|Severity|TMVS|Trending|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 0 | 22.5 | 2024-04-12 | CVE-2024-3400 | 10.0 | 0.99999 | true | true | 2024-04-12T08:15:06Z | Unknown | CRITICAL | 25.0 | false |
@@ -459,31 +483,34 @@ Gets a ThreatMon Vulnerability Knowledge CVE in detail, optionally with the AI r
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | The CVE ID, for example CVE-2024-3400. | Required | 
-| include | A comma-separated list of extra sections to return. Possible values are: report, timeline, mentions. | Optional | 
+| cve_id | The CVE ID, for example CVE-2024-3400. | Required |
+| include | A comma-separated list of extra sections to return. Possible values are: report, timeline, mentions. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.CVE.cve | String | The CVE ID. | 
-| ThreatMon.CVE.summary | String | The CVE summary. | 
-| ThreatMon.CVE.severity | String | The severity of the newest CVSS version. | 
-| ThreatMon.CVE.tmvs | Number | The ThreatMon vulnerability score. | 
-| ThreatMon.CVE.brvs | Number | The Brainify Risk Vulnerability Score, the risk of the CVE for the company. | 
-| ThreatMon.CVE.epss | Number | The EPSS exploit probability. | 
-| ThreatMon.CVE.exploit | Boolean | Whether a known exploit exists. | 
-| ThreatMon.CVE.hasPoc | Boolean | Whether a public proof of concept exists. | 
-| ThreatMon.CVE.kev | Unknown | The CISA Known Exploited Vulnerabilities entry. | 
-| ThreatMon.CVE.pocs | Unknown | The known proofs of concept. | 
-| ThreatMon.CVE.riskBreakdown | Unknown | The parts of the ThreatMon vulnerability score. | 
-| ThreatMon.CVE.report | Unknown | The AI enrichment report, when requested. | 
-| ThreatMon.CVE.timeline | Unknown | The timeline of the CVE, when requested. | 
-| ThreatMon.CVE.mentions | Unknown | The mentions on X, Reddit and the dark web, when requested. | 
+| ThreatMon.CVE.cve | String | The CVE ID. |
+| ThreatMon.CVE.summary | String | The CVE summary. |
+| ThreatMon.CVE.severity | String | The severity of the newest CVSS version. |
+| ThreatMon.CVE.tmvs | Number | The ThreatMon vulnerability score. |
+| ThreatMon.CVE.brvs | Number | The Brainify Risk Vulnerability Score, the risk of the CVE for the company. |
+| ThreatMon.CVE.epss | Number | The EPSS exploit probability. |
+| ThreatMon.CVE.exploit | Boolean | Whether a known exploit exists. |
+| ThreatMon.CVE.hasPoc | Boolean | Whether a public proof of concept exists. |
+| ThreatMon.CVE.kev | Unknown | The CISA Known Exploited Vulnerabilities entry. |
+| ThreatMon.CVE.pocs | Unknown | The known proofs of concept. |
+| ThreatMon.CVE.riskBreakdown | Unknown | The parts of the ThreatMon vulnerability score. |
+| ThreatMon.CVE.report | Unknown | The AI enrichment report, when requested. |
+| ThreatMon.CVE.timeline | Unknown | The timeline of the CVE, when requested. |
+| ThreatMon.CVE.mentions | Unknown | The mentions on X, Reddit and the dark web, when requested. |
 
 #### Command example
+
 ```!threatmon-cve-get cve_id=CVE-2024-3400 include=report```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -511,9 +538,11 @@ Gets a ThreatMon Vulnerability Knowledge CVE in detail, optionally with the AI r
 #### Human Readable Output
 
 >### AI Report: Palo Alto Networks PAN-OS GlobalProtect command injection allows unauthenticated RCE
+>
 >**Priority:** P1. Pre-auth network RCE with public PoC, active in-the-wild exploitation, and ransomware usage.
 >
 >### Response Steps
+>
 >|Step|Title|Description|ETA|
 >|---|---|---|---|
 >| 1 | Isolate affected firewalls | Disable GlobalProtect features on affected PAN-OS versions via temporary policies to stop active exploitation. | 0-15 min |
@@ -532,44 +561,47 @@ Searches ThreatMon Vulnerability Knowledge for CVEs published or updated in a pe
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_date | The start of the period, for example "7 days" or "2026-11-01". The period can be at most 366 days. | Required | 
-| end_date | The end of the period. Default is now. | Optional | 
-| date_field | The date to search by. Possible values are: published, updated. Default is published. | Optional | 
-| cvss | The severity of the newest CVSS version. Possible values are: NONE, LOW, MEDIUM, HIGH, CRITICAL. | Optional | 
-| search | A part of a CVE ID, for example 2026-1234. | Optional | 
-| vendor | The CPE vendor name. | Optional | 
-| product | The CPE product name. | Optional | 
-| exploit | Whether a known exploit exists. Possible values are: true, false. | Optional | 
-| has_poc | Whether a public proof of concept exists. Possible values are: true, false. | Optional | 
-| trending | Whether the CVE is trending. Possible values are: true, false. | Optional | 
-| known_ransomware_use | Whether the CVE is used in ransomware campaigns. Possible values are: true, false. | Optional | 
-| confirmed_affected | Whether company assets are confirmed to be affected. Possible values are: true, false. | Optional | 
-| potentially_affected | Whether company assets are potentially affected. Possible values are: true, false. | Optional | 
-| limit | The maximum number of CVEs to return (1-1000). Default is 50. | Optional | 
-| cursor | The cursor returned by the previous search, to get the next CVEs. | Optional | 
+| start_date | The start of the period, for example "7 days" or "2026-11-01". The period can be at most 366 days. | Required |
+| end_date | The end of the period. Default is now. | Optional |
+| date_field | The date to search by. Possible values are: published, updated. Default is published. | Optional |
+| cvss | The severity of the newest CVSS version. Possible values are: NONE, LOW, MEDIUM, HIGH, CRITICAL. | Optional |
+| search | A part of a CVE ID, for example 2026-1234. | Optional |
+| vendor | The CPE vendor name. | Optional |
+| product | The CPE product name. | Optional |
+| exploit | Whether a known exploit exists. Possible values are: true, false. | Optional |
+| has_poc | Whether a public proof of concept exists. Possible values are: true, false. | Optional |
+| trending | Whether the CVE is trending. Possible values are: true, false. | Optional |
+| known_ransomware_use | Whether the CVE is used in ransomware campaigns. Possible values are: true, false. | Optional |
+| confirmed_affected | Whether company assets are confirmed to be affected. Possible values are: true, false. | Optional |
+| potentially_affected | Whether company assets are potentially affected. Possible values are: true, false. | Optional |
+| limit | The maximum number of CVEs to return (1-1000). Default is 50. | Optional |
+| cursor | The cursor returned by the previous search, to get the next CVEs. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.CVE.cve | String | The CVE ID. | 
-| ThreatMon.CVE.cweId | String | The CWE IDs. | 
-| ThreatMon.CVE.summary | String | The CVE summary. | 
-| ThreatMon.CVE.severity | String | The severity of the newest CVSS version. | 
-| ThreatMon.CVE.cvssV3_1 | Number | The CVSS v3.1 score. | 
-| ThreatMon.CVE.cvssV4 | Number | The CVSS v4 score. | 
-| ThreatMon.CVE.tmvs | Number | The ThreatMon vulnerability score. | 
-| ThreatMon.CVE.brvs | Number | The Brainify Risk Vulnerability Score, the risk of the CVE for the company. | 
-| ThreatMon.CVE.epss | Number | The EPSS exploit probability. | 
-| ThreatMon.CVE.exploit | Boolean | Whether a known exploit exists. | 
-| ThreatMon.CVE.hasPoc | Boolean | Whether a public proof of concept exists. | 
-| ThreatMon.CVE.vendors | Unknown | The affected vendors and products. | 
-| ThreatMon.CVE.publishedAt | Date | The date the CVE was published \(e.g., 2026-11-01T00:00:23.604Z\). | 
-| ThreatMon.CVESearch.NextCursor | String | The cursor to get the next CVEs, or empty when there are no more. | 
+| ThreatMon.CVE.cve | String | The CVE ID. |
+| ThreatMon.CVE.cweId | String | The CWE IDs. |
+| ThreatMon.CVE.summary | String | The CVE summary. |
+| ThreatMon.CVE.severity | String | The severity of the newest CVSS version. |
+| ThreatMon.CVE.cvssV3_1 | Number | The CVSS v3.1 score. |
+| ThreatMon.CVE.cvssV4 | Number | The CVSS v4 score. |
+| ThreatMon.CVE.tmvs | Number | The ThreatMon vulnerability score. |
+| ThreatMon.CVE.brvs | Number | The Brainify Risk Vulnerability Score, the risk of the CVE for the company. |
+| ThreatMon.CVE.epss | Number | The EPSS exploit probability. |
+| ThreatMon.CVE.exploit | Boolean | Whether a known exploit exists. |
+| ThreatMon.CVE.hasPoc | Boolean | Whether a public proof of concept exists. |
+| ThreatMon.CVE.vendors | Unknown | The affected vendors and products. |
+| ThreatMon.CVE.publishedAt | Date | The date the CVE was published \(e.g., 2026-11-01T00:00:23.604Z\). |
+| ThreatMon.CVESearch.NextCursor | String | The cursor to get the next CVEs, or empty when there are no more. |
 
 #### Command example
+
 ```!threatmon-cve-search start_date=2026-11-01 cvss=CRITICAL exploit=true limit=1```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -601,6 +633,7 @@ Searches ThreatMon Vulnerability Knowledge for CVEs published or updated in a pe
 #### Human Readable Output
 
 >### ThreatMon CVEs (1)
+>
 >|CVE|Severity|CVSS 3.1|TMVS|EPSS|Exploit|Public PoC|Published|Summary|
 >|---|---|---|---|---|---|---|---|---|
 >| CVE-2026-102895 | CRITICAL | 9.8 | 27.27 | 0.00331 | true | false | 2026-11-04T21:16:59.842Z | GPUStack is an open-source GPU cluster manager for AI model serving and GPU instance provisioning. Prior to 2.2.0, get_current_user in gpustack/api/auth.py... |
@@ -620,24 +653,27 @@ Lists the vendors and products the company follows in ThreatMon Vulnerability Kn
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| recipient_email | Show only the subscriptions of this recipient of the CVE e-mails. | Optional | 
-| limit | The maximum number of subscriptions to return (1-1000). Default is 50. | Optional | 
-| cursor | The cursor returned by the previous command, to get the next subscriptions. | Optional | 
+| recipient_email | Show only the subscriptions of this recipient of the CVE e-mails. | Optional |
+| limit | The maximum number of subscriptions to return (1-1000). Default is 50. | Optional |
+| cursor | The cursor returned by the previous command, to get the next subscriptions. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.CVESubscription.vendor | String | The vendor. | 
-| ThreatMon.CVESubscription.product | String | The product. | 
-| ThreatMon.CVESubscription.productId | Number | The product ID. | 
-| ThreatMon.CVESubscription.subscribedAt | Date | The time of the subscription. | 
-| ThreatMon.CVESubscription.recipients | Unknown | The recipients of the CVE e-mails. | 
-| ThreatMon.CVESubscriptionList.NextCursor | String | The cursor to get the next subscriptions, or empty when there are no more. | 
+| ThreatMon.CVESubscription.vendor | String | The vendor. |
+| ThreatMon.CVESubscription.product | String | The product. |
+| ThreatMon.CVESubscription.productId | Number | The product ID. |
+| ThreatMon.CVESubscription.subscribedAt | Date | The time of the subscription. |
+| ThreatMon.CVESubscription.recipients | Unknown | The recipients of the CVE e-mails. |
+| ThreatMon.CVESubscriptionList.NextCursor | String | The cursor to get the next subscriptions, or empty when there are no more. |
 
 #### Command example
+
 ```!threatmon-cve-subscription-list```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -667,6 +703,7 @@ Lists the vendors and products the company follows in ThreatMon Vulnerability Kn
 #### Human Readable Output
 
 >### ThreatMon CVE Subscriptions (1)
+>
 >|Vendor|Product|Internal|External|Subscribed At|Recipients|
 >|---|---|---|---|---|---|
 >| Fortinet | Fortios | true | false | 2026-09-01T10:00:00Z | soc@example.com |
@@ -684,27 +721,30 @@ Searches the CVEs published in a period for the vendors and products the company
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_date | The start of the period, for example "30 days" or "2026-10-01". The period can be at most 366 days. | Required | 
-| end_date | The end of the period. Default is now. | Optional | 
-| cvss | The severity of the newest CVSS version. Possible values are: NONE, LOW, MEDIUM, HIGH, CRITICAL. | Optional | 
-| recipient_email | Show only the CVEs e-mailed to this recipient. | Optional | 
-| limit | The maximum number of CVEs to return (1-1000). Default is 50. | Optional | 
-| cursor | The cursor returned by the previous search, to get the next CVEs. | Optional | 
+| start_date | The start of the period, for example "30 days" or "2026-10-01". The period can be at most 366 days. | Required |
+| end_date | The end of the period. Default is now. | Optional |
+| cvss | The severity of the newest CVSS version. Possible values are: NONE, LOW, MEDIUM, HIGH, CRITICAL. | Optional |
+| recipient_email | Show only the CVEs e-mailed to this recipient. | Optional |
+| limit | The maximum number of CVEs to return (1-1000). Default is 50. | Optional |
+| cursor | The cursor returned by the previous search, to get the next CVEs. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.CVE.cve | String | The CVE ID. | 
-| ThreatMon.CVE.summary | String | The CVE summary. | 
-| ThreatMon.CVE.severity | String | The severity of the newest CVSS version. | 
-| ThreatMon.CVE.riskScore | Number | The risk score of the CVE. | 
-| ThreatMon.CVE.subscribedProducts | Unknown | The subscribed products the CVE was matched to. | 
-| ThreatMon.SubscribedCVESearch.NextCursor | String | The cursor to get the next CVEs, or empty when there are no more. | 
+| ThreatMon.CVE.cve | String | The CVE ID. |
+| ThreatMon.CVE.summary | String | The CVE summary. |
+| ThreatMon.CVE.severity | String | The severity of the newest CVSS version. |
+| ThreatMon.CVE.riskScore | Number | The risk score of the CVE. |
+| ThreatMon.CVE.subscribedProducts | Unknown | The subscribed products the CVE was matched to. |
+| ThreatMon.SubscribedCVESearch.NextCursor | String | The cursor to get the next CVEs, or empty when there are no more. |
 
 #### Command example
+
 ```!threatmon-subscribed-cve-search start_date="30 days" cvss=HIGH```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -731,6 +771,7 @@ Searches the CVEs published in a period for the vendors and products the company
 #### Human Readable Output
 
 >### ThreatMon CVEs of Subscribed Products (1)
+>
 >|CVE|Severity|Summary|
 >|---|---|---|
 >| CVE-2026-24858 | HIGH | An authentication bypass in FortiOS SSL-VPN. |
@@ -748,27 +789,30 @@ Lists the company assets that ThreatMon discovered (Digital Footprint), such as 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_type | The type of assets to list. Possible values are: IP, Cloud IP, Domain, Subdomain, Cloud Subdomain, WHOIS, Website, SSL Certificate, Technology, DNS Record, Bucket, Bucket File. Default is Domain. | Required | 
-| limit | The maximum number of assets to return (1-100). Default is 50. | Optional | 
-| page | The page to return, 0-based. Each page holds "limit" assets. Default is 0. | Optional | 
+| asset_type | The type of assets to list. Possible values are: IP, Cloud IP, Domain, Subdomain, Cloud Subdomain, WHOIS, Website, SSL Certificate, Technology, DNS Record, Bucket, Bucket File. Default is Domain. | Required |
+| limit | The maximum number of assets to return (1-100). Default is 50. | Optional |
+| page | The page to return, 0-based. Each page holds "limit" assets. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.Asset.AssetType | String | The asset type. | 
-| ThreatMon.Asset.ip | String | The IP address \(IP and Cloud IP assets\). | 
-| ThreatMon.Asset.domainName | String | The domain name \(Domain assets\). | 
-| ThreatMon.Asset.subDomainName | String | The subdomain name \(Subdomain and Cloud Subdomain assets\). | 
-| ThreatMon.Asset.websiteUrl | String | The website URL \(Website assets\). | 
-| ThreatMon.Asset.asset | String | The asset the record belongs to \(WHOIS, SSL Certificate and Technology assets\). | 
-| ThreatMon.Asset.expireDate | Date | The expiry date of the certificate \(SSL Certificate assets\). | 
-| ThreatMon.Asset.productName | String | The technology name \(Technology assets\). | 
-| ThreatMon.Asset.monitor | Boolean | Whether ThreatMon monitors the asset. | 
+| ThreatMon.Asset.AssetType | String | The asset type. |
+| ThreatMon.Asset.ip | String | The IP address \(IP and Cloud IP assets\). |
+| ThreatMon.Asset.domainName | String | The domain name \(Domain assets\). |
+| ThreatMon.Asset.subDomainName | String | The subdomain name \(Subdomain and Cloud Subdomain assets\). |
+| ThreatMon.Asset.websiteUrl | String | The website URL \(Website assets\). |
+| ThreatMon.Asset.asset | String | The asset the record belongs to \(WHOIS, SSL Certificate and Technology assets\). |
+| ThreatMon.Asset.expireDate | Date | The expiry date of the certificate \(SSL Certificate assets\). |
+| ThreatMon.Asset.productName | String | The technology name \(Technology assets\). |
+| ThreatMon.Asset.monitor | Boolean | Whether ThreatMon monitors the asset. |
 
 #### Command example
+
 ```!threatmon-asset-list asset_type="SSL Certificate" limit=1```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -797,6 +841,7 @@ Lists the company assets that ThreatMon discovered (Digital Footprint), such as 
 #### Human Readable Output
 
 >### ThreatMon SSL Certificate Assets (Total Records: 1)
+>
 >|Asset|Expire Date|Grade|Issued By|Issued Name|Monitor|SSL Protocols|Vulnerable|
 >|---|---|---|---|---|---|---|---|
 >| www.example.com:443 | 2027-01-13 | B | WE1 | example.com | true | TLSv1.0,<br>TLSv1.1,<br>TLSv1.2,<br>TLSv1.3 | true |
@@ -814,24 +859,27 @@ Gets the ThreatMon CISO Dashboard, with the Brainify Risk Score, the module scor
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| include_report | Whether to show the AI risk report in the War Room. Possible values are: true, false. Default is true. | Optional | 
+| include_report | Whether to show the AI risk report in the War Room. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.CISODashboard.statistics | Unknown | The alert statistics and the average score. | 
-| ThreatMon.CISODashboard.score.score | Number | The Brainify Risk Score. | 
-| ThreatMon.CISODashboard.score.grade | String | The grade of the Brainify Risk Score. | 
-| ThreatMon.CISODashboard.score.report | String | The AI risk report, in Markdown. | 
-| ThreatMon.CISODashboard.topAlerts | Unknown | The most frequent alerts. | 
-| ThreatMon.CISODashboard.topAssets | Unknown | The assets with the most findings. | 
-| ThreatMon.CISODashboard.topCveAlerts | Unknown | The CVEs with the highest risk for the company. | 
-| ThreatMon.CISODashboard.highDemandAssets | Unknown | The company assets offered on black markets. | 
+| ThreatMon.CISODashboard.statistics | Unknown | The alert statistics and the average score. |
+| ThreatMon.CISODashboard.score.score | Number | The Brainify Risk Score. |
+| ThreatMon.CISODashboard.score.grade | String | The grade of the Brainify Risk Score. |
+| ThreatMon.CISODashboard.score.report | String | The AI risk report, in Markdown. |
+| ThreatMon.CISODashboard.topAlerts | Unknown | The most frequent alerts. |
+| ThreatMon.CISODashboard.topAssets | Unknown | The assets with the most findings. |
+| ThreatMon.CISODashboard.topCveAlerts | Unknown | The CVEs with the highest risk for the company. |
+| ThreatMon.CISODashboard.highDemandAssets | Unknown | The company assets offered on black markets. |
 
 #### Command example
+
 ```!threatmon-ciso-dashboard-get include_report=false```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -866,17 +914,20 @@ Gets the ThreatMon CISO Dashboard, with the Brainify Risk Score, the module scor
 #### Human Readable Output
 
 >### ThreatMon CISO Dashboard: Risk Score 64.0 (D)
+>
 >|Average Score|Confidence Level|Confidence Level Text|Critical Findings|Open Alert|Total Alert|
 >|---|---|---|---|---|---|
 >| 64.0 | 85 | High Confidence | 18154 | 64 | 19616 |
 >
 >### Module Scores
+>
 >|Module|Score|Grade|
 >|---|---|---|
 >| Attack Surface | 97 | A |
 >| Dark Web | 1 | F |
 >
 >### Top Alerts
+>
 >|Title|Total|
 >|---|---|
 >| VIP/C-Level Machine Infected by Malware | 18076 |
@@ -894,22 +945,25 @@ Downloads the screenshot of a finding, for example of a phishing page, and adds 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| blob_name | The value of the Screenshot item of the finding, as the full URL or the blob name. | Required | 
+| blob_name | The value of the Screenshot item of the finding, as the full URL or the blob name. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | String | The file name. | 
-| InfoFile.EntryID | String | The entry ID of the file. | 
-| InfoFile.Size | Number | The file size. | 
-| InfoFile.Type | String | The file type. | 
-| InfoFile.Info | String | The basic information of the file. | 
-| InfoFile.Extension | String | The file extension. | 
+| InfoFile.Name | String | The file name. |
+| InfoFile.EntryID | String | The entry ID of the file. |
+| InfoFile.Size | Number | The file size. |
+| InfoFile.Type | String | The file type. |
+| InfoFile.Info | String | The basic information of the file. |
+| InfoFile.Extension | String | The file extension. |
 
 #### Command example
+
 ```!threatmon-screenshot-get blob_name="FILE-SHARE/b2da3c55-c8e4-4e0f-96e5-0fce6fa0b7ba.png"```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -940,34 +994,37 @@ Submits a file to the ThreatMon sandbox for malware analysis and waits for the v
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | The War Room entry ID of the file. | Required | 
-| archive_password | The password of an encrypted archive. | Optional | 
-| polling | Whether to wait for the verdict. Possible values are: true, false. Default is true. | Optional | 
+| entry_id | The War Room entry ID of the file. | Required |
+| archive_password | The password of an encrypted archive. | Optional |
+| polling | Whether to wait for the verdict. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.Sandbox.ID | Number | The row ID of the submission. It does not change. | 
-| ThreatMon.Sandbox.SID | String | The submission ID. | 
-| ThreatMon.Sandbox.FileName | String | The submitted file name. | 
-| ThreatMon.Sandbox.OverallRating | String | The verdict, for example Clean or Malicious. | 
-| ThreatMon.Sandbox.Results.SHA256 | String | The SHA-256 of an analysed file. | 
-| ThreatMon.Sandbox.Results.Rating | String | The rating of an analysed file. | 
-| ThreatMon.Sandbox.Results.MalwareName | String | The detected malware name. | 
-| ThreatMon.Sandbox.Results.BehaviorData | Unknown | The behavior of the analysed file. | 
-| File.SHA256 | String | The SHA-256 of the file. | 
-| File.SHA1 | String | The SHA-1 of the file. | 
-| File.Name | String | The file name. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | The reliability of the source providing the intelligence data. | 
+| ThreatMon.Sandbox.ID | Number | The row ID of the submission. It does not change. |
+| ThreatMon.Sandbox.SID | String | The submission ID. |
+| ThreatMon.Sandbox.FileName | String | The submitted file name. |
+| ThreatMon.Sandbox.OverallRating | String | The verdict, for example Clean or Malicious. |
+| ThreatMon.Sandbox.Results.SHA256 | String | The SHA-256 of an analysed file. |
+| ThreatMon.Sandbox.Results.Rating | String | The rating of an analysed file. |
+| ThreatMon.Sandbox.Results.MalwareName | String | The detected malware name. |
+| ThreatMon.Sandbox.Results.BehaviorData | Unknown | The behavior of the analysed file. |
+| File.SHA256 | String | The SHA-256 of the file. |
+| File.SHA1 | String | The SHA-1 of the file. |
+| File.Name | String | The file name. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | The reliability of the source providing the intelligence data. |
 
 #### Command example
+
 ```!threatmon-sandbox-file-submit entry_id=1234@abcd```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -1004,11 +1061,13 @@ Submits a file to the ThreatMon sandbox for malware analysis and waits for the v
 #### Human Readable Output
 
 >### ThreatMon Sandbox Submission 8492267284349462431: Clean
+>
 >|Created At|File Name|File Size|Overall Rating|SID|Status|Total Jobs|
 >|---|---|---|---|---|---|---|
 >| 2026-11-10T12:20:45.230084 | invoice.txt | 70 | Clean | 8492267284349462431 | 2 | 1 |
 >
 >### Analysed Files
+>
 >|File Name|File Type|Rating|Malware Name|Rating Source|SHA256|
 >|---|---|---|---|---|---|
 >| invoice.txt | txt | Clean | N/A | Static Scan Engine | e377e9997013ef1c04c8ddede14b00f88396c0ec88c0dbfa14057dc42d416a51 |
@@ -1026,23 +1085,26 @@ Lists the files submitted to the ThreatMon sandbox.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of submissions to return (1-100). Default is 20. | Optional | 
-| page | The page to return, 0-based. Default is 0. | Optional | 
+| limit | The maximum number of submissions to return (1-100). Default is 20. | Optional |
+| page | The page to return, 0-based. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.Sandbox.ID | Number | The row ID of the submission. It does not change. | 
-| ThreatMon.Sandbox.SID | String | The submission ID. | 
-| ThreatMon.Sandbox.FileName | String | The submitted file name. | 
-| ThreatMon.Sandbox.FileSize | Number | The file size in bytes. | 
-| ThreatMon.Sandbox.OverallRating | String | The verdict, for example Clean or Malicious. | 
-| ThreatMon.Sandbox.CreatedAt | Date | The time of the submission. | 
+| ThreatMon.Sandbox.ID | Number | The row ID of the submission. It does not change. |
+| ThreatMon.Sandbox.SID | String | The submission ID. |
+| ThreatMon.Sandbox.FileName | String | The submitted file name. |
+| ThreatMon.Sandbox.FileSize | Number | The file size in bytes. |
+| ThreatMon.Sandbox.OverallRating | String | The verdict, for example Clean or Malicious. |
+| ThreatMon.Sandbox.CreatedAt | Date | The time of the submission. |
 
 #### Command example
+
 ```!threatmon-sandbox-submission-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -1065,6 +1127,7 @@ Lists the files submitted to the ThreatMon sandbox.
 #### Human Readable Output
 
 >### ThreatMon Sandbox Submissions (Total: 14)
+>
 >|SID|File Name|Overall Rating|Total Jobs|Created At|Updated At|
 >|---|---|---|---|---|---|
 >| 8492267284349462431 | invoice.txt | Clean | 1 | 2026-11-10T12:20:45.230084 | 2026-11-10T12:25:02.655001 |
@@ -1082,32 +1145,35 @@ Gets the verdict and the analysed files of a ThreatMon sandbox submission.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sid | The submission ID (SID) from threatmon-sandbox-submission-list. A new submission gets its final SID when the analysis starts. | Required | 
-| limit | The maximum number of analysed files to return (1-100). Default is 50. | Optional | 
-| page | The page to return, 0-based. Default is 0. | Optional | 
+| sid | The submission ID (SID) from threatmon-sandbox-submission-list. A new submission gets its final SID when the analysis starts. | Required |
+| limit | The maximum number of analysed files to return (1-100). Default is 50. | Optional |
+| page | The page to return, 0-based. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.Sandbox.ID | Number | The row ID of the submission. It does not change. | 
-| ThreatMon.Sandbox.SID | String | The submission ID. | 
-| ThreatMon.Sandbox.OverallRating | String | The verdict, for example Clean or Malicious. | 
-| ThreatMon.Sandbox.Results.FileName | String | The name of an analysed file. | 
-| ThreatMon.Sandbox.Results.SHA256 | String | The SHA-256 of an analysed file. | 
-| ThreatMon.Sandbox.Results.Rating | String | The rating of an analysed file. | 
-| ThreatMon.Sandbox.Results.MalwareName | String | The detected malware name. | 
-| ThreatMon.Sandbox.Results.BehaviorData | Unknown | The behavior of the analysed file. | 
-| File.SHA256 | String | The SHA-256 of the file. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | The reliability of the source providing the intelligence data. | 
+| ThreatMon.Sandbox.ID | Number | The row ID of the submission. It does not change. |
+| ThreatMon.Sandbox.SID | String | The submission ID. |
+| ThreatMon.Sandbox.OverallRating | String | The verdict, for example Clean or Malicious. |
+| ThreatMon.Sandbox.Results.FileName | String | The name of an analysed file. |
+| ThreatMon.Sandbox.Results.SHA256 | String | The SHA-256 of an analysed file. |
+| ThreatMon.Sandbox.Results.Rating | String | The rating of an analysed file. |
+| ThreatMon.Sandbox.Results.MalwareName | String | The detected malware name. |
+| ThreatMon.Sandbox.Results.BehaviorData | Unknown | The behavior of the analysed file. |
+| File.SHA256 | String | The SHA-256 of the file. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | The reliability of the source providing the intelligence data. |
 
 #### Command example
+
 ```!threatmon-sandbox-result-get sid=8049628341845326322```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -1150,11 +1216,13 @@ Gets the verdict and the analysed files of a ThreatMon sandbox submission.
 #### Human Readable Output
 
 >### ThreatMon Sandbox Submission 8049628341845326322: Malicious
+>
 >|File Name|Overall Rating|SID|
 >|---|---|---|
 >| report.doc | Malicious | 8049628341845326322 |
 >
 >### Analysed Files
+>
 >|File Name|File Type|Rating|Malware Name|Rating Source|SHA256|
 >|---|---|---|---|---|---|
 >| report.doc | doc | Malicious | MSOffice/Agent.D068!tr.dldr | AV Scan Engine | fbd4e59df6c46f8647bb4f2992cbb65a58909e5c941b4b3a9f91db73d42cd5aa |
@@ -1172,22 +1240,25 @@ Lists the customers of a ThreatMon MSSP account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_name | Return only this customer. | Optional | 
-| page | The page to return, 0-based. Default is 0. | Optional | 
+| customer_name | Return only this customer. | Optional |
+| page | The page to return, 0-based. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.Customer.CustomerName | String | The customer name. | 
-| ThreatMon.Customer.License | String | The license type, TRIAL or CUSTOMER. | 
-| ThreatMon.Customer.Domain | String | The domain of the customer. | 
-| ThreatMon.Customer.Keywords | String | The monitoring keywords. | 
-| ThreatMon.Customer.ContractEndDate | Date | The end of the contract. | 
+| ThreatMon.Customer.CustomerName | String | The customer name. |
+| ThreatMon.Customer.License | String | The license type, TRIAL or CUSTOMER. |
+| ThreatMon.Customer.Domain | String | The domain of the customer. |
+| ThreatMon.Customer.Keywords | String | The monitoring keywords. |
+| ThreatMon.Customer.ContractEndDate | Date | The end of the contract. |
 
 #### Command example
+
 ```!threatmon-customer-list customer_name="Example Corp"```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -1209,6 +1280,7 @@ Lists the customers of a ThreatMon MSSP account.
 #### Human Readable Output
 
 >### ThreatMon MSSP Customers (Total Records: 1)
+>
 >|Customer Name|License|Domain|Keywords|Contract End Date|
 >|---|---|---|---|---|
 >| Example Corp | CUSTOMER | example.com | example | 2030-02-28T23:59:59.999999999Z |
@@ -1226,23 +1298,26 @@ Creates a customer in a ThreatMon MSSP account. The change is applied at once. R
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_name | The customer name. | Required | 
-| license | The license type. Possible values are: TRIAL, CUSTOMER. | Required | 
-| customer_domain | The domain of the customer. | Required | 
-| keywords | A comma-separated list of monitoring keywords. | Optional | 
-| contract_end_date | The end of the contract, for example 2027-12-31. | Optional | 
+| customer_name | The customer name. | Required |
+| license | The license type. Possible values are: TRIAL, CUSTOMER. | Required |
+| customer_domain | The domain of the customer. | Required |
+| keywords | A comma-separated list of monitoring keywords. | Optional |
+| contract_end_date | The end of the contract, for example 2027-12-31. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.Customer.CustomerName | String | The customer name. | 
-| ThreatMon.Customer.License | String | The license type. | 
-| ThreatMon.Customer.Domain | String | The domain of the customer. | 
+| ThreatMon.Customer.CustomerName | String | The customer name. |
+| ThreatMon.Customer.License | String | The license type. |
+| ThreatMon.Customer.Domain | String | The domain of the customer. |
 
 #### Command example
+
 ```!threatmon-customer-create customer_name="Example Corp" license=TRIAL customer_domain=example.com keywords=example contract_end_date=2027-12-31```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -1276,16 +1351,19 @@ Changes the license, the domain or the contract end date of a customer in a Thre
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_name | The customer to change. | Required | 
-| license | The new license type. Possible values are: TRIAL, CUSTOMER. | Optional | 
-| customer_domain | The new domain of the customer. | Optional | 
-| contract_end_date | The new end of the contract, for example 2027-12-31. | Optional | 
+| customer_name | The customer to change. | Required |
+| license | The new license type. Possible values are: TRIAL, CUSTOMER. | Optional |
+| customer_domain | The new domain of the customer. | Optional |
+| contract_end_date | The new end of the contract, for example 2027-12-31. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threatmon-customer-update customer_name="Example Corp" license=CUSTOMER```
+
 #### Human Readable Output
 
 >The ThreatMon customer Example Corp was updated.
@@ -1303,13 +1381,16 @@ Deletes a customer from a ThreatMon MSSP account. The change is applied at once 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_name | The customer to delete. | Required | 
+| customer_name | The customer to delete. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threatmon-customer-delete customer_name="Example Corp"```
+
 #### Human Readable Output
 
 >The ThreatMon customer Example Corp was deleted.
@@ -1327,14 +1408,17 @@ Adds a monitoring keyword to a customer of a ThreatMon MSSP account. Requires th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_name | The customer. | Required | 
-| keyword | The keyword to add. | Required | 
+| customer_name | The customer. | Required |
+| keyword | The keyword to add. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threatmon-customer-keyword-add customer_name="Example Corp" keyword=examplebrand```
+
 #### Human Readable Output
 
 >The keyword examplebrand was added to the ThreatMon customer Example Corp.
@@ -1352,14 +1436,17 @@ Removes a monitoring keyword from a customer of a ThreatMon MSSP account. Requir
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_name | The customer. | Required | 
-| keyword | The keyword to remove. | Required | 
+| customer_name | The customer. | Required |
+| keyword | The keyword to remove. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threatmon-customer-keyword-remove customer_name="Example Corp" keyword=examplebrand```
+
 #### Human Readable Output
 
 >The keyword examplebrand was removed from the ThreatMon customer Example Corp.
@@ -1377,20 +1464,23 @@ Reports files and directories found on the company websites, so ThreatMon monito
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| urls | A comma-separated list of full URLs (at most 1000), for example https://www.example.com/backup/db.zip. | Required | 
+| urls | A comma-separated list of full URLs (at most 1000), for example https://www.example.com/backup/db.zip. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatMon.WebsiteURL.URL | String | The submitted URL. | 
-| ThreatMon.WebsiteURL.NormalizedURL | String | The URL as ThreatMon stored it. | 
-| ThreatMon.WebsiteURL.Status | String | The result: INSERTED, UPDATED or FAILED. | 
-| ThreatMon.WebsiteURL.Reason | String | Why the URL failed. | 
+| ThreatMon.WebsiteURL.URL | String | The submitted URL. |
+| ThreatMon.WebsiteURL.NormalizedURL | String | The URL as ThreatMon stored it. |
+| ThreatMon.WebsiteURL.Status | String | The result: INSERTED, UPDATED or FAILED. |
+| ThreatMon.WebsiteURL.Reason | String | Why the URL failed. |
 
 #### Command example
+
 ```!threatmon-website-url-submit urls=https://www.example.com/backup/db.zip,https://shop.example.net/admin/```
+
 #### Context Example
+
 ```json
 {
     "ThreatMon": {
@@ -1413,11 +1503,13 @@ Reports files and directories found on the company websites, so ThreatMon monito
 #### Human Readable Output
 
 >### ThreatMon Website URL Submission
+>
 >|Failed|Inserted|Received|Updated|
 >|---|---|---|---|
 >| 1 | 1 | 2 | 0 |
 >
 >### Results
+>
 >|URL|Status|Reason|
 >|---|---|---|
 >| https://www.example.com/backup/db.zip | INSERTED |  |
@@ -1436,12 +1528,13 @@ Gets the latest status of a mirrored alarm. This command is used by mirroring an
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The alarm code. | Required | 
-| lastUpdate | Retrieves changes made after this time. | Required | 
+| id | The alarm code. | Required |
+| lastUpdate | Retrieves changes made after this time. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### get-modified-remote-data
 
 ***
@@ -1455,11 +1548,12 @@ Gets the alarms that changed since the last update. This command is used by mirr
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lastUpdate | A date string. Only alarms changed after this time are returned. | Optional | 
+| lastUpdate | A date string. Only alarms changed after this time are returned. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### update-remote-system
 
 ***
@@ -1477,6 +1571,7 @@ Updates the ThreatMon alarm with the changes of the mirrored incident. This comm
 #### Context Output
 
 There is no context output for this command.
+
 ### get-mapping-fields
 
 ***
@@ -1494,6 +1589,7 @@ Returns the ThreatMon fields that outgoing mirroring can update.
 #### Context Output
 
 There is no context output for this command.
+
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and ThreatMon alarms (available from Cortex XSOAR version 6.0.0). Mirroring is available in Cortex XSOAR only; in Cortex XSIAM the mirroring parameters are hidden.
