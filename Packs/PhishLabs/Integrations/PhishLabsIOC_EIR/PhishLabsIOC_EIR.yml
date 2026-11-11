@@ -247,6 +247,13 @@ script:
     - description: The ID of the incident.
       name: incident_id
       required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether the attachment list should also contain screenshot and submission attachment types (if available).
+      name: extend_attachments
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns a single Incident based on the given ID.
     name: phishlabs-ioc-eir-get-incident-by-id
     outputs:
@@ -370,7 +377,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: String
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.15.14069087
   isfetch: true
   runonce: false
   script: '-'
