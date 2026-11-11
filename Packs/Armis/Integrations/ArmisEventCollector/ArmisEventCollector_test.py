@@ -23,6 +23,7 @@ from ArmisEventCollector import (
     _next_fetch_window,
     _stream_page_to_xsiam,
     _wait_for_enrichment,
+    apply_activities_aql_filter,
     arg_to_datetime,
     bulk_enrich_alerts,
     compute_pagination_budget,
@@ -3192,3 +3193,64 @@ class TestSequentialFailureKeepsProgress:
             )
 
         mock_set_last_run.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "activities_aql_filter, expected_query",
+    [
+        ('type:"Connection Start"', 'in:activity type:"Connection Start"'),
+        ("  !type:Login  ", "in:activity !type:Login"),
+        (None, "in:activity"),
+        ("", "in:activity"),
+        ("   ", "in:activity"),
+    ],
+)
+def test_apply_activities_aql_filter(mocker, activities_aql_filter, expected_query):
+    """
+    Given:
+        - An Activities AQL filter parameter (set, padded with spaces, or empty).
+    When:
+        - Applying the filter to the Activities event type.
+    Then:
+        - The filter is appended as is (stripped) to the Activities base query, or the query is unchanged when empty.
+        - The Alerts and Devices queries are not affected.
+    """
+    mocker.patch.dict(
+        EVENT_TYPES,
+        {
+            "Activities": EVENT_TYPE("activityUUID", "in:activity", "activity", "time", "activities"),
+            "Alerts": EVENT_TYPE("alertId", "in:alerts", "alerts", "time", "alerts"),
+            "Devices": EVENT_TYPE("id", "in:devices", "devices", "lastSeen", "devices"),
+        },
+    )
+
+    apply_activities_aql_filter(activities_aql_filter)
+
+    assert EVENT_TYPES["Activities"].aql_query == expected_query
+    assert EVENT_TYPES["Alerts"].aql_query == "in:alerts"
+    assert EVENT_TYPES["Devices"].aql_query == "in:devices"
+
+
+def test_activities_aql_filter_sent_with_time_range(mocker, dummy_client):
+    """
+    Given:
+        - An Activities AQL filter applied to the Activities event type.
+    When:
+        - Fetching activities with fetch_by_aql_query.
+    Then:
+        - The request AQL keeps the in: clause first, followed by the user filter and the after:/before: time range.
+    """
+    mocker.patch.dict(EVENT_TYPES, {"Activities": EVENT_TYPE("activityUUID", "in:activity", "activity", "time", "activities")})
+    apply_activities_aql_filter('type:"Connection Start"')
+    perform_fetch = mocker.patch.object(dummy_client, "perform_fetch", return_value={"data": {"results": [], "next": None}})
+
+    dummy_client.fetch_by_aql_query(
+        aql_query=EVENT_TYPES["Activities"].aql_query,
+        max_fetch=10,
+        after=datetime(2026, 11, 11, 10, 0, 0),
+        before=datetime(2026, 11, 11, 10, 5, 0),
+    )
+
+    assert perform_fetch.call_args[0][0]["aql"] == (
+        'in:activity type:"Connection Start" after:2026-11-11T10:00:00 before:2026-11-11T10:05:00'
+    )

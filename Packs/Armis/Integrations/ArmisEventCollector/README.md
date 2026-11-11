@@ -21,6 +21,7 @@ This integration was integrated and tested with API V.1.8 of Armis API.
 | Events Fetch Interval | Alerts and activity events. | False |
 | Minutes to delay | Number of minutes to delay when fetching events (to handle events creation delay in the Armis database). Default is 10 minutes but note a higher value might be needed for users with heavier traffic. | False |
 | Device Fetch Interval | Time between fetch of devices \(for example 12 hours, 60 minutes, etc.\). | False |
+| Activities AQL Filter | Optional AQL appended as is to the Activities query, to reduce the volume of fetched activities. Applies to the Activities event type only. The collector sets the event type and time range, so the filter must not contain the "in:", "after:" or "before:" clauses. The filter is not validated, and its content is the user's responsibility. | False |
 
 ## Commands
 

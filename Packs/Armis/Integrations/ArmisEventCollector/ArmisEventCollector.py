@@ -1669,6 +1669,22 @@ def set_last_run_for_last_minute(last_run: dict) -> None:
         last_run[last_fetch_time] = now_str
 
 
+def apply_activities_aql_filter(activities_aql_filter: str | None) -> None:
+    """Appends the user-provided AQL filter to the Activities base query, as is.
+
+    The filter is not validated. Keeping it free of the collector-controlled clauses
+    (in:, after:, before:) is the user's responsibility, as stated in the parameter help.
+
+    Args:
+        activities_aql_filter (str | None): Additional AQL to append to the Activities query.
+    """
+    if not activities_aql_filter or not activities_aql_filter.strip():
+        return
+    activities = EVENT_TYPES["Activities"]
+    activities.aql_query = f"{activities.aql_query} {activities_aql_filter.strip()}"
+    demisto.debug(f"[Fetch] Activities AQL query with user filter: {activities.aql_query}")
+
+
 def should_run_device_fetch(last_run, device_fetch_interval: timedelta | None, datetime_now: datetime):
     """
     Args:
@@ -1714,6 +1730,7 @@ def main():  # pragma: no cover
     parsed_interval = dateparser.parse(params.get("deviceFetchInterval", "24 hours")) or dateparser.parse("24 hours")
     device_fetch_interval: timedelta = datetime.now() - parsed_interval  # type: ignore[operator]
     fetch_delay = arg_to_number(params.get("fetch_delay")) or DEFAULT_FETCH_DELAY
+    apply_activities_aql_filter(params.get("activities_aql_filter"))
 
     demisto.debug(f"Command being called is {command}")
 

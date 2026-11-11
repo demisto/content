@@ -79,6 +79,13 @@ configuration:
   defaultvalue: "4 hours"
   type: 0
   required: false
+- section: Collect
+  advanced: true
+  display: Activities AQL Filter
+  additionalinfo: 'Optional AQL appended as is to the Activities query, to reduce the volume of fetched activities. Applies to the Activities event type only. The collector sets the event type and time range, so the filter must not contain the "in:", "after:" or "before:" clauses. The filter is not validated, and its content is the user''s responsibility.'
+  name: activities_aql_filter
+  type: 0
+  required: false
 description: Collects alerts, devices and activities from Armis resources.
 display: Armis Event Collector
 name: ArmisEventCollector
