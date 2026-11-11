@@ -10,8 +10,12 @@ urllib3.disable_warnings()
 BASE_URL = "https://api.recordedfuture.com/gw/xsiam"
 STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+TRIGGERED_FORMAT = "%Y-%m-%dT%H:%M:%S"  # The format of get_triggered() values (no milliseconds).
 VENDOR = "Recorded Future"
 PRODUCT = "Intelligence Cloud"
+# The alert search endpoint silently caps every response at 50 alerts, regardless of the requested limit.
+PAGE_SIZE = 50
+MAX_FETCH = 1000
 
 """ CLIENT CLASS """
 
@@ -103,45 +107,83 @@ def get_triggered(event: dict) -> str:
     return ""
 
 
+def fetch_alert_pages(client: Client, last_run: str, max_fetch: int) -> list[dict]:
+    """Fetch the oldest alerts triggered at or after `last_run`, paging with `from` until `max_fetch` is reached.
+
+    With direction=desc the API returns the *oldest* alerts after the start time (displayed newest-first),
+    so paging with `from` moves forward in time and new alerts arriving between pages do not shift the offsets.
+
+    Args:
+        client (Client): RecordedFuture client to use.
+        last_run (str): The start time (inclusive) to fetch from.
+        max_fetch (int): The maximum number of alerts to fetch.
+
+    Returns:
+        list: The raw alerts returned by the API (may contain duplicates across pages).
+    """
+    alerts: list[dict] = []
+    offset = 0
+    while offset < max_fetch:
+        page_limit = min(PAGE_SIZE, max_fetch - offset)
+        params = {
+            "triggered": f"[{last_run},]",
+            "orderby": "triggered",
+            "direction": "desc",
+            "limit": page_limit,
+            "from": offset,
+        }
+        page = client.get_alerts(params).get("data") or []
+        alerts.extend(page)
+        offset += len(page)
+        demisto.debug(f"Fetched {len(page)} alerts (from={offset - len(page)}, limit={page_limit}).")
+        if len(page) < page_limit:
+            break
+    return alerts
+
+
 def fetch_events(client: Client, **kwargs) -> tuple[list, dict]:
     """
     Args:
         client (Client): RecordedFuture client to use.
+        limit: The maximum number of events to fetch (capped at MAX_FETCH).
+        last_run (str): The time to fetch from (inclusive).
 
     Returns:
-        list: (list) of events that will be created in XSIAM.
-        dict: The lastRun object to save for next run.
+        list: (list) of events that will be created in XSIAM, sorted by trigger time.
+        dict: The lastRun object to save for next run (empty if nothing was fetched).
     """
-    params = {
-        "triggered": f'[{kwargs.get("last_run")},]',
-        "orderby": "triggered",
-        "direction": "asc",
-        "limit": kwargs.get("limit"),
-    }
-    response = client.get_alerts(params)
+    last_run = str(kwargs.get("last_run"))
+    max_fetch = min(arg_to_number(kwargs.get("limit")) or MAX_FETCH, MAX_FETCH)
+    last_run_ids = set(demisto.getLastRun().get("last_run_ids") or [])
 
-    next_run = {}
-    if events := response.get("data", []):
-        # Obtain the latest triggered time (for the next fetch round)
-        next_run_time = get_triggered(events[0])
+    alerts = fetch_alert_pages(client, last_run, max_fetch)
+    if not alerts:
+        return [], {}
 
-        # We need the IDs of the events with the same trigger time as the latest,
-        # So that we can remove them in the next fetch, Since we are fetching from (including) this time.
-        next_run_ids = {event.get("id") for event in events if get_triggered(event) == next_run_time}
+    # Remove alerts fetched in the previous round (same trigger second as the cursor) and duplicates across pages.
+    events: list[dict] = []
+    seen_ids: set = set()
+    for alert in sorted(alerts, key=get_triggered):
+        alert_id = alert.get("id")
+        if alert_id in seen_ids or alert_id in last_run_ids:
+            continue
+        seen_ids.add(alert_id)
+        events.append(alert)
 
-        # In case all events were triggered at the same time and the limit equals their amount,
-        # We should increase the next run time, Otherwise the fetch will get stuck at this time forever.
-        if len(next_run_ids) == int(kwargs.get("limit")):  # type: ignore
-            next_run_time = (datetime.strptime(next_run_time, DATE_FORMAT) + timedelta(seconds=1)).strftime(DATE_FORMAT)
+    # The cursor is the latest trigger time fetched. The API ignores milliseconds, so the next fetch
+    # starts from (including) this second, and we keep the IDs triggered at this second to filter them out.
+    next_run_time = max(get_triggered(alert) for alert in alerts)
+    next_run_ids = {alert.get("id") for alert in alerts if get_triggered(alert) == next_run_time}
+    if next_run_time == last_run.split(".")[0]:
+        next_run_ids |= last_run_ids
 
-        # Filter out events that have already been fetched.
-        if last_run_event_ids := demisto.getLastRun().get("last_run_ids"):
-            demisto.info(f"this is the last_run_event_ids {last_run_event_ids}")
-            events = list(filter(lambda x: x.get("id") not in last_run_event_ids, events))
+    # In case all fetched alerts were triggered at the same second and the limit was reached,
+    # move the cursor forward, otherwise the fetch will get stuck at this second forever.
+    if len(alerts) >= max_fetch and all(get_triggered(alert) == next_run_time for alert in alerts):
+        next_run_time = (datetime.strptime(next_run_time, TRIGGERED_FORMAT) + timedelta(seconds=1)).strftime(TRIGGERED_FORMAT)
 
-        next_run = {"last_run_time": next_run_time, "last_run_ids": list(next_run_ids)}
-
-    return events, next_run
+    demisto.debug(f"Fetched {len(alerts)} alerts, {len(events)} new. Next run time: {next_run_time}.")
+    return events, {"last_run_time": next_run_time, "last_run_ids": list(next_run_ids)}
 
 
 """ HELPER FUNCTIONS """
@@ -189,7 +231,7 @@ def main() -> None:
             if not (last_run := demisto.getLastRun().get("last_run_time")):
                 last_run = arg_to_datetime(params.get("first_fetch", "3 days")).strftime(DATE_FORMAT)  # type: ignore
             events, next_run = fetch_events(
-                client=client, limit=args.get("limit") or params.get("max_fetch") or 1000, last_run=last_run
+                client=client, limit=args.get("limit") or params.get("max_fetch") or MAX_FETCH, last_run=last_run
             )
 
             add_time_key_to_events(events)
