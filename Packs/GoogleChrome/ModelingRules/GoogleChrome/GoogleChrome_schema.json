@@ -2,11 +2,13 @@
     "google_workspace_chrome_raw": {
         "events": {
           "type": "string",
-          "is_array": false
+          "is_array": false,
+          "field_description": "The list of Chrome events."
         },
         "event": {
           "type": "string",
-          "is_array": false
+          "is_array": false,
+          "field_description": "A single Chrome event."
         },
         "parameters": {
           "type": "string",

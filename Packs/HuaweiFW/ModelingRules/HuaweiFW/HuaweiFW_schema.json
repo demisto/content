@@ -1,8 +1,10 @@
 {
     "huawei_fw_raw": {
+      "dataset_description": "Firewall logs collected from Huawei FW.",
       "_raw_log": {
         "type": "string",
-        "is_array": false
+        "is_array": false,
+        "field_description": "The raw log."
       },
       "parsed_fields_headers": {
         "type": "string",
