@@ -239,6 +239,7 @@ class IndicatorInstance:
         else:
             self.final_status = Status.FAILURE
             self.context_message = self._build_failure_context()
+            demisto.debug("Test")
 
 
 class CommandType(Enum):
