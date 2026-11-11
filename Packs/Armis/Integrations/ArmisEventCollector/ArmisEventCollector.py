@@ -1732,6 +1732,7 @@ def main():  # pragma: no cover
     fetch_delay = arg_to_number(params.get("fetch_delay")) or DEFAULT_FETCH_DELAY
     apply_activities_aql_filter(params.get("activities_aql_filter"))
 
+    demisto.debug("Running a custom version of Armis Event Collector (Activities AQL Filter support).")
     demisto.debug(f"Command being called is {command}")
 
     try:
