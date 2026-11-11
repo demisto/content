@@ -3060,3 +3060,135 @@ class TestHandleFetchedEventsNextRunLogging:
         assert "id-1" not in summary_logs[0]
         assert "2023-01-01T01:00:17" in summary_logs[0]
         assert mock_set_last_run.call_args.args[0][ACT_IDS] == ids
+
+
+class TestSequentialFailureKeepsProgress:
+    def test_alerts_progress_kept_when_activities_fails(self, mocker, dummy_client):
+        """
+        Given: Alerts and Activities fetched in the same cycle (sequential path), and the Activities
+               request fails with an API error after the alerts were already fetched.
+        When:  fetch_events runs as the periodic fetch (streaming enabled).
+        Then:  no error is raised, so the cycle completes and the last run can be saved. The returned
+               next_run has the new alerts cursor and the unchanged activities cursor, so the alerts
+               are not re-sent and no activities are skipped in the next cycle.
+        """
+        last_run = {
+            "alerts_last_fetch_time": "2026-11-04T13:08:45",
+            "activity_last_fetch_time": "2026-11-03T17:31:34",
+            "activity_last_fetch_ids": ["id-1"],
+            "activity_last_fetch_next_field": 0,
+        }
+
+        def fake_fetch_by_event_type(client, event_type, events, max_fetch, last_run, next_run, *args, **kwargs):
+            if event_type.type == "alerts":
+                next_run["alerts_last_fetch_time"] = "2026-11-04T14:13:02"
+                return
+            raise DemistoException("Error in API call [500] - Internal Server Error")
+
+        mocker.patch("ArmisEventCollector.fetch_by_event_type", side_effect=fake_fetch_by_event_type)
+        mocker.patch("ArmisEventCollector.demisto.error")
+
+        _, next_run = fetch_events(
+            client=dummy_client,
+            max_fetch=10,
+            devices_max_fetch=10,
+            last_run=last_run,
+            fetch_start_time=None,
+            event_types_to_fetch=["Alerts", "Activities"],
+            device_fetch_interval=None,
+            use_multithreading=True,
+            context_manager=IntegrationContextManager(),
+            enable_streaming=True,
+        )
+
+        assert next_run["alerts_last_fetch_time"] == "2026-11-04T14:13:02"
+        assert next_run["activity_last_fetch_time"] == "2026-11-03T17:31:34"
+        assert next_run["activity_last_fetch_ids"] == ["id-1"]
+        assert next_run["activity_last_fetch_next_field"] == 0
+
+    def test_failed_event_type_reported_to_caller(self, mocker, dummy_client):
+        """
+        Given: the periodic fetch (streaming enabled) and a failing Activities fetch.
+        When:  fetch_events runs with a failed_event_types list.
+        Then:  the failure is appended to the list as "<event type>: <error>" and logged at error level.
+        """
+        mocker.patch("ArmisEventCollector.fetch_by_event_type", side_effect=DemistoException("Error in API call [500]"))
+        mock_error = mocker.patch("ArmisEventCollector.demisto.error")
+        failed_event_types: list[str] = []
+
+        fetch_events(
+            client=dummy_client,
+            max_fetch=10,
+            devices_max_fetch=10,
+            last_run={},
+            fetch_start_time=None,
+            event_types_to_fetch=["Activities"],
+            device_fetch_interval=None,
+            use_multithreading=True,
+            context_manager=IntegrationContextManager(),
+            enable_streaming=True,
+            failed_event_types=failed_event_types,
+        )
+
+        assert len(failed_event_types) == 1
+        assert failed_event_types[0].startswith("Activities: ")
+        assert "500" in failed_event_types[0]
+        assert mock_error.call_args.args[0].startswith("[Fetch] Fetching Activities failed")
+
+    def test_main_reports_failure_to_module_health_after_saving_last_run(self, mocker):
+        """
+        Given: the fetch-events command and an event type that fails during fetch_events.
+        When:  main runs.
+        Then:  the last run is saved first, and the failure is then reported to module health as an error.
+        """
+        import ArmisEventCollector
+
+        def fake_fetch_events(*args, **kwargs):
+            kwargs["failed_event_types"].append("Activities: Error in API call [500]")
+            return {}, {"alerts_last_fetch_time": "2026-11-04T14:13:02"}
+
+        mocker.patch.object(ArmisEventCollector.demisto, "command", return_value="fetch-events")
+        mocker.patch.object(
+            ArmisEventCollector.demisto,
+            "params",
+            return_value={"server_url": "test_url", "event_types_to_fetch": "Alerts,Activities"},
+        )
+        mocker.patch.object(ArmisEventCollector.demisto, "args", return_value={})
+        mocker.patch.object(ArmisEventCollector.demisto, "getLastRun", return_value={"alerts_last_fetch_time": "x"})
+        mocker.patch.object(ArmisEventCollector.demisto, "getIntegrationContext", return_value={})
+        mocker.patch("ArmisEventCollector.Client")  # fetch_events is mocked, so no real API calls are needed
+        mocker.patch("ArmisEventCollector.fetch_events", side_effect=fake_fetch_events)
+        mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        calls = MagicMock()
+        mocker.patch.object(ArmisEventCollector.demisto, "setLastRun", side_effect=calls.setLastRun)
+        mocker.patch.object(ArmisEventCollector.demisto, "updateModuleHealth", side_effect=calls.updateModuleHealth)
+
+        ArmisEventCollector.main()
+
+        assert [c[0] for c in calls.mock_calls] == ["setLastRun", "updateModuleHealth"]
+        assert calls.updateModuleHealth.call_args.args[0] == "[Fetch] Failed to fetch: Activities: Error in API call [500]"
+        assert calls.updateModuleHealth.call_args.kwargs == {"is_error": True}
+
+    def test_last_run_not_touched_for_manual_get_events(self, mocker, dummy_client):
+        """
+        Given: the manual armis-get-events path (streaming disabled) and a failing Activities fetch.
+        When:  fetch_events runs.
+        Then:  the error is raised and the last run is not modified.
+        """
+        mocker.patch("ArmisEventCollector.fetch_by_event_type", side_effect=DemistoException("boom"))
+        mock_set_last_run = mocker.patch("ArmisEventCollector.demisto.setLastRun")
+
+        with pytest.raises(DemistoException, match="boom"):
+            fetch_events(
+                client=dummy_client,
+                max_fetch=10,
+                devices_max_fetch=10,
+                last_run={},
+                fetch_start_time=None,
+                event_types_to_fetch=["Activities"],
+                device_fetch_interval=None,
+                use_multithreading=False,
+                enable_streaming=False,
+            )
+
+        mock_set_last_run.assert_not_called()
