@@ -1549,3 +1549,210 @@ def test_input_arguments_error(
     """
     with pytest.raises(CommonServerPython.DemistoException):
         command(mock_client, {})
+
+
+""" Shared authentication layer (MerakiBaseClient / MerakiOAuthTokenManager) """
+
+OAUTH_TOKEN_URL = "https://as.meraki.com/oauth/token"
+
+
+@pytest.fixture()
+def integration_context(mocker) -> dict:
+    """In-memory integration context shared by get/set."""
+    context: dict = {}
+    mocker.patch.object(CiscoMerakiv2, "get_integration_context", side_effect=lambda: dict(context))
+    mocker.patch.object(
+        CiscoMerakiv2, "set_integration_context", side_effect=lambda new: (context.clear(), context.update(new))
+    )
+    return context
+
+
+def build_oauth_client(auth_code: str | None = "the-code") -> CiscoMerakiv2.Client:
+    return CiscoMerakiv2.Client(
+        base_url="https://api.meraki.com",
+        client_id="cid",
+        client_secret="csecret",
+        redirect_uri="https://redirect.example.com",
+        auth_code=auth_code,
+    )
+
+
+@pytest.mark.parametrize(
+    "api_key, client_id, client_secret, expected",
+    [
+        ("key", None, None, CiscoMerakiv2.MerakiAuthMode.API_KEY),
+        (None, "cid", "secret", CiscoMerakiv2.MerakiAuthMode.OAUTH),
+        ("key", "cid", "secret", CiscoMerakiv2.MerakiAuthMode.OAUTH),
+    ],
+)
+def test_resolve_meraki_auth_mode(api_key, client_id, client_secret, expected):
+    """
+    Given: Different combinations of configured credentials.
+    When:  Resolving the authentication mode outside UCP.
+    Then:  OAuth 2.0 wins over the API key.
+    """
+    assert CiscoMerakiv2.resolve_meraki_auth_mode(api_key, client_id, client_secret) == expected
+
+
+@pytest.mark.parametrize("client_id, client_secret", [(None, None), ("cid", None), (None, "secret")])
+def test_resolve_meraki_auth_mode_errors(client_id, client_secret):
+    """
+    Given: No credentials, or partial OAuth 2.0 credentials.
+    When:  Resolving the authentication mode.
+    Then:  A clear error is raised.
+    """
+    with pytest.raises(CommonServerPython.DemistoException):
+        CiscoMerakiv2.resolve_meraki_auth_mode(None, client_id, client_secret)
+
+
+def test_resolve_meraki_auth_mode_ucp(mocker):
+    """
+    Given: UCP brokers the credentials.
+    When:  Resolving the authentication mode with no legacy params.
+    Then:  UCP mode is returned and no error is raised.
+    """
+    mocker.patch.object(CiscoMerakiv2, "should_use_ucp_auth", return_value=True)
+    assert CiscoMerakiv2.resolve_meraki_auth_mode(None, None, None) == CiscoMerakiv2.MerakiAuthMode.UCP
+
+
+@pytest.mark.parametrize(
+    "params, expected",
+    [
+        ({"base_url": "https://api.meraki.ca/"}, "https://api.meraki.ca"),
+        ({"endpoint_region": "Canada"}, "https://api.meraki.ca"),
+        ({"endpoint_region": "United States FedRAMP"}, "https://api.gov-meraki.com"),
+        ({"endpoint_region": "Europe"}, "https://api.meraki.com"),
+        ({}, "https://api.meraki.com"),
+    ],
+)
+def test_resolve_meraki_base_url(params, expected):
+    """
+    Given: A base URL param or a UCP endpoint region.
+    When:  Resolving the base URL.
+    Then:  The matching Meraki cluster URL is returned.
+    """
+    assert CiscoMerakiv2.resolve_meraki_base_url(params) == expected
+
+
+def test_resolve_meraki_base_url_unknown_region():
+    with pytest.raises(CommonServerPython.DemistoException):
+        CiscoMerakiv2.resolve_meraki_base_url({"endpoint_region": "Mars"})
+
+
+def test_oauth_rejected_for_regional_cluster():
+    """
+    Given: OAuth 2.0 credentials and a regional base URL.
+    When:  Creating the client.
+    Then:  An error points the user to the API key.
+    """
+    with pytest.raises(CommonServerPython.DemistoException, match="API Key"):
+        CiscoMerakiv2.Client(base_url="https://api.meraki.ca", client_id="cid", client_secret="cs", redirect_uri="r")
+
+
+def test_api_key_header(requests_mock):
+    """
+    Given: An API key client.
+    When:  Calling the API.
+    Then:  The key is sent as a Bearer token.
+    """
+    requests_mock.get(f"{BASE_URL}/organizations", json=[])
+    client = CiscoMerakiv2.Client(base_url="https://api.meraki.com", api_key="the-key")
+    client.list_organization()
+    assert requests_mock.last_request.headers["Authorization"] == "Bearer the-key"
+
+
+def test_oauth_code_exchange_and_refresh_rotation(requests_mock, integration_context, mocker):
+    """
+    Given: An OAuth 2.0 client with an authorization code.
+    When:  Calling the API, then calling again after the access token expired.
+    Then:  The code is exchanged once, then the refresh token is used and the rotated one is stored.
+    """
+    token_mock = requests_mock.post(
+        OAUTH_TOKEN_URL,
+        [
+            {"json": {"access_token": "at1", "refresh_token": "rt1", "expires_in": 3600}},
+            {"json": {"access_token": "at2", "refresh_token": "rt2", "expires_in": 3600}},
+        ],
+    )
+    api_mock = requests_mock.get(f"{BASE_URL}/organizations", json=[])
+    client = build_oauth_client()
+
+    client.list_organization()
+    assert api_mock.last_request.headers["Authorization"] == "Bearer at1"
+    assert "grant_type=authorization_code" in token_mock.request_history[0].text
+    assert token_mock.request_history[0].headers["Authorization"].startswith("Basic ")
+
+    integration_context["meraki_oauth"]["valid_until"] = 0  # expire the access token
+    client.list_organization()
+    assert api_mock.last_request.headers["Authorization"] == "Bearer at2"
+    assert "refresh_token=rt1" in token_mock.request_history[1].text
+    assert integration_context["meraki_oauth"]["refresh_token"] == "rt2"
+
+
+def test_oauth_401_refreshes_and_retries_once(requests_mock, integration_context):
+    """
+    Given: A cached access token that Meraki rejects with 401.
+    When:  Calling the API.
+    Then:  The token is refreshed and the request is retried once.
+    """
+    integration_context["meraki_oauth"] = {"access_token": "stale", "valid_until": 9e12, "refresh_token": "rt"}
+    requests_mock.post(OAUTH_TOKEN_URL, json={"access_token": "fresh", "refresh_token": "rt-new", "expires_in": 3600})
+    api_mock = requests_mock.get(f"{BASE_URL}/organizations", [{"status_code": 401, "json": {}}, {"json": []}])
+
+    build_oauth_client(auth_code=None).list_organization()
+
+    assert [r.headers["Authorization"] for r in api_mock.request_history] == ["Bearer stale", "Bearer fresh"]
+
+
+def test_oauth_without_code_requires_authorization(integration_context):
+    """
+    Given: An OAuth 2.0 client with no authorization code and no cached tokens.
+    When:  Getting an access token.
+    Then:  The user is told to authorize.
+    """
+    with pytest.raises(CommonServerPython.DemistoException, match="authorization is required"):
+        build_oauth_client(auth_code=None).require_oauth().get_access_token()
+
+
+def test_oauth_generate_login_url():
+    """
+    Given: An OAuth 2.0 client.
+    When:  Generating the login URL.
+    Then:  It targets the Meraki authorize endpoint with the v2 scopes and the redirect URI.
+    """
+    result = CiscoMerakiv2.oauth_generate_login_url_command(build_oauth_client(), "meraki")
+    assert "https://as.meraki.com/oauth/authorize?" in result.readable_output
+    assert "sdwan%3Aconfig%3Awrite" in result.readable_output
+    assert "redirect_uri=https%3A%2F%2Fredirect.example.com" in result.readable_output
+
+
+def test_oauth_auth_reset_clears_context(integration_context):
+    integration_context["meraki_oauth"] = {"refresh_token": "rt"}
+    integration_context["other"] = 1
+    CiscoMerakiv2.oauth_auth_reset_command(build_oauth_client(), "meraki")
+    assert integration_context == {"other": 1}
+
+
+def test_auth_commands_require_oauth(mock_client):
+    with pytest.raises(CommonServerPython.DemistoException, match="OAuth 2.0"):
+        CiscoMerakiv2.oauth_generate_login_url_command(mock_client, "meraki")
+
+
+def test_ucp_skips_legacy_auth_header(requests_mock, mocker):
+    """
+    Given: UCP brokers the credentials (no legacy params).
+    When:  Calling the API.
+    Then:  The client does not build its own Authorization header and lets BaseClient inject it.
+    """
+    mocker.patch.object(CiscoMerakiv2, "should_use_ucp_auth", return_value=True)
+    mocker.patch.object(CiscoMerakiv2, "ucp_credentials_are_oauth", return_value=False)
+    mocker.patch.object(CommonServerPython, "should_use_ucp_auth", return_value=False)  # disable injection in BaseClient
+    api_mock = requests_mock.get(f"{BASE_URL}/organizations", json=[])
+
+    CiscoMerakiv2.Client(base_url="https://api.meraki.com").list_organization()
+
+    assert "Authorization" not in api_mock.last_request.headers
+
+
+def test_test_module_with_oauth():
+    assert "meraki-auth-test" in CiscoMerakiv2.test_module(build_oauth_client())
