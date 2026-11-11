@@ -3765,24 +3765,6 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Ite
     return item
 
 
-# Cortex severity label → ServiceNow em_event severity integer.
-CORTEX_TO_SNOW_SEVERITY: dict[str, str] = {
-    "critical": "1",
-    "high": "2",
-    "medium": "3",
-    "low": "4",
-    "info": "5",
-    "informational": "5",
-}
-
-# Cortex resolution state → ServiceNow em_event resolution_state string.
-CORTEX_TO_SNOW_RESOLUTION_STATE: dict[str, str] = {
-    "new": "open",
-    "in progress": "open",
-    "resolved": "closed",
-}
-
-
 def create_event_command(client: Client, args: dict) -> CommandResults:
     """Create an event in ServiceNow Event Management via the /api/global/em/jsonv2 webhook.
 
@@ -3799,15 +3781,22 @@ def create_event_command(client: Client, args: dict) -> CommandResults:
     Raises:
         DemistoException: If required fields are missing.
     """
-    demisto.debug(f"create_event_command received args: {args}")
+    severity_map: dict[str, str] = {
+        "critical": "1",
+        "high": "2",
+        "medium": "3",
+        "low": "4",
+        "info": "5",
+    }
+    resolution_state_map: dict[str, str] = {
+        "new": "open",
+        "in progress": "open",
+        "resolved": "closed",
+    }
 
     node = args.get("node")
     event_type = args.get("type")
     time_of_event = args.get("time_of_event")
-
-    missing = [name for name, val in [("node", node), ("type", event_type), ("time_of_event", time_of_event)] if not val]
-    if missing:
-        raise DemistoException(f"Missing required argument(s): {', '.join(missing)}.")
 
     event: dict = {
         "source": args.get("source") or "Cortex",
@@ -3821,10 +3810,10 @@ def create_event_command(client: Client, args: dict) -> CommandResults:
             event[field] = value
 
     if (severity := args.get("severity")) is not None:
-        event["severity"] = CORTEX_TO_SNOW_SEVERITY.get(severity.lower(), severity)
+        event["severity"] = severity_map.get(severity.lower(), severity)
 
     if (resolution_state := args.get("resolution_state")) is not None:
-        event["resolution_state"] = CORTEX_TO_SNOW_RESOLUTION_STATE.get(resolution_state.lower(), resolution_state)
+        event["resolution_state"] = resolution_state_map.get(resolution_state.lower(), resolution_state)
 
     client.create_event([event])
 
@@ -4055,6 +4044,8 @@ def main():
         elif command == "servicenow-delete-ticket":
             return_results(delete_ticket_command(client, args))
         elif command == "servicenow-create-event":
+            return_results(create_event_command(client, args))
+        elif command == "servicenow-create-event-quick-action":
             return_results(create_event_command(client, args))
         elif command == "servicenow-generic-api-call":
             return_results(generic_api_call_command(client, args))

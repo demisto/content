@@ -1759,34 +1759,21 @@ script:
       type: Unknown
   - arguments:
     - defaultValue: Cortex
-      description: >-
-        Source of the event — identifies the monitoring tool or system
-        (e.g. "Cortex", "SCOM", "Nagios"). Maps to xdm.asset.name.
-        Defaults to "Cortex".
+      description: Source of the event.
       name: source
-    - description: >-
-        Node (hostname or asset name) where the event occurred. Maps to
-        xdm.asset.name (e.g. "web-server-01").
+    - description: Node where the event occurred.
       name: node
       required: true
-    - description: >-
-        Event type or detection rule name. Maps to xdm.issue.type
-        (e.g. "CPU Utilization", "Malware Detected").
+    - description: Type of the event.
       name: type
       required: true
-    - description: >-
-        Time the event occurred, in the format "YYYY-MM-DD HH:MM:SS" (UTC).
-        Maps to xdm.issue.observation_time.
+    - description: 'Time the event occurred, in the format: YYYY-MM-DD HH:MM:SS (UTC).'
       name: time_of_event
       required: true
-    - description: >-
-        Resource on the node that triggered the event. Maps to
-        xdm.asset.strong_id (e.g. "CPU", "disk:/var").
+    - description: Resource on the node that triggered the event.
       name: resource
     - auto: PREDEFINED
-      description: >-
-        Severity of the event. Accepts Cortex severity labels, which are mapped
-        to ServiceNow values (critical=1, high=2, medium=3, low=4, info=5).
+      description: Severity of the event.
       name: severity
       predefined:
       - critical
@@ -1794,32 +1781,20 @@ script:
       - medium
       - low
       - info
-    - description: >-
-        Human-readable description of the event. Maps to xdm.issue.description.
+    - description: Description of the event.
       name: description
-    - description: >-
-        A JSON string of additional key-value pairs to attach to the event.
-        Recommended to include the full issue as a serialized JSON string.
+    - description: 'Additional key-value pairs to attach to the event, in the format: {"key": "value"}.'
       name: additional_info
-    - description: >-
-        Unique key used to deduplicate events. Events with the same message_key
-        are treated as updates to the same alert. Maps to xdm.issue.id.
+    - description: Unique key used to deduplicate events.
       name: message_key
     - auto: PREDEFINED
-      description: >-
-        Resolution state of the event. Cortex labels are mapped to ServiceNow
-        values (new=open, in progress=open, resolved=closed).
+      description: Resolution state of the event.
       name: resolution_state
       predefined:
       - new
       - in progress
       - resolved
-    description: >-
-      Creates an event in ServiceNow Event Management by posting to the
-      /api/global/em/jsonv2 webhook endpoint (em_events table). source defaults
-      to "Cortex"; node, type, and time_of_event are required. Cortex severity
-      labels (critical, high, medium, low, info) and resolution states (new,
-      in progress, resolved) are automatically mapped to ServiceNow values.
+    description: Creates an event in ServiceNow Event Management.
     name: servicenow-create-event
   - arguments:
     - auto: PREDEFINED
@@ -2085,13 +2060,12 @@ script:
       prettyname: Node
       required: true
       prettypredefined:
-        Alert Name: ${issue.name}
-    - description: Event type or detection rule name.
+        Issue Name: ${issue.name}
+    - description: Event type.
       name: type
       prettyname: Type
       required: true
       prettypredefined:
-        Alert Name: ${issue.name}
         Category: ${issue.categoryname}
     - description: Time the event occurred, in the format "YYYY-MM-DD HH:MM:SS" (UTC).
       name: time_of_event
@@ -2103,7 +2077,7 @@ script:
       name: resource
       prettyname: Resource
       prettypredefined:
-        Alert ID: ${issue.id}
+        Issue ID: ${issue.id}
     - auto: PREDEFINED
       description: Severity of the event. Accepts Cortex labels (critical, high, medium, low, info) or raw ServiceNow integers (0–5).
       name: severity
@@ -2119,7 +2093,7 @@ script:
       name: message_key
       prettyname: Message Key
       prettypredefined:
-        Alert ID: ${issue.id}
+        Issue ID: ${issue.id}
     - description: Resolution state. Accepts Cortex labels (new, in progress, resolved) or raw ServiceNow values.
       name: resolution_state
       prettyname: Resolution State
