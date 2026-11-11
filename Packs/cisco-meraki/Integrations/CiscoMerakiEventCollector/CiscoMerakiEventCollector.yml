@@ -1,0 +1,152 @@
+category: Analytics & SIEM
+sectionOrder:
+  - Connect
+  - Collect
+commonfields:
+  id: Cisco Meraki Event Collector
+  version: -1
+configuration:
+  - name: base_url
+    display: Base URL
+    additionalinfo: "The API base URL. Use https://api.meraki.com for the global cluster (North America, South America, Europe, Asia-Pacific), https://api.meraki.ca for Canada, https://api.meraki.cn for China, https://api.meraki.in for India, or https://api.gov-meraki.com for United States FedRAMP. OAuth 2.0 is supported only for https://api.meraki.com."
+    required: true
+    type: 0
+    section: Connect
+    defaultvalue: https://api.meraki.com
+  - name: api_key
+    displaypassword: API Key
+    additionalinfo: An API key can be generated through 'My Profile' in 'API access'. Required when OAuth 2.0 is not configured, and for clusters other than https://api.meraki.com.
+    required: false
+    type: 9
+    hiddenusername: true
+    section: Connect
+  - name: credentials
+    display: Client ID
+    displaypassword: Client Secret
+    additionalinfo: OAuth 2.0 client ID and secret of the integration registered in the Meraki Dashboard. When set, OAuth 2.0 is used instead of the API key.
+    required: false
+    type: 9
+    section: Connect
+  - name: redirect_uri
+    display: Redirect URI
+    additionalinfo: The redirect URI registered on the Meraki OAuth 2.0 integration. Required for OAuth 2.0.
+    required: false
+    type: 0
+    section: Connect
+  - name: auth_code
+    displaypassword: Authorization code
+    additionalinfo: The `code` value received after running the cisco-meraki-generate-login-url command and signing in. Required for OAuth 2.0.
+    required: false
+    type: 9
+    hiddenusername: true
+    section: Connect
+  - name: organization_id
+    display: Organization ID
+    additionalinfo: The ID of the Meraki organization to collect events from.
+    required: true
+    type: 0
+    section: Connect
+  - name: insecure
+    display: Trust any certificate (not secure)
+    required: false
+    type: 8
+    section: Connect
+    advanced: true
+  - name: proxy
+    display: Use system proxy settings
+    required: false
+    type: 8
+    section: Connect
+    advanced: true
+  - name: isFetchEvents
+    display: Fetch events
+    required: false
+    type: 8
+    section: Collect
+    defaultvalue: "true"
+  - name: event_types
+    display: Event types to fetch
+    additionalinfo: The event types to collect. Each type is fetched with its own budget and state.
+    required: false
+    type: 16
+    section: Collect
+    defaultvalue: Configuration changes,Network events,API requests,Appliance security events
+    options:
+      - Configuration changes
+      - Network events
+      - API requests
+      - Appliance security events
+  - name: network_ids
+    display: Network IDs
+    additionalinfo: Comma-separated network IDs to collect network events from. Leave empty to collect from all the networks of the organization. Applies to network events only.
+    required: false
+    type: 0
+    section: Collect
+    advanced: true
+  - name: max_events_per_type
+    display: Maximum number of events per fetch, per event type
+    additionalinfo: The maximum number of events to fetch for each event type in every fetch cycle.
+    required: false
+    type: 0
+    section: Collect
+    advanced: true
+    defaultvalue: "10000"
+  - name: eventFetchInterval
+    display: Events Fetch Interval
+    required: false
+    type: 19
+    section: Collect
+    advanced: true
+    defaultvalue: "1"
+description: Collects configuration changes, network events, API requests and appliance security events from Cisco Meraki into Cortex XSIAM.
+display: Cisco Meraki Event Collector
+name: Cisco Meraki Event Collector
+script:
+  commands:
+    - name: cisco-meraki-get-events
+      description: Get events from Cisco Meraki. This command is intended for development and debugging purposes and should be used with caution, as it may create duplicate events.
+      arguments:
+        - name: event_types
+          description: Comma-separated event types to get. Default is all event types.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - Configuration changes
+            - Network events
+            - API requests
+            - Appliance security events
+        - name: limit
+          description: The maximum number of events to return per event type.
+          defaultValue: "10"
+        - name: start_time
+          description: The start time to get events from (organization-level event types), e.g., "1 hour", "2026-01-01T00:00:00Z". Default is 1 hour ago.
+        - name: should_push_events
+          description: Whether to push the events to Cortex XSIAM. Set to true only when you want to create events, otherwise use only for debugging.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          defaultValue: "false"
+    - name: cisco-meraki-generate-login-url
+      description: Generate the login URL used to authorize the integration with OAuth 2.0.
+      arguments: []
+    - name: cisco-meraki-auth-test
+      description: Test the OAuth 2.0 authorization and the connection to Cisco Meraki.
+      arguments: []
+    - name: cisco-meraki-auth-reset
+      description: Reset the OAuth 2.0 authorization. Run cisco-meraki-generate-login-url to authorize again.
+      arguments: []
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.13.10116658
+  isfetchevents: true
+  script: ""
+marketplaces:
+  - marketplacev2
+  - platform
+supportedModules:
+  - xsiam
+fromversion: 8.4.0
+tests:
+  - No tests (auto formatted)

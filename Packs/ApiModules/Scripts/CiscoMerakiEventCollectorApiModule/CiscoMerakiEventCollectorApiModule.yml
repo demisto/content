@@ -1,0 +1,19 @@
+commonfields:
+  id: CiscoMerakiEventCollectorApiModule
+  version: -1
+name: CiscoMerakiEventCollectorApiModule
+script: ""
+type: python
+subtype: python3
+tags:
+  - infra
+  - server
+comment: Common code for the Cisco Meraki Event Collector integrations (configuration changes, network events, API requests and appliance security events).
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/python3:3.12.13.10116658
+fromversion: 5.0.0
+tests:
+  - No test
