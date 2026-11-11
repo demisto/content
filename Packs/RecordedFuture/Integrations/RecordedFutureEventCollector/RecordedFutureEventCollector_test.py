@@ -49,10 +49,11 @@ def test_module_failed():
     assert e.value.message == 'Failed due to - Error in API call [401] - None\n{"error": {"status": 401}}'
 
 
-def test_get_events():
+def test_get_events(mocker):
     from RecordedFutureEventCollector import Client, get_events
 
     client = Client(BASE_URL)
+    mocker.patch("RecordedFutureEventCollector.return_results")
 
     with requests_mock.Mocker() as m:
         m.get(f"{BASE_URL}/alert/search", json=util_load_json("test_data/first_fetch.json"))
@@ -60,6 +61,64 @@ def test_get_events():
         mock_events = get_events(client, {"limit": 2})
 
     assert len(mock_events) == 2
+
+
+def test_get_events_time_window(mocker):
+    """
+    Given: start_time and end_time, and more alerts after end_time.
+    When: Running recorded-future-get-events.
+    Then: Only start_time is sent to the API (open filter), paging stops once alerts pass end_time,
+          alerts after end_time are dropped, and the summary says counts.total is from start_time up to NOW.
+    """
+    from RecordedFutureEventCollector import Client, get_events
+
+    mock_results = mocker.patch("RecordedFutureEventCollector.return_results")
+    # 120 alerts, one per second from 10:00:00. The window [10:00:10, 10:01:09] holds 60 of them.
+    alerts = [make_alert(f"id-{i}", f"2026-11-10T10:{i // 60:02d}:{i % 60:02d}.000Z") for i in range(10, 130)]
+    pages = [
+        {"json": {"data": list(reversed(alerts[i : i + 50])), "counts": {"returned": 50, "total": 120}}}
+        for i in range(0, 120, 50)
+    ]
+
+    with requests_mock.Mocker() as m:
+        mock_request = m.get(f"{BASE_URL}/alert/search", pages)
+        events = get_events(
+            Client(BASE_URL), {"limit": 1000, "start_time": "2026-11-10T10:00:10Z", "end_time": "2026-11-10T10:01:09Z"}
+        )
+
+    assert mock_request.call_count == 2  # the second page already passes end_time
+    for request in mock_request.request_history:
+        assert request.qs["triggered"][0].upper() == "[2026-11-10T10:00:10,]"
+        assert request.qs["direction"] == ["desc"]
+        assert request.qs["limit"] == ["50"]
+    assert [r.qs["from"][0] for r in mock_request.request_history] == ["0", "50"]
+    assert [event["id"] for event in events] == [f"id-{i}" for i in range(10, 70)]
+
+    readable = mock_results.call_args[0][0].readable_output
+    assert "| 60 |" in readable  # alerts in window
+    assert "120 - alerts triggered from start_time up to NOW, NOT limited by end_time" in readable
+    assert "end_time is applied by the integration" in readable
+
+
+def test_get_events_window_larger_than_limit(mocker):
+    """
+    Given: More alerts in the window than the limit.
+    When: Running recorded-future-get-events.
+    Then: The oldest `limit` alerts are returned and the window count says it stopped at the limit.
+    """
+    from RecordedFutureEventCollector import Client, get_events
+
+    mock_results = mocker.patch("RecordedFutureEventCollector.return_results")
+    alerts = [make_alert(f"id-{i}", f"2026-11-10T10:{i // 60:02d}:{i % 60:02d}.000Z") for i in range(100)]
+    pages = [make_page(list(reversed(alerts[i : i + 50]))) for i in range(0, 100, 50)]
+
+    with requests_mock.Mocker() as m:
+        mock_request = m.get(f"{BASE_URL}/alert/search", pages)
+        events = get_events(Client(BASE_URL), {"limit": 10, "start_time": "2026-11-10T10:00:00Z"})
+
+    assert mock_request.call_count == 1
+    assert [event["id"] for event in events] == [f"id-{i}" for i in range(10)]
+    assert "more than 10 (stopped at the limit)" in mock_results.call_args[0][0].readable_output
 
 
 @freeze_time("2023-12-24T01:02:03.000Z")
@@ -270,4 +329,4 @@ def test_main(mocker):
     assert event.get("_time") == event.get("log", {}).get("triggered")
     assert events.call_args[1].get("vendor") == VENDOR
     assert events.call_args[1].get("product") == PRODUCT
-    assert mock_request.last_request.query == "limit=2"
+    assert mock_request.last_request.qs == {"orderby": ["triggered"], "direction": ["desc"], "limit": ["50"], "from": ["0"]}
