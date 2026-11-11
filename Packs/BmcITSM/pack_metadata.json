@@ -21,6 +21,8 @@
     ],
     "supportedModules": [
         "agentix",
-        "xsiam"
+        "xsiam",
+        "cloud",
+        "cloud_runtime_security"
     ]
 }

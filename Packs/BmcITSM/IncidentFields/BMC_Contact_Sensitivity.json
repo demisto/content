@@ -38,5 +38,9 @@
             "type": "singleSelect",
             "name": "Bmc Contact Sensitivity"
         }
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }
