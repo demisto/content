@@ -1,0 +1,76 @@
+commonfields:
+  id: GitBook Link Invites Event Collector
+  version: -1
+name: GitBook Link Invites Event Collector
+display: GitBook Link Invites Event Collector
+category: Analytics & SIEM
+description: Collect the GitBook organisation link invites and ingest them into the Cortex Platform.
+configuration:
+- display: GitBook API URL
+  name: url
+  type: 0
+  required: true
+  defaultvalue: https://api.gitbook.com
+  additionalinfo: The GitBook API base URL. Leave the default unless GitBook has directed you to another endpoint.
+- display: API token
+  name: credentials
+  type: 9
+  required: true
+  displaypassword: API token
+  hiddenusername: true
+  additionalinfo: 'A GitBook personal access token, created under User Settings > Developer > Personal access tokens. The token owner needs an administrator role in the organisation being collected, because the link invites are not readable otherwise. Provide the token in the password field.'
+- display: Organization ID
+  name: organization_id
+  type: 0
+  required: true
+  additionalinfo: 'The GitBook organisation identifier. Take it from the application URL, which has the form https://app.gitbook.com/o/<organizationId>/, or list them with GET /v1/orgs.'
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  defaultvalue: "60"
+  additionalinfo: How often the collector runs, in minutes. This is a snapshot of the invites that currently exist rather than an event stream, so an hourly interval is appropriate and keeps ingestion proportionate.
+- display: Maximum number of records per fetch
+  name: max_fetch
+  type: 0
+  required: false
+  defaultvalue: "5000"
+  advanced: true
+  additionalinfo: The maximum number of records to collect on each run.
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  advanced: true
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.13.10404775
+  isfetchevents: true
+  commands:
+  - name: gitbook-get-link-invites
+    description: Manual command to retrieve and preview the GitBook organisation link invites. Used for testing and development.
+    arguments:
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: "50"
+    - name: should_push_events
+      description: If true, the fetched records are also pushed to the Cortex Platform dataset. Defaults to false.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+  runonce: false
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+- platform
