@@ -1,0 +1,22 @@
+category: Utilities
+commonfields:
+  id: PackC
+  version: -1
+configuration: []
+description: Dummy integration for PackC dependency chain testing.
+display: PackC
+name: PackC
+script:
+  commands:
+  - description: Returns a hello message from Pack C.
+    name: packc-say-hello
+    outputs:
+    - contextPath: PackC.Message
+      description: The hello message.
+      type: String
+  dockerimage: demisto/python3:3.10.14.100715
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
