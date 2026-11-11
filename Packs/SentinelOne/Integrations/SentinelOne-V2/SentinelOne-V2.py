@@ -3941,9 +3941,11 @@ def build_remote_hosts(args: dict) -> list[dict] | None:
             raise DemistoException("remote_host_type is required when remote_host_values is specified.")
         return None
 
-    if remote_host_type == "any" and remote_host_values:
-        raise DemistoException("remote_host_values cannot be specified when remote_host_type is 'any'.")
-    if remote_host_type != "any" and not remote_host_values:
+    if remote_host_type == "any":
+        if remote_host_values:
+            raise DemistoException("remote_host_values cannot be specified when remote_host_type is 'any'.")
+        return None
+    if not remote_host_values:
         raise DemistoException("remote_host_values is required when remote_host_type is not 'any'.")
     if remote_host_type == "range" and len(remote_host_values) != 2:
         raise DemistoException(
@@ -3951,7 +3953,7 @@ def build_remote_hosts(args: dict) -> list[dict] | None:
         )
     if remote_host_type in ("fqdn", "cidr"):
         return [{"type": remote_host_type, "values": [val]} for val in remote_host_values]
-    return [assign_params(type=remote_host_type, values=remote_host_values or None)]
+    return [{"type": remote_host_type, "values": remote_host_values}]
 
 
 def build_local_host(args: dict) -> dict | None:
@@ -3963,9 +3965,11 @@ def build_local_host(args: dict) -> dict | None:
             raise DemistoException("local_host_type is required when local_host_values is specified.")
         return None
 
-    if local_host_type == "any" and local_host_values:
-        raise DemistoException("local_host_values cannot be specified when local_host_type is 'any'.")
-    if local_host_type != "any" and not local_host_values:
+    if local_host_type == "any":
+        if local_host_values:
+            raise DemistoException("local_host_values cannot be specified when local_host_type is 'any'.")
+        return None
+    if not local_host_values:
         raise DemistoException("local_host_values is required when local_host_type is not 'any'.")
     if local_host_type == "range" and len(local_host_values) != 2:
         raise DemistoException(
@@ -3973,7 +3977,7 @@ def build_local_host(args: dict) -> dict | None:
         )
     if local_host_type in ("fqdn", "cidr") and len(local_host_values) != 1:
         raise DemistoException(f"local_host_values must contain exactly 1 value when local_host_type is '{local_host_type}'.")
-    return assign_params(type=local_host_type, values=local_host_values or None)
+    return {"type": local_host_type, "values": local_host_values}
 
 
 def build_firewall_rule_port(args: dict, prefix: str) -> dict | None:
@@ -3987,16 +3991,18 @@ def build_firewall_rule_port(args: dict, prefix: str) -> dict | None:
             raise DemistoException(f"{type_arg} is required when {values_arg} is specified.")
         return None
 
-    if port_type == "any" and port_values_raw:
-        raise DemistoException(f"{values_arg} cannot be specified when {type_arg} is 'any'.")
-    if port_type != "any" and not port_values_raw:
+    if port_type == "any":
+        if port_values_raw:
+            raise DemistoException(f"{values_arg} cannot be specified when {type_arg} is 'any'.")
+        return None
+    if not port_values_raw:
         raise DemistoException(f"{values_arg} is required when {type_arg} is not 'any'.")
     if port_type == "range" and len(port_values_raw) != 2:
         raise DemistoException(
             f"{values_arg} must contain exactly 2 port numbers (start and end port) when {type_arg} is 'range'."
         )
     port_values = [arg_to_number(p, arg_name=values_arg) for p in port_values_raw]
-    return assign_params(type=port_type, values=port_values or None)
+    return {"type": port_type, "values": port_values}
 
 
 def build_firewall_rule_application(args: dict) -> dict | None:
@@ -4008,11 +4014,13 @@ def build_firewall_rule_application(args: dict) -> dict | None:
             raise DemistoException("application_type is required when application_values is specified.")
         return None
 
-    if application_type == "any" and application_values:
-        raise DemistoException("application_values cannot be specified when application_type is 'any'.")
-    if application_type != "any" and not application_values:
+    if application_type == "any":
+        if application_values:
+            raise DemistoException("application_values cannot be specified when application_type is 'any'.")
+        return None
+    if not application_values:
         raise DemistoException("application_values is required when application_type is not 'any'.")
-    return assign_params(type=application_type, values=application_values or None)
+    return {"type": application_type, "values": application_values}
 
 
 def build_firewall_rule_location(args: dict) -> dict | None:
@@ -4058,10 +4066,7 @@ def create_firewall_rule_command(client: Client, args: dict) -> CommandResults:
     new_rule = client.create_firewall_rule_request(filter_data=filter_data, rule_data=rule_data)
 
     context_entry: dict = {}
-    title = "Sentinel One - Create Firewall Rule"
-
     if new_rule:
-        title += "The firewall rule was successfully created."
         context_entry = {
             "ID": new_rule.get("id"),
             "Name": new_rule.get("name"),
@@ -4095,7 +4100,9 @@ def create_firewall_rule_command(client: Client, args: dict) -> CommandResults:
         }
 
     return CommandResults(
-        readable_output=tableToMarkdown(title, context_entry, removeNull=True, headerTransform=pascalToSpace),
+        readable_output=tableToMarkdown(
+            "Sentinel One - Create Firewall Rule.", context_entry, removeNull=True, headerTransform=pascalToSpace
+        ),
         outputs_prefix="SentinelOne.FirewallRule.Created",
         outputs_key_field="ID",
         outputs=context_entry,
@@ -4141,7 +4148,7 @@ def delete_firewall_rule_command(client: Client, args: dict) -> CommandResults:
     affected = response.get("affected", 0)
 
     return CommandResults(
-        readable_output=f"Sentinel One - Firewall Rules Deleted\n{affected} firewall rule(s) successfully deleted.",
+        readable_output="Sentinel One - Firewall Rules Deleted.",
         outputs_prefix="SentinelOne.FirewallRule.Deleted",
         outputs={"Affected": affected},
         raw_response=response,

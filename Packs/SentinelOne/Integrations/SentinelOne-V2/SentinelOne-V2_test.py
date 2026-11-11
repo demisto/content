@@ -3061,7 +3061,6 @@ def test_create_firewall_rule_full_schema_and_validations(mocker, requests_mock)
             ],
             "localHost": {"type": "cidr", "values": ["10.0.0.0/8"]},
             "remotePort": {"type": "ports", "values": [80, 443]},
-            "localPort": {"type": "any"},
             "application": {"type": "path", "values": ["C:\\bad.exe"]},
             "location": {"type": "specific", "values": [{"id": "225494730938493804"}]},
             "tagIds": ["225494730938493915"],
