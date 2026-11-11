@@ -81,7 +81,7 @@ def test_fetch_events(mocker):
     assert query.get("triggered")[0].upper() == "[2023-12-21T01:02:03.000000Z,]"
     assert query.get("direction") == ["desc"]
     assert query.get("orderby") == ["triggered"]
-    assert query.get("limit") == ["2"]
+    assert query.get("limit") == ["50"]  # always the full page size, the result is trimmed to the limit
     assert query.get("from") == ["0"]
 
     mocker.patch.object(demisto, "getLastRun", return_value=next_last_run)
@@ -109,8 +109,8 @@ def test_fetch_events_pages_with_from(mocker):
     """
     Given: More alerts than a single page (the API caps every response at 50).
     When: Fetching with a limit of 120.
-    Then: Pages are requested with from=0/50/100 and limits 50/50/20, all events are returned oldest first,
-          and the cursor is the latest trigger time.
+    Then: Pages are requested with from=0/50/100, always with limit=50 (the page size never changes mid-paging),
+          all events are returned oldest first, and the cursor is the latest trigger time.
     """
     from RecordedFutureEventCollector import Client, fetch_events, demisto
 
@@ -126,10 +126,32 @@ def test_fetch_events_pages_with_from(mocker):
     assert [(r.qs["from"][0], r.qs["limit"][0]) for r in mock_request.request_history] == [
         ("0", "50"),
         ("50", "50"),
-        ("100", "20"),
+        ("100", "50"),
     ]
     assert [event["id"] for event in events] == [alert["id"] for alert in alerts]
     assert next_run == {"last_run_time": "2026-11-10T10:01:59", "last_run_ids": ["id-119"]}
+
+
+def test_fetch_events_trims_to_limit_without_skipping(mocker):
+    """
+    Given: More alerts than the limit, and a limit that is not a multiple of the page size.
+    When: Fetching with a limit of 60.
+    Then: Two full pages of 50 are requested (page size stays 50), only the oldest 60 alerts are returned,
+          and the cursor is set from the 60th alert so the trimmed alerts are fetched on the next run.
+    """
+    from RecordedFutureEventCollector import Client, fetch_events, demisto
+
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    alerts = [make_alert(f"id-{i}", f"2026-11-10T10:{i // 60:02d}:{i % 60:02d}.000Z") for i in range(100)]
+    pages = [make_page(list(reversed(alerts[i : i + 50]))) for i in range(0, 100, 50)]
+
+    with requests_mock.Mocker() as m:
+        mock_request = m.get(f"{BASE_URL}/alert/search", pages)
+        events, next_run = fetch_events(Client(BASE_URL), limit=60, last_run="2026-11-10T10:00:00")
+
+    assert [(r.qs["from"][0], r.qs["limit"][0]) for r in mock_request.request_history] == [("0", "50"), ("50", "50")]
+    assert [event["id"] for event in events] == [f"id-{i}" for i in range(60)]
+    assert next_run == {"last_run_time": "2026-11-10T10:00:59", "last_run_ids": ["id-59"]}
 
 
 def test_fetch_events_stops_on_short_page(mocker):

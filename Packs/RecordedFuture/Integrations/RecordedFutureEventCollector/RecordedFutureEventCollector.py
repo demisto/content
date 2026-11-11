@@ -112,32 +112,34 @@ def fetch_alert_pages(client: Client, last_run: str, max_fetch: int) -> list[dic
 
     With direction=desc the API returns the *oldest* alerts after the start time (displayed newest-first),
     so paging with `from` moves forward in time and new alerts arriving between pages do not shift the offsets.
+    The page size is always PAGE_SIZE (never shrunk for the last page) so `from` always advances in whole pages;
+    the caller trims the result to `max_fetch`.
 
     Args:
         client (Client): RecordedFuture client to use.
         last_run (str): The start time (inclusive) to fetch from.
-        max_fetch (int): The maximum number of alerts to fetch.
+        max_fetch (int): The number of alerts to collect before stopping.
 
     Returns:
-        list: The raw alerts returned by the API (may contain duplicates across pages).
+        list: The raw alerts returned by the API (may contain duplicates across pages, and up to
+              PAGE_SIZE - 1 alerts more than `max_fetch`).
     """
     alerts: list[dict] = []
     offset = 0
     while offset < max_fetch:
-        page_limit = min(PAGE_SIZE, max_fetch - offset)
         params = {
             "triggered": f"[{last_run},]",
             "orderby": "triggered",
             "direction": "desc",
-            "limit": page_limit,
+            "limit": PAGE_SIZE,
             "from": offset,
         }
         page = client.get_alerts(params).get("data") or []
+        demisto.debug(f"Fetched {len(page)} alerts (from={offset}, limit={PAGE_SIZE}).")
         alerts.extend(page)
-        offset += len(page)
-        demisto.debug(f"Fetched {len(page)} alerts (from={offset - len(page)}, limit={page_limit}).")
-        if len(page) < page_limit:
+        if len(page) < PAGE_SIZE:
             break
+        offset += PAGE_SIZE
     return alerts
 
 
@@ -160,29 +162,32 @@ def fetch_events(client: Client, **kwargs) -> tuple[list, dict]:
     if not alerts:
         return [], {}
 
-    # Remove alerts fetched in the previous round (same trigger second as the cursor) and duplicates across pages.
-    events: list[dict] = []
+    # Sort oldest first, drop duplicates across pages, then keep only the oldest `max_fetch` alerts.
+    # The cursor is computed from the kept alerts only, so trimmed (newer) alerts are fetched next run.
+    unique_alerts: list[dict] = []
     seen_ids: set = set()
     for alert in sorted(alerts, key=get_triggered):
-        alert_id = alert.get("id")
-        if alert_id in seen_ids or alert_id in last_run_ids:
-            continue
-        seen_ids.add(alert_id)
-        events.append(alert)
+        if (alert_id := alert.get("id")) not in seen_ids:
+            seen_ids.add(alert_id)
+            unique_alerts.append(alert)
+    kept = unique_alerts[:max_fetch]
 
-    # The cursor is the latest trigger time fetched. The API ignores milliseconds, so the next fetch
+    # The cursor is the latest trigger time kept. The API ignores milliseconds, so the next fetch
     # starts from (including) this second, and we keep the IDs triggered at this second to filter them out.
-    next_run_time = max(get_triggered(alert) for alert in alerts)
-    next_run_ids = {alert.get("id") for alert in alerts if get_triggered(alert) == next_run_time}
+    next_run_time = get_triggered(kept[-1])
+    next_run_ids = {alert.get("id") for alert in kept if get_triggered(alert) == next_run_time}
     if next_run_time == last_run.split(".")[0]:
         next_run_ids |= last_run_ids
 
-    # In case all fetched alerts were triggered at the same second and the limit was reached,
+    # In case all kept alerts were triggered at the same second and the limit was reached,
     # move the cursor forward, otherwise the fetch will get stuck at this second forever.
-    if len(alerts) >= max_fetch and all(get_triggered(alert) == next_run_time for alert in alerts):
+    if len(kept) >= max_fetch and get_triggered(kept[0]) == next_run_time:
         next_run_time = (datetime.strptime(next_run_time, TRIGGERED_FORMAT) + timedelta(seconds=1)).strftime(TRIGGERED_FORMAT)
 
-    demisto.debug(f"Fetched {len(alerts)} alerts, {len(events)} new. Next run time: {next_run_time}.")
+    # Remove alerts already sent in the previous round (same trigger second as the previous cursor).
+    events = [alert for alert in kept if alert.get("id") not in last_run_ids]
+
+    demisto.debug(f"Fetched {len(alerts)} alerts, kept {len(kept)}, {len(events)} new. Next run time: {next_run_time}.")
     return events, {"last_run_time": next_run_time, "last_run_ids": list(next_run_ids)}
 
 
