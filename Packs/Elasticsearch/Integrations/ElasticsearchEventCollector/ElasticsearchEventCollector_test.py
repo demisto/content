@@ -1162,3 +1162,103 @@ def test_get_events_with_parameters(mocker):
     result = get_events({})
     assert "999" in result.readable_output
     assert "888" in result.readable_output
+
+
+ES_V8_EMPTY_RESPONSE = {
+    "took": 7,
+    "timed_out": False,
+    "_shards": {"total": 4, "successful": 4, "skipped": 4, "failed": 0},
+    "hits": {"total": {"value": 0, "relation": "eq"}, "max_score": None, "hits": []},
+}
+
+
+def _mock_fetch_events_client(mocker, response, last_run):
+    mocker.patch.object(ElasticsearchEventCollector.Elasticsearch, "search", return_value=response)
+    mocker.patch.object(ElasticsearchEventCollector.Elasticsearch, "__init__", return_value=None)
+    es = ElasticsearchEventCollector.elasticsearch_builder({})
+    mocker.patch("ElasticsearchEventCollector.ELASTIC_SEARCH_CLIENT", "Elasticsearch_v8")
+    mocker.patch("ElasticsearchEventCollector.elasticsearch_builder", return_value=es)
+    mocker.patch("ElasticsearchEventCollector.TIME_FIELD", "Date")
+    mocker.patch("ElasticsearchEventCollector.TIME_METHOD", "Simple-Date")
+    mocker.patch("ElasticsearchEventCollector.RAW_QUERY", "")
+    mocker.patch("ElasticsearchEventCollector.send_events_to_xsiam")
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    return mocker.patch.object(demisto, "setLastRun"), mocker.spy(ElasticsearchEventCollector, "get_time_range")
+
+
+def test_fetch_events_first_fetch_no_events_saves_last_run(mocker):
+    """
+    Given:
+        - No last run (first fetch) and Elasticsearch returns no events.
+    When:
+        - Running fetch_events.
+    Then:
+        - The search starts one minute before the run start time.
+        - The last run is saved with the run start time, so the next fetch starts from a fixed point in the past.
+    """
+    from ElasticsearchEventCollector import fetch_events
+
+    mock_set_last_run, spy_time_range = _mock_fetch_events_client(mocker, ES_V8_EMPTY_RESPONSE, {})
+
+    before_run = datetime.now(ElasticsearchEventCollector.UTC)
+    fetch_events({})
+    after_run = datetime.now(ElasticsearchEventCollector.UTC)
+
+    search_start = datetime.fromisoformat(spy_time_range.call_args.kwargs["time_range_start"])
+    assert before_run - timedelta(minutes=1) <= search_start <= after_run - timedelta(minutes=1)
+
+    assert mock_set_last_run.call_count == 1
+    saved_last_run = mock_set_last_run.call_args.args[0]
+    assert saved_last_run["event_ids"] == []
+    saved_time = datetime.fromisoformat(saved_last_run["time"])
+    assert before_run <= saved_time <= after_run
+    assert saved_time - search_start == timedelta(minutes=1)
+
+
+def test_fetch_events_after_empty_first_fetch_uses_saved_time(mocker):
+    """
+    Given:
+        - A last run saved by an empty first fetch, and Elasticsearch returns no events again.
+    When:
+        - Running fetch_events.
+    Then:
+        - The search starts from the saved time and not from the current time.
+        - The last run is not changed.
+    """
+    from ElasticsearchEventCollector import fetch_events
+
+    saved_time = "2026-11-03T09:22:00.458314+00:00"
+    mock_set_last_run, spy_time_range = _mock_fetch_events_client(
+        mocker, ES_V8_EMPTY_RESPONSE, {"time": saved_time, "event_ids": []}
+    )
+
+    fetch_events({})
+
+    assert spy_time_range.call_args.kwargs["time_range_start"] == saved_time
+    assert spy_time_range.spy_return["range"]["Date"]["gte"] == "2026-11-03 09:22:00.458314"
+    assert mock_set_last_run.call_count == 0
+
+
+def test_fetch_events_after_empty_first_fetch_collects_late_events(mocker):
+    """
+    Given:
+        - A last run saved by an empty first fetch, and Elasticsearch returns events newer than the saved time.
+    When:
+        - Running fetch_events.
+    Then:
+        - The events are sent and the last run moves to the latest event time.
+    """
+    from ElasticsearchEventCollector import fetch_events
+
+    mock_set_last_run, _ = _mock_fetch_events_client(
+        mocker, ES_V8_RESPONSE, {"time": "2024-08-27T17:59:00+00:00", "event_ids": []}
+    )
+
+    fetch_events({})
+
+    sent_events = ElasticsearchEventCollector.send_events_to_xsiam.call_args.args[0]
+    assert [event["dbotMirrorId"] for event in sent_events] == ["888", "999"]
+    assert mock_set_last_run.call_count == 1
+    saved_last_run = mock_set_last_run.call_args.args[0]
+    assert saved_last_run["event_ids"] == ["999"]
+    assert dateparser.parse(saved_last_run["time"]) == dateparser.parse("2024-08-27T18:01:25.343212Z")
