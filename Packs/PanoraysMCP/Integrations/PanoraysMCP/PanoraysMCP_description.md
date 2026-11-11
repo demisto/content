@@ -1,5 +1,7 @@
 ## Panorays Axis MCP
 
+**Before you start:** Panorays Axis MCP is a commercial product. Contact your Panorays Admin to enable it for your Panorays account; until it is enabled, tool discovery and the integration's tools do not work.
+
 Select one of the following authentication types.
 
 ### Bearer
