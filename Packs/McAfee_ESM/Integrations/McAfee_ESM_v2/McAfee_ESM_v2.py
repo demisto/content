@@ -1,7 +1,7 @@
 import itertools
 import time
 from collections.abc import Callable
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -41,24 +41,11 @@ SESSION_TTL_SECONDS = 10 * 60
 # Status codes returned by ESM when the cached session is no longer accepted.
 UNAUTHORIZED_STATUS_CODES = (401, 403)
 
-# ESM returns dates in the date format configured for the API user, and slash-separated dates are ambiguous
-# (e.g. 03/11/2026 is March 11 when month-first and November 3 when day-first). The formats are tried in order.
-DATE_FORMAT_AUTO = "Auto detect"
+# The "ESM date format" parameter values. An ESM that uses a day-first date format (e.g. DD-MM-YYYY) reads the
+# customStart / customEnd query times with the day and month swapped, so the integration swaps them before sending.
 DATE_FORMAT_MONTH_FIRST = "MM/DD/YYYY"
 DATE_FORMAT_DAY_FIRST = "DD/MM/YYYY"
-ESM_DATE_FORMATS: dict[str, list[str]] = {
-    DATE_FORMAT_AUTO: ["%Y/%m/%d %H:%M:%S", "%m/%d/%Y %H:%M:%S", "%d/%m/%Y %H:%M:%S", "%d-%m-%Y %H:%M:%S"],
-    DATE_FORMAT_MONTH_FIRST: ["%Y/%m/%d %H:%M:%S", "%m/%d/%Y %H:%M:%S", "%d-%m-%Y %H:%M:%S"],
-    DATE_FORMAT_DAY_FIRST: ["%Y/%m/%d %H:%M:%S", "%d/%m/%Y %H:%M:%S", "%d-%m-%Y %H:%M:%S"],
-}
-
-# ESM returns an empty response for alarm queries over a wide time range, so each fetch queries a bounded window.
-DEFAULT_MAX_FETCH_WINDOW_HOURS = 1
-# Once a fetch window is fully consumed, the next window starts this far before its end, to catch alarms that
-# ESM indexed late. Alarms that were already fetched are skipped by their ID.
-FETCH_WINDOW_LOOKBACK = timedelta(minutes=10)
-# Marks a lastRun written by this fetch logic. Older lastRun objects may hold a misparsed (day/month swapped) time.
-ALARMS_LAST_RUN_VERSION = 2
+ESM_DAY_FIRST_QUERY_FORMAT = "%Y-%d-%mT%H:%M:%SZ"
 
 
 def parse_version(version: str) -> Version:
@@ -131,10 +118,10 @@ class McAfeeESMClient(BaseClient):
         self.args = demisto.args()
         self.__user_name = params.get("credentials", {}).get("identifier", "")
         self.__password = params.get("credentials", {}).get("password", "")
-        self.difference = int(params.get("timezone", 0))
+        self.difference = parse_timezone_offset(params.get("timezone"))
+        self.day_first = is_day_first_date_format(params.get("dateFormat"))
         self.version = params.get("version", "11.6.0")
         validate_version(self.version)
-        self.time_formats = get_esm_time_formats(params.get("dateFormat") or DATE_FORMAT_AUTO)
         super().__init__(
             "{}/rs/esm/v2/".format(params.get("url", "").strip("/")),
             proxy=params.get("proxy", False),
@@ -369,7 +356,7 @@ class McAfeeESMClient(BaseClient):
         raw_response: list = self.__request(path)
         result = raw_response
         for case in result:
-            case = dict_times_set(case, self.difference, self.time_formats)
+            case = dict_times_set(case, self.difference)
             if not start_time or not start_time > case.get("openTime"):
                 temp_case = {
                     "ID": case.get("id"),
@@ -395,7 +382,7 @@ class McAfeeESMClient(BaseClient):
         result = raw_response
         case_event: list = [None] * len(result)
         for i in range(len(result)):
-            result[i] = dict_times_set(result[i], self.difference, self.time_formats)
+            result[i] = dict_times_set(result[i], self.difference)
             case_event[i] = {
                 "ID": result[i].get("id"),
                 "LastTime": result[i].get("lastTime"),
@@ -410,7 +397,7 @@ class McAfeeESMClient(BaseClient):
         path = "caseGetCaseDetail"
         raw_response = self.__request(path, data={"id": case_id if case_id else self.args.get("id")})
         result = raw_response
-        result = dict_times_set(result, self.difference, self.time_formats)
+        result = dict_times_set(result, difference=self.difference)
         status_id = result.get("statusId", {})
         if not isinstance(status_id, int):
             status_id = status_id.get("value")
@@ -527,7 +514,7 @@ class McAfeeESMClient(BaseClient):
         start_time = start_time if start_time else self.args.get("customStart")
         end_time = end_time if end_time else self.args.get("customEnd")
 
-        since, start_time, end_time = set_query_times(since, start_time, end_time, self.difference)
+        since, start_time, end_time = set_query_times(since, start_time, end_time, self.difference, self.day_first)
         params = {"triggeredTimeRange": since}
         if since == "CUSTOM":
             params["customStart"] = start_time
@@ -544,7 +531,7 @@ class McAfeeESMClient(BaseClient):
         result = raw_response
 
         for i in range(len(result)):
-            result[i] = dict_times_set(result[i], self.difference, self.time_formats)
+            result[i] = dict_times_set(result[i], self.difference)
 
         if not raw:
             context_entry = [None] * len(result)
@@ -610,7 +597,7 @@ class McAfeeESMClient(BaseClient):
         path = "ipsGetAlertData"
         raw_response = self.__request(path, data={"id": self.args.get("eventId")})
         result = raw_response
-        result = dict_times_set(result, self.difference, self.time_formats)
+        result = dict_times_set(result, self.difference)
         context_entry = self.__alarm_event_context_and_times_set(result)
         human_readable = tableToMarkdown(name="Alarm events", t=context_entry)
         return human_readable, {f"{CONTEXT_INTEGRATION_NAME}AlarmEvent": context_entry}, raw_response
@@ -619,7 +606,7 @@ class McAfeeESMClient(BaseClient):
         path = "notifyGetTriggeredNotificationDetail"
         raw_response = self.__request(path, data={"id": self.args.get("alarmId")})
         result = raw_response
-        result = dict_times_set(result, self.difference, self.time_formats)
+        result = dict_times_set(result, self.difference)
         human_readable: str = ""
         context_entry: list = []
         if "events" in result:
@@ -701,7 +688,7 @@ class McAfeeESMClient(BaseClient):
                 else:
                     result_ready = True
         result = raw_response
-        result = table_times_set(result, self.difference, self.time_formats)
+        result = table_times_set(result, self.difference)
         entry: list = [{}] * len(result["rows"])
         headers = [str(field.get("name")).replace(".", "") for field in result["columns"]]
         for i in range(len(result["rows"])):
@@ -748,15 +735,10 @@ class McAfeeESMClient(BaseClient):
         current_run = {}
         incidents = []
         if params.get("fetchType", "alarms") in ("alarms", "both"):
-            alarms_last_run = last_run.get("alarms", {})
-            first_fetch_start = parse_date_range(params.get("fetchTime"), self.demisto_format)[0]
-            start_time = get_alarms_fetch_start_time(alarms_last_run, first_fetch_start)
-            start_id = int(alarms_last_run.get("id", params.get("startingFetchID")))
-            max_window_hours = arg_to_number(params.get("maxFetchWindowHours"), arg_name="Maximum fetch window (hours)")
-            if max_window_hours is None:
-                max_window_hours = DEFAULT_MAX_FETCH_WINDOW_HOURS
+            start_time = last_run.get("alarms", {}).get("time", parse_date_range(params.get("fetchTime"), self.demisto_format)[0])
+            start_id = int(last_run.get("alarms", {}).get("id", params.get("startingFetchID")))
             temp_incidents, current_run["alarms"] = self.__alarms_to_incidents(
-                start_time, start_id, int(params.get("fetchLimitAlarms", 5)), max_window_hours
+                start_time, start_id, int(params.get("fetchLimitAlarms", 5))
             )
             incidents.extend(temp_incidents)
 
@@ -770,26 +752,20 @@ class McAfeeESMClient(BaseClient):
         demisto.setLastRun(current_run)
         demisto.incidents(incidents)
 
-    def __alarms_to_incidents(
-        self, start_time: str, start_id: int = 0, limit: int = 1, max_window_hours: int = DEFAULT_MAX_FETCH_WINDOW_HOURS
-    ) -> tuple[list, dict]:
-        end_time = get_fetch_window_end(start_time, utc_now(), max_window_hours)
-        _, _, raw_alarms = self.fetch_alarms(start_time=start_time, end_time=end_time, raw=True)
-        # ESM returns an empty body (parsed as {}) when there are no results.
-        raw_alarms = raw_alarms if isinstance(raw_alarms, list) else []
-        new_alarms_count = sum(1 for alarm in raw_alarms if int(alarm.get("id", 0)) > start_id)
-        all_alarms = filtering_incidents(raw_alarms, start_id=start_id, limit=limit)
-        window_consumed = limit == 0 or new_alarms_count <= limit
-        newest_alarm_time = all_alarms[0].get("triggeredDate") if all_alarms else None
-        current_run = {
-            "time": get_next_alarms_fetch_start(start_time, end_time, newest_alarm_time, window_consumed),
-            "id": all_alarms[0]["id"] if all_alarms else start_id,
-            "version": ALARMS_LAST_RUN_VERSION,
-        }
-        demisto.debug(
-            f"Fetched {len(raw_alarms)} alarms in window {start_time} - {end_time}, {new_alarms_count} new, "
-            f"{len(all_alarms)} returned as incidents. {window_consumed=}, next {current_run=}"
-        )
+    def __alarms_to_incidents(self, start_time: str, start_id: int = 0, limit: int = 1) -> tuple[list, dict]:
+        current_time = datetime.utcnow().strftime(self.demisto_format)
+        current_run = {}
+        _, _, all_alarms = self.fetch_alarms(start_time=start_time, end_time=current_time, raw=True)
+        all_alarms = filtering_incidents(all_alarms, start_id=start_id, limit=limit)
+        if all_alarms:
+            current_run["time"] = all_alarms[0].get("triggeredDate", start_time)
+            current_run["id"] = all_alarms[0]["id"]
+            current_run_time = current_run["time"]
+            demisto.debug(f"{len(all_alarms)=}, setting current time to {current_run_time=}")
+        else:
+            current_run["time"] = start_time
+            current_run["id"] = start_id
+            demisto.debug(f"No alarms were found, setting current time to {start_time=}")
         all_alarms = create_incident(all_alarms, alarms=True)
         return all_alarms, current_run
 
@@ -979,125 +955,38 @@ def expected_errors(error: DemistoException) -> bool:
     return str(error) in expected_error
 
 
-def time_format(current_time: str, difference: int = 0, time_formats: list[str] | None = None) -> str:
+def time_format(current_time: str, difference: float = 0) -> str:
     """
 
     :param current_time: the current time in the current format
     :param difference: the time zone offset
-    :param time_formats: the formats to parse ESM dates with, in order (defaults to Auto detect)
     :return: the time in the new format and in UTC time
     """
-    for mcafee_format in time_formats or ESM_DATE_FORMATS[DATE_FORMAT_AUTO]:
-        try:
-            return convert_time_format(current_time, difference=difference, mcafee_format=mcafee_format)
-        except ValueError as error:
-            if str(error) != f"time data '{current_time}' does not match format '{mcafee_format}'":
-                raise error
-    raise ValueError(f"time data '{current_time}' does not match the time format.")
-
-
-def get_esm_time_formats(date_format: str) -> list[str]:
-    """
-    :param date_format: the "ESM date format" instance parameter (Auto detect, MM/DD/YYYY or DD/MM/YYYY)
-    :return: the formats time_format tries, in order, to parse dates returned by ESM
-    """
-    if date_format not in ESM_DATE_FORMATS:
-        raise DemistoException(f"Invalid ESM date format '{date_format}'. Possible values: {', '.join(ESM_DATE_FORMATS)}.")
-    return ESM_DATE_FORMATS[date_format]
-
-
-def utc_now() -> datetime:
-    """
-    :return: the current UTC time as a naive datetime, comparable with times parsed in the demisto format
-    """
-    return datetime.now(UTC).replace(tzinfo=None)
-
-
-def parse_demisto_time(time_str: str | None) -> datetime | None:
-    """
-    :param time_str: a time in the demisto format (e.g. 2026-11-03T08:21:18Z)
-    :return: the datetime object, or None if the value is empty or not in the demisto format
-    """
+    to_return: str = ""
     try:
-        return datetime.strptime(time_str or "", McAfeeESMClient.demisto_format)
-    except ValueError:
-        return None
+        to_return = convert_time_format(current_time, difference=difference, mcafee_format="%Y/%m/%d %H:%M:%S")
+    except ValueError as error:
+        if str(error) != f"time data '{current_time}' does not match format '%Y/%m/%d %H:%M:%S'":
+            raise error
 
+        try:
+            to_return = convert_time_format(current_time, difference=difference, mcafee_format="%m/%d/%Y %H:%M:%S")
+        except ValueError as error_2:
+            if str(error_2) != f"time data '{current_time}' does not match format '%m/%d/%Y %H:%M:%S'":
+                raise error_2
 
-def get_alarms_fetch_start_time(alarms_last_run: dict, first_fetch_start: str) -> str:
-    """
-    Returns the start time of the alarms fetch window.
-    A lastRun written before the bounded fetch window may hold a day/month swapped time that is months in the past,
-    and a time in the future can never be queried, so in both cases the fetch restarts from the first fetch time.
-    Alarms that were already fetched are skipped by their ID.
-
-    :param alarms_last_run: the "alarms" object of the lastRun
-    :param first_fetch_start: the start time of the first fetch, in the demisto format
-    :return: the start time in the demisto format
-    """
-    last_run_time = alarms_last_run.get("time")
-    if not last_run_time:
-        return first_fetch_start
-
-    parsed_last_run_time = parse_demisto_time(last_run_time)
-    if parsed_last_run_time is None or parsed_last_run_time > utc_now():
-        demisto.debug(f"Invalid alarms lastRun time {last_run_time}, starting from {first_fetch_start=}.")
-        return first_fetch_start
-
-    if alarms_last_run.get("version") != ALARMS_LAST_RUN_VERSION:
-        parsed_first_fetch_start = parse_demisto_time(first_fetch_start)
-        if parsed_first_fetch_start and parsed_last_run_time < parsed_first_fetch_start:
-            demisto.debug(f"Legacy alarms lastRun time {last_run_time} is before {first_fetch_start=}, starting from it.")
-            return first_fetch_start
-
-    return last_run_time
-
-
-def get_fetch_window_end(start_time: str, now: datetime, max_window_hours: int) -> str:
-    """
-    :param start_time: the start time of the fetch window, in the demisto format
-    :param now: the current UTC time
-    :param max_window_hours: the maximum size of the fetch window in hours
-    :return: the end time of the fetch window in the demisto format: max_window_hours after start_time, at most now
-    """
-    if max_window_hours <= 0:
-        raise DemistoException("Maximum fetch window (hours) must be a positive number.")
-    window_end = now
-    if parsed_start_time := parse_demisto_time(start_time):
-        window_end = min(now, parsed_start_time + timedelta(hours=max_window_hours))
-    return window_end.strftime(McAfeeESMClient.demisto_format)
-
-
-def get_next_alarms_fetch_start(start_time: str, end_time: str, newest_alarm_time: str | None, window_consumed: bool) -> str:
-    """
-    Returns the start time of the next alarms fetch window. The window always moves forward once it was fully consumed,
-    so an empty ESM response can never keep the fetch on the same window.
-
-    :param start_time: the start time of the current fetch window, in the demisto format
-    :param end_time: the end time of the current fetch window, in the demisto format
-    :param newest_alarm_time: the triggeredDate of the newest alarm returned as an incident, if any
-    :param window_consumed: True if all the new alarms in the window were returned as incidents
-    :return: the next start time in the demisto format
-    """
-    parsed_start_time = parse_demisto_time(start_time)
-    parsed_end_time = parse_demisto_time(end_time)
-    if not parsed_start_time or not parsed_end_time:
-        return start_time
-
-    if window_consumed:
-        next_start = max(parsed_start_time, parsed_end_time - FETCH_WINDOW_LOOKBACK)
-        return next_start.strftime(McAfeeESMClient.demisto_format)
-
-    # The fetch limit was reached. Continue from the newest returned alarm, if its time is inside the window.
-    # A time outside the window means the date was misparsed, so stay on the window - the alarm ID filter moves forward.
-    parsed_alarm_time = parse_demisto_time(newest_alarm_time)
-    if parsed_alarm_time and parsed_start_time <= parsed_alarm_time <= parsed_end_time:
-        return parsed_alarm_time.strftime(McAfeeESMClient.demisto_format)
-    return start_time
+            try:
+                to_return = convert_time_format(current_time, difference=difference, mcafee_format="%d-%m-%Y %H:%M:%S")
+            except ValueError as error_3:
+                if str(error_3) != f"time data '{current_time}' does not match format '%d-%m-%Y %H:%M:%S'":
+                    raise error_3
+                else:
+                    raise ValueError(f"time data '{current_time}' does not match the time format.")
+    return to_return
 
 
 def convert_time_format(
-    current_time: str, difference: int = 0, to_demisto: bool = True, mcafee_format: str = "%Y/%m/%d %H:%M:%S"
+    current_time: str, difference: float = 0, to_demisto: bool = True, mcafee_format: str = "%Y/%m/%d %H:%M:%S"
 ) -> str:
     """
 
@@ -1119,7 +1008,7 @@ def convert_time_format(
 
 
 def set_query_times(
-    since: str = None, start_time: str = None, end_time: str = None, difference: int = 0
+    since: str = None, start_time: str = None, end_time: str = None, difference: float = 0, day_first: bool = False
 ) -> tuple[str | None, str | None, str | None]:
     """
     checks all time args
@@ -1127,6 +1016,7 @@ def set_query_times(
     :param start_time: start_time from args
     :param end_time: end_time from args
     :param difference: the difference (e.g. time zone)
+    :param day_first: True if the ESM uses a day-first date format and reads the custom times with day and month swapped
     :return: the args in the machine time and after validation
     """
     if not since:
@@ -1143,42 +1033,85 @@ def set_query_times(
 
         if start_time and end_time and start_time > end_time:
             raise ValueError("Invalid set times.")
+        if day_first:
+            start_time = to_day_first_query_time(start_time)
+            end_time = to_day_first_query_time(end_time)
     return since, start_time, end_time
 
 
-def list_times_set(list_to_set: list, indexes: list, difference: int = 0, time_formats: list[str] | None = None) -> list:
+def to_day_first_query_time(query_time: str | None) -> str | None:
+    """
+    An ESM with a day-first date format reads a custom query time such as 2026-11-10T09:00:00Z as October 11.
+    Swapping the day and month makes it read the intended date.
+
+    :param query_time: the query time in the demisto format, e.g. 2026-11-10T09:00:00Z
+    :return: the query time with the day and month swapped, e.g. 2026-10-11T09:00:00Z
+    """
+    if not query_time:
+        return query_time
+    return datetime.strptime(query_time, McAfeeESMClient.demisto_format).strftime(ESM_DAY_FIRST_QUERY_FORMAT)
+
+
+def is_day_first_date_format(date_format: str | None) -> bool:
+    """
+    :param date_format: the "ESM date format" instance parameter
+    :return: True if the ESM uses a day-first date format
+    """
+    if date_format in (None, "", DATE_FORMAT_MONTH_FIRST):
+        return False
+    if date_format == DATE_FORMAT_DAY_FIRST:
+        return True
+    raise DemistoException(
+        f"Invalid ESM date format '{date_format}'. Possible values: {DATE_FORMAT_MONTH_FIRST}, {DATE_FORMAT_DAY_FIRST}."
+    )
+
+
+def parse_timezone_offset(timezone_offset: str | int | float | None) -> float:
+    """
+    :param timezone_offset: the "McAfee ESM Timezone in hours" instance parameter, e.g. 3, -5 or 5.5 (for +05:30)
+    :return: the offset in hours
+    """
+    if timezone_offset in (None, ""):
+        return 0
+    try:
+        return float(timezone_offset)  # type: ignore[arg-type]
+    except ValueError:
+        raise DemistoException(
+            f"Invalid McAfee ESM Timezone in hours '{timezone_offset}'. Enter the offset in hours, e.g. 3, -5 or 5.5."
+        )
+
+
+def list_times_set(list_to_set: list, indexes: list, difference: float = 0) -> list:
     """
 
     :param list_to_set: the raw list
     :param indexes: a list of the indexes for time fields
     :param difference: the difference (e.g. time zone)
-    :param time_formats: the formats to parse ESM dates with, in order (defaults to Auto detect)
     :return: the data list with utc times
     """
     for i in indexes:
         if list_to_set[i]:
-            list_to_set[i] = time_format(list_to_set[i], difference=difference, time_formats=time_formats)
+            list_to_set[i] = time_format(list_to_set[i], difference=difference)
     return list_to_set
 
 
-def dict_times_set(dict_to_set: dict, difference: int = 0, time_formats: list[str] | None = None) -> dict:
+def dict_times_set(dict_to_set: dict, difference: float = 0) -> dict:
     """
 
     :param dict_to_set: the raw dict
     :param difference: the difference (e.g. time zone)
-    :param time_formats: the formats to parse ESM dates with, in order (defaults to Auto detect)
     :return: the data dict with utc times
     """
     for field in dict_to_set:
         if dict_to_set[field]:
             if "time" in field.lower() or "date" in field.lower():
-                dict_to_set[field] = time_format(dict_to_set[field], difference=difference, time_formats=time_formats)
+                dict_to_set[field] = time_format(dict_to_set[field], difference=difference)
             elif isinstance(dict_to_set[field], dict):
-                dict_to_set[field] = dict_times_set(dict_to_set[field], difference, time_formats)
+                dict_to_set[field] = dict_times_set(dict_to_set[field], difference)
             elif isinstance(dict_to_set[field], list):
                 for i in range(len(dict_to_set[field])):
                     if isinstance(dict_to_set[field][i], dict):
-                        dict_to_set[field][i] = dict_times_set(dict_to_set[field][i], difference, time_formats)
+                        dict_to_set[field][i] = dict_times_set(dict_to_set[field][i], difference)
     return dict_to_set
 
 
@@ -1195,17 +1128,16 @@ def time_fields(field_list: list[dict]) -> list:
     return indexes_list
 
 
-def table_times_set(table_to_set: dict, difference: int = 0, time_formats: list[str] | None = None) -> dict:
+def table_times_set(table_to_set: dict, difference: float = 0) -> dict:
     """
 
     :param table_to_set: the raw event/ alarm
     :param difference: the difference (e.g. time zone)
-    :param time_formats: the formats to parse ESM dates with, in order (defaults to Auto detect)
     :return: the event/ alarm with utc time
     """
     indexes_list = time_fields(table_to_set["columns"])
     for dict_ in table_to_set["rows"]:
-        dict_["values"] = list_times_set(dict_.get("values"), indexes_list, difference, time_formats)
+        dict_["values"] = list_times_set(dict_.get("values"), indexes_list, difference)
     return table_to_set
 
 
