@@ -2515,19 +2515,19 @@ Creates a Firewall Control rule for a specified scope and OS to allow or block n
 | action | Defines whether the agent blocks or allows traffic matching the rule parameters. Possible values are: Allow, Block. | Required |
 | status | Defines whether the rule is Enabled or Disabled. Possible values are: Enabled, Disabled. | Required |
 | direction | Defines the direction of the firewall rule. Possible values are: any, inbound, outbound. | Optional |
-| os_types | A comma-separated list of OS types for the rule (e.g., windows, macos, linux, windows_legacy). Possible values are: linux, windows, macos, windows_legacy. | Optional |
-| protocol | The network protocol for the rule (e.g., any, tcp, udp, icmp). | Optional |
-| remote_host_type | The type of remote host to match (any, cidr, range, addresses, fqdn). Use 'addresses' for IP addresses and 'fqdn' for domains/FQDNs. Possible values are: any, cidr, range, addresses, fqdn. | Optional |
-| remote_host_values | A comma-separated list of remote host values (e.g., IP addresses, CIDR blocks, IP ranges, or domains/FQDNs). | Optional |
-| local_host_type | The type of local host to match (any, cidr, range, addresses, fqdn). Possible values are: any, cidr, range, addresses, fqdn. | Optional |
+| os_types | A comma-separated list of OS types for the rule. Possible values are: linux, windows, macos, windows_legacy. | Optional |
+| protocol | The network protocol for the rule. | Optional |
+| remote_host_type | The type of remote host to match. Use 'addresses' for IP addresses and 'fqdn' for domains/FQDNs. Possible values are: any, cidr, range, addresses, fqdn. | Optional |
+| remote_host_values | A comma-separated list of remote host values. | Optional |
+| local_host_type | The type of local host to match. Possible values are: any, cidr, range, addresses, fqdn. | Optional |
 | local_host_values | A comma-separated list of local host values. | Optional |
-| remote_port_type | The type of remote ports to match (any, ports, range). Possible values are: any, ports, range. | Optional |
+| remote_port_type | The type of remote ports to match. Possible values are: any, ports, range. | Optional |
 | remote_port_values | A comma-separated list of remote port numbers (integers between 0 and 65535). | Optional |
-| local_port_type | The type of local ports to match (any, ports, range). Possible values are: any, ports, range. | Optional |
+| local_port_type | The type of local ports to match. Possible values are: any, ports, range. | Optional |
 | local_port_values | A comma-separated list of local port numbers (integers between 0 and 65535). | Optional |
-| application_type | The type of application for the rule (any, path, sha1, system). Possible values are: any, path, sha1, system. | Optional |
+| application_type | The type of application for the rule. Possible values are: any, path, sha1, system. | Optional |
 | application_values | A comma-separated list of application values. | Optional |
-| location_type | The location type for the rule (all, specific, fallback). Possible values are: all, specific, fallback. | Optional |
+| location_type | The location type for the rule. Possible values are: all, specific, fallback. | Optional |
 | location_ids | A comma-separated list of location IDs (applicable when location_type is 'specific'). | Optional |
 | description | Free-text description of the firewall rule. | Optional |
 | tag_ids | A comma-separated list of tag IDs to link to this firewall rule. | Optional |
@@ -2540,35 +2540,35 @@ Creates a Firewall Control rule for a specified scope and OS to allow or block n
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SentinelOne.FirewallRule.ID | String | The created firewall rule ID. |
-| SentinelOne.FirewallRule.Name | String | The name of the firewall rule. |
-| SentinelOne.FirewallRule.Action | String | The rule action (Allow or Block). |
-| SentinelOne.FirewallRule.Status | String | The status of the rule (Enabled or Disabled). |
-| SentinelOne.FirewallRule.Direction | String | The direction of the firewall rule (any, inbound, outbound). |
-| SentinelOne.FirewallRule.OsType | String | The primary OS type of the rule. |
-| SentinelOne.FirewallRule.OsTypes | Unknown | The list of OS types for the rule. |
-| SentinelOne.FirewallRule.Protocol | String | The protocol of the firewall rule. |
-| SentinelOne.FirewallRule.RemoteHost | Unknown | The first remote host in the rule. |
-| SentinelOne.FirewallRule.RemoteHosts | Unknown | The list of remote hosts in the rule. |
-| SentinelOne.FirewallRule.LocalHost | Unknown | The local host structure of the rule. |
-| SentinelOne.FirewallRule.RemotePort | Unknown | The remote ports structure of the rule. |
-| SentinelOne.FirewallRule.LocalPort | Unknown | The local ports structure of the rule. |
-| SentinelOne.FirewallRule.Application | Unknown | The application structure of the rule. |
-| SentinelOne.FirewallRule.Location | Unknown | The location associated with the rule. |
-| SentinelOne.FirewallRule.Scope | String | The scope of the rule (global, account, group, site). |
-| SentinelOne.FirewallRule.ScopeId | String | The group, site, or account ID depending on the scope. |
-| SentinelOne.FirewallRule.Order | Number | The position of the rule in the list of rules. |
-| SentinelOne.FirewallRule.Editable | Boolean | Whether the rule can be modified at this scope level. |
-| SentinelOne.FirewallRule.Creator | String | The full name of the user who created the rule. |
-| SentinelOne.FirewallRule.CreatorId | String | The ID of the user who created the rule. |
-| SentinelOne.FirewallRule.CreatedAt | Date | The date and time of rule creation. |
-| SentinelOne.FirewallRule.UpdatedAt | Date | The date and time of the last update. |
-| SentinelOne.FirewallRule.Description | String | The description of the firewall rule. |
-| SentinelOne.FirewallRule.RuleCategory | String | The rule category (firewall or network_quarantine). |
-| SentinelOne.FirewallRule.TagIds | Unknown | The list of tag IDs linked to this rule. |
-| SentinelOne.FirewallRule.TagNames | Unknown | The list of tag names linked to this rule. |
-| SentinelOne.FirewallRule.Tags | Unknown | The list of tag objects linked to this rule. |
-| SentinelOne.FirewallRule.ProductId | String | The product identifier. |
+| SentinelOne.FirewallRule.Created.ID | string | The created firewall rule ID. |
+| SentinelOne.FirewallRule.Created.Name | string | The name of the firewall rule. |
+| SentinelOne.FirewallRule.Created.Action | string | The rule action \(Allow or Block\). |
+| SentinelOne.FirewallRule.Created.Status | string | The status of the rule \(Enabled or Disabled\). |
+| SentinelOne.FirewallRule.Created.Direction | string | The direction of the firewall rule \(any, inbound, outbound\). |
+| SentinelOne.FirewallRule.Created.OsType | string | The primary OS type of the rule. |
+| SentinelOne.FirewallRule.Created.OsTypes | Unknown | The list of OS types for the rule. |
+| SentinelOne.FirewallRule.Created.Protocol | string | The protocol of the firewall rule. |
+| SentinelOne.FirewallRule.Created.RemoteHost | Unknown | The first remote host in the rule. |
+| SentinelOne.FirewallRule.Created.RemoteHosts | Unknown | The list of remote hosts in the rule. |
+| SentinelOne.FirewallRule.Created.LocalHost | Unknown | The local host structure of the rule. |
+| SentinelOne.FirewallRule.Created.RemotePort | Unknown | The remote ports structure of the rule. |
+| SentinelOne.FirewallRule.Created.LocalPort | Unknown | The local ports structure of the rule. |
+| SentinelOne.FirewallRule.Created.Application | Unknown | The application structure of the rule. |
+| SentinelOne.FirewallRule.Created.Location | Unknown | The location associated with the rule. |
+| SentinelOne.FirewallRule.Created.Scope | string | The scope of the rule \(global, account, group, site\). |
+| SentinelOne.FirewallRule.Created.ScopeId | string | The group, site, or account ID depending on the scope. |
+| SentinelOne.FirewallRule.Created.Order | number | The position of the rule in the list of rules. |
+| SentinelOne.FirewallRule.Created.Editable | boolean | Whether the rule can be modified at this scope level. |
+| SentinelOne.FirewallRule.Created.Creator | string | The full name of the user who created the rule. |
+| SentinelOne.FirewallRule.Created.CreatorId | string | The ID of the user who created the rule. |
+| SentinelOne.FirewallRule.Created.CreatedAt | date | The date and time of rule creation. |
+| SentinelOne.FirewallRule.Created.UpdatedAt | date | The date and time of the last update. |
+| SentinelOne.FirewallRule.Created.Description | string | The description of the firewall rule. |
+| SentinelOne.FirewallRule.Created.RuleCategory | string | The rule category \(firewall or network_quarantine\). |
+| SentinelOne.FirewallRule.Created.TagIds | Unknown | The list of tag IDs linked to this rule. |
+| SentinelOne.FirewallRule.Created.TagNames | Unknown | The list of tag names linked to this rule. |
+| SentinelOne.FirewallRule.Created.Tags | Unknown | The list of tag objects linked to this rule. |
+| SentinelOne.FirewallRule.Created.ProductId | string | The product identifier. |
 
 ### sentinelone-delete-firewall-rule
 
@@ -2593,10 +2593,10 @@ Deletes Firewall Control rules that match the filter (uses the v2.1 firewall-con
 | applications | A comma-separated list of firewall classes/applications to filter by. | Optional |
 | name | Filter firewall rules by exact rule name. | Optional |
 | protocols | A comma-separated list of protocols to filter firewall rules by. | Optional |
-| os_types | A comma-separated list of OS types to filter firewall rules by (linux, windows, macos, windows_legacy). Possible values are: linux, windows, macos, windows_legacy. | Optional |
-| directions | A comma-separated list of directions to filter firewall rules by (any, inbound, outbound). Possible values are: any, inbound, outbound. | Optional |
-| actions | A comma-separated list of actions to filter firewall rules by (Allow, Block). Possible values are: Allow, Block. | Optional |
-| statuses | A comma-separated list of statuses to filter firewall rules by (Enabled, Disabled). Possible values are: Enabled, Disabled. | Optional |
+| os_types | A comma-separated list of OS types to filter firewall rules by. Possible values are: linux, windows, macos, windows_legacy. | Optional |
+| directions | A comma-separated list of directions to filter firewall rules by. Possible values are: any, inbound, outbound. | Optional |
+| actions | A comma-separated list of actions to filter firewall rules by. Possible values are: Allow, Block. | Optional |
+| statuses | A comma-separated list of statuses to filter firewall rules by. Possible values are: Enabled, Disabled. | Optional |
 | created_at_lt | Filter firewall rules created before this timestamp (e.g., 2018-02-27T04:49:26.257525Z). | Optional |
 | created_at_gt | Filter firewall rules created after this timestamp (e.g., 2018-02-27T04:49:26.257525Z). | Optional |
 | created_at_lte | Filter firewall rules created before or at this timestamp (e.g., 2018-02-27T04:49:26.257525Z). | Optional |
@@ -2614,4 +2614,4 @@ Deletes Firewall Control rules that match the filter (uses the v2.1 firewall-con
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SentinelOne.FirewallRule.Deleted.Affected | Number | The number of firewall rules successfully deleted. |
+| SentinelOne.FirewallRule.Deleted.Affected | number | The number of firewall rules successfully deleted. |

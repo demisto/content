@@ -847,7 +847,7 @@ script:
       - inbound
       - outbound
     - auto: PREDEFINED
-      description: A comma-separated list of OS types for the rule (e.g., windows, macos, linux, windows_legacy).
+      description: A comma-separated list of OS types for the rule.
       isArray: true
       name: os_types
       predefined:
@@ -855,10 +855,10 @@ script:
       - windows
       - macos
       - windows_legacy
-    - description: The network protocol for the rule (e.g., any, tcp, udp, icmp).
+    - description: The network protocol for the rule.
       name: protocol
     - auto: PREDEFINED
-      description: The type of remote host to match (any, cidr, range, addresses, fqdn). Use 'addresses' for IP addresses and 'fqdn' for domains/FQDNs.
+      description: The type of remote host to match. Use 'addresses' for IP addresses and 'fqdn' for domains/FQDNs.
       name: remote_host_type
       predefined:
       - any
@@ -866,11 +866,11 @@ script:
       - range
       - addresses
       - fqdn
-    - description: A comma-separated list of remote host values (e.g., IP addresses, CIDR blocks, IP ranges, or domains/FQDNs).
+    - description: A comma-separated list of remote host values.
       isArray: true
       name: remote_host_values
     - auto: PREDEFINED
-      description: The type of local host to match (any, cidr, range, addresses, fqdn).
+      description: The type of local host to match.
       name: local_host_type
       predefined:
       - any
@@ -882,7 +882,7 @@ script:
       isArray: true
       name: local_host_values
     - auto: PREDEFINED
-      description: The type of remote ports to match (any, ports, range).
+      description: The type of remote ports to match.
       name: remote_port_type
       predefined:
       - any
@@ -892,7 +892,7 @@ script:
       isArray: true
       name: remote_port_values
     - auto: PREDEFINED
-      description: The type of local ports to match (any, ports, range).
+      description: The type of local ports to match.
       name: local_port_type
       predefined:
       - any
@@ -902,7 +902,7 @@ script:
       isArray: true
       name: local_port_values
     - auto: PREDEFINED
-      description: The type of application for the rule (any, path, sha1, system).
+      description: The type of application for the rule.
       name: application_type
       predefined:
       - any
@@ -913,7 +913,7 @@ script:
       isArray: true
       name: application_values
     - auto: PREDEFINED
-      description: The location type for the rule (all, specific, fallback).
+      description: The location type for the rule.
       name: location_type
       predefined:
       - all
@@ -945,91 +945,91 @@ script:
     description: Creates a Firewall Control rule for a specified scope and OS to allow or block network traffic to matching endpoints (uses the v2.1 firewall-control endpoint).
     name: sentinelone-create-firewall-rule
     outputs:
-    - contextPath: SentinelOne.FirewallRule.ID
+    - contextPath: SentinelOne.FirewallRule.Created.ID
       description: The created firewall rule ID.
       type: string
-    - contextPath: SentinelOne.FirewallRule.Name
+    - contextPath: SentinelOne.FirewallRule.Created.Name
       description: The name of the firewall rule.
       type: string
-    - contextPath: SentinelOne.FirewallRule.Action
+    - contextPath: SentinelOne.FirewallRule.Created.Action
       description: The rule action (Allow or Block).
       type: string
-    - contextPath: SentinelOne.FirewallRule.Status
+    - contextPath: SentinelOne.FirewallRule.Created.Status
       description: The status of the rule (Enabled or Disabled).
       type: string
-    - contextPath: SentinelOne.FirewallRule.Direction
+    - contextPath: SentinelOne.FirewallRule.Created.Direction
       description: The direction of the firewall rule (any, inbound, outbound).
       type: string
-    - contextPath: SentinelOne.FirewallRule.OsType
+    - contextPath: SentinelOne.FirewallRule.Created.OsType
       description: The primary OS type of the rule.
       type: string
-    - contextPath: SentinelOne.FirewallRule.OsTypes
+    - contextPath: SentinelOne.FirewallRule.Created.OsTypes
       description: The list of OS types for the rule.
       type: Unknown
-    - contextPath: SentinelOne.FirewallRule.Protocol
+    - contextPath: SentinelOne.FirewallRule.Created.Protocol
       description: The protocol of the firewall rule.
       type: string
-    - contextPath: SentinelOne.FirewallRule.RemoteHost
+    - contextPath: SentinelOne.FirewallRule.Created.RemoteHost
       description: The first remote host in the rule.
       type: Unknown
-    - contextPath: SentinelOne.FirewallRule.RemoteHosts
+    - contextPath: SentinelOne.FirewallRule.Created.RemoteHosts
       description: The list of remote hosts in the rule.
       type: Unknown
-    - contextPath: SentinelOne.FirewallRule.LocalHost
+    - contextPath: SentinelOne.FirewallRule.Created.LocalHost
       description: The local host structure of the rule.
       type: Unknown
-    - contextPath: SentinelOne.FirewallRule.RemotePort
+    - contextPath: SentinelOne.FirewallRule.Created.RemotePort
       description: The remote ports structure of the rule.
       type: Unknown
-    - contextPath: SentinelOne.FirewallRule.LocalPort
+    - contextPath: SentinelOne.FirewallRule.Created.LocalPort
       description: The local ports structure of the rule.
       type: Unknown
-    - contextPath: SentinelOne.FirewallRule.Application
+    - contextPath: SentinelOne.FirewallRule.Created.Application
       description: The application structure of the rule.
       type: Unknown
-    - contextPath: SentinelOne.FirewallRule.Location
+    - contextPath: SentinelOne.FirewallRule.Created.Location
       description: The location associated with the rule.
       type: Unknown
-    - contextPath: SentinelOne.FirewallRule.Scope
+    - contextPath: SentinelOne.FirewallRule.Created.Scope
       description: The scope of the rule (global, account, group, site).
       type: string
-    - contextPath: SentinelOne.FirewallRule.ScopeId
+    - contextPath: SentinelOne.FirewallRule.Created.ScopeId
       description: The group, site, or account ID depending on the scope.
       type: string
-    - contextPath: SentinelOne.FirewallRule.Order
+    - contextPath: SentinelOne.FirewallRule.Created.Order
       description: The position of the rule in the list of rules.
       type: number
-    - contextPath: SentinelOne.FirewallRule.Editable
+    - contextPath: SentinelOne.FirewallRule.Created.Editable
       description: Whether the rule can be modified at this scope level.
       type: boolean
-    - contextPath: SentinelOne.FirewallRule.Creator
+    - contextPath: SentinelOne.FirewallRule.Created.Creator
       description: The full name of the user who created the rule.
       type: string
-    - contextPath: SentinelOne.FirewallRule.CreatorId
+    - contextPath: SentinelOne.FirewallRule.Created.CreatorId
       description: The ID of the user who created the rule.
       type: string
-    - contextPath: SentinelOne.FirewallRule.CreatedAt
+    - contextPath: SentinelOne.FirewallRule.Created.CreatedAt
       description: The date and time of rule creation.
       type: date
-    - contextPath: SentinelOne.FirewallRule.UpdatedAt
+    - contextPath: SentinelOne.FirewallRule.Created.UpdatedAt
       description: The date and time of the last update.
       type: date
-    - contextPath: SentinelOne.FirewallRule.Description
+    - contextPath: SentinelOne.FirewallRule.Created.Description
       description: The description of the firewall rule.
       type: string
-    - contextPath: SentinelOne.FirewallRule.RuleCategory
+    - contextPath: SentinelOne.FirewallRule.Created.RuleCategory
       description: The rule category (firewall or network_quarantine).
       type: string
-    - contextPath: SentinelOne.FirewallRule.TagIds
+    - contextPath: SentinelOne.FirewallRule.Created.TagIds
       description: The list of tag IDs linked to this rule.
       type: Unknown
-    - contextPath: SentinelOne.FirewallRule.TagNames
+    - contextPath: SentinelOne.FirewallRule.Created.TagNames
       description: The list of tag names linked to this rule.
       type: Unknown
-    - contextPath: SentinelOne.FirewallRule.Tags
+    - contextPath: SentinelOne.FirewallRule.Created.Tags
       description: The list of tag objects linked to this rule.
       type: Unknown
-    - contextPath: SentinelOne.FirewallRule.ProductId
+    - contextPath: SentinelOne.FirewallRule.Created.ProductId
       description: The product identifier.
       type: string
   - arguments:
@@ -1071,7 +1071,7 @@ script:
       isArray: true
       name: protocols
     - auto: PREDEFINED
-      description: A comma-separated list of OS types to filter firewall rules by (linux, windows, macos, windows_legacy).
+      description: A comma-separated list of OS types to filter firewall rules by.
       isArray: true
       name: os_types
       predefined:
@@ -1080,7 +1080,7 @@ script:
       - macos
       - windows_legacy
     - auto: PREDEFINED
-      description: A comma-separated list of directions to filter firewall rules by (any, inbound, outbound).
+      description: A comma-separated list of directions to filter firewall rules by.
       isArray: true
       name: directions
       predefined:
@@ -1088,14 +1088,14 @@ script:
       - inbound
       - outbound
     - auto: PREDEFINED
-      description: A comma-separated list of actions to filter firewall rules by (Allow, Block).
+      description: A comma-separated list of actions to filter firewall rules by.
       isArray: true
       name: actions
       predefined:
       - Allow
       - Block
     - auto: PREDEFINED
-      description: A comma-separated list of statuses to filter firewall rules by (Enabled, Disabled).
+      description: A comma-separated list of statuses to filter firewall rules by.
       isArray: true
       name: statuses
       predefined:

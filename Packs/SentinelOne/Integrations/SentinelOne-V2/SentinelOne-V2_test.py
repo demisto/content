@@ -3075,6 +3075,28 @@ def test_create_firewall_rule_full_schema_and_validations(mocker, requests_mock)
             client,
             {"name": "Rule", "action": "Block", "status": "Enabled"},
         )
+    with pytest.raises(sentinelone_v2.DemistoException, match="You must provide a scope filter"):
+        sentinelone_v2.create_firewall_rule_command(
+            client,
+            {"name": "Rule", "action": "Block", "status": "Enabled", "tenant": "false"},
+        )
+    with pytest.raises(sentinelone_v2.DemistoException, match="Cannot set 'tenant' to true"):
+        sentinelone_v2.create_firewall_rule_command(
+            client,
+            {"name": "Rule", "action": "Block", "status": "Enabled", "tenant": "true", "site_ids": "225494730938493805"},
+        )
+    with pytest.raises(sentinelone_v2.DemistoException, match="remote_host_values cannot be specified"):
+        sentinelone_v2.create_firewall_rule_command(
+            client,
+            {
+                "name": "Rule",
+                "action": "Block",
+                "status": "Enabled",
+                "tenant": "true",
+                "remote_host_type": "any",
+                "remote_host_values": "192.168.1.1",
+            },
+        )
     with pytest.raises(sentinelone_v2.DemistoException, match="remote_host_values is required"):
         sentinelone_v2.create_firewall_rule_command(
             client,
@@ -3090,6 +3112,18 @@ def test_create_firewall_rule_full_schema_and_validations(mocker, requests_mock)
                 "tenant": "true",
                 "remote_host_type": "range",
                 "remote_host_values": "192.168.1.1,192.168.1.10,192.168.1.20",
+            },
+        )
+    with pytest.raises(sentinelone_v2.DemistoException, match="location_ids can only be specified"):
+        sentinelone_v2.create_firewall_rule_command(
+            client,
+            {
+                "name": "Rule",
+                "action": "Block",
+                "status": "Enabled",
+                "tenant": "true",
+                "location_type": "all",
+                "location_ids": "225494730938493804",
             },
         )
 
@@ -3140,5 +3174,14 @@ def test_delete_firewall_rule(mocker, requests_mock):
     }
 
     client = sentinelone_v2.Client(base_url="https://usea1.sentinelone.net/web/api/v2.1/", verify=False, proxy=False, headers={})
-    with pytest.raises(sentinelone_v2.DemistoException, match="You must provide at least one filter parameter"):
+    with pytest.raises(sentinelone_v2.DemistoException, match="You must provide a scope filter"):
         sentinelone_v2.delete_firewall_rule_command(client, {})
+    with pytest.raises(sentinelone_v2.DemistoException, match="You must provide a scope filter"):
+        sentinelone_v2.delete_firewall_rule_command(client, {"tenant": "false", "ids": "225494730938493804"})
+    with pytest.raises(sentinelone_v2.DemistoException, match="Cannot set 'tenant' to true"):
+        sentinelone_v2.delete_firewall_rule_command(
+            client,
+            {"tenant": "true", "site_ids": "225494730938493805", "ids": "225494730938493804"},
+        )
+    with pytest.raises(sentinelone_v2.DemistoException, match="You must provide at least one rule filter parameter"):
+        sentinelone_v2.delete_firewall_rule_command(client, {"tenant": "true"})
