@@ -68,6 +68,12 @@ RATE_LIMIT_DEFAULT_WAIT_SEC = 30
 CONCURRENCY_LIMIT_ERROR_CODE = "1960"
 CONCURRENCY_LIMIT_WAIT_SEC = 60
 CONCURRENCY_LIMIT_MAX_RETRIES = 2
+# Interactive calls (test-module, qualys-get-assets) do not back off on 1960: two 60s waits exceed the 60s test timeout.
+CONCURRENCY_LIMIT_INTERACTIVE_ERROR = (
+    f"Qualys concurrency limit reached (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}): the Qualys account is already running "
+    "the maximum number of host list detection requests, usually because the assets and vulnerabilities fetch is running. "
+    "Try again after it finishes."
+)
 
 # Retry configuration for sending assets and vulnerabilities into XSIAM.
 # The XSIAM ingestion gateway intermittently answers with transient errors (502 from nginx, connection resets,
@@ -1790,7 +1796,12 @@ class Client(BaseClient):
         return response.text
 
     def get_host_list_detection(
-        self, since_datetime: str, next_page: str | None = None, limit: int = HOST_LIMIT, qid: Optional[str] = None
+        self,
+        since_datetime: str,
+        next_page: str | None = None,
+        limit: int = HOST_LIMIT,
+        qid: Optional[str] = None,
+        retry_on_concurrency_limit: bool = True,
     ) -> tuple[Optional[requests.Response], bool]:
         """
         Make a http request to Qualys API to get assets.
@@ -1804,12 +1815,14 @@ class Client(BaseClient):
             next_page (str | None): For pagination; show hosts starting from a minimum host ID value.
             limit (int): Maximum number of host records returned; should be <= 1000000. Specify 0 for no truncation limit.
             qid: The Qualys ID (QID).
+            retry_on_concurrency_limit (bool): Whether to back off and retry on a concurrency-limit error
+                (HTTP 409, Error Code 1960). True for the assets fetch; False for interactive calls, which must fail fast.
         Returns:
             A tuple of (streamed ``requests.Response`` or ``None`` on timeout, ``set_new_limit`` flag).
             ``set_new_limit`` is True only when the request timed out, so the caller can retry with a smaller limit.
         Raises:
             DemistoException: can be raised by the _http_request function, including a concurrency-limit error
-                (HTTP 409, Error Code 1960) that is still active after the in-run retries.
+                (HTTP 409, Error Code 1960) that is still active after the in-run retries (if any).
         """
         set_new_limit = False
         self._headers.update({"Content-Type": "application/json"})
@@ -1834,10 +1847,16 @@ class Client(BaseClient):
         # Read Timeout does *not* specify request max execution time! Handle using a timed thread (via `ThreadPoolExecutor`)
 
         response: Optional[requests.Response] = None
+        max_retries = CONCURRENCY_LIMIT_MAX_RETRIES if retry_on_concurrency_limit else 0
+        request_start = time.monotonic()
         try:
-            demisto.debug(f"[HTTP Call] Requesting host list detections (streamed). Used query params: {params}.")
+            demisto.debug(
+                f"[HTTP Call] Requesting host list detections (streamed). Used query params: {params}. "
+                f"Concurrency-limit retries: {max_retries}."
+            )
             url_suffix = urljoin(API_SUFFIX_DETECTION, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1")
-            response = self._request_with_concurrency_retry("GET", url_suffix, params, timeout)
+            response = self._request_with_concurrency_retry("GET", url_suffix, params, timeout, max_retries=max_retries)
+            demisto.debug(f"[HTTP Call] Host list detections request returned after {time.monotonic() - request_start:.1f}s.")
 
         # Handle response timeout (`ReadTimeout`) or response ending prematurely (`ChunkedEncodingError`)
         except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
@@ -1853,7 +1872,12 @@ class Client(BaseClient):
         return response, set_new_limit
 
     def _request_with_concurrency_retry(
-        self, method: str, url_suffix: str, params: dict[str, Any], timeout: tuple[int, int]
+        self,
+        method: str,
+        url_suffix: str,
+        params: dict[str, Any],
+        timeout: tuple[int, int],
+        max_retries: Optional[int] = None,
     ) -> Optional[requests.Response]:
         """Perform a streamed Qualys request, retrying on Qualys concurrency-limit (Error Code 1960).
 
@@ -1870,6 +1894,8 @@ class Client(BaseClient):
             url_suffix (str): The URL suffix for the request.
             params (dict[str, Any]): Query params for the request.
             timeout (tuple[int, int]): (connection, read) timeout for the request.
+            max_retries (Optional[int]): Retries on a 1960 error. Defaults to ``CONCURRENCY_LIMIT_MAX_RETRIES``;
+                0 raises the first 1960 error without waiting.
 
         Returns:
             Optional[requests.Response]: The streamed response.
@@ -1877,7 +1903,8 @@ class Client(BaseClient):
         Raises:
             DemistoException: For non-1960 errors, or a 1960 error after retries are exhausted.
         """
-        for attempt in range(CONCURRENCY_LIMIT_MAX_RETRIES + 1):
+        retries = CONCURRENCY_LIMIT_MAX_RETRIES if max_retries is None else max_retries
+        for attempt in range(retries + 1):
             try:
                 return self._http_request(
                     method=method,
@@ -1889,11 +1916,20 @@ class Client(BaseClient):
                     stream=True,
                 )
             except DemistoException as e:
-                if not self._is_concurrency_limit_error(getattr(e, "res", None)) or attempt == CONCURRENCY_LIMIT_MAX_RETRIES:
+                res = getattr(e, "res", None)
+                if not self._is_concurrency_limit_error(res):
+                    raise
+                headers = getattr(res, "headers", None) or {}
+                demisto.debug(
+                    f"[HTTP Error] Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}) on attempt "
+                    f"{attempt + 1}/{retries + 1}: running={headers.get('x-concurrency-limit-running')}, "
+                    f"limit={headers.get('x-concurrency-limit-limit')}."
+                )
+                if attempt == retries:
                     raise
                 demisto.debug(
                     f"[HTTP Error] Hit Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}). "
-                    f"Waiting {CONCURRENCY_LIMIT_WAIT_SEC}s before retry {attempt + 1}/{CONCURRENCY_LIMIT_MAX_RETRIES}. "
+                    f"Waiting {CONCURRENCY_LIMIT_WAIT_SEC}s before retry {attempt + 1}/{retries}. "
                     f"Error: {str(e)}\n{traceback.format_exc()}"
                 )
                 time.sleep(CONCURRENCY_LIMIT_WAIT_SEC)  # pylint: disable=E9003
@@ -3450,7 +3486,11 @@ def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) 
 def get_host_list_detections_events(
     client, since_datetime, next_page="", limit=HOST_LIMIT, is_test=False, qid: Optional[str] = None
 ) -> tuple:
-    """Get host list detections from qualys
+    """Get host list detections from qualys for the interactive callers (test-module and qualys-get-assets).
+
+    A Qualys concurrency-limit error (HTTP 409, Error Code 1960) is raised right away, without the fetch back-off,
+    so the call fits in the 60s test timeout and does not hold the caller while the assets fetch runs.
+
     Args:
         client: Qualys client
         next_page: pagination marking
@@ -3460,12 +3500,22 @@ def get_host_list_detections_events(
         qid: The Qualys ID (QID).
     Returns:
         Host list detections assets
+    Raises:
+        DemistoException: On a concurrency-limit error, with ``CONCURRENCY_LIMIT_INTERACTIVE_ERROR`` and the original error.
     """
     demisto.debug("Pulling host list detections")
     assets: list = []
 
     demisto.debug("Starting to get client host list detections.")
-    host_list_detections, set_new_limit = client.get_host_list_detection(since_datetime, next_page, limit, qid)
+    try:
+        host_list_detections, set_new_limit = client.get_host_list_detection(
+            since_datetime, next_page, limit, qid, retry_on_concurrency_limit=False
+        )
+    except DemistoException as e:
+        if not Client._is_concurrency_limit_error(getattr(e, "res", None)):
+            raise
+        demisto.debug("[HTTP Error] Host list request hit the concurrency limit; failing fast for the interactive call.")
+        raise DemistoException(f"{CONCURRENCY_LIMIT_INTERACTIVE_ERROR}\n{e}", res=e.res) from e
     demisto.debug(f"Finished getting client host list detections. Set new limit: {set_new_limit}")
 
     if not set_new_limit:
