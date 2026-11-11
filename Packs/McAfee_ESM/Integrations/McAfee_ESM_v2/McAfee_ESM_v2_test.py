@@ -355,7 +355,38 @@ def test_get_fetch_window_end_rejects_non_positive_window():
     - An error is raised.
     """
     with pytest.raises(DemistoException, match="must be a positive number"):
-        get_fetch_window_end("2022-10-18T16:00:00Z", datetime.utcnow(), 0)
+        get_fetch_window_end("2022-10-18T16:00:00Z", utc_now(), 0)
+
+
+@freeze_time(MOCK_CURRENT_TIME)
+def test_fetch_alarms_rejects_zero_fetch_window(mocker):
+    """
+    Given:
+    - The Maximum fetch window (hours) parameter set to 0.
+    When:
+    - Fetching alarms.
+    Then:
+    - An error is raised instead of falling back to the default window.
+    """
+    params = FETCH_PARAMS | {"maxFetchWindowHours": "0"}
+    with pytest.raises(DemistoException, match="must be a positive number"):
+        run_fetch(mocker, {}, raw_alarms=[], params=params)
+
+
+@freeze_time(MOCK_CURRENT_TIME)
+def test_client_parses_dates_with_the_configured_date_format(mocker):
+    """
+    Given:
+    - The ESM date format parameter set to DD/MM/YYYY.
+    When:
+    - Fetching, and ESM returns an alarm with a day-first date.
+    Then:
+    - The client parses the alarm date with the configured format.
+    """
+    params = FETCH_PARAMS | {"dateFormat": "DD/MM/YYYY", "fetchTime": "1 hour"}
+    _, incidents, _ = run_fetch(mocker, {}, [{"id": 1, "triggeredDate": "18/10/2022 16:30:00"}], params)
+
+    assert incidents[0]["occurred"] == "2022-10-18T16:30:00Z"
 
 
 def test_get_next_alarms_fetch_start_ignores_alarm_time_outside_window():
@@ -393,11 +424,7 @@ def test_time_format_with_date_format(date_format, esm_time, expected):
     Then:
     - The date is parsed according to the date format.
     """
-    set_esm_date_format(date_format)
-    try:
-        assert time_format(esm_time) == expected
-    finally:
-        set_esm_date_format("Auto detect")
+    assert time_format(esm_time, time_formats=get_esm_time_formats(date_format)) == expected
 
 
 def test_time_format_month_first_rejects_day_greater_than_12():
@@ -409,25 +436,21 @@ def test_time_format_month_first_rejects_day_greater_than_12():
     Then:
     - An error is raised instead of guessing the format.
     """
-    set_esm_date_format("MM/DD/YYYY")
-    try:
-        with pytest.raises(ValueError, match="does not match the time format"):
-            time_format("13/11/2026 08:21:18")
-    finally:
-        set_esm_date_format("Auto detect")
+    with pytest.raises(ValueError, match="does not match the time format"):
+        time_format("13/11/2026 08:21:18", time_formats=get_esm_time_formats("MM/DD/YYYY"))
 
 
-def test_set_esm_date_format_rejects_invalid_value():
+def test_get_esm_time_formats_rejects_invalid_value():
     """
     Given:
     - An invalid ESM date format value.
     When:
-    - Setting the date format.
+    - Getting the formats for the date format.
     Then:
     - An error is raised.
     """
     with pytest.raises(DemistoException, match="Invalid ESM date format"):
-        set_esm_date_format("YYYY.MM.DD")
+        get_esm_time_formats("YYYY.MM.DD")
 
 
 # testing if can upload
