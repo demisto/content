@@ -1,0 +1,5 @@
+[INGEST:vendor="docker", product="ai_gov", target_dataset="docker_ai_gov_raw", no_hit=keep]
+// The HTTP Collector delivers timestamp as a native date, so no conversion is needed.
+// Records with no usable timestamp fall back to ingestion time rather than being dropped.
+filter timestamp != null
+| alter _time = timestamp;
