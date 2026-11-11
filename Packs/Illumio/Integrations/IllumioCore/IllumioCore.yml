@@ -1,5 +1,7 @@
 category: Network Security
 provider: Illumio
+sectionorder:
+- Connect
 commonfields:
   id: IllumioCore
   version: -1
@@ -7,38 +9,45 @@ configuration:
 - additionalinfo: The URL this integration should connect to.
   display: Server URL
   name: url
+  section: Connect
   required: true
   type: 0
 - additionalinfo: The port number to establish the connection.
   defaultvalue: '443'
   display: Port
   name: port
+  section: Connect
   required: true
   type: 0
 - additionalinfo: The API user for authentication.
   display: API Key Username
   name: api_user
+  section: Connect
   required: true
   type: 4
 - additionalinfo: The API Key required to authenticate to the service.
   display: API Secret
   name: api_key
+  section: Connect
   required: true
   type: 4
 - additionalinfo: The organization ID to use when calling org-dependent APIs.
   defaultvalue: '1'
   display: Organization ID
   name: org_id
+  section: Connect
   required: true
   type: 0
 - additionalinfo: Indicates whether to allow connections without verifying SSL certificate's validity.
   display: Trust any certificate (not secure)
   name: insecure
+  section: Connect
   type: 8
   required: false
 - additionalinfo: Indicates whether to use XSOAR's system proxy settings to connect to the API.
   display: Use system proxy settings
   name: proxy
+  section: Connect
   type: 8
   required: false
 description: Connects to Illumio Core APIs to perform investigative and restorative actions.
@@ -1844,7 +1853,7 @@ script:
     - contextPath: Illumio.Workloads.ike_authentication_certificate
       description: IKE authentication certificate for certificate-based Secure Connect and Machine Auth connections.
       type: String
-  dockerimage: demisto/illumio:1.0.0.12701738
+  dockerimage: demisto/illumio:1.0.0.14169403
   runonce: false
   script: '-'
   subtype: python3
