@@ -130,5 +130,9 @@
             "type": "grid",
             "name": "Bmc Requester"
         }
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }
