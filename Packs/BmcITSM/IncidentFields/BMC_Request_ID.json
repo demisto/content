@@ -43,5 +43,9 @@
             "type": "shortText",
             "name": "Bmc Request ID"
         }
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

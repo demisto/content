@@ -1343,6 +1343,7 @@ def fetch_events(
     use_multithreading: bool = True,
     context_manager: IntegrationContextManager | None = None,
     enable_streaming: bool = True,
+    failed_event_types: list[str] | None = None,
 ):
     """Fetch events from Armis API with optional multithreading support.
 
@@ -1363,6 +1364,9 @@ def fetch_events(
             Devices are streamed page-by-page directly to XSIAM. When False (used by the
             manual ``armis-get-events`` command, which needs to display the events in
             CommandResults), all event types are collected into the returned ``events`` dict.
+        failed_event_types (list[str] | None): Optional output list. During the periodic fetch, an event
+            type that fails is appended here as "<event type>: <error>", so the caller can report it after
+            the last run is saved.
     Returns:
         (list[dict], dict) : List of fetched events and next run dictionary. When streaming
         is enabled, Activities/Devices have already been shipped to XSIAM and the
@@ -1454,18 +1458,33 @@ def fetch_events(
             type_start = time.monotonic()
             safe_debug(f"Starting sequential fetch for {event_type} (max: {event_max_fetch}, stream={stream_this})")
 
-            fetch_by_event_type(
-                client,
-                EVENT_TYPES[event_type],
-                events,
-                event_max_fetch,
-                last_run,
-                next_run,
-                fetch_start_time,
-                fetch_delay=fetch_delay,
-                stream=stream_this,
-                max_pagination_seconds=max_pagination_seconds,
-            )
+            try:
+                fetch_by_event_type(
+                    client,
+                    EVENT_TYPES[event_type],
+                    events,
+                    event_max_fetch,
+                    last_run,
+                    next_run,
+                    fetch_start_time,
+                    fetch_delay=fetch_delay,
+                    stream=stream_this,
+                    max_pagination_seconds=max_pagination_seconds,
+                )
+            except Exception as e:
+                if not enable_streaming:  # manual armis-get-events: surface the error as before
+                    raise
+                # Raising would discard the whole last run, so alerts already shipped this cycle would be
+                # re-sent. Keep this type's previous cursor and continue, so the cycle completes and saves.
+                error_str = _safe_error_str(e)
+                demisto.error(f"[Fetch] Fetching {event_type} failed, keeping its previous cursor: {error_str}")
+                type_key = EVENT_TYPES[event_type].type
+                for suffix in ("last_fetch_time", "last_fetch_ids", "last_fetch_next_field"):
+                    if (state_key := f"{type_key}_{suffix}") in last_run:
+                        next_run[state_key] = last_run[state_key]
+                if failed_event_types is not None:
+                    failed_event_types.append(f"{event_type}: {error_str}")
+                continue
 
             type_duration = time.monotonic() - type_start
             type_count = len(events.get(EVENT_TYPES[event_type].dataset_name, []))
@@ -1731,6 +1750,7 @@ def main():  # pragma: no cover
                 fetch_delay = 0
 
             should_push_events = command == "fetch-events" or should_push_events
+            failed_event_types: list[str] = []
 
             events, next_run = fetch_events(
                 client=client,
@@ -1747,12 +1767,18 @@ def main():  # pragma: no cover
                 # ``armis-get-events`` needs the events in the returned dict to render
                 # CommandResults to the analyst.
                 enable_streaming=command == "fetch-events",
+                failed_event_types=failed_event_types,
             )
             for key, value in events.items():
                 demisto.debug(f"{len(value)} events of type: {key} fetched from armis api")
 
             if should_push_events:
                 handle_fetched_events(events, next_run)
+
+            if failed_event_types:
+                # Reported after the last run is saved (and after the eventsPulled health update done by
+                # send_events_to_xsiam), so a persistent failure stays visible without discarding progress.
+                demisto.updateModuleHealth(f"[Fetch] Failed to fetch: {'; '.join(failed_event_types)}", is_error=True)
 
             if should_return_results:
                 return_results(
