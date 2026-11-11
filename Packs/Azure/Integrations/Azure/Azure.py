@@ -494,6 +494,76 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.OperationalInsights/workspaces/searchJobs/write": ["azure-log-analytics-table-run"],
 }
 
+# Commands allowed for users granted only the partial (CSPM remediation) permission set.
+# Each group corresponds to a permission listed in the CSPM remediation permissions policy.
+PARTIAL_PERMISSIONS_ALLOWED_COMMANDS: frozenset[str] = frozenset(
+    {
+        # Authentication flow commands (no cloud resource permissions required)
+        "azure-auth-start",
+        "azure-auth-complete",
+        "azure-auth-test",
+        "azure-auth-reset",
+        "azure-generate-login-url",
+        # Microsoft.Storage/storageAccounts/write
+        "azure-storage-account-update",
+        "azure-storage-allow-access-quick-action",
+        "azure-storage-disable-cross-tenant-replication-quick-action",
+        "azure-storage-disable-storage-account-public-access-quick-action",
+        "azure-network-disable-storage-account-access-quick-action",
+        "azure-set-storage-account-https-only-quick-action",
+        # Microsoft.Network/networkSecurityGroups/securityRules/write
+        "azure-nsg-security-rule-update",
+        "azure-vn-security-rule-update",
+        # Microsoft.Network/networkSecurityGroups/securityRules/delete
+        "azure-nsg-security-rule-delete",
+        "azure-nsg-security-rule-delete-quick-action",
+        "azure-vn-security-rule-delete",
+        # Microsoft.Sql/servers/databases/transparentDataEncryption/write
+        "azure-sql-db-transparent-data-encryption-set",
+        "azure-sql-db-transparent-data-encryption-enable-tde-quick-action",
+        # Microsoft.Sql/servers/databases/securityAlertPolicies/write
+        "azure-sql-db-threat-policy-update",
+        "azure-sql-db-threat-policy-update-quick-action",
+        "azure-sqldb-security-alert-policy-update",
+        # Microsoft.DBforMySQL/flexibleServers/configurations/write
+        "azure-mysql-flexible-server-param-set",
+        "azure-mysql-set-secure-transport-quick-action",
+        # Microsoft.DocumentDB/databaseAccounts/write
+        "azure-cosmos-db-update",
+        "azure-cosmos-db-disable-key-quick-action",
+        "azure-cosmosdb-db-account-update",
+        # Microsoft.Web/sites/write
+        "azure-webapp-update",
+        "azure-webapp-assign-managed-identity-quick-action",
+        "azure-webapp-update-assign-managed-identity-quick-action",
+        "azure-webapp-set-webapp-to-https-only-quick-action",
+        "azure-webapp-enable-client-cert-quick-action",
+        "azure-appservice-webapp-update",
+        "azure-appservice-webapp-update-quick-action",
+        # Microsoft.Web/sites/config/write
+        "azure-webapp-config-set",
+        "azure-webapp-auth-update",
+        "azure-webapp-set-http2-quick-action",
+        "azure-set-function-app-http-version2-0-quick-action",
+        "azure-webapp-disable-remote-debugging-quick-action",
+        "azure-webapp-auth-update-quick-action",
+        "azure-webapp-set-min-tls-version-quick-action",
+        "azure-function-app-set-min-tls-version-quick-action",
+        "azure-appservice-webapp-auth-settings-update",
+        "azure-appservice-webapp-auth-settings-update-quick-action",
+        "azure-appservice-webapp-config-update",
+        "azure-appservice-webapp-config-update-http2-quick-action",
+        "azure-appservice-webapp-config-disable-remote-debugging-quick-action",
+        "azure-appservice-webapp-config-update-min-tls-version-quick-action",
+        # Microsoft.Insights/logprofiles/write
+        "azure-monitor-log-profile-update",
+        "azure-monitor-log-retention-period-quick-action",
+        # Microsoft.Authorization/policyAssignments/write
+        "azure-policy-assignment-create",
+        "azure-policy-assignment-create-quick-action",
+    }
+)
+
 API_FUNCTION_TO_PERMISSIONS = {
     "create_network_security_group": ["Microsoft.Network/networkSecurityGroups/write"],
     "acr_update": ["Microsoft.ContainerRegistry/registries/read", "Microsoft.ContainerRegistry/registries/write"],
@@ -12909,6 +12979,12 @@ def main():  # pragma: no cover
     demisto.debug(f"{connector_id=}")
     handle_proxy()
     try:
+        # TODO: Determine the user type (full vs. partial permissions) once the mechanism is defined.
+        is_all_commands_allowed = True
+        validate_command_is_allowed(
+            command, PARTIAL_PERMISSIONS_ALLOWED_COMMANDS, CloudTypes.AZURE.value, is_all_commands_allowed
+        )
+
         commands_with_params_and_args = {
             "azure-rg-list-operations": resource_graph_operations_list_command,
             "azure-rg-operations-list": resource_graph_operations_list_command,

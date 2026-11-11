@@ -1214,3 +1214,40 @@ def test_get_timeout_negative_raises(bad_timeout):
 
     with pytest.raises(DemistoException, match="Timeout values must not be negative."):
         get_timeout(bad_timeout)
+
+
+@pytest.mark.parametrize("command", ["test-module", "aws-s3-bucket-versioning-put"])
+def test_validate_command_is_allowed_partial_user_allowed_command(command):
+    """
+    Given: A user with the partial permission set, and a command that is test-module or in the allowed commands set.
+    When: validate_command_is_allowed is called with is_all_commands_allowed=False.
+    Then: No exception is raised.
+    """
+    from COOCApiModule import validate_command_is_allowed
+
+    validate_command_is_allowed(command, frozenset({"aws-s3-bucket-versioning-put"}), CloudTypes.AWS.value, False)
+
+
+def test_validate_command_is_allowed_partial_user_disallowed_command():
+    """
+    Given: A user with the partial permission set, and a command that is not in the allowed commands set.
+    When: validate_command_is_allowed is called with is_all_commands_allowed=False.
+    Then: A DemistoException with an informative message is raised.
+    """
+    from COOCApiModule import validate_command_is_allowed
+
+    with pytest.raises(DemistoException, match="The command 'aws-s3-bucket-delete' is not allowed with the partial"):
+        validate_command_is_allowed(
+            "aws-s3-bucket-delete", frozenset({"aws-s3-bucket-versioning-put"}), CloudTypes.AWS.value, False
+        )
+
+
+def test_validate_command_is_allowed_full_user_any_command():
+    """
+    Given: A user with full permissions, and a command that is not in the allowed commands set.
+    When: validate_command_is_allowed is called with is_all_commands_allowed=True.
+    Then: No exception is raised.
+    """
+    from COOCApiModule import validate_command_is_allowed
+
+    validate_command_is_allowed("aws-s3-bucket-delete", frozenset(), CloudTypes.AWS.value, True)
