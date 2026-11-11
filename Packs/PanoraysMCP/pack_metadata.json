@@ -9,7 +9,26 @@
     "email": "support@panorays.com",
     "created": "2026-10-13T00:00:00Z",
     "categories": [
-        "Vulnerability Management"
+        "Data Enrichment & Threat Intelligence",
+        "Vulnerability Management",
+        "Analytics & SIEM",
+        "Case Management",
+        "Cloud Services",
+        "Cloud Security",
+        "Database",
+        "Deception & Breach Simulation",
+        "Endpoint",
+        "Forensics & Malware Analysis",
+        "IT Services",
+        "Identity and Access Management",
+        "Messaging and Conferencing",
+        "Network Security",
+        "Utilities",
+        "Authentication & Identity Management",
+        "Email",
+        "Cloud Service Provider",
+        "Code Repositories",
+        "CI/CD"
     ],
     "tags": [],
     "useCases": [],
@@ -17,6 +36,9 @@
         "Panorays",
         "MCP",
         "TPRM",
+        "TPCRM",
+        "Third Party Intelligence",
+        "Axis",
         "Supply Chain Security"
     ],
     "marketplaces": [

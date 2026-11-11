@@ -1,7 +1,7 @@
 name: Panorays Axis MCP
 display: Panorays Axis MCP
 description: Connects securely with the Panorays Axis Model Context Protocol (MCP) server and accesses its tools in real time.
-category: Vulnerability Management
+category: Data Enrichment & Threat Intelligence
 provider: Panorays
 sectionorder:
 - Connect
