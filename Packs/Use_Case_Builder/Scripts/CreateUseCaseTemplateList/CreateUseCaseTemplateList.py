@@ -135,3 +135,5 @@ usecasetemplatelist = """<html>
 """  # noqa: E501
 
 demisto.executeCommand("setList", {"listName": "UseCaseTemplate", "listData": usecasetemplatelist})
+
+# CIAC-17462: xsoar-lint engine comparison (pylint vs ast). Not for merge.

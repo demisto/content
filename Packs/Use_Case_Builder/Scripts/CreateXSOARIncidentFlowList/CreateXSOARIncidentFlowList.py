@@ -119,3 +119,5 @@ Alert</li> </ul> </div> \
     0.12), 0 1px 2px rgba(0, 0, 0, 0.24);">Timeline</li> </ul> </div> </div> </body> """
 
 demisto.executeCommand("createList", {"listName": "XSOARIncidentFlow", "listData": incidentflowdata})
+
+# CIAC-17462: xsoar-lint engine comparison (pylint vs ast). Not for merge.

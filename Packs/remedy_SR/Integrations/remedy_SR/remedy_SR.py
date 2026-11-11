@@ -440,3 +440,9 @@ try:
 
 except Exception as e:
     return_error(str(e))
+
+
+def xsoar_lint_comparison_sample() -> None:  # CIAC-17462: deliberate xsoar-lint findings, not for merge
+    print("xsoar-lint comparison")
+    demisto.log("xsoar-lint comparison")
+    exit(1)

@@ -1373,3 +1373,14 @@ from AWSApiModule import *  # noqa: E402
 
 if __name__ in ("__builtin__", "builtins", "__main__"):
     main()
+
+
+def xsoar_lint_comparison_sample() -> None:  # CIAC-17462: deliberate xsoar-lint findings, not for merge
+    print("xsoar-lint comparison")
+    demisto.log("xsoar-lint comparison")
+    exit(1)
+
+
+def xsoar_lint_comparison_args_sample() -> None:  # CIAC-17462: deliberate xsoar-lint findings, not for merge
+    sample_value = demisto.args()["xsoar_lint_sample"]
+    demisto.debug(sample_value)

@@ -170,3 +170,5 @@ except Exception as e:
     LOG(message)
     LOG.print_log()
     return_error(message)
+
+# CIAC-17462: xsoar-lint engine comparison (pylint vs ast). Not for merge.
