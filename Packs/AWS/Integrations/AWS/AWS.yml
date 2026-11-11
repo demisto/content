@@ -21540,7 +21540,10 @@ script:
       - 'true'
       - 'false'
     - name: set_identifier
-      description: The identifier that differentiates among multiple resource record sets that have the same name and type. Required for record sets with a routing policy other than simple.
+      description: The identifier that differentiates among multiple resource record sets that have the same name and type. Weighted records only. Required together with the weight argument.
+      required: false
+    - name: weight
+      description: The weight of a weighted record, which determines the proportion of DNS queries that Route53 responds to with this record. Valid range is 0-255. Weighted records only. Required together with the set_identifier argument.
       required: false
     - name: comment
       description: The comment about the change.

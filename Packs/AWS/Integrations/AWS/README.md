@@ -7569,7 +7569,8 @@ Creates, updates (UPSERT), or deletes a single resource record set in a hosted z
 | alias_target_hosted_zone_id | The hosted zone ID of the AWS resource that the alias record routes traffic to. Alias records only. Required together with alias_target_dns_name. | Optional |
 | alias_target_dns_name | The DNS name of the AWS resource that the alias record routes traffic to. Alias records only. Required together with alias_target_hosted_zone_id. | Optional |
 | alias_target_evaluate_target_health | Whether the alias record inherits the health of the referenced AWS resource. Alias records only. If not provided for an alias record, false is used. Possible values are: true, false. | Optional |
-| set_identifier | The identifier that differentiates among multiple resource record sets that have the same name and type. Required for record sets with a routing policy other than simple. | Optional |
+| set_identifier | The identifier that differentiates among multiple resource record sets that have the same name and type. Weighted records only. Required together with the weight argument. | Optional |
+| weight | The weight of a weighted record, which determines the proportion of DNS queries that Route53 responds to with this record. Valid range is 0-255. Weighted records only. Required together with the set_identifier argument. | Optional |
 | comment | The comment about the change. | Optional |
 
 #### Context Output

@@ -6621,7 +6621,8 @@ def test_route53_hosted_zones_list_command_empty(mocker):
     """
     Given: A mocked Route53 client returning no hosted zones.
     When: hosted_zones_list_command is called without arguments.
-    Then: The default MaxItems of "100" is sent, and it returns a readable message without outputs or a raw response.
+    Then: The default MaxItems of "100" is sent, it returns a readable message, and HostedZonesNextToken is
+          written as None to clear a stale token.
     """
     from AWS import Route53
 
@@ -6632,8 +6633,7 @@ def test_route53_hosted_zones_list_command_empty(mocker):
 
     mock_client.list_hosted_zones.assert_called_once_with(MaxItems="100")
     assert result.readable_output == "No Route53 hosted zones were found."
-    assert result.outputs is None
-    assert result.raw_response is None
+    assert result.outputs == {"AWS.Route53(true)": {"HostedZonesNextToken": None}}
 
 
 def test_route53_hosted_zones_list_command_error_response(mocker):
@@ -6704,7 +6704,8 @@ def test_route53_hosted_zones_by_name_list_command_empty(mocker):
     """
     Given: A mocked Route53 client returning no hosted zones.
     When: hosted_zones_by_name_list_command is called without arguments.
-    Then: It sends only the default MaxItems of "100" and returns a readable message without a raw response.
+    Then: It sends only the default MaxItems of "100", returns a readable message, and writes the next-page
+          values as None to clear stale values.
     """
     from AWS import Route53
 
@@ -6718,7 +6719,7 @@ def test_route53_hosted_zones_by_name_list_command_empty(mocker):
 
     mock_client.list_hosted_zones_by_name.assert_called_once_with(MaxItems="100")
     assert result.readable_output == "No Route53 hosted zones were found."
-    assert result.raw_response is None
+    assert result.outputs == {"AWS.Route53(true)": {"HostedZonesNextDNSName": None, "HostedZonesNextHostedZoneId": None}}
 
 
 def test_route53_hosted_zones_by_name_list_command_error_response(mocker):
@@ -6836,8 +6837,8 @@ def test_route53_resource_record_sets_list_command_empty(mocker):
     """
     Given: A mocked Route53 client returning no record sets.
     When: resource_record_sets_list_command is called without a limit.
-    Then: The default MaxItems of "300" is sent, and it returns a readable message that names the hosted zone,
-          without a raw response.
+    Then: The default MaxItems of "300" is sent, it returns a readable message that names the hosted zone,
+          and the next-record values are written as None to clear stale values.
     """
     from AWS import Route53
 
@@ -6852,7 +6853,14 @@ def test_route53_resource_record_sets_list_command_empty(mocker):
 
     mock_client.list_resource_record_sets.assert_called_once_with(HostedZoneId="Z1", MaxItems="300")
     assert result.readable_output == "No resource record sets were found in hosted zone Z1."
-    assert result.raw_response is None
+    assert result.outputs == {
+        "AWS.Route53(true)": {
+            "RecordSetsNextRecordName": None,
+            "RecordSetsNextRecordType": None,
+            "RecordSetsNextRecordIdentifier": None,
+            "RecordSetsIsTruncated": False,
+        }
+    }
 
 
 @pytest.mark.parametrize(
@@ -6911,9 +6919,10 @@ def _route53_change_response() -> dict:
 
 def test_route53_resource_record_sets_change_command_delete_values(mocker):
     """
-    Given: A DELETE action with multiple values, a TTL, a set identifier and a comment.
+    Given: A DELETE action with multiple values, a TTL, a set identifier, a weight and a comment.
     When: resource_record_sets_change_command is called.
-    Then: It sends one change with all the ResourceRecords, and outputs the ChangeInfo with SubmittedAt as a string.
+    Then: It sends one change with all the ResourceRecords, the SetIdentifier and the Weight,
+          and outputs the ChangeInfo with SubmittedAt as a string.
     """
     from AWS import Route53
 
@@ -6927,6 +6936,7 @@ def test_route53_resource_record_sets_change_command_delete_values(mocker):
         "ttl": "300",
         "values": "old-bucket.s3.amazonaws.com,other.example.com",
         "set_identifier": "weighted-1",
+        "weight": "50",
         "comment": "remove dangling record",
     }
 
@@ -6943,6 +6953,7 @@ def test_route53_resource_record_sets_change_command_delete_values(mocker):
                         "Name": "app.example.com",
                         "Type": "CNAME",
                         "SetIdentifier": "weighted-1",
+                        "Weight": 50,
                         "TTL": 300,
                         "ResourceRecords": [{"Value": "old-bucket.s3.amazonaws.com"}, {"Value": "other.example.com"}],
                     },
@@ -7042,6 +7053,22 @@ def test_route53_resource_record_sets_change_command_alias_default_evaluate_targ
             {"alias_target_hosted_zone_id": "Z2", "alias_target_dns_name": "a.b", "ttl": "60"},
             "ttl argument cannot be used with an alias record",
         ),
+        (
+            {"values": "1.1.1.1", "ttl": "60", "set_identifier": "blue"},
+            "weight argument is required when the set_identifier argument is provided",
+        ),
+        (
+            {"values": "1.1.1.1", "ttl": "60", "weight": "10"},
+            "set_identifier argument is required when the weight argument is provided",
+        ),
+        (
+            {"values": "1.1.1.1", "ttl": "60", "set_identifier": "blue", "weight": "256"},
+            "weight argument must be between 0 and 255",
+        ),
+        (
+            {"values": "1.1.1.1", "ttl": "60", "set_identifier": "blue", "weight": "-1"},
+            "weight argument must be between 0 and 255",
+        ),
     ],
 )
 def test_route53_resource_record_sets_change_command_validation_errors(extra_args, error):
@@ -7058,6 +7085,34 @@ def test_route53_resource_record_sets_change_command_validation_errors(extra_arg
     with pytest.raises(ValueError, match=error):
         Route53.resource_record_sets_change_command(mock_client, args)
     mock_client.change_resource_record_sets.assert_not_called()
+
+
+def test_route53_resource_record_sets_change_command_weight_zero(mocker):
+    """
+    Given: A CREATE action for a weighted record with a weight of 0 (which stops Route53 from responding with the record).
+    When: resource_record_sets_change_command is called.
+    Then: The Weight of 0 is sent to the API and is not dropped as an empty value.
+    """
+    from AWS import Route53
+
+    mock_client = mocker.Mock()
+    mock_client.change_resource_record_sets.return_value = _route53_change_response()
+    args = {
+        "hosted_zone_id": "Z1",
+        "action": "CREATE",
+        "name": "www.example.com",
+        "type": "A",
+        "ttl": "60",
+        "values": "1.1.1.1",
+        "set_identifier": "blue",
+        "weight": "0",
+    }
+
+    Route53.resource_record_sets_change_command(mock_client, args)
+
+    record_set = mock_client.change_resource_record_sets.call_args[1]["ChangeBatch"]["Changes"][0]["ResourceRecordSet"]
+    assert record_set["SetIdentifier"] == "blue"
+    assert record_set["Weight"] == 0
 
 
 def test_route53_resource_record_sets_change_command_error_response(mocker):
@@ -7183,18 +7238,26 @@ def test_route53_hosted_zones_readable():
 
 def test_route53_build_resource_record_set_values():
     """
-    Given: Record arguments with values, a TTL and a set identifier.
+    Given: Record arguments with values, a TTL, a set identifier and a weight.
     When: Route53._build_resource_record_set is called.
-    Then: It returns a ResourceRecordSet with ResourceRecords and TTL, and without an AliasTarget.
+    Then: It returns a ResourceRecordSet with ResourceRecords, TTL, SetIdentifier and Weight, and without an AliasTarget.
     """
     from AWS import Route53
 
-    args = {"name": "www.example.com", "type": "A", "ttl": "60", "values": "1.1.1.1,2.2.2.2", "set_identifier": "id-1"}
+    args = {
+        "name": "www.example.com",
+        "type": "A",
+        "ttl": "60",
+        "values": "1.1.1.1,2.2.2.2",
+        "set_identifier": "id-1",
+        "weight": "10",
+    }
 
     assert Route53._build_resource_record_set(args) == {
         "Name": "www.example.com",
         "Type": "A",
         "SetIdentifier": "id-1",
+        "Weight": 10,
         "TTL": 60,
         "ResourceRecords": [{"Value": "1.1.1.1"}, {"Value": "2.2.2.2"}],
     }

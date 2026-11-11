@@ -11305,6 +11305,7 @@ class Route53:
 
     HOSTED_ZONES_MAX_ITEMS = 100
     RECORD_SETS_MAX_ITEMS = 300
+    MAX_RECORD_WEIGHT = 255
     HOSTED_ZONE_ID_PREFIX = "/hostedzone/"
     HOSTED_ZONES_HEADERS = ["Id", "Name", "ResourceRecordSetCount", "PrivateZone", "Comment"]
 
@@ -11393,12 +11394,14 @@ class Route53:
         hosted_zones = response.get("HostedZones", [])
         next_marker = response.get("NextMarker")
         print_debug_logs(client, f"{len(hosted_zones)=}, {bool(next_marker)=}")
+        # Outputs are intentionally not cleaned, so a missing NextMarker is written as null and clears a stale token.
+        next_page_outputs = {"AWS.Route53(true)": {"HostedZonesNextToken": next_marker}}
         if not hosted_zones:
-            return CommandResults(readable_output="No Route53 hosted zones were found.")
+            return CommandResults(readable_output="No Route53 hosted zones were found.", outputs=next_page_outputs)
 
         outputs = {
             "AWS.Route53.HostedZones(val.Id && val.Id == obj.Id)": hosted_zones,
-            "AWS.Route53(true)": {"HostedZonesNextToken": next_marker},
+            **next_page_outputs,
         }
         return CommandResults(
             outputs=outputs,
@@ -11436,15 +11439,19 @@ class Route53:
         response = serialize_response_with_datetime_encoding(response)
         hosted_zones = response.get("HostedZones", [])
         print_debug_logs(client, f"{len(hosted_zones)=}, {response.get('IsTruncated')=}")
-        if not hosted_zones:
-            return CommandResults(readable_output="No Route53 hosted zones were found.")
-
-        outputs = {
-            "AWS.Route53.HostedZones(val.Id && val.Id == obj.Id)": hosted_zones,
+        # Outputs are intentionally not cleaned, so missing next-page values are written as null and clear stale values.
+        next_page_outputs = {
             "AWS.Route53(true)": {
                 "HostedZonesNextDNSName": response.get("NextDNSName"),
                 "HostedZonesNextHostedZoneId": response.get("NextHostedZoneId"),
             },
+        }
+        if not hosted_zones:
+            return CommandResults(readable_output="No Route53 hosted zones were found.", outputs=next_page_outputs)
+
+        outputs = {
+            "AWS.Route53.HostedZones(val.Id && val.Id == obj.Id)": hosted_zones,
+            **next_page_outputs,
         }
         return CommandResults(
             outputs=outputs,
@@ -11496,8 +11503,20 @@ class Route53:
         response = serialize_response_with_datetime_encoding(response)
         record_sets = response.get("ResourceRecordSets", [])
         print_debug_logs(client, f"{len(record_sets)=}, {response.get('IsTruncated')=}")
+        # Outputs are intentionally not cleaned, so missing next-record values are written as null and clear stale values.
+        next_page_outputs = {
+            "AWS.Route53(true)": {
+                "RecordSetsNextRecordName": response.get("NextRecordName"),
+                "RecordSetsNextRecordType": response.get("NextRecordType"),
+                "RecordSetsNextRecordIdentifier": response.get("NextRecordIdentifier"),
+                "RecordSetsIsTruncated": response.get("IsTruncated"),
+            },
+        }
         if not record_sets:
-            return CommandResults(readable_output=f"No resource record sets were found in hosted zone {hosted_zone_id}.")
+            return CommandResults(
+                readable_output=f"No resource record sets were found in hosted zone {hosted_zone_id}.",
+                outputs=next_page_outputs,
+            )
 
         for record_set in record_sets:
             record_set["HostedZoneId"] = hosted_zone_id
@@ -11517,12 +11536,7 @@ class Route53:
         outputs = {
             "AWS.Route53.RecordSets(val.HostedZoneId == obj.HostedZoneId && val.Name == obj.Name"
             " && val.Type == obj.Type && val.SetIdentifier == obj.SetIdentifier)": record_sets,
-            "AWS.Route53(true)": {
-                "RecordSetsNextRecordName": response.get("NextRecordName"),
-                "RecordSetsNextRecordType": response.get("NextRecordType"),
-                "RecordSetsNextRecordIdentifier": response.get("NextRecordIdentifier"),
-                "RecordSetsIsTruncated": response.get("IsTruncated"),
-            },
+            **next_page_outputs,
         }
         return CommandResults(
             outputs=outputs,
@@ -11542,17 +11556,20 @@ class Route53:
         Builds and validates the ResourceRecordSet of a single Route53 change.
 
         Args:
-            args (Dict[str, Any]): Command arguments including name, type, ttl, values, set_identifier and the alias target
-                arguments.
+            args (Dict[str, Any]): Command arguments including name, type, ttl, values, set_identifier, weight and the alias
+                target arguments.
 
         Returns:
             Dict[str, Any]: The ResourceRecordSet for the change request.
 
         Raises:
-            ValueError: If the values and alias target arguments are missing, combined, or incomplete.
+            ValueError: If the values and alias target arguments are missing, combined, or incomplete, or if the
+                set_identifier and weight arguments are not provided together or the weight is out of range.
         """
         values = argToList(args.get("values"))
         ttl = arg_to_number(args.get("ttl"))
+        set_identifier = args.get("set_identifier")
+        weight = arg_to_number(args.get("weight"))
         alias_hosted_zone_id = args.get("alias_target_hosted_zone_id")
         alias_dns_name = args.get("alias_target_dns_name")
         alias_evaluate_target_health = arg_to_bool_or_none(args.get("alias_target_evaluate_target_health"))
@@ -11571,6 +11588,12 @@ class Route53:
             raise ValueError("Both alias_target_hosted_zone_id and alias_target_dns_name are required for an alias record.")
         if uses_alias and ttl is not None:
             raise ValueError("The ttl argument cannot be used with an alias record.")
+        if set_identifier and weight is None:
+            raise ValueError("The weight argument is required when the set_identifier argument is provided.")
+        if weight is not None and not set_identifier:
+            raise ValueError("The set_identifier argument is required when the weight argument is provided.")
+        if weight is not None and not 0 <= weight <= Route53.MAX_RECORD_WEIGHT:
+            raise ValueError(f"The weight argument must be between 0 and {Route53.MAX_RECORD_WEIGHT}.")
 
         alias_target = {
             "HostedZoneId": alias_hosted_zone_id,
@@ -11581,7 +11604,8 @@ class Route53:
             {
                 "Name": args.get("name"),
                 "Type": args.get("type"),
-                "SetIdentifier": args.get("set_identifier"),
+                "SetIdentifier": set_identifier,
+                "Weight": weight,
                 "TTL": ttl,
                 "ResourceRecords": [{"Value": value} for value in values] or None,
                 "AliasTarget": alias_target if uses_alias else None,
