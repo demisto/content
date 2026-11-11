@@ -128,5 +128,8 @@
                 }
             }
         ]
-    }
+    },
+    "marketplaces": [
+        "xsoar"
+    ]
 }

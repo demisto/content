@@ -988,6 +988,7 @@ script:
   dockerimage: demisto/python3:3.12.14.13495286
   isFetchSamples: true
   isfetch: true
+  isfetch:platform: false
   script: ''
   subtype: python3
   type: python

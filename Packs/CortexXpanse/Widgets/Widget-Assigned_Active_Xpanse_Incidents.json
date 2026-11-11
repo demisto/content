@@ -33,5 +33,8 @@
     "id": "c21d76eb-3bf8-43e3-891e-7c552a62dc0a",
     "widgetType": "trend",
     "fromVersion": "6.8.0",
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }
