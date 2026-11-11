@@ -1,0 +1,332 @@
+id: Sprinklr - Suspicious User Activity Response
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Sprinklr - Suspicious User Activity Response
+description: Investigates a Sprinklr user and recent author activity, then optionally deactivates or deprovisions the user
+  only when the corresponding approval inputs are explicitly enabled.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 66f4d321-7183-4d70-bad2-0bf1c1431bc6
+    type: start
+    task:
+      id: 66f4d321-7183-4d70-bad2-0bf1c1431bc6
+      version: -1
+      name: ''
+      description: ''
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    view: '{"position":{"x":450,"y":40}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      '#none#':
+      - '1'
+  '1':
+    id: '1'
+    taskid: c354fe00-68ec-4203-8211-d24057539467
+    type: title
+    task:
+      id: c354fe00-68ec-4203-8211-d24057539467
+      version: -1
+      name: Investigate
+      description: ''
+      iscommand: false
+      brand: ''
+      type: title
+    separatecontext: false
+    view: '{"position":{"x":450,"y":160}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      '#none#':
+      - '2'
+  '2':
+    id: '2'
+    taskid: 37d08efa-a536-4eb2-aca6-8818caf5b109
+    type: regular
+    task:
+      id: 37d08efa-a536-4eb2-aca6-8818caf5b109
+      version: -1
+      name: Get Sprinklr user
+      description: Retrieve the user and team memberships before containment.
+      iscommand: true
+      brand: Sprinklr Event Collector
+      script: Sprinklr Event Collector|||sprinklr-get-user
+      type: regular
+    separatecontext: false
+    view: '{"position":{"x":450,"y":280}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    scriptarguments:
+      email:
+        complex:
+          root: inputs.UserEmail
+    nexttasks:
+      '#none#':
+      - '3'
+  '3':
+    id: '3'
+    taskid: 6d426d10-d29b-4d4a-bf69-f35121c758ec
+    type: regular
+    task:
+      id: 6d426d10-d29b-4d4a-bf69-f35121c758ec
+      version: -1
+      name: Review recent user activity
+      description: Retrieve recent activity for the authorId from the configured Sprinklr Reporting API.
+      iscommand: true
+      brand: Sprinklr Event Collector
+      script: Sprinklr Event Collector|||sprinklr-get-user-activity
+      type: regular
+    separatecontext: false
+    view: '{"position":{"x":450,"y":420}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    scriptarguments:
+      author_id:
+        complex:
+          root: inputs.AuthorID
+      from_time:
+        complex:
+          root: inputs.Lookback
+    nexttasks:
+      '#none#':
+      - '4'
+  '4':
+    id: '4'
+    taskid: 5690db5e-c26d-4688-9eb5-4025057c6469
+    type: condition
+    task:
+      id: 5690db5e-c26d-4688-9eb5-4025057c6469
+      version: -1
+      name: Deactivate the user?
+      description: Containment runs only after explicit approval.
+      iscommand: false
+      brand: ''
+      type: condition
+    separatecontext: false
+    view: '{"position":{"x":450,"y":570}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      'yes':
+      - '5'
+      '#default#':
+      - '6'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ConfirmDeactivate
+              iscontext: true
+          right:
+            value:
+              simple: 'True'
+          ignorecase: true
+  '5':
+    id: '5'
+    taskid: bb9e2e1f-21f4-4944-b878-5a4ebe49fcd1
+    type: regular
+    task:
+      id: bb9e2e1f-21f4-4944-b878-5a4ebe49fcd1
+      version: -1
+      name: Deactivate Sprinklr user
+      description: Set SCIM active=false for containment.
+      iscommand: true
+      brand: Sprinklr Event Collector
+      script: Sprinklr Event Collector|||sprinklr-deactivate-user
+      type: regular
+    separatecontext: false
+    view: '{"position":{"x":180,"y":720}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    scriptarguments:
+      user_id:
+        complex:
+          root: inputs.UserID
+      confirm:
+        simple: 'yes'
+    nexttasks:
+      '#none#':
+      - '6'
+  '6':
+    id: '6'
+    taskid: 49ec9adb-d968-466e-86d3-e7d32ba9b485
+    type: condition
+    task:
+      id: 49ec9adb-d968-466e-86d3-e7d32ba9b485
+      version: -1
+      name: Permanently deprovision the user?
+      description: Destructive SCIM DELETE runs only after separate explicit approval.
+      iscommand: false
+      brand: ''
+      type: condition
+    separatecontext: false
+    view: '{"position":{"x":450,"y":880}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      'yes':
+      - '9'
+      '#default#':
+      - '8'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ConfirmDeprovision
+              iscontext: true
+          right:
+            value:
+              simple: 'True'
+          ignorecase: true
+  '9':
+    id: '9'
+    taskid: 2b37de73-9b6c-4ca5-88ad-52b81eef0a72
+    type: condition
+    task:
+      id: 2b37de73-9b6c-4ca5-88ad-52b81eef0a72
+      version: -1
+      name: Confirm permanent deprovision
+      description: An analyst must explicitly confirm before the irreversible SCIM DELETE action runs.
+      iscommand: false
+      brand: ''
+      type: condition
+    separatecontext: false
+    view: '{"position":{"x":180,"y":1030}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      'yes':
+      - '7'
+      'no':
+      - '8'
+  '7':
+    id: '7'
+    taskid: 086e2867-a34c-45a0-a5ec-5a3e20362077
+    type: regular
+    task:
+      id: 086e2867-a34c-45a0-a5ec-5a3e20362077
+      version: -1
+      name: Deprovision Sprinklr user
+      description: Permanently deprovision the user using the configured SCIM DELETE endpoint.
+      iscommand: true
+      brand: Sprinklr Event Collector
+      script: Sprinklr Event Collector|||sprinklr-deprovision-user
+      type: regular
+    separatecontext: false
+    view: '{"position":{"x":180,"y":1190}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    scriptarguments:
+      user_id:
+        complex:
+          root: inputs.UserID
+      confirm:
+        simple: 'yes'
+    nexttasks:
+      '#none#':
+      - '8'
+  '8':
+    id: '8'
+    taskid: 4cf8b898-0f3f-446b-8b2a-a15cd5975ebe
+    type: title
+    task:
+      id: 4cf8b898-0f3f-446b-8b2a-a15cd5975ebe
+      version: -1
+      name: Done
+      description: ''
+      iscommand: false
+      brand: ''
+      type: title
+    separatecontext: false
+    view: '{"position":{"x":450,"y":1350}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+inputs:
+- key: UserEmail
+  value: {}
+  required: true
+  description: Sprinklr user email to investigate.
+  playbookInputQuery: null
+- key: AuthorID
+  value: {}
+  required: true
+  description: Sprinklr authorId used to retrieve recent Reporting API activity.
+  playbookInputQuery: null
+- key: UserID
+  value: {}
+  required: true
+  description: Sprinklr SCIM user ID for containment/deprovision actions.
+  playbookInputQuery: null
+- key: Lookback
+  value:
+    simple: 24 hours ago
+  required: true
+  description: Activity lookback window.
+  playbookInputQuery: null
+- key: ConfirmDeactivate
+  value:
+    simple: 'False'
+  required: true
+  description: Set to True only after analyst approval to deactivate the user.
+  playbookInputQuery: null
+- key: ConfirmDeprovision
+  value:
+    simple: 'False'
+  required: true
+  description: Set to True to enable the destructive path. A separate interactive analyst confirmation is still required before SCIM deprovisioning.
+  playbookInputQuery: null
+outputs:
+- contextPath: Sprinklr.Response.User
+  description: Sprinklr Governance user details.
+  type: unknown
+- contextPath: Sprinklr.Investigation.UserActivity
+  description: Recent activity for the requested authorId.
+  type: unknown
+- contextPath: Sprinklr.Response.Action
+  description: Response action executed, when approved.
+  type: string
+fromversion: 8.0.0
+marketplaces:
+- marketplacev2
+- platform

@@ -1,0 +1,48 @@
+{
+    "sprinklr_sprinklr_raw": {
+        "postId": {
+            "type": "int",
+            "is_array": false
+        },
+        "messageId": {
+            "type": "int",
+            "is_array": false
+        },
+        "accountId": {
+            "type": "int",
+            "is_array": false
+        },
+        "authorId": {
+            "type": "int",
+            "is_array": false
+        },
+        "messageType": {
+            "type": "int",
+            "is_array": false
+        },
+        "channelType": {
+            "type": "string",
+            "is_array": false
+        },
+        "accountType": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "statusID": {
+            "type": "string",
+            "is_array": false
+        },
+        "content": {
+            "type": "string",
+            "is_array": false
+        },
+        "permalink": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

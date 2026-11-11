@@ -1,0 +1,33 @@
+[MODEL: dataset = sprinklr_sprinklr_raw]
+alter
+    xdm.event.id = to_string(coalesce(messageId, postId)),
+    xdm.event.original_event_type = channelType,
+    xdm.event.type = to_string(messageType),
+    xdm.event.outcome_reason = status,
+    xdm.event.description = content,
+
+    xdm.source.user.identifier = to_string(authorId),
+    xdm.source.identity.identifier = to_string(authorId),
+
+    xdm.target.resource.id = to_string(accountId),
+    xdm.target.resource.type = accountType,
+    xdm.target.resource.value = statusID,
+
+    xdm.target.url = permalink,
+
+    xdm.session_context_id = to_string(messageId),
+
+    xdm.observer.name = "Sprinklr",
+    xdm.observer.type = "Sprinklr",
+
+    xdm.event.is_completed = if(
+        status = "SENT", true,
+        status = "FAILED", true,
+        null
+    ),
+
+    xdm.event.outcome = if(
+        status = "SENT", XDM_CONST.OUTCOME_SUCCESS,
+        status = "FAILED", XDM_CONST.OUTCOME_FAILED,
+        XDM_CONST.OUTCOME_UNKNOWN
+    );
