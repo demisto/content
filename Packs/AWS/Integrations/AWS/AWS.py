@@ -30,6 +30,7 @@ MAX_TRIPLE_FILTER_VALUE = 5
 MAX_CHAR_LENGTH_FOR_FILTER_VALUE = 255
 MAX_LIMIT_VALUE = 1000
 DEFAULT_LIMIT_VALUE = 50
+MAX_SSM_EMPTY_PAGES_TO_SKIP = 10  # Max number of empty pages (with a NextToken) to skip when listing SSM parameters.
 DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval for polling commands.
 DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for polling commands.
 TERMINAL_COMMAND_STATUSES = {  # the status for run command command
@@ -9512,18 +9513,24 @@ class SSM:
         )
         kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
 
-        print_debug_logs(client, f"Listing SSM parameters with {kwargs=}")
+        # With filters, AWS can return an empty page that still has a NextToken (its internal scan limit was reached
+        # before a match was found), so keep following the NextToken until a page has results or there are no more pages.
+        for _ in range(MAX_SSM_EMPTY_PAGES_TO_SKIP + 1):
+            print_debug_logs(client, f"Listing SSM parameters with {kwargs=}")
 
-        response = client.describe_parameters(**kwargs)
+            response = client.describe_parameters(**kwargs)
 
-        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        response = serialize_response_with_datetime_encoding(response)
-        parameters = response.get("Parameters", [])
-        next_token = response.get("NextToken")
+            response = serialize_response_with_datetime_encoding(response)
+            parameters = response.get("Parameters", [])
+            next_token = response.get("NextToken")
 
-        # With filters, AWS can return an empty page that still has a NextToken, so only stop when both are missing.
+            if parameters or not next_token:
+                break
+            kwargs["NextToken"] = next_token
+
         if not parameters and not next_token:
             return CommandResults(
                 readable_output="No SSM parameters found.",

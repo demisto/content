@@ -16896,27 +16896,76 @@ def test_parameters_list_command_no_parameters(mocker):
     assert result.outputs == {"AWS.SSM(true)": {"ParametersNextToken": None}}
 
 
-def test_parameters_list_command_empty_page_with_next_token(mocker):
+def test_parameters_list_command_empty_page_with_next_token_is_skipped(mocker):
     """
-    Given: A mocked SSM client returning an empty Parameters list together with a NextToken.
+    Given: A mocked SSM client whose first page is empty with a NextToken and whose second page has parameters.
     When: parameters_list_command is called.
-    Then: It does not stop with "No SSM parameters found." and returns the NextToken so the next page can be requested.
+    Then: It automatically follows the NextToken, returns the parameters of the second page and its NextToken.
     """
     from AWS import SSM
+
+    mock_client = mocker.Mock()
+    empty_page = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Parameters": [], "NextToken": "empty-page-tok"}
+    full_page = copy.deepcopy(SSM_DESCRIBE_PARAMETERS_RESPONSE) | {"NextToken": "next-page-tok"}
+    mock_client.describe_parameters.side_effect = [empty_page, full_page]
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    result = SSM.parameters_list_command(mock_client, {"account_id": "123456789012", "region": "us-east-1"})
+
+    assert mock_client.describe_parameters.call_count == 2
+    assert mock_client.describe_parameters.call_args_list[0].kwargs == {"MaxResults": 50}
+    assert mock_client.describe_parameters.call_args_list[1].kwargs == {"MaxResults": 50, "NextToken": "empty-page-tok"}
+    assert "/prod/db/password" in result.readable_output
+    assert len(result.outputs["AWS.SSM.Parameters(val.ARN && val.ARN == obj.ARN)"]) == len(
+        SSM_DESCRIBE_PARAMETERS_RESPONSE["Parameters"]
+    )
+    assert result.outputs["AWS.SSM(true)"] == {"ParametersNextToken": "next-page-tok"}
+
+
+def test_parameters_list_command_empty_pages_until_end(mocker):
+    """
+    Given: A mocked SSM client whose first page is empty with a NextToken and whose second page is empty without a NextToken.
+    When: parameters_list_command is called.
+    Then: It follows the NextToken once, returns "No SSM parameters found." and sets ParametersNextToken to None.
+    """
+    from AWS import SSM
+
+    mock_client = mocker.Mock()
+    mock_client.describe_parameters.side_effect = [
+        {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Parameters": [], "NextToken": "empty-page-tok"},
+        {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Parameters": []},
+    ]
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    result = SSM.parameters_list_command(mock_client, {"account_id": "123456789012", "region": "us-east-1"})
+
+    assert mock_client.describe_parameters.call_count == 2
+    assert result.readable_output == "No SSM parameters found."
+    assert result.outputs == {"AWS.SSM(true)": {"ParametersNextToken": None}}
+
+
+def test_parameters_list_command_empty_pages_limit_reached(mocker):
+    """
+    Given: A mocked SSM client that always returns an empty page with a NextToken.
+    When: parameters_list_command is called.
+    Then: It stops skipping after the maximum number of empty pages and returns the last NextToken so the user can continue.
+    """
+    from AWS import MAX_SSM_EMPTY_PAGES_TO_SKIP, SSM
 
     mock_client = mocker.Mock()
     mock_client.describe_parameters.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "Parameters": [],
-        "NextToken": "next-page-tok",
+        "NextToken": "endless-tok",
     }
     mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
 
     result = SSM.parameters_list_command(mock_client, {"account_id": "123456789012", "region": "us-east-1"})
 
+    assert mock_client.describe_parameters.call_count == MAX_SSM_EMPTY_PAGES_TO_SKIP + 1
     assert result.readable_output != "No SSM parameters found."
     assert result.outputs["AWS.SSM.Parameters(val.ARN && val.ARN == obj.ARN)"] == []
-    assert result.outputs["AWS.SSM(true)"] == {"ParametersNextToken": "next-page-tok"}
+    assert result.outputs["AWS.SSM(true)"] == {"ParametersNextToken": "endless-tok"}
 
 
 def test_parameters_list_command_with_filters_and_pagination(mocker):
