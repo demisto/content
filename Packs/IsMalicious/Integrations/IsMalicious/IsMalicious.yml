@@ -1,0 +1,223 @@
+commonfields:
+  id: IsMalicious
+  version: -1
+name: IsMalicious
+display: IsMalicious
+category: Data Enrichment & Threat Intelligence
+description: Enrich IP, domain, URL and file-hash indicators with IsMalicious reputation, evidence and data-trust context.
+sectionorder:
+- Connect
+- Collect
+configuration:
+- displaypassword: X-API-KEY credential (Base64 of apiKey:apiSecret)
+  name: credentials
+  required: true
+  type: 9
+  hiddenusername: true
+  section: Connect
+  additionalinfo: Use the complete encoded credential, not the raw API key. Keep it secret.
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  additionalinfo: Route requests through the proxy configured in the Cortex system settings.
+- display: Source Reliability
+  name: integrationReliability
+  required: false
+  type: 15
+  section: Collect
+  defaultvalue: F - Reliability cannot be judged
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Choose the reliability assessed by your team; this is not the provider's risk or confidence score.
+script:
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.14.13495286
+  isfetch: false
+  runonce: false
+  commands:
+  - name: ip
+    description: Enrich ip indicators with IsMalicious evidence. At most 50 values per command.
+    arguments:
+    - name: ip
+      description: Indicators to check; comma-separated list or array.
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - &id001
+      contextPath: IsMalicious.Check.Indicator
+      description: The indicator queried, unchanged.
+      type: String
+    - &id002
+      contextPath: IsMalicious.Check.Type
+      description: Indicator type.
+      type: String
+    - &id003
+      contextPath: IsMalicious.Check.Verdict
+      description: Server-evidence-derived verdict; unknown remains unknown.
+      type: String
+    - &id004
+      contextPath: IsMalicious.Check.RiskScore
+      description: Risk score from 0 to 100, higher is riskier. Missing remains unknown.
+      type: Number
+    - &id005
+      contextPath: IsMalicious.Check.Confidence
+      description: Confidence from 0 to 100, separate from risk. Missing remains unknown.
+      type: Number
+    - &id006
+      contextPath: IsMalicious.Check.BlocklistHits
+      description: Number of explicit blocklist matches as provided by API.
+      type: Number
+    - &id007
+      contextPath: IsMalicious.Check.Evidence
+      description: Server evidence, reasons, contradictions, source summary and recommended action.
+      type: Unknown
+    - &id008
+      contextPath: IsMalicious.Check.DataTrust
+      description: Provider data quality and freshness profile.
+      type: Unknown
+    - &id009
+      contextPath: IsMalicious.Check.Sources
+      description: Raw source context. Do not interpret all rows as malicious detections.
+      type: Unknown
+    - &id010
+      contextPath: IsMalicious.Check.LookupStatus
+      description: Known or unknown hash lookup state.
+      type: String
+    - &id011
+      contextPath: IsMalicious.Check.KnownGood
+      description: Known-good hash flag when provided.
+      type: Boolean
+    - &id012
+      contextPath: IsMalicious.Check.Delisted
+      description: Reviewed delisting flag when provided.
+      type: Boolean
+    - &id013
+      contextPath: IsMalicious.Check.ReportURL
+      description: IsMalicious report URL.
+      type: String
+    - &id014
+      contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - &id015
+      contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - &id016
+      contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - &id017
+      contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+  - name: domain
+    description: Enrich domain indicators with IsMalicious evidence. At most 50 values per command.
+    arguments:
+    - name: domain
+      description: Indicators to check; comma-separated list or array.
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - *id001
+    - *id002
+    - *id003
+    - *id004
+    - *id005
+    - *id006
+    - *id007
+    - *id008
+    - *id009
+    - *id010
+    - *id011
+    - *id012
+    - *id013
+    - *id014
+    - *id015
+    - *id016
+    - *id017
+    - contextPath: Domain.Name
+      description: Domain name.
+      type: String
+  - name: url
+    description: Enrich url indicators with IsMalicious evidence. At most 50 values per command.
+    arguments:
+    - name: url
+      description: One complete HTTP(S) URL or an array of complete URLs. Commas inside a URL are preserved.
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - *id001
+    - *id002
+    - *id003
+    - *id004
+    - *id005
+    - *id006
+    - *id007
+    - *id008
+    - *id009
+    - *id010
+    - *id011
+    - *id012
+    - *id013
+    - *id014
+    - *id015
+    - *id016
+    - *id017
+    - contextPath: URL.Data
+      description: Full URL.
+      type: String
+  - name: file
+    description: Enrich MD5, SHA1 or SHA256 hashes with IsMalicious evidence. At most 50 values per command.
+    arguments:
+    - name: file
+      description: MD5, SHA1 or SHA256 hashes; comma-separated list or array. No file upload.
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - *id001
+    - *id002
+    - *id003
+    - *id004
+    - *id005
+    - *id006
+    - *id007
+    - *id008
+    - *id009
+    - *id010
+    - *id011
+    - *id012
+    - *id013
+    - *id014
+    - *id015
+    - *id016
+    - *id017
+    - contextPath: File.MD5
+      description: MD5 hash.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash.
+      type: String
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

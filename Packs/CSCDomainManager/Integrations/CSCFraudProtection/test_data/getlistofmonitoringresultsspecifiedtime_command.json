@@ -1,0 +1,75 @@
+{
+    "CSCFraudProtection": {
+        "status": "success",
+        "message": "Data Fetched Successfully",
+        "data": [
+            {
+                "ticketId": 63583,
+                "eventId": 190153661,
+                "target": "https://malicious-example.com/phishing-test-csc",
+                "detectionTimeStamp": "2026-02-26T23:16:14.665027",
+                "fraudType": "Phishing",
+                "source": "CSC",
+                "data": {
+                    "status": "MONITORING",
+                    "score": 100,
+                    "ip": null,
+                    "isp": "Amazon AES",
+                    "registrar": null,
+                    "records": [
+                        {
+                            "recordType": "A",
+                            "recordValue": "0.0.0.0",
+                            "recVersion": 1
+                        },
+                        {
+                            "recordType": "AAAA",
+                            "recordValue": "0.0.0.0",
+                            "recVersion": 1
+                        },
+                        {
+                            "recordType": "FINGER_PRINT",
+                            "recordValue": "00000000000000000000000000000000",
+                            "recVersion": 1
+                        },
+                        {
+                            "recordType": "HTTP_STATUS_CODE",
+                            "recordValue": "400",
+                            "recVersion": 2
+                        },
+                        {
+                            "recordType": "HTTP_STATUS_CODE",
+                            "recordValue": "404",
+                            "recVersion": 1
+                        },
+                        {
+                            "recordType": "MX",
+                            "recordValue": "0.0.0.0",
+                            "recVersion": 1
+                        },
+                        {
+                            "recordType": "NS",
+                            "recordValue": "0.0.0.0",
+                            "recVersion": 1
+                        },
+                        {
+                            "recordType": "SCORE",
+                            "recordValue": "100",
+                            "recVersion": 1
+                        },
+                        {
+                            "recordType": "SSL_ISSUER",
+                            "recordValue": "Unknown",
+                            "recVersion": 1
+                        },
+                        {
+                            "recordType": "URL",
+                            "recordValue": "https://malicious-example.com/phishing-test-csc",
+                            "recVersion": 1
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

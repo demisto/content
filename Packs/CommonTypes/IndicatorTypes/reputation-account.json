@@ -218,5 +218,9 @@
     },
     "manualMapping": null,
     "fileHashesPriority": null,
-    "layout": "accountRep"
-  }
+    "layout": "accountRep",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

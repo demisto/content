@@ -6320,7 +6320,7 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
-| target | Single serial number to target with this command | Optional |
+| target | The serial number of the firewall to target. Used only on a Panorama instance. To query Panorama itself (for example, to get the status of a job that was run on Panorama), set this argument to the host from the integration instance Server URL, exactly as written (for example, if the Server URL is "https://10.1.1.1/", use "10.1.1.1"). This queries only Panorama and skips the managed firewalls, which speeds up the command, especially when polling. | Optional |
 | status | Filter to return jobs by status. | Optional |
 | job_type | Filter to return jobs by type. | Optional |
 | id | Filter by ID. | Optional |
@@ -6532,7 +6532,7 @@ will immediately reboot.
 ### pan-os-platform-get-system-status
 
 ***
-Checks the status of the given device, checking whether it's up or down and if the operational mode is normal.
+Checks the status of the given device, checking whether it's up or down and if the operational mode is normal. Supports polling to wait until the device becomes available.
 
 #### Base Command
 
@@ -6543,6 +6543,9 @@ Checks the status of the given device, checking whether it's up or down and if t
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | target | ID of host (serial or hostname) to check. | Required |
+| polling | Whether to use polling. When set to "true", the command polls the target device until it becomes available (operational mode "normal") or the timeout is reached. Possible values are: true, false. Default is false. | Optional |
+| interval_in_seconds | The interval (in seconds) between polling attempts. Default is 30. | Optional |
+| timeout | The timeout (in seconds) when polling. Default is 1200. | Optional |
 
 #### Context Output
 
@@ -10258,3 +10261,13 @@ Gets rule hit counts from the firewall.  When connected to Panorama this command
 | PANOS.RuleHitCount.rule_modification_timestamp | Date | Timestamp when the rule was most recently modified. |
 | PANOS.RuleHitCount.rulebase | String | The rulebase of the rule \(such as security, nat, and so on\). |
 | PANOS.RuleHitCount.vsys | String | The name of the firewall VSYS. |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
+
+* Fetch incidents
+
+</~PLATFORM>

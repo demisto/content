@@ -1,3 +1,4 @@
+import json
 from collections import namedtuple
 from copy import deepcopy
 from unittest.mock import MagicMock, patch
@@ -1911,6 +1912,107 @@ def test_escape_backslashes_in_field_filters(spl_search, expected):
       and rex/free-text quoted strings and regex literals inside function calls are left untouched.
     """
     assert splunk.escape_backslashes_in_field_filters(spl_search) == expected
+
+
+@pytest.mark.parametrize(
+    "raw_json, expected",
+    [
+        # A lone backslash forming an invalid JSON escape (\A) is doubled so json.loads accepts it
+        (
+            '{"search":"object=\\"PREFIX\\Admin\\""}',
+            '{"search":"object=\\"PREFIX\\\\Admin\\""}',
+        ),
+        # Multiple invalid backslashes (\W in "NT SERVICE\WinCollect", \A in "\Admin")
+        (
+            '{"search":"user=\\"NT SERVICE\\WinCollect\\" object=\\"PREFIX\\Admin\\""}',
+            '{"search":"user=\\"NT SERVICE\\\\WinCollect\\" object=\\"PREFIX\\\\Admin\\""}',
+        ),
+        # Valid JSON escapes (\" and \n) must be left untouched
+        (
+            '{"search":"a=\\"b\\" \\n c=\\"d\\""}',
+            '{"search":"a=\\"b\\" \\n c=\\"d\\""}',
+        ),
+        # Already-doubled backslash (valid JSON) is left untouched (idempotent)
+        (
+            '{"search":"object=\\"a\\\\b\\""}',
+            '{"search":"object=\\"a\\\\b\\""}',
+        ),
+        # A unicode escape (\u) is a valid JSON escape and must be left untouched
+        (
+            '{"search":"snowman=\\u2603"}',
+            '{"search":"snowman=\\u2603"}',
+        ),
+        # A backslash followed by whitespace is an invalid JSON escape and is doubled
+        (
+            '{"search":"object=\\"PREFIX\\ Admin\\""}',
+            '{"search":"object=\\"PREFIX\\\\ Admin\\""}',
+        ),
+        # Lone backslashes near the end of a value (\T and \9 are invalid escapes) are doubled
+        (
+            '{"search":"object=\\"C:\\Temp\\9\\""}',
+            '{"search":"object=\\"C:\\\\Temp\\\\9\\""}',
+        ),
+    ],
+    ids=[
+        "single invalid backslash escape is doubled",
+        "multiple invalid backslash escapes are doubled",
+        "valid escapes are untouched",
+        "already-doubled backslash is idempotent",
+        "unicode escape is untouched",
+        "backslash followed by whitespace is doubled",
+        "backslash near end of value is doubled",
+    ],
+)
+def test_escape_invalid_backslashes_in_drilldown_json(raw_json, expected):
+    """
+    Scenario: Splunk places placeholder values that contain a lone backslash directly into the
+    drilldown search JSON payload (e.g. object="PREFIX\\Admin"), which is invalid
+    JSON and makes json.loads raise 'Invalid \\escape' (XSUP-75731).
+
+    Given:
+    - A drilldown JSON payload containing a lone backslash forming an invalid JSON escape.
+    - A drilldown JSON payload containing multiple invalid backslash escapes.
+    - A drilldown JSON payload containing only valid JSON escapes (\\" and \\n).
+    - A drilldown JSON payload whose backslash is already doubled (valid JSON).
+    - A drilldown JSON payload containing a valid unicode escape (\\u2603).
+
+    When:
+    - escape_invalid_backslashes_in_drilldown_json is called.
+
+    Then:
+    - Invalid backslash escapes are doubled so the payload becomes valid JSON, valid escapes are
+      left untouched, and the operation is idempotent.
+    """
+    result = splunk.escape_invalid_backslashes_in_drilldown_json(raw_json)
+    assert result == expected
+    # the sanitized payload must now be valid JSON
+    json.loads(result)
+
+
+def test_parse_drilldown_searches_handles_unescaped_backslash_in_value():
+    """
+    Scenario: End-to-end reproduction of XSUP-75731 where a drilldown search payload contains a
+    placeholder value with an unescaped backslash (object="PREFIX\\Admin").
+
+    Given:
+    - A raw drilldown_searches payload where a field="value" filter contains a lone backslash that
+      makes the payload invalid JSON.
+
+    When:
+    - Running splunk.parse_drilldown_searches.
+
+    Then:
+    - The payload is parsed successfully (no JSONDecodeError) and the resulting SPL 'search' keeps
+      the backslashes escaped (doubled) for Splunk SPL.
+    """
+    searches = [
+        '{"name":"View contributing events","search":"| search '
+        'user=\\"NT SERVICE\\WinCollect\\" object=\\"PREFIX\\Admin\\"",'
+        '"earliest_offset":"1","latest_offset":"2"}'
+    ]
+    parsed = splunk.parse_drilldown_searches(searches)
+    assert len(parsed) == 1
+    assert parsed[0]["search"] == ('| search user="NT SERVICE\\\\WinCollect" object="PREFIX\\\\Admin"')
 
 
 def test_parse_drilldown_searches_preserves_backslashes():
@@ -8489,3 +8591,139 @@ def test_splunk_configuration_stanza_delete_conf_file_not_found():
 
     with pytest.raises(DemistoException, match="Configuration file 'transforms' was not found"):
         splunk.splunk_configuration_stanza_delete(service, {"conf_file": "transforms", "stanza_name": "s1"})
+
+
+# =========== Enterprise Security version / mirror-out finding_time helpers ===========
+
+
+def _mock_service_with_es_app(version):
+    """Build a mock Splunk service whose ES app returns the given version."""
+    es_app = MagicMock()
+    es_app.content = {"version": version}
+    service = MagicMock()
+    service.apps = {splunk.ES_APP_NAME: es_app}
+    return service
+
+
+def test_get_enterprise_security_version_returns_version():
+    """
+    Given: A Splunk service whose Enterprise Security app reports version "8.2.0".
+    When: get_enterprise_security_version is called.
+    Then: The reported version string "8.2.0" is returned.
+    """
+    service = _mock_service_with_es_app("8.2.0")
+
+    result = splunk.get_enterprise_security_version(service)
+
+    assert result == "8.2.0"
+
+
+def test_get_enterprise_security_version_missing_version_key():
+    """
+    Given: A Splunk service whose Enterprise Security app content has no "version" key.
+    When: get_enterprise_security_version is called.
+    Then: "unknown" is returned.
+    """
+    es_app = MagicMock()
+    es_app.content = {}
+    service = MagicMock()
+    service.apps = {splunk.ES_APP_NAME: es_app}
+
+    result = splunk.get_enterprise_security_version(service)
+
+    assert result == "unknown"
+
+
+def test_get_enterprise_security_version_app_not_installed():
+    """
+    Given: A Splunk service whose apps lookup raises (ES app not installed).
+    When: get_enterprise_security_version is called.
+    Then: The exception is swallowed and "unknown" is returned.
+    """
+    service = MagicMock()
+    service.apps.__getitem__.side_effect = KeyError("SplunkEnterpriseSecuritySuite")
+
+    result = splunk.get_enterprise_security_version(service)
+
+    assert result == "unknown"
+
+
+@pytest.mark.parametrize(
+    "version, target_version, expected",
+    [
+        ("8.2", "8.2", True),
+        ("8.2.0", "8.2", True),
+        ("8.2.5", "8.2", True),
+        ("8.1.9", "8.2", False),
+        ("8.3.0", "8.2", False),
+        ("9.0.0", "8.2", False),
+        ("unknown", "8.2", False),
+        ("", "8.2", False),
+        ("8.3.1", "8.3", True),
+        ("8.2.5", "8.3", False),
+        ("8.2", "unknown", False),
+    ],
+)
+def test_is_es_version(version, target_version, expected):
+    """
+    Given: An Enterprise Security version string and a target version.
+    When: is_es_version is called.
+    Then: True is returned only when the major/minor match; unparseable values return False.
+    """
+    assert splunk.is_es_version(version, target_version) is expected
+
+
+def test_get_finding_time_for_es_notable_time_returns_time_on_8_2(mocker: MockerFixture):
+    """
+    Given: An ES 8.2.x service and mirrored data containing a "notable_time" value.
+    When: get_finding_time_for_es_notable_time is called.
+    Then: The notable_time value is returned as a string.
+    """
+    mocker.patch.object(splunk, "get_enterprise_security_version", return_value="8.2.0")
+    service = MagicMock()
+
+    result = splunk.get_finding_time_for_es_notable_time(service, {"notable_time": "2026-01-01T00:00:00.000Z"})
+
+    assert result == "2026-01-01T00:00:00.000Z"
+
+
+def test_get_finding_time_for_es_notable_time_none_when_not_8_2(mocker: MockerFixture):
+    """
+    Given: An ES 8.3.x service (out of the 8.2.x range) and mirrored data with a notable_time.
+    When: get_finding_time_for_es_notable_time is called.
+    Then: None is returned because finding_time is only required on 8.2.x.
+    """
+    mocker.patch.object(splunk, "get_enterprise_security_version", return_value="8.3.0")
+    service = MagicMock()
+
+    result = splunk.get_finding_time_for_es_notable_time(service, {"notable_time": "2026-01-01T00:00:00.000Z"})
+
+    assert result is None
+
+
+def test_get_finding_time_for_es_notable_time_none_when_no_time_in_data(mocker: MockerFixture):
+    """
+    Given: An ES 8.2.x service but mirrored data that has no "notable_time" field.
+    When: get_finding_time_for_es_notable_time is called.
+    Then: None is returned since there is no finding time to send.
+    """
+    mocker.patch.object(splunk, "get_enterprise_security_version", return_value="8.2.1")
+    service = MagicMock()
+
+    result = splunk.get_finding_time_for_es_notable_time(service, {"other": "value"})
+
+    assert result is None
+
+
+def test_get_finding_time_for_es_notable_time_none_when_data_is_none(mocker: MockerFixture):
+    """
+    Given: An ES 8.2.x service and data is None.
+    When: get_finding_time_for_es_notable_time is called.
+    Then: None is returned without raising.
+    """
+    mocker.patch.object(splunk, "get_enterprise_security_version", return_value="8.2.0")
+    service = MagicMock()
+
+    result = splunk.get_finding_time_for_es_notable_time(service, None)
+
+    assert result is None

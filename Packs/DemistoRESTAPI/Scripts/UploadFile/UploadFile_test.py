@@ -1,5 +1,6 @@
 import pytest
-from UploadFile import upload_file_command
+from CommonServerPython import EntryType
+from UploadFile import is_transient_error, upload_file, upload_file_command
 
 RAW_RESPONSE = [
     {
@@ -451,3 +452,183 @@ def test_upload_with_using_argument(mocker):
     upload_file_command({"incidentId": "1", "entryID": "1", "using": "instance_1"})
     assert len(execute_command_mocker.call_args_list) == 1
     assert execute_command_mocker.call_args_list[0][0][1]["using"] == "instance_1"
+
+
+SUCCESS_ENTRY = [{"Type": EntryType.NOTE, "Contents": {"response": {"entries": [{"id": "1@1"}]}}}]
+
+
+def _transient_entry(message: str) -> list:
+    """Build an error entry whose contents match a transient error marker."""
+    return [{"Type": EntryType.ERROR, "Contents": message}]
+
+
+def _permanent_entry(message: str = "Item not found (8) - incident does not exist") -> list:
+    """Build an error entry that is NOT transient (should not be retried)."""
+    return [{"Type": EntryType.ERROR, "Contents": message}]
+
+
+TRANSIENT_MESSAGES = [
+    'Post "https://api/xsoar/incident/upload/1": context deadline exceeded (Client.Timeout exceeded while awaiting headers)',
+    "502 Bad Gateway",
+    "The service is Under Maintenance, please try again later",
+    "read tcp 1.2.3.4->5.6.7.8: connection reset by peer",
+]
+
+
+def test_is_transient_error_transient_markers():
+    """
+    Given: error entries whose contents contain a known transient marker (any case).
+    When: calling is_transient_error.
+    Then: it returns True.
+    """
+    for message in TRANSIENT_MESSAGES:
+        assert is_transient_error({"Type": EntryType.ERROR, "Contents": message}) is True
+    # case-insensitive check
+    assert is_transient_error({"Type": EntryType.ERROR, "Contents": "CONTEXT DEADLINE EXCEEDED"}) is True
+
+
+def test_is_transient_error_non_transient():
+    """
+    Given: a permanent error entry, a success entry, and a None entry.
+    When: calling is_transient_error.
+    Then: it returns False for all of them.
+    """
+    assert is_transient_error({"Type": EntryType.ERROR, "Contents": "incident does not exist"}) is False
+    assert is_transient_error(SUCCESS_ENTRY[0]) is False
+    assert is_transient_error(None) is False
+
+
+def test_upload_file_success_first_try(mocker):
+    """
+    Given: executeCommand succeeds on the first attempt.
+    When: calling upload_file.
+    Then: executeCommand is called once, no sleep occurs, and the success response is returned.
+    """
+    execute_command_mocker = mocker.patch("UploadFile.demisto.executeCommand", return_value=SUCCESS_ENTRY)
+    sleep_mocker = mocker.patch("UploadFile.time.sleep")
+
+    result = upload_file("1", "1@1")
+
+    assert result == SUCCESS_ENTRY
+    assert execute_command_mocker.call_count == 1
+    assert sleep_mocker.call_count == 0
+
+
+@pytest.mark.parametrize("num_failures", [1, 2, 3])
+def test_upload_file_success_after_transient_failures(mocker, num_failures):
+    """
+    Given: executeCommand returns N transient errors then succeeds.
+    When: calling upload_file.
+    Then: executeCommand is called N+1 times, sleep is called N times, and success is returned.
+    """
+    side_effects = [_transient_entry("context deadline exceeded")] * num_failures + [SUCCESS_ENTRY]
+    execute_command_mocker = mocker.patch("UploadFile.demisto.executeCommand", side_effect=side_effects)
+    sleep_mocker = mocker.patch("UploadFile.time.sleep")
+
+    result = upload_file("1", "1@1")
+
+    assert result == SUCCESS_ENTRY
+    assert execute_command_mocker.call_count == num_failures + 1
+    assert sleep_mocker.call_count == num_failures
+
+
+@pytest.mark.parametrize("message", TRANSIENT_MESSAGES)
+def test_upload_file_retries_each_transient_marker(mocker, message):
+    """
+    Given: executeCommand returns a specific transient marker once, then succeeds.
+    When: calling upload_file.
+    Then: the call is retried and ultimately succeeds.
+    """
+    execute_command_mocker = mocker.patch(
+        "UploadFile.demisto.executeCommand", side_effect=[_transient_entry(message), SUCCESS_ENTRY]
+    )
+    mocker.patch("UploadFile.time.sleep")
+
+    result = upload_file("1", "1@1")
+
+    assert result == SUCCESS_ENTRY
+    assert execute_command_mocker.call_count == 2
+
+
+def test_upload_file_permanent_error_not_retried(mocker):
+    """
+    Given: executeCommand returns a permanent (non-transient) error.
+    When: calling upload_file.
+    Then: it is NOT retried - executeCommand is called once, no sleep, and the error is returned.
+    """
+    permanent = _permanent_entry()
+    execute_command_mocker = mocker.patch("UploadFile.demisto.executeCommand", return_value=permanent)
+    sleep_mocker = mocker.patch("UploadFile.time.sleep")
+
+    result = upload_file("1", "1@1")
+
+    assert result == permanent
+    assert execute_command_mocker.call_count == 1
+    assert sleep_mocker.call_count == 0
+
+
+def test_upload_file_retries_exhausted(mocker):
+    """
+    Given: executeCommand always returns a transient error.
+    When: calling upload_file.
+    Then: it retries MAX_RETRIES times (4 total calls, 3 sleeps) and returns the last error response.
+    """
+    from UploadFile import MAX_RETRIES
+
+    transient = _transient_entry("502 Bad Gateway")
+    execute_command_mocker = mocker.patch("UploadFile.demisto.executeCommand", return_value=transient)
+    sleep_mocker = mocker.patch("UploadFile.time.sleep")
+
+    result = upload_file("1", "1@1")
+
+    assert result == transient
+    assert execute_command_mocker.call_count == MAX_RETRIES + 1
+    assert sleep_mocker.call_count == MAX_RETRIES
+
+
+def test_upload_file_exponential_backoff_values(mocker):
+    """
+    Given: executeCommand always returns a transient error.
+    When: calling upload_file.
+    Then: sleep is called with exponentially increasing, capped delays (2, 4, 8).
+    """
+    from UploadFile import BASE_BACKOFF, MAX_BACKOFF, MAX_RETRIES
+
+    mocker.patch("UploadFile.demisto.executeCommand", return_value=_transient_entry("connection reset by peer"))
+    sleep_mocker = mocker.patch("UploadFile.time.sleep")
+
+    upload_file("1", "1@1")
+
+    expected_delays = [min(BASE_BACKOFF * 2**i, MAX_BACKOFF) for i in range(MAX_RETRIES)]
+    actual_delays = [call.args[0] for call in sleep_mocker.call_args_list]
+    assert actual_delays == expected_delays
+
+
+def test_upload_file_command_transient_then_success(mocker):
+    """
+    Given: the first upload attempt hits a transient error, the retry succeeds.
+    When: running upload_file_command.
+    Then: no error is raised and a success readable output is returned.
+    """
+    mocker.patch(
+        "UploadFile.demisto.executeCommand",
+        side_effect=[_transient_entry("context deadline exceeded"), SUCCESS_ENTRY],
+    )
+    mocker.patch("UploadFile.time.sleep")
+
+    command_results = upload_file_command({"incID": "1", "entryID": "1@1"})
+
+    assert "File uploaded successfully." in command_results[0].readable_output
+
+
+def test_upload_file_command_transient_exhausted_raises(mocker):
+    """
+    Given: every upload attempt hits a transient error and retries are exhausted.
+    When: running upload_file_command.
+    Then: the original upload error is raised (error surface preserved).
+    """
+    mocker.patch("UploadFile.demisto.executeCommand", return_value=_transient_entry("502 Bad Gateway"))
+    mocker.patch("UploadFile.time.sleep")
+
+    with pytest.raises(Exception, match="There was an issue uploading the file."):
+        upload_file_command({"incID": "1", "entryID": "1@1"})

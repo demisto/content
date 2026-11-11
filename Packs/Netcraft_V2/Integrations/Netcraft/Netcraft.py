@@ -14,7 +14,11 @@ SUBMISSION_API_LIMIT = 1000
 MAX_FETCH_DEFAULT = 10
 TAKEDOWN_OK_CODE = "TD_OK"
 
+# Format used for the Netcraft API's `date_from` parameter and for lastRun
 LOOKBACK_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+# Format used for the XSOAR incident `occurred` field.
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 RES_CODE_TO_MESSAGE = {
     TAKEDOWN_OK_CODE: "The attack was submitted to Netcraft successfully.",
@@ -545,7 +549,6 @@ def fetch_incidents_with_lookback(client: Client, look_back: int) -> list[dict[s
     demisto.debug(f"{prefix}API returned {len(raw_incidents)} incidents")
 
     xsoar_incidents = [to_xsoar_incident(incident, date_format=LOOKBACK_DATE_FORMAT) for incident in raw_incidents]
-
     xsoar_incidents = filter_incidents_by_duplicates_and_limit(
         incidents_res=xsoar_incidents,
         last_run=last_run,
@@ -567,6 +570,13 @@ def fetch_incidents_with_lookback(client: Client, look_back: int) -> list[dict[s
     )
 
     demisto.setLastRun(last_run)
+
+    # convert the occurred field to the format expected by the server-side.
+    for incident in xsoar_incidents:
+        incident["occurred"] = datetime.strptime(  # noqa: DTZ007
+            incident["occurred"], LOOKBACK_DATE_FORMAT
+        ).strftime(DATE_FORMAT)
+
     return xsoar_incidents
 
 

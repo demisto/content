@@ -332,7 +332,7 @@ class Client(BaseClient):
         params: dict[str, Any] = {
             "page": page,
             "size": size,
-            "filter": json.dumps({"iocClassifications": ["NEWLY_REGISTERED_DOMAIN"]}),
+            "iocClassifications": "NEWLY_REGISTERED_DOMAIN",
         }
         if sort:
             params["sort"] = sort
@@ -346,7 +346,7 @@ class Client(BaseClient):
         params: dict[str, Any] = {
             "page": page,
             "size": size,
-            "filter": json.dumps({"iocClassifications": ["TELNET_BRUTE_FORCE"]}),
+            "iocClassifications": "TELNET_BRUTE_FORCE",
         }
         if sort:
             params["sort"] = sort

@@ -1,0 +1,12 @@
+[
+    {
+        "id": "f1e2d3c4-b5a6-7890-fedc-ba9876543210",
+        "name": "SureBackup Job 1",
+        "description": "SureBackup Job Description",
+        "objectsCount": 5,
+        "lastResult": "Failed",
+        "lastRun": "2024-05-16T07:21:32Z",
+        "status": "Stopped",
+        "type": "SureBackupContentScan"
+    }
+]

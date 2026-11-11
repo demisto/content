@@ -1,4 +1,5 @@
 fromversion: 6.10.0
+toversion: 8.14.0
 id: Endpoint_Protection_WithSecure_ModelingRule
 name: Endpoint Protection WithSecure Modeling Rule
 rules: ''

@@ -144,6 +144,14 @@ class Client(BaseClient):
             json_data={"id": incident_id, "version": incident_ver, "closeNotes": close_notes, "closeReason": close_reason},
         )
 
+    def _get_multipart_headers(self) -> dict[str, str]:
+        """Returns the client headers without "Content-Type".
+
+        For multipart uploads, `requests` must generate the "multipart/form-data; boundary=..." header itself.
+        Sending the client's default "Content-Type: application/json" makes XSOAR 8 reject the upload.
+        """
+        return {key: value for key, value in (self._headers or {}).items() if key.lower() != "content-type"}
+
     def add_incident_entry(self, incident_id: str | None, entry: dict[str, Any]):
         if entry.get("type") == 3:
             path_res = demisto.getFilePath(entry.get("id"))
@@ -153,6 +161,7 @@ class Client(BaseClient):
                 self._http_request(
                     method="POST",
                     url_suffix=f"/entry/upload/{incident_id}",
+                    headers=self._get_multipart_headers(),
                     files={"file": (full_file_name, file_to_send, "application/octet-stream")},
                 )
 
@@ -694,6 +703,8 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
                 if "file" in entry and entry.get("file"):
                     file_entry_content = client.get_file_entry(entry.get("id"))  # type: ignore
                     file_result = fileResult(entry["file"], file_entry_content)
+                    if entry_tags := entry.get("tags"):
+                        file_result["Tags"] = entry_tags  # keep the remote entry tags on the mirrored file
 
                     formatted_entries.append(file_result)
                 else:
@@ -847,7 +858,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     if unsupported_date == today_utc:
         cached_error_msg = (
             "The remote XSOAR machine does not support the /public/v1/incidents/modified endpoint. "
-            "This endpoint is only available on XSOAR 8.14.0 and later. "
+            "This endpoint is only available on XSOAR 8.15.0 and later. "
             f"The endpoint was found unsupported on {unsupported_date} (UTC) and will be retried tomorrow."
         )
         demisto.error(f"get-modified-remote-data: {cached_error_msg}")
@@ -882,7 +893,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
         if e.res is not None and status_code in (303, 404):
             error_msg = (
                 f"The remote XSOAR machine does not support the /public/v1/incidents/modified endpoint "
-                f"(HTTP {status_code=}). This endpoint is only available on XSOAR 8.14.0 and later. Original error: {e}"
+                f"(HTTP {status_code=}). This endpoint is only available on XSOAR 8.15.0 and later. Original error: {e}"
             )
             demisto.error(f"get-modified-remote-data: {error_msg}")
             # Persist the flag so subsequent cycles skip this endpoint for the rest of today (UTC).
@@ -1055,6 +1066,9 @@ def main() -> None:  # pragma: no cover
 
         elif demisto.command() == "update-remote-system":
             return_results(update_remote_system_command(client, demisto.args(), mirror_tags))
+
+        elif demisto.command() == "get-modified-remote-data":
+            return_results(get_modified_remote_data_command(client, demisto.args()))
 
         else:
             raise NotImplementedError("Command not implemented")

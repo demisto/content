@@ -1,0 +1,7 @@
+{
+    "data": [
+        {"fileName": "FindFileByHash.yara"},
+        {"fileName": "FindFileByParameters.yara"},
+        {"fileName": "FindString.yara"}
+    ]
+}

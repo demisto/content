@@ -30,6 +30,7 @@ urllib3.disable_warnings(InsecureRequestWarning)
 print = timestamped_print
 INTERNAL_LABEL = "Internal PR"
 MAPPING_LABEL = "Mapping Contribution"
+SKIP_AI_REVIEW_LABEL = "skip-ai-review"
 XSIAM_CONTENT = [
     "ModelingRules",
     "ParsingRules",
@@ -237,7 +238,7 @@ def remove_branch_protection(repo, branch_name, t):
 
 
 def prepare_body(pr: PullRequest):
-    body = f"## Original External PR\r\n[external pull request]({pr.html_url})\r\n\r\n"
+    body = f"## Related PRs\r\n**Original External PR:** {pr.html_url}\r\n\r\n"
     if "## Contributor" not in pr.body:
         merged_pr_author = pr.user.login
         body += f"## Contributor\r\n@{merged_pr_author}\r\n\r\n"
@@ -250,6 +251,8 @@ def prepare_labels(pr: PullRequest):
     labels.append("ready-for-pipeline-running")
     if MAPPING_LABEL in labels:
         labels.remove(MAPPING_LABEL)
+    if SKIP_AI_REVIEW_LABEL not in labels:
+        labels.append(SKIP_AI_REVIEW_LABEL)
     return labels
 
 
@@ -375,6 +378,26 @@ def main():
 
         except Exception as e:
             print(f"{t.red}Mapping PR failed: {e}{t.normal}")
+
+    # Cross-reference main and mapping PRs when both were created from the same external PR
+    if len(created) == 2:
+        main_pr, mapping_pr = created[0], created[1]
+        try:
+            main_pr.edit(
+                body=main_pr.body.replace(
+                    f"**Original External PR:** {merged_pr.html_url}",
+                    f"**Original External PR:** {merged_pr.html_url}\r\n**Mapping Internal PR:** {mapping_pr.html_url}",
+                )
+            )
+            mapping_pr.edit(
+                body=mapping_pr.body.replace(
+                    f"**Original External PR:** {merged_pr.html_url}",
+                    f"**Original External PR:** {merged_pr.html_url}\r\n**Main Internal PR:** {main_pr.html_url}",
+                )
+            )
+            print(f"{t.cyan}Cross-referenced main PR #{main_pr.number} and mapping PR #{mapping_pr.number}{t.normal}")
+        except Exception as e:
+            print(f"{t.red}Failed to cross-reference PRs: {e}{t.normal}")
 
     for pr in created:
         remove_branch_protection(content_repo, pr.head.ref, t)

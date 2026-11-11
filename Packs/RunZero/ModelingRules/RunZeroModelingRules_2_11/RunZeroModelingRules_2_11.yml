@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: RunZero_RunZero_modeling_rule
+name: RunZero RunZero Modeling Rule
+rules: ''
+schema: ''
+tags: RunZero
+supportedModules:
+- xsiam

@@ -1,0 +1,105 @@
+{
+    "involvedEntities": [
+        {
+            "id": "376359",
+            "type": "ADDRESS",
+            "suspicious": true,
+            "internal": true,
+            "networkPriority": 0,
+            "attacker": false,
+            "pivot": false,
+            "environment": "Default Environment",
+            "manuallyCreated": false,
+            "additionalProperties": "{\"Type\":\"ADDRESS\",\"IsArtifact\":\"False\",\"IsEnriched\":\"False\",\"IsVulnerable\":\"False\",\"IsInternalAsset\":\"True\",\"OriginalIdentifier\":\"0.0.0.1\"}",
+            "enriched": false,
+            "artifact": false,
+            "vulnerable": false,
+            "entityUri": "/entity?indicator=0.0.0.1&type=ipAddress",
+            "fields": [
+                {
+                    "displayName": "Default",
+                    "highlighted": false,
+                    "hidden": false,
+                    "items": [
+                        {
+                            "name": "Network_Priority",
+                            "originalName": "Network_Priority",
+                            "value": "0"
+                        },
+                        {
+                            "name": "IsSuspicious",
+                            "originalName": "IsSuspicious",
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "displayName": "Entity",
+                    "highlighted": false,
+                    "hidden": false,
+                    "items": [
+                        {
+                            "name": "Is Pivot",
+                            "originalName": "IsPivot",
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "alertIdentifier": "TEST ALERT_00000000-0000-0000-0000-000000000010",
+            "caseId": 1001,
+            "identifier": "0.0.0.1"
+        },
+        {
+            "id": "376358",
+            "type": "HOSTNAME",
+            "suspicious": false,
+            "internal": false,
+            "networkPriority": 0,
+            "attacker": false,
+            "pivot": false,
+            "environment": "Default Environment",
+            "manuallyCreated": false,
+            "additionalProperties": "{\"Type\":\"HOSTNAME\",\"IsArtifact\":\"False\",\"IsEnriched\":\"True\",\"Censys_ports\":\"53, 443, 853\",\"IsVulnerable\":\"False\",\"IsInternalAsset\":\"False\",\"OriginalIdentifier\":\"demo.com\"}",
+            "enriched": true,
+            "artifact": false,
+            "vulnerable": false,
+            "entityUri": "/entity?indicator=demo.com&type=hostName",
+            "fields": [
+                {
+                    "displayName": "Default",
+                    "highlighted": false,
+                    "hidden": false,
+                    "items": [
+                        {
+                            "name": "Network_Priority",
+                            "originalName": "Network_Priority",
+                            "value": "0"
+                        },
+                        {
+                            "name": "IsSuspicious",
+                            "originalName": "IsSuspicious",
+                            "value": "False"
+                        }
+                    ]
+                },
+                {
+                    "displayName": "Entity",
+                    "highlighted": false,
+                    "hidden": false,
+                    "items": [
+                        {
+                            "name": "Is Pivot",
+                            "originalName": "IsPivot",
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "alertIdentifier": "TEST ALERT_00000000-0000-0000-0000-000000000010",
+            "caseId": 1001,
+            "identifier": "demo.com"
+        }
+    ],
+    "totalSize": 2
+}

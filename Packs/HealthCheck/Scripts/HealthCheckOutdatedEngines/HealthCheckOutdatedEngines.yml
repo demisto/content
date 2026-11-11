@@ -1,0 +1,26 @@
+args:
+- auto: PREDEFINED
+  defaultValue: "False"
+  description: Whether the script runs as part of a playbook. When true, results are returned in a format suitable for playbook context.
+  name: RunInPlaybook
+  predefined:
+  - "True"
+  - "False"
+commonfields:
+  id: 'HealthCheckOutdatedEngines'
+  version: -1
+dockerimage: demisto/python3:3.12.15.14069087
+enabled: true
+engineinfo: {}
+name: HealthCheckOutdatedEngines
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- widget
+type: python
+fromversion: 8.0.0
+tests:
+- No tests (auto formatted)

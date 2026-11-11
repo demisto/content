@@ -158,6 +158,13 @@ configuration:
   required: false
   type: 13
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 description: This integration allows to create incidents based on Vectra XDR Entities.
 display: Vectra XDR
 name: VectraXDR
@@ -2470,7 +2477,7 @@ script:
     description: Resets the given entity to refetch incidents.
     execution: false
     name: vectra-entity-reset-fetch
-  dockerimage: demisto/python3:3.12.12.6391686
+  dockerimage: demisto/python3:3.12.13.10116658
   feed: false
   isfetch: true
   isremotesyncin: true

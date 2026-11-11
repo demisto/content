@@ -376,7 +376,7 @@
                         "displayType": "CARD",
                         "h": 4,
                         "hideName": false,
-                        "i": "caseinfoid-ntyuvwepxy-caseinfoid-ntyuvwepxy-c0a36420-ea0d-11eb-ba35-536dc8b5ff33",
+                        "i": "caseinfoid-ntyuvwepxy-field-changed-ntyuvwepxy-caseinfoid-ntyuvwepxy-caseinfoid-ntyuvwepxy-c0a36420-ea0d-11eb-ba35-536dc8b5ff33",
                         "items": [
                             {
                                 "endCol": 2,
@@ -447,9 +447,9 @@
                     {
                         "description": "",
                         "displayType": "CARD",
-                        "h": 4,
+                        "h": 5,
                         "hideName": false,
-                        "i": "caseinfoid-ntyuvwepxy-caseinfoid-ntyuvwepxy-1bede670-eab8-11eb-9783-b30efc136dbc",
+                        "i": "caseinfoid-ntyuvwepxy-field-changed-ntyuvwepxy-caseinfoid-ntyuvwepxy-caseinfoid-ntyuvwepxy-1bede670-eab8-11eb-9783-b30efc136dbc",
                         "items": [
                             {
                                 "endCol": 2,
@@ -549,7 +549,7 @@
                         "displayType": "CARD",
                         "h": 4,
                         "hideName": false,
-                        "i": "caseinfoid-ntyuvwepxy-caseinfoid-ntyuvwepxy-30eff960-f697-11eb-9de5-7575374647b1",
+                        "i": "caseinfoid-ntyuvwepxy-field-changed-ntyuvwepxy-caseinfoid-ntyuvwepxy-caseinfoid-ntyuvwepxy-30eff960-f697-11eb-9de5-7575374647b1",
                         "items": [
                             {
                                 "endCol": 2,
@@ -692,11 +692,11 @@
                     },
                     {
                         "description": "",
-                        "displayType": "ROW",
-                        "h": 2,
+                        "displayType": "CARD",
+                        "h": 4,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "caseinfoid-ntyuvwepxy-caseinfoid-a1b007c0-00ed-11ec-88f6-1f794d158658",
+                        "i": "caseinfoid-ntyuvwepxy-field-changed-ntyuvwepxy-caseinfoid-ntyuvwepxy-caseinfoid-a1b007c0-00ed-11ec-88f6-1f794d158658",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -706,6 +706,17 @@
                                 "id": "b3422550-2ca4-11ef-8284-87a4aba2fa4a",
                                 "index": 0,
                                 "listId": "caseinfoid-a1b007c0-00ed-11ec-88f6-1f794d158658",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "flashpointalertbody",
+                                "height": 44,
+                                "id": "6cbc74a0-8a76-11f1-9891-e38d55d661c9",
+                                "index": 1,
+                                "listId": "caseinfoid-ntyuvwepxy-caseinfoid-a1b007c0-00ed-11ec-88f6-1f794d158658",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -724,7 +735,7 @@
                         "displayType": "CARD",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-ntyuvwepxy-caseinfoid-fb9422f0-2d39-11ef-8b34-757e2b9daeb5",
+                        "i": "caseinfoid-ntyuvwepxy-field-changed-ntyuvwepxy-caseinfoid-ntyuvwepxy-caseinfoid-fb9422f0-2d39-11ef-8b34-757e2b9daeb5",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -756,14 +767,14 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 8
+                        "y": 10
                     },
                     {
                         "description": "",
                         "displayType": "CARD",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-ntyuvwepxy-caseinfoid-dc8c9de0-2ec6-11ef-893b-b96c86e19e29",
+                        "i": "caseinfoid-ntyuvwepxy-field-changed-ntyuvwepxy-caseinfoid-ntyuvwepxy-caseinfoid-dc8c9de0-2ec6-11ef-893b-b96c86e19e29",
                         "items": [
                             {
                                 "endCol": 2,
@@ -822,7 +833,7 @@
                         "static": false,
                         "w": 2,
                         "x": 1,
-                        "y": 6
+                        "y": 8
                     },
                     {
                         "description": "",
@@ -830,7 +841,7 @@
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "caseinfoid-ntyuvwepxy-caseinfoid-e0242710-2ec7-11ef-893b-b96c86e19e29",
+                        "i": "caseinfoid-ntyuvwepxy-field-changed-ntyuvwepxy-caseinfoid-ntyuvwepxy-caseinfoid-e0242710-2ec7-11ef-893b-b96c86e19e29",
                         "items": [
                             {
                                 "endCol": 2,
@@ -850,14 +861,14 @@
                         "w": 1,
                         "wrapLabels": false,
                         "x": 0,
-                        "y": 8
+                        "y": 9
                     },
                     {
                         "displayType": "CARD",
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "caseinfoid-ntyuvwepxy-caseinfoid-faf0a820-2ec7-11ef-893b-b96c86e19e29",
+                        "i": "caseinfoid-ntyuvwepxy-field-changed-ntyuvwepxy-caseinfoid-ntyuvwepxy-caseinfoid-faf0a820-2ec7-11ef-893b-b96c86e19e29",
                         "items": [
                             {
                                 "endCol": 2,
@@ -876,13 +887,13 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 8
+                        "y": 10
                     },
                     {
                         "displayType": "CARD",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
-                        "i": "caseinfoid-426cc7e0-3910-11ef-8e50-559813be2708",
+                        "i": "caseinfoid-ntyuvwepxy-field-changed-ntyuvwepxy-caseinfoid-426cc7e0-3910-11ef-8e50-559813be2708",
                         "items": [
                             {
                                 "endCol": 2,
@@ -912,14 +923,14 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 10
+                        "y": 11
                     },
                     {
                         "displayType": "CARD",
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "caseinfoid-3d0589f0-391e-11ef-ae9c-e1848d17d14f",
+                        "i": "caseinfoid-ntyuvwepxy-field-changed-ntyuvwepxy-caseinfoid-3d0589f0-391e-11ef-ae9c-e1848d17d14f",
                         "items": [
                             {
                                 "endCol": 4,
@@ -938,7 +949,88 @@
                         "static": false,
                         "w": 2,
                         "x": 1,
-                        "y": 10
+                        "y": 12
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "caseinfoid-ntyuvwepxy-field-changed-ntyuvwepxy-caseinfoid-add0a500-8a68-11f1-965d-8d3290fd439a",
+                        "items": [
+                            {
+                                "args": {},
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "f5153b80-8c14-11f1-a67c-2b32dc58b1aa",
+                                "index": 0,
+                                "listId": "caseinfoid-ntyuvwepxy-field-changed-ntyuvwepxy-caseinfoid-add0a500-8a68-11f1-965d-8d3290fd439a",
+                                "name": "Retrieve CVE IDs for Vulnerabilities",
+                                "scriptId": "FlashpointVulnerabilityDetails",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "flashpointvulnerabilitydetails",
+                                "height": 106,
+                                "id": "055e6430-8c15-11f1-a67c-2b32dc58b1aa",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Vulnerability Details",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 14
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 5,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "caseinfoid-ntyuvwepxy-field-changed-ntyuvwepxy-caseinfoid-c34957d0-8a70-11f1-aff6-8be503c09c1e",
+                        "items": [
+                            {
+                                "args": {},
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "daa4f510-8a70-11f1-aff6-8be503c09c1e",
+                                "index": 0,
+                                "listId": "caseinfoid-c34957d0-8a70-11f1-aff6-8be503c09c1e",
+                                "name": "Import Full Report Information",
+                                "scriptId": "FlashpointReportDetails",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "flashpointreportbody",
+                                "height": 106,
+                                "id": "8d2e5f00-8a71-11f1-aff6-8be503c09c1e",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Report Body",
+                        "static": false,
+                        "w": 3,
+                        "wrapLabels": false,
+                        "x": 0,
+                        "y": 18
                     }
                 ],
                 "type": "custom"

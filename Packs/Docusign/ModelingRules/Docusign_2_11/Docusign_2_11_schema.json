@@ -1,0 +1,112 @@
+{
+    "docusign_docusign_raw": {
+      "action": {
+        "type": "string",
+        "is_array": false
+      },
+      "browser": {
+        "type": "string",
+        "is_array": false
+      },
+      "city": {
+        "type": "string",
+        "is_array": false
+      },
+      "country": {
+        "type": "string",
+        "is_array": false
+      },
+      "data": {
+        "type": "string",
+        "is_array": false
+      },
+      "email": {
+        "type": "string",
+        "is_array": false
+      },
+      "eventId": {
+        "type": "string",
+        "is_array": false
+      },
+      "firstName": {
+        "type": "string",
+        "is_array": false
+      },
+      "groupList": {
+        "type": "string",
+        "is_array": false
+      },
+      "ipAddress": {
+        "type": "string",
+        "is_array": false
+      },
+      "isAdmin": {
+        "type": "string",
+        "is_array": false
+      },
+      "isNAREnabled": {
+        "type": "string",
+        "is_array": false
+      },
+      "lastName": {
+        "type": "string",
+        "is_array": false
+      },
+      "latitude": {
+        "type": "float",
+        "is_array": false
+      },
+      "longitude": {
+        "type": "float",
+        "is_array": false
+      },
+      "object": {
+        "type": "string",
+        "is_array": false
+      },
+      "os": {
+        "type": "string",
+        "is_array": false
+      },
+      "result": {
+        "type": "string",
+        "is_array": false
+      },
+      "site": {
+        "type": "string",
+        "is_array": false
+      },
+      "source": {
+        "type": "string",
+        "is_array": false
+      },
+      "source_log_type": {
+        "type": "string",
+        "is_array": false
+      },
+      "uri": {
+        "type": "string",
+        "is_array": false
+      },
+      "userAgent": {
+        "type": "string",
+        "is_array": false
+      },
+      "userId": {
+        "type": "string",
+        "is_array": false
+      },
+      "userName": {
+        "type": "string",
+        "is_array": false
+      },
+      "userStatus": {
+        "type": "string",
+        "is_array": false
+      },
+      "workAddress": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

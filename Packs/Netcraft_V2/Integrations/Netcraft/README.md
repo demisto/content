@@ -1823,3 +1823,13 @@ Retrieve incidents from Netcraft using the same API request as *fetch-incidents*
 | Netcraft.Incident.date_submitted | String | The date the incident was submitted. |
 | Netcraft.Incident.last_updated | String | The date the incident was last updated. |
 | Netcraft.Incident.target_brand | String | The target brand of the incident. |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
+
+- Fetch incidents
+
+</~PLATFORM>

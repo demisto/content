@@ -20,19 +20,19 @@ This integration provides access to Google Gemini's large language models for AI
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Authentication Type | Choose between "AI Studio API Key" or "Vertex AI Service Account" | True |
-| Server URL | For AI Studio: `https://generativelanguage.googleapis.com`. For Vertex AI: `https://aiplatform.googleapis.com` (auto-detected if unchanged). | True |
-| API Key | Google AI Studio API key. Required when using AI Studio. | False |
+| Authentication Type | Choose whether to authenticate with a Google AI Studio API Key or a Google Cloud Vertex AI Service Account. | True |
+| Server URL | For AI Studio: https://generativelanguage.googleapis.com. For Vertex AI: https://aiplatform.googleapis.com \(auto-detected if unchanged\). | True |
+| API Key | API Key for Google AI Studio authentication. Required when using AI Studio. | False |
 | Service Account Key (JSON) | Service Account Key JSON for Vertex AI authentication. Required when using Vertex AI. | False |
 | Project ID | Google Cloud Project ID. Required when using Vertex AI. | False |
-| Location | Google Cloud location for Vertex AI (e.g., `global`, `us-central1`). Defaults to `global`. | False |
-| Default Model | Select a Gemini model from the dropdown | True |
-| Max tokens | Maximum number of tokens in the response (default: 1024) | True |
-| Temperature | Controls randomness in responses (0.0-2.0) | False |
-| Top P | Nucleus sampling parameter (0.0-1.0) | False |
-| Top K | Top-k sampling parameter | False |
-| Trust any certificate (not secure) | Whether to ignore SSL certificate verification | False |
-| Use system proxy settings | Whether to use system proxy configuration | False |
+| Location | Google Cloud location for Vertex AI \(e.g., 'global', 'us-central1'\). Defaults to 'global'. | False |
+| Default Model | Please choose only one model. | True |
+| Max tokens | The maximum number of tokens that can be generated for the response \(1-10000\). Defaults to 1024. | True |
+| Temperature | Controls the degree of randomness in token selection. Lower values \(closer to 0\) produce more deterministic outputs, while higher values \(up to 2.0\) increase randomness and creativity. | False |
+| Top P | Changes how the model selects tokens for output. Tokens are selected from most to least probable until their cumulative probability equals the topP value \(0.0-1.0\). Lower values for less random responses, higher values for more random responses. | False |
+| Top K | Consider only the top K most probable tokens when generating text. Affects the diversity of the generated content. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
 ### Supported Models
 
@@ -40,19 +40,14 @@ The integration supports various Gemini models including:
 
 **Stable Models:**
 
-- gemini-2.5-pro
 - gemini-2.5-flash
-
-**Deprecated (Legacy Only) Models** — operational until June 1, 2026:
-
-- gemini-2.0-flash
-- gemini-2.0-flash-lite
-
-**Preview Models:**
-
-- gemini-3.1-pro-preview
-- gemini-3.1-flash-preview
+- gemini-2.5-pro
 - gemini-3.1-flash-lite
+- gemini-3.5-flash-lite
+- gemini-3.5-flash
+- gemini-3.6-flash
+- gemini-3.7-flash
+- gemini-3.8-flash
 
 Note: You can also use the freetext model field to specify newer models not in the dropdown list.
 
@@ -64,7 +59,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### google-gemini-send-message
 
 ***
-Send a prompt to Google Gemini and receive an AI-generated response.
+Send a chat message to the Gemini AI model.
 
 #### Base Command
 
@@ -74,21 +69,30 @@ Send a prompt to Google Gemini and receive an AI-generated response.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| prompt | The prompt or question to send to the AI model | Required |
-| model | Override the instance default model for this specific request | Optional |
-| history | Conversation history in JSON format for maintaining context across multiple interactions | Optional |
-| save_conversation | Whether to automatically save and retrieve conversation history (default: false) | Optional |
+| prompt | The prompt or question to send to the AI model. | Required |
+| model | The Gemini model to use for this request. If not specified, uses the default model from configuration. | Optional |
+| history | Optional conversation history in JSON format. Array of message objects with 'role' (user/model) and 'parts' containing text.<br/>Example: [{"role": "user", "parts": [{"text": "Hello"}]}, {"role": "model", "parts": [{"text": "Hi there!"}]}]. | Optional |
+| save_conversation | If true, saves the complete conversation (including the current exchange) to context under GoogleGemini.Chat.History for reuse in subsequent calls. Possible values are: true, false. | Optional |
+| temperature | The degree of randomness in token selection for this call. Overrides the instance-level Temperature parameter. Lower values (closer to 0) produce more deterministic outputs, while higher values (up to 2.0) increase randomness and creativity. Default is 0.5. | Optional |
+| max_tokens | The maximum number of tokens that can be generated for this response (1-10000). Overrides the instance-level Max tokens parameter for this call. If not specified, the instance-level value is used. | Optional |
+| max_input_tokens | The maximum number of input tokens (the prompt and history combined) allowed for this request. If the input token count exceeds this limit and truncate is false, the command returns an error that compares the actual token count with the allowed limit. | Optional |
+| truncate | Whether to automatically truncate the oldest history entries first, and then the prompt, to fit within the token budget if the input token count exceeds max_input_tokens. If set to false (the default), the command returns an error instead. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleGemini.Chat.Prompt | String | The original prompt sent to the model |
-| GoogleGemini.Chat.Response | String | The AI model's response |
-| GoogleGemini.Chat.Model | String | The model used for generation |
-| GoogleGemini.Chat.Temperature | Number | The temperature parameter used for response generation |
-| GoogleGemini.Chat.History | Array | Complete conversation history (when save_conversation=true) |
-| GoogleGemini.Chat.ConversationId | String | A unique identifier, used to identify the chat session |
+| GoogleGemini.Chat.Prompt | String | The original prompt sent to the model. |
+| GoogleGemini.Chat.Response | String | The AI model's response. |
+| GoogleGemini.Chat.Model | String | The model used for generation. |
+| GoogleGemini.Chat.Temperature | Number | The temperature setting used. |
+| GoogleGemini.Chat.MaxTokens | Number | The maximum number of output tokens configured for the request. |
+| GoogleGemini.Chat.History | Unknown | Complete conversation history in Gemini format, updated when save_conversation=true. Can be used as input for the history argument in subsequent calls. |
+| GoogleGemini.Chat.ConversationId | String | A unique identifier, used to identify the chat session. |
+| GoogleGemini.Chat.InputTokenCount | Number | The number of input \(prompt\) tokens consumed by the request, as reported by the model. |
+| GoogleGemini.Chat.OutputTokenCount | Number | The number of output \(response\) tokens generated by the model. |
+| GoogleGemini.Chat.TotalTokenCount | Number | The total number of tokens \(input and output\) consumed by the request. |
+| GoogleGemini.Chat.Truncated | Boolean | Whether the history, the prompt, or both were automatically truncated to fit within max_input_tokens. |
 
 #### Command Examples
 
@@ -99,6 +103,12 @@ Send a prompt to Google Gemini and receive an AI-generated response.
 ```!google-gemini-send-message prompt="Continue our previous discussion" history='[{"role": "user", "parts": [{"text": "Hello"}]}, {"role": "model", "parts": [{"text": "Hi there! How can I help you?"}]}]'```
 
 ```!google-gemini-send-message prompt="What are the next investigation steps?" save_conversation=true```
+
+```!google-gemini-send-message prompt="Brainstorm creative phishing detection rules" temperature=1.2```
+
+```!google-gemini-send-message prompt="Provide a detailed incident summary" max_tokens=2048```
+
+```!google-gemini-send-message prompt="Summarize the incident" history='[{"role": "user", "parts": [{"text": "Hello"}]}, {"role": "model", "parts": [{"text": "Hi there! How can I help you?"}]}]' max_input_tokens=8000 truncate=true```
 
 #### Conversation History Management
 
@@ -112,31 +122,3 @@ When `save_conversation=true`, the integration:
 #### Human Readable Output
 
 The command returns the AI model's response as human-readable output in the War Room.
-
-## Setup Instructions
-
-### AI Studio (API Key)
-
-1. **Obtain API Key**: Visit [Google AI Studio](https://makersuite.google.com/app/apikey) to create an API key.
-2. **Configure Integration**: Add a new GoogleGemini integration instance, set Authentication Type to **AI Studio API Key**, and enter your API key.
-3. **Test Connection**: Use the Test button to verify connectivity.
-4. **Start Using**: Execute the `google-gemini-send-message` command for AI interactions.
-
-### Vertex AI (Service Account)
-
-1. **Create a Service Account**: In the Google Cloud Console, go to **IAM & Admin** > **Service Accounts** and create a service account with the **Vertex AI User** role.
-2. **Generate a JSON Key**: On the service account page, create a new JSON key and download it.
-3. **Configure Integration**: Add a new GoogleGemini integration instance, set Authentication Type to **Vertex AI Service Account**, and paste the full JSON key contents into the Service Account Key field.
-4. **Set Project ID**: Enter your Google Cloud Project ID.
-5. **Set Location**: Enter the location (default: `global`). Use `us-central1`, `europe-west4`, etc. for regional endpoints.
-6. **Test Connection**: Use the Test button to verify connectivity.
-
-## Troubleshooting and Tips
-
-- Ensure your API key has access to the Generative Language API.
-- Verify your Cortex XSOAR or XSIAM instance can access the configured endpoint.
-- Check that the specified model is available in your region.
-- Review usage quotas and rate limits for your API key or project.
-- The integration attempts to use models not included in the official list and issues a warning.
-- Ensure the service account has the `roles/aiplatform.user` role and the Vertex AI API is enabled in your project.
-- For AI Studio, use the server URL `https://generativelanguage.googleapis.com`. For Vertex AI, the URL auto-switches to `https://aiplatform.googleapis.com` by default.

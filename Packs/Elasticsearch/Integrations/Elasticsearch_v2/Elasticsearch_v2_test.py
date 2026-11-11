@@ -1,6 +1,6 @@
 import importlib
 import unittest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from unittest import mock
 from unittest.mock import patch, MagicMock
 
@@ -1445,6 +1445,25 @@ def test_search_command_with_query_esql(mocker):
     assert call_args["body"] == {"query": f"{query}| LIMIT 2"}
 
 
+def test_update_http_body():
+    original_body = {"endpoint_ids": ["agent-1"]}
+
+    result = Elasticsearch_v2.update_http_body(
+        original_body,
+        {"alert_ids": "alert-1,alert-2", "comment": "investigation", "agent_type": ""},
+        array_fields={"alert_ids", "case_ids"},
+        string_fields={"agent_type", "comment"},
+    )
+
+    assert result is not original_body
+    assert original_body == {"endpoint_ids": ["agent-1"]}
+    assert result == {
+        "endpoint_ids": ["agent-1"],
+        "alert_ids": ["alert-1", "alert-2"],
+        "comment": "investigation",
+    }
+
+
 class TestGetElasticToken:
     """Tests for the get_elastic_token function."""
 
@@ -1692,38 +1711,86 @@ class TestGetKibanaBaseUrl:
     def test_get_kibana_base_url_success(self, mocker):
         """
         Given:
-            - A Server URL containing the ".es." Elastic Cloud subdomain segment
+            - No configured Kibana Server URL, and a Server URL containing the ".es." Elastic Cloud subdomain segment
         When:
             - Calling get_kibana_base_url
         Then:
             - Return the URL with ".es." replaced by ".kb."
         """
-        import Elasticsearch_v2
-
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": ""})
         mocker.patch("Elasticsearch_v2.SERVER", "https://my-deployment-af38b6.es.us-central1.gcp.cloud.es.io")
 
         result = Elasticsearch_v2.get_kibana_base_url()
 
         assert result == "https://my-deployment-af38b6.kb.us-central1.gcp.cloud.es.io"
 
-    def test_get_kibana_base_url_missing_es_segment(self, mocker):
+    def test_get_kibana_base_url_from_configured_param(self, mocker):
         """
         Given:
-            - A Server URL that does not contain the ".es." segment
+            - A configured Kibana Server URL of an on-premises deployment, and a Server URL without ".es."
         When:
             - Calling get_kibana_base_url
         Then:
-            - Raise a DemistoException explaining the Kibana URL could not be derived
+            - Return the configured Kibana Server URL as-is, without attempting any derivation
         """
-        import Elasticsearch_v2
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": "https://kibana.example.com:5601"})
+        mocker.patch("Elasticsearch_v2.SERVER", "https://on-prem-elastic.example.com:9200")
+
+        result = Elasticsearch_v2.get_kibana_base_url()
+
+        assert result == "https://kibana.example.com:5601"
+
+    def test_get_kibana_base_url_configured_param_strips_trailing_slash(self, mocker):
+        """
+        Given:
+            - A configured Kibana Server URL that ends with a trailing slash
+        When:
+            - Calling get_kibana_base_url
+        Then:
+            - Return the URL without the trailing slash, so paths are joined correctly
+        """
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": "https://kibana.example.com:5601/"})
+        mocker.patch("Elasticsearch_v2.SERVER", "https://on-prem-elastic.example.com:9200")
+
+        result = Elasticsearch_v2.get_kibana_base_url()
+
+        assert result == "https://kibana.example.com:5601"
+
+    def test_get_kibana_base_url_configured_param_takes_precedence(self, mocker):
+        """
+        Given:
+            - Both a configured Kibana Server URL and an Elastic Cloud Server URL containing ".es."
+        When:
+            - Calling get_kibana_base_url
+        Then:
+            - Return the configured Kibana Server URL, which takes precedence over the derivation
+        """
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": "https://custom-kibana.example.com"})
+        mocker.patch("Elasticsearch_v2.SERVER", "https://my-deployment-af38b6.es.us-central1.gcp.cloud.es.io")
+
+        result = Elasticsearch_v2.get_kibana_base_url()
+
+        assert result == "https://custom-kibana.example.com"
+
+    def test_get_kibana_base_url_missing_es_segment(self, mocker):
+        """
+        Given:
+            - No configured Kibana Server URL, and a Server URL that does not contain the ".es." segment
+        When:
+            - Calling get_kibana_base_url
+        Then:
+            - Raise a DemistoException instructing the user to configure the Kibana Server URL
+        """
         from CommonServerPython import DemistoException
 
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": ""})
         mocker.patch("Elasticsearch_v2.SERVER", "https://on-prem-elastic.example.com:9200")
 
         with pytest.raises(DemistoException) as exc_info:
             Elasticsearch_v2.get_kibana_base_url()
 
-        assert "Could not derive the Kibana URL" in str(exc_info.value)
+        assert "Could not determine the Kibana URL" in str(exc_info.value)
+        assert "Kibana Server URL" in str(exc_info.value)
 
 
 class TestGetKibanaAuthHeaders:
@@ -2742,6 +2809,308 @@ class TestEsKibanaDetectionAlertStatusSetCommand:
             Elasticsearch_v2.es_kibana_detection_alert_status_set_command({}, {})
 
 
+class TestEsKibanaEndpointIsolateCommand:
+    """Tests for es_kibana_endpoint_isolate_command."""
+
+    def test_isolate_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "action": "action-1",
+            "data": {
+                "id": "action-1",
+                "agentType": "endpoint",
+                "command": "isolate",
+                "isComplete": False,
+                "status": "pending",
+                "wasSuccessful": False,
+            },
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        markdown = mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Isolation submitted")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_isolate_command(
+            {
+                "space_id": "security",
+                "endpoint_ids": "endpoint-1,endpoint-2",
+                "agent_type": "endpoint",
+                "alert_ids": "alert-1,alert-2",
+                "case_ids": "case-1",
+                "comment": "Isolating as initial response",
+            },
+            {},
+        )
+
+        mock_request.assert_called_once_with(
+            "POST",
+            "/api/endpoint/action/isolate",
+            space_id="security",
+            json_data={
+                "endpoint_ids": ["endpoint-1", "endpoint-2"],
+                "agent_type": "endpoint",
+                "alert_ids": ["alert-1", "alert-2"],
+                "case_ids": ["case-1"],
+                "comment": "Isolating as initial response",
+            },
+            proxies={},
+        )
+        expected_output = response["data"]
+        assert result.outputs == expected_output
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointIsolationAction"
+        assert result.readable_output == "Isolation submitted"
+        hr = markdown.call_args.args[1]
+        assert hr["Id"] == "action-1"
+        assert hr["Is Complete"] is False
+        assert hr["Was Successful"] is False
+
+    def test_missing_endpoint_ids_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="endpoint_ids"):
+            Elasticsearch_v2.es_kibana_endpoint_isolate_command({}, {})
+
+
+class TestEsKibanaEndpointUnisolateCommand:
+    """Tests for es_kibana_endpoint_unisolate_command."""
+
+    def test_unisolate_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "action": "action-2",
+            "data": {
+                "id": "action-2",
+                "agentType": "endpoint",
+                "command": "unisolate",
+                "isComplete": True,
+                "status": "completed",
+                "wasSuccessful": True,
+            },
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        markdown = mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Unisolation submitted")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_unisolate_command(
+            {
+                "space_id": "security",
+                "endpoint_ids": "endpoint-1,endpoint-2",
+                "agent_type": "endpoint",
+                "alert_ids": "alert-1,alert-2",
+                "case_ids": "case-1",
+                "comment": "Releasing endpoint",
+            },
+            {},
+        )
+
+        mock_request.assert_called_once_with(
+            "POST",
+            "/api/endpoint/action/unisolate",
+            space_id="security",
+            json_data={
+                "endpoint_ids": ["endpoint-1", "endpoint-2"],
+                "agent_type": "endpoint",
+                "alert_ids": ["alert-1", "alert-2"],
+                "case_ids": ["case-1"],
+                "comment": "Releasing endpoint",
+            },
+            proxies={},
+        )
+        expected_output = response["data"]
+        assert result.outputs == expected_output
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointUnisolationAction"
+        assert result.readable_output == "Unisolation submitted"
+        hr = markdown.call_args.args[1]
+        assert hr["Id"] == "action-2"
+        assert hr["Command"] == "unisolate"
+        assert hr["Was Successful"] is True
+
+    def test_missing_endpoint_ids_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="endpoint_ids"):
+            Elasticsearch_v2.es_kibana_endpoint_unisolate_command({}, {})
+
+
+class TestEsKibanaEndpointAgentGetCommand:
+    """Tests for es_kibana_endpoint_agent_get_command."""
+
+    def test_get_agent_passes_path_id_and_metrics_param(self, mocker):
+        import Elasticsearch_v2
+
+        response = {"item": {"id": "agent-1", "status": "online", "local_metadata": {"host": {"hostname": "host-1"}}}}
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Fleet agents")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_agent_get_command(
+            {
+                "space_id": "security",
+                "agent_id": "agent-1",
+                "with_metrics": "true",
+            },
+            {},
+        )
+
+        mock_request.assert_called_once_with(
+            "GET",
+            "/api/fleet/agents/agent-1",
+            space_id="security",
+            params={"withMetrics": True},
+            proxies={},
+        )
+        assert result.outputs == response
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointAgentGet"
+        assert result.readable_output == "Fleet agents"
+
+    def test_get_agent_without_optional_params(self, mocker):
+        import Elasticsearch_v2
+
+        response = {"item": {"id": "agent-1", "status": "online"}}
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Fleet agent")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_agent_get_command({"agent_id": "agent-1"}, {})
+
+        mock_request.assert_called_once_with("GET", "/api/fleet/agents/agent-1", space_id=None, params={}, proxies={})
+        assert result.outputs == response
+        assert result.readable_output == "Fleet agent"
+
+    def test_get_agent_requires_agent_id(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="agent_id"):
+            Elasticsearch_v2.es_kibana_endpoint_agent_get_command({}, {})
+
+
+class TestEsKibanaEndpointExecuteCommand:
+    """Tests for es_kibana_endpoint_execute_command."""
+
+    def test_execute_command_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "data": {
+                "id": "action-1",
+                "agents": ["agent-1"],
+                "agentType": "endpoint",
+                "command": "execute",
+                "status": "pending",
+                "parameters": {"command": "ls -al", "timeout": 600},
+            }
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Command submitted")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_execute_command(
+            {
+                "space_id": "security",
+                "endpoint_ids": "agent-1,agent-2",
+                "command": "ls -al",
+                "timeout": "600",
+                "alert_ids": "alert-1",
+                "case_ids": "case-1,case-2",
+                "agent_type": "endpoint",
+                "comment": "investigation",
+            },
+            {},
+        )
+
+        mock_request.assert_called_once_with(
+            "POST",
+            "/api/endpoint/action/execute",
+            space_id="security",
+            json_data={
+                "endpoint_ids": ["agent-1", "agent-2"],
+                "parameters": {"command": "ls -al", "timeout": 600},
+                "alert_ids": ["alert-1"],
+                "case_ids": ["case-1", "case-2"],
+                "agent_type": "endpoint",
+                "comment": "investigation",
+            },
+            proxies={},
+        )
+        expected_output = response["data"]
+        assert result.outputs == expected_output
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointExecuteCommandAction"
+        assert result.readable_output == "Command submitted"
+
+    @pytest.mark.parametrize("args", [{}, {"endpoint_ids": "agent-1"}])
+    def test_execute_command_requires_endpoint_ids_and_command(self, args):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        expected_argument = "endpoint_ids" if not args else "command"
+        with pytest.raises(DemistoException, match=expected_argument):
+            Elasticsearch_v2.es_kibana_endpoint_execute_command(args, {})
+
+
+class TestEsKibanaEndpointActionDetailsCommand:
+    """Tests for es_kibana_endpoint_action_details_command."""
+
+    def test_action_details_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {"data": {"id": "action-1", "command": "execute", "status": "completed"}}
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Action details")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_action_details_command({"space_id": "security", "action_id": "action-1"}, {})
+
+        mock_request.assert_called_once_with(
+            "GET",
+            "/api/endpoint/action/action-1",
+            space_id="security",
+            proxies={},
+        )
+        expected_output = response["data"]
+        assert result.outputs == expected_output
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointGetActionDetails"
+        assert result.readable_output == "Action details"
+
+    def test_action_details_requires_action_id(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="action_id"):
+            Elasticsearch_v2.es_kibana_endpoint_action_details_command({}, {})
+
+
+class TestEsKibanaEndpointMetadataGetCommand:
+    """Tests for es_kibana_endpoint_metadata_get_command."""
+
+    def test_get_metadata_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "host_status": "online",
+            "last_checkin": "2026-10-02T12:00:00Z",
+            "metadata": {"hostname": "host-1"},
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Endpoint metadata")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_metadata_get_command({"space_id": "security", "id": "agent-1"}, {})
+
+        mock_request.assert_called_once_with(
+            "GET",
+            "/api/endpoint/metadata/agent-1",
+            space_id="security",
+            proxies={},
+        )
+        assert result.outputs == {**response, "agent_id": "agent-1"}
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointMetadataGet"
+        assert result.readable_output == "Endpoint metadata"
+
+    def test_get_metadata_requires_agent_id(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match='"id"'):
+            Elasticsearch_v2.es_kibana_endpoint_metadata_get_command({}, {})
+
+
 MOCK_EXCEPTION_ITEM = {
     "id": "item-id-1",
     "item_id": "trusted-linux-processes",
@@ -3282,3 +3651,866 @@ class TestEsKibanaValueListItemImportCommand:
 
         with pytest.raises(DemistoException):
             Elasticsearch_v2.es_kibana_value_list_item_import_command({}, {})
+
+
+class TestBuildFetchExtraParams:
+    """Tests for build_fetch_extra_params.
+    A blank "Fields to Fetch" parameter must not add an empty "fields": [] entry to the
+    fetch request body, otherwise Elasticsearch fails with:
+    ParsingException 400 'Unknown key for a START_ARRAY in [fields]'.
+    """
+
+    def test_empty_fields_list_omits_fields_key(self):
+        import Elasticsearch_v2
+
+        extra_params = Elasticsearch_v2.build_fetch_extra_params([])
+
+        assert "fields" not in extra_params
+        assert extra_params == {"_source": True}
+
+    def test_populated_fields_list_includes_fields_key(self):
+        import Elasticsearch_v2
+
+        extra_params = Elasticsearch_v2.build_fetch_extra_params(["field_a", "field_b"])
+
+        assert extra_params == {"_source": True, "fields": ["field_a", "field_b"]}
+
+
+class TestElasticEntityKind:
+    """Tests for the ``elastic_entity_kind`` field added to mirrored/fetched incidents.
+
+    The field carries the source entity kind so the incoming mapper can distinguish
+    security alerts from cases. Security alerts derive it from ``event.kind`` (falling
+    back to ``signal``); cases derive it from the case ``owner`` (falling back to
+    ``securitySolution``).
+    """
+
+    def test_get_remote_data_security_alert_uses_event_kind(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", False)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="instance-1")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "search_security_alerts",
+            return_value={
+                "hits": {
+                    "hits": [
+                        {
+                            "_index": "alerts",
+                            "_id": "alert-1",
+                            "_source": {
+                                "kibana.alert.uuid": "alert-1",
+                                "kibana.alert.severity": "high",
+                                "kibana.alert.workflow_status": "open",
+                                "event.kind": "signal",
+                            },
+                        }
+                    ]
+                }
+            },
+        )
+
+        response = Elasticsearch_v2.get_remote_data_command({"id": "alert-1", "lastUpdate": ""}, {})
+
+        assert response.mirrored_object[Elasticsearch_v2.ELASTIC_ENTITY_KIND_FIELD] == "signal"
+
+    def test_get_remote_data_security_alert_defaults_kind(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", False)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="instance-1")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "search_security_alerts",
+            return_value={
+                "hits": {
+                    "hits": [
+                        {
+                            "_index": "alerts",
+                            "_id": "alert-2",
+                            "_source": {
+                                "kibana.alert.uuid": "alert-2",
+                                "kibana.alert.severity": "low",
+                                "kibana.alert.workflow_status": "open",
+                            },
+                        }
+                    ]
+                }
+            },
+        )
+
+        response = Elasticsearch_v2.get_remote_data_command({"id": "alert-2", "lastUpdate": ""}, {})
+
+        assert response.mirrored_object[Elasticsearch_v2.ELASTIC_ENTITY_KIND_FIELD] == Elasticsearch_v2.ENTITY_KIND_SECURITY_ALERT
+
+    def test_get_remote_data_security_alert_exposes_flat_workflow_tags(self, mocker):
+        """Mirroring-in must expose workflow tags under a dot-free key the incoming mapper can read.
+
+        Alerts-as-data documents store the tags under the flat dotted key
+        ``kibana.alert.workflow_tags``; the mapper's ``simple`` selector would otherwise treat that
+        as nested-object traversal and resolve nothing, so tags would never mirror in.
+        """
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", False)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="instance-1")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "search_security_alerts",
+            return_value={
+                "hits": {
+                    "hits": [
+                        {
+                            "_index": "alerts",
+                            "_id": "alert-tags",
+                            "_source": {
+                                "kibana.alert.uuid": "alert-tags",
+                                "kibana.alert.severity": "low",
+                                "kibana.alert.workflow_status": "open",
+                                "kibana.alert.workflow_tags": ["new tag", "Duplicate"],
+                            },
+                        }
+                    ]
+                }
+            },
+        )
+
+        response = Elasticsearch_v2.get_remote_data_command({"id": "alert-tags", "lastUpdate": ""}, {})
+
+        assert response.mirrored_object["kibana_alert_workflow_tags"] == ["new tag", "Duplicate"]
+
+    def test_get_remote_data_security_alert_tags_default_empty(self, mocker):
+        """When an alert has no workflow tags, mirroring-in exposes an empty list, not a missing key."""
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", False)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="instance-1")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "search_security_alerts",
+            return_value={
+                "hits": {
+                    "hits": [
+                        {
+                            "_index": "alerts",
+                            "_id": "alert-no-tags",
+                            "_source": {
+                                "kibana.alert.uuid": "alert-no-tags",
+                                "kibana.alert.severity": "low",
+                                "kibana.alert.workflow_status": "open",
+                            },
+                        }
+                    ]
+                }
+            },
+        )
+
+        response = Elasticsearch_v2.get_remote_data_command({"id": "alert-no-tags", "lastUpdate": ""}, {})
+
+        assert response.mirrored_object["kibana_alert_workflow_tags"] == []
+
+    def test_get_remote_data_case_uses_owner(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_CASE)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", False)
+        mocker.patch.object(Elasticsearch_v2, "FETCH_ALERTS_FOR_CASE", False)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="instance-1")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "kibana_http_request",
+            return_value={"id": "case-1", "status": "open", "severity": "medium", "owner": "observability"},
+        )
+
+        response = Elasticsearch_v2.get_remote_data_command({"id": "case-1", "lastUpdate": ""}, {})
+
+        assert response.mirrored_object[Elasticsearch_v2.ELASTIC_ENTITY_KIND_FIELD] == "observability"
+
+    def test_get_remote_data_case_defaults_kind(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_CASE)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", False)
+        mocker.patch.object(Elasticsearch_v2, "FETCH_ALERTS_FOR_CASE", False)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="instance-1")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "kibana_http_request",
+            return_value={"id": "case-2", "status": "open", "severity": "medium"},
+        )
+
+        response = Elasticsearch_v2.get_remote_data_command({"id": "case-2", "lastUpdate": ""}, {})
+
+        assert response.mirrored_object[Elasticsearch_v2.ELASTIC_ENTITY_KIND_FIELD] == Elasticsearch_v2.ENTITY_KIND_CASE
+
+
+class TestMirroringHelpers:
+    """Unit tests for the small, pure helpers introduced with the mirroring feature."""
+
+    def test_get_value_by_dot_notation_nested(self):
+        import Elasticsearch_v2
+
+        source = {"kibana": {"alert": {"uuid": "abc"}}}
+        assert Elasticsearch_v2.get_value_by_dot_notation(source, "kibana.alert.uuid") == "abc"
+
+    def test_get_value_by_dot_notation_missing(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.get_value_by_dot_notation({"a": 1}, "a.b.c") is None
+
+    def test_get_alert_source_value_prefers_flat_key(self):
+        import Elasticsearch_v2
+
+        source = {"kibana.alert.uuid": "flat", "kibana": {"alert": {"uuid": "nested"}}}
+        assert Elasticsearch_v2.get_alert_source_value(source, "kibana.alert.uuid") == "flat"
+
+    def test_get_alert_source_value_falls_back_to_nested(self):
+        import Elasticsearch_v2
+
+        source = {"kibana": {"alert": {"uuid": "nested"}}}
+        assert Elasticsearch_v2.get_alert_source_value(source, "kibana.alert.uuid") == "nested"
+
+    def test_get_alert_source_value_non_dict(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.get_alert_source_value("not-a-dict", "any.key") is None
+
+    @pytest.mark.parametrize(
+        "name,expected",
+        [("critical", 4), ("high", 3), ("medium", 2), ("low", 1), ("CRITICAL", 4), ("unknown", 0), (None, 0)],
+    )
+    def test_convert_severity(self, name, expected):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.convert_severity(name) == expected
+
+    @pytest.mark.parametrize(
+        "value,expected",
+        [(4, "critical"), (3, "high"), (2, "medium"), (1, "low"), ("high", "high"), ("HIGH", "high"), (0, None), ("bogus", None)],
+    )
+    def test_convert_severity_to_elastic(self, value, expected):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.convert_severity_to_elastic(value) == expected
+
+    def test_flatten_alert_hit_merges_source_and_keeps_metadata(self):
+        import Elasticsearch_v2
+
+        hit = {"_index": "alerts", "_id": "1", "_source": {"a": 1, "b": 2}}
+        flattened = Elasticsearch_v2.flatten_alert_hit(hit)
+        assert flattened == {"_index": "alerts", "_id": "1", "a": 1, "b": 2}
+        assert "_source" not in flattened
+
+    def test_flatten_alert_hit_handles_missing_source(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.flatten_alert_hit({"_id": "1"}) == {"_id": "1"}
+
+    def test_build_alert_lookup_body(self):
+        import Elasticsearch_v2
+
+        body = Elasticsearch_v2.build_alert_lookup_body("remote-1", size=5)
+        should = body["query"]["bool"]["should"]
+        assert {"term": {"kibana.alert.uuid": "remote-1"}} in should
+        assert {"ids": {"values": ["remote-1"]}} in should
+        assert body["query"]["bool"]["minimum_should_match"] == 1
+        assert body["size"] == 5
+
+    @pytest.mark.parametrize(
+        "message,expected",
+        [
+            ("Error 429 Too Many Requests", True),
+            ("hit the rate limit", True),
+            ("too many requests", True),
+            ("connection refused", False),
+        ],
+    )
+    def test_is_rate_limit_error(self, message, expected):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2._is_rate_limit_error(Exception(message)) is expected
+
+    def test_parse_to_utc_valid(self):
+        import Elasticsearch_v2
+
+        parsed = Elasticsearch_v2.parse_to_utc("2020-01-01T00:00:00Z")
+        assert parsed is not None
+        assert parsed.tzinfo is not None
+
+    def test_parse_to_utc_empty(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.parse_to_utc("") is None
+        assert Elasticsearch_v2.parse_to_utc(None) is None
+
+
+class TestIsIncidentClosing:
+    """Tests for is_incident_closing."""
+
+    def test_status_done_is_closing(self):
+        import Elasticsearch_v2
+        from CommonServerPython import IncidentStatus
+
+        assert Elasticsearch_v2.is_incident_closing(IncidentStatus.DONE, {}) is True
+
+    def test_close_delta_key_is_closing(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.is_incident_closing(None, {"closeReason": "Resolved"}) is True
+
+    def test_not_closing(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.is_incident_closing(None, {"status": "open"}) is False
+
+    def test_none_delta_not_closing(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.is_incident_closing(None, None) is False
+
+
+class TestGetIncidentType:
+    """Tests for get_incident_type."""
+
+    def test_returns_type(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2.demisto, "incident", return_value={"type": "Elasticsearch Case"})
+        assert Elasticsearch_v2.get_incident_type() == "Elasticsearch Case"
+
+    def test_returns_empty_when_no_type(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2.demisto, "incident", return_value={})
+        assert Elasticsearch_v2.get_incident_type() == ""
+
+    def test_returns_empty_on_exception(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2.demisto, "incident", side_effect=Exception("no context"))
+        assert Elasticsearch_v2.get_incident_type() == ""
+
+    def test_returns_empty_when_not_dict(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2.demisto, "incident", return_value="not-a-dict")
+        assert Elasticsearch_v2.get_incident_type() == ""
+
+
+class TestGetConfiguredFetchIncidentType:
+    """Tests for get_configured_fetch_incident_type."""
+
+    def test_fetch_incident_type_param(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "PARAMS", {"fetch_incident_type": "Elasticsearch Case"})
+        assert Elasticsearch_v2.get_configured_fetch_incident_type() == "Elasticsearch Case"
+
+    def test_incident_type_param_fallback(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "PARAMS", {"incidentType": "Elasticsearch Security Alert"})
+        assert Elasticsearch_v2.get_configured_fetch_incident_type() == "Elasticsearch Security Alert"
+
+    def test_unrecognized_returns_empty(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "PARAMS", {"fetch_incident_type": "Something Else"})
+        assert Elasticsearch_v2.get_configured_fetch_incident_type() == ""
+
+
+class TestPruneFetchedIds:
+    """Tests for prune_fetched_ids."""
+
+    def test_keeps_recent_and_drops_expired(self):
+        import Elasticsearch_v2
+        from datetime import datetime, timedelta
+
+        now = datetime(2020, 1, 30, tzinfo=UTC)
+        fetched = {
+            "recent": (now - timedelta(days=1)).isoformat(),
+            "expired": (now - timedelta(days=Elasticsearch_v2.FETCHED_IDS_RETENTION_DAYS + 5)).isoformat(),
+        }
+        pruned = Elasticsearch_v2.prune_fetched_ids(fetched, now=now)
+        assert "recent" in pruned
+        assert "expired" not in pruned
+
+    def test_keeps_unparsable(self):
+        import Elasticsearch_v2
+        from datetime import datetime
+
+        now = datetime(2020, 1, 30, tzinfo=UTC)
+        pruned = Elasticsearch_v2.prune_fetched_ids({"weird": "not-a-date"}, now=now)
+        assert "weird" in pruned
+
+    def test_empty_input(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.prune_fetched_ids({}) == {}
+        assert Elasticsearch_v2.prune_fetched_ids(None) == {}
+
+
+class TestResolveRemoteIncidentType:
+    """Tests for resolve_remote_incident_type."""
+
+    def test_empty_remote_id(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.resolve_remote_incident_type("", {}) == ""
+
+    def test_resolves_case(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value={"id": "case-1"})
+        assert Elasticsearch_v2.resolve_remote_incident_type("case-1", {}) == Elasticsearch_v2.INCIDENT_TYPE_CASE
+
+    def test_resolves_alert(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value=None)
+        mocker.patch.object(Elasticsearch_v2, "search_security_alerts", return_value={"hits": {"hits": [{"_id": "a1"}]}})
+        assert Elasticsearch_v2.resolve_remote_incident_type("a1", {}) == Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT
+
+    def test_falls_back_to_configured_type(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", side_effect=Exception("down"))
+        mocker.patch.object(Elasticsearch_v2, "search_security_alerts", side_effect=Exception("down"))
+        mocker.patch.object(
+            Elasticsearch_v2, "get_configured_fetch_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_CASE
+        )
+        assert Elasticsearch_v2.resolve_remote_incident_type("x", {}) == Elasticsearch_v2.INCIDENT_TYPE_CASE
+
+    def test_matches_nothing(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value=None)
+        mocker.patch.object(Elasticsearch_v2, "search_security_alerts", return_value={"hits": {"hits": []}})
+        mocker.patch.object(Elasticsearch_v2, "get_configured_fetch_incident_type", return_value="")
+        assert Elasticsearch_v2.resolve_remote_incident_type("x", {}) == ""
+
+
+class TestSearchSecurityAlerts:
+    """Tests for search_security_alerts fallback behavior."""
+
+    def test_falls_back_to_kibana(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder", side_effect=Exception("es down"))
+        kibana = mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value={"hits": {"hits": [{"_id": "1"}]}})
+        result = Elasticsearch_v2.search_security_alerts({"query": {}}, {})
+        assert result == {"hits": {"hits": [{"_id": "1"}]}}
+        assert kibana.called
+
+    def test_raises_when_both_fail(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder", side_effect=Exception("es down"))
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", side_effect=Exception("kibana down"))
+        mocker.patch.object(Elasticsearch_v2, "mirror_error")
+        with pytest.raises(Exception):
+            Elasticsearch_v2.search_security_alerts({"query": {}}, {})
+
+
+class TestGetRemoteDataClose:
+    """Tests for the close-incident entries returned by get_remote_data_command."""
+
+    def test_alert_closed_adds_close_entry(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", True)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="inst")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "search_security_alerts",
+            return_value={
+                "hits": {
+                    "hits": [
+                        {
+                            "_id": "a1",
+                            "_source": {
+                                "kibana.alert.uuid": "a1",
+                                "kibana.alert.workflow_status": "closed",
+                                "kibana.alert.workflow_reason": "false_positive",
+                                "kibana.alert.severity": "low",
+                            },
+                        }
+                    ]
+                }
+            },
+        )
+        response = Elasticsearch_v2.get_remote_data_command({"id": "a1", "lastUpdate": ""}, {})
+        assert any(e["Contents"].get("dbotIncidentClose") for e in response.entries)
+        close_entry = response.entries[0]["Contents"]
+        assert close_entry["closeReason"] == "false_positive"
+
+    def test_case_closed_adds_close_entry(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_CASE)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", True)
+        mocker.patch.object(Elasticsearch_v2, "FETCH_ALERTS_FOR_CASE", False)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="inst")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "kibana_http_request",
+            return_value={"id": "c1", "status": "closed", "severity": "low", "closeReason": "duplicate"},
+        )
+        response = Elasticsearch_v2.get_remote_data_command({"id": "c1", "lastUpdate": ""}, {})
+        assert response.entries[0]["Contents"]["dbotIncidentClose"] is True
+        assert response.entries[0]["Contents"]["closeReason"] == "duplicate"
+
+    def test_case_rate_limit_raises(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_CASE)
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", side_effect=Exception("429 too many requests"))
+        return_error = mocker.patch.object(Elasticsearch_v2, "return_error", side_effect=SystemExit)
+        with pytest.raises(SystemExit):
+            Elasticsearch_v2.get_remote_data_command({"id": "c1", "lastUpdate": ""}, {})
+        assert return_error.called
+
+
+class TestUpdateRemoteSystemCommand:
+    """Tests for update_remote_system_command routing."""
+
+    def test_no_remote_id_returns_empty(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_CASE)
+        args = {"remoteId": "", "data": {}, "entries": [], "incidentChanged": True, "delta": {}, "status": 1}
+        assert Elasticsearch_v2.update_remote_system_command(args, {}) == ""
+
+    def test_routes_to_alert(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT)
+        mirror_out = mocker.patch.object(Elasticsearch_v2, "_mirror_out_security_alert")
+        args = {
+            "remoteId": "a1",
+            "data": {"type": Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT},
+            "entries": [],
+            "incidentChanged": True,
+            "delta": {"status": "closed"},
+            "status": 1,
+        }
+        assert Elasticsearch_v2.update_remote_system_command(args, {}) == "a1"
+        assert mirror_out.called
+
+    def test_routes_to_case_and_entries(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_CASE)
+        mirror_case = mocker.patch.object(Elasticsearch_v2, "_mirror_out_case")
+        mirror_entries = mocker.patch.object(Elasticsearch_v2, "_mirror_out_case_entries")
+        args = {
+            "remoteId": "c1",
+            "data": {"type": Elasticsearch_v2.INCIDENT_TYPE_CASE},
+            "entries": [{"ID": "1"}],
+            "incidentChanged": True,
+            "delta": {"title": "new"},
+            "status": 1,
+        }
+        assert Elasticsearch_v2.update_remote_system_command(args, {}) == "c1"
+        assert mirror_case.called
+        assert mirror_entries.called
+
+
+class TestMirrorOutCaseEntries:
+    """Tests for _mirror_out_case_entries."""
+
+    def test_posts_comment_for_tagged_entry(self, mocker):
+        import Elasticsearch_v2
+
+        req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request")
+        Elasticsearch_v2._mirror_out_case_entries("c1", [{"ID": "1", "Tags": ["comment"], "Contents": "hello"}], {})
+        assert req.called
+        _, kwargs = req.call_args
+        assert kwargs["json_data"]["comment"] == "hello"
+
+    def test_skips_untagged_entry(self, mocker):
+        import Elasticsearch_v2
+
+        req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request")
+        Elasticsearch_v2._mirror_out_case_entries("c1", [{"ID": "1", "Tags": [], "Contents": "hello"}], {})
+        assert not req.called
+
+    def test_serializes_dict_contents(self, mocker):
+        import Elasticsearch_v2
+
+        req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request")
+        Elasticsearch_v2._mirror_out_case_entries("c1", [{"ID": "1", "Tags": ["comment"], "Contents": {"a": 1}}], {})
+        _, kwargs = req.call_args
+        assert kwargs["json_data"]["comment"] == json.dumps({"a": 1})
+
+
+class TestMirrorOutSecurityAlert:
+    """Tests for _mirror_out_security_alert."""
+
+    def test_updates_status(self, mocker):
+        import Elasticsearch_v2
+
+        req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value={"updated": 1})
+        Elasticsearch_v2._mirror_out_security_alert("a1", {"status": "acknowledged"}, 1, {})
+        assert req.called
+        _, kwargs = req.call_args
+        assert kwargs["json_data"]["status"] == "acknowledged"
+
+    def test_nothing_to_mirror_logs_error(self, mocker):
+        import Elasticsearch_v2
+
+        req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request")
+        err = mocker.patch.object(Elasticsearch_v2, "mirror_error")
+        Elasticsearch_v2._mirror_out_security_alert("a1", {"severity": 3}, 1, {})
+        assert not req.called
+        assert err.called
+
+    def test_close_sets_status_and_reason(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_ELASTIC_INCIDENT", True)
+        req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value={"updated": 1})
+        Elasticsearch_v2._mirror_out_security_alert("a1", {"closeReason": "Resolved"}, Elasticsearch_v2.IncidentStatus.DONE, {})
+        _, kwargs = req.call_args
+        assert kwargs["json_data"]["status"] == "closed"
+        assert kwargs["json_data"]["reason"] == "true_positive"
+
+    def test_updates_tags(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "search_security_alerts",
+            return_value={"hits": {"hits": [{"_id": "doc1", "_source": {"kibana.alert.workflow_tags": ["old"]}}]}},
+        )
+        req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request")
+        Elasticsearch_v2._mirror_out_security_alert("a1", {"tags": ["new"]}, 1, {})
+        # Last call should be to the tags endpoint.
+        args, kwargs = req.call_args
+        assert args[1] == "/api/detection_engine/signals/tags"
+        assert kwargs["json_data"]["tags"]["tags_to_add"] == ["new"]
+        assert kwargs["json_data"]["tags"]["tags_to_remove"] == ["old"]
+
+
+class TestMirrorOutCase:
+    """Tests for _mirror_out_case."""
+
+    def test_case_not_found_skips(self, mocker):
+        import Elasticsearch_v2
+
+        req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value=None)
+        Elasticsearch_v2._mirror_out_case("c1", {"title": "x"}, 1, {}, {})
+        # Only the initial GET was attempted.
+        assert req.call_count == 1
+
+    def test_updates_supported_fields(self, mocker):
+        import Elasticsearch_v2
+
+        calls = []
+
+        def fake_request(method, path, **kwargs):
+            calls.append((method, path, kwargs))
+            if method == "GET":
+                return {"version": "v1"}
+            return {}
+
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", side_effect=fake_request)
+        Elasticsearch_v2._mirror_out_case("c1", {"title": "new title", "severity": 3}, 1, {}, {})
+        patch_call = [c for c in calls if c[0] == "PATCH"][0]
+        case_payload = patch_call[2]["json_data"]["cases"][0]
+        assert case_payload["title"] == "new title"
+        assert case_payload["severity"] == "high"
+
+    def test_no_supported_fields_skips_patch(self, mocker):
+        import Elasticsearch_v2
+
+        calls = []
+
+        def fake_request(method, path, **kwargs):
+            calls.append(method)
+            if method == "GET":
+                return {"version": "v1"}
+            return {}
+
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", side_effect=fake_request)
+        Elasticsearch_v2._mirror_out_case("c1", {"unsupported": "x"}, 1, {}, {})
+        assert "PATCH" not in calls
+
+
+class TestGetModifiedRemoteData:
+    """Tests for get_modified_remote_data_command and its helpers."""
+
+    def test_get_modified_alert_ids_empty_update(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2._get_modified_alert_ids("", {}) == []
+
+    def test_get_modified_alert_ids_uses_uuid_then_docid(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "search_security_alerts",
+            return_value={
+                "hits": {
+                    "hits": [
+                        {"_id": "doc1", "_source": {"kibana.alert.uuid": "uuid1"}},
+                        {"_id": "doc2", "_source": {}},
+                    ]
+                }
+            },
+        )
+        ids = Elasticsearch_v2._get_modified_alert_ids("2020-01-01T00:00:00Z", {})
+        assert ids == ["uuid1", "doc2"]
+
+    def test_get_modified_case_ids_filters_by_time(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "kibana_http_request",
+            return_value={
+                "cases": [
+                    {"id": "new", "updated_at": "2020-01-02T00:00:00Z"},
+                    {"id": "old", "updated_at": "2019-12-01T00:00:00Z"},
+                ]
+            },
+        )
+        ids = Elasticsearch_v2._get_modified_case_ids("2020-01-01T00:00:00Z", {})
+        assert ids == ["new"]
+
+    def test_get_modified_case_ids_bad_update(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2._get_modified_case_ids("not-a-date", {}) == []
+
+    def test_command_dedups_ids(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "_get_modified_alert_ids", return_value=["a", "b"])
+        mocker.patch.object(Elasticsearch_v2, "_get_modified_case_ids", return_value=["b", "c"])
+        response = Elasticsearch_v2.get_modified_remote_data_command({"lastUpdate": "2020-01-01T00:00:00Z"}, {})
+        assert response.modified_incident_ids == ["a", "b", "c"]
+
+    def test_command_rate_limit_on_alerts(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "_get_modified_alert_ids", side_effect=Exception("429"))
+        return_error = mocker.patch.object(Elasticsearch_v2, "return_error", side_effect=SystemExit)
+        with pytest.raises(SystemExit):
+            Elasticsearch_v2.get_modified_remote_data_command({"lastUpdate": "2020-01-01T00:00:00Z"}, {})
+        assert return_error.called
+
+
+class TestFetchSecurityAlertsSubSecondCursor:
+    """The fetch cursor must preserve sub-second precision.
+
+    fetch_security_alerts used to derive its cursor from `occurred`, which format_to_iso
+    truncates at the decimal point. When a full page of alerts shared the same second, every
+    hit collapsed to one cursor value, the cursor could never advance past that second, and
+    each later fetch re-read the same documents only to drop them via the ID dedup - producing
+    0 incidents indefinitely.
+    """
+
+    PARAMS = {
+        "client_type": "Elasticsearch",
+        "fetch_index": "alerts",
+        "fetch_time_field": "@timestamp",
+        "time_method": "Simple-Date",
+        "fetch_incident_type": "Elasticsearch Security Alert",
+        "map_labels": False,
+        "credentials": {"identifier": "mock", "password": "demisto"},
+    }
+
+    @staticmethod
+    def _hit(alert_id, timestamp):
+        return {
+            "_index": ".alerts-security.alerts-default",
+            "_id": alert_id,
+            "_source": {"@timestamp": timestamp, "kibana.alert.uuid": alert_id},
+        }
+
+    def _run_fetch(self, mocker, hits, last_run):
+        """Runs fetch_security_alerts against a canned response, returning (incidents, last_run)."""
+        mocker.patch.object(demisto, "params", return_value=self.PARAMS)
+        importlib.reload(Elasticsearch_v2)
+
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+        mocker.patch.object(demisto, "integrationInstance", return_value="test-instance")
+        set_last_run = mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder", return_value=MagicMock())
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "execute_raw_query",
+            return_value={"hits": {"hits": hits}},
+        )
+        mocker.patch.object(Elasticsearch_v2, "RAW_QUERY", "*")
+
+        incidents = Elasticsearch_v2.fetch_security_alerts({})
+        return incidents, set_last_run.call_args[0][0]
+
+    def test_cursor_retains_milliseconds(self, mocker):
+        """
+        Given: A single alert whose @timestamp carries milliseconds.
+        When:  fetch_security_alerts runs.
+        Then:  The persisted alert_time keeps sub-second precision (the direct bug guard).
+        """
+        incidents, last_run = self._run_fetch(
+            mocker, [self._hit("a1", "2026-09-28T12:00:00.750Z")], {"alert_time": "2026-09-28T00:00:00Z"}
+        )
+
+        assert len(incidents) == 1
+        # Before the fix this was '2026-09-28T12:00:00+00:00' - truncated to a whole second.
+        assert "." in last_run["alert_time"], f"cursor lost sub-second precision: {last_run['alert_time']}"
+        assert dateparser.parse(last_run["alert_time"]).microsecond == 750000
+
+    def test_cursor_advances_to_latest_ms_in_page(self, mocker):
+        """
+        Given: A page of alerts that all share the same second but differ in milliseconds.
+        When:  fetch_security_alerts runs.
+        Then:  The cursor advances to the greatest timestamp in the page, not the truncated second.
+        """
+        hits = [self._hit(f"a{ms}", f"2026-09-28T12:00:00.{ms:03d}Z") for ms in (100, 400, 990)]
+        incidents, last_run = self._run_fetch(mocker, hits, {"alert_time": "2026-09-28T00:00:00Z"})
+
+        assert len(incidents) == 3
+        assert dateparser.parse(last_run["alert_time"]).microsecond == 990000
+
+    def test_second_alert_in_same_second_is_ingested_next_cycle(self, mocker):
+        """
+        Given: Two alerts in the same second with different milliseconds, arriving in
+               separate fetch cycles, with the lastRun of cycle 1 fed into cycle 2.
+        When:  Both fetch cycles run.
+        Then:  The later alert is still ingested - the fetch does not stall at 0 incidents.
+        """
+        incidents1, last_run1 = self._run_fetch(
+            mocker, [self._hit("a1", "2026-09-28T12:00:00.100Z")], {"alert_time": "2026-09-28T00:00:00Z"}
+        )
+        assert [inc["dbotMirrorId"] for inc in incidents1] == ["a1"]
+
+        # Cycle 2: gte is now the cycle-1 cursor, so Elasticsearch returns both documents.
+        hits = [self._hit("a1", "2026-09-28T12:00:00.100Z"), self._hit("a2", "2026-09-28T12:00:00.900Z")]
+        incidents2, last_run2 = self._run_fetch(mocker, hits, last_run1)
+
+        # 'a1' is suppressed by the ID dedup; 'a2' must still come through.
+        assert [inc["dbotMirrorId"] for inc in incidents2] == ["a2"]
+        assert dateparser.parse(last_run2["alert_time"]).microsecond == 900000
+
+    def test_occurred_field_remains_truncated(self, mocker):
+        """
+        Given: An alert whose @timestamp carries milliseconds.
+        When:  fetch_security_alerts runs.
+        Then:  The incident's `occurred` display field keeps its existing truncated format,
+               so the fix changes the cursor only.
+        """
+        incidents, _ = self._run_fetch(
+            mocker, [self._hit("a1", "2026-09-28T12:00:00.750Z")], {"alert_time": "2026-09-28T00:00:00Z"}
+        )
+
+        assert incidents[0]["occurred"] == "2026-09-28T12:00:00Z"

@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: CiscoNexus_ModelingRule
+name: CiscoNexus Modeling Rule
+rules: ''
+schema: ''
+tags: Cisco Nexus
+supportedModules:
+- xsiam

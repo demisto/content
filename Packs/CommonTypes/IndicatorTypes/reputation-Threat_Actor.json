@@ -23,6 +23,9 @@
     "updateAfter": 0,
     "version": -1,
     "fromVersion": "6.2.0",
-    "layout": "STIX Threat Actor"
-
+    "layout": "STIX Threat Actor",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

@@ -1,8 +1,11 @@
+import subprocess
+
 import demistomock as demisto
 import pytest
 from CommonServerPython import CommandResults, EntryType
 from ImageOCR import (
     CORRUPTED_ERR,
+    EMPTY_FILE_MSG,
     extract_text,
     extract_text_command,
     list_languages_command,
@@ -151,6 +154,75 @@ def test_extract_text_command_corrupted_image(mocker, skip_corrupted: bool):
         assert results[0].entry_type == EntryType.WARNING
     else:
         assert CORRUPTED_ERR in errors[0]
+
+
+def test_extract_text_command_empty_file(mocker, tmp_path):
+    """
+    Given:
+     - An empty (zero-byte) image file, such as a broken inline email image.
+
+    When:
+     - Running the image-ocr-extract-text command.
+
+    Then:
+     - Ensure a warning entry is returned instead of an error, and tesseract is never invoked.
+    """
+    empty_file = tmp_path / "empty.png"
+    empty_file.write_bytes(b"")
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": str(empty_file)})
+    run_mock = mocker.patch("ImageOCR.subprocess.run")
+
+    results, errors = extract_text_command(
+        args={"entryid": "test"},
+        instance_languages=["eng"],
+        skip_corrupted=False,
+    )
+
+    assert not errors
+    assert len(results) == 1
+    assert isinstance(results[0], CommandResults)
+    assert results[0].entry_type == EntryType.WARNING
+    assert results[0].outputs["Text"] == EMPTY_FILE_MSG
+    run_mock.assert_not_called()
+
+
+@pytest.mark.parametrize("skip_corrupted", [True, False])
+def test_extract_text_command_truncated_file(mocker, skip_corrupted: bool):
+    """
+    Given:
+     - A truncated image file that causes tesseract to fail with "truncated file" in stderr.
+     - The skip_corrupted boolean indicating whether or not to raise an error.
+
+    When:
+     - Running the image-ocr-extract-text command.
+
+    Then:
+     - Ensure a warning is returned if skip_corrupted is true, or an error otherwise.
+    """
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/irs.png"})
+    mocker.patch("ImageOCR.os.path.getsize", return_value=100)
+    mocker.patch(
+        "ImageOCR.extract_text",
+        side_effect=subprocess.CalledProcessError(
+            returncode=1,
+            cmd=["tesseract"],
+            output="",
+            stderr="Error in findFileFormatStream: truncated file",
+        ),
+    )
+
+    results, errors = extract_text_command(
+        args={"entryid": "test"},
+        instance_languages=["eng"],
+        skip_corrupted=skip_corrupted,
+    )
+
+    assert len(results + errors) == 1
+    if skip_corrupted:
+        assert isinstance(results[0], CommandResults)
+        assert results[0].entry_type == EntryType.WARNING
+    else:
+        assert "truncated file" in errors[0]
 
 
 def test_run_test_module():

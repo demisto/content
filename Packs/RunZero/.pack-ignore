@@ -4,3 +4,6 @@ runzero
 [file:RunZeroModelingRules.yml]
 ignore=MR108
 
+
+[file:RunZeroModelingRules_2_11.yml]
+ignore=MR108

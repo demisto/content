@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
 provider: Netskope
 description: Append HyperContext™ insights to your SIEM data and feed them into your orchestration workflows.
 display: WootCloud
@@ -12,16 +15,19 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+  section: Connect
 - display: API Key
   name: secret_key
   defaultvalue: ""
   type: 4
   required: true
+  section: Connect
 - display: Time to retrieve the first fetch (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
   defaultvalue: 3 days
   required: false
+  section: Collect
 - display: Alert Type
   name: alert_type
   required: true
@@ -30,6 +36,7 @@ configuration:
   - packet
   - bluetooth
   - anomaly
+  section: Collect
 - display: Severity Type
   name: severity_type
   type: 15
@@ -42,18 +49,29 @@ configuration:
   - medium
   - high
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  advanced: true
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 script:
   commands:
   - name: wootcloud-get-pkt-alerts
@@ -938,7 +956,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
 tests:
 - No tests
 fromversion: 5.0.0

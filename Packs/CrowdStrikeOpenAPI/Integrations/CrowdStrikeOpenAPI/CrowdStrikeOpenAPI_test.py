@@ -1,7 +1,12 @@
 import json
 
 import pytest
-from CrowdStrikeOpenAPI import Client, query_behaviors_command, update_notificationsv1_command
+from CrowdStrikeOpenAPI import (
+    Client,
+    query_behaviors_command,
+    query_devices_combined_command,
+    update_notificationsv1_command,
+)
 
 
 @pytest.fixture()
@@ -72,3 +77,38 @@ def test_update_notificationsv1(client, requests_mock):
 
     # Verify command outputs
     assert result.outputs == api_response
+
+
+def test_query_devices_combined_command(client, requests_mock):
+    """
+    Given:
+        - offset, limit, sort, and filter args
+    When:
+        - Running query devices combined command
+    Then:
+        - Verify the request targets the combined devices endpoint (not the deprecated scroll endpoint)
+        - Verify command outputs equal the API response
+        - Verify the outputs_prefix is the domain device details response prefix
+    """
+    args = {
+        "offset": "0",
+        "limit": "1",
+        "sort": "hostname.asc",
+        "filter_": 'platform_name:"Windows"',
+    }
+    api_response = util_load_json("./test_data/query_devices_combined_response.json")
+
+    mock_get = requests_mock.get("https://api.crowdstrike.com/devices/combined/devices/v1", json=api_response)
+
+    result = query_devices_combined_command(client=client, args=args)
+
+    # Verify the request was made against the correct combined endpoint (not the deprecated scroll endpoint)
+    assert mock_get.called
+    assert mock_get.last_request.path == "/devices/combined/devices/v1"
+    assert "devices-scroll" not in mock_get.last_request.path
+
+    # Verify command outputs equal the fixture response
+    assert result.outputs == api_response
+
+    # Verify the outputs prefix
+    assert result.outputs_prefix == "CrowdStrike.domainDeviceDetailsResponseSwagger"

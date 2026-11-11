@@ -7,5 +7,8 @@ Follow the [Self-Deployed Application Authentication guide](https://xsoar.pan.de
 
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
+The Certificate Thumbprint is used for certificate authentication as it appears on the **Certificates & secrets** page of the app.
+The private key of the registered certificate, used for certificate authentication.
+
 
 

@@ -1,0 +1,48 @@
+{
+  "imanage_threat_raw": {
+    "id": {
+      "type": "string",
+      "is_array": false
+    },
+    "task_name": {
+      "type": "string",
+      "is_array": false
+    },
+    "task_id": {
+      "type": "int",
+      "is_array": false
+    },
+    "risk_score": {
+      "type": "int",
+      "is_array": false
+    },
+    "risk_level": {
+      "type": "string",
+      "is_array": false
+    },
+    "user": {
+      "type": "string",
+      "is_array": false
+    },
+    "email": {
+      "type": "string",
+      "is_array": false
+    },
+    "location": {
+      "type": "string",
+      "is_array": false
+    },
+    "action_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "action_state": {
+      "type": "string",
+      "is_array": false
+    },
+    "_source_log_type": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

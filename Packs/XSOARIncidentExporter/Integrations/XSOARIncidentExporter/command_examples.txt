@@ -1,0 +1,5 @@
+!xsoar-exporter-push-incidents max_incidents="5"
+!xsoar-exporter-push-incident incident_id="100"
+!xsoar-exporter-sync-new-incidents
+!xsoar-exporter-reset-sync
+!xsoar-exporter-sync-close-status

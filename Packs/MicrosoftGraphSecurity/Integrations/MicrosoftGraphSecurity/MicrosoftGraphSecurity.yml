@@ -17,7 +17,6 @@ configuration:
   - US GCC
   - US GCC-High
   - DoD
-  - Germany
   - China
   - Custom
   additionalinfo: When selecting the Custom option, the Host URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
@@ -139,49 +138,148 @@ configuration:
   type: 8
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Fetch incidents type
+  name: fetch_incidents_type
+  type: 16
+  section: Collect
+  required: false
+  defaultvalue: Alerts
+  additionalinfo: Select which record types to fetch. You can select Alerts, Incidents, or both.
+  options:
+  - Alerts
+  - Incidents
+  supportedModules:
+  - agentix
+  - xsiam
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   additionalinfo: <number> <time unit>, for example 1 hour, 30 minutes
   name: fetch_time
   type: 0
   section: Collect
   required: false
-- display: Max incidents per fetch
+  defaultvalue: 3 days
+- display: Fetch limit per type
+  additionalinfo: The maximum number of items to fetch per type. Applies to both alerts and incidents. Note that when fetching incidents, no more than 50 can be fetched per cycle, due to a Microsoft limitation.
   name: fetch_limit
   type: 0
   section: Collect
   required: false
-  defaultvalue: '10'
-- display: Fetch incidents of the given service sources only.
-  additionalinfo: Multiple service sources can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity". If empty, incidents of all service sources will be fetched.
+  defaultvalue: '50'
+- display: Alerts Service Sources
+  additionalinfo: Relevant only when fetching alerts. A comma-separated list of service sources, for example, "microsoftDefenderForEndpoint,microsoftDefenderForIdentity". If empty, alerts from all service sources will be fetched.
   name: fetch_service_sources
   type: 0
   section: Collect
   advanced: true
   required: false
-- display: Fetched incidents filter
-  additionalinfo: Use this field to filter fetched incidents according to any of the alert properties. Overrides the service sources list, if given. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Alerts Filter
+  additionalinfo: Filters fetched alerts according to their properties. Relevant only when fetching alerts. Overrides the service sources list, if provided. The filter format must be {property} eq '{property-value}'. Multiple filters can be separated by " and ", for example, "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
   name: fetch_filter
   type: 0
   section: Collect
   advanced: true
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Filter
+  additionalinfo: Filters fetched incidents according to their properties. Relevant only when fetching incidents. The filter format must be {property} eq '{property-value}'. Multiple filters can be separated by " and ", for example, "severity eq 'high' and status eq 'active'".
+  name: fetch_incidents_filter
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incident Mirroring Direction
+  additionalinfo: 'The direction to mirror alerts and incidents: Incoming (Microsoft to Cortex XSOAR), Outgoing (Cortex XSOAR to Microsoft), or Incoming And Outgoing.'
+  name: mirror_direction
+  type: 15
+  section: Collect
+  required: false
+  defaultvalue: None
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  hidden:
+  - marketplacev2
+  - platform
+- display: Close Mirrored Cortex XSOAR Incident
+  additionalinfo: Whether to close the Cortex XSOAR incident when the Microsoft alert or incident resolves (or, for incidents, redirects), and reopen it when the Microsoft alert or incident reopens.
+  name: close_incident
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: 'false'
+  hidden:
+  - marketplacev2
+  - platform
+- display: Close Mirrored Microsoft Alert/Incident
+  additionalinfo: Whether to set the Microsoft alert or incident status to Resolved when you close the Cortex XSOAR incident, and set it back to active (incidents) or new (alerts) when you reopen it. If you disable this parameter, the integration never sends the status to Microsoft, including edits to the Microsoft Graph Security Incident/Alert Status field. The integration does not change the status of an incident redirected in Microsoft.
+  name: close_out
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: 'false'
+  hidden:
+  - marketplacev2
+  - platform
+- display: Comment Entry Tag (to Microsoft)
+  additionalinfo: The tag for entries that the integration mirrors as comments to the Microsoft alert or incident. You must set this tag and make it different from the Comment Entry Tag (from Microsoft).
+  name: comment_tag
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: CommentToMicrosoftGraphSecurity
+  hidden:
+  - marketplacev2
+  - platform
+- display: Comment Entry Tag (from Microsoft)
+  additionalinfo: The tag added to entries created from Microsoft alert or incident comments. You must set this tag and make it different from the Comment Entry Tag (to Microsoft).
+  name: comment_tag_from_microsoft_graph_security
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: CommentFromMicrosoftGraphSecurity
+  hidden:
+  - marketplacev2
+  - platform
 - display: Microsoft 365 Defender context
   name: microsoft_365_defender_context
   defaultvalue: "false"
   type: 8
   required: false
-  additionalinfo: Save Hunting Query result to the Microsoft 365 Defender context path.
+  additionalinfo: When selected, the hunting query result is also saved to the Microsoft 365 Defender context path. Relevant only for the msg-advanced-hunting command.
   section: Collect
 description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
 display: Microsoft Graph Security
@@ -799,6 +897,39 @@ script:
     description: Generate the login URL used for authorization code flow.
     execution: false
     name: msg-generate-login-url
+  - arguments:
+    - description: The identifier of the accounts that are monitored for suspicious or malicious activity by Microsoft Defender for Identity.
+      isArray: false
+      name: identity_accounts_id
+      required: true
+    - description: The identifier of the account to perform the action on.
+      isArray: false
+      name: account_id
+      required: true
+    - auto: PREDEFINED
+      description: The type of action to perform on the account.
+      isArray: false
+      name: action
+      predefined:
+      - 'disable'
+      - 'enable'
+      - 'forcePasswordReset'
+      - 'revokeAllSessions'
+      - 'requireUserToSignInAgain'
+      - 'markUserAsCompromised'
+      required: true
+    - auto: PREDEFINED
+      description: The identity provider associated with the account.
+      isArray: false
+      name: identity_provider
+      predefined:
+      - 'entraID'
+      - 'activeDirectory'
+      - 'okta'
+      required: true
+    description: 'Perform actions such as revoking accounts and forcing password reset for identity accounts that are observed in Microsoft Defender for Identity. Requires the SecurityIdentitiesActions.ReadWrite.All permission (Delegated or Application). For delegated access, the signed-in user must have at least the Security Administrator role. Supported in the Worldwide (global) cloud only. To learn more about the possible actions, see https://learn.microsoft.com/en-us/graph/api/security-identityaccounts-invokeaction?view=graph-rest-1.0&tabs=http.'
+    execution: true
+    name: msg-invoke-action
   - arguments:
     - description: The name of the eDiscovery case.
       isArray: false
@@ -2182,6 +2313,13 @@ script:
       description: The specification for the incident.
     - name: odata
       description: Filter incidents using 'odata' query.
+    - name: extra_data
+      description: Whether to include each incident's related alerts in the response.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
     description: Get a list of incident objects that Microsoft graph created to track attacks in an organization. If you want a specific incident, just enter incident_id.
     name: msg-list-security-incident
     outputs:
@@ -3122,8 +3260,33 @@ script:
     - contextPath: MsGraph.eDiscoveryCase.Export.Location
       description: The Location header URL returned for the export operation.
       type: String
-  dockerimage: demisto/crypto:1.0.0.10120494
+  - arguments:
+    - description: The last update time (ISO-8601 or UTC timestamp in seconds). The command returns the IDs of the alerts and/or incidents (according to Fetch incidents type) that changed after this time.
+      name: lastUpdate
+    description: Gets the list of remote incidents/alerts that changed since the last update time. Use this method for debugging purposes only.
+    name: get-modified-remote-data
+  - arguments:
+    - description: The ID of the remote alert or incident.
+      name: id
+    - description: The ID of the remote alert. The command uses this argument only if you do not provide id or incident_id.
+      name: alert_id
+    - description: The ID of the remote incident. The command uses this argument only if you do not provide id.
+      name: incident_id
+    - description: The last update time (ISO-8601 or UTC timestamp in seconds). The command returns only comments created after this time.
+      name: lastUpdate
+    description: Gets remote data from a remote alert/incident. This method does not update the current incident. Use it for debugging purposes only.
+    name: get-remote-data
+  - arguments: []
+    description: Returns the list of fields to map in outgoing mirroring. Use this command for debugging purposes only.
+    name: get-mapping-fields
+  - arguments: []
+    description: Updates the remote incidents/alerts with local incident changes. Use this method for debugging purposes only. This method does not update the current incident.
+    name: update-remote-system
+  dockerimage: demisto/crypto:1.0.0.12833174
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   runonce: false
   script: '-'
   subtype: python3
@@ -3138,3 +3301,6 @@ tests:
 - MSG-ediscovery-tpb
 - MSG-Threat-Assessment-test
 fromversion: 5.0.0
+defaultclassifier: Graph Security Classifier
+defaultmapperin: Graph Security Mapper - Incoming
+defaultmapperout: Graph Security Mapper - Outgoing

@@ -65,6 +65,12 @@ configuration:
   type: 8
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  type: 19
+  required: false
+  section: Collect
 - additionalinfo: Free text box to add comma-separated tags to filter the fetched incidents by.
   display: Tags filter for the fetch
   name: tags
@@ -3016,7 +3022,7 @@ script:
     - contextPath: TC.AttributeType.TC.AttributeType.validationRule.version
       description: The attribute type validation rule version.
       type: string
-  dockerimage: demisto/python3:3.12.12.7090913
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   script: ''
   subtype: python3

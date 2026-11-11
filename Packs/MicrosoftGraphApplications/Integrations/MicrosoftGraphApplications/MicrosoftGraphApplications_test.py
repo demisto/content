@@ -360,7 +360,7 @@ def test_remove_password_service_principal_command(mocker, requests_mock, mocked
     assert mock_update_service_principals.call_args[1] == expected_args
 
 
-@pytest.mark.parametrize("args,", [({"id": "TEST", "app_id": None})])
+@pytest.mark.parametrize("args", [{"id": "TEST", "app_id": None}])
 def test_remove_password_service_principal_command_without_required_arg(requests_mock, args, mocked_client):
     """
     Given:

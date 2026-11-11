@@ -2,6 +2,13 @@ The Nozomi Networks integration enables the collection of alert and asset inform
 
 This integration is used to gather alert and asset information from Nozomi.
 
+## Features
+
+The integration provides the following capabilities:
+
+1. **Fetch Incidents**: Retrieve incidents directly from Nozomi Networks.
+2. **Execute Commands**: Perform actions to gather and update data from Nozomi Networks.
+
 ## Configure Nozomi Networks in Cortex
 
 | **Parameter** | **Description**                                        | **Required** |
@@ -16,6 +23,26 @@ This integration is used to gather alert and asset information from Nozomi.
 | riskFrom | Get incidents from risk level                          | False |
 | fecthAlsoIncidents | Fetch also nozomi incidents                            | False |
 | incidentPerRun | Specifies the maximum number of incidents to retrieve  | False |
+| customAlertFilter | Custom alert filter. An additional Nozomi query language filter appended to the alerts query, combined with the other fetch filters (for example `where risk >= 8`). The leading `\|` is optional. | False |
+| defaultIncidentRole | Default incident role. The Cortex XSOAR role (or comma-separated roles) assigned to incidents created from fetched alerts. Leave empty to not assign a role. | False |
+| Custom incident name pattern | The pattern used to build the incident name from Nozomi alert fields, for example `{type_id}_{id} - {description}`. Leave empty to use the default name `{name}_{id}`. See [Custom incident name](#custom-incident-name). | False |
+
+Fetched alerts are mapped to Cortex XSOAR incident severity based on the Nozomi risk: 1-5 Low, 6-7 Medium, 8-9 High, 10 Critical.
+
+### Custom incident name
+
+By default the incident name is `{name}_{id}`, built from the Nozomi alert name and id. Set **Custom incident name pattern** to build the name from other Nozomi alert fields. If the parameter is empty (or contains only whitespace), or the rendered name is empty, the default name is used, so existing instances are unaffected.
+
+Pattern syntax:
+
+- `{field}` is replaced with the value of that Nozomi alert field. Use the exact alert field name, for example `{id}`, `{name}`, `{description}`, `{type_id}`, `{type_name}`, `{ip_src}`, `{ip_dst}`, `{status}`.
+- Missing, empty or unknown fields are rendered as empty text.
+- Use `{{` and `}}` for literal braces.
+- Values are inserted as plain text only (they are never evaluated or re-interpolated). HTML angle brackets (`<`, `>`) are removed, control characters and newlines are replaced by spaces, and repeated whitespace is collapsed.
+- The name is limited to 76 characters (36 for the alert id plus 40; longer names are truncated with `...`).
+- The name depends only on the alert data, so it is the same on every fetch.
+
+Example: `{type_id}_{id} - {description}` produces `NET:RST-FROM-SLAVE_1af93f46-65c1-4f52-a46a-2a181597fb0c - The slave 10.19...`.
 
 ## Commands
 

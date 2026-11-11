@@ -1,0 +1,17 @@
+{
+    "sessionType": "SecurityComplianceAnalyzer",
+    "state": "Stopped",
+    "id": "417be050-191b-4b3c-a31f-76be224a34ce",
+    "name": "Security & Compliance Analyzer",
+    "jobId": "417be050-191b-4b3c-a31f-76be224a34ce",
+    "creationTime": "2026-04-21T04:43:54.267826-07:00",
+    "endTime": "2026-04-21T04:44:08.42273-07:00",
+    "progressPercent": 100,
+    "result": {
+        "result": "Warning",
+        "message": "Warning",
+        "isCanceled": false
+    },
+    "usn": 1114773,
+    "initiatedBy": ".\\veeam-rest-service"
+}

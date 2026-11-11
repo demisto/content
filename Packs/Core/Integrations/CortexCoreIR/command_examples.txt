@@ -15,6 +15,7 @@
 !core-get-policy endpoint_id="f8a2f58846b542579c12090652e79f3d"
 !core-get-endpoint-device-control-violations violation_id_list=100,90,80
 !core-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 windows_file_paths="C:\\Users\\demisto\\Desktop\\demisto.txt"
+!core-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 windows_file_paths="C:\\Users\\demisto\\Desktop\\test, demo\\demisto.txt" paths_separator=";"
 !core-retrieve-file-details action_id=1763
 !core-get-scripts created_by="Palo Alto Networks" is_high_risk=true
 !core-get-script-metadata script_uid=43973479d389f2ac7e99b6db88eaee40

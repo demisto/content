@@ -10,12 +10,15 @@ The permissions required to use this integration depends on which operations you
 - **!get-mapping-fields** - If the Elasticsearch security features are enabled, you must have the *view_index_metadata* or *manage* [index privilege](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-privileges.html#privileges-list-indices) for the target data stream, index, or alias.
 - **!es-index** - If the Elasticsearch security features are enabled, you must have the *write* [index privilege](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-privileges.html#privileges-list-indices) for the target data stream, index, or alias.
 - **!es-kibana-* commands** - To execute Kibana commands, you must have the necessary privileges for the applicable resource. The privilege required depends on the command you are using. Kibana API endpoints are gated by feature privileges granted at one of two levels: *Read* (GET / list / view operations) and *All* (POST / PUT / PATCH / DELETE operations). For rules and cases, the privilege is scoped to the feature that owns the object — a Security-owned object requires the **Security** feature privilege, an Observability-owned object requires the **Observability** feature privilege, and a stack-owned object requires the **Management** / **Stack Rules** feature privilege.
+- **!es-kibana-endpoint-isolate / !es-kibana-endpoint-unisolate / !es-kibana-endpoint-execute-command** - These are active endpoint response actions: isolation and unisolation change endpoint connectivity, and execute-command runs a shell command on the endpoint. They require the applicable endpoint response-action privileges. Existing integration instances may not have these privileges and can receive a 403 response.
+- **!es-kibana-endpoint-agent-get** - Requires the `fleet-agents-read` privilege to retrieve a Fleet agent.
 
 ## Configure Elasticsearch v2 in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments. | False |
+| Kibana Server URL | The Kibana server used by the es-kibana-\* commands and by fetching and mirroring security alerts and cases. Required for on-premises \(self-managed\) deployments, where Kibana is usually hosted separately from Elasticsearch \(for example, https://kibana.example.com:5601\). If left empty, the Kibana URL is derived from the Server URL, which is supported only for Elastic Cloud deployments whose hostname contains ".es." \(the segment is replaced with ".kb."\). | False |
 | Authorization type | Select the authentication type and enter the appropriate credentials:<br/>- Basic Auth: Enter Username and Password.<br/>- Bearer Auth: Enter Username and Password.<br/>- API Key Auth: Enter the API Key ID and API Key. | True |
 | API key ID | Use for API key auth | False |
 | API Key | Use for API key auth | False |
@@ -37,6 +40,81 @@ The permissions required to use this integration depends on which operations you
 | Incident type |  | False |
 | Fetch incidents |  | False |
 | Space ID | The default Kibana space ID to use for es-kibana-* commands. Used to derive the Kibana base URL from the Server URL. If a `space_id` argument is provided to a command, it overrides this value. See [Spaces](https://www.elastic.co/docs/deploy-manage/manage-spaces) for more information. | False |
+| Fetch incident types | The type of incident to fetch from Elasticsearch (Elasticsearch Entity, Elasticsearch Security Alert, or Elasticsearch Case). | False |
+| Incident Mirroring Direction | Mirroring works only for the Elasticsearch Security Alert and Elasticsearch Case incident types. | False |
+| Fetch cases by Severity | Case severities to fetch. If none are chosen, all severity levels will be returned. Relevant only for incident type Elasticsearch Case. | False |
+| Fetch cases by Status | Case statuses to fetch. If none are chosen, in-progress and open will be returned. Relevant only for incident type Elasticsearch Case. | False |
+| Fetch alerts for case | When enabled, fetches alerts associated with each Elasticsearch Case. You must have read privileges for the Cases feature in the Management, Observability, or Security section of the Kibana feature privileges. | False |
+| Close Mirrored XSOAR Incident | Whether closing the Elasticsearch alert or case is mirrored in Cortex XSOAR. | False |
+| Close Mirrored Elasticsearch Incident | Whether closing the Cortex XSOAR incident is mirrored in Elasticsearch. | False |
+
+## Fetch
+
+Use the **Fetch incident types** parameter to select what to fetch from Elasticsearch: the default **Elasticsearch Entity**, **Elasticsearch Security Alert**, or **Elasticsearch Case**.
+
+Mirroring is only available for Elasticsearch Security Alerts and Cases.
+
+### Fetch
+
+The default fetch behavior. Configure the **Index to fetch incidents from**, **Query String**, and/or **Raw Query** fields to fetch generic Elasticsearch documents as incidents.
+
+### Fetch Security Alerts
+
+To fetch security alerts, set the **Index to fetch incidents from** to one of these patterns: `.internal.alerts-security.alerts-*` or `.siem-signals-*`. Use the **Query String** field (Lucene syntax) to filter the alerts (for example, `*` to fetch all alerts). The **Index time field**, **First fetch timestamp**, and **The maximum number of results per fetch** parameters are applied to the query.
+
+**Note:** When the **Raw Query** field is set, it overrides the **Query String**. The time range, sort, and maximum number of results are not applied to it, and Elasticsearch defaults are used instead (for example, 10 results in relevance order). Because the same alerts are returned in every fetch cycle and are already fetched, no new incidents are created after the first cycle. If you use **Raw Query**, add a time range filter, a sort, and a `size` to the query, for example:
+
+```json
+{
+  "query": {
+    "bool": {
+      "must": [{"match_all": {}}],
+      "filter": [{"range": {"@timestamp": {"gte": "now-15m"}}}]
+    }
+  },
+  "sort": [{"@timestamp": "asc"}],
+  "size": 200
+}
+```
+
+### Fetch Cases
+
+Use the **Fetch cases by Severity** parameter to filter cases by the required severity and the **Fetch cases by Status** parameter to filter cases by the required status. Enable **Fetch alerts for case** to also retrieve the alerts associated with each case.
+
+## Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and Elasticsearch (Kibana) Security Alerts and Cases.
+
+Mirroring is only available for **Elasticsearch Security Alert** and **Elasticsearch Case** incident types.
+
+To set up mirroring:
+
+1. Enable **Fetch incidents** in your instance configuration.
+2. In the **Fetch incident types** parameter, select **Elasticsearch Security Alert** or **Elasticsearch Case**.
+3. In the **Incident Mirroring Direction** parameter, select in which direction the incidents should be mirrored:
+    - **Incoming** - Changes in Elasticsearch (status, tags, workflow reason, case fields) are reflected in Cortex XSOAR.
+    - **Outgoing** - Changes in Cortex XSOAR are reflected in Elasticsearch.
+    - **Incoming And Outgoing** - Changes are mirrored in both directions.
+4. Optionally, select **Close Mirrored XSOAR Incident** to close the Cortex XSOAR incident when the Elasticsearch alert/case is closed, and **Close Mirrored Elasticsearch Incident** to close the Elasticsearch alert/case when the Cortex XSOAR incident is closed.
+
+**Notes:**
+
+- The mirroring is affected by the following integration parameters: **Incident Mirroring Direction**, **Close Mirrored XSOAR Incident**, and **Close Mirrored Elasticsearch Incident**.
+- To ensure mirroring works as expected, mappers are required so that the fields are properly mapped to and from Elasticsearch. Select the appropriate incoming and outgoing mappers per incident type (**Elasticsearch Security Alert - Incoming/Outgoing Mapper** and **Elasticsearch Case - Incoming/Outgoing Mapper**).
+- Set the **Fetch incident types** parameter even when mirroring only. It is used to resolve the incident type when the remote lookup is unavailable; without it, changes may not be mirrored out.
+- Mirroring **out** always uses the Kibana API, because the security alert indices are Kibana system indices and writing to them directly would skip Kibana's bookkeeping (such as `kibana.alert.workflow_status_updated_at`, which mirroring in relies on). The configured credentials therefore need the **Security → Alerts: All** Kibana privilege, and the **Space ID** must match the space that owns the alerts. If either is wrong, the fetch keeps working while mirroring out reports that 0 alerts were updated.
+
+#### Which Security Alert fields can be mirrored
+
+Elasticsearch only allows a detection alert's **workflow status**, **status reason**, and **workflow tags** to be changed. These are the only fields mirrored out:
+
+| Cortex XSOAR incident field | Elasticsearch field |
+| --- | --- |
+| Elasticsearch Workflow Alert Status | `kibana.alert.workflow_status` |
+| Elasticsearch Workflow Alert Status Reason | `kibana.alert.workflow_reason` |
+| Tags | `kibana.alert.workflow_tags` |
+
+Other fields, such as **severity**, **risk score**, or the detection rule, cannot be pushed back to Elasticsearch because no API exists to change them on an existing alert. Editing those fields in Cortex XSOAR updates the local incident only, and an error is written to the log explaining that nothing was mirrored out. These fields are still mirrored **in** (from Elasticsearch to Cortex XSOAR).
 
 ## Commands
 
@@ -781,6 +859,401 @@ Set the status of one or more detection alerts.
 >|Total|Updated|
 >|---|---|
 >| 2 | 2 |
+
+### es-kibana-endpoint-execute-command
+
+***
+Run a shell command on one or more Elastic Defend endpoints.
+
+#### Base Command
+
+`es-kibana-endpoint-execute-command`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Kibana space ID. | Optional |
+| endpoint_ids | Endpoint IDs to run the command on. A maximum of 250 IDs can be specified. | Required |
+| agent_type | Agent type. Defaults to `endpoint`. | Optional |
+| alert_ids | Alert IDs associated with the action. A maximum of 50 IDs can be specified. | Optional |
+| case_ids | Case IDs in which to log the action. A maximum of 50 IDs can be specified. | Optional |
+| comment | Optional action comment. Maximum length is 30,000 characters. | Optional |
+| command | Shell command to run on the endpoint. | Required |
+| timeout | Maximum timeout in seconds. Minimum value is 1; defaults to 1. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.agents | String | Agent IDs targeted by the action. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.agentState | Unknown | Response action state for each agent. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.agentType | String | Agent type. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.command | String | Response action command. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.completedAt | String | Action completion time. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.createdBy | String | User who created the action. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.hosts | Unknown | Host names associated with the agents. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.id | String | Response action ID. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.isComplete | Boolean | Whether the action is complete. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.isExpired | Boolean | Whether the action is expired. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.outputs | Unknown | Outputs for each agent. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.parameters | Unknown | Action parameters. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.startedAt | Date | Action start time. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.status | String | Action status. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.wasCancelled | Boolean | Whether the action was cancelled. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.wasSuccessful | Boolean | Whether the action was successful. |
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "EndpointExecuteCommandAction": {
+                "id": "action-1",
+                "agents": ["agent-1"],
+                "agentType": "endpoint",
+                "command": "execute",
+                "parameters": {"command": "ls -al", "timeout": 600},
+                "isComplete": false,
+                "status": "pending",
+                "wasSuccessful": false
+            }
+        }
+    }
+}
+```
+
+#### Command Example
+
+```!es-kibana-endpoint-execute-command endpoint_ids="agent-1" command="ls -al" timeout="600"```
+
+#### Human Readable Output
+
+>### Kibana Endpoint Execute Command Action
+>
+>|Agents|Agent Type|Command|Id|Is Complete|Parameters|Status|Was Successful|
+>|---|---|---|---|---|---|---|---|
+>| agent-1 | endpoint | execute | action-1 | false | {"command":"ls -al","timeout":600} | pending | false |
+
+### es-kibana-endpoint-action-details
+
+***
+Retrieve the details of a response action by its ID.
+
+#### Base Command
+
+`es-kibana-endpoint-action-details`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Kibana space ID. | Optional |
+| action_id | ID of the response action to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.EndpointGetActionDetails.agents | String | The agent IDs to which the response action was sent. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.agentState | Unknown | The response action state for each agent ID. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.agentType | String | The agent type. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.command | String | The response action command. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.completedAt | String | The response action completion time. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.createdBy | String | The user who created the response action. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.hosts | Unknown | The host names associated with the agent IDs. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.id | String | The response action ID. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.isComplete | Boolean | Whether the response action is complete. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.isExpired | Boolean | Whether the response action is expired. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.outputs | Unknown | The response action outputs for each agent ID. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.parameters | Unknown | The response action parameters. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.startedAt | String | The response action start time. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.status | String | The response action status. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.wasCancelled | Boolean | Whether the response action was cancelled. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.wasSuccessful | Boolean | Whether the response action was successful. |
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "EndpointGetActionDetails": {
+                "id": "action-1",
+                "agents": ["agent-1"],
+                "agentType": "endpoint",
+                "command": "execute",
+                "parameters": {"command": "ls -al", "timeout": 600},
+                "isComplete": true,
+                "status": "completed",
+                "wasSuccessful": true
+            }
+        }
+    }
+}
+```
+
+#### Command Example
+
+```!es-kibana-endpoint-action-details action_id="action-1"```
+
+#### Human Readable Output
+
+>### Kibana Endpoint Action Details
+>
+>|Agents|Agent Type|Command|Id|Is Complete|Parameters|Status|Was Successful|
+>|---|---|---|---|---|---|---|---|
+>| agent-1 | endpoint | execute | action-1 | true | {"command":"ls -al","timeout":600} | completed | true |
+
+### es-kibana-endpoint-metadata-get
+
+***
+Retrieve host metadata for a specific endpoint.
+
+#### Base Command
+
+`es-kibana-endpoint-metadata-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Kibana space ID. | Optional |
+| id | Agent ID of the endpoint. Maximum length is 256. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.EndpointMetadataGet.host_status | String | Endpoint host status. |
+| Elasticsearch.Kibana.EndpointMetadataGet.last_checkin | String | Endpoint's last check-in time. |
+| Elasticsearch.Kibana.EndpointMetadataGet.metadata | Unknown | Endpoint metadata. |
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "EndpointMetadataGet": {
+                "host_status": "online",
+                "last_checkin": "2026-10-02T12:00:00Z",
+                "metadata": {"hostname": "host-1"}
+            }
+        }
+    }
+}
+```
+
+#### Command Example
+
+```!es-kibana-endpoint-metadata-get id="agent-1"```
+
+#### Human Readable Output
+
+>### Kibana Endpoint Metadata
+>
+>|Host Status|Last Checkin|Metadata|
+>|---|---|---|
+>| online | 2026-10-02T12:00:00Z | {"hostname":"host-1"} |
+
+### es-kibana-endpoint-agent-get
+
+***
+Retrieve an Elastic Fleet agent by ID. Requires the `fleet-agents-read` privilege.
+
+#### Base Command
+
+`es-kibana-endpoint-agent-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Kibana space ID. | Optional |
+| agent_id | The ID of the agent to retrieve. | Required |
+| with_metrics | Include CPU and memory metrics. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.EndpointAgentGet.item | Unknown | The agent returned by the request. |
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "EndpointAgentGet": {
+                "item": {
+                    "id": "agent-1",
+                    "status": "online",
+                    "local_metadata": {"host": {"hostname": "host-1"}}
+                }
+            }
+        }
+    }
+}
+```
+
+#### Command Example
+
+```!es-kibana-endpoint-agent-get agent_id="agent-1" with_metrics="true"```
+
+#### Human Readable Output
+
+>### Kibana Fleet Agent
+>
+>|id|status|local_metadata|
+>|---|---|---|
+>| agent-1 | online | {"host":{"hostname":"host-1"}} |
+
+### es-kibana-endpoint-isolate
+
+***
+Isolate an endpoint from the network. The endpoint remains isolated until it's released.
+
+#### Base Command
+
+`es-kibana-endpoint-isolate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
+| endpoint_ids | Endpoint IDs to isolate. A maximum of 250 IDs can be specified. | Required |
+| agent_type | The type of agent on which to run the isolation action. | Optional |
+| alert_ids | Alert IDs associated with the action. A maximum of 50 IDs can be specified. | Optional |
+| case_ids | Case IDs in which to log the action. A maximum of 50 IDs can be specified. | Optional |
+| comment | An optional comment for the isolation action. Maximum length is 30,000 characters. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.EndpointIsolationAction.agents | String | The agent IDs to which the response action was sent. |
+| Elasticsearch.Kibana.EndpointIsolationAction.agentState | Unknown | The response action state for each agent ID. |
+| Elasticsearch.Kibana.EndpointIsolationAction.agentType | String | The agent type. |
+| Elasticsearch.Kibana.EndpointIsolationAction.command | String | The response action command. |
+| Elasticsearch.Kibana.EndpointIsolationAction.completedAt | String | The response action completion time. |
+| Elasticsearch.Kibana.EndpointIsolationAction.createdBy | String | The user who created the response action. |
+| Elasticsearch.Kibana.EndpointIsolationAction.hosts | Unknown | The host names associated with the agent IDs. |
+| Elasticsearch.Kibana.EndpointIsolationAction.id | String | The response action ID. |
+| Elasticsearch.Kibana.EndpointIsolationAction.isComplete | Boolean | Whether the response action is complete. |
+| Elasticsearch.Kibana.EndpointIsolationAction.isExpired | Boolean | Whether the response action is expired. |
+| Elasticsearch.Kibana.EndpointIsolationAction.outputs | Unknown | The response action outputs for each agent ID. |
+| Elasticsearch.Kibana.EndpointIsolationAction.startedAt | Date | The response action start time. |
+| Elasticsearch.Kibana.EndpointIsolationAction.status | String | The response action status. |
+| Elasticsearch.Kibana.EndpointIsolationAction.wasCancelled | Boolean | Whether the response action was cancelled. |
+| Elasticsearch.Kibana.EndpointIsolationAction.wasSuccessful | Boolean | Whether the response action was successful. |
+
+#### Command Example
+
+```!es-kibana-endpoint-isolate endpoint_ids="endpoint-1,endpoint-2" agent_type="endpoint" comment="Isolating as initial response"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "EndpointIsolationAction": {
+                "id": "action-1",
+                "agents": ["endpoint-1", "endpoint-2"],
+                "agentType": "endpoint",
+                "command": "isolate",
+                "isComplete": false,
+                "status": "pending",
+                "wasSuccessful": false
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Endpoint Isolation Action
+>
+>|Action ID|Agent type|Command|Status|Is Complete|Was Successful|
+>|---|---|---|---|---|---|
+>| action-1 | endpoint | isolate | pending | false | false |
+
+### es-kibana-endpoint-unisolate
+
+***
+Release an isolated endpoint so it can rejoin the network.
+
+#### Base Command
+
+`es-kibana-endpoint-unisolate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Kibana space ID. | Optional |
+| endpoint_ids | Endpoint IDs to release. A maximum of 250 IDs can be specified. | Required |
+| agent_type | The type of agent on which to run the unisolation action. Defaults to `endpoint`. | Optional |
+| alert_ids | Alert IDs associated with the action. A maximum of 50 IDs can be specified. | Optional |
+| case_ids | Case IDs in which to log the action. A maximum of 50 IDs can be specified. | Optional |
+| comment | An optional comment for the unisolation action. Maximum length is 30,000 characters. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.EndpointUnisolationAction.agents | String | The agent IDs targeted by the action. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.agentState | Unknown | The response action state for each agent. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.agentType | String | The agent type. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.command | String | The response action command. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.completedAt | String | The response action completion time. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.createdBy | String | The user who created the action. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.hosts | Unknown | Host names associated with the agents. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.id | String | The response action ID. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.isComplete | Boolean | Whether the action is complete. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.isExpired | Boolean | Whether the action is expired. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.outputs | Unknown | Outputs for each agent. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.startedAt | Date | Action start time. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.status | String | Action status. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.wasCancelled | Boolean | Whether the action was cancelled. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.wasSuccessful | Boolean | Whether the action was successful. |
+
+#### Command Example
+
+```!es-kibana-endpoint-unisolate endpoint_ids="endpoint-1,endpoint-2" agent_type="endpoint" comment="Releasing endpoint"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "EndpointUnisolationAction": {
+                "id": "action-1",
+                "agents": ["endpoint-1", "endpoint-2"],
+                "agentType": "endpoint",
+                "command": "unisolate",
+                "isComplete": true,
+                "status": "completed",
+                "wasSuccessful": true
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Endpoint Unisolation Action
+>
+>|Id|Agent Type|Command|Status|Is Complete|Was Successful|
+>|---|---|---|---|---|---|
+>| action-2 | endpoint | unisolate | completed | true | true |
 
 ### es-kibana-case-create
 
@@ -2465,3 +2938,13 @@ Import value list items from a TXT or CSV file.
 >|Value list item ID|List ID|Value|Creation date|
 >|---|---|---|---|
 >| 5678 | 1234 | 10.0.0.1 | 2024-01-15T10:00:00.000Z |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
+
+- Fetch incidents
+
+</~PLATFORM>

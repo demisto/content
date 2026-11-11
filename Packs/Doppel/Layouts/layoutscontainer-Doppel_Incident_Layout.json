@@ -465,115 +465,9 @@
 						"y": 0
 					},
 					{
-						"columns": [
-							{
-								"displayName": "domain",
-								"fieldCalcScript": "",
-								"isDefault": true,
-								"isReadOnly": false,
-								"key": "domain",
-								"orgType": "",
-								"required": false,
-								"script": "",
-								"selectValues": null,
-								"type": "shortText",
-								"width": 182
-							},
-							{
-								"displayName": "registrar",
-								"fieldCalcScript": "",
-								"isDefault": true,
-								"isReadOnly": false,
-								"key": "registrar",
-								"orgType": "",
-								"required": false,
-								"script": "",
-								"selectValues": null,
-								"type": "shortText",
-								"width": 208
-							},
-							{
-								"displayName": "ip_address",
-								"fieldCalcScript": "",
-								"isDefault": true,
-								"isReadOnly": false,
-								"key": "ip_address",
-								"orgType": "",
-								"required": false,
-								"script": "",
-								"selectValues": null,
-								"type": "shortText",
-								"width": 154
-							},
-							{
-								"displayName": "contact_email",
-								"fieldCalcScript": "",
-								"isDefault": true,
-								"isReadOnly": false,
-								"key": "contact_email",
-								"orgType": "",
-								"required": false,
-								"script": "",
-								"selectValues": null,
-								"type": "shortText",
-								"width": 224
-							},
-							{
-								"displayName": "country_code",
-								"fieldCalcScript": "",
-								"isDefault": true,
-								"isReadOnly": false,
-								"key": "country_code",
-								"orgType": "",
-								"required": false,
-								"script": "",
-								"selectValues": null,
-								"type": "shortText",
-								"width": 122
-							},
-							{
-								"displayName": "hosting_provider",
-								"fieldCalcScript": "",
-								"isDefault": true,
-								"isReadOnly": false,
-								"key": "hosting_provider",
-								"orgType": "",
-								"required": false,
-								"script": "",
-								"selectValues": null,
-								"type": "shortText",
-								"width": 151
-							},
-							{
-								"displayName": "mx_records",
-								"fieldCalcScript": "",
-								"isDefault": true,
-								"isReadOnly": false,
-								"key": "mx_records",
-								"orgType": "",
-								"required": false,
-								"script": "",
-								"selectValues": [],
-								"type": "longText",
-								"width": 382
-							},
-							{
-								"displayName": "nameservers",
-								"fieldCalcScript": "",
-								"isDefault": true,
-								"isReadOnly": false,
-								"key": "nameservers",
-								"orgType": "",
-								"required": false,
-								"script": "",
-								"selectValues": null,
-								"type": "longText",
-								"width": 451
-							}
-						],
 						"description": "Details about the entity received from Doppel",
 						"displayType": "ROW",
-						"h": 3,
+						"h": 4,
 						"hideName": false,
 						"i": "chtyrfjhpp-db82b87b-a67c-4e81-8e33-29dae245ea1b",
 						"items": [
@@ -596,15 +490,154 @@
 								"startCol": 0
 							},
 							{
-								"dropEffect": "move",
 								"endCol": 4,
 								"fieldId": "doppelentitycontent",
 								"height": 106,
-								"id": "4c377f5a-6dcf-4122-8112-4fb557f4642b",
+								"id": "fddaed53-c99f-4313-838c-8ba2c9bd2a94",
 								"index": 2,
-								"listId": "chtyrfjhpp-db82b87b-a67c-4e81-8e33-29dae245ea1b",
 								"sectionItemType": "field",
-								"startCol": 0
+								"startCol": 0,
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "type"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "Doppel Alert Domains"
+												}
+											},
+											"type": "singleSelect"
+										}
+									]
+								]
+							},
+							{
+								"endCol": 4,
+								"fieldId": "doppelentitycontentsocialmedia",
+								"height": 106,
+								"id": "f91250bd-b611-4f9b-8aa1-97b2a2e58180",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0,
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "type"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "Doppel Alert Social_Media"
+												}
+											},
+											"type": "singleSelect"
+										}
+									]
+								]
+							},
+							{
+								"endCol": 4,
+								"fieldId": "doppelentitycontentmobileapps",
+								"height": 106,
+								"id": "217fbf37-2f3f-4c87-ab5d-84364559438c",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0,
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "type"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "Doppel Alert Mobile_Apps"
+												}
+											},
+											"type": "singleSelect"
+										}
+									]
+								]
+							},
+							{
+								"endCol": 4,
+								"fieldId": "doppelentitycontentecommerce",
+								"height": 106,
+								"id": "118d6fc6-dd30-4446-873c-7a142cacd127",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0,
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "type"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "Doppel Alert Ecommerce"
+												}
+											},
+											"type": "singleSelect"
+										}
+									]
+								]
+							},
+							{
+								"endCol": 4,
+								"fieldId": "doppelentitycontenttelco",
+								"height": 106,
+								"id": "1127064a-6e4c-45ca-91c1-af4c03d2e3a6",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0,
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "type"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "Doppel Alert Telco"
+												}
+											},
+											"type": "singleSelect"
+										}
+									]
+								]
 							}
 						],
 						"maxW": 3,
@@ -622,7 +655,17 @@
 						"h": 4,
 						"hideName": false,
 						"i": "chtyrfjhpp-07b54ffa-28e8-4216-b4d2-1d0590a0affe",
-						"items": [],
+						"items": [
+							{
+								"endCol": 4,
+								"fieldId": "doppelauditlogs",
+								"height": 150,
+								"id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,

@@ -1,0 +1,266 @@
+description: Resolves Veeam ONE triggered alarms.
+id: Veeam - Resolve Triggered Alarms
+inputs:
+- description: ""
+  key: TriggeredAlarmId
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      accessor: eventid
+      root: incident
+- description: ""
+  key: Instance
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      accessor: sourceInstance
+      root: incident
+name: Veeam - Resolve Triggered Alarms
+outputs: []
+starttaskid: "0"
+fromversion: "6.10.0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a3520492-ab98-42d8-8ae1-f6a3ade9c1a2
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: a3520492-ab98-42d8-8ae1-f6a3ade9c1a2
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 20
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      comment:
+        complex:
+          root: incident.owner
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'Resolved by Cortex XSOAR user: '
+              suffix: {}
+            operator: concat
+      resolveType:
+        simple: Resolve
+      triggeredAlarmIds:
+        complex:
+          root: inputs.TriggeredAlarmId
+          transformers:
+          - operator: StringToArray
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Veeam ONE REST API
+      description: Resolve Triggered Alarms.
+      id: af093a96-3ede-4e6e-84fa-9e0e87f67968
+      iscommand: true
+      name: Resolve Triggered Alarms
+      script: Veeam ONE REST API|||veeam-vone-resolve-triggered-alarms
+      type: regular
+      version: -1
+    taskid: af093a96-3ede-4e6e-84fa-9e0e87f67968
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 440
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      comment:
+        complex:
+          root: incident.owner
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'Acknowledged by Cortex XSOAR user: '
+              suffix: {}
+            operator: concat
+      resolveType:
+        simple: Acknowledge
+      triggeredAlarmIds:
+        complex:
+          root: inputs.TriggeredAlarmId
+          transformers:
+          - operator: StringToArray
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Veeam ONE REST API
+      description: Resolve Triggered Alarms.
+      id: 15b0d854-cb16-4e20-8e4b-0b7a256fc8ae
+      iscommand: true
+      name: Resolve Triggered Alarms
+      script: Veeam ONE REST API|||veeam-vone-resolve-triggered-alarms
+      type: regular
+      version: -1
+    taskid: 15b0d854-cb16-4e20-8e4b-0b7a256fc8ae
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 440
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Acknowledge:
+      - "2"
+      Resolve:
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Select Alarm Resolution Type.
+      id: 57dbd58b-d2d6-4b02-8568-e85f28de9734
+      iscommand: false
+      name: Select Alarm Resolution Type
+      type: condition
+      version: -1
+    taskid: 57dbd58b-d2d6-4b02-8568-e85f28de9734
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident.
+      id: d2522fb1-e69f-4ee0-8fe6-d49a3c00f4de
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: d2522fb1-e69f-4ee0-8fe6-d49a3c00f4de
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 710
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6dbdeb0c-cd2e-41c4-83ac-737f8368a8f4
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 6dbdeb0c-cd2e-41c4-83ac-737f8368a8f4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 890
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 935,
+        "width": 960,
+        "x": 150,
+        "y": 20
+      }
+    }
+  }

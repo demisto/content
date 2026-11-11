@@ -1,8 +1,8 @@
 {
     "name": "Lumu",
-    "description": "SecOps operation, reflect and manage the Lumu Incidents either from XSOAR Cortex or viceversa using the mirroring integration flow",
+    "description": "Lumu SecOps operation, reflect and manage the Lumu Incidents either from XSOAR Cortex or viceversa using the mirroring integration flow",
     "support": "partner",
-    "currentVersion": "1.0.30",
+    "currentVersion": "2.0.0",
     "author": "Lumu",
     "url": "https://lumu.io",
     "email": "support@lumu.io",
@@ -17,7 +17,7 @@
         "Incident Handling"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["Lumu", "Lumu Secops", "Lumu Incidents", "SecOps", "Incident Management"],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

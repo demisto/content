@@ -115,6 +115,10 @@ call arista_switch_common_fields_modeling
 | filter facility = "ACL"
 | alter
     acl_tuple = split(arrayindex(regextract(message, "list\s+(\S+\s+\S+\s+\S+\s+\S+\s+\S+)"), 0)),
+    ipacc_acl_name = if(mnemonic = "IPACCESS", arrayindex(regextract(message, "list\s+(\S+)"), 0), null),
+    ipacc_action = if(mnemonic = "IPACCESS", arrayindex(regextract(message, "\b(permitted|denied)\b"), 0), null),
+    ipacc_proto = if(mnemonic = "IPACCESS", arrayindex(regextract(message, "\b(?:permitted|denied)\s+(\S+)"), 0), null),
+    ipacc_interface = if(mnemonic = "IPACCESS", arrayindex(regextract(message, "list\s+\S+\s+(\S+)\s+(?:permitted|denied)\b"), 0), null),
     src_ip = if(mnemonic = "IPACCESS", arrayindex(regextract(message, "([\d\.\:]+)\(*\d{0,5}\)*\s*\-\>\s*\S+"), 0), null),
     dst_ip = if(mnemonic = "IPACCESS", arrayindex(regextract(message, "\S+\s*\-\>\s*([\d\.\:]+)"), 0), null),
     src_port = if(mnemonic = "IPACCESS", arrayindex(regextract(message, "\((\d{1,5})\)\s*\-\>"), 0), null),
@@ -135,10 +139,10 @@ call arista_switch_common_fields_modeling
     dpt = if(mnemonic="MACACCESS", arrayindex(regextract(message, "\-\>\s*[a-fA-F\d\:\-]{12,17}\s+\S+\s*\:\s*(\d{1,5})$"), 0), null), // smac sip : spt -> dmac dip : dpt
     proto = if(mnemonic="MACACCESS", uppercase(arrayindex(regextract(message, "([a-zA-Z]+)\s+[a-fA-F\d\:\-]{12,17}\s+[\d\.\:a-fA-F]+\s*\:\s*\d{1,5}\s*\-\>"), 0)), null)
 | alter 
-    acl_name = arrayindex(acl_tuple, 0),
-    switch_interface = arrayindex(acl_tuple, 1),
-    acl_filter_action = arrayindex(acl_tuple, 2),
-    ip_proto = if(mnemonic = "IPACCESS", uppercase(arrayindex(acl_tuple, 3)), null), 
+    acl_name = coalesce(ipacc_acl_name, arrayindex(acl_tuple, 0)),
+    switch_interface = if(mnemonic = "IPACCESS", ipacc_interface, arrayindex(acl_tuple, 1)),
+    acl_filter_action = coalesce(ipacc_action, arrayindex(acl_tuple, 2)),
+    ip_proto = if(mnemonic = "IPACCESS", uppercase(ipacc_proto), null), 
     vlan_num = if(mnemonic = "MACACCESS", to_integer(arrayindex(acl_tuple, 3)), null),
     src_ip = coalesce(src_ip, sip1, sip2),
     dst_ip = coalesce(dst_ip, dip1, dip2),

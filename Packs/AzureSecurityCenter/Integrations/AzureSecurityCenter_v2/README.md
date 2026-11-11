@@ -69,6 +69,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 ***
 
 Lists alerts for the subscription according to the specified filters.
+The OData select, expand, and filter arguments are deprecated, as they are no longer supported by Microsoft Defender for Cloud and have no effect.
 
 *Require Subscription ID*
 
@@ -82,9 +83,6 @@ Lists alerts for the subscription according to the specified filters.
 | --- | --- | --- |
 | resource_group_name | The name of the resource group within the user's subscription. The name is case insensitive. | Optional |
 | asc_location | The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument. | Optional |
-| filter | OData filter | Optional |
-| select | OData select | Optional |
-| expand | OData expand | Optional |
 | subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
 
 ##### Context Output

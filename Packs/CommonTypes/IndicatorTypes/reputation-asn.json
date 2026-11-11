@@ -31,5 +31,9 @@
     },
     "expiration": 0,
     "layout": "ASN",
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.5.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

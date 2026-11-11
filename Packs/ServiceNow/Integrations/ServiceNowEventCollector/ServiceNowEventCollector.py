@@ -134,9 +134,12 @@ class Client:
                 "sysparm_display_value": "false",
                 "sysparm_limit": limit,
                 "sysparm_offset": offset,
-                # Use timestamp-based query with descending ordering (newest first) to match
-                # current implementation for the other event types.
-                "sysparm_query": f"ORDERBYDESCsys_created_on^sys_created_on>{from_time}",
+                # Use ascending ordering (oldest first), consistent with the other event types.
+                # This is required so the last returned event is the newest one: the fetch's
+                # last-run timestamp and the de-duplication boundary logic both assume ascending
+                # order. Descending order pinned last_fetch_time to the oldest record, which kept
+                # re-fetching the same window and produced duplicate events (XSUP-71435 follow-up).
+                "sysparm_query": f"ORDERBYsys_created_on^sys_created_on>{from_time}",
             }
         else:
             # Standard query for other log types

@@ -47,6 +47,13 @@ configuration:
   type: 13
   section: Connect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Fetch mails from these senders addresses only (eg. admin@demo.com,test@demo.com)
   name: permittedFromAdd
   type: 0
@@ -184,7 +191,7 @@ script:
       required: true
     description: Fetches an email by message ID and returns the information in an eml file format.
     name: mail-listener-get-email-as-eml
-  dockerimage: demisto/py3-tools:1.0.0.10120494
+  dockerimage: demisto/py3-tools:1.0.0.13712671
   isfetch: true
   runonce: false
   script: '-'

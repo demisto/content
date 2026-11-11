@@ -114,8 +114,14 @@ pipeline_jobs_folder/
 plan.md
 report.md
 plans/
+cooc_command_examples.txt
+
+# Local investigation workspace (customer data, logs, dumps, scratch files). Never commit.
+/Investigations/
 
 # IDEX custom tools and rules
 .roomodes
 .roo/
 .idex/
+.worktree-context/
+

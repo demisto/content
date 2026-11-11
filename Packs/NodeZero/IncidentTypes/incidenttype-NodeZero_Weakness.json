@@ -1,0 +1,22 @@
+{
+    "id": "NodeZero Weakness",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "NodeZero Weakness",
+    "prevName": "NodeZero Weakness",
+    "color": "#5C6BC0",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "fromVersion": "6.1.0"
+}

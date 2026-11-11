@@ -36,6 +36,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: All
   display: Ticket type to fetch as incidents.
   name: ticket_type
@@ -140,6 +143,9 @@ configuration:
   type: 13
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: When selected, closing the Freshservice ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
@@ -185,12 +191,18 @@ configuration:
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Freshservice is a service management solution that allows customers to manage service requests, incidents, change requests tasks, and problem investigation.
 display: Freshworks Freshservice
 name: FreshworksFreshservice

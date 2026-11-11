@@ -24,11 +24,11 @@ outputs:
   type: Unknown
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.12.7090913
+dockerimage: demisto/python3:3.12.15.14069087
 dependson:
   must:
-  - core-list-brokers
-  - core-xql-generic-query-platform
+  - getBrokers
+  - runXQLQuery
 fromversion: 8.14.0
 isInternal: true
 tests:

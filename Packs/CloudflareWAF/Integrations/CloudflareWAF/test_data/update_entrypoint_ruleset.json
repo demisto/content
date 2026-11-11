@@ -1,0 +1,26 @@
+{
+    "result": {
+        "id": "entrypoint_ruleset_id_1",
+        "name": "updated entry point",
+        "kind": "root",
+        "phase": "http_request_firewall_managed",
+        "description": "Updated entry point ruleset",
+        "source": "firewall_managed",
+        "version": "6",
+        "last_updated": "2023-02-21T09:15:00Z",
+        "rules": [
+            {
+                "id": "entry_rule_id_3",
+                "action": "challenge",
+                "expression": "(ip.src eq 192.0.2.1)",
+                "description": "Challenge suspicious IP",
+                "enabled": true,
+                "version": "6",
+                "ref": "entry_ref_3"
+            }
+        ]
+    },
+    "success": true,
+    "errors": [],
+    "messages": []
+}

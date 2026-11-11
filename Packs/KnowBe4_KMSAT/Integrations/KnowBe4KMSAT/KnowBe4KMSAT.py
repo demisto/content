@@ -957,7 +957,7 @@ def kmsat_user_events_list_command(client: UserEventClient, args: dict) -> Comma
         outputs_key_field="id",
         raw_response=response,
         outputs=data,
-        readable_output=tableToMarkdown(name="KMSAT User Events", t=data),
+        readable_output=tableToMarkdown(name="KSAT User Events", t=data),
     )
 
 
@@ -982,7 +982,7 @@ def kmsat_user_event_types_list_command(client: UserEventClient, args: dict) -> 
         outputs_key_field="id",
         raw_response=response,
         outputs=data,
-        readable_output=tableToMarkdown(name="KMSAT User Event Types", t=data),
+        readable_output=tableToMarkdown(name="KSAT User Event Types", t=data),
     )
 
 
@@ -1007,7 +1007,7 @@ def kmsat_user_event_create_command(client: UserEventClient, args: dict) -> Comm
         outputs_key_field="id",
         raw_response=response,
         outputs=data,
-        readable_output=tableToMarkdown(name="KMSAT Create User Event", t=data),
+        readable_output=tableToMarkdown(name="KSAT Create User Event", t=data),
     )
 
 
@@ -1048,7 +1048,7 @@ def kmsat_user_event_list_command(client: UserEventClient, args: dict) -> Comman
         outputs_key_field="id",
         raw_response=response,
         outputs=data,
-        readable_output=tableToMarkdown(name="KMSAT User Event", t=data),
+        readable_output=tableToMarkdown(name="KSAT User Event", t=data),
     )
 
 
@@ -1102,7 +1102,7 @@ def kmsat_user_event_statuses_list_command(client: UserEventClient, args: dict) 
     response = client.user_event_statuses(params)
     data: List[dict] = response.get("data") or []
     markdown = tableToMarkdown(
-        "KMSAT User Event Statuses",
+        "KSAT User Event Statuses",
         data,
         [
             "id",

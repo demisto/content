@@ -9,19 +9,19 @@ from VeeamONERESTAPI import (
     Client,
     FilterBuilder,
     Operation,
-    check_version,
-    convert_to_list,
-    convert_triggered_alarms_to_incidents,
-    fetch_converted_incidents,
     fetch_incidents,
-    get_triggered_alarms_command,
-    handle_command_with_token_refresh,
-    overwrite_last_fetch_time,
-    process_command,
-    process_error,
     search_with_paging,
-    try_cast_to_int,
-    update_token,
+    overwrite_last_fetch_time,
+    validate_int,
+    process_command,
+    handle_command_with_token_refresh,
+    convert_triggered_alarms_to_incidents,
+    process_error,
+    check_version,
+    fetch_converted_incidents,
+    convert_to_list,
+    get_triggered_alarms_command,
+    get_access_token,
 )
 
 SERVER_URL = "https://test_url.com"
@@ -122,9 +122,9 @@ def test_str(operation, items, expected_result):
         "202",  # str int
     ],
 )
-def test_try_cast_to_int(arg):
+def test_validate_int(arg):
     try:
-        try_cast_to_int(arg)
+        validate_int(arg)
     except Exception as e:
         pytest.fail(f"raised {e}")
 
@@ -135,9 +135,9 @@ def test_try_cast_to_int(arg):
         "wtgwte"  # not int => exception
     ],
 )
-def test_try_cast_to_int_with_exception(arg):
+def test_validate_int_with_exception(arg):
     with pytest.raises(ValueError):
-        try_cast_to_int(arg)
+        validate_int(arg)
 
 
 @pytest.mark.parametrize("string, expected_result", [("[1, 2, 3]", [1, 2, 3]), ("[4, 5, 6]", [4, 5, 6]), ("[]", [])])
@@ -163,11 +163,11 @@ def test_check_version(version, expected_result):
         check_version(version)
 
 
-def test_update_token(client, mocker):
+def test_get_access_token(client, mocker):
     expected_token = "token"
     mocker.patch("VeeamONERESTAPI.Client.authentication_create_token_request", return_value={"access_token": "token"})
 
-    token = update_token(client, "username", "password")
+    token = get_access_token(client, "username", "password")
 
     assert token == expected_token
 
@@ -202,7 +202,7 @@ def test_update_token(client, mocker):
 )
 def test_get_triggered_alarms_command(client, mocker, response, expected_command_results):
     mocker.patch("VeeamONERESTAPI.Client.get_triggered_alarms_request", return_value=response)
-    mocker.patch("VeeamONERESTAPI.try_cast_to_int")
+    mocker.patch("VeeamONERESTAPI.validate_int")
 
     args = {}
     command_results = get_triggered_alarms_command(client, args)
@@ -278,14 +278,14 @@ def test_convert_triggered_alarms_to_incidents(
     ],
 )
 def test_fetch_converted_incidents(client, mocker, last_run, last_fetch, max_results, errors_by_command, expected_result):
-    mock_handle_command_with_token_refresh = mocker.patch("VeeamONERESTAPI.handle_command_with_token_refresh")
-    mock_handle_command_with_token_refresh.return_value = ([], set(), "2022-01-01T00:00:00Z")
+    mock_convert_triggered_alarms = mocker.patch("VeeamONERESTAPI.convert_triggered_alarms_to_incidents")
+    mock_convert_triggered_alarms.return_value = ([], set(), "2022-01-01T00:00:00Z")
 
     incidents, alarms_ids, last_fetch_time = fetch_converted_incidents(
         client, last_run, last_fetch, max_results, errors_by_command
     )
 
-    mock_handle_command_with_token_refresh.assert_called_once()
+    mock_convert_triggered_alarms.assert_called_once()
     assert incidents == expected_result[0]
     assert alarms_ids == expected_result[1]
     assert last_fetch_time == expected_result[2]
@@ -306,7 +306,7 @@ def test_fetch_converted_incidents(client, mocker, last_run, last_fetch, max_res
 def test_fetch_converted_incidents_with_exception(
     client, mocker, last_run, last_fetch, max_results, errors_by_command, expected_result
 ):
-    mocker.patch("VeeamONERESTAPI.handle_command_with_token_refresh")
+    mocker.patch("VeeamONERESTAPI.convert_triggered_alarms_to_incidents", side_effect=Exception("error"))
     mock_process_error = mocker.patch("VeeamONERESTAPI.process_error")
     mock_process_error.return_value = ({"type": "incident_on_error"}, {"error_in_triggered_alarms": 2})
 
@@ -416,7 +416,7 @@ def test_search_with_paging(mocker, page_size, size_limit, response, expected_re
 @pytest.mark.parametrize(
     "command",
     [
-        ("test-module"),
+        ("veeam-vone-resolve-triggered-alarms"),
         ("veeam-vone-get-triggered-alarms"),  # all real commands
     ],
 )
@@ -449,7 +449,7 @@ def test_handle_command_with_token_refresh_attempts(client, mocker):
     mock_setIntegrationContext = mocker.patch("VeeamONERESTAPI.demisto.setIntegrationContext")
     mock_get_api_key = mocker.patch("VeeamONERESTAPI.get_api_key", return_value="new_api_key")
     mock_set_api_key = mocker.patch("VeeamONERESTAPI.set_api_key")
-    mocker.patch("VeeamONERESTAPI.Client.get_about_request", return_value={})
+    mock_get_about_request = mocker.patch("VeeamONERESTAPI.Client.get_about_request", return_value={})
     mocker.patch("VeeamONERESTAPI.check_version")
 
     mock_command = Mock()
@@ -465,6 +465,7 @@ def test_handle_command_with_token_refresh_attempts(client, mocker):
 
     assert result == {"res": "success"}
     assert mock_getIntegrationContext.call_count == 5  # 3 calls + 2 on exception
+    assert mock_get_about_request.call_count == 2  # new token on attempts 1 and 2, cached on attempt 3
     assert mock_get_api_key.call_count == 2
     assert mock_setIntegrationContext.call_count == 4  # 2 resets + 2 setting token
     assert mock_set_api_key.call_count == 3

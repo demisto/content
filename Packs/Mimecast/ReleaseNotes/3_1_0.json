@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "<ul><li>The context outputs on the following commands have changed:<ul><li><b>mimecast-create-block-sender-policy</b></li><li><b>mimecast-update-block-sender-policy</b></li><li><b>mimecast-list-policies</b></li><li><b>mimecast-get-policy</b></li><li><b>mimecast-delete-policy</b></li></ul></li><li>Updated the<i>fromType</i>argument in the<b>mimecast-update-block-sender-policy</b>command, it no longer accepts<i>free_mail_domains</i>or<i>header_display_name</i>.</li><li>Updated the<i>fromPart</i>argument to be required in the<b>mimecast-create-block-sender-policy</b>command.</li></ul>"
+}

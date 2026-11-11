@@ -166,7 +166,10 @@ class RequestArguments:
         self.mwg_type = mwg_type
         self.category_default = category_default
         self.category_attribute = []  # type:List
-        self.fields_to_present = self.get_fields_to_present(fields_to_present)
+        # Keep the raw user input so it can be persisted and re-resolved after a refresh
+        # (e.g. "use_legacy_query" / "all" must survive to_context_json -> from_context_json).
+        self.raw_fields_to_present = fields_to_present or ""
+        self.fields_to_present = self.get_fields_to_present(self.raw_fields_to_present)
         self.csv_text = csv_text
         self.url_truncate = url_truncate
         self.maximum_cidr_size = maximum_cidr_size
@@ -191,7 +194,7 @@ class RequestArguments:
             self.CTX_MWG_TYPE: self.mwg_type,
             self.CTX_CATEGORY_DEFAULT: self.category_default,
             self.CTX_CATEGORY_ATTRIBUTE: self.category_attribute,
-            self.CTX_FIELDS_TO_PRESENT: self.fields_to_present,
+            self.CTX_FIELDS_TO_PRESENT: self.raw_fields_to_present,
             self.CTX_CSV_TEXT: self.csv_text,
             self.CTX_PROTOCOL_STRIP_KEY: self.url_protocol_stripping,
             self.CTX_URL_TRUNCATE_KEY: self.url_truncate,
@@ -227,9 +230,9 @@ class RequestArguments:
     def get_fields_to_present(self, fields_to_present: str) -> str:
         # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
 
-        # Fixes legacy query mode silently lost after the first refresh because
-        # `get_fields_to_present("")` returned "name,type" instead of ""
-        if fields_to_present == "use_legacy_query" or (not fields_to_present and self.out_format == FORMAT_TEXT):
+        # An empty value must NOT disable field filtering - doing so loads full indicator documents
+        # on the server and can exhaust its memory for large lists (XSUP-77883).
+        if fields_to_present == "use_legacy_query":
             return ""
 
         fields_for_format = {
@@ -1512,14 +1515,16 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
 """ COMMAND FUNCTIONS """
 
 
-def test_module(_: dict, params: dict):
-    """
+def validate_test_module_params(params: dict) -> None:
+    """Validate the integration configuration parameters used by test-module.
+
     Validates:
         1. Valid port.
-        2. Valid cache_refresh_rate
+        2. Valid cache_refresh_rate (when not running on-demand).
+
+    Args:
+        params (dict): The integration parameters.
     """
-    if not params.get("longRunningPort"):
-        params["longRunningPort"] = "1111"
     get_params_port(params)
     on_demand = params.get("on_demand", None)
     if not on_demand:
@@ -1535,7 +1540,31 @@ def test_module(_: dict, params: dict):
         if range_split[1] not in ["minute", "minutes", "hour", "hours", "day", "days", "month", "months", "year", "years"]:
             raise ValueError("Invalid time unit for the Refresh Rate. Must be minutes, hours, days, months, or years.")
         parse_date_range(cache_refresh_rate, to_timestamp=True)
-    run_long_running(params, is_test=True)
+
+
+def test_module(_: dict, params: dict) -> tuple[str, dict, dict]:
+    """
+    Validates the integration configuration and, if a long-running instance is already up,
+    verifies it is a healthy EDL instance instead of failing on the already-bound ports.
+
+    Each long-running integration instance runs in its own dedicated, persistent container, so
+    within this container the only process that could be holding the EDL ports is this instance's
+    own long-running server.
+
+    Flow:
+        1. Validate configuration params (port, cache_refresh_rate).
+        2. Delegate to NGINXApiModule.test_long_running_with_running_instance_check:
+            a. If the EDL ports are free - run the regular nginx/WSGI test.
+            b. If the ports are already in use and a healthy instance is answering through nginx -
+               the test passes (we must not re-bind the ports of a live instance).
+            c. Otherwise - a DemistoException is raised: the ports are used by a different process.
+    """
+    if not params.get("longRunningPort"):
+        params["longRunningPort"] = "1111"
+
+    validate_test_module_params(params)
+
+    test_long_running_with_running_instance_check(params)
     return "ok", {}, {}
 
 

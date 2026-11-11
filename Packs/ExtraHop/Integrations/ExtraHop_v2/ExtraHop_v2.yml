@@ -12,11 +12,27 @@ configuration:
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Select if the instance connects to an ExtraHop Reveal(x) 360 system. Leave unselected if connecting to ExtraHop Reveal(x) Enterprise. Default value is false.
   display: On Cloud
   name: on_cloud
@@ -78,6 +94,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: |-
     Applies a filter to the list of detections based on a JSON-specific query.
 
@@ -4552,7 +4571,7 @@ script:
     deprecated: true
     description: Use extrahop-packets-search instead. Search for specific packets in Reveal(x).
     name: extrahop-search-packets
-  dockerimage: demisto/python3:3.12.13.8428455
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   runonce: false
   script: '-'

@@ -1,0 +1,691 @@
+{
+    "HealthCheck": {
+        "ActionableItems": [
+            {
+                "category": "Content packs",
+                "description": "Updates are needed for various content packs",
+                "resolution": "Navigate to the market place and update the outdated packs",
+                "severity": "Low"
+            },
+            {
+                "category": "Content packs",
+                "description": "The number of installed packs on your system is too high",
+                "resolution": "Delete unneeded packs, refer to:  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-6/cortex-xsoar-admin/marketplace/content-pack-installation/delete-a-content-pack",
+                "severity": "Medium"
+            }
+        ],
+        "CollectResults": {
+            "Correlation Rules Without Automation": [
+                {
+                    "count": 131,
+                    "xdm.issue.name": "playbook-failed-task"
+                },
+                {
+                    "count": 1,
+                    "xdm.issue.name": "[ACTION REQUIRED] Your Microsoft 365 Password Expires in 24 Hours"
+                }
+            ],
+            "Health Check - Agent and Asset - Agent Policy Assignment xql_1773742279543": [
+                {
+                    "assigned_prevention_policy": "Emre_Block_Mode",
+                    "policy_count": 3
+                },
+                {
+                    "assigned_prevention_policy": "Emre_Windows_Block",
+                    "policy_count": 2
+                },
+                {
+                    "assigned_prevention_policy": "CanT Test PC PPolicy",
+                    "policy_count": 2
+                },
+                {
+                    "assigned_prevention_policy": "Android Default",
+                    "policy_count": 1
+                },
+                {
+                    "assigned_prevention_policy": "CanT Test PC PPolicy MacOS",
+                    "policy_count": 1
+                },
+                {
+                    "assigned_prevention_policy": "CanT Linux Server Group1 PPolicy",
+                    "policy_count": 1
+                },
+                {
+                    "assigned_prevention_policy": "wins-agent-policy",
+                    "policy_count": 1
+                },
+                {
+                    "assigned_prevention_policy": "GozdeMachines",
+                    "policy_count": 1
+                },
+                {
+                    "assigned_prevention_policy": "No_ tameper",
+                    "policy_count": 1
+                }
+            ],
+            "Health Check - Agent and Asset - Agent Scan Status xql_1773743335910": [
+                {
+                    "scan_status": "IN_PROGRESS",
+                    "scancount": 1
+                },
+                {
+                    "scan_status": "NONE",
+                    "scancount": 12
+                }
+            ],
+            "Health Check - Agent and Asset - Auto Agent Upgrade Status xql_1773741704945": [
+                {
+                    "auto_upgrade_status": "STATUS_NOT_CONFIGURED",
+                    "upgradestatuscount": 7
+                },
+                {
+                    "auto_upgrade_status": "STATUS_UP_TO_DATE",
+                    "upgradestatuscount": 4
+                },
+                {
+                    "auto_upgrade_status": "STATUS_IN_PROGRESS",
+                    "upgradestatuscount": 1
+                }
+            ],
+            "Health Check - Agent and Asset - EDR Disabled Endpoints xql_1773148595080": [
+                {
+                    "Policy": "No_ tameper",
+                    "name": "emre-win3-client",
+                    "type": "TYPE_SERVER"
+                }
+            ],
+            "Health Check - Agent and Asset-HC-test - Agent Policy Assignment xql_1773742279543": [
+                {
+                    "assigned_prevention_policy": "Emre_Block_Mode",
+                    "policy_count": 3
+                },
+                {
+                    "assigned_prevention_policy": "Emre_Windows_Block",
+                    "policy_count": 2
+                },
+                {
+                    "assigned_prevention_policy": "CanT Test PC PPolicy",
+                    "policy_count": 2
+                },
+                {
+                    "assigned_prevention_policy": "Android Default",
+                    "policy_count": 1
+                },
+                {
+                    "assigned_prevention_policy": "CanT Test PC PPolicy MacOS",
+                    "policy_count": 1
+                },
+                {
+                    "assigned_prevention_policy": "CanT Linux Server Group1 PPolicy",
+                    "policy_count": 1
+                },
+                {
+                    "assigned_prevention_policy": "wins-agent-policy",
+                    "policy_count": 1
+                },
+                {
+                    "assigned_prevention_policy": "GozdeMachines",
+                    "policy_count": 1
+                },
+                {
+                    "assigned_prevention_policy": "No_ tameper",
+                    "policy_count": 1
+                }
+            ],
+            "Health Check - Agent and Asset-HC-test - Agent Scan Status xql_1773743335910": [
+                {
+                    "scan_status": "IN_PROGRESS",
+                    "scancount": 1
+                },
+                {
+                    "scan_status": "NONE",
+                    "scancount": 12
+                }
+            ],
+            "Health Check - Agent and Asset-HC-test - Auto Agent Upgrade Status xql_1773741704945": [
+                {
+                    "auto_upgrade_status": "STATUS_NOT_CONFIGURED",
+                    "upgradestatuscount": 7
+                },
+                {
+                    "auto_upgrade_status": "STATUS_UP_TO_DATE",
+                    "upgradestatuscount": 4
+                },
+                {
+                    "auto_upgrade_status": "STATUS_IN_PROGRESS",
+                    "upgradestatuscount": 1
+                }
+            ],
+            "Health Check - Agent and Asset-HC-test - EDR Disabled Endpoints xql_1773148595080": [
+                {
+                    "Policy": "No_ tameper",
+                    "name": "emre-win3-client",
+                    "type": "TYPE_SERVER"
+                }
+            ],
+            "Health Check - Ingestion/Integration/Configuration-HC-test - CIE - Ingested Domains xql_1773145541487": [
+                {
+                    "IdentityDomain": "demoautomata.local",
+                    "generatedTime": 1767703378341,
+                    "last_modified": 1767165786000,
+                    "last_modified_dc_record": 1767165786000,
+                    "record_generated_time": 1767703378341
+                }
+            ],
+            "Health Check - Ingestion/Integration/Configuration-HC-test - CIE Non Reporting Domains xql_1773145445339": [
+                {
+                    "daysNoUpdate": 159,
+                    "generatedTime": 1767703378341,
+                    "last_modified": 1767165786000,
+                    "last_modified_dc_record": 1767165786000,
+                    "name": "demoautomata.local",
+                    "record_generated_time": 1767703378341
+                }
+            ],
+            "Health Check - Ingestion/Integration/Configuration-HC-test - Health Issues - 7d xql_1773664559419": [
+                {
+                    "count": 1,
+                    "xdm.issue.name": "An error occurred in a Local Agent Settings collector on the xsiam-csemea-10-BVM1-CanT Broker VM",
+                    "xdm.issue.type": "Collection"
+                },
+                {
+                    "count": 1,
+                    "xdm.issue.name": "An error occurred in a Network Mapper collector on the xsiam-csemea-10-BVM1-CanT Broker VM",
+                    "xdm.issue.type": "Collection"
+                },
+                {
+                    "count": 1,
+                    "xdm.issue.name": "Collection error in the instance MITRE ATT\u0026CK v2_instance_1 of a MITRE ATT\u0026CK v2 collector",
+                    "xdm.issue.type": "Collection"
+                },
+                {
+                    "count": 5,
+                    "xdm.issue.name": "Collection error in the instance GozdePhishing of a Gmail Single User collector",
+                    "xdm.issue.type": "Collection"
+                },
+                {
+                    "count": 1,
+                    "xdm.issue.name": "An error occurred in a syslog collector on the xsiam-csemea-10-BVM1-CanT Broker VM",
+                    "xdm.issue.type": "Collection"
+                },
+                {
+                    "count": 2,
+                    "xdm.issue.name": "Healthcheck Report and BPA diagnostics",
+                    "xdm.issue.type": "Automation"
+                },
+                {
+                    "count": 1,
+                    "xdm.issue.name": "Healthcheck Report and BPA diagnostics",
+                    "xdm.issue.type": "Automation"
+                }
+            ],
+            "Health Check - Ingestion/Integration/Configuration-HC-test - Playbook Failing Tasks - 30d xql_1773147166230": [
+                {
+                    "task_name": "core-script-run",
+                    "tasks": [
+                        "job-014c9c3bda0f490ca047e1f8cf7b4ff5",
+                        "job-01b0d27f3b26465b802b12c8caa131df",
+                        "job-029780055b6040f0b1c5107b50311357",
+                        "job-02a8b68e4c3644bd8cae1469d5ce8d35",
+                        "job-02e770fbd6ba406ca3abde5f8d75e035",
+                        "job-0350ba7828b549d9b6e636e821460c80",
+                        "job-03c42c13d5f649959e53dda36092794c",
+                        "job-0404f47473af469aa4540f2ea567f17f",
+                        "job-0456281f250d45e885c83b341fbd059e",
+                        "job-05fcbad4ca5443f4b560650e2fe47817",
+                        "job-07023978ed1c46d0922e5762f4a1a94a",
+                        "job-07f0e1545d844a64a261cc06f0cbf701",
+                        "job-0976286e203b4f6dbfe32e462241e113",
+                        "job-09aa8dd97ee14e8d87aa3c6c742e94ba",
+                        "job-0a1b6e1d8f4940fa9ba7a54c43271cf7",
+                        "job-0aaed5efcf4d4cedac212350afa2d30b",
+                        "job-0b675a8433864b079ba5cc15be27e46f",
+                        "job-103f5c23fda642bb9995d114a22240c0",
+                        "job-1396627888594768aee0ff8277610449",
+                        "job-146d989fa2264c34ae86e584ff2ee630",
+                        "job-16780b0f51574d08a70005b19139f4cd",
+                        "job-178a39e28267400391487996c3487b80",
+                        "job-18255208bc9e452aa16d36706a69dcbc",
+                        "job-1825927d12594599a27cdba3e03cd8eb",
+                        "job-183ec717f78248b9b0b5478839721abc",
+                        "job-18c60968c388438da0ee01839d9b631a",
+                        "job-18c842e20239443b8132601f4bfd4f34",
+                        "job-1924ce3a2ed74b558b2adf6f7a265080",
+                        "job-1ad8b795bb844ac5aa22a203586fed40",
+                        "job-1c141c14dfe74f6f93a06e01a6b700c3",
+                        "job-1c2424e1ecba4bd1978077a3e6e09e1b",
+                        "job-1f672b90056f47fda3704156ae01a43e",
+                        "job-20d05bb6c5014e2c86d9a006b945d0be",
+                        "job-2285935b0b504cd9a7c6324075ecd65b",
+                        "job-25546c352d1e4b5b8ee7715ed6ff8ead",
+                        "job-26560c6ddf0e4bb7a36ec41efda644d8",
+                        "job-26aa6182f05243e08157ad379f089c06",
+                        "job-2721d7072b4a47e09050c652ec534129",
+                        "job-29ab2ffb86964a45ae2231b8652a3842",
+                        "job-2cc3b626e36e45ed9e2780d297ae43f8",
+                        "job-2cffc20f5bed4324940cc20db11dd494",
+                        "job-2ea645a01afa4e7884bb13694b5c78d1",
+                        "job-31a5527ed067466c820eddd690a921cc",
+                        "job-3200f2bf82d94c8aad324ad937819e4d",
+                        "job-32f8e322e273497b80271fa05eb783ff",
+                        "job-341f81f70903408a96efe20445716a4e",
+                        "job-34cf45590bd4467ea252416ca5075ec9",
+                        "job-36f1e1b5ea0c4161a2ce2b3527c8fc6c",
+                        "job-373072427e404f92a228a5b3efd30d23",
+                        "job-37d77ba9983743e3bffb232a43d2b628",
+                        "job-382a28e66e7349a197bed72ea636290c",
+                        "job-39d07a723af94c00809495dd5cdb6495",
+                        "job-3a39684cb3d24dbbaa2c5e74a12f22cf",
+                        "job-3ac85c19538949a2bf46d0fb90497142",
+                        "job-3b94fd6b6d63450c898df341d8e08dfd",
+                        "job-3f4ecf30d02e4984b52dc6d91e8684aa",
+                        "job-40c26bec324649a3892c05f917bdb6d3",
+                        "job-413a9d0b03ab4d87a6ca3a21b1ab44cc",
+                        "job-4171746c7f4b45808a238f68c917f60f",
+                        "job-4271552f920f493f8223a98d750242a5",
+                        "job-455f289d44124455a569b7ab8a2a575b",
+                        "job-45f714cbbf154b2780c75b8ff91f8058",
+                        "job-463f6421ce5b4e24ae96747fc9aed632",
+                        "job-464c2ced39854b7b98732d8bbf8393b6",
+                        "job-46f0ac15a6b848c5b38b61a5c461a8cf",
+                        "job-494582ba0c6244e68186558abc230f47",
+                        "job-4ab26099b7a045d9ba1977cac587478e",
+                        "job-4c78dad3e47c439086d40384f43809ef",
+                        "job-4db74f66a7a248299159f796585afd15",
+                        "job-4ef1b2512ebb43f4a4f4f87b1edd8d36",
+                        "job-4f4dbe18cabf4095a5a903acc070f300",
+                        "job-4f6fd22569df4a3f88603d408658b046",
+                        "job-50dc81c057eb41a09ec9f213c4da2116",
+                        "job-523ad6d8ff41415285edebcf82fc05ef",
+                        "job-5439db3a9d8e4f8d8b10a1c3e2b72d80",
+                        "job-5a4eda5b79ee4b118b0b3cc57b53f1d9",
+                        "job-5a804580d81d437c89d7874fdbb7fde4",
+                        "job-5cb14acabefc41f793a9b81b1af5664b",
+                        "job-5dd1e11519cb4944882870788dcadd53",
+                        "job-5fc881d0092c4ccdaabd43ae1a2196a5",
+                        "job-606ee8d127394dadaeb6ccf2affee6c8",
+                        "job-61bf2af20aab434ca9b4c5a3d633b74e",
+                        "job-6387425f41af40d980be46cbf2b75c56",
+                        "job-645173ac865a4700b7a613982cd5d406",
+                        "job-65bbc9df1bfa4b5393430f36b59a45f8",
+                        "job-6a241faff08d4b56a865fc37d9b0c425",
+                        "job-6a7b8122be614f1da5065c8a1b0e17f3",
+                        "job-6aa05a398bd14aaa985013b5c19ff4d8",
+                        "job-6ccf210f2b0b448eb73932a98306545c",
+                        "job-6ed0de45f7af4c1c88d12f7f348fe03d",
+                        "job-70826303e47f4097a27c9bd7dc4ee12f",
+                        "job-73485f1425474f66a9031423b8ead1c7",
+                        "job-740bb5f737754d1f8805f0a69611582a",
+                        "job-7850d53c1fa342f2b30faa3886a28bfe",
+                        "job-78beb4d533914bb6bc0f45d9e59164e9",
+                        "job-7952b33a940743149ae29d956ed22374",
+                        "job-820af4619f954435986ace7ba95c8346",
+                        "job-82a56e2387754877a9085c455614cd33",
+                        "job-84cbd44e95de4742b4ed750800f822ee",
+                        "job-859e75997384409083b0708ff26f32b4",
+                        "job-85a726025e38404eaa33f76b707e9c57",
+                        "job-87d3f82ca30b447e86b88e8cc48a8ea9",
+                        "job-8c88e7007d4e42af916ada165f5fbd7d",
+                        "job-8ed26cc4a6124381bbe42680e77e9896",
+                        "job-922cc905c43c4a0cba8c9c0a08d9f1d7",
+                        "job-923d15fc5580454f9aee68ec089f7df6",
+                        "job-9482e1b2e85240d4aa05d2d9a238743f",
+                        "job-988d119ef4594588a27d62716e4a287b",
+                        "job-99063c9b5ecc4ead8b7c77a9562d41aa",
+                        "job-99fcb454fea2444ba474acde7016b934",
+                        "job-9baef5bc896e47079e2e009ab3391f98",
+                        "job-9c8286528862497db945c868ed569fbc",
+                        "job-9dd73de0a43d4f27850b2acad07feea8",
+                        "job-a31faffb9aef49aab46b3e0ada76734b",
+                        "job-a428ee97a8694fd6ab24f04ee10e1b67",
+                        "job-a4ffbad4371644e3b7f736520e703484",
+                        "job-a5e3027c3eed44b6a6b56f0eea1d3614",
+                        "job-a62f1b71c55649398a682db63c990df9",
+                        "job-a931bc82fb19487e824952b1d055851b",
+                        "job-a9adcc35ec9a47d5b900cbc0b233da4d",
+                        "job-a9c9a1c10aa04496983af9788519cd8d",
+                        "job-a9d5a836d2ee4e27861cd10c1e80a254",
+                        "job-aaf1233572b9430da2e64e512df193f1",
+                        "job-abc4942fab8d41fb8c90a6b47bb6530a",
+                        "job-ad23f118955743248227441b46fc7571",
+                        "job-ae51adc1357c4b559a9a93ffcfa087ea",
+                        "job-afb1d79d4c8646ab9c703a096c6872d2",
+                        "job-aff3a823a3a54b78b0ea440fb6af4135",
+                        "job-b05d370bde134fc0aa2227c6fa82d1af",
+                        "job-b06eb27b19e048d299a2179392540f1d",
+                        "job-b1176c7a753845bc93c2336700de0119",
+                        "job-b4873628ddca4daa973472338930b2e9",
+                        "job-b6bab0f54daa4c3f8b18c03535951f6b",
+                        "job-b73b9124fc0f4b49810d828be4a3c2ed",
+                        "job-b99e38e51c5e4179a5fe65fc4854d912",
+                        "job-bbffec8a009e41afa66a48846f8bbac7",
+                        "job-c0cd65679afd4335943334ec0b710bea",
+                        "job-c1babde8b10a48c39dd0b76dc30f1324",
+                        "job-c27285662d164182978be43c3d4a943e",
+                        "job-cb1cabd9e5fc4704b4f122c993d53d21",
+                        "job-cbc85c9eb1d44347a5a921b7dd718771",
+                        "job-cc929e55c04a4c06a530dddeb5fb62d7",
+                        "job-ce4600d88a07456081df28163d2044ec",
+                        "job-d2119522623f45b1a05624ced21f0ae4",
+                        "job-d3dccc4c91cc4a88925e0da3f8621a11",
+                        "job-d52bd3e5846d461b85cf020bebac8fdc",
+                        "job-d5d284f1837141e8b1a430fccf498103",
+                        "job-d6f7e7b95a154b5597a3e5948640ed11",
+                        "job-d758162b1e7e4a1cb2dce49290ebf0c9",
+                        "job-d8a79e2e91e346c5a0158a817e034545",
+                        "job-d8aa7b3090c04de09cb087872d006405",
+                        "job-d982f25901594709a6a91b43073104eb",
+                        "job-dc2c682396054cba82b5b0072c736ae8",
+                        "job-dd11eef2e3754c6cab5ab2a507132015",
+                        "job-e3ad9ad671d5428a89b39b167ba7d5ca",
+                        "job-ea2f84623fb34d6e818a1bb39b0b52ff",
+                        "job-eb1aac807e1e4c0baa254052892d46eb",
+                        "job-ec9ddc92b1df4b38862a0045dc5e53ad",
+                        "job-ecb59ee46ec5483c8af9fd8698488543",
+                        "job-edd01a5df3464d498dea67484720899a",
+                        "job-eeeb2bce93e14bb6ab76c8635714a245",
+                        "job-efd52c61f1b04dab93777cc1eaadd0d9",
+                        "job-f0e64978eb184101ae9fc07303d731ac",
+                        "job-f131f1ccefe6432685e7f36943ce8a4b",
+                        "job-f26ed9cc324e473aad3fda2d632ff101",
+                        "job-f740f320fb1c4c8181908cb7466eda5b",
+                        "job-f819be5ae33142d1b67e922976e9b76c",
+                        "job-f9bb18a4eebd4291b6376bdd5c0f6879",
+                        "job-fd54789aea9d41b3985f1c7cda55712f",
+                        "job-fdba90bccc144ec5b41a3300b9e6ef5e",
+                        "job-fe21dd1b52b0450a8c77a0b62ab03bd0",
+                        "job-ff42d9dbff8a45dc903d8051b42dca58"
+                    ]
+                },
+                {
+                    "task_name": "Retrieve Issue Info",
+                    "tasks": [
+                        "294804",
+                        "294903",
+                        "294989",
+                        "295086",
+                        "295183",
+                        "295270",
+                        "295322",
+                        "295371",
+                        "295405",
+                        "295514",
+                        "295582",
+                        "296395",
+                        "297724",
+                        "298681",
+                        "298690",
+                        "298697",
+                        "298706",
+                        "298713",
+                        "298725",
+                        "298732",
+                        "298743",
+                        "298751",
+                        "298760",
+                        "298768",
+                        "298775",
+                        "298782",
+                        "298790",
+                        "298798",
+                        "298813",
+                        "298822",
+                        "298830",
+                        "298839",
+                        "298851",
+                        "298862",
+                        "298871",
+                        "298880",
+                        "298943",
+                        "298959",
+                        "298969",
+                        "298977",
+                        "298986",
+                        "298994",
+                        "299002",
+                        "299009",
+                        "299018",
+                        "299027",
+                        "299037",
+                        "299048",
+                        "299055",
+                        "299062",
+                        "299070",
+                        "299078",
+                        "299086",
+                        "299094",
+                        "299101",
+                        "299110",
+                        "299124",
+                        "299134",
+                        "299150",
+                        "299158",
+                        "299167",
+                        "299174",
+                        "299183",
+                        "299190",
+                        "299198",
+                        "299206",
+                        "299216",
+                        "299223",
+                        "299266",
+                        "299375",
+                        "299432",
+                        "299480",
+                        "299536",
+                        "299590",
+                        "299638",
+                        "299685",
+                        "299736",
+                        "299785",
+                        "299832",
+                        "299886",
+                        "299938",
+                        "299984",
+                        "300040",
+                        "300088",
+                        "300134",
+                        "300180",
+                        "300227",
+                        "300285",
+                        "300331",
+                        "300376",
+                        "300423",
+                        "300471",
+                        "300519",
+                        "300568",
+                        "300621",
+                        "300677",
+                        "300723",
+                        "300771",
+                        "300819",
+                        "300872",
+                        "300921",
+                        "300969",
+                        "301017",
+                        "301065",
+                        "301116",
+                        "301167",
+                        "301215",
+                        "301262",
+                        "301309",
+                        "301357",
+                        "301408",
+                        "301451",
+                        "301501",
+                        "301548",
+                        "301594",
+                        "301640",
+                        "301689",
+                        "301741",
+                        "301792",
+                        "301843",
+                        "301889",
+                        "301940",
+                        "301989",
+                        "302039",
+                        "302089",
+                        "302137",
+                        "302189",
+                        "302234",
+                        "302283",
+                        "302333",
+                        "302386"
+                    ]
+                },
+                {
+                    "task_name": "Collect widgets data",
+                    "tasks": [
+                        "303869",
+                        "311764"
+                    ]
+                },
+                {
+                    "task_name": "Collect widgets data",
+                    "tasks": [
+                        "303869"
+                    ]
+                }
+            ],
+            "Health Check - Ingestion/Integration/Configuration-HC-test - Sources Feeding Authentication Preset - 3d xql_1773911506249": [
+                {
+                    "_product": "Fusion",
+                    "_time": 1781511060149,
+                    "_vendor": "PANW",
+                    "assacioatedproducts": "Cortex Audit",
+                    "insert_timestamp": 1781511186905
+                },
+                {
+                    "_product": "Fusion",
+                    "_time": 1781487464235,
+                    "_vendor": "PANW",
+                    "assacioatedproducts": "XDR Agent",
+                    "insert_timestamp": 1781487551450
+                },
+                {
+                    "_product": "Fusion",
+                    "_time": 1781510456753,
+                    "_vendor": "PANW",
+                    "assacioatedproducts": "Cortex Audit",
+                    "insert_timestamp": 1781510587274
+                },
+                {
+                    "_product": "Fusion",
+                    "_time": 1781470861081,
+                    "_vendor": "PANW",
+                    "assacioatedproducts": "XDR Agent",
+                    "insert_timestamp": 1781470982956
+                }
+            ],
+            "Health Check - Ingestion/Integration/Configuration-HC-test - Sources Feeding Network Preset - 3d xql_1773920763500": [
+                {
+                    "_product": "Fusion",
+                    "_time": 1781478111645,
+                    "_vendor": "PANW",
+                    "assacioatedproducts": "XDR Agent",
+                    "insert_timestamp": 1781493964326
+                },
+                {
+                    "_product": "Fusion",
+                    "_time": 1781476173234,
+                    "_vendor": "PANW",
+                    "assacioatedproducts": "XDR Agent",
+                    "insert_timestamp": 1781490589136
+                }
+            ],
+            "Health Check - Ingestion/Integration/Configuration-HC-test - Sources Feeding SaaS Audit Dataset - 3d xql_1773920994974": [
+                {
+                    "_time": 1773532810798,
+                    "ingestion_time": 1773532912002,
+                    "product": "Cortex Audit"
+                }
+            ],
+            "Health Check - Issues/Cases-HC-test - Correlation Rules Without Automation xql_1773663920960": [
+                {
+                    "count": 131,
+                    "xdm.issue.name": "playbook-failed-task"
+                },
+                {
+                    "count": 1,
+                    "xdm.issue.name": "[ACTION REQUIRED] Your Microsoft 365 Password Expires in 24 Hours"
+                }
+            ],
+            "Health Check - Issues/Cases-HC-test - Noisy Issue Categories - 30d xql_1772798270735": [
+                {
+                    "Alerts": 136,
+                    "xdm.issue.detection.method": "CORRELATION"
+                },
+                {
+                    "Alerts": 40,
+                    "xdm.issue.detection.method": "ANALYTICS_BIOC"
+                },
+                {
+                    "Alerts": 26,
+                    "xdm.issue.detection.method": "HEALTH"
+                },
+                {
+                    "Alerts": 4,
+                    "xdm.issue.detection.method": "TRAPS"
+                },
+                {
+                    "Alerts": 1,
+                    "xdm.issue.detection.method": "CREATE_ALERT_PUBLIC_API"
+                }
+            ],
+            "Health Check - Issues/Cases-HC-test - Non-Prevented Issues xql_1773144919377": [
+                {
+                    "alert_name": "Powershell Activity - 23614999",
+                    "assigned_prevention_policy": "CanT Test PC PPolicy",
+                    "events": 1
+                }
+            ],
+            "Noisy Issue Categories - 30d": [
+                {
+                    "Alerts": 136,
+                    "xdm.issue.detection.method": "CORRELATION"
+                },
+                {
+                    "Alerts": 40,
+                    "xdm.issue.detection.method": "ANALYTICS_BIOC"
+                },
+                {
+                    "Alerts": 26,
+                    "xdm.issue.detection.method": "HEALTH"
+                },
+                {
+                    "Alerts": 4,
+                    "xdm.issue.detection.method": "TRAPS"
+                },
+                {
+                    "Alerts": 2,
+                    "xdm.issue.detection.method": "CREATE_ALERT_PUBLIC_API"
+                }
+            ],
+            "Non-Prevented Issues": [
+                {
+                    "alert_name": "Powershell Activity - 23614999",
+                    "assigned_prevention_policy": "CanT Test PC PPolicy",
+                    "events": 1
+                }
+            ]
+        }
+    },
+    "InfoFile": [
+        {
+            "EntryID": "0d086831-d01e-4811-89e1-26ad2f9c9f04@311764",
+            "Extension": "html",
+            "Info": "text/html; charset=utf-8",
+            "Name": "HealthCheckCollect_Results.html",
+            "Size": 18496,
+            "Type": "HTML document, ASCII text, with very long lines (7056)"
+        },
+        {
+            "EntryID": "d31ca4e4-be6b-49ca-8fb8-29eeac7cc883@311764",
+            "Extension": "html",
+            "Info": "text/html; charset=utf-8",
+            "Name": "HealthCheckCollect_Results.html",
+            "Size": 19594,
+            "Type": "HTML document, ASCII text, with very long lines (7056)"
+        }
+    ]
+}

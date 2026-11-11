@@ -348,6 +348,80 @@ def test_get_query_viewer_results_command(mocker, requests_mock):
     assert output[1].get("Event-Event ID") == "event_two"
 
 
+def test_get_query_viewer_results_v7_9_bare_string_cells(mocker, requests_mock):
+    """
+    Given:
+        - ArcSight ESM v7.9+ returns Query Viewer row cell values as plain
+          strings instead of ``{"@xsi.type": "xs:string", "$": "val"}`` dicts.
+          Sample response captured from a real v7.9.1 server:
+            {"columnHeaders": ["ID", "Name", "Create Time"],
+             "rows": [{"value": ["<id>", "<name>", "<ts>"]}, ...]}
+
+    When:
+        - Running as-get-query-viewer-results command against that response.
+
+    Then:
+        - The rows are parsed successfully without raising
+          ``AttributeError: 'str' object has no attribute 'get'``.
+    """
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"auth_token": "token"})
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "command", return_value="as-get-query-viewer-results")
+    mocker.patch.object(demisto, "params", return_value=PARAMS)
+    mocker.patch.object(demisto, "args", return_value={"onlyColumns": "false", "resource_id": "id"})
+
+    requests_mock.get(
+        PARAMS["server"] + "/www/manager-service/rest/QueryViewerService/getMatrixData",
+        json={
+            "qvs.getMatrixDataResponse": {
+                "qvs.return": {
+                    "columnHeaders": ["ID", "Name", "Create Time"],
+                    "rows": [
+                        {"value": ["7tUGQr6A11111yvd6pLaaLg==", "password Spraying", "1789333332565"]},
+                        {"value": ["aBcDe12123kLmNoPqRsTuVw==", "Another Case", "1789651900000"]},
+                    ],
+                }
+            }
+        },
+    )
+    import ArcSightESMv2
+
+    ArcSightESMv2.main()
+    results = demisto.results.call_args[0][0]
+    output = results["Contents"]
+    assert len(output) == 2
+    assert output[0] == {
+        "ID": "7tUGQr6A11111yvd6pLaaLg==",
+        "Name": "password Spraying",
+        "Create Time": "1789333332565",
+    }
+    assert output[1] == {
+        "ID": "aBcDe12123kLmNoPqRsTuVw==",
+        "Name": "Another Case",
+        "Create Time": "1789651900000",
+    }
+
+
+def test_extract_cell_value_handles_both_shapes():
+    """
+    Given:
+        - Cells returned by ArcSight ESM in either the legacy
+          dict-wrapped shape or the v7.9+ bare-string shape.
+
+    When:
+        - Calling _extract_cell_value on each.
+
+    Then:
+        - Both return the underlying scalar value.
+    """
+    import ArcSightESMv2
+
+    assert ArcSightESMv2._extract_cell_value({"@xsi.type": "xs:string", "$": "legacy_val"}) == "legacy_val"
+    assert ArcSightESMv2._extract_cell_value("bare_val") == "bare_val"
+    assert ArcSightESMv2._extract_cell_value(1234) == 1234
+    assert ArcSightESMv2._extract_cell_value(None) is None
+
+
 def test_update_case_command(mocker):
     """
     Given:

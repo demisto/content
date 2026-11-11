@@ -620,6 +620,39 @@ def get_risk_rules_command(client: Client, args) -> tuple[str, dict, dict]:
     return hr, {"RecordedFutureFeed.RiskRule(val.Name == obj.Name)": entry_result}, result
 
 
+def parse_services(raw_services: Any, _depth: int = 0) -> list[str]:
+    """Normalizes the 'services' parameter into a list of service names.
+
+    Handles standard lists/CSV strings, JSON-encoded array strings, and UCP Edit
+    Wizard character-split arrays where a JSON string was spread into single-character
+    elements (e.g. ['[', '"', 'c', ..., 'connectApi']).
+    """
+    if not raw_services or _depth > 10:
+        return []
+
+    items = [str(item) for item in argToList(raw_services) if item is not None]
+    if not items:
+        return []
+
+    multi_char_items: list[str] = []
+    for item in items:
+        if len(item) > 1:
+            if item.startswith("[") and item.endswith("]"):
+                multi_char_items.extend(parse_services(item, _depth + 1))
+            else:
+                multi_char_items.append(item)
+
+    if multi_char_items:
+        return list(dict.fromkeys(multi_char_items))
+
+    # All items are single characters (e.g. ['[', '"', 'c', 'o', ..., '"', ']']).
+    joined = "".join(items)
+    if joined.startswith("[") and joined.endswith("]"):
+        return parse_services(joined, _depth + 1)
+
+    return list(dict.fromkeys(items))
+
+
 def main():  # pragma: no cover
     params = demisto.params()
     api_token = params.get("credentials_api_token", {}).get("password") or params.get("api_token")
@@ -629,7 +662,7 @@ def main():  # pragma: no cover
     client = Client(
         RF_INDICATOR_TYPES[params.get("indicator_type")],
         api_token,
-        params.get("services"),
+        parse_services(params.get("services")),
         params.get("risk_rule"),
         params.get("fusion_file_path"),
         params.get("insecure"),

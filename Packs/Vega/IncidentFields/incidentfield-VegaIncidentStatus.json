@@ -3,19 +3,14 @@
     "version": -1,
     "name": "Vega Incident Status",
     "ownerOnly": false,
-    "description": "The current status of a Vega incident.",
+    "description": "The analyst user status of a Vega incident.",
     "cliName": "vegaincidentstatus",
     "type": "singleSelect",
     "selectValues": [
-        "NEW",
-        "INVESTIGATING",
+        "OPEN",
+        "IN REVIEW",
         "ON HOLD",
-        "EXTERNAL ESCALATION",
-        "RESOLVED",
-        "REOPENED",
-        "REVIEW RECOMMENDED",
-        "RESPONSE REQUIRED",
-        "UNDER REVIEW"
+        "RESOLVED"
     ],
     "openEnded": false,
     "closeForm": false,

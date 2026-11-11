@@ -1,4 +1,5 @@
 fromversion: 8.4.0
+toversion: 8.14.0
 id: Tanium_Threat_Response_ModelingRule
 name: Tanium Threat Response Modeling Rule
 rules: ''

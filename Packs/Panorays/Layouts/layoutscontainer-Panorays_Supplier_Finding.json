@@ -1,0 +1,250 @@
+{
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "name": "Panorays Supplier Finding",
+    "id": "Panorays Supplier Finding",
+    "group": "incident",
+    "description": "Layout for Panorays Supplier Finding incidents. Surfaces the affected supplier's context alongside the underlying finding details.",
+    "system": false,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Summary",
+                "type": "summary"
+            },
+            {
+                "id": "panorays",
+                "name": "Panorays",
+                "type": "custom",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 8,
+                        "i": "panorays-supplier-context",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panorayssuppliername",
+                                "height": 22,
+                                "id": "field-incident_panorayssuppliername",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panorayssupplierid",
+                                "height": 22,
+                                "id": "field-incident_panorayssupplierid",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panorayssupplierdomain",
+                                "height": 22,
+                                "id": "field-incident_panorayssupplierdomain",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panorayssupplierbusinessimpact",
+                                "height": 22,
+                                "id": "field-incident_panorayssupplierbusinessimpact",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panorayssuppliercombinedscore",
+                                "height": 22,
+                                "id": "field-incident_panorayssuppliercombinedscore",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panorayssupplierposturescore",
+                                "height": 22,
+                                "id": "field-incident_panorayssupplierposturescore",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panorayssupplierrisk",
+                                "height": 22,
+                                "id": "field-incident_panorayssupplierrisk",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panorayssuppliertags",
+                                "height": 22,
+                                "id": "field-incident_panorayssuppliertags",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Supplier Context",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 12,
+                        "i": "panorays-finding-details",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panoraysfindingid",
+                                "height": 22,
+                                "id": "field-incident_panoraysfindingid",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panoraysfindingseverity",
+                                "height": 22,
+                                "id": "field-incident_panoraysfindingseverity",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panoraysfindingstatus",
+                                "height": 22,
+                                "id": "field-incident_panoraysfindingstatus",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panoraysfindingcategory",
+                                "height": 22,
+                                "id": "field-incident_panoraysfindingcategory",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panoraysfindingsubcategory",
+                                "height": 22,
+                                "id": "field-incident_panoraysfindingsubcategory",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panoraysfindingassetname",
+                                "height": 22,
+                                "id": "field-incident_panoraysfindingassetname",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panoraysfindingfindingtext",
+                                "height": 22,
+                                "id": "field-incident_panoraysfindingfindingtext",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panoraysfindingdescription",
+                                "height": 22,
+                                "id": "field-incident_panoraysfindingdescription",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panoraysfindingcves",
+                                "height": 22,
+                                "id": "field-incident_panoraysfindingcves",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panoraysfindingstestname",
+                                "height": 22,
+                                "id": "field-incident_panoraysfindingstestname",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panoraysfindinginsertts",
+                                "height": 22,
+                                "id": "field-incident_panoraysfindinginsertts",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_panoraysfindingupdatets",
+                                "height": 22,
+                                "id": "field-incident_panoraysfindingupdatets",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Finding Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 8
+                    }
+                ]
+            },
+            {
+                "id": "investigation",
+                "name": "Investigation",
+                "type": "investigation"
+            },
+            {
+                "id": "war_room",
+                "name": "War Room",
+                "type": "warRoom"
+            }
+        ]
+    }
+}

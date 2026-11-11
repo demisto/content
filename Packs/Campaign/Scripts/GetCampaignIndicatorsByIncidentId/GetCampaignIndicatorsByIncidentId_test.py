@@ -1,6 +1,12 @@
 import demistomock as demisto
 import pytest
-from GetCampaignIndicatorsByIncidentId import associate_to_current_incident, format_results, get_indicators_from_incidents, main
+from GetCampaignIndicatorsByIncidentId import (
+    associate_to_current_incident,
+    format_results,
+    get_indicator_link_creator,
+    get_indicators_from_incidents,
+    main,
+)
 from pytest_mock import MockerFixture
 
 INCIDENT_IDS = ["1", "2", "3"]
@@ -81,3 +87,29 @@ def test_associate_to_current_incident(mocker: MockerFixture) -> None:
     execute_command_mocker.assert_called_once_with(
         "associateIndicatorsToIncident", {"incidentId": "id", "indicatorsValues": ["indicators"]}
     )
+
+
+@pytest.mark.parametrize(
+    "is_platform_res, is_saas_res, indicator_id, expected_link",
+    [
+        (True, False, "24", "[24](/indicator/24)"),
+        (False, True, "24", "[24](/indicator/24)"),
+        (False, False, "24", "[24](#/indicator/24)"),
+    ],
+)
+def test_get_indicator_link_creator(mocker: MockerFixture, is_platform_res, is_saas_res, indicator_id, expected_link):
+    """
+    Given:
+        - An indicator ID.
+        - Case 1: Unified Cortex platform (XSIAM v3 / XSOAR on platform) -> path-based URL.
+        - Case 2: Cortex XSOAR 8.x SaaS -> path-based URL.
+        - Case 3: Cortex XSOAR 6.x (on-prem) -> legacy hash-based URL.
+    When:
+        - Calling the indicator link creator.
+    Then:
+        - Ensure the correct link format is produced for each platform (XSUP-78154).
+    """
+    mocker.patch("GetCampaignIndicatorsByIncidentId.is_platform", return_value=is_platform_res)
+    mocker.patch("GetCampaignIndicatorsByIncidentId.is_xsoar_saas", return_value=is_saas_res)
+
+    assert get_indicator_link_creator()(indicator_id) == expected_link

@@ -41,8 +41,8 @@ tasks:
     task:
       id: 8fd64b85-f8e5-4954-83ac-e29d071c7df6
       version: -1
-      name: Is Censys v2 integration enabled?
-      description: Checks whether Censys v2 integration is enabled or not.
+      name: Is Censys Platform integration enabled?
+      description: Checks whether Censys Platform integration is enabled or not.
       type: condition
       iscommand: false
       brand: ""

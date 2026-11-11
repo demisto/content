@@ -47,14 +47,16 @@ This integration includes a set of **`es-kibana-*` commands** that let you inter
 - **Case Management** — Create, update, delete, and list Kibana cases; add comments, attach files, and link alerts to cases.
 - **Alerting & Rules** — List rule types, retrieve rules, enable/disable rules, mute/unmute alerts.
 - **Detection Alerts** — Bulk-update the status of security detection alerts (open, acknowledged, closed).
+- **Endpoint Management** — Run commands on endpoints, retrieve response-action details and endpoint metadata, retrieve a Fleet agent, and isolate or release endpoints.
 - **Exception Lists & Items** — Manage Kibana exception lists and their items, including Elastic Endpoint exceptions.
 - **Value Lists** — Create, update, delete, and import/export value lists used in detection rules.
 
 ### Kibana URL
 
-The Kibana URL is derived automatically from the **Server URL** you already configured for Elasticsearch. No additional URL field is needed.
+- **On-premises (self-managed) deployments:** Set the **Kibana Server URL** parameter to the address of your Kibana server, including the port if it is not the default (e.g. `https://kibana.example.com:5601`). Kibana is usually hosted separately from Elasticsearch, so this URL cannot be derived from the Elasticsearch **Server URL**.
+- **Elastic Cloud deployments:** You can leave **Kibana Server URL** empty. The URL is then derived automatically from the **Server URL**, by replacing the `.es.` segment of the hostname with `.kb.` (for example, `https://my-deployment.es.us-central1.gcp.cloud.es.io` becomes `https://my-deployment.kb.us-central1.gcp.cloud.es.io`).
 
-> **Requirement:** Your Elasticsearch Server URL must be an Elastic Cloud URL containing `.es.` in the hostname (e.g. `https://my-deployment.es.us-central1.gcp.cloud.es.io`). The integration replaces `.es.` with `.kb.` to reach Kibana. Self-managed deployments with a custom Kibana URL are not supported by the automatic derivation.
+> **Note:** When **Kibana Server URL** is set, it always takes precedence over the derivation from the **Server URL**.
 
 ### Required Kibana Privileges
 
@@ -83,7 +85,11 @@ If you use [Kibana Spaces](https://www.elastic.co/docs/deploy-manage/manage-spac
 
 ## Additional Configuration Parameters Details
 
-Fetch incidents requires:
+Use the **Fetch incident types** parameter to select what to fetch from Elasticsearch: the default **Elasticsearch Entity**, **Elasticsearch Security Alert**, or **Elasticsearch Case**.
+
+Mirroring is only available for Elasticsearch Security Alerts and Cases.
+
+Fetching security alerts requires:
     - Index
     - Index time field
     - Query String or Raw Query
@@ -95,6 +101,14 @@ Query String is queried using the Lucene syntax. For more information about the 
 
 **Raw Query**
 Allows raw DSL queries. For more information about Query DSL see [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html).
+
+### Fetch Security Alerts
+
+To fetch security alerts, use the **Raw Query** field (DSL query). The index must follow one of these patterns: `.internal.alerts-security.alerts-*` or `.siem-signals-*`.
+
+### Fetch Cases
+
+Use the **Fetch cases by Severity** parameter to filter cases by the required severity and the **Fetch cases by Status** parameter to filter cases by the required status.
 
 **Time field type**
 3 formats supported:
