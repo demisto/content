@@ -5,6 +5,7 @@ from CommonServerPython import DemistoException
 from SpyCloudEnterpriseProtectionEnrichment import (
     Client,
     command_helper_function,
+    create_spycloud_args,
     get_command_title_string,
     get_paginated_results,
     lookup_to_markdown_table,
@@ -210,6 +211,17 @@ def test_query_spy_cloud_api_success(requests_mock):
     requests_mock.get(req_url, json=BREACH_LIST_RESPONSE)
     response = client.query_spy_cloud_api(endpoint, {})
     assert response == BREACH_LIST_RESPONSE
+
+
+@pytest.mark.parametrize("severity", ["2", "5", "20", "25", "30", "25,30"])
+def test_create_spycloud_args_supported_severity(severity):
+    result = create_spycloud_args({"severity": severity})
+    assert result["severity"] == severity
+
+
+def test_create_spycloud_args_unsupported_severity():
+    with pytest.raises(DemistoException, match="supported values for severity are: 2, 5, 20, 25, 30"):
+        create_spycloud_args({"severity": "10"})
 
 
 def test_get_command_title_string():

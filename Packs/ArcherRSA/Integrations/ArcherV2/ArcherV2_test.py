@@ -1533,3 +1533,114 @@ class TestArcherV2:
         with pytest.raises(DemistoException) as e:
             upload_and_associate_command(client, args)
         assert str(e.value) == "Found arguments to associate an attachment to a record, but not all required arguments supplied"
+
+    @pytest.mark.parametrize(
+        "integration_context, field_id, expected_api_call_count",
+        [
+            pytest.param(
+                {},
+                "999",
+                1,
+                id="Cache miss (uninitialized fieldValueNames in context)",
+            ),
+            pytest.param(
+                {"fieldValueNames": {}},
+                "999",
+                1,
+                id="Cache miss (empty fieldValueNames)",
+            ),
+            pytest.param(
+                {"fieldValueNames": {"999": "Unmapped Field Name"}},
+                "999",
+                0,
+                id="Cache hit (string field_id)",
+            ),
+            pytest.param(
+                {"fieldValueNames": {"999": "Unmapped Field Name"}},
+                999,
+                0,
+                id="Cache hit (int field_id)",
+            ),
+        ],
+    )
+    def test_get_field_value_name(
+        self,
+        mocker: MockerFixture,
+        requests_mock: RequestsMock,
+        integration_context: dict,
+        field_id: str | int,
+        expected_api_call_count: int,
+    ):
+        """
+        Given:
+            - Integration context cache (with or without 'fieldValueNames' initialized) and a field ID.
+        When:
+            - Running get_field_value_name.
+        Then:
+            - Ensure no KeyError is raised when 'fieldValueNames' is missing from context.
+            - Ensure API requests are not performed if the field name exists in cache.
+            - Ensure the resolved field name is cached using a string key and returned.
+        """
+        mocker.patch("ArcherV2.get_integration_context", return_value=integration_context)
+        mock_merge_context = mocker.patch("ArcherV2.merge_integration_context")
+
+        login_request = requests_mock.post(
+            f"{BASE_URL}api/core/security/login",
+            json=AUTH_LOGIN_RES,
+        )
+        field_definition_request = requests_mock.get(
+            f"{BASE_URL}api/core/system/fielddefinition/999",
+            json={"RequestedObject": {"Id": 999, "Name": "Unmapped Field Name", "Type": 1}, "IsSuccessful": True},
+        )
+
+        client = Client(BASE_URL, "", "", "", "", 400)
+        field_name = client.get_field_value_name(field_id)
+
+        assert field_name == "Unmapped Field Name"
+        assert login_request.call_count == expected_api_call_count
+        assert field_definition_request.call_count == expected_api_call_count
+        if expected_api_call_count > 0:
+            assert integration_context["fieldValueNames"]["999"] == "Unmapped Field Name"
+            mock_merge_context.assert_called_with(integration_context)
+
+    def test_get_record_with_unmapped_field(self, requests_mock: RequestsMock):
+        """
+        Given:
+            - A record containing a field ID ('999') not present in the application level mapping,
+              and an empty integration context without 'fieldValueNames'.
+        When:
+            - Calling client.get_record.
+        Then:
+            - Ensure get_field_value_name dynamically resolves the unmapped field name without raising KeyError
+              and caches it under a string key in integration context.
+        """
+        demisto.setIntegrationContext({})
+        record_res = {
+            "Links": [],
+            "RequestedObject": {
+                "Id": 1010,
+                "LevelId": 123,
+                "FieldContents": {
+                    "2": {"Type": 1, "Value": "The device name", "FieldId": 2},
+                    "999": {"Type": 1, "Value": "Cross-app value", "FieldId": 999},
+                },
+            },
+            "IsSuccessful": True,
+            "ValidationMessages": [],
+        }
+        requests_mock.post(f"{BASE_URL}api/core/security/login", json=AUTH_LOGIN_RES)
+        requests_mock.get(f"{BASE_URL}api/core/content/1010", json=record_res)
+        requests_mock.get(f"{BASE_URL}api/core/system/level/module/1", json=GET_LEVEL_RES)
+        requests_mock.get(f"{BASE_URL}api/core/system/fielddefinition/level/123", json=FIELD_DEFINITION_RES)
+        requests_mock.get(
+            f"{BASE_URL}api/core/system/fielddefinition/999",
+            json={"RequestedObject": {"Id": 999, "Name": "Unmapped Field", "Type": 1}, "IsSuccessful": True},
+        )
+
+        client = Client(BASE_URL, "", "", "", "", 400)
+        record, res, errors = client.get_record(1, 1010, 1)
+
+        assert errors is None
+        assert res
+        assert record == {"Device Name": "The device name", "Unmapped Field": "Cross-app value", "Id": 1010}
+        assert demisto.getIntegrationContext().get("fieldValueNames") == {"999": "Unmapped Field"}

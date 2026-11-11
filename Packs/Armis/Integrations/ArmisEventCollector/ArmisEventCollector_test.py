@@ -1,4 +1,6 @@
+import re
 import threading
+from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
 from unittest.mock import MagicMock, patch
 
@@ -8,6 +10,8 @@ from ArmisEventCollector import (
     BULK_ENRICHMENT_BATCH_SIZE,
     EVENT_TYPE,
     EVENT_TYPES,
+    MAX_PAGINATION_DURATION_SECONDS,
+    MIN_PAGINATION_DURATION_SECONDS,
     Any,
     Client,
     DemistoException,
@@ -16,10 +20,13 @@ from ArmisEventCollector import (
     _bulk_fetch_entities_by_id,
     _collect_unique_enrichment_ids,
     _enrich_and_ship_in_chunks,
+    _next_fetch_window,
     _stream_page_to_xsiam,
     _wait_for_enrichment,
     arg_to_datetime,
     bulk_enrich_alerts,
+    compute_pagination_budget,
+    compute_resume_state,
     datetime,
     fetch_by_event_type,
     fetch_events,
@@ -278,6 +285,126 @@ class TestHelperFunction:
 
         assert are_two_datetime_equal_by_second(x, y) == expected_result
 
+    def test_resume_advances_and_resets_offset_when_response_spans_multiple_seconds(self):
+        """
+        Given: a response spanning two or more distinct seconds, resumed from offset 30000.
+        When:  computing the next-cycle resume state.
+        Then:  'after' advances to the latest event's second and the offset resets to 0.
+        """
+        from ArmisEventCollector import compute_resume_state
+
+        response = [
+            {"id": "a", "time": "2026-10-06T08:33:16.100000+00:00"},
+            {"id": "b", "time": "2026-10-06T08:33:16.900000+00:00"},
+            {"id": "c", "time": "2026-10-06T08:33:17.050000+00:00"},
+        ]
+        after, offset = compute_resume_state(response, "2026-10-06T08:33:16", 30000, "time")
+        assert after == "2026-10-06T08:33:17"
+        assert offset == 0
+
+    def test_resume_steps_within_single_second_page(self):
+        """
+        Given: a full page whose events all share one second, resumed from offset 20000.
+        When:  computing the next-cycle resume state.
+        Then:  'after' stays on the same second and the offset steps forward by the page
+               length so the next cycle reads the following slice of that second.
+        """
+        from ArmisEventCollector import compute_resume_state
+
+        response = [
+            {"id": "d", "time": "2026-10-06T08:33:16.100000+00:00"},
+            {"id": "e", "time": "2026-10-06T08:33:16.200000+00:00"},
+            {"id": "f", "time": "2026-10-06T08:33:16.300000+00:00"},
+        ]
+        after, offset = compute_resume_state(response, "2026-10-06T08:33:16", 20000, "time")
+        assert after == "2026-10-06T08:33:16"
+        assert offset == 20003
+
+    def test_resume_does_not_advance_when_boundary_timestamp_missing(self):
+        """
+        Given: a multi-element response where an event is missing the order-by field.
+        When:  computing the next-cycle resume state.
+        Then:  the watermark is NOT advanced (a missing timestamp must not be mistaken
+               for a second boundary); the offset steps conservatively instead.
+        """
+        from ArmisEventCollector import compute_resume_state
+
+        response = [
+            {"id": "a"},  # missing 'time'
+            {"id": "b", "time": "2026-10-06T08:33:17.050000+00:00"},
+        ]
+        after, offset = compute_resume_state(response, "2026-10-06T08:33:16", 10, "time")
+        assert after == "2026-10-06T08:33:16"
+        assert offset == 12  # 10 + len(response)
+
+    @pytest.mark.parametrize(
+        "response",
+        [
+            pytest.param(
+                [{"id": "a", "time": None}, {"id": "b", "time": "2026-10-06T08:33:17.050000+00:00"}],
+                id="first_event_time_is_None",
+            ),
+            pytest.param(
+                [{"id": "a", "time": "2026-10-06T08:33:16.010000+00:00"}, {"id": "b", "time": None}],
+                id="last_event_time_is_None",
+            ),
+        ],
+    )
+    def test_resume_treats_explicit_none_timestamp_as_missing(self, response):
+        """
+        Given: a response where the boundary event has an explicit None order-by value.
+        When:  computing the next-cycle resume state.
+        Then:  None is treated as a missing timestamp (not the string "None"), so the
+               watermark is NOT advanced and the offset steps conservatively instead.
+        """
+        from ArmisEventCollector import compute_resume_state
+
+        after, offset = compute_resume_state(response, "2026-10-06T08:33:16", 10, "time")
+        assert after == "2026-10-06T08:33:16"
+        assert offset == 12  # 10 + len(response)
+
+    def test_resume_keeps_state_unchanged_when_no_events(self):
+        """
+        Given: an empty response.
+        When:  computing the next-cycle resume state.
+        Then:  both 'after' and the offset are kept unchanged, so already-consumed
+               events are not re-fetched on the next cycle.
+        """
+        from ArmisEventCollector import compute_resume_state
+
+        after, offset = compute_resume_state([], "2026-10-06T08:33:16", 50000, "time")
+        assert after == "2026-10-06T08:33:16"
+        assert offset == 50000
+
+    def test_resume_offset_never_grows_across_a_second_boundary(self):
+        """
+        Given: a single second holding more events than one page, followed by a later second.
+        When:  draining it across multiple cycles.
+        Then:  the offset only ever counts within that one second and snaps back to 0 once
+               the later second appears, never accumulating into a deep offset.
+        """
+        from ArmisEventCollector import compute_resume_state
+
+        page_size = 3
+        after = "2026-10-06T08:33:16"
+        offset = 0
+        observed_offsets = []
+
+        hot_second = [{"id": c, "time": "2026-10-06T08:33:16.000000+00:00"} for c in "ABCDEFG"]
+        next_second = [{"id": "H", "time": "2026-10-06T08:33:17.000000+00:00"}]
+        all_events = hot_second + next_second
+
+        for _ in range(5):
+            page = all_events[offset : offset + page_size]
+            after, offset = compute_resume_state(page, after, offset, "time")
+            observed_offsets.append(offset)
+            if after == "2026-10-06T08:33:17":
+                break
+
+        assert max(observed_offsets) <= len(hot_second)
+        assert after == "2026-10-06T08:33:17"
+        assert offset == 0
+
     # test_dedup_events parametrize arguments
     case_all_events_with_same_time = (
         [
@@ -330,15 +457,35 @@ class TestHelperFunction:
 
         assert dedup_events(events, events_last_fetch_ids, unique_id_key, event_order_by) == expected_result
 
+    def test_dedup_events_handles_explicit_none_timestamp(self):
+        """
+        Given: events where the latest event has an explicit None order-by value.
+        When:  running the dedup mechanism.
+        Then:  no TypeError is raised (None is treated as an empty timestamp), new events
+               are returned, and only the trailing None-timestamp event's id is kept for dedup.
+        """
+        from ArmisEventCollector import dedup_events
+
+        events = [
+            {"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"},
+            {"unique_id": "2", "time": None},
+        ]
+        new_events, new_ids = dedup_events(events, [], "unique_id", "time")
+        assert new_events == events
+        assert new_ids == ["2"]
+
     @pytest.mark.parametrize(
         "next_pointer, expected_last_run",
         [
+            # The response spans multiple distinct seconds, so the resume state advances
+            # to the latest second and resets the offset to 0 regardless of the API's
+            # 'next' pointer (the watermark decision no longer depends on it).
             (
                 4,
                 {
                     "events_last_fetch_ids": ["3"],
-                    "events_last_fetch_next_field": 4,
-                    "events_last_fetch_time": "2023-01-01T01:00:20",
+                    "events_last_fetch_next_field": 0,
+                    "events_last_fetch_time": "2023-01-01T01:00:30",
                 },
             ),
             (
@@ -346,7 +493,7 @@ class TestHelperFunction:
                 {
                     "events_last_fetch_ids": ["3"],
                     "events_last_fetch_next_field": 0,
-                    "events_last_fetch_time": "2023-01-01T01:00:30.123456+00:00",
+                    "events_last_fetch_time": "2023-01-01T01:00:30",
                 },
             ),
         ],
@@ -583,10 +730,11 @@ class TestFetchFlow:
         ["Events"],
         events_with_different_time_1,
         {"events": events_with_different_time_1},
+        # Multi-second response -> advance to latest second, reset offset to 0.
         {
             "events_last_fetch_ids": ["3"],
-            "events_last_fetch_next_field": 4,
-            "events_last_fetch_time": "2023-01-01T01:00:00",
+            "events_last_fetch_next_field": 0,
+            "events_last_fetch_time": "2023-01-01T01:00:30",
         },
         4,
     )
@@ -603,10 +751,11 @@ class TestFetchFlow:
         ["Events"],
         events_with_different_time_2,
         {"events": events_with_different_time_2},
+        # Multi-second response -> advance to latest second, reset offset to 0.
         {
             "events_last_fetch_ids": ["7", "6"],
-            "events_last_fetch_next_field": 8,
-            "events_last_fetch_time": "2023-01-01T01:00:30",
+            "events_last_fetch_next_field": 0,
+            "events_last_fetch_time": "2023-01-01T01:01:00",
         },
         8,
     )
@@ -627,10 +776,11 @@ class TestFetchFlow:
                 {"unique_id": "7", "time": "2023-01-01T01:01:00.123456+00:00"},
             ]
         },
+        # Multi-second response -> advance to latest second, reset offset to 0.
         {
             "events_last_fetch_ids": ["7", "6"],
-            "events_last_fetch_next_field": 8,
-            "events_last_fetch_time": "2023-01-01T01:00:30",
+            "events_last_fetch_next_field": 0,
+            "events_last_fetch_time": "2023-01-01T01:01:00",
         },
         8,
     )
@@ -647,7 +797,8 @@ class TestFetchFlow:
         ["Events"],
         {},
         {},
-        {"events_last_fetch_next_field": 4, "events_last_fetch_time": "2023-01-01T01:00:30"},
+        # Empty response -> keep watermark and offset unchanged (offset defaults to 0).
+        {"events_last_fetch_next_field": 0, "events_last_fetch_time": "2023-01-01T01:00:30.123456+00:00"},
         4,
     )
 
@@ -663,10 +814,11 @@ class TestFetchFlow:
         ["Events"],
         events_with_same_time,
         {"events": events_with_same_time},
+        # Single-second response -> keep watermark, step offset within the second (0 + 3).
         {
             "events_last_fetch_ids": ["1", "2", "3", "4", "5", "6"],
-            "events_last_fetch_next_field": 7,
-            "events_last_fetch_time": "2023-01-01T01:00:30",
+            "events_last_fetch_next_field": 3,
+            "events_last_fetch_time": "2023-01-01T01:00:30.123456+00:00",
         },
         7,
     )
@@ -757,10 +909,11 @@ class TestFetchFlow:
         mocker.patch.dict(EVENT_TYPES, {"Events": EVENT_TYPE("unique_id", "events_query", "events", "time", "events")})
 
         if fetch_start_time:
+            # Multi-second response -> advance to latest second, reset offset to 0.
             expected_next_run = {
                 "events_last_fetch_ids": ["3"],
-                "events_last_fetch_next_field": 4,
-                "events_last_fetch_time": "2023-01-01T01:00:00",
+                "events_last_fetch_next_field": 0,
+                "events_last_fetch_time": "2023-01-01T01:00:30",
             }
             assert fetch_events(dummy_client, 1000, 1000, {}, fetch_start_time, ["Events"], None) == (
                 {"events": events_with_different_time["data"]["results"]},
@@ -831,8 +984,9 @@ class TestFetchFlow:
         # Verify devices are mapped by id
         device_ids = {d["id"] for d in enriched_alert["devicesData"]}
         assert device_ids == {789, 12}
-        # Verify next_run state
-        assert next_run["alerts_last_fetch_next_field"] == 2
+        # Verify next_run state: single-second response (one alert) keeps the watermark
+        # and steps the offset within the second by the fetched count (0 + 1).
+        assert next_run["alerts_last_fetch_next_field"] == 1
 
 
 class TestMultithreading:
@@ -1590,7 +1744,9 @@ class TestStreamPageToXsiam:
         # streaming callback may read or mutate must be present.
         return {
             "last_fetch_ids": list(last_fetch_ids or []),
+            "first_event_time": None,
             "last_event_time": None,
+            "total_fetched": 0,
             "total_shipped": 0,
             "total_send_secs": 0.0,
             "page_count": 0,
@@ -1610,6 +1766,55 @@ class TestStreamPageToXsiam:
 
         mock_send.assert_not_called()
         assert state["total_shipped"] == 0
+        assert state["last_event_time"] is None
+
+    def test_first_event_time_recorded_from_first_page_even_when_missing(self, mocker):
+        """
+        Given: two pages where the first event of the first page has no timestamp.
+        When: the callback is invoked for both pages.
+        Then: first_event_time stays None (matching the non-streaming path, which uses
+              response[0]) and is not overwritten by a later timestamped event.
+        """
+        mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        state = self._running_state()
+        on_page = _stream_page_to_xsiam(EVENT_TYPES["Activities"], state)
+
+        on_page([{"activityUUID": "a"}, {"activityUUID": "b", "time": "2023-01-01T01:00:10.000000+00:00"}])
+        on_page([{"activityUUID": "c", "time": "2023-01-01T01:00:20.000000+00:00"}])
+
+        assert state["first_event_time"] is None
+        assert state["total_fetched"] == 3
+
+    def test_first_event_time_not_set_by_empty_page(self, mocker):
+        """
+        Given: an empty page followed by a non-empty page.
+        When: the callback is invoked for both pages.
+        Then: first_event_time comes from the first non-empty page.
+        """
+        mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        state = self._running_state()
+        on_page = _stream_page_to_xsiam(EVENT_TYPES["Activities"], state)
+
+        on_page([])
+        on_page([{"activityUUID": "a", "time": "2023-01-01T01:00:10.000000+00:00"}])
+
+        assert state["first_event_time"] == "2023-01-01T01:00:10.000000+00:00"
+
+    def test_last_event_time_recorded_even_when_missing(self, mocker):
+        """
+        Given: a timestamped page followed by a page whose last event has no timestamp.
+        When: the callback is invoked for both pages.
+        Then: last_event_time is overwritten with None rather than keeping the older value,
+              so the resume logic does not advance the watermark to a stale second.
+        """
+        mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        state = self._running_state()
+        on_page = _stream_page_to_xsiam(EVENT_TYPES["Activities"], state)
+
+        on_page([{"activityUUID": "a", "time": "2023-01-01T01:00:10.000000+00:00"}])
+        assert state["last_event_time"] == "2023-01-01T01:00:10.000000+00:00"
+
+        on_page([{"activityUUID": "b", "time": "2023-01-01T01:00:20.000000+00:00"}, {"activityUUID": "c"}])
         assert state["last_event_time"] is None
 
     def test_single_page_shipped(self, mocker):
@@ -1843,10 +2048,10 @@ class TestFetchByEventTypeStreamMode:
 
     def test_stream_mode_updates_next_run(self, mocker, dummy_client):
         """
-        Given: A streaming fetch with two events and a fully-drained cursor (next=0).
+        Given: A streaming fetch with events spanning two distinct seconds.
         When: fetch_by_event_type is called with stream=True.
-        Then: next_run captures last_fetch_ids and advances last_fetch_time to the
-              latest seen event timestamp (matches the non-streaming path's behaviour).
+        Then: next_run captures last_fetch_ids, advances last_fetch_time to the latest
+              seen second, and resets the offset to 0 (matches the non-streaming path).
         """
         mocker.patch("ArmisEventCollector.send_events_to_xsiam")
         response = [
@@ -1868,10 +2073,126 @@ class TestFetchByEventTypeStreamMode:
             stream=True,
         )
 
-        # next == 0 because the stub returns a fully drained cursor.
+        # Multi-second response -> advance to the latest second and reset the offset.
         assert next_run["activity_last_fetch_next_field"] == 0
-        # last_fetch_time should advance to the latest streamed event's timestamp.
-        assert next_run["activity_last_fetch_time"] == "2023-01-01T01:00:20.000000+00:00"
+        assert next_run["activity_last_fetch_time"] == "2023-01-01T01:00:20"
+
+
+def _drained_armis_stub(armis_events: list[dict]):
+    """Helper: emulate the Armis search API over a mutable, time-ordered event store.
+
+    Returns every event whose second is at or after the ``after`` watermark (the
+    ``after:`` AQL filter is second-granular), starting at the ``from`` offset, and
+    always reports ``next=0`` — i.e. the query is fully drained in a single call.
+    Honours ``on_page`` so it works for both the streaming and non-streaming paths.
+    """
+
+    def _stub(*args, **kwargs):
+        after_second = kwargs["after"].strftime("%Y-%m-%dT%H:%M:%S")
+        matching = [event for event in armis_events if event["time"][:19] >= after_second]
+        page = matching[kwargs.get("from_param") or 0 :]
+        on_page = kwargs.get("on_page")
+        if on_page is not None:
+            on_page(page)
+            return [], 0
+        return page, 0
+
+    return _stub
+
+
+class TestResumeAfterDrainWithNewEventsInSameSecond:
+    """A cycle that fully drains (next == 0) persists the resume offset; when new events
+    later arrive in that same second, the next cycle must ship exactly those new events —
+    no duplicates of the already-shipped events and no gaps."""
+
+    @staticmethod
+    def _run_cycle(mocker, client, last_run: dict, stream: bool) -> tuple[dict, list[str]]:
+        mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        events: dict = {}
+        next_run: dict = {}
+        fetch_by_event_type(
+            client=client,
+            event_type=EVENT_TYPES["Activities"],
+            events=events,
+            max_fetch=100,
+            last_run=last_run,
+            next_run=next_run,
+            fetch_start_time=arg_to_datetime("2023-01-01T01:00:00"),
+            stream=stream,
+        )
+        if stream:
+            shipped = [event for call in mock_send.call_args_list for event in call.args[0]]
+        else:
+            shipped = events.get("activities", [])
+        return next_run, [event["activityUUID"] for event in shipped]
+
+    @pytest.mark.parametrize("stream", [True, False], ids=["streaming", "non_streaming"])
+    @pytest.mark.parametrize(
+        "initial_events, expected_watermark_after_drain, expected_offset_after_drain",
+        [
+            pytest.param(
+                [
+                    {"activityUUID": "a", "time": "2023-01-01T01:00:16.100000+00:00"},
+                    {"activityUUID": "b", "time": "2023-01-01T01:00:17.100000+00:00"},
+                    {"activityUUID": "c", "time": "2023-01-01T01:00:17.200000+00:00"},
+                ],
+                "2023-01-01T01:00:17",
+                0,
+                id="multi_second_drain",
+            ),
+            pytest.param(
+                [
+                    {"activityUUID": "a", "time": "2023-01-01T01:00:17.100000+00:00"},
+                    {"activityUUID": "b", "time": "2023-01-01T01:00:17.200000+00:00"},
+                    {"activityUUID": "c", "time": "2023-01-01T01:00:17.300000+00:00"},
+                ],
+                "2023-01-01T01:00:16",
+                3,
+                id="single_second_drain",
+            ),
+        ],
+    )
+    @freeze_time("2023-01-01T02:00:00")
+    def test_new_events_in_same_second_after_drain(
+        self,
+        mocker,
+        dummy_client,
+        stream,
+        initial_events,
+        expected_watermark_after_drain,
+        expected_offset_after_drain,
+    ):
+        """
+        Given: cycle 1 resumes from watermark 01:00:16 and drains all available events
+               (Armis returns next=0) whose latest second is 01:00:17, so the watermark
+               and offset are persisted (advanced + offset 0 for a multi-second response,
+               kept + offset stepped for a single-second response).
+        When:  new events then arrive in that same second (01:00:17) and cycle 2 runs
+               from the persisted next_run.
+        Then:  cycle 2 ships exactly the new events — none of cycle 1's events are
+               re-shipped and none of the new events are skipped.
+        """
+        armis_events = list(initial_events)
+        mocker.patch.object(Client, "fetch_by_aql_query", side_effect=_drained_armis_stub(armis_events))
+        initial_last_run = {"activity_last_fetch_time": "2023-01-01T01:00:16", "activity_last_fetch_next_field": 0}
+
+        # Cycle 1: drain everything currently available.
+        next_run, shipped_cycle_1 = self._run_cycle(mocker, dummy_client, initial_last_run, stream)
+        assert shipped_cycle_1 == ["a", "b", "c"]
+        assert next_run["activity_last_fetch_time"] == expected_watermark_after_drain
+        assert next_run["activity_last_fetch_next_field"] == expected_offset_after_drain
+
+        # New events land in the same (already drained) second.
+        armis_events.extend(
+            [
+                {"activityUUID": "d", "time": "2023-01-01T01:00:17.400000+00:00"},
+                {"activityUUID": "e", "time": "2023-01-01T01:00:17.500000+00:00"},
+            ]
+        )
+
+        # Cycle 2: resume from the persisted state.
+        _, shipped_cycle_2 = self._run_cycle(mocker, dummy_client, next_run, stream)
+        assert shipped_cycle_2 == ["d", "e"]
 
 
 def _streaming_fetch_stub(response: list[dict], next_cursor: int = 0):
@@ -2021,3 +2342,853 @@ class TestEnrichAndShipInChunks:
 
         assert mock_send.call_count == 2  # first full chunk + remainder
         assert [len(c.args[0]) for c in mock_send.call_args_list] == [ALERT_ENRICHMENT_CHUNK_SIZE, 5]
+
+
+class TestComputePaginationBudget:
+    """Tests for compute_pagination_budget (v1.3.6 dynamic budget-aware pagination cap).
+
+    The cap is derived from the shared ~300s container budget:
+        usable = PAGINATION_BUDGET_SECONDS - alerts_elapsed_seconds - (reserve if alerts_present)
+        per_type = int(usable // paginating_types)
+        result = clamp(per_type, MIN_PAGINATION_DURATION_SECONDS, MAX_PAGINATION_DURATION_SECONDS)
+    """
+
+    def test_single_type_no_alerts_clamps_to_max(self):
+        """
+        Given: One paginating type, no alerts fetched this cycle.
+        When: Computing the budget.
+        Then: usable=270 // 1 = 270, clamped down to MAX (180). This is the customer's case
+              (Alerts=0, Devices skipped -> Activities only).
+        """
+        assert compute_pagination_budget(paginating_types=1) == MAX_PAGINATION_DURATION_SECONDS
+
+    def test_two_types_no_alerts_splits_budget(self):
+        """
+        Given: Two paginating types, no alerts.
+        When: Computing the budget.
+        Then: 270 // 2 = 135, within [90, 180] -> 135 each.
+        """
+        assert compute_pagination_budget(paginating_types=2) == 135
+
+    def test_three_types_no_alerts_clamps_to_floor(self):
+        """
+        Given: Three paginating types, no alerts.
+        When: Computing the budget.
+        Then: 270 // 3 = 90 -> exactly the floor.
+        """
+        assert compute_pagination_budget(paginating_types=3) == MIN_PAGINATION_DURATION_SECONDS
+
+    def test_many_types_never_drops_below_floor(self):
+        """
+        Given: More types than the budget can evenly fund (e.g. 5).
+        When: Computing the budget.
+        Then: 270 // 5 = 54, clamped UP to the floor (90) to preserve the proven behavior.
+        """
+        assert compute_pagination_budget(paginating_types=5) == MIN_PAGINATION_DURATION_SECONDS
+
+    def test_zero_types_returns_floor(self):
+        """
+        Given: No paginating types (defensive guard).
+        When: Computing the budget.
+        Then: The floor is returned without a division-by-zero.
+        """
+        assert compute_pagination_budget(paginating_types=0) == MIN_PAGINATION_DURATION_SECONDS
+
+    def test_negative_types_returns_floor(self):
+        """
+        Given: A negative count (defensive guard).
+        When: Computing the budget.
+        Then: The floor is returned.
+        """
+        assert compute_pagination_budget(paginating_types=-1) == MIN_PAGINATION_DURATION_SECONDS
+
+    def test_alerts_present_subtracts_reserve_and_elapsed(self):
+        """
+        Given: One paginating type, alerts present, 30s spent fetching alerts.
+        When: Computing the budget.
+        Then: usable = 270 - 30 - 60(reserve) = 180 // 1 = 180 -> clamped at MAX (180).
+        """
+        assert (
+            compute_pagination_budget(paginating_types=1, alerts_elapsed_seconds=30.0, alerts_present=True)
+            == MAX_PAGINATION_DURATION_SECONDS
+        )
+
+    def test_alerts_present_reserve_pushes_two_types_below_floor(self):
+        """
+        Given: Two paginating types, alerts present, 60s spent on alerts.
+        When: Computing the budget.
+        Then: usable = 270 - 60 - 60 = 150 // 2 = 75, clamped UP to the floor (90).
+        """
+        assert (
+            compute_pagination_budget(paginating_types=2, alerts_elapsed_seconds=60.0, alerts_present=True)
+            == MIN_PAGINATION_DURATION_SECONDS
+        )
+
+    def test_reserve_not_applied_when_alerts_absent(self):
+        """
+        Given: One type, alerts_elapsed is non-zero but alerts_present is False
+               (e.g. Alerts queried but returned nothing).
+        When: Computing the budget.
+        Then: Only elapsed is subtracted, NOT the reserve: usable = 270 - 20 = 250 // 1 = 250 -> MAX.
+        """
+        assert (
+            compute_pagination_budget(paginating_types=1, alerts_elapsed_seconds=20.0, alerts_present=False)
+            == MAX_PAGINATION_DURATION_SECONDS
+        )
+
+    def test_large_alerts_elapsed_floors_result(self):
+        """
+        Given: One type but alerts consumed almost the whole window (250s) plus reserve.
+        When: Computing the budget.
+        Then: usable = 270 - 250 - 60 = -40 // 1 = -40, clamped UP to the floor (90).
+        """
+        assert (
+            compute_pagination_budget(paginating_types=1, alerts_elapsed_seconds=250.0, alerts_present=True)
+            == MIN_PAGINATION_DURATION_SECONDS
+        )
+
+    def test_result_is_always_an_int(self):
+        """
+        Given: A fractional alerts_elapsed_seconds.
+        When: Computing the budget.
+        Then: The returned cap is an int (floor division), never a float.
+        """
+        result = compute_pagination_budget(paginating_types=2, alerts_elapsed_seconds=10.5, alerts_present=False)
+        assert isinstance(result, int)
+
+    @pytest.mark.parametrize(
+        "paginating_types, alerts_elapsed, alerts_present, expected",
+        [
+            (1, 0.0, False, 180),  # customer case -> MAX
+            (2, 0.0, False, 135),  # even split, in range
+            (3, 0.0, False, 90),  # even split hits the floor
+            (4, 0.0, False, 90),  # below floor -> clamped up
+            (1, 90.0, True, 120),  # 270-90-60=120 // 1
+            (2, 30.0, True, 90),  # (270-30-60)//2 = 90
+        ],
+    )
+    def test_parametrized_matrix(self, paginating_types, alerts_elapsed, alerts_present, expected):
+        assert (
+            compute_pagination_budget(
+                paginating_types=paginating_types,
+                alerts_elapsed_seconds=alerts_elapsed,
+                alerts_present=alerts_present,
+            )
+            == expected
+        )
+
+    def test_result_never_exceeds_max_or_below_min(self):
+        """Invariant sweep: for a wide range of inputs the result stays within [MIN, MAX]."""
+        for n in range(1, 10):
+            for elapsed in (0.0, 15.0, 60.0, 200.0):
+                for present in (True, False):
+                    result = compute_pagination_budget(n, elapsed, present)
+                    assert MIN_PAGINATION_DURATION_SECONDS <= result <= MAX_PAGINATION_DURATION_SECONDS
+
+
+# ---------------------------------------------------------------------------
+# Resume-window decision (_next_fetch_window / compute_resume_state)
+# ---------------------------------------------------------------------------
+
+T15 = "2026-10-06T08:33:15"
+T16 = "2026-10-06T08:33:16"
+T17 = "2026-10-06T08:33:17"
+
+
+class TestNextFetchWindow:
+    """All branches of _next_fetch_window: empty / multi-second / single-second / missing timestamps."""
+
+    @pytest.mark.parametrize(
+        "earliest_second, latest_second, count, last_fetch_time, last_fetch_next, expected",
+        [
+            pytest.param("", "", 0, T16, 0, (T16, 0), id="empty_steady_state"),
+            pytest.param("", "", 0, T16, 30000, (T16, 30000), id="empty_keeps_deep_offset"),
+            pytest.param("", "", 0, None, 0, (None, 0), id="empty_first_run"),
+            pytest.param(T16, T17, 10, T15, 500, (T17, 0), id="multi_second_advances_and_resets_offset"),
+            pytest.param(T16, T16, 10000, T16, 20000, (T16, 30000), id="single_second_steps_offset"),
+            pytest.param(T16, T16, 1, T15, 0, (T15, 1), id="single_event_steps_offset"),
+            pytest.param(T16, "", 5, T15, 0, (T15, 5), id="missing_latest_never_advances"),
+            pytest.param("", T17, 5, T15, 0, (T15, 5), id="missing_earliest_does_not_advance"),
+            pytest.param("", "", 5, T15, 10, (T15, 15), id="both_missing_steps_offset"),
+        ],
+    )
+    def test_next_fetch_window(self, earliest_second, latest_second, count, last_fetch_time, last_fetch_next, expected):
+        assert _next_fetch_window(earliest_second, latest_second, count, last_fetch_time, last_fetch_next) == expected
+
+
+class TestComputeResumeStateTimestampFormats:
+    """compute_resume_state compares timestamps at second granularity regardless of their format."""
+
+    def test_mixed_formats_in_same_second_are_single_second(self):
+        """
+        Given: events in the same second but with different timestamp formats (micros+offset, 'Z', bare).
+        When:  compute_resume_state runs.
+        Then:  they truncate to the same second -> treated as a single-second response (offset steps).
+        """
+        response = [
+            {"time": f"{T16}.123456+00:00"},
+            {"time": f"{T16}Z"},
+            {"time": T16},
+        ]
+        assert compute_resume_state(response, T16, 0, "time") == (T16, 3)
+
+    def test_mixed_formats_across_seconds_advance(self):
+        """
+        Given: first and last events in different seconds, each in a different timestamp format.
+        When:  compute_resume_state runs.
+        Then:  the watermark advances to the latest second (truncated) and the offset resets.
+        """
+        response = [{"time": T16}, {"time": f"{T17}.500000Z"}]
+        assert compute_resume_state(response, T15, 42, "time") == (T17, 0)
+
+
+# ---------------------------------------------------------------------------
+# Multi-cycle behaviour against a fake Armis search API
+# ---------------------------------------------------------------------------
+
+
+class FakeArmisSearchApi:
+    """In-memory stand-in for ``GET /api/v1/search/``.
+
+    Results are ascending by ``order_by``; ``after:`` is inclusive and second-granular;
+    paging uses ``from`` (offset) + ``length``; ``next`` is the following offset, or None
+    once the query is drained. ``blackout`` simulates a transient empty response.
+    """
+
+    def __init__(self, order_by: str = "time"):
+        self.events: list[dict] = []
+        self.order_by = order_by
+        self.blackout = False
+
+    def perform_fetch(self, params: dict) -> dict:
+        if self.blackout:
+            return {"data": {"results": [], "next": None}}
+        after_match = re.search(r"after:(\S+)", params["aql"])
+        assert after_match, f"aql has no after: clause: {params['aql']}"
+        after_second = after_match.group(1)[:19]
+        matching = sorted(
+            (event for event in self.events if event[self.order_by][:19] >= after_second),
+            key=lambda event: event[self.order_by],
+        )
+        offset = params.get("from") or 0
+        page = matching[offset : offset + params["length"]]
+        end = offset + len(page)
+        return {"data": {"results": [dict(event) for event in page], "next": end if end < len(matching) else None}}
+
+
+def _run_one_cycle(client, event_type_name: str, last_run: dict, stream: bool, max_fetch: int, send_mock) -> tuple[dict, list]:
+    """Run one fetch_by_event_type cycle; return (next_run, ids shipped in this cycle)."""
+    event_type = EVENT_TYPES[event_type_name]
+    calls_before = len(send_mock.call_args_list)
+    events: dict = {}
+    next_run: dict = {}
+    fetch_by_event_type(client, event_type, events, max_fetch, last_run, next_run, None, stream=stream)
+    if stream:
+        shipped = [event for call in send_mock.call_args_list[calls_before:] for event in call.args[0]]
+    else:
+        shipped = events.get(event_type.dataset_name, [])
+    return next_run, [event[event_type.unique_id_key] for event in shipped]
+
+
+def _activity(uuid: str, time_str: str) -> dict:
+    return {"activityUUID": uuid, "time": time_str}
+
+
+ACT_TIME = "activity_last_fetch_time"
+ACT_NEXT = "activity_last_fetch_next_field"
+ACT_IDS = "activity_last_fetch_ids"
+
+
+@pytest.fixture
+def fake_armis_api(mocker) -> Iterator[FakeArmisSearchApi]:
+    """Patch Client.perform_fetch with an in-memory FakeArmisSearchApi and freeze time."""
+    fake_api = FakeArmisSearchApi()
+    mocker.patch.object(Client, "perform_fetch", side_effect=fake_api.perform_fetch)
+    with freeze_time("2023-01-01T02:00:00"):
+        yield fake_api
+
+
+class TestMultiCycleResume:
+    """End-to-end resume behaviour across several fetch cycles (each id shipped exactly once)."""
+
+    def test_quiet_alerts_each_shipped_once(self, mocker, dummy_client, fake_armis_api):
+        """
+        Given: a quiet Alerts stream — one new alert appears per cycle, each in its own second.
+        When:  three cycles run, each resuming from the previous next_run.
+        Then:  every alert is shipped exactly once, in its own cycle.
+        """
+        send_mock = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        last_run: dict = {"alerts_last_fetch_time": "2023-01-01T01:00:10", "alerts_last_fetch_next_field": 0}
+        shipped_per_cycle = []
+        for second in (11, 12, 13):
+            fake_armis_api.events.append({"alertId": f"alert-{second}", "time": f"2023-01-01T01:00:{second}.000000+00:00"})
+            last_run, shipped = _run_one_cycle(dummy_client, "Alerts", last_run, False, 100, send_mock)
+            shipped_per_cycle.append(shipped)
+
+        assert shipped_per_cycle == [["alert-11"], ["alert-12"], ["alert-13"]]
+
+    @pytest.mark.parametrize("stream", [True, False], ids=["streaming", "non_streaming"])
+    def test_hot_second_larger_than_page_then_later_second(self, mocker, dummy_client, fake_armis_api, stream):
+        """
+        Given: one second holding more events than a cycle can read (7 events, max_fetch=3),
+               followed by an event in the next second.
+        When:  cycles run until the watermark moves past the hot second, plus one extra cycle.
+        Then:  the offset steps within the hot second (3 -> 6), then resets to 0 when the later
+               second appears; every id is shipped exactly once (the re-read is deduped).
+        """
+        send_mock = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        fake_armis_api.events = [
+            _activity(uuid, f"2023-01-01T01:00:16.{index:06d}+00:00") for index, uuid in enumerate("ABCDEFG")
+        ]
+        fake_armis_api.events.append(_activity("H", "2023-01-01T01:00:17.000000+00:00"))
+        last_run: dict = {ACT_TIME: "2023-01-01T01:00:16", ACT_NEXT: 0}
+
+        all_shipped: list = []
+        observed_state = []
+        for _ in range(4):
+            last_run, shipped = _run_one_cycle(dummy_client, "Activities", last_run, stream, 3, send_mock)
+            all_shipped.extend(shipped)
+            observed_state.append((last_run[ACT_TIME], last_run[ACT_NEXT]))
+
+        assert observed_state[:3] == [
+            ("2023-01-01T01:00:16", 3),
+            ("2023-01-01T01:00:16", 6),
+            ("2023-01-01T01:00:17", 0),
+        ]
+        assert sorted(all_shipped) == list("ABCDEFGH")
+        assert len(all_shipped) == len(set(all_shipped))
+
+    @pytest.mark.parametrize("stream", [True, False], ids=["streaming", "non_streaming"])
+    def test_empty_cycles_between_events_and_during_hot_second(self, mocker, dummy_client, fake_armis_api, stream):
+        """
+        Given: an empty store at first, then a hot second (5 events, max_fetch=2) plus a later event,
+               with a transient empty response in the middle of stepping through the hot second.
+        When:  cycles run across the empty periods.
+        Then:  empty cycles leave the watermark and offset unchanged (and, when streaming, the dedup
+               ids), and every id is shipped exactly once — nothing skipped, nothing duplicated.
+        """
+        send_mock = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        initial_last_run: dict = {ACT_TIME: "2023-01-01T01:00:15", ACT_NEXT: 0, ACT_IDS: ["seed"]}
+
+        # Empty period before any events exist.
+        next_run, shipped = _run_one_cycle(dummy_client, "Activities", dict(initial_last_run), stream, 2, send_mock)
+        assert shipped == []
+        assert (next_run[ACT_TIME], next_run[ACT_NEXT]) == ("2023-01-01T01:00:15", 0)
+        if stream:
+            assert next_run[ACT_IDS] == ["seed"]
+
+        fake_armis_api.events = [_activity(uuid, f"2023-01-01T01:00:16.{index:06d}+00:00") for index, uuid in enumerate("ABCDE")]
+        fake_armis_api.events.append(_activity("F", "2023-01-01T01:00:17.000000+00:00"))
+        all_shipped: list = []
+
+        last_run, shipped = _run_one_cycle(dummy_client, "Activities", next_run, stream, 2, send_mock)
+        all_shipped.extend(shipped)
+
+        # Transient empty response while stepping through the hot second.
+        fake_armis_api.blackout = True
+        state_before_blackout = dict(last_run)
+        last_run, shipped = _run_one_cycle(dummy_client, "Activities", last_run, stream, 2, send_mock)
+        fake_armis_api.blackout = False
+        assert shipped == []
+        assert (last_run[ACT_TIME], last_run[ACT_NEXT]) == (state_before_blackout[ACT_TIME], state_before_blackout[ACT_NEXT])
+        if stream:
+            assert last_run[ACT_IDS] == state_before_blackout[ACT_IDS]
+
+        for _ in range(3):
+            last_run, shipped = _run_one_cycle(dummy_client, "Activities", last_run, stream, 2, send_mock)
+            all_shipped.extend(shipped)
+
+        assert sorted(all_shipped) == list("ABCDEF")
+        assert len(all_shipped) == len(set(all_shipped))
+
+    @pytest.mark.parametrize("stream", [True, False], ids=["streaming", "non_streaming"])
+    def test_reanchor_reread_ships_no_duplicates(self, mocker, dummy_client, fake_armis_api, stream):
+        """
+        Given: cycle 1 reads a multi-second response, so the watermark re-anchors to the latest
+               second (offset 0) and the next cycle re-reads that second.
+        When:  new events arrive and cycle 2 runs.
+        Then:  the re-read events of the latest second are deduped; only the new events ship.
+        """
+        send_mock = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        fake_armis_api.events = [
+            _activity("a", "2023-01-01T01:00:16.500000+00:00"),
+            _activity("b", "2023-01-01T01:00:17.100000+00:00"),
+            _activity("c", "2023-01-01T01:00:17.200000+00:00"),
+        ]
+        last_run: dict = {ACT_TIME: "2023-01-01T01:00:16", ACT_NEXT: 0}
+
+        last_run, shipped_cycle_1 = _run_one_cycle(dummy_client, "Activities", last_run, stream, 10, send_mock)
+        assert shipped_cycle_1 == ["a", "b", "c"]
+        assert (last_run[ACT_TIME], last_run[ACT_NEXT]) == ("2023-01-01T01:00:17", 0)
+
+        fake_armis_api.events += [
+            _activity("d", "2023-01-01T01:00:17.300000+00:00"),
+            _activity("e", "2023-01-01T01:00:18.000000+00:00"),
+        ]
+        _, shipped_cycle_2 = _run_one_cycle(dummy_client, "Activities", last_run, stream, 10, send_mock)
+        assert shipped_cycle_2 == ["d", "e"]
+
+
+# ---------------------------------------------------------------------------
+# fetch_by_event_type resume edge cases (both modes)
+# ---------------------------------------------------------------------------
+
+
+@freeze_time("2023-01-01T02:00:00")
+class TestFetchByEventTypeResumeEdges:
+    @pytest.mark.parametrize("stream", [True, False], ids=["streaming", "non_streaming"])
+    def test_single_second_with_more_pages_steps_offset(self, mocker, dummy_client, stream):
+        """
+        Given: a single-second response while Armis reports more pages (next > 0).
+        When:  fetch_by_event_type runs.
+        Then:  the watermark is kept and the offset steps by the number of events read.
+        """
+        mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        response = [_activity(f"x{index}", f"2023-01-01T01:00:16.{index:06d}+00:00") for index in range(3)]
+        mocker.patch.object(Client, "fetch_by_aql_query", side_effect=_streaming_fetch_stub(response, next_cursor=20003))
+        next_run: dict = {}
+        fetch_by_event_type(
+            dummy_client,
+            EVENT_TYPES["Activities"],
+            {},
+            100,
+            {ACT_TIME: "2023-01-01T01:00:16", ACT_NEXT: 20000},
+            next_run,
+            None,
+            stream=stream,
+        )
+        assert (next_run[ACT_TIME], next_run[ACT_NEXT]) == ("2023-01-01T01:00:16", 20003)
+
+    @pytest.mark.parametrize("stream", [True, False], ids=["streaming", "non_streaming"])
+    def test_empty_response_preserves_position(self, mocker, dummy_client, stream):
+        """
+        Given: a previous run at a deep offset and an empty response.
+        When:  fetch_by_event_type runs.
+        Then:  the watermark and offset are preserved unchanged (and, when streaming, the dedup ids).
+        """
+        mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        mocker.patch.object(Client, "fetch_by_aql_query", side_effect=_streaming_fetch_stub([]))
+        last_run = {ACT_TIME: "2023-01-01T01:00:16", ACT_NEXT: 30000, ACT_IDS: ["x"]}
+        next_run: dict = {}
+        fetch_by_event_type(dummy_client, EVENT_TYPES["Activities"], {}, 100, last_run, next_run, None, stream=stream)
+        assert (next_run[ACT_TIME], next_run[ACT_NEXT]) == ("2023-01-01T01:00:16", 30000)
+        if stream:
+            assert next_run[ACT_IDS] == ["x"]
+
+    def test_all_deduped_streaming_page_still_advances_watermark(self, mocker, dummy_client):
+        """
+        Given: a streaming page spanning two seconds whose events were all shipped last cycle.
+        When:  fetch_by_event_type runs with stream=True.
+        Then:  nothing is shipped, but last_event_time is still tracked so the watermark advances
+               to the latest second and the offset resets.
+        """
+        mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        response = [
+            _activity("a", "2023-01-01T01:00:10.500000+00:00"),
+            _activity("b", "2023-01-01T01:00:20.500000+00:00"),
+        ]
+        mocker.patch.object(Client, "fetch_by_aql_query", side_effect=_streaming_fetch_stub(response))
+        last_run = {ACT_TIME: "2023-01-01T01:00:10", ACT_NEXT: 0, ACT_IDS: ["a", "b"]}
+        next_run: dict = {}
+        fetch_by_event_type(dummy_client, EVENT_TYPES["Activities"], {}, 100, last_run, next_run, None, stream=True)
+        mock_send.assert_not_called()
+        assert (next_run[ACT_TIME], next_run[ACT_NEXT]) == ("2023-01-01T01:00:20", 0)
+
+    @pytest.mark.parametrize("stream", [True, False], ids=["streaming", "non_streaming"])
+    def test_max_pagination_seconds_forwarded(self, mocker, dummy_client, stream):
+        """
+        Given: a custom max_pagination_seconds.
+        When:  fetch_by_event_type runs.
+        Then:  the value is forwarded unchanged to Client.fetch_by_aql_query.
+        """
+        mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        mock_fetch = mocker.patch.object(Client, "fetch_by_aql_query", side_effect=_streaming_fetch_stub([]))
+        fetch_by_event_type(
+            dummy_client, EVENT_TYPES["Activities"], {}, 100, {}, {}, None, stream=stream, max_pagination_seconds=123
+        )
+        assert mock_fetch.call_args.kwargs["max_pagination_seconds"] == 123
+
+
+# ---------------------------------------------------------------------------
+# fetch_events: pagination budget wiring
+# ---------------------------------------------------------------------------
+
+
+class TestFetchEventsPaginationBudgetWiring:
+    def test_budget_receives_measured_alert_time_and_presence(self, mocker, dummy_client):
+        """
+        Given: an Alerts fetch that takes 25s and returns alerts, plus one paginating type.
+        When:  fetch_events runs.
+        Then:  compute_pagination_budget receives the measured alert time and alerts_present=True.
+        """
+        budget_spy = mocker.patch("ArmisEventCollector.compute_pagination_budget", wraps=compute_pagination_budget)
+        mocker.patch("ArmisEventCollector._enrich_and_ship_in_chunks")
+        with freeze_time("2023-01-01T02:00:00") as frozen_time:
+
+            def fake_fetch_by_event_type(client, event_type, events, *args, **kwargs):
+                if event_type.type == "alerts":
+                    frozen_time.tick(timedelta(seconds=25))
+                    events.setdefault("alerts", []).append({"alertId": "1"})
+
+            mocker.patch("ArmisEventCollector.fetch_by_event_type", side_effect=fake_fetch_by_event_type)
+            fetch_events(
+                client=dummy_client,
+                max_fetch=10,
+                devices_max_fetch=10,
+                last_run={},
+                fetch_start_time=None,
+                event_types_to_fetch=["Alerts", "Activities"],
+                device_fetch_interval=None,
+                use_multithreading=False,
+            )
+
+        kwargs = budget_spy.call_args.kwargs
+        assert kwargs["paginating_types"] == 1
+        assert kwargs["alerts_present"] is True
+        assert kwargs["alerts_elapsed_seconds"] == pytest.approx(25.0)
+
+    def test_budget_reports_no_alerts_when_alerts_empty(self, mocker, dummy_client):
+        """
+        Given: an Alerts fetch that returns nothing.
+        When:  fetch_events runs.
+        Then:  compute_pagination_budget receives alerts_present=False (no enrichment reserve).
+        """
+        budget_spy = mocker.patch("ArmisEventCollector.compute_pagination_budget", wraps=compute_pagination_budget)
+        mocker.patch("ArmisEventCollector.fetch_by_event_type")
+        fetch_events(
+            client=dummy_client,
+            max_fetch=10,
+            devices_max_fetch=10,
+            last_run={},
+            fetch_start_time=None,
+            event_types_to_fetch=["Alerts", "Activities"],
+            device_fetch_interval=None,
+            use_multithreading=False,
+        )
+        assert budget_spy.call_args.kwargs["alerts_present"] is False
+
+    def test_cap_forwarded_to_every_sequential_call(self, mocker, dummy_client):
+        """
+        Given: two paginating types processed sequentially and a computed cap of 123s.
+        When:  fetch_events runs.
+        Then:  every fetch_by_event_type call receives max_pagination_seconds=123.
+        """
+        mocker.patch("ArmisEventCollector.compute_pagination_budget", return_value=123)
+        mock_fetch = mocker.patch("ArmisEventCollector.fetch_by_event_type")
+        fetch_events(
+            client=dummy_client,
+            max_fetch=10,
+            devices_max_fetch=10,
+            last_run={},
+            fetch_start_time=None,
+            event_types_to_fetch=["Activities", "Devices"],
+            device_fetch_interval=timedelta(hours=1),
+            use_multithreading=False,
+        )
+        assert mock_fetch.call_count == 2
+        assert all(call.kwargs["max_pagination_seconds"] == 123 for call in mock_fetch.call_args_list)
+
+    def test_cap_forwarded_to_every_parallel_worker(self, mocker, dummy_client):
+        """
+        Given: two paginating types processed in parallel and a computed cap of 123s.
+        When:  fetch_events runs.
+        Then:  every fetch_event_type_worker receives max_pagination_seconds=123.
+        """
+        mocker.patch("ArmisEventCollector.compute_pagination_budget", return_value=123)
+        received_caps: dict = {}
+
+        def fake_worker(
+            client,
+            event_type_name,
+            event_type,
+            max_fetch,
+            last_run,
+            fetch_start_time,
+            fetch_delay,
+            context_manager,
+            stream,
+            max_pagination_seconds,
+        ):
+            received_caps[event_type_name] = max_pagination_seconds
+            return event_type_name, {}, {}
+
+        mocker.patch("ArmisEventCollector.fetch_event_type_worker", side_effect=fake_worker)
+        fetch_events(
+            client=dummy_client,
+            max_fetch=10,
+            devices_max_fetch=10,
+            last_run={},
+            fetch_start_time=None,
+            event_types_to_fetch=["Activities", "Devices"],
+            device_fetch_interval=timedelta(hours=1),
+            use_multithreading=True,
+            context_manager=IntegrationContextManager(),
+        )
+        assert received_caps == {"Activities": 123, "Devices": 123}
+
+    def test_devices_not_starved_when_activities_hits_cap(self, mocker, dummy_client):
+        """
+        Given: an Activities backlog that never drains (every page reports more) and 60s per page,
+               processed sequentially before Devices.
+        When:  fetch_events runs.
+        Then:  Activities stops at its pagination cap and Devices is still fetched and shipped.
+        """
+        mock_send = mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        search_calls: dict = {"activity": 0, "devices": 0}
+
+        with freeze_time("2023-01-01T02:00:00") as frozen_time:
+
+            def fake_perform_fetch(params):
+                frozen_time.tick(timedelta(seconds=60))
+                offset = params.get("from") or 0
+                if "in:devices" in params["aql"]:
+                    search_calls["devices"] += 1
+                    device = {"id": "d1", "lastSeen": "2023-01-01T01:00:00.000000+00:00"}
+                    return {"data": {"results": [device], "next": None}}
+                search_calls["activity"] += 1
+                page_second = f"2023-01-01T01:{offset // 60:02d}:{offset % 60:02d}"
+                page = [_activity(f"a{offset + index}", f"{page_second}.{index:06d}+00:00") for index in range(2)]
+                return {"data": {"results": page, "next": offset + 2}}
+
+            mocker.patch.object(Client, "perform_fetch", side_effect=fake_perform_fetch)
+            fetch_events(
+                client=dummy_client,
+                max_fetch=1000,
+                devices_max_fetch=10,
+                last_run={},
+                fetch_start_time=None,
+                event_types_to_fetch=["Activities", "Devices"],
+                device_fetch_interval=timedelta(hours=1),
+                use_multithreading=False,
+            )
+
+        # 2 types, no alerts -> cap = min(MAX, 270 // 2) = 135s; at 60s/page the loop breaks after
+        # the 3rd request (elapsed 180s >= 135s, measured from before the first request).
+        assert search_calls["activity"] == 3
+        assert search_calls["devices"] == 1
+        assert any(call.kwargs.get("product") == "security_devices" for call in mock_send.call_args_list)
+
+
+# ---------------------------------------------------------------------------
+# fetch_by_aql_query: custom pagination cap
+# ---------------------------------------------------------------------------
+
+
+class TestFetchByAqlQueryCustomCap:
+    @staticmethod
+    def _paged_perform_fetch(frozen_time, total_pages: int, seconds_per_page: int):
+        def perform_fetch(params):
+            frozen_time.tick(timedelta(seconds=seconds_per_page))
+            offset = params.get("from") or 0
+            page = [{"unique_id": str(offset), "time": f"2023-01-01T01:00:{offset:02d}.000000+00:00"}]
+            return {"data": {"results": page, "next": offset + 1 if offset + 1 < total_pages else None}}
+
+        return perform_fetch
+
+    def test_custom_cap_stops_early_with_next(self, mocker, dummy_client):
+        """
+        Given: 5 pages at 20s each and max_pagination_seconds=30.
+        When:  fetch_by_aql_query runs.
+        Then:  it stops after the elapsed time passes 30s and returns a non-zero next for resume.
+        """
+        with freeze_time("2023-01-01T02:00:00") as frozen_time:
+            mocker.patch.object(Client, "perform_fetch", side_effect=self._paged_perform_fetch(frozen_time, 5, 20))
+            results, next_pointer = dummy_client.fetch_by_aql_query(
+                aql_query="in:activity", max_fetch=100, after=datetime.now() - timedelta(minutes=1), max_pagination_seconds=30
+            )
+        # timer starts before the first request: 20s (<30) after page 1, 40s (>=30) after page 2 -> break.
+        assert len(results) == 2
+        assert next_pointer == 2
+
+    def test_first_page_counts_towards_cap(self, mocker, dummy_client):
+        """
+        Given: pages of 60s each and max_pagination_seconds=90.
+        When:  fetch_by_aql_query runs.
+        Then:  the first page's time is counted, so pagination stops after 2 pages (120s), not 3 (180s),
+               keeping the worst-case cycle at cap + one page.
+        """
+        with freeze_time("2023-01-01T02:00:00") as frozen_time:
+            mocked_fetch = mocker.patch.object(
+                Client, "perform_fetch", side_effect=self._paged_perform_fetch(frozen_time, 10, 60)
+            )
+            results, next_pointer = dummy_client.fetch_by_aql_query(
+                aql_query="in:activity", max_fetch=100, after=datetime.now() - timedelta(minutes=1), max_pagination_seconds=90
+            )
+        assert mocked_fetch.call_count == 2
+        assert len(results) == 2
+        assert next_pointer == 2
+
+    def test_large_cap_drains_all_pages(self, mocker, dummy_client):
+        """
+        Given: 5 pages at 20s each and a cap well above the total time.
+        When:  fetch_by_aql_query runs.
+        Then:  every page is read and next is 0 (drained).
+        """
+        with freeze_time("2023-01-01T02:00:00") as frozen_time:
+            mocker.patch.object(Client, "perform_fetch", side_effect=self._paged_perform_fetch(frozen_time, 5, 20))
+            results, next_pointer = dummy_client.fetch_by_aql_query(
+                aql_query="in:activity", max_fetch=100, after=datetime.now() - timedelta(minutes=1), max_pagination_seconds=1000
+            )
+        assert len(results) == 5
+        assert next_pointer == 0
+
+
+# ---------------------------------------------------------------------------
+# handle_fetched_events: next_run logging vs persistence
+# ---------------------------------------------------------------------------
+
+
+class TestHandleFetchedEventsNextRunLogging:
+    def test_summary_log_collapses_lists_and_full_state_persisted(self, mocker):
+        """
+        Given: a next_run containing a dedup id list and scalar fields.
+        When:  handle_fetched_events runs.
+        Then:  the summary log shows the list as '<N ids>' (no raw ids) but keeps scalars,
+               while setLastRun receives the full, uncollapsed list.
+        """
+        mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        mock_debug = mocker.patch("ArmisEventCollector.demisto.debug")
+        mock_set_last_run = mocker.patch("ArmisEventCollector.demisto.setLastRun")
+        ids = ["id-1", "id-2", "id-3"]
+        next_run: dict = {ACT_IDS: list(ids), ACT_TIME: "2023-01-01T01:00:17", ACT_NEXT: 0}
+
+        handle_fetched_events({}, next_run)
+
+        summary_logs = [call.args[0] for call in mock_debug.call_args_list if "[handle_fetched_events]" in str(call.args[0])]
+        assert len(summary_logs) == 1
+        assert "<3 ids>" in summary_logs[0]
+        assert "id-1" not in summary_logs[0]
+        assert "2023-01-01T01:00:17" in summary_logs[0]
+        assert mock_set_last_run.call_args.args[0][ACT_IDS] == ids
+
+
+class TestSequentialFailureKeepsProgress:
+    def test_alerts_progress_kept_when_activities_fails(self, mocker, dummy_client):
+        """
+        Given: Alerts and Activities fetched in the same cycle (sequential path), and the Activities
+               request fails with an API error after the alerts were already fetched.
+        When:  fetch_events runs as the periodic fetch (streaming enabled).
+        Then:  no error is raised, so the cycle completes and the last run can be saved. The returned
+               next_run has the new alerts cursor and the unchanged activities cursor, so the alerts
+               are not re-sent and no activities are skipped in the next cycle.
+        """
+        last_run = {
+            "alerts_last_fetch_time": "2026-11-04T13:08:45",
+            "activity_last_fetch_time": "2026-11-03T17:31:34",
+            "activity_last_fetch_ids": ["id-1"],
+            "activity_last_fetch_next_field": 0,
+        }
+
+        def fake_fetch_by_event_type(client, event_type, events, max_fetch, last_run, next_run, *args, **kwargs):
+            if event_type.type == "alerts":
+                next_run["alerts_last_fetch_time"] = "2026-11-04T14:13:02"
+                return
+            raise DemistoException("Error in API call [500] - Internal Server Error")
+
+        mocker.patch("ArmisEventCollector.fetch_by_event_type", side_effect=fake_fetch_by_event_type)
+        mocker.patch("ArmisEventCollector.demisto.error")
+
+        _, next_run = fetch_events(
+            client=dummy_client,
+            max_fetch=10,
+            devices_max_fetch=10,
+            last_run=last_run,
+            fetch_start_time=None,
+            event_types_to_fetch=["Alerts", "Activities"],
+            device_fetch_interval=None,
+            use_multithreading=True,
+            context_manager=IntegrationContextManager(),
+            enable_streaming=True,
+        )
+
+        assert next_run["alerts_last_fetch_time"] == "2026-11-04T14:13:02"
+        assert next_run["activity_last_fetch_time"] == "2026-11-03T17:31:34"
+        assert next_run["activity_last_fetch_ids"] == ["id-1"]
+        assert next_run["activity_last_fetch_next_field"] == 0
+
+    def test_failed_event_type_reported_to_caller(self, mocker, dummy_client):
+        """
+        Given: the periodic fetch (streaming enabled) and a failing Activities fetch.
+        When:  fetch_events runs with a failed_event_types list.
+        Then:  the failure is appended to the list as "<event type>: <error>" and logged at error level.
+        """
+        mocker.patch("ArmisEventCollector.fetch_by_event_type", side_effect=DemistoException("Error in API call [500]"))
+        mock_error = mocker.patch("ArmisEventCollector.demisto.error")
+        failed_event_types: list[str] = []
+
+        fetch_events(
+            client=dummy_client,
+            max_fetch=10,
+            devices_max_fetch=10,
+            last_run={},
+            fetch_start_time=None,
+            event_types_to_fetch=["Activities"],
+            device_fetch_interval=None,
+            use_multithreading=True,
+            context_manager=IntegrationContextManager(),
+            enable_streaming=True,
+            failed_event_types=failed_event_types,
+        )
+
+        assert len(failed_event_types) == 1
+        assert failed_event_types[0].startswith("Activities: ")
+        assert "500" in failed_event_types[0]
+        assert mock_error.call_args.args[0].startswith("[Fetch] Fetching Activities failed")
+
+    def test_main_reports_failure_to_module_health_after_saving_last_run(self, mocker):
+        """
+        Given: the fetch-events command and an event type that fails during fetch_events.
+        When:  main runs.
+        Then:  the last run is saved first, and the failure is then reported to module health as an error.
+        """
+        import ArmisEventCollector
+
+        def fake_fetch_events(*args, **kwargs):
+            kwargs["failed_event_types"].append("Activities: Error in API call [500]")
+            return {}, {"alerts_last_fetch_time": "2026-11-04T14:13:02"}
+
+        mocker.patch.object(ArmisEventCollector.demisto, "command", return_value="fetch-events")
+        mocker.patch.object(
+            ArmisEventCollector.demisto,
+            "params",
+            return_value={"server_url": "test_url", "event_types_to_fetch": "Alerts,Activities"},
+        )
+        mocker.patch.object(ArmisEventCollector.demisto, "args", return_value={})
+        mocker.patch.object(ArmisEventCollector.demisto, "getLastRun", return_value={"alerts_last_fetch_time": "x"})
+        mocker.patch.object(ArmisEventCollector.demisto, "getIntegrationContext", return_value={})
+        mocker.patch("ArmisEventCollector.Client")  # fetch_events is mocked, so no real API calls are needed
+        mocker.patch("ArmisEventCollector.fetch_events", side_effect=fake_fetch_events)
+        mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        calls = MagicMock()
+        mocker.patch.object(ArmisEventCollector.demisto, "setLastRun", side_effect=calls.setLastRun)
+        mocker.patch.object(ArmisEventCollector.demisto, "updateModuleHealth", side_effect=calls.updateModuleHealth)
+
+        ArmisEventCollector.main()
+
+        assert [c[0] for c in calls.mock_calls] == ["setLastRun", "updateModuleHealth"]
+        assert calls.updateModuleHealth.call_args.args[0] == "[Fetch] Failed to fetch: Activities: Error in API call [500]"
+        assert calls.updateModuleHealth.call_args.kwargs == {"is_error": True}
+
+    def test_last_run_not_touched_for_manual_get_events(self, mocker, dummy_client):
+        """
+        Given: the manual armis-get-events path (streaming disabled) and a failing Activities fetch.
+        When:  fetch_events runs.
+        Then:  the error is raised and the last run is not modified.
+        """
+        mocker.patch("ArmisEventCollector.fetch_by_event_type", side_effect=DemistoException("boom"))
+        mock_set_last_run = mocker.patch("ArmisEventCollector.demisto.setLastRun")
+
+        with pytest.raises(DemistoException, match="boom"):
+            fetch_events(
+                client=dummy_client,
+                max_fetch=10,
+                devices_max_fetch=10,
+                last_run={},
+                fetch_start_time=None,
+                event_types_to_fetch=["Activities"],
+                device_fetch_interval=None,
+                use_multithreading=False,
+                enable_streaming=False,
+            )
+
+        mock_set_last_run.assert_not_called()
