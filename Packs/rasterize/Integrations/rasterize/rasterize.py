@@ -1320,7 +1320,10 @@ def get_tabs_count_for_log(browser: pychrome.Browser) -> int | str:
     try:
         return len(browser.list_tab())
     except Exception as ex:
-        demisto.debug(f"get_tabs_count_for_log: could not list Chrome tabs, Chrome is probably not running: {ex}")
+        demisto.debug(
+            f"get_tabs_count_for_log: could not list Chrome tabs, Chrome is probably not running: {ex}\n"
+            f"Trace:{traceback.format_exc()}"
+        )
         return "unavailable"
 
 
