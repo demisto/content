@@ -68,13 +68,13 @@ class Client:
 class URLScanURLIndicator(Common.URL):
     """URL indicator that also emits the URLScan result page on the same URL context entry."""
 
-    def __init__(self, result_page: str | None = None, **kwargs):
+    def __init__(self, result_page: str | None = None, **kwargs) -> None:
         super().__init__(**kwargs)
         self.result_page = result_page
 
     def to_context(self) -> dict:
         context = super().to_context()
-        if self.result_page:
+        if self.result_page and Common.URL.CONTEXT_PATH in context:
             context[Common.URL.CONTEXT_PATH]["ResultPage"] = self.result_page
         return context
 

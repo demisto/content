@@ -448,7 +448,7 @@ script:
       description: Page in the URLScan UI displaying the scan result.
       type: String
     - contextPath: URLScan.ResultPage
-      description: Page in the URLScan UI displaying the scan result.
+      description: The page in the URLScan UI displaying the scan result.
       type: String
     polling: true
   - arguments:

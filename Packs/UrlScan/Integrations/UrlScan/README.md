@@ -397,7 +397,7 @@
 </tr>
 <tr>
 <td style="width: 267px;">URLScan.ResultPage </td>
-<td style="width: 454px;">Page in the URLScan UI displaying the scan result.</td>
+<td style="width: 454px;">The page in the URLScan UI displaying the scan result.</td>
 </tr>
 </tbody>
 </table>
