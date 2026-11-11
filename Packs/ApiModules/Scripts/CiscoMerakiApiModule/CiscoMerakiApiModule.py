@@ -4194,8 +4194,8 @@ def run_cisco_meraki_v2_integration() -> None:
     client_secret: str | None = dict_safe_get(params, keys=["credentials", "password"]) or None
     auth_code: str | None = dict_safe_get(params, keys=["auth_code", "password"]) or None
     redirect_uri: str | None = params.get("redirect_uri") or None
-    verify_certificate: bool = not argToBoolean(params.get("insecure", False))
-    proxy: bool = argToBoolean(params.get("proxy", False))
+    verify_certificate: bool = not argToBoolean(params.get("insecure") or False)
+    proxy: bool = argToBoolean(params.get("proxy") or False)
 
     if not args.get("organization_id"):
         args["organization_id"] = params.get("organization_id")

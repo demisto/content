@@ -470,8 +470,8 @@ def run_cisco_meraki_event_collector() -> None:
             client_secret=dict_safe_get(params, ["credentials", "password"]) or None,
             redirect_uri=params.get("redirect_uri") or None,
             auth_code=dict_safe_get(params, ["auth_code", "password"]) or None,
-            verify=not argToBoolean(params.get("insecure", False)),
-            proxy=argToBoolean(params.get("proxy", False)),
+            verify=not argToBoolean(params.get("insecure") or False),
+            proxy=argToBoolean(params.get("proxy") or False),
         )
 
         if command == "test-module":

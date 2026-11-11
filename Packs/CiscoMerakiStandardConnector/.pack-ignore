@@ -1,0 +1,14 @@
+[file:README.md]
+ignore=RM104
+
+[file:CiscoMerakiv2StandardConnector.yml]
+ignore=PR101,BA129,BA127
+
+[file:CiscoMerakiEventCollectorStandardConnector.yml]
+ignore=PR101,BA129,BA127
+
+[file:CiscoMerakiv2StandardConnector_image.png]
+ignore=IM111
+
+[file:CiscoMerakiEventCollectorStandardConnector_image.png]
+ignore=IM111

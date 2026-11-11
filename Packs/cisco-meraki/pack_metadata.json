@@ -2,13 +2,14 @@
     "name": "Cisco Meraki",
     "description": "Cloud controlled WiFi, routing, and security.",
     "support": "xsoar",
-    "currentVersion": "2.0.11",
+    "currentVersion": "2.1.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "IT Services"
+        "IT Services",
+        "Analytics & SIEM"
     ],
     "tags": [
         "Network"

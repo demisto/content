@@ -1,0 +1,99 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: CiscoMerakiEventCollectorStandardConnector
+  version: -1
+configuration:
+- name: endpoint_region
+  display: Endpoint Region
+  additionalinfo: The Cisco Meraki API endpoint region of your Meraki dashboard.
+  type: 15
+  required: true
+  section: Connect
+  defaultvalue: North America
+  options:
+  - North America
+  - South America
+  - Europe
+  - India
+  - Asia-Pacific
+  - Canada
+  - China
+  - United States FedRAMP
+- name: organization_id
+  display: Organization ID
+  additionalinfo: The ID of the Meraki organization to collect events from.
+  required: true
+  type: 0
+  section: Connect
+- name: event_types
+  display: Event types to fetch
+  additionalinfo: The event types to collect. Each type is fetched with its own budget and state.
+  required: false
+  type: 16
+  section: Collect
+  defaultvalue: Configuration changes,Network events,API requests,Appliance security events
+  options:
+  - Configuration changes
+  - Network events
+  - API requests
+  - Appliance security events
+- name: network_ids
+  display: Network IDs
+  additionalinfo: Comma-separated network IDs to collect network events from. Leave empty to collect from all the networks of the organization. Applies to network events only.
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+- name: max_events_per_type
+  display: Maximum number of events per fetch, per event type
+  additionalinfo: The maximum number of events to fetch for each event type in every fetch cycle.
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+  defaultvalue: '10000'
+description: This integration is configured automatically as part of the Cisco Meraki Standard Connector. Do not configure this integration directly — set it up from the connector page instead.
+display: Cisco Meraki Event Collector (Standard Connector)
+name: CiscoMerakiEventCollectorStandardConnector
+script:
+  commands:
+  - name: cisco-meraki-get-events
+    description: Get events from Cisco Meraki. This command is intended for development and debugging purposes and should be used with caution, as it may create duplicate events.
+    arguments:
+    - name: event_types
+      description: Comma-separated event types to get. Default is all event types.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - Configuration changes
+      - Network events
+      - API requests
+      - Appliance security events
+    - name: limit
+      description: The maximum number of events to return per event type.
+      defaultValue: '10'
+    - name: start_time
+      description: The start time to get events from (organization-level event types), e.g., "1 hour", "2026-01-01T00:00:00Z". Default is 1 hour ago.
+    - name: should_push_events
+      description: Whether to push the events to Cortex XSIAM. Set to true only when you want to create events, otherwise use only for debugging.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.13.10116658
+  isfetchevents: true
+  script: ''
+marketplaces:
+- platform
+supportedModules:
+- xsiam
+fromversion: 8.15.0
+tests:
+- No tests (auto formatted)
