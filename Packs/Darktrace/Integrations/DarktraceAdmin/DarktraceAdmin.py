@@ -598,11 +598,11 @@ def get_tags_for_device_command(client: Client, args: dict[str, Any]) -> Command
     :type args: ``Dict[str, Any]``
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
-        ``args['alert_id']`` alert ID to return
+        ``args['deviceId']`` ID of the device to return tags for
 
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains an alert
+        that contains the tags for the device
 
     :rtype: ``CommandResults``
     """
@@ -614,8 +614,8 @@ def get_tags_for_device_command(client: Client, args: dict[str, Any]) -> Command
         info: dict[str, Any] = {}
         info["tagId"] = tag["tid"]
         info["tagName"] = tag["name"]
-        info["tagDescription"] = tag["data"]["description"]
-        info["expiry"] = tag["expiry"]
+        info["tagDescription"] = (tag.get("data") or {}).get("description")
+        info["expiry"] = tag.get("expiry")
         output.append(info)
     readable_output = tableToMarkdown(f"Device Tag Response for device: {did} ", output)
     return CommandResults(
