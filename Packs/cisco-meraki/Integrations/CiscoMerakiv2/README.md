@@ -8,8 +8,12 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Base URL | The API base URL. | True |
-| API Key | An API key can be generated through 'My Profile' in 'API access'. | True |
+| Base URL | The API base URL. Use https://api.meraki.com for the global cluster (North America, South America, Europe, Asia-Pacific), https://api.meraki.ca for Canada, https://api.meraki.cn for China, https://api.meraki.in for India, or https://api.gov-meraki.com for United States FedRAMP. OAuth 2.0 is supported only for https://api.meraki.com. | True |
+| API Key | An API key can be generated through 'My Profile' in 'API access'. Required when OAuth 2.0 is not configured, and for clusters other than https://api.meraki.com. | False |
+| Client ID | OAuth 2.0 client ID and secret of the integration registered in the Meraki Dashboard. When set, OAuth 2.0 is used instead of the API key. | False |
+| Client Secret |  | False |
+| Redirect URI | The redirect URI registered on the Meraki OAuth 2.0 integration. Required for OAuth 2.0. | False |
+| Authorization code | The `code` value received after running the meraki-generate-login-url command and signing in. Required for OAuth 2.0. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Organization ID | A default ID to be used in all commands that require an organization. | False |
@@ -19,6 +23,57 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### meraki-generate-login-url
+
+***
+Generate the login URL used to authorize the integration with OAuth 2.0.
+
+#### Base Command
+
+`meraki-generate-login-url`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### meraki-auth-test
+
+***
+Test the OAuth 2.0 authorization and the connection to Cisco Meraki.
+
+#### Base Command
+
+`meraki-auth-test`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### meraki-auth-reset
+
+***
+Reset the OAuth 2.0 authorization. Run meraki-generate-login-url to authorize again.
+
+#### Base Command
+
+`meraki-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
 
 ### meraki-organization-list
 
