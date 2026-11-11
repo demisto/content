@@ -10939,14 +10939,15 @@ script:
       type: unknown
 
   - name: aws-elasticbeanstalk-environment-create
+    execution: true
     description: "Starts creating an AWS Elastic Beanstalk environment. This command only starts the creation and does not wait for the environment to finish launching. Use aws-elasticbeanstalk-environments-describe to track its Status and Health. Can be used to recreate a deleted environment with the same CNAME prefix to prevent subdomain takeover. Note: This command creates real, billable AWS resources (for example, EC2 instances, Auto Scaling groups, load balancers, and S3 objects). Exactly one of template_name, solution_stack_name, or platform_arn must be provided. Required IAM permission: elasticbeanstalk:CreateEnvironment. Elastic Beanstalk also requires additional permissions to provision the environment resources, such as CloudFormation, EC2, AutoScaling, Elastic Load Balancing, S3, and iam:PassRole."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0), Cortex Cloud, and Cortex Agentix. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex XSIAM (version >= 3.0), Cortex Cloud, and Cortex Agentix. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
@@ -11084,11 +11085,11 @@ script:
     description: "Returns descriptions for existing AWS Elastic Beanstalk environments. Required IAM permission: elasticbeanstalk:DescribeEnvironments."
     arguments:
     - name: account_id
-      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0), Cortex Cloud, and Cortex Agentix. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: region
-      description: The AWS region. Required for Cortex XSIAM (version >= 3.0), Cortex Cloud, and Cortex Agentix. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
       auto: PREDEFINED
