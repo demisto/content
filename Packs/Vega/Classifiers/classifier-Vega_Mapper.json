@@ -15,6 +15,12 @@
                 "Vega Detection ID": {
                     "simple": "detectionId"
                 },
+                "Vega Detection Version ID": {
+                    "simple": "detectionVersionId"
+                },
+                "Vega Detection Mode": {
+                    "simple": "detectionMode"
+                },
                 "Vega Verdict": {
                     "simple": "verdict"
                 },
@@ -68,6 +74,12 @@
 				},
                 "Vega Related Incidents": {
                     "simple": "relatedIncidents"
+                },
+                "Vega Actors": {
+                    "simple": "actors"
+                },
+                "Vega Targets": {
+                    "simple": "targets"
                 },
                 "Vega Alert Link": {
                     "simple": "link"
@@ -134,6 +146,12 @@
                 "Vega Last Updated": {
                     "simple": "lastUpdated"
                 },
+                "Vega Resolved At": {
+                    "simple": "resolvedAt"
+                },
+                "Vega Verdict Agreement": {
+                    "simple": "verdictAgreement"
+                },
                 "Vega Incident Summary": {
                     "simple": "incidentSummary"
                 },
@@ -148,6 +166,9 @@
                 },
                 "Vega Observables": {
                     "simple": "observables"
+                },
+                "Vega Typed Observables": {
+                    "simple": "typedObservables"
                 },
                 "Vega Alerts Count": {
                     "simple": "alertsCount"

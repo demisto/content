@@ -500,7 +500,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "vegaobservables",
+								"fieldId": "vegatypedobservables",
 								"height": 106,
 								"id": "4856c4ca-8a04-4436-bb3b-42911de5dc6b",
 								"index": 1,
@@ -831,7 +831,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "vegaobservables",
+                        "fieldId": "vegatypedobservables",
                         "isVisible": true
                     },
                     {
@@ -1029,7 +1029,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "vegaobservables",
+                        "fieldId": "vegatypedobservables",
                         "isVisible": true
                     },
                     {
