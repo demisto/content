@@ -41,8 +41,8 @@
                 "commitMessage": "",
                 "shouldCommit": false,
                 "Cache": null,
-                "name": "New Xpanse High \u0026 Critical Incidents",
-                "prevName": "New Xpanse High \u0026 Critical Incidents",
+                "name": "New Xpanse High & Critical Incidents",
+                "prevName": "New Xpanse High & Critical Incidents",
                 "dataType": "incidents",
                 "widgetType": "column",
                 "query": "type:\"Xpanse Alert\" and severity:High or severity:Critical",
@@ -490,5 +490,8 @@
     ],
     "description": "",
     "isPredefined": true,
-    "fromVersion": "6.8.0"
+    "fromVersion": "6.8.0",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

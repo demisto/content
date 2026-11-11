@@ -1,5 +1,7 @@
 id: Xpanse - Alert Enrichment
 version: -1
+marketplaces:
+- xsoar
 name: Xpanse - Alert Enrichment
 description: Additional enrichment via cloud service providers and other applicable IT and security tools.
 starttaskid: "0"
