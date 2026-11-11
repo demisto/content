@@ -4,11 +4,11 @@ import unittest.mock
 from collections.abc import Callable
 from typing import Any
 
-import CiscoMerakiv2
+import CiscoMerakiApiModule as CiscoMerakiv2
 import CommonServerPython
 import pytest
 
-TEST_DATA = "test_data"
+TEST_DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
 BASE_URL = "https://api.meraki.com/api/v1"
 
 

@@ -1,0 +1,19 @@
+commonfields:
+  id: CiscoMerakiApiModule
+  version: -1
+name: CiscoMerakiApiModule
+script: ""
+type: python
+subtype: python3
+tags:
+  - infra
+  - server
+comment: Common Cisco Meraki code (OAuth 2.0 / API key / UCP authentication, rate-limit handling) for all Cisco Meraki integrations, including the Cisco Meraki v2 integration implementation.
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/python3:3.12.13.10116658
+fromversion: 5.0.0
+tests:
+  - No test
