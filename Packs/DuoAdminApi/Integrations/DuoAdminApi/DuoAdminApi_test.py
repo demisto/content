@@ -2,6 +2,7 @@ import json
 
 import demistomock as demisto
 import duo_client
+import pytest
 
 
 def util_load_json(path: str):
@@ -81,6 +82,213 @@ def test_get_users(mocker):
     assert content.get("alias1") == "test.1"
     assert content.get("email") == "test.1@test.com"
     assert content.get("status") == "active"
+
+
+def _mock_user_list():
+    return [util_load_json("test_data/get_users.json")]
+
+
+def test_get_users_by_username_list(mocker):
+    """
+    Given
+    - A username_list argument.
+
+    When
+    - Calling get_all_users method.
+
+    Then
+    - Validate only the by-usernames lookup is used and the user is returned.
+    """
+    from DuoAdminApi import get_all_users
+
+    client = mock_client()
+    by_names = mocker.patch.object(duo_client.Admin, "get_users_by_names", return_value=iter(_mock_user_list()))
+    all_users = mocker.patch.object(duo_client.Admin, "get_users")
+    mocker.patch.object(demisto, "results")
+
+    get_all_users(client, {"username_list": "test.1,test.2"})
+
+    by_names.assert_called_once_with(["test.1", "test.2"])
+    all_users.assert_not_called()
+    entry = demisto.results.call_args[0][0]
+    assert entry["Contents"][0]["email"] == "test.1@test.com"
+    assert "DuoAdmin.UserDetails(val.username==obj.username)" in entry["EntryContext"]
+
+
+def test_get_users_by_user_id_list(mocker):
+    """
+    Given
+    - A user_id_list argument.
+
+    When
+    - Calling get_all_users method.
+
+    Then
+    - Validate only the by-ids lookup is used and the context shape is a list.
+    """
+    from DuoAdminApi import get_all_users
+
+    client = mock_client()
+    by_ids = mocker.patch.object(duo_client.Admin, "get_users_by_ids", return_value=iter(_mock_user_list()))
+    all_users = mocker.patch.object(duo_client.Admin, "get_users")
+    mocker.patch.object(demisto, "results")
+
+    get_all_users(client, {"user_id_list": "DUAB3CDEFG456HI7J8KL, DUCD4EFGHI567JK8L9MN"})
+
+    by_ids.assert_called_once_with(["DUAB3CDEFG456HI7J8KL", "DUCD4EFGHI567JK8L9MN"])
+    all_users.assert_not_called()
+    entry = demisto.results.call_args[0][0]
+    assert isinstance(entry["Contents"], list)
+    assert entry["EntryContext"]["DuoAdmin.UserDetails(val.username==obj.username)"] == entry["Contents"]
+
+
+def test_get_users_no_args_returns_all(mocker):
+    """
+    Given
+    - No filter arguments.
+
+    When
+    - Calling get_all_users method.
+
+    Then
+    - Validate all users are fetched (backward compatible behavior).
+    """
+    from DuoAdminApi import get_all_users
+
+    client = mock_client()
+    all_users = mocker.patch.object(duo_client.Admin, "get_users", return_value=_mock_user_list())
+    mocker.patch.object(demisto, "results")
+
+    get_all_users(client, {})
+
+    all_users.assert_called_once_with()
+    assert len(demisto.results.call_args[0][0]["Contents"]) == 1
+
+
+def test_get_users_both_args_raises(mocker):
+    """
+    Given
+    - Both username_list and user_id_list arguments.
+
+    When
+    - Calling get_all_users method.
+
+    Then
+    - Validate a readable error is raised and no API call is made.
+    """
+    from DuoAdminApi import get_all_users
+
+    client = mock_client()
+    all_users = mocker.patch.object(duo_client.Admin, "get_users")
+    by_names = mocker.patch.object(duo_client.Admin, "get_users_by_names")
+    by_ids = mocker.patch.object(duo_client.Admin, "get_users_by_ids")
+
+    with pytest.raises(Exception, match="Provide only one of username_list or user_id_list."):
+        get_all_users(client, {"username_list": "a", "user_id_list": "b"})
+
+    all_users.assert_not_called()
+    by_names.assert_not_called()
+    by_ids.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "args, patched_method, expected_message",
+    [
+        ({"username_list": "ghost,casper"}, "get_users_by_names", "No user found matching the given username: ghost, casper."),
+        ({"user_id_list": "DUMISSING"}, "get_users_by_ids", "No user found matching the given user ID: DUMISSING."),
+    ],
+)
+def test_get_users_not_found_empty_list(mocker, args, patched_method, expected_message):
+    """
+    Given
+    - A filter that matches no user (API returns an empty list).
+
+    When
+    - Calling get_all_users method.
+
+    Then
+    - Validate a readable "no user found" message is returned.
+    """
+    from DuoAdminApi import get_all_users
+
+    client = mock_client()
+    mocker.patch.object(duo_client.Admin, patched_method, return_value=iter([]))
+    mocker.patch.object(demisto, "results")
+
+    get_all_users(client, args)
+
+    entry = demisto.results.call_args[0][0]
+    assert entry["HumanReadable"] == expected_message
+    assert entry["Contents"] == []
+
+
+def test_get_users_not_found_404(mocker):
+    """
+    Given
+    - A user_id_list that makes the API return HTTP 404.
+
+    When
+    - Calling get_all_users method.
+
+    Then
+    - Validate a readable "no user found" message is returned instead of a raw error.
+    """
+    from DuoAdminApi import get_all_users
+
+    client = mock_client()
+    error = RuntimeError("Received 404 Not Found")
+    error.status = 404  # type: ignore[attr-defined]
+    mocker.patch.object(duo_client.Admin, "get_users_by_ids", side_effect=error)
+    mocker.patch.object(demisto, "results")
+
+    get_all_users(client, {"user_id_list": "DUMISSING"})
+
+    entry = demisto.results.call_args[0][0]
+    assert entry["HumanReadable"] == "No user found matching the given user ID: DUMISSING."
+
+
+def test_get_users_too_many_values_raises(mocker):
+    """
+    Given
+    - A username_list with more than 100 values.
+
+    When
+    - Calling get_all_users method.
+
+    Then
+    - Validate a readable error is raised and no API call is made.
+    """
+    from DuoAdminApi import get_all_users
+
+    client = mock_client()
+    by_names = mocker.patch.object(duo_client.Admin, "get_users_by_names")
+
+    with pytest.raises(Exception, match="A maximum of 100 values can be provided, got 101."):
+        get_all_users(client, {"username_list": ",".join(f"user{i}" for i in range(101))})
+
+    by_names.assert_not_called()
+
+
+def test_get_users_other_error_propagates(mocker):
+    """
+    Given
+    - The lookup fails with a non-404 error.
+
+    When
+    - Calling get_all_users method.
+
+    Then
+    - Validate the original error is not swallowed.
+    """
+    from DuoAdminApi import get_all_users
+
+    client = mock_client()
+    error = RuntimeError("Received 500 Server Error")
+    error.status = 500  # type: ignore[attr-defined]
+    mocker.patch.object(duo_client.Admin, "get_users_by_names", side_effect=error)
+
+    with pytest.raises(RuntimeError, match="500"):
+        get_all_users(client, {"username_list": "DUX"})
 
 
 def test_get_bypass_codes(mocker):
