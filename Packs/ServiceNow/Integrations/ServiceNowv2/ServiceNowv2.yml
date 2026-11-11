@@ -2048,7 +2048,6 @@ script:
     - contextPath: ServiceNow.Ticket.CloseCode
       description: Ticket close code.
       type: string
-
   - arguments:
     - defaultValue: Cortex
       description: Source of the event. Defaults to "Cortex".
@@ -2110,7 +2109,6 @@ script:
     hidden: true
     quickaction: true
     outputs: []
-
   dockerimage: demisto/auth-utils:1.0.0.13053055
   isfetch: true
   ismappable: true
@@ -2119,7 +2117,6 @@ script:
   script: ''
   subtype: python3
   type: python
-
 supportsquickactions: true
 fromversion: 5.0.0
 tests:
