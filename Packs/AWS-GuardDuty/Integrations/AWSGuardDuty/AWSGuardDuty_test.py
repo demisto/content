@@ -1688,3 +1688,60 @@ def test_get_pagination_args(args, expected_results):
     from AWSGuardDuty import get_pagination_args
 
     assert expected_results == get_pagination_args(args)
+
+
+@pytest.mark.parametrize(
+    "gd_severity, expected_severity",
+    [
+        pytest.param(None, None, id="None severity returns None"),
+        pytest.param(0, None, id="Zero severity returns None"),
+        pytest.param(0.1, 1, id="Low - lower edge"),
+        pytest.param(2.0, 1, id="Low - middle"),
+        pytest.param(3.9, 1, id="Low - upper boundary"),
+        pytest.param(4, 2, id="Medium - lower boundary"),
+        pytest.param(5.5, 2, id="Medium - middle"),
+        pytest.param(6.9, 2, id="Medium - upper boundary"),
+        pytest.param(7, 3, id="High - lower boundary"),
+        pytest.param(8.0, 3, id="High - middle"),
+        pytest.param(8.9, 3, id="High - upper boundary"),
+        pytest.param(9, 4, id="Critical - lower boundary"),
+        pytest.param(9.5, 4, id="Critical - middle"),
+        pytest.param(10, 4, id="Critical - upper boundary"),
+        pytest.param(10.1, 0, id="Above 10 returns Unknown"),
+        pytest.param(123.0, 0, id="Out of range returns Unknown"),
+    ],
+)
+def test_severity_mapping(gd_severity, expected_severity):
+    """
+    Given:
+        - A GuardDuty finding severity score (0.1-10 scale), or an empty / out-of-range value.
+
+    When:
+        - Running severity_mapping.
+
+    Then:
+        - Make sure the GuardDuty severity is mapped to the matching XSOAR incident severity:
+          Low (0.1-3.9) -> 1, Medium (4-6.9) -> 2, High (7-8.9) -> 3, Critical (9-10) -> 4,
+          out of range -> Unknown (0), and empty values -> None.
+    """
+    from AWSGuardDuty import severity_mapping
+
+    assert severity_mapping(gd_severity) == expected_severity
+
+
+def test_parse_incident_from_finding_critical_severity():
+    """
+    Given:
+        - A GuardDuty finding with a critical severity score (9.0).
+
+    When:
+        - Parsing the finding into an XSOAR incident.
+
+    Then:
+        - Make sure the incident severity is Critical (4).
+    """
+    finding = {**FINDING, "Severity": 9.0}
+
+    incident = parse_incident_from_finding(finding)
+
+    assert incident["severity"] == 4

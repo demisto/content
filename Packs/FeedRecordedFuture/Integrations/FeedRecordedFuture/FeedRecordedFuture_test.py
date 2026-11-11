@@ -5,7 +5,15 @@ from csv import DictReader
 
 import pytest
 from CommonServerPython import argToList
-from FeedRecordedFuture import Client, fetch_indicators_command, get_indicator_type, get_indicators_command, main, requests
+from FeedRecordedFuture import (
+    Client,
+    fetch_indicators_command,
+    get_indicator_type,
+    get_indicators_command,
+    main,
+    parse_services,
+    requests,
+)
 from pytest_mock import MockerFixture
 
 
@@ -631,11 +639,55 @@ def test_client_init_with_null_values():
 
 
 @pytest.mark.parametrize(
+    "services_param, expected_services",
+    [
+        (["connectApi"], ["connectApi"]),
+        ('["connectApi"]', ["connectApi"]),
+        ("connectApi", ["connectApi"]),
+        ("connectApi,fusion", ["connectApi", "fusion"]),
+        (
+            ["[", '"', "c", "o", "n", "n", "e", "c", "t", "A", "p", "i", '"', "]", "fusion"],
+            ["fusion"],
+        ),
+        (
+            ["[", '"', "c", "o", "n", "n", "e", "c", "t", "A", "p", "i", '"', "]"],
+            ["connectApi"],
+        ),
+        (
+            '["[","\\"","c","o","n","n","e","c","t","A","p","i","\\"","]"]',
+            ["connectApi"],
+        ),
+        (
+            '["[","\\"","[","\\"",",","\\"","\\\\","\\"","\\"",",","\\"","c","\\"",",","\\"","o",",","\\"","i","\\"",",","\\"","\\\\","\\"","\\"",",","\\"","]","\\"","]","connectApi"]',
+            ["connectApi"],
+        ),
+        (None, []),
+    ],
+)
+def test_parse_services(services_param: list | str | None, expected_services: list[str]):
+    """
+    Given:
+     - Various 'services' parameter representations including native lists, JSON strings,
+       and UCP character-split strings/arrays.
+
+    When:
+     - Calling parse_services().
+
+    Then:
+     - Verify it normalizes to the expected list of service names without single-character artifacts.
+    """
+    assert parse_services(services_param) == expected_services
+
+
+@pytest.mark.parametrize(
     "services_param",
     [
         ["connectApi"],
         '["connectApi"]',
         "connectApi",
+        ["[", '"', "c", "o", "n", "n", "e", "c", "t", "A", "p", "i", '"', "]", "connectApi"],
+        '["[","\\"","[","\\"",",","\\"","\\\\","\\"","\\"",",","\\"","c","\\"",",","\\"","o",",","\\"","i","\\"",",","\\"","\\\\","\\"","\\"",",","\\"","]","\\"","]","connectApi"]',
+        '["[","\\"","c","o","n","n","e","c","t","A","p","i","\\"","]"]',
     ],
 )
 def test_main_services_param_normalization(mocker, services_param: list | str):

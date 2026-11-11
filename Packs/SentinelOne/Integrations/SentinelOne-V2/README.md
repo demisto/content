@@ -53,7 +53,7 @@ Returns all agents that match the specified criteria.
 | created_at | Endpoint creation timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional |
 | min_active_threats | Minimum number of threats per agent. | Optional |
 | limit | The maximum number of agents to return. Default is 10. | Optional |
-| params | Query params field=value pairs delimited by comma (e.g., activeThreats=3,gatewayIp=1.2.3.4). Query params are OR'd. | Optional |
+| params | Query params field=value pairs delimited by comma (e.g., activeThreats=3,gatewayIp=1.2.3.4). Query params are AND'd. | Optional |
 | columns | A comma-separated list of additionals fields to display. | Optional |
 
 #### Context Output
