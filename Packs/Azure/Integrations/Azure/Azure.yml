@@ -2257,9 +2257,14 @@ script:
       description: The maximum number of entries to retrieve.
     - name: prefix
       description: The prefix used to filter entries. Only entries whose names begin with this prefix are returned.
+    - name: next_token
+      description: A string value that identifies the portion of the list to be returned with the next list operation. The operation returns a marker value within the response body if the list returned wasn't complete. You can then use the marker value in a subsequent call to request the next set of list items.
     outputs:
     - contextPath: Azure.Storage.FileShares.name
       description: The share name.
+      type: String
+    - contextPath: Azure.Storage.FileShares.ContentNextToken
+      description: The marker value to pass as the next_token argument in a subsequent call to retrieve the next set of list items. Empty if the list is complete.
       type: String
     - contextPath: Azure.Storage.FileShares.Content.Path
       description: The directory path.

@@ -5616,7 +5616,7 @@ class AzureClient:
         full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
         headers = {
             "x-ms-type": "file",
-            "x-ms-file-permission": "Inherit",
+            "x-ms-file-permission": "inherit",
             "x-ms-file-attributes": "None",
             "x-ms-file-creation-time": "now",
             "x-ms-file-last-write-time": "now",
@@ -5660,7 +5660,6 @@ class AzureClient:
             "x-ms-write": "update",
             "x-ms-range": f"bytes=0-{max_range}",
             "Content-Length": str(content_length),
-            "x-ms-type": "file",
             **FILESHARE_OAUTH_HEADERS,
         }
         params = {"comp": "range"}
@@ -6693,11 +6692,17 @@ def fileshare_handle_directory_content_response(response: str) -> dict:
         response (str): XML schema string response.
 
     Returns:
-        dict: Raw response with Directory, File and DirectoryId keys.
+        dict: Raw response with Directory, File, DirectoryId and NextToken keys.
     """
     root = defused_ET.fromstring(response)
 
-    raw_response: dict = {"Directory": [], "File": [], "DirectoryId": root.findtext("DirectoryId")}
+    # Azure returns an empty <NextMarker /> on the last page; normalize it to None so a stale token is overwritten.
+    raw_response: dict = {
+        "Directory": [],
+        "File": [],
+        "DirectoryId": root.findtext("DirectoryId"),
+        "NextToken": root.findtext("NextMarker") or None,
+    }
 
     for path in ("Directory", "File"):
         for element in root.iter(path):
@@ -6722,6 +6727,8 @@ def fileshare_create_directory_content_output(share_name: str, raw_response: dic
     """
     outputs: dict = {
         "name": share_name,
+        # The token is a pagination value for the whole listing, so it is exposed next to the content rather than inside it.
+        "ContentNextToken": raw_response.pop("NextToken", None),
         "Content": {"Path": directory_path, "DirectoryId": raw_response["DirectoryId"]},
     }
 
@@ -6761,7 +6768,10 @@ def fileshare_create_content_readable_output(outputs: dict, prefix: str = "") ->
     files_outputs = tableToMarkdown(
         "Files:", outputs["Content"]["File"], headers=["Name", "FileId"], headerTransform=pascalToSpace
     )
-    return prefix + "\n" + directories_outputs + "\n" + files_outputs
+    readable_output = prefix + "\n" + directories_outputs + "\n" + files_outputs
+    if outputs.get("ContentNextToken"):
+        readable_output += "\nMore pages are available - re-run the command with the next_token argument to continue."
+    return readable_output
 
 
 """ COMMAND FUNCTIONS """
@@ -13236,9 +13246,10 @@ def storage_fileshare_content_list_command(client: AzureClient, params: dict, ar
     directory_path = args.get("directory_path", "")
     prefix = args.get("prefix")
     limit = args.get("limit") or DEFAULT_LIMIT
+    next_token = args.get("next_token")
     validate_limit(arg_to_number(limit), max_limit=5000)
 
-    response = client.list_directories_and_files_request(account_name, share_name, directory_path, prefix, limit)
+    response = client.list_directories_and_files_request(account_name, share_name, directory_path, prefix, limit, next_token)
 
     raw_response = fileshare_handle_directory_content_response(response)
     outputs = fileshare_create_directory_content_output(share_name, copy.deepcopy(raw_response), directory_path)
@@ -13333,7 +13344,7 @@ def storage_fileshare_file_create_command(client: AzureClient, params: dict, arg
         with system_file_path.open("rb") as file_data:
             client.add_file_content_request(account_name, share_name, new_file_name, file_data, content_length, directory_path)
 
-            return CommandResults(readable_output=f"File successfully created in {share_name}.")
+        return CommandResults(readable_output=f"File successfully created in {share_name}.")
     else:
         return CommandResults(readable_output=f"The file {file_entry_id} is empty.")
 

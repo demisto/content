@@ -10874,6 +10874,41 @@ def test_storage_fileshare_content_list_command_success(mocker, client, mock_par
     assert result.outputs.get("name") == "mock-share"
     assert result.outputs.get("Content").get("File")[0].get("Name") == "mock_file.png"
     assert result.outputs.get("Content").get("Directory")[0].get("Name") == "mock_directory"
+    assert result.outputs.get("ContentNextToken") is None
+    assert "NextToken" not in result.outputs.get("Content")
+    assert "next_token" not in result.readable_output
+
+
+def test_storage_fileshare_content_list_command_with_next_token(mocker, client, mock_params):
+    """
+    Given: An Azure client and a next_token argument, with a response containing a NextMarker value.
+    When: The storage_fileshare_content_list_command function is called with the next_token argument.
+    Then: The next_token value is passed to the client request as the marker, and the returned
+          NextMarker is exposed as ContentNextToken and mentioned in the readable output.
+    """
+    from Azure import storage_fileshare_content_list_command
+
+    xml_response = (
+        '<?xml version="1.0" encoding="utf-8"?>'
+        "<EnumerationResults>"
+        "<DirectoryId>mock_dir_id</DirectoryId>"
+        "<Entries></Entries>"
+        "<NextMarker>mock-next-marker</NextMarker>"
+        "</EnumerationResults>"
+    )
+    request_mock = mocker.patch.object(client, "list_directories_and_files_request", return_value=xml_response)
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+        "next_token": "mock-marker",
+    }
+    result = storage_fileshare_content_list_command(client, mock_params, args)
+
+    request_mock.assert_called_once_with("mockaccount", "mock-share", "", None, "50", "mock-marker")
+    assert result.outputs.get("ContentNextToken") == "mock-next-marker"
+    assert "next_token" in result.readable_output
 
 
 def test_storage_fileshare_directory_create_command_success(mocker, client, mock_params):
@@ -10961,14 +10996,16 @@ def test_storage_fileshare_file_create_command_success(mocker, client, mock_para
     mock_stat = mocker.MagicMock()
     mock_stat.st_size = 1024
     mocker.patch("Azure.Path.stat", return_value=mock_stat)
-    mocker.patch("Azure.Path.open", mocker.mock_open(read_data=b"mock_data"))
+    mock_open = mocker.patch("Azure.Path.open", mocker.mock_open(read_data=b"mock_data"))
     mocker.patch.object(client, "create_file_request")
     mocker.patch.object(client, "add_file_content_request")
 
     result = storage_fileshare_file_create_command(client, mock_params, args)
 
-    client.create_file_request.assert_called_once()
-    client.add_file_content_request.assert_called_once()
+    client.create_file_request.assert_called_once_with("mockaccount", "mock-share", "mock_file.txt", 1024, "mock/path")
+    client.add_file_content_request.assert_called_once_with(
+        "mockaccount", "mock-share", "mock_file.txt", mock_open.return_value, 1024, "mock/path"
+    )
     assert isinstance(result, CommandResults)
     assert result.readable_output == "File successfully created in mock-share."
 
