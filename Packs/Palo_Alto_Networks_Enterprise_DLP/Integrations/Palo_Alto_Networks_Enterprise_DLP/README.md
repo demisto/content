@@ -127,7 +127,7 @@ Updates a DLP incident with user feedback.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IncidentUpdate.feedback | string | The feedback that was saved. Not available for "EXCEPTION_GRANTED". |
+| IncidentUpdate.feedback | String | The feedback that was saved. Not available for "EXCEPTION_GRANTED". |
 | IncidentUpdate.success | boolean | Whether the update was successful. Not available for "EXCEPTION_GRANTED". |
 | Exemption.feedback | string | The feedback that was saved, only available for "EXCEPTION_GRANTED". |
 | Exemption.success | boolean | Whether the exemption was granted, only available for "EXCEPTION_GRANTED". |
