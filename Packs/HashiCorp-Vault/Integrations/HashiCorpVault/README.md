@@ -20,7 +20,7 @@ You are required to fill in only the *Username / Role ID* parameter with the rol
 
 ### SSH Key-Based Authentication
 
-The integration supports SSH key-based authentication for managing SSH credentials stored in HashiCorp Vault. When enabled, the integration fetches SSH key credentials from configured secrets engines and maps them to XSOAR credential objects for use with integrations such as RemoteAccessV2.
+The integration supports SSH key-based authentication for managing SSH credentials stored in HashiCorp Vault. When enabled, the integration fetches SSH key credentials from configured secrets engines and maps them to Cortex XSOAR credential objects for use with integrations such as RemoteAccessV2.
 
 #### How SSH Key Authentication Works
 
