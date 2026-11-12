@@ -1,8 +1,8 @@
 {
-    "name": "ThreatMon",
-    "description": "This integration pulls data from the ThreatMon API and updates XSOAR incidents. You can also update the status of your incidents, submit takedown requests, and request data removal for Black Market Monitoring findings directly from the XSOAR interface.",
+    "name": "ThreatMon Incident Management",
+    "description": "Brings ThreatMon digital risk protection into Cortex: alarms become incidents with their findings and screenshots, the alarm status is mirrored in both directions, and playbooks can submit takedowns and data removals, enrich CVEs with ThreatMon Vulnerability Knowledge, analyse files in the ThreatMon sandbox, list the company attack surface and manage MSSP customers.",
     "support": "community",
-    "currentVersion": "1.0.7",
+    "currentVersion": "2.0.0",
     "author": "ThreatMon",
     "url": "https://www.threatmon.io",
     "email": "support@threatmonit.io",
@@ -10,17 +10,39 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Threat Intelligence"
+        "Threat Intelligence",
+        "Dark Web",
+        "Alerts",
+        "Incident Handling",
+        "Malware"
     ],
     "useCases": [
-        "Threat Intelligence Management"
+        "Threat Intelligence Management",
+        "Phishing",
+        "Incident Response",
+        "Vulnerability Management",
+        "Asset Management",
+        "Malware"
     ],
     "certification": "certified",
-    "keywords": [],
+    "keywords": [
+        "ThreatMon",
+        "Digital Risk Protection",
+        "Takedown",
+        "Brand Protection",
+        "Dark Web",
+        "Attack Surface",
+        "CVE",
+        "Sandbox",
+        "MSSP"
+    ],
     "premium": false,
     "marketplaces": [
         "xsoar",
         "marketplacev2",
         "platform"
+    ],
+    "itemPrefix": [
+        "ThreatMon"
     ]
 }
