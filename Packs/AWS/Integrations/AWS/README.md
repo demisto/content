@@ -3704,8 +3704,8 @@ Starts creating an AWS Elastic Beanstalk environment. This command only starts t
 | AWS.ElasticBeanstalk.Environments.Description | String | The description of the environment. |
 | AWS.ElasticBeanstalk.Environments.EndpointURL | String | The URL to the load balancer for load-balanced, autoscaling environments, or the IP address of the instance for single-instance environments. |
 | AWS.ElasticBeanstalk.Environments.CNAME | String | The URL to the CNAME for this environment. |
-| AWS.ElasticBeanstalk.Environments.DateCreated | Date | The creation date for this environment. |
-| AWS.ElasticBeanstalk.Environments.DateUpdated | Date | The last modified date for this environment. |
+| AWS.ElasticBeanstalk.Environments.DateCreated | Date | The creation date for this environment in ISO 8601 format \(for example, 2024-01-15T10:30:00\). |
+| AWS.ElasticBeanstalk.Environments.DateUpdated | Date | The last modified date for this environment in ISO 8601 format \(for example, 2024-01-15T10:30:00\). |
 | AWS.ElasticBeanstalk.Environments.Status | String | The current operational status of the environment. Possible values are Aborting, Launching, Updating, LinkingFrom, LinkingTo, Ready, Terminating, or Terminated. |
 | AWS.ElasticBeanstalk.Environments.AbortableOperationInProgress | Boolean | Whether there is an in-progress environment configuration update or application version deployment that can be aborted. |
 | AWS.ElasticBeanstalk.Environments.Health | String | The health status of the environment. Possible values are Green, Yellow, Red, or Grey. |
@@ -3756,8 +3756,8 @@ Returns descriptions for existing AWS Elastic Beanstalk environments. Required I
 | AWS.ElasticBeanstalk.Environments.Description | String | The description of the environment. |
 | AWS.ElasticBeanstalk.Environments.EndpointURL | String | The URL to the load balancer for load-balanced, autoscaling environments, or the IP address of the instance for single-instance environments. |
 | AWS.ElasticBeanstalk.Environments.CNAME | String | The URL to the CNAME for this environment. |
-| AWS.ElasticBeanstalk.Environments.DateCreated | Date | The creation date for this environment. |
-| AWS.ElasticBeanstalk.Environments.DateUpdated | Date | The last modified date for this environment. |
+| AWS.ElasticBeanstalk.Environments.DateCreated | Date | The creation date for this environment in ISO 8601 format \(for example, 2024-01-15T10:30:00\). |
+| AWS.ElasticBeanstalk.Environments.DateUpdated | Date | The last modified date for this environment in ISO 8601 format \(for example, 2024-01-15T10:30:00\). |
 | AWS.ElasticBeanstalk.Environments.Status | String | The current operational status of the environment. Possible values are Aborting, Launching, Updating, LinkingFrom, LinkingTo, Ready, Terminating, or Terminated. |
 | AWS.ElasticBeanstalk.Environments.AbortableOperationInProgress | Boolean | Whether there is an in-progress environment configuration update or application version deployment that can be aborted. |
 | AWS.ElasticBeanstalk.Environments.Health | String | The health status of the environment. Possible values are Green, Yellow, Red, or Grey. |

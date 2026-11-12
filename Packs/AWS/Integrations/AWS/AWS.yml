@@ -11045,10 +11045,10 @@ script:
       description: The URL to the CNAME for this environment.
       type: String
     - contextPath: AWS.ElasticBeanstalk.Environments.DateCreated
-      description: The creation date for this environment.
+      description: 'The creation date for this environment in ISO 8601 format (for example, 2024-01-15T10:30:00).'
       type: Date
     - contextPath: AWS.ElasticBeanstalk.Environments.DateUpdated
-      description: The last modified date for this environment.
+      description: 'The last modified date for this environment in ISO 8601 format (for example, 2024-01-15T10:30:00).'
       type: Date
     - contextPath: AWS.ElasticBeanstalk.Environments.Status
       description: The current operational status of the environment. Possible values are Aborting, Launching, Updating, LinkingFrom, LinkingTo, Ready, Terminating, or Terminated.
@@ -11194,10 +11194,10 @@ script:
       description: The URL to the CNAME for this environment.
       type: String
     - contextPath: AWS.ElasticBeanstalk.Environments.DateCreated
-      description: The creation date for this environment.
+      description: 'The creation date for this environment in ISO 8601 format (for example, 2024-01-15T10:30:00).'
       type: Date
     - contextPath: AWS.ElasticBeanstalk.Environments.DateUpdated
-      description: The last modified date for this environment.
+      description: 'The last modified date for this environment in ISO 8601 format (for example, 2024-01-15T10:30:00).'
       type: Date
     - contextPath: AWS.ElasticBeanstalk.Environments.Status
       description: The current operational status of the environment. Possible values are Aborting, Launching, Updating, LinkingFrom, LinkingTo, Ready, Terminating, or Terminated.
