@@ -1,0 +1,356 @@
+id: NVIDIA OpenShell - Contain AI Agent Sandbox
+version: -1
+name: NVIDIA OpenShell - Contain AI Agent Sandbox
+description: Contains an AI agent running in an NVIDIA OpenShell sandbox. Gets the sandbox state and recent logs, optionally waits for analyst approval, stops the sandbox and verifies that it stopped.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 0b9d7c3e-0000-4c1a-9e5f-0a1b2c3d4e5f
+    type: start
+    task:
+      id: 0b9d7c3e-0000-4c1a-9e5f-0a1b2c3d4e5f
+      version: -1
+      name: ''
+      description: ''
+      type: start
+      iscommand: false
+      brand: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '10'
+  '10':
+    id: '10'
+    taskid: 0b9d7c3e-0010-4c1a-9e5f-0a1b2c3d4e5f
+    type: condition
+    task:
+      id: 0b9d7c3e-0010-4c1a-9e5f-0a1b2c3d4e5f
+      version: -1
+      name: Is an NVIDIA OpenShell instance enabled?
+      description: Checks whether an enabled instance of the NVIDIA OpenShell integration is available.
+      type: condition
+      iscommand: false
+      brand: ''
+      scriptName: IsIntegrationAvailable
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 200\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '1'
+    scriptarguments:
+      brandname:
+        simple: NVIDIA OpenShell
+  '1':
+    id: '1'
+    taskid: 0b9d7c3e-0001-4c1a-9e5f-0a1b2c3d4e5f
+    type: condition
+    task:
+      id: 0b9d7c3e-0001-4c1a-9e5f-0a1b2c3d4e5f
+      version: -1
+      name: Is a sandbox name available?
+      description: Checks that the SandboxName input has a value.
+      type: condition
+      iscommand: false
+      brand: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '2'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SandboxName
+            iscontext: true
+  '2':
+    id: '2'
+    taskid: 0b9d7c3e-0002-4c1a-9e5f-0a1b2c3d4e5f
+    type: regular
+    task:
+      id: 0b9d7c3e-0002-4c1a-9e5f-0a1b2c3d4e5f
+      version: -1
+      name: Get the sandbox state
+      description: Gets the sandbox phase and policy version from the OpenShell gateway.
+      type: regular
+      iscommand: true
+      brand: NVIDIA OpenShell
+      script: NVIDIA OpenShell|||openshell-sandbox-get
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 540\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      name: &id001
+        complex:
+          root: inputs.SandboxName
+    continueonerror: true
+  '3':
+    id: '3'
+    taskid: 0b9d7c3e-0003-4c1a-9e5f-0a1b2c3d4e5f
+    type: regular
+    task:
+      id: 0b9d7c3e-0003-4c1a-9e5f-0a1b2c3d4e5f
+      version: -1
+      name: Get recent sandbox logs
+      description: Gets the latest network and policy decisions for the sandbox.
+      type: regular
+      iscommand: true
+      brand: NVIDIA OpenShell
+      script: NVIDIA OpenShell|||openshell-sandbox-logs
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 710\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      name: *id001
+      lines:
+        simple: '50'
+    continueonerror: true
+  '4':
+    id: '4'
+    taskid: 0b9d7c3e-0004-4c1a-9e5f-0a1b2c3d4e5f
+    type: condition
+    task:
+      id: 0b9d7c3e-0004-4c1a-9e5f-0a1b2c3d4e5f
+      version: -1
+      name: Is analyst approval required?
+      description: Checks the RequireApproval input.
+      type: condition
+      iscommand: false
+      brand: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 880\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '5'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.RequireApproval
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
+          ignorecase: true
+  '5':
+    id: '5'
+    taskid: 0b9d7c3e-0005-4c1a-9e5f-0a1b2c3d4e5f
+    type: condition
+    task:
+      id: 0b9d7c3e-0005-4c1a-9e5f-0a1b2c3d4e5f
+      version: -1
+      name: Stop the sandbox?
+      description: Review the sandbox state and logs. Yes stops the sandbox. The sandbox identity and workspace are kept, so it can be started again after the investigation.
+      type: condition
+      iscommand: false
+      brand: ''
+    view: "{\n  \"position\": {\n    \"x\": 250,\n    \"y\": 1050\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      'Yes':
+      - '6'
+      'No':
+      - '8'
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: 'Approval needed: stop OpenShell sandbox ${inputs.SandboxName}'
+      body:
+        simple: 'Review the sandbox state and recent logs in incident ${incident.id}, then answer whether to stop the OpenShell sandbox ${inputs.SandboxName}.'
+      methods: []
+      format: ''
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - 'Yes'
+      - 'No'
+  '6':
+    id: '6'
+    taskid: 0b9d7c3e-0006-4c1a-9e5f-0a1b2c3d4e5f
+    type: regular
+    task:
+      id: 0b9d7c3e-0006-4c1a-9e5f-0a1b2c3d4e5f
+      version: -1
+      name: Stop the sandbox
+      description: Stops the sandbox and waits until the gateway reports STOPPED.
+      type: regular
+      iscommand: true
+      brand: NVIDIA OpenShell
+      script: NVIDIA OpenShell|||openshell-sandbox-stop
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1220\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '7'
+      '#error#':
+      - '9'
+    scriptarguments:
+      name: *id001
+      wait:
+        simple: 'true'
+      timeout_seconds:
+        simple: '120'
+    continueonerror: true
+    continueonerrortype: errorPath
+  '7':
+    id: '7'
+    taskid: 0b9d7c3e-0007-4c1a-9e5f-0a1b2c3d4e5f
+    type: regular
+    task:
+      id: 0b9d7c3e-0007-4c1a-9e5f-0a1b2c3d4e5f
+      version: -1
+      name: Verify the sandbox stopped
+      description: Reads the sandbox state back from the gateway, so the incident records the result.
+      type: regular
+      iscommand: true
+      brand: NVIDIA OpenShell
+      script: NVIDIA OpenShell|||openshell-sandbox-get
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1390\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      name: *id001
+  '8':
+    id: '8'
+    taskid: 0b9d7c3e-0008-4c1a-9e5f-0a1b2c3d4e5f
+    type: title
+    task:
+      id: 0b9d7c3e-0008-4c1a-9e5f-0a1b2c3d4e5f
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1560\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 0b9d7c3e-0009-4c1a-9e5f-0a1b2c3d4e5f
+    type: regular
+    task:
+      id: 0b9d7c3e-0009-4c1a-9e5f-0a1b2c3d4e5f
+      version: -1
+      name: Contain the sandbox manually
+      description: The sandbox could not be stopped automatically (no enabled instance, no sandbox name, or the stop failed or timed out). Check the NVIDIA OpenShell instance, run openshell-sandbox-list to find the sandbox, run openshell-sandbox-stop, and confirm with openshell-sandbox-get. If the sandbox still does not stop, remove its egress with openshell-egress-block-host or openshell-policy-rule-remove.
+      type: regular
+      iscommand: false
+      brand: ''
+    view: "{\n  \"position\": {\n    \"x\": 800,\n    \"y\": 540\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '8'
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1575,\n      \"width\": 880,\n      \"x\": 250,\n      \"y\": 50\n    }\n  }\n}"
+inputs:
+- key: SandboxName
+  value: {}
+  required: false
+  description: The name of the OpenShell sandbox to contain. Map it from the incident or alert field that holds the sandbox name.
+  playbookInputQuery: null
+- key: RequireApproval
+  value:
+    simple: 'true'
+  required: false
+  description: Whether an analyst must approve before the sandbox is stopped. Set to false to stop the sandbox automatically.
+  playbookInputQuery: null
+outputs:
+- contextPath: OpenShell.Sandbox.Phase
+  description: The sandbox phase after the playbook ran.
+  type: String
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

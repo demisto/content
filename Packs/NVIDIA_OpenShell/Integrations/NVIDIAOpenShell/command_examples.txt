@@ -1,0 +1,17 @@
+!openshell-gateway-info-get
+!openshell-sandbox-list
+!openshell-sandbox-get name=agent-1
+!openshell-sandbox-logs name=agent-1 lines=20
+!openshell-policy-get name=agent-1
+!openshell-policy-history name=agent-1 limit=5
+!openshell-egress-block-host name=agent-1 host=files.example.com reason="Incident 42"
+!openshell-policy-rule-remove name=agent-1 rule_name=allow-web
+!openshell-policy-endpoint-remove name=agent-1 rule_name=allow-web host=files.example.com
+!openshell-policy-binary-remove name=agent-1 rule_name=allow-web binary_path=/usr/bin/curl
+!openshell-provider-list name=agent-1
+!openshell-provider-detach name=agent-1 provider=vault confirm=yes
+!openshell-sandbox-suspend name=agent-1
+!openshell-sandbox-resume name=agent-1
+!openshell-sandbox-stop name=agent-1
+!openshell-sandbox-start name=agent-1
+!openshell-sandbox-delete name=agent-1 confirm=yes
