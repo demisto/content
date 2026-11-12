@@ -826,21 +826,21 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      description: Defines whether the agent blocks or allows traffic matching the rule parameters.
+      description: The action the agent takes on traffic that matches the rule.
       name: action
       predefined:
       - Allow
       - Block
       required: true
     - auto: PREDEFINED
-      description: Defines whether the rule is Enabled or Disabled.
+      description: The rule status.
       name: status
       predefined:
       - Enabled
       - Disabled
       required: true
     - auto: PREDEFINED
-      description: Defines the direction of the firewall rule.
+      description: The traffic direction the rule applies to.
       name: direction
       predefined:
       - any
@@ -922,53 +922,53 @@ script:
     - description: A comma-separated list of location IDs (applicable when location_type is 'specific').
       isArray: true
       name: location_ids
-    - description: Free-text description of the firewall rule.
+    - description: The description of the firewall rule.
       name: description
     - description: A comma-separated list of tag IDs to link to this firewall rule.
       isArray: true
       name: tag_ids
     - auto: PREDEFINED
-      description: Indicates a tenant (global) scope request. Set to true for global scope, or false when filtering by account_ids, site_ids, or group_ids.
+      description: Whether to apply the rule at the tenant (global) scope. Can't be combined with account_ids, site_ids, or group_ids.
       name: tenant
       predefined:
       - 'true'
       - 'false'
-    - description: A comma-separated list of Account IDs to scope the firewall rule to.
+    - description: A comma-separated list of account IDs to scope the firewall rule to.
       isArray: true
       name: account_ids
-    - description: A comma-separated list of Site IDs to scope the firewall rule to.
+    - description: A comma-separated list of site IDs to scope the firewall rule to.
       isArray: true
       name: site_ids
-    - description: A comma-separated list of Group IDs to scope the firewall rule to.
+    - description: A comma-separated list of group IDs to scope the firewall rule to.
       isArray: true
       name: group_ids
-    description: Creates a Firewall Control rule for a specified scope and OS to allow or block network traffic to matching endpoints (uses the v2.1 firewall-control endpoint).
+    description: Creates a Firewall Control rule that allows or blocks network traffic on endpoints in the specified scope. Relevant for API version 2.1.
     name: sentinelone-create-firewall-rule
     outputs:
     - contextPath: SentinelOne.FirewallRule.Created.ID
-      description: The created firewall rule ID.
-      type: string
+      description: The ID of the firewall rule.
+      type: String
     - contextPath: SentinelOne.FirewallRule.Created.Name
       description: The name of the firewall rule.
-      type: string
+      type: String
     - contextPath: SentinelOne.FirewallRule.Created.Action
-      description: The rule action (Allow or Block).
-      type: string
+      description: The rule action.
+      type: String
     - contextPath: SentinelOne.FirewallRule.Created.Status
-      description: The status of the rule (Enabled or Disabled).
-      type: string
+      description: The status of the rule.
+      type: String
     - contextPath: SentinelOne.FirewallRule.Created.Direction
-      description: The direction of the firewall rule (any, inbound, outbound).
-      type: string
+      description: The direction of the firewall rule.
+      type: String
     - contextPath: SentinelOne.FirewallRule.Created.OsType
       description: The primary OS type of the rule.
-      type: string
+      type: String
     - contextPath: SentinelOne.FirewallRule.Created.OsTypes
       description: The list of OS types for the rule.
       type: Unknown
     - contextPath: SentinelOne.FirewallRule.Created.Protocol
       description: The protocol of the firewall rule.
-      type: string
+      type: String
     - contextPath: SentinelOne.FirewallRule.Created.RemoteHost
       description: The first remote host in the rule.
       type: Unknown
@@ -976,50 +976,50 @@ script:
       description: The list of remote hosts in the rule.
       type: Unknown
     - contextPath: SentinelOne.FirewallRule.Created.LocalHost
-      description: The local host structure of the rule.
+      description: The local host of the rule.
       type: Unknown
     - contextPath: SentinelOne.FirewallRule.Created.RemotePort
-      description: The remote ports structure of the rule.
+      description: The remote ports of the rule.
       type: Unknown
     - contextPath: SentinelOne.FirewallRule.Created.LocalPort
-      description: The local ports structure of the rule.
+      description: The local ports of the rule.
       type: Unknown
     - contextPath: SentinelOne.FirewallRule.Created.Application
-      description: The application structure of the rule.
+      description: The application of the rule.
       type: Unknown
     - contextPath: SentinelOne.FirewallRule.Created.Location
       description: The location associated with the rule.
       type: Unknown
     - contextPath: SentinelOne.FirewallRule.Created.Scope
-      description: The scope of the rule (global, account, group, site).
-      type: string
+      description: The scope of the rule.
+      type: String
     - contextPath: SentinelOne.FirewallRule.Created.ScopeId
       description: The group, site, or account ID depending on the scope.
-      type: string
+      type: String
     - contextPath: SentinelOne.FirewallRule.Created.Order
       description: The position of the rule in the list of rules.
-      type: number
+      type: Number
     - contextPath: SentinelOne.FirewallRule.Created.Editable
       description: Whether the rule can be modified at this scope level.
-      type: boolean
+      type: Boolean
     - contextPath: SentinelOne.FirewallRule.Created.Creator
       description: The full name of the user who created the rule.
-      type: string
+      type: String
     - contextPath: SentinelOne.FirewallRule.Created.CreatorId
       description: The ID of the user who created the rule.
-      type: string
+      type: String
     - contextPath: SentinelOne.FirewallRule.Created.CreatedAt
       description: The date and time of rule creation.
-      type: date
+      type: Date
     - contextPath: SentinelOne.FirewallRule.Created.UpdatedAt
       description: The date and time of the last update.
-      type: date
+      type: Date
     - contextPath: SentinelOne.FirewallRule.Created.Description
       description: The description of the firewall rule.
-      type: string
+      type: String
     - contextPath: SentinelOne.FirewallRule.Created.RuleCategory
-      description: The rule category (firewall or network_quarantine).
-      type: string
+      description: The rule category.
+      type: String
     - contextPath: SentinelOne.FirewallRule.Created.TagIds
       description: The list of tag IDs linked to this rule.
       type: Unknown
@@ -1031,18 +1031,18 @@ script:
       type: Unknown
     - contextPath: SentinelOne.FirewallRule.Created.ProductId
       description: The product identifier.
-      type: string
+      type: String
   - arguments:
     - description: 'A comma-separated list of firewall rule IDs to filter by, for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: ids
-    - description: 'A comma-separated list of Account IDs to filter by, for example: "225494730938493804,225494730938493915".'
+    - description: 'A comma-separated list of account IDs to filter by, for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: account_ids
-    - description: 'A comma-separated list of Site IDs to filter by, for example: "225494730938493804,225494730938493915".'
+    - description: 'A comma-separated list of site IDs to filter by, for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: site_ids
-    - description: 'A comma-separated list of Group IDs to filter by, for example: "225494730938493804,225494730938493915".'
+    - description: 'A comma-separated list of group IDs to filter by, for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: group_ids
     - auto: PREDEFINED
@@ -1054,7 +1054,7 @@ script:
     - description: Free-text search on name, tag, application, or protocol.
       name: query
     - auto: PREDEFINED
-      description: A comma-separated list of scopes to filter firewall rules by (global, account, group, site).
+      description: A comma-separated list of scopes to filter firewall rules by.
       isArray: true
       name: scopes
       predefined:
@@ -1062,7 +1062,7 @@ script:
       - account
       - group
       - site
-    - description: A comma-separated list of firewall classes/applications to filter by.
+    - description: A comma-separated list of applications to filter firewall rules by.
       isArray: true
       name: applications
     - description: Filter firewall rules by exact rule name.
@@ -1109,7 +1109,7 @@ script:
       name: created_at_lte
     - description: 'Filter firewall rules created after or at this timestamp (e.g., 2018-02-27T04:49:26.257525Z).'
       name: created_at_gte
-    - description: 'Filter firewall rules created within this range (inclusive), for example: "1514978764288-1514978999999".'
+    - description: 'Filter firewall rules created within this range of epoch milliseconds (inclusive), for example: "1514978764288-1514978999999".'
       name: created_at_between
     - description: A comma-separated list of associated location IDs to filter by.
       isArray: true
@@ -1132,13 +1132,13 @@ script:
     - description: Free-text filter by service (supports multiple comma-separated values).
       isArray: true
       name: service_contains
-    description: Deletes Firewall Control rules that match the filter (uses the v2.1 firewall-control endpoint).
+    description: Deletes Firewall Control rules that match the specified filters. Relevant for API version 2.1.
     execution: true
     name: sentinelone-delete-firewall-rule
     outputs:
     - contextPath: SentinelOne.FirewallRule.Deleted.Affected
       description: The number of firewall rules successfully deleted.
-      type: number
+      type: Number
   - arguments:
     - description: 'A comma-separated list of group IDs by which to filter, for example: "225494730938493804,225494730938493915".'
       isArray: true

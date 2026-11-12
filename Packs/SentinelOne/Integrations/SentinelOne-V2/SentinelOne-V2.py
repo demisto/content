@@ -3911,7 +3911,8 @@ def delete_unified_exclusion_command(client: Client, args: dict) -> CommandResul
 
 def build_firewall_rule_scope_filter(args: dict) -> dict:
     """Validate and build the scope filter for firewall rule commands."""
-    tenant = argToBoolean(args["tenant"]) if args.get("tenant") is not None else None
+    tenant_arg = args.get("tenant")
+    tenant = argToBoolean(tenant_arg) if tenant_arg else None
     account_ids = argToList(args.get("account_ids")) or None
     site_ids = argToList(args.get("site_ids")) or None
     group_ids = argToList(args.get("group_ids")) or None
@@ -4064,40 +4065,43 @@ def create_firewall_rule_command(client: Client, args: dict) -> CommandResults:
     )
 
     new_rule = client.create_firewall_rule_request(filter_data=filter_data, rule_data=rule_data)
+    if not new_rule:
+        return CommandResults(
+            readable_output="Sentinel One - The firewall rule was not created. The API returned no data.",
+            raw_response=new_rule,
+        )
 
-    context_entry: dict = {}
-    if new_rule:
-        context_entry = {
-            "ID": new_rule.get("id"),
-            "Name": new_rule.get("name"),
-            "Action": new_rule.get("action"),
-            "Status": new_rule.get("status"),
-            "Direction": new_rule.get("direction"),
-            "OsType": new_rule.get("osType"),
-            "OsTypes": new_rule.get("osTypes"),
-            "Protocol": new_rule.get("protocol"),
-            "RemoteHost": new_rule.get("remoteHost"),
-            "RemoteHosts": new_rule.get("remoteHosts"),
-            "LocalHost": new_rule.get("localHost"),
-            "RemotePort": new_rule.get("remotePort"),
-            "LocalPort": new_rule.get("localPort"),
-            "Application": new_rule.get("application"),
-            "Location": new_rule.get("location"),
-            "Scope": new_rule.get("scope"),
-            "ScopeId": new_rule.get("scopeId"),
-            "Order": new_rule.get("order"),
-            "Editable": new_rule.get("editable"),
-            "Creator": new_rule.get("creator"),
-            "CreatorId": new_rule.get("creatorId"),
-            "CreatedAt": new_rule.get("createdAt"),
-            "UpdatedAt": new_rule.get("updatedAt"),
-            "Description": new_rule.get("description"),
-            "RuleCategory": new_rule.get("ruleCategory"),
-            "TagIds": new_rule.get("tagIds"),
-            "TagNames": new_rule.get("tagNames"),
-            "Tags": new_rule.get("tags"),
-            "ProductId": new_rule.get("productId"),
-        }
+    context_entry = {
+        "ID": new_rule.get("id"),
+        "Name": new_rule.get("name"),
+        "Action": new_rule.get("action"),
+        "Status": new_rule.get("status"),
+        "Direction": new_rule.get("direction"),
+        "OsType": new_rule.get("osType"),
+        "OsTypes": new_rule.get("osTypes"),
+        "Protocol": new_rule.get("protocol"),
+        "RemoteHost": new_rule.get("remoteHost"),
+        "RemoteHosts": new_rule.get("remoteHosts"),
+        "LocalHost": new_rule.get("localHost"),
+        "RemotePort": new_rule.get("remotePort"),
+        "LocalPort": new_rule.get("localPort"),
+        "Application": new_rule.get("application"),
+        "Location": new_rule.get("location"),
+        "Scope": new_rule.get("scope"),
+        "ScopeId": new_rule.get("scopeId"),
+        "Order": new_rule.get("order"),
+        "Editable": new_rule.get("editable"),
+        "Creator": new_rule.get("creator"),
+        "CreatorId": new_rule.get("creatorId"),
+        "CreatedAt": new_rule.get("createdAt"),
+        "UpdatedAt": new_rule.get("updatedAt"),
+        "Description": new_rule.get("description"),
+        "RuleCategory": new_rule.get("ruleCategory"),
+        "TagIds": new_rule.get("tagIds"),
+        "TagNames": new_rule.get("tagNames"),
+        "Tags": new_rule.get("tags"),
+        "ProductId": new_rule.get("productId"),
+    }
 
     return CommandResults(
         readable_output=tableToMarkdown(
