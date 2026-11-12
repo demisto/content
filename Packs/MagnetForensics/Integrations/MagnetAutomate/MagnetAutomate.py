@@ -91,7 +91,7 @@ class MagnetAutomateClient(ContentClient):
     def __init__(self, params: MagnetAutomateParams):
         auth_handler = MagnetAutomateAuthHandler(params.api_key)
         super().__init__(
-            base_url=params.url,
+            base_url=str(params.url),
             verify=params.verify,
             proxy=params.proxy,
             auth_handler=auth_handler,
