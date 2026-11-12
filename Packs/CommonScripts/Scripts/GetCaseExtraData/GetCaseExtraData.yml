@@ -176,7 +176,7 @@ dependson:
   must:
   - core-get-case-extra-data
 subtype: python3
-dockerimage: demisto/python3:3.12.14.13495286
+dockerimage: demisto/python3:3.12.15.14069087
 fromversion: 6.6.0
 tests:
 - No tests (auto formatted)

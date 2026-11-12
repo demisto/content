@@ -61,7 +61,7 @@ outputs:
   type: String
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.14.13495286
+dockerimage: demisto/python3:3.12.15.14069087
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:
