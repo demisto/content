@@ -1,5 +1,6 @@
 # imports
 import calendar
+import traceback
 
 import demistomock as demisto  # noqa: F401
 import duo_client
@@ -183,15 +184,75 @@ def test_instance(admin_api):
             raise Exception("Unknown error: " + str(e))
 
 
-def get_all_users(admin_api):
-    res = admin_api.get_users()
+USER_TABLE_HEADERS = ["username", "user_id", "is_enrolled", "last_login", "realname", "email", "phones", "status"]
+USER_NOT_FOUND_MESSAGE = "No user found matching the given {field}: {value}."
+MAX_USERS_PER_LOOKUP = 100  # Duo accepts up to 100 values in username_list / user_id_list
+
+
+def fetch_users(
+    admin_api: duo_client.Admin, username_list: list[str] | None = None, user_id_list: list[str] | None = None
+) -> list[dict[str, Any]]:
+    """Fetch users from Duo, optionally filtered by usernames or user IDs.
+
+    Uses the Retrieve Users endpoint (GET /admin/v1/users) with the `username_list` / `user_id_list`
+    query parameter, which always returns a list, so the context shape is the same for all lookups.
+
+    Args:
+        admin_api: The duo_client Admin client.
+        username_list: Usernames to look up (up to 100). Mutually exclusive with user_id_list.
+        user_id_list: Duo user IDs to look up (up to 100). Mutually exclusive with username_list.
+
+    Returns:
+        A list of the matching user objects (empty when nothing matches).
+    """
+    if username_list and user_id_list:
+        raise DemistoException("Provide only one of username_list or user_id_list.")
+
+    values = username_list or user_id_list
+    if not values:
+        return admin_api.get_users()
+
+    if len(values) > MAX_USERS_PER_LOOKUP:
+        raise DemistoException(f"A maximum of {MAX_USERS_PER_LOOKUP} values can be provided, got {len(values)}.")
+
+    try:
+        if username_list:
+            return list(admin_api.get_users_by_names(username_list))
+        return list(admin_api.get_users_by_ids(user_id_list))
+    except Exception as e:
+        # Return a readable "no user found" message instead of a raw 404 error.
+        if getattr(e, "status", None) == 404:
+            demisto.debug(f"No user found (HTTP 404): {e}")
+            demisto.debug(traceback.format_exc())
+            return []
+        raise
+
+
+def get_all_users(admin_api: duo_client.Admin, args: dict[str, Any] | None = None) -> None:
+    args = args or {}
+    username_list = argToList(args.get("username_list"))
+    user_id_list = argToList(args.get("user_id_list"))
+    res = fetch_users(admin_api, username_list=username_list, user_id_list=user_id_list)
+
+    if not res and (username_list or user_id_list):
+        field, values = ("username", username_list) if username_list else ("user ID", user_id_list)
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "Contents": res,
+                "ContentsFormat": formats["json"],
+                "HumanReadable": USER_NOT_FOUND_MESSAGE.format(field=field, value=", ".join(values)),
+                "EntryContext": {"DuoAdmin.UserDetails(val.username==obj.username)": res},
+            }
+        )
+        return
 
     entry = get_entry_for_object(
         "Users",
         res,
         res,
         {"DuoAdmin.UserDetails(val.username==obj.username)": res},
-        headers=["username", "user_id", "is_enrolled", "last_login", "realname", "email", "phones", "status"],
+        headers=USER_TABLE_HEADERS,
     )
 
     demisto.results(entry)
@@ -377,7 +438,7 @@ def main() -> None:  # pragma: no cover
             test_instance(admin_api)
 
         elif command == "duoadmin-get-users":
-            get_all_users(admin_api)
+            get_all_users(admin_api, args)
 
         elif command == "duoadmin-get-admins":
             get_all_admins(admin_api)

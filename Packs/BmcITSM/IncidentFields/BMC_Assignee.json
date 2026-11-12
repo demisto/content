@@ -91,5 +91,9 @@
             "type": "grid",
             "name": "Bmc Assignee"
         }
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

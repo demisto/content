@@ -197,3 +197,52 @@ def test_format_results_check_lists(mocker):
     format_results(client, "uuid", "")
     outputs = command_results_inputs.call_args[1]["outputs"]["URLScan(val.URL && val.URL == obj.URL)"]
     assert outputs.get("links") == ["http://capitalne.com/home", "http://capitalne.com/about", "https://urlscan.io/"]
+
+
+@pytest.mark.parametrize(
+    "report_url, expected_result_page",
+    [
+        pytest.param(
+            "https://urlscan.io/result/8fb2fc51-7653-46b4-bbb0-a4cde38e549d/",
+            "https://urlscan.io/result/8fb2fc51-7653-46b4-bbb0-a4cde38e549d/",
+            id="reportURL present",
+        ),
+        pytest.param(None, "https://urlscan.io/result/uuid/", id="reportURL absent - fallback"),
+    ],
+)
+def test_format_results_report_url(mocker: MockerFixture, report_url, expected_result_page):
+    """
+    Given:
+        A urlscan.io result response with or without task.reportURL
+    When:
+        format_results is called (shared by the url and urlscan-submit commands)
+    Then:
+        - The report URL is added to the human-readable table as "Report URL"
+        - URLScan.ResultPage holds the report URL
+        - URL.ResultPage is set on the same URL context entry as the URL indicator (single URL object)
+    """
+    from UrlScan import Client, format_results
+
+    client = Client()
+    with open("./test_data/capitalne.json") as f:
+        response_data = json.loads(f.read())
+    if report_url is None:
+        response_data["task"].pop("reportURL", None)
+    else:
+        response_data["task"]["reportURL"] = report_url
+    response_data["task"].pop("screenshotURL", None)
+
+    mocker.patch("UrlScan.urlscan_submit_request", return_value=(response_data, "", ""))
+    mocker.patch.object(demisto, "args", return_value={"url": "http://capitalne.com"})
+    results_mock = mocker.patch.object(demisto, "results")
+
+    format_results(client, "uuid", "")
+
+    entry = results_mock.call_args_list[0][0][0]
+    context = entry["EntryContext"]
+    assert context["URLScan(val.URL && val.URL == obj.URL)"]["ResultPage"] == expected_result_page
+    url_entries = context[Common.URL.CONTEXT_PATH]
+    assert len(url_entries) == 1
+    assert url_entries[0]["ResultPage"] == expected_result_page
+    assert "Report URL" in entry["HumanReadable"]
+    assert expected_result_page in entry["HumanReadable"]
