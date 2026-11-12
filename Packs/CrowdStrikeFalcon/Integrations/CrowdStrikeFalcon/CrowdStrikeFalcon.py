@@ -2352,12 +2352,31 @@ def delete_custom_ioc(ids: str) -> dict:
     return http_request("DELETE", "/iocs/entities/indicators/v1", params=params)
 
 
+def _request_with_legacy_ioc_fallback(modern_url_suffix, legacy_url_suffix, params, status_code=None):
+    """
+    Calls the modern IOC Management endpoint first and falls back to the legacy Custom IOC endpoint
+    if an HTTP 403 Forbidden error is returned (e.g., when an API client only has legacy IOC scopes).
+    """
+    try:
+        return http_request("GET", modern_url_suffix, params=params, status_code=status_code)
+    except DemistoException as e:
+        if "code: 403" in str(e):
+            demisto.debug(f"Received HTTP 403 on {modern_url_suffix}, falling back to legacy route {legacy_url_suffix}")
+            return http_request("GET", legacy_url_suffix, params=params, status_code=status_code)
+        raise
+
+
 def get_ioc_device_count(ioc_type, value):
     """
     Gets the devices that encountered the IOC
     """
     payload = assign_params(type=ioc_type, value=value)
-    response = http_request("GET", "/indicators/aggregates/devices-count/v1", payload, status_code=404)
+    response = _request_with_legacy_ioc_fallback(
+        "/iocs/aggregates/indicators/device-count/v1",
+        "/indicators/aggregates/devices-count/v1",
+        payload,
+        status_code=404,
+    )
     errors = response.get("errors", [])
     for error in errors:
         if error.get("code") == 404:
@@ -2378,7 +2397,11 @@ def get_proccesses_ran_on(ioc_type, value, device_id):
     Get processes ids that ran on the given device_id that encountered the ioc
     """
     payload = assign_params(type=ioc_type, value=value, device_id=device_id)
-    return http_request("GET", "/indicators/queries/processes/v1", payload)
+    return _request_with_legacy_ioc_fallback(
+        "/iocs/queries/indicators/processes/v1",
+        "/indicators/queries/processes/v1",
+        payload,
+    )
 
 
 def search_device(filter_operator="AND"):
@@ -7142,7 +7165,10 @@ def get_ioc_device_count_command(ioc_type: str, value: str):
 
             device_count_res[0]["device_count"] = device_count
 
-        context = [get_trasnformed_dict(device_count, IOC_DEVICE_COUNT_MAP) for device_count in device_count_res]
+        context = [
+            {"ID": ioc_id} | get_trasnformed_dict(device_count_item, IOC_DEVICE_COUNT_MAP)
+            for device_count_item in device_count_res
+        ]
         hr = f"Indicator of Compromise **{ioc_id}** device count: **{device_count}**"
         return create_entry_object(contents=raw_res, ec={"CrowdStrike.IOC(val.ID === obj.ID)": context}, hr=hr)
 
@@ -8107,7 +8133,12 @@ def validate_response(raw_res):
 
 
 def run_indicator_device_id_request(params):
-    return http_request("GET", "/indicators/queries/devices/v1", params=params, status_code=404)
+    return _request_with_legacy_ioc_fallback(
+        "/iocs/queries/indicators/devices/v1",
+        "/indicators/queries/devices/v1",
+        params=params,
+        status_code=404,
+    )
 
 
 def get_indicator_device_id():

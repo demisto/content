@@ -2477,11 +2477,36 @@ test_data2 = get_fetch_data2()
 def test_get_indicator_device_id(mocker, requests_mock):
     from CrowdStrikeFalcon import get_indicator_device_id
 
-    requests_mock.get("https://4.4.4.4/indicators/queries/devices/v1", json=test_data["response_for_get_indicator_device_id"])
+    requests_mock.get(
+        "https://4.4.4.4/iocs/queries/indicators/devices/v1", json=test_data["response_for_get_indicator_device_id"]
+    )
     mocker.patch.object(demisto, "args", return_value={"type": "sha256", "value": "example_sha"})
     res = get_indicator_device_id()
 
     # Expecting both DeviceIOC and DeviceID outputs for BC.
+    assert set(res.outputs.keys()) - {"DeviceIOC", "DeviceID"} == set()
+    assert res.outputs["DeviceIOC"]["Type"] == "sha256"
+    assert res.outputs["DeviceIOC"]["Value"] == "example_sha"
+    assert res.outputs["DeviceIOC"]["DeviceID"] == res.outputs["DeviceID"]
+
+
+def test_get_indicator_device_id_legacy_fallback_on_403(mocker, requests_mock):
+    from CrowdStrikeFalcon import get_indicator_device_id
+
+    requests_mock.get(
+        "https://4.4.4.4/iocs/queries/indicators/devices/v1",
+        json={"errors": [{"code": 403, "message": "access denied, scope not permitted"}]},
+        status_code=403,
+        reason="Forbidden",
+    )
+    requests_mock.get(
+        "https://4.4.4.4/indicators/queries/devices/v1",
+        json=test_data["response_for_get_indicator_device_id"],
+        status_code=200,
+    )
+    mocker.patch.object(demisto, "args", return_value={"type": "sha256", "value": "example_sha"})
+    res = get_indicator_device_id()
+
     assert set(res.outputs.keys()) - {"DeviceIOC", "DeviceID"} == set()
     assert res.outputs["DeviceIOC"]["Type"] == "sha256"
     assert res.outputs["DeviceIOC"]["Value"] == "example_sha"
@@ -3329,7 +3354,12 @@ def test_get_ioc_device_count_command_does_not_exist(requests_mock, mocker):
 
     expected_error = [{"code": 404, "message": "md5:testmd5 - Resource Not Found"}]
     response = {"resources": [], "errors": expected_error}
-    requests_mock.get(f"{SERVER_URL}/indicators/aggregates/devices-count/v1", json=response, status_code=404, reason="Not found")
+    requests_mock.get(
+        f"{SERVER_URL}/iocs/aggregates/indicators/device-count/v1",
+        json=response,
+        status_code=404,
+        reason="Not found",
+    )
     mocker.patch(RETURN_ERROR_TARGET)
     res = get_ioc_device_count_command(ioc_type="md5", value="testmd5")
     assert res == "No results found for md5 - testmd5"
@@ -3345,19 +3375,50 @@ def test_get_ioc_device_count_command_exists(requests_mock):
      - The user is running cs-falcon-device-count-ioc with md5:testmd5
     Then
      - Return a human readable result with appropriate message
-     - Do populate the entry context with the right value
+     - Do populate the entry context with the right value even when 'id' is omitted from the modern API response
     """
     from CrowdStrikeFalcon import get_ioc_device_count_command
 
-    response = {"resources": [{"id": "md5:testmd5", "type": "md5", "value": "testmd5", "device_count": 1}]}
+    response = {"resources": [{"type": "md5", "value": "testmd5", "device_count": 1}]}
     requests_mock.get(
-        f"{SERVER_URL}/indicators/aggregates/devices-count/v1",
+        f"{SERVER_URL}/iocs/aggregates/indicators/device-count/v1",
         json=response,
         status_code=200,
     )
     result = get_ioc_device_count_command(ioc_type="md5", value="testmd5")
     assert result["HumanReadable"] == "Indicator of Compromise **md5:testmd5** device count: **1**"
     assert result["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["ID"] == "md5:testmd5"
+    assert result["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["DeviceCount"] == 1
+
+
+def test_get_ioc_device_count_command_legacy_fallback_on_403(requests_mock):
+    """
+    Test cs-falcon-device-count-ioc falls back to legacy /indicators/... route when modern /iocs/... returns 403
+
+    Given
+     - An API client with legacy-only IOC permissions where /iocs/aggregates/indicators/device-count/v1 returns HTTP 403
+    When
+     - The user runs cs-falcon-device-count-ioc
+    Then
+     - The command falls back to /indicators/aggregates/devices-count/v1 and returns the expected result
+    """
+    from CrowdStrikeFalcon import get_ioc_device_count_command
+
+    requests_mock.get(
+        f"{SERVER_URL}/iocs/aggregates/indicators/device-count/v1",
+        json={"errors": [{"code": 403, "message": "access denied, scope not permitted"}]},
+        status_code=403,
+        reason="Forbidden",
+    )
+    requests_mock.get(
+        f"{SERVER_URL}/indicators/aggregates/devices-count/v1",
+        json={"resources": [{"id": "md5:testmd5", "type": "md5", "value": "testmd5", "device_count": 2}]},
+        status_code=200,
+    )
+    result = get_ioc_device_count_command(ioc_type="md5", value="testmd5")
+    assert result["HumanReadable"] == "Indicator of Compromise **md5:testmd5** device count: **2**"
+    assert result["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["ID"] == "md5:testmd5"
+    assert result["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["DeviceCount"] == 2
 
 
 def test_get_ioc_device_count_command_rate_limit_exceeded(requests_mock):
@@ -3379,17 +3440,17 @@ def test_get_ioc_device_count_command_rate_limit_exceeded(requests_mock):
     indicators_queries_res = {"resources": ["res_1", "res_2", "res_3"]}
     indicators_queries_res_with_offset = indicators_queries_res | {"meta": {"pagination": {"offset": 1}}}
     requests_mock.get(
-        f"{SERVER_URL}/indicators/aggregates/devices-count/v1",
+        f"{SERVER_URL}/iocs/aggregates/indicators/device-count/v1",
         json=response,
         status_code=200,
     )
     requests_mock.get(
-        f"{SERVER_URL}/indicators/queries/devices/v1",
+        f"{SERVER_URL}/iocs/queries/indicators/devices/v1",
         json=indicators_queries_res_with_offset,
         status_code=200,
     )
     requests_mock.get(
-        f"{SERVER_URL}/indicators/queries/devices/v1?type=md5&value=testmd5&offset=1",
+        f"{SERVER_URL}/iocs/queries/indicators/devices/v1?type=md5&value=testmd5&offset=1",
         json=indicators_queries_res,
         status_code=200,
     )
@@ -3474,7 +3535,7 @@ def test_get_proccesses_ran_on_command_exists(requests_mock):
 
     response = {"resources": ["pid:fake:process"]}
     requests_mock.get(
-        f"{SERVER_URL}/indicators/queries/processes/v1",
+        f"{SERVER_URL}/iocs/queries/indicators/processes/v1",
         json=response,
         status_code=200,
     )
@@ -3485,6 +3546,31 @@ def test_get_proccesses_ran_on_command_exists(requests_mock):
     expected_proc_result = {"DeviceID": "123", "ID": ["pid:fake:process"]}
     actual_proc_result = result["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"]["Process"]
     assert expected_proc_result == actual_proc_result
+
+
+def test_get_proccesses_ran_on_command_legacy_fallback_on_403(requests_mock):
+    """
+    Test cs-falcon-processes-ran-on falls back to legacy /indicators/... route when modern /iocs/... returns 403
+    """
+    from CrowdStrikeFalcon import get_proccesses_ran_on_command
+
+    requests_mock.get(
+        f"{SERVER_URL}/iocs/queries/indicators/processes/v1",
+        json={"errors": [{"code": 403, "message": "access denied, scope not permitted"}]},
+        status_code=403,
+        reason="Forbidden",
+    )
+    requests_mock.get(
+        f"{SERVER_URL}/indicators/queries/processes/v1",
+        json={"resources": ["pid:fake:process"]},
+        status_code=200,
+    )
+    result = get_proccesses_ran_on_command(ioc_type="test", value="mock", device_id="123")
+    assert "### Processes with custom IOC test:mock on device 123." in result["HumanReadable"]
+    assert result["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"]["Process"] == {
+        "DeviceID": "123",
+        "ID": ["pid:fake:process"],
+    }
 
 
 def test_get_proccesses_ran_on_command_not_exists(requests_mock):
@@ -3503,7 +3589,7 @@ def test_get_proccesses_ran_on_command_not_exists(requests_mock):
     expected_error = [{"code": 404, "message": "pid:fake:process - Resource Not Found"}]
     response = {"resources": [], "errors": expected_error}
     requests_mock.get(
-        f"{SERVER_URL}/indicators/queries/processes/v1",
+        f"{SERVER_URL}/iocs/queries/indicators/processes/v1",
         json=response,
         status_code=200,
     )
