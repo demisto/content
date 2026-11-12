@@ -57,9 +57,9 @@ def test_is_safe_target(mocker, target, expected):
     Then: Targets containing (encoded) dot-segments, backslashes, control chars or not being clean absolute paths are rejected.
     """
     mocker.patch.object(demisto, "params", return_value=PARAMS)
-    from SimpleAPIProxy import is_safe_target
+    import SimpleAPIProxy
 
-    assert is_safe_target(target) is expected
+    assert SimpleAPIProxy.is_safe_target(target) is expected
 
 
 @pytest.mark.parametrize(
@@ -80,9 +80,9 @@ def test_is_url_within_api_path(mocker, url, api_path, expected):
     Then: Only URLs on the same scheme, host and base path are allowed.
     """
     mocker.patch.object(demisto, "params", return_value=PARAMS)
-    from SimpleAPIProxy import is_url_within_api_path
+    import SimpleAPIProxy
 
-    assert is_url_within_api_path(url, api_path) is expected
+    assert SimpleAPIProxy.is_url_within_api_path(url, api_path) is expected
 
 
 def test_handle_post_allowed_target(client, requests_mock):
