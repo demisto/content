@@ -1252,6 +1252,7 @@ class AWSServices(str, Enum):
     CloudWatchLogs = "logs"
     NetworkFirewall = "network-firewall"
     STS = "sts"
+    ROUTE53 = "route53"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -11299,6 +11300,370 @@ class NetworkFirewall:
         )
 
 
+class Route53:
+    service = AWSServices.ROUTE53
+
+    HOSTED_ZONES_MAX_ITEMS = 100
+    RECORD_SETS_MAX_ITEMS = 300
+    MAX_RECORD_WEIGHT = 255
+    HOSTED_ZONE_ID_PREFIX = "/hostedzone/"
+    HOSTED_ZONES_HEADERS = ["Id", "Name", "ResourceRecordSetCount", "PrivateZone", "Comment"]
+
+    @staticmethod
+    def _pagination_kwargs(args: Dict[str, Any], max_limit: int) -> Dict[str, Any]:
+        """
+        Builds the Route53 MaxItems and Marker pagination parameters. Route53 expects MaxItems as a string.
+
+        Args:
+            args (Dict[str, Any]): Command arguments containing the optional limit and next_token.
+            max_limit (int): The maximum number of items the API returns per request, also used as the default limit.
+
+        Returns:
+            Dict[str, Any]: The validated MaxItems, and the Marker when next_token is provided.
+        """
+        pagination_args = {"limit": args.get("limit") or max_limit, "next_token": args.get("next_token")}
+        kwargs = build_pagination_kwargs(pagination_args, max_limit=max_limit, next_token_name="Marker", limit_name="MaxItems")
+        kwargs["MaxItems"] = str(kwargs["MaxItems"])
+        return kwargs
+
+    @staticmethod
+    def _normalize_hosted_zone_id(hosted_zone_id: str | None) -> str | None:
+        """
+        Removes the /hostedzone/ prefix from a hosted zone ID, so that the same zone is always stored with the same ID.
+
+        Args:
+            hosted_zone_id (str | None): The hosted zone ID, with or without the /hostedzone/ prefix.
+
+        Returns:
+            str | None: The hosted zone ID without the prefix, or None if no ID was provided.
+        """
+        if not hosted_zone_id:
+            return hosted_zone_id
+        return hosted_zone_id.removeprefix(Route53.HOSTED_ZONE_ID_PREFIX)
+
+    @staticmethod
+    def _hosted_zones_readable(title: str, hosted_zones: list[Dict[str, Any]]) -> str:
+        """
+        Builds the human-readable table for a list of hosted zones.
+
+        Args:
+            title (str): The table title.
+            hosted_zones (list[Dict[str, Any]]): The hosted zones returned by the API.
+
+        Returns:
+            str: A markdown table of the hosted zones.
+        """
+        rows = [
+            {
+                "Id": zone.get("Id"),
+                "Name": zone.get("Name"),
+                "ResourceRecordSetCount": zone.get("ResourceRecordSetCount"),
+                "PrivateZone": zone.get("Config", {}).get("PrivateZone"),
+                "Comment": zone.get("Config", {}).get("Comment"),
+            }
+            for zone in hosted_zones
+        ]
+        return tableToMarkdown(title, rows, headers=Route53.HOSTED_ZONES_HEADERS, headerTransform=pascalToSpace, removeNull=True)
+
+    @staticmethod
+    def hosted_zones_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Retrieves the public and private hosted zones that are associated with the AWS account.
+
+        Args:
+            client (BotoClient): The boto3 client for Route53.
+            args (Dict[str, Any]): Command arguments including limit, next_token, delegation_set_id and hosted_zone_type.
+
+        Returns:
+            CommandResults: The hosted zones and the marker for the next page.
+        """
+        kwargs = remove_empty_elements(
+            {
+                "DelegationSetId": args.get("delegation_set_id"),
+                "HostedZoneType": args.get("hosted_zone_type"),
+            }
+        )
+        kwargs.update(Route53._pagination_kwargs(args, Route53.HOSTED_ZONES_MAX_ITEMS))
+        print_debug_logs(client, f"Listing hosted zones with parameter keys: {list(kwargs.keys())} and {kwargs.get('MaxItems')=}")
+        response = client.list_hosted_zones(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        hosted_zones = response.get("HostedZones", [])
+        next_marker = response.get("NextMarker")
+        print_debug_logs(client, f"{len(hosted_zones)=}, {bool(next_marker)=}")
+        # Outputs are intentionally not cleaned, so a missing NextMarker is written as null and clears a stale token.
+        next_page_outputs = {"AWS.Route53(true)": {"HostedZonesNextToken": next_marker}}
+        if not hosted_zones:
+            return CommandResults(readable_output="No Route53 hosted zones were found.", outputs=next_page_outputs)
+
+        outputs = {
+            "AWS.Route53.HostedZones(val.Id && val.Id == obj.Id)": hosted_zones,
+            **next_page_outputs,
+        }
+        return CommandResults(
+            outputs=outputs,
+            readable_output=Route53._hosted_zones_readable("AWS Route53 Hosted Zones", hosted_zones),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def hosted_zones_by_name_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Retrieves the hosted zones associated with the AWS account, in ASCII order by domain name.
+
+        Args:
+            client (BotoClient): The boto3 client for Route53.
+            args (Dict[str, Any]): Command arguments including dns_name, hosted_zone_id and limit.
+
+        Returns:
+            CommandResults: The hosted zones and the DNS name and hosted zone ID of the next page.
+        """
+        dns_name = args.get("dns_name")
+        hosted_zone_id = Route53._normalize_hosted_zone_id(args.get("hosted_zone_id"))
+        if hosted_zone_id and not dns_name:
+            raise ValueError("The dns_name argument is required when hosted_zone_id is provided.")
+
+        kwargs = remove_empty_elements({"DNSName": dns_name, "HostedZoneId": hosted_zone_id})
+        kwargs.update(Route53._pagination_kwargs({"limit": args.get("limit")}, Route53.HOSTED_ZONES_MAX_ITEMS))
+        print_debug_logs(
+            client, f"Listing hosted zones by name with parameter keys: {list(kwargs.keys())} and {kwargs.get('MaxItems')=}"
+        )
+        response = client.list_hosted_zones_by_name(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        hosted_zones = response.get("HostedZones", [])
+        print_debug_logs(client, f"{len(hosted_zones)=}, {response.get('IsTruncated')=}")
+        # Outputs are intentionally not cleaned, so missing next-page values are written as null and clear stale values.
+        next_page_outputs = {
+            "AWS.Route53(true)": {
+                "HostedZonesNextDNSName": response.get("NextDNSName"),
+                "HostedZonesNextHostedZoneId": response.get("NextHostedZoneId"),
+            },
+        }
+        if not hosted_zones:
+            return CommandResults(readable_output="No Route53 hosted zones were found.", outputs=next_page_outputs)
+
+        outputs = {
+            "AWS.Route53.HostedZones(val.Id && val.Id == obj.Id)": hosted_zones,
+            **next_page_outputs,
+        }
+        return CommandResults(
+            outputs=outputs,
+            readable_output=Route53._hosted_zones_readable("AWS Route53 Hosted Zones By Name", hosted_zones),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def resource_record_sets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Lists the resource record sets in a specified hosted zone.
+
+        Args:
+            client (BotoClient): The boto3 client for Route53.
+            args (Dict[str, Any]): Command arguments including hosted_zone_id, the start record arguments and limit.
+
+        Returns:
+            CommandResults: The resource record sets and the values for retrieving the next page.
+        """
+        hosted_zone_id = Route53._normalize_hosted_zone_id(args.get("hosted_zone_id"))
+        start_record_name = args.get("start_record_name")
+        start_record_type = args.get("start_record_type")
+        start_record_identifier = args.get("start_record_identifier")
+        if start_record_type and not start_record_name:
+            raise ValueError("The start_record_name argument is required when start_record_type is provided.")
+        if start_record_identifier and not (start_record_name and start_record_type):
+            raise ValueError(
+                "The start_record_name and start_record_type arguments are required when start_record_identifier is provided."
+            )
+
+        kwargs = remove_empty_elements(
+            {
+                "HostedZoneId": hosted_zone_id,
+                "StartRecordName": start_record_name,
+                "StartRecordType": start_record_type,
+                "StartRecordIdentifier": start_record_identifier,
+            }
+        )
+        kwargs.update(Route53._pagination_kwargs({"limit": args.get("limit")}, Route53.RECORD_SETS_MAX_ITEMS))
+        print_debug_logs(
+            client,
+            f"Listing resource record sets with parameter keys: {list(kwargs.keys())} and {kwargs.get('MaxItems')=}",
+        )
+        response = client.list_resource_record_sets(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        record_sets = response.get("ResourceRecordSets", [])
+        print_debug_logs(client, f"{len(record_sets)=}, {response.get('IsTruncated')=}")
+        # Outputs are intentionally not cleaned, so missing next-record values are written as null and clear stale values.
+        next_page_outputs = {
+            "AWS.Route53(true)": {
+                "RecordSetsNextRecordName": response.get("NextRecordName"),
+                "RecordSetsNextRecordType": response.get("NextRecordType"),
+                "RecordSetsNextRecordIdentifier": response.get("NextRecordIdentifier"),
+                "RecordSetsIsTruncated": response.get("IsTruncated"),
+            },
+        }
+        if not record_sets:
+            return CommandResults(
+                readable_output=f"No resource record sets were found in hosted zone {hosted_zone_id}.",
+                outputs=next_page_outputs,
+            )
+
+        for record_set in record_sets:
+            record_set["HostedZoneId"] = hosted_zone_id
+
+        readable_rows = [
+            {
+                "Name": record_set.get("Name"),
+                "Type": record_set.get("Type"),
+                "TTL": record_set.get("TTL"),
+                # Standard records show all their values; alias records show the alias target DNS name instead.
+                "Values": ", ".join(record.get("Value") for record in record_set.get("ResourceRecords", []))
+                or record_set.get("AliasTarget", {}).get("DNSName"),
+                "SetIdentifier": record_set.get("SetIdentifier"),
+            }
+            for record_set in record_sets
+        ]
+        outputs = {
+            "AWS.Route53.RecordSets(val.HostedZoneId == obj.HostedZoneId && val.Name == obj.Name"
+            " && val.Type == obj.Type && val.SetIdentifier == obj.SetIdentifier)": record_sets,
+            **next_page_outputs,
+        }
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                f"AWS Route53 Record Sets in hosted zone {hosted_zone_id}",
+                readable_rows,
+                headers=["Name", "Type", "TTL", "Values", "SetIdentifier"],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def _build_resource_record_set(args: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Builds and validates the ResourceRecordSet of a single Route53 change.
+
+        Args:
+            args (Dict[str, Any]): Command arguments including name, type, ttl, values, set_identifier, weight and the alias
+                target arguments.
+
+        Returns:
+            Dict[str, Any]: The ResourceRecordSet for the change request.
+
+        Raises:
+            ValueError: If the values and alias target arguments are missing, combined, or incomplete, or if the
+                set_identifier and weight arguments are not provided together or the weight is out of range.
+        """
+        values = argToList(args.get("values"))
+        ttl = arg_to_number(args.get("ttl"))
+        set_identifier = args.get("set_identifier")
+        weight = arg_to_number(args.get("weight"))
+        alias_hosted_zone_id = args.get("alias_target_hosted_zone_id")
+        alias_dns_name = args.get("alias_target_dns_name")
+        alias_evaluate_target_health = arg_to_bool_or_none(args.get("alias_target_evaluate_target_health"))
+        uses_alias = any(arg is not None for arg in (alias_hosted_zone_id, alias_dns_name, alias_evaluate_target_health))
+
+        if values and uses_alias:
+            raise ValueError("Provide either the values argument or the alias target arguments, not both.")
+        if not values and not uses_alias:
+            raise ValueError(
+                "Provide either the values and ttl arguments, or the alias_target_hosted_zone_id and "
+                "alias_target_dns_name arguments."
+            )
+        if values and ttl is None:
+            raise ValueError("The ttl argument is required when the values argument is provided.")
+        if uses_alias and not (alias_hosted_zone_id and alias_dns_name):
+            raise ValueError("Both alias_target_hosted_zone_id and alias_target_dns_name are required for an alias record.")
+        if uses_alias and ttl is not None:
+            raise ValueError("The ttl argument cannot be used with an alias record.")
+        if set_identifier and weight is None:
+            raise ValueError("The weight argument is required when the set_identifier argument is provided.")
+        if weight is not None and not set_identifier:
+            raise ValueError("The set_identifier argument is required when the weight argument is provided.")
+        if weight is not None and not 0 <= weight <= Route53.MAX_RECORD_WEIGHT:
+            raise ValueError(f"The weight argument must be between 0 and {Route53.MAX_RECORD_WEIGHT}.")
+
+        alias_target = {
+            "HostedZoneId": alias_hosted_zone_id,
+            "DNSName": alias_dns_name,
+            "EvaluateTargetHealth": bool(alias_evaluate_target_health),
+        }
+        return remove_empty_elements(
+            {
+                "Name": args.get("name"),
+                "Type": args.get("type"),
+                "SetIdentifier": set_identifier,
+                "Weight": weight,
+                "TTL": ttl,
+                "ResourceRecords": [{"Value": value} for value in values] or None,
+                "AliasTarget": alias_target if uses_alias else None,
+            }
+        )
+
+    @staticmethod
+    def resource_record_sets_change_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Creates, updates (upserts) or deletes a single resource record set in a hosted zone.
+
+        Args:
+            client (BotoClient): The boto3 client for Route53.
+            args (Dict[str, Any]): Command arguments including hosted_zone_id, action, comment and the record set arguments.
+
+        Returns:
+            CommandResults: The change information returned by Route53.
+        """
+        action = args.get("action")
+        hosted_zone_id = Route53._normalize_hosted_zone_id(args.get("hosted_zone_id"))
+        record_set = Route53._build_resource_record_set(args)
+        kwargs = {
+            "HostedZoneId": hosted_zone_id,
+            "ChangeBatch": remove_empty_elements(
+                {
+                    "Comment": args.get("comment"),
+                    "Changes": [{"Action": action, "ResourceRecordSet": record_set}],
+                }
+            ),
+        }
+        # Log only non-sensitive fields: record names and values can reveal customer domains and infrastructure.
+        print_debug_logs(
+            client,
+            f"Changing a resource record set with record keys: {list(record_set.keys())} and {action=}, "
+            f"{record_set.get('Type')=}, {len(record_set.get('ResourceRecords', []))=}",
+        )
+        response = client.change_resource_record_sets(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        change_info = response.get("ChangeInfo", {})
+        return CommandResults(
+            outputs_prefix="AWS.Route53.RecordSetsChange",
+            outputs_key_field="Id",
+            outputs=change_info,
+            readable_output=tableToMarkdown(
+                f"AWS Route53 {action} request submitted for record {record_set.get('Name')} ({record_set.get('Type')})",
+                change_info,
+                headers=["Id", "Status", "SubmittedAt", "Comment"],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
@@ -11536,6 +11901,10 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-resource-untag": NetworkFirewall.untag_resource_command,
     "aws-network-firewall-logging-configuration-describe": NetworkFirewall.describe_logging_configuration_command,
     "aws-network-firewall-logging-configuration-update": NetworkFirewall.update_logging_configuration_command,
+    "aws-route53-hosted-zones-list": Route53.hosted_zones_list_command,
+    "aws-route53-hosted-zones-by-name-list": Route53.hosted_zones_by_name_list_command,
+    "aws-route53-resource-record-sets-list": Route53.resource_record_sets_list_command,
+    "aws-route53-resource-record-sets-change": Route53.resource_record_sets_change_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -11745,6 +12114,10 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:UntagResource",
     "network-firewall:DescribeLoggingConfiguration",
     "network-firewall:UpdateLoggingConfiguration",
+    "route53:ListHostedZones",
+    "route53:ListHostedZonesByName",
+    "route53:ListResourceRecordSets",
+    "route53:ChangeResourceRecordSets",
 ]
 
 COMMAND_SERVICE_MAP = {

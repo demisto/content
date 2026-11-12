@@ -21113,6 +21113,455 @@ script:
     - contextPath: AWS.NetworkFirewall.Firewalls.EnableMonitoringDashboard
       description: Whether the monitoring dashboard is enabled for the firewall.
       type: Boolean
+  - name: aws-route53-hosted-zones-list
+    description: "Retrieves a list of the public and private hosted zones that are associated with the AWS account. Route53 is a global service. Required IAM permission: route53:ListHostedZones."
+    arguments:
+    - name: account_id
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: region
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: limit
+      description: The maximum number of hosted zones to return. Valid range is 1-100.
+      required: false
+      defaultValue: '100'
+    - name: next_token
+      description: The token for the next page of hosted zones. Use the value of AWS.Route53.HostedZonesNextToken from the previous response.
+      required: false
+    - name: delegation_set_id
+      description: The ID of a reusable delegation set. If provided, only the hosted zones that are associated with this delegation set are returned.
+      required: false
+    - name: hosted_zone_type
+      description: The type of hosted zones to return. If not provided, all hosted zones are returned.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - PrivateHostedZone
+    outputs:
+    - contextPath: AWS.Route53.HostedZones.Id
+      description: The ID that Route53 assigned to the hosted zone when it was created.
+      type: String
+    - contextPath: AWS.Route53.HostedZones.Name
+      description: The name of the domain.
+      type: String
+    - contextPath: AWS.Route53.HostedZones.CallerReference
+      description: The value that was specified for CallerReference when the hosted zone was created.
+      type: String
+    - contextPath: AWS.Route53.HostedZones.Config.Comment
+      description: The comment that was included about the hosted zone.
+      type: String
+    - contextPath: AWS.Route53.HostedZones.Config.PrivateZone
+      description: Whether this is a private hosted zone.
+      type: Boolean
+    - contextPath: AWS.Route53.HostedZones.ResourceRecordSetCount
+      description: The number of resource record sets in the hosted zone.
+      type: Number
+    - contextPath: AWS.Route53.HostedZones.LinkedService.ServicePrincipal
+      description: If the hosted zone was created by another service, the service that created it.
+      type: String
+    - contextPath: AWS.Route53.HostedZones.LinkedService.Description
+      description: If the hosted zone was created by another service, an optional description provided by that service.
+      type: String
+    - contextPath: AWS.Route53.HostedZonesNextToken
+      description: The token to use in the next_token argument to retrieve the next page of hosted zones. Null when there are no more results.
+      type: String
+  - name: aws-route53-hosted-zones-by-name-list
+    description: "Retrieves a list of the hosted zones associated with the AWS account, sorted in ASCII order by domain name (labels reversed). Route53 is a global service. Required IAM permission: route53:ListHostedZonesByName."
+    arguments:
+    - name: account_id
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: region
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: dns_name
+      description: The domain name to start listing hosted zones from, in ASCII order. To retrieve the next page, use the value of AWS.Route53.HostedZonesNextDNSName.
+      required: false
+    - name: hosted_zone_id
+      description: The hosted zone ID to start listing from, together with dns_name. To retrieve the next page, use the value of AWS.Route53.HostedZonesNextHostedZoneId. Requires the dns_name argument.
+      required: false
+    - name: limit
+      description: The maximum number of hosted zones to return. Valid range is 1-100.
+      required: false
+      defaultValue: '100'
+    outputs:
+    - contextPath: AWS.Route53.HostedZones.Id
+      description: The ID that Route53 assigned to the hosted zone when it was created.
+      type: String
+    - contextPath: AWS.Route53.HostedZones.Name
+      description: The name of the domain.
+      type: String
+    - contextPath: AWS.Route53.HostedZones.CallerReference
+      description: The value that was specified for CallerReference when the hosted zone was created.
+      type: String
+    - contextPath: AWS.Route53.HostedZones.Config.Comment
+      description: The comment that was included about the hosted zone.
+      type: String
+    - contextPath: AWS.Route53.HostedZones.Config.PrivateZone
+      description: Whether this is a private hosted zone.
+      type: Boolean
+    - contextPath: AWS.Route53.HostedZones.ResourceRecordSetCount
+      description: The number of resource record sets in the hosted zone.
+      type: Number
+    - contextPath: AWS.Route53.HostedZones.LinkedService.ServicePrincipal
+      description: If the hosted zone was created by another service, the service that created it.
+      type: String
+    - contextPath: AWS.Route53.HostedZones.LinkedService.Description
+      description: If the hosted zone was created by another service, an optional description provided by that service.
+      type: String
+    - contextPath: AWS.Route53.HostedZonesNextDNSName
+      description: The DNS name to use in the dns_name argument to retrieve the next page of hosted zones. Null when there are no more results.
+      type: String
+    - contextPath: AWS.Route53.HostedZonesNextHostedZoneId
+      description: The hosted zone ID to use in the hosted_zone_id argument to retrieve the next page of hosted zones. Null when there are no more results.
+      type: String
+  - name: aws-route53-resource-record-sets-list
+    description: "Lists the resource record sets in a specified hosted zone. Route53 is a global service. Required IAM permission: route53:ListResourceRecordSets."
+    arguments:
+    - name: account_id
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: region
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: hosted_zone_id
+      description: The ID of the hosted zone that contains the resource record sets to list.
+      required: true
+    - name: start_record_name
+      description: The first name in the lexicographic ordering of resource record sets to list. To retrieve the next page, use the value of AWS.Route53.RecordSetsNextRecordName.
+      required: false
+    - name: start_record_type
+      description: The type of resource record set to begin the listing from. Requires the start_record_name argument. To retrieve the next page, use the value of AWS.Route53.RecordSetsNextRecordType.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - A
+      - AAAA
+      - CAA
+      - CNAME
+      - DS
+      - HTTPS
+      - MX
+      - NAPTR
+      - NS
+      - PTR
+      - SOA
+      - SPF
+      - SRV
+      - SSHFP
+      - SVCB
+      - TLSA
+      - TXT
+    - name: start_record_identifier
+      description: For resource record sets that have a routing policy other than simple, the set identifier to begin the listing from. Requires the start_record_name and start_record_type arguments. To retrieve the next page, use the value of AWS.Route53.RecordSetsNextRecordIdentifier.
+      required: false
+    - name: limit
+      description: The maximum number of resource record sets to return. Valid range is 1-300.
+      required: false
+      defaultValue: '300'
+    outputs:
+    - contextPath: AWS.Route53.RecordSets.HostedZoneId
+      description: The ID of the hosted zone that contains the resource record set, without the /hostedzone/ prefix.
+      type: String
+    - contextPath: AWS.Route53.RecordSets.Name
+      description: The name of the domain.
+      type: String
+    - contextPath: AWS.Route53.RecordSets.Type
+      description: The DNS record type.
+      type: String
+    - contextPath: AWS.Route53.RecordSets.SetIdentifier
+      description: An identifier that differentiates among multiple resource record sets that have the same combination of name and type.
+      type: String
+    - contextPath: AWS.Route53.RecordSets.Weight
+      description: Weighted resource record sets only. The weight of the resource record set.
+      type: Number
+    - contextPath: AWS.Route53.RecordSets.Region
+      description: Latency-based resource record sets only. The AWS region of the resource that this record set refers to.
+      type: String
+    - contextPath: AWS.Route53.RecordSets.GeoLocation
+      description: Geolocation resource record sets only. The geolocation of the record set, containing ContinentCode, CountryCode, and SubdivisionCode.
+      type: Unknown
+    - contextPath: AWS.Route53.RecordSets.Failover
+      description: Failover resource record sets only. Whether this is the PRIMARY or SECONDARY resource record set.
+      type: String
+    - contextPath: AWS.Route53.RecordSets.MultiValueAnswer
+      description: Multivalue answer resource record sets only.
+      type: Boolean
+    - contextPath: AWS.Route53.RecordSets.TTL
+      description: The resource record cache time to live (TTL), in seconds.
+      type: Number
+    - contextPath: AWS.Route53.RecordSets.ResourceRecords.Value
+      description: The value of the record.
+      type: String
+    - contextPath: AWS.Route53.RecordSets.AliasTarget.HostedZoneId
+      description: Alias resource record sets only. The hosted zone ID of the alias target.
+      type: String
+    - contextPath: AWS.Route53.RecordSets.AliasTarget.DNSName
+      description: Alias resource record sets only. The DNS name of the alias target.
+      type: String
+    - contextPath: AWS.Route53.RecordSets.AliasTarget.EvaluateTargetHealth
+      description: Alias resource record sets only. Whether the alias record inherits the health of the referenced resource.
+      type: Boolean
+    - contextPath: AWS.Route53.RecordSets.HealthCheckId
+      description: The ID of the applicable health check.
+      type: String
+    - contextPath: AWS.Route53.RecordSets.TrafficPolicyInstanceId
+      description: The ID of the traffic policy instance that Route53 created this resource record set for.
+      type: String
+    - contextPath: AWS.Route53.RecordSetsNextRecordName
+      description: The name to use in the start_record_name argument to retrieve the next page. Null when there are no more results.
+      type: String
+    - contextPath: AWS.Route53.RecordSetsNextRecordType
+      description: The type to use in the start_record_type argument to retrieve the next page. Null when there are no more results.
+      type: String
+    - contextPath: AWS.Route53.RecordSetsNextRecordIdentifier
+      description: The set identifier to use in the start_record_identifier argument to retrieve the next page. Null when there are no more results or the next record has no set identifier.
+      type: String
+    - contextPath: AWS.Route53.RecordSetsIsTruncated
+      description: Whether more resource record sets are available.
+      type: Boolean
+  - name: aws-route53-resource-record-sets-change
+    description: "Creates, updates (UPSERT), or deletes a single resource record set in a hosted zone. Provide either the values and ttl arguments, or the alias target arguments. A DELETE request must exactly match the existing record, including the TTL and all the values, or the alias target. Route53 is a global service. Required IAM permission: route53:ChangeResourceRecordSets."
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: region
+      description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: hosted_zone_id
+      description: The ID of the hosted zone that contains the resource record set.
+      required: true
+    - name: action
+      description: The action to perform. CREATE creates a new record set, UPSERT creates the record set or updates it if it exists, and DELETE deletes an existing record set.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - CREATE
+      - UPSERT
+      - DELETE
+    - name: name
+      description: The name of the record, for example, www.example.com.
+      required: true
+    - name: type
+      description: The DNS record type.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - A
+      - AAAA
+      - CAA
+      - CNAME
+      - DS
+      - HTTPS
+      - MX
+      - NAPTR
+      - NS
+      - PTR
+      - SOA
+      - SPF
+      - SRV
+      - SSHFP
+      - SVCB
+      - TLSA
+      - TXT
+    - name: ttl
+      description: The resource record cache time to live (TTL), in seconds. Required when the values argument is provided. Cannot be used with an alias record.
+      required: false
+    - name: values
+      description: The comma-separated list of record values. For a DELETE action, provide all the values of the existing record. Cannot be used with the alias target arguments.
+      required: false
+      isArray: true
+    - name: alias_target_hosted_zone_id
+      description: The hosted zone ID of the AWS resource that the alias record routes traffic to. Alias records only. Required together with alias_target_dns_name.
+      required: false
+    - name: alias_target_dns_name
+      description: The DNS name of the AWS resource that the alias record routes traffic to. Alias records only. Required together with alias_target_hosted_zone_id.
+      required: false
+    - name: alias_target_evaluate_target_health
+      description: Whether the alias record inherits the health of the referenced AWS resource. Alias records only. If not provided for an alias record, false is used.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: set_identifier
+      description: The identifier that differentiates among multiple resource record sets that have the same name and type. Weighted records only. Required together with the weight argument.
+      required: false
+    - name: weight
+      description: The weight of a weighted record, which determines the proportion of DNS queries that Route53 responds to with this record. Valid range is 0-255. Weighted records only. Required together with the set_identifier argument.
+      required: false
+    - name: comment
+      description: The comment about the change.
+      required: false
+    outputs:
+    - contextPath: AWS.Route53.RecordSetsChange.Id
+      description: The ID of the change request.
+      type: String
+    - contextPath: AWS.Route53.RecordSetsChange.Status
+      description: The current state of the request. PENDING indicates that the request has not yet been applied to all Route53 DNS servers.
+      type: String
+    - contextPath: AWS.Route53.RecordSetsChange.SubmittedAt
+      description: The date and time that the change request was submitted.
+      type: Date
+    - contextPath: AWS.Route53.RecordSetsChange.Comment
+      description: The comment that was specified for the change request.
+      type: String
+
 
   isfetch: false
   runonce: false
