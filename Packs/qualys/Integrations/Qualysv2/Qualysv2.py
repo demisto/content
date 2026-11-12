@@ -39,6 +39,10 @@ QIDS_BATCH_SIZE = 500
 VULNERABILITIES_SEND_BATCH_SIZE = 5000
 # Hosts per commit: their detections are sent together, then the last run is saved with the next host ID as cursor.
 ASSETS_COMMIT_HOSTS_BATCH_SIZE = 100
+# Detections (asset rows) per commit: a batch also closes once its hosts reach this many detections, so a few hosts
+# with many detections cannot hold too many rows in memory at once. Hosts are never split: a single host with more
+# detections than this is sent as a batch of its own.
+ASSETS_COMMIT_DETECTIONS_BATCH_SIZE = 5000
 # Assets runs in a row that may make no progress before the error is raised (fetch shows as failed). Counted: errors
 # before the first commit (including concurrency-limit errors) and host list timeouts once the limit is already 1.
 ASSETS_MAX_CONSECUTIVE_FAILURES = 5
@@ -3204,6 +3208,18 @@ def get_detections_from_hosts(hosts):
     return fetched_assets, False
 
 
+def get_host_detections(host: dict) -> list[dict]:
+    """Returns the host's detections as a list, one per asset row. A host without detections yields one empty detection.
+
+    Args:
+        host (dict): A host dict from the host list detection response.
+    Returns:
+        list[dict]: The host's detections (a single detection parsed as a dict is wrapped in a list).
+    """
+    detections = (host.get("DETECTION_LIST") or {}).get("DETECTION") or [{}]
+    return detections if isinstance(detections, list) else [detections]
+
+
 def iter_detections_from_hosts(hosts: Iterable[dict]) -> Iterator[dict]:
     """Yields detection (asset) rows one at a time from a stream of hosts, without accumulating the full list.
 
@@ -3219,10 +3235,7 @@ def iter_detections_from_hosts(hosts: Iterable[dict]) -> Iterator[dict]:
         One detection (asset) row dict per detection.
     """
     for host in hosts:
-        detections_list = host.get("DETECTION_LIST", {}).get("DETECTION") or [{}]
-
-        if not isinstance(detections_list, list):  # In case detections_list = {}
-            detections_list = [detections_list]
+        detections_list = get_host_detections(host)
 
         # Build the host-without-detections once per host so the (potentially large) detections list is not
         # deep-copied per detection (keeps it O(N) rather than O(N^2) for a host with N detections).
@@ -3810,10 +3823,45 @@ def read_assets_page_state(last_run: dict[str, Any]) -> tuple[str, str, str, int
     return since_datetime, next_page, snapshot_id, limit
 
 
+def iter_host_batches(hosts: Iterable[dict], max_hosts: int, max_rows: int) -> Iterator[tuple[list[dict], bool]]:
+    """Groups hosts into batches of whole hosts, closing a batch at ``max_hosts`` hosts or ``max_rows`` asset rows.
+
+    A host is never split between batches. If adding a host would take a non-empty batch over ``max_rows``, the batch
+    is closed first. A single host with more than ``max_rows`` rows is therefore yielded as a batch of its own.
+
+    Args:
+        hosts (Iterable[dict]): The hosts, in the order they are streamed.
+        max_hosts (int): The maximum number of hosts in a batch.
+        max_rows (int): The number of asset rows at which a batch is closed.
+    Yields:
+        tuple: (hosts batch, closed_by_limit). closed_by_limit is False only for the last batch, which was closed by
+        the end of the hosts rather than by a limit.
+    """
+    batch: list[dict] = []
+    batch_rows = 0
+    for host in hosts:
+        host_rows = len(get_host_detections(host))
+        if batch and batch_rows + host_rows > max_rows:
+            yield batch, True
+            batch, batch_rows = [], 0
+
+        batch.append(host)
+        batch_rows += host_rows
+        if len(batch) >= max_hosts or batch_rows >= max_rows:
+            yield batch, True
+            batch, batch_rows = [], 0
+
+    if batch:
+        yield batch, False
+
+
 def iter_committable_host_batches(
     raw_response: Optional[requests.Response], stream_state: dict
 ) -> Iterator[tuple[list[dict], Optional[str], bool]]:
-    """Streams the page's hosts in batches of ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` and yields the asset rows of each batch.
+    """Streams the page's hosts in batches of whole hosts and yields the asset rows of each batch.
+
+    A batch closes at ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts or ``ASSETS_COMMIT_DETECTIONS_BATCH_SIZE`` asset rows,
+    whichever comes first (see ``iter_host_batches``), so peak memory is bounded by rows rather than by hosts.
 
     Args:
         raw_response (Optional[requests.Response]): The streamed host list detection response.
@@ -3824,9 +3872,14 @@ def iter_committable_host_batches(
             - is_full_batch: False only for the last batch, which the caller sends as the end-of-page remainder.
     """
     hosts = iter_host_list_detections(raw_response, stream_state)
-    for host_batch in iter_batches(hosts, ASSETS_COMMIT_HOSTS_BATCH_SIZE):
+    host_batches = iter_host_batches(hosts, ASSETS_COMMIT_HOSTS_BATCH_SIZE, ASSETS_COMMIT_DETECTIONS_BATCH_SIZE)
+    for host_batch, closed_by_limit in host_batches:
         rows = list(iter_detections_from_hosts(host_batch))
-        if len(host_batch) < ASSETS_COMMIT_HOSTS_BATCH_SIZE:
+        demisto.debug(
+            f"[Fetch] Built asset rows batch: {len(host_batch)} hosts (IDs {host_batch[0].get('ID')}-"
+            f"{host_batch[-1].get('ID')}), {len(rows)} rows, closed by {'limit' if closed_by_limit else 'end of page'}."
+        )
+        if not closed_by_limit:
             yield rows, None, False
             return
         # Assumes Qualys returns hosts in ascending ID order (observed behavior, not stated in the Qualys API docs).
@@ -3837,9 +3890,9 @@ def iter_committable_host_batches(
 def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> tuple[dict[str, Any], bool]:
     """Fetches one assets page (host list detections) and sends it to XSIAM, committing every few hosts.
 
-    Every ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts, their detections are sent into the same snapshot (``items_count=1``,
-    unsealed) and the last run is saved with ``next_page`` set to the next host ID. Only the final send of the final
-    page declares the cumulative ``total_assets`` to seal the snapshot.
+    For every batch of whole hosts (see ``iter_committable_host_batches``), their detections are sent into the same
+    snapshot (``items_count=1``, unsealed) and the last run is saved with ``next_page`` set to the next host ID.
+    Only the final send of the final page declares the cumulative ``total_assets`` to seal the snapshot.
 
     On any error mid-page (closed socket, parse error, failed send, etc.) the last commit is kept and the run ends
     normally, so the next fetch resumes from the first uncommitted host. If nothing was committed, the run is handled
@@ -3920,10 +3973,10 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
 def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str, Any]) -> tuple[dict[str, Any], bool]:
     """Fetches one assets page and sends it with the vulnerabilities of its QIDs, committing every few hosts.
 
-    For every ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts: build their asset rows, fetch the vulnerabilities of the QIDs
-    not fetched yet in this run, send both into the same snapshot (unsealed), then save the last run with ``next_page``
-    set to the next host ID. On the last page, the final send seals both snapshots with the cumulative totals and the
-    last run is reset.
+    For every batch of whole hosts (see ``iter_committable_host_batches``): build their asset rows, fetch the
+    vulnerabilities of the QIDs not fetched yet in this run, send both into the same snapshot (unsealed), then save the
+    last run with ``next_page`` set to the next host ID. On the last page, the final send seals both snapshots with the
+    cumulative totals and the last run is reset.
 
     Errors are handled as in ``fetch_and_send_assets_streamed``, for both the host list and the knowledge-base
     requests: the last commit is kept; if nothing was committed, ``handle_assets_page_error`` decides (concurrency-limit
@@ -4224,8 +4277,9 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
     then back to assets.
 
     Assets stage (``fetch_and_send_assets_streamed``), one page of up to ``limit`` hosts per run:
-        - The page is streamed. Every ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts, their rows are sent into the cycle's
-          assets snapshot (unsealed) and the last run is saved right away with ``next_page`` = last host ID + 1.
+        - The page is streamed in batches of whole hosts, closed at ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts or
+          ``ASSETS_COMMIT_DETECTIONS_BATCH_SIZE`` detections (a host is never split). Each batch's rows are sent into
+          the cycle's assets snapshot (unsealed) and the last run is saved right away with ``next_page`` = last host ID + 1.
           ``id_min`` is inclusive, so this cursor is the first unsent host. This relies on Qualys returning hosts in
           ascending ID order, which matches observed behavior but is not stated in the Qualys API documentation.
         - On any error mid-page (dropped connection, cut-off XML, failed send), the last commit is kept and the run ends
@@ -4298,7 +4352,8 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
     cycle is all assets pages; assets and vulnerabilities share one ``snapshot_id`` per cycle.
 
     Per page:
-        - The page is streamed. For every ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts:
+        - The page is streamed in batches of whole hosts, closed at ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts or
+          ``ASSETS_COMMIT_DETECTIONS_BATCH_SIZE`` detections (a host is never split). For every batch:
             1. Their asset rows are built (one row per detection).
             2. Their QIDs that were not fetched yet in this run are fetched from the knowledge base (in chunks of
                ``QIDS_BATCH_SIZE``). This happens before any send, so a failed fetch sends nothing for the batch.
