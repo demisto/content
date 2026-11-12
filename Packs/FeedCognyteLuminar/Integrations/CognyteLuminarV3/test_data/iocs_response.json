@@ -1,0 +1,342 @@
+{
+ "more": false,
+ "objects": [
+  {
+   "type": "indicator",
+   "spec_version": "2.1",
+   "id": "indicator--73be9a1f-266b-5023-9c6d-a23c955b65cb",
+   "created": "2026-09-08T00:00:00.000Z",
+   "modified": "2026-09-09T00:00:58.072Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "score": 100,
+     "asn": 10834,
+     "country": "US",
+     "protocols": [
+      "ssh"
+     ],
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff",
+     "collection_date": "2026-09-09T00:00:02.718Z",
+     "conviction_reasons": [
+      "bad_reputation"
+     ],
+     "threat_types": [
+      "bruteforce"
+     ],
+     "cloud_provider": false,
+     "targeted_system_names": [
+      "Attack"
+     ]
+    }
+   },
+   "labels": [
+    "SuspiciousNetworkActivity",
+    "Scanner",
+    "phishing"
+   ],
+   "confidence": 90,
+   "pattern": "[ipv4-addr:value = '200.41.233.229']",
+   "created_by_ref": "identity--5bf1ac35-8d08-509e-b31a-044cb09b4199",
+   "pattern_type": "stix",
+   "indicator_types": [
+    "malicious-activity"
+   ],
+   "valid_from": "2026-09-08T00:00:00.000Z",
+   "valid_until": "2026-09-15T00:00:00.000Z"
+  },
+  {
+   "type": "indicator",
+   "spec_version": "2.1",
+   "id": "indicator--5f439e9d-4f62-57d6-abcb-8c8fe38e0158",
+   "created": "2026-09-08T00:00:00.000Z",
+   "modified": "2026-09-09T00:00:58.087Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "score": 100,
+     "asn": 4837,
+     "protocols": [
+      "ssl"
+     ],
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff",
+     "collection_date": "2026-09-09T00:00:02.719Z",
+     "resolving_domains": [
+      "download.zplay.cn"
+     ],
+     "cloud_provider": false,
+     "targeted_system_types": [
+      "Endpoint"
+     ],
+     "targeted_system_names": [
+      "Win11"
+     ],
+     "targeted_system_versions": [
+      "10.0.26200"
+     ]
+    }
+   },
+   "labels": [
+    "phishing"
+   ],
+   "confidence": 10,
+   "pattern": "[ipv4-addr:value = '122.189.80.152']",
+   "created_by_ref": "identity--5bf1ac35-8d08-509e-b31a-044cb09b4199",
+   "pattern_type": "stix",
+   "indicator_types": [
+    "malicious-activity"
+   ],
+   "valid_from": "2026-09-08T00:00:00.000Z",
+   "valid_until": "2026-09-15T00:00:00.000Z"
+  },
+  {
+   "type": "indicator",
+   "spec_version": "2.1",
+   "id": "indicator--6854bfee-fdeb-5c9e-b20f-47a7941f1085",
+   "created": "2026-09-08T00:00:00.000Z",
+   "modified": "2026-09-09T00:00:58.088Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "score": 100,
+     "asn": 4134,
+     "protocols": [
+      "ssl"
+     ],
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff",
+     "collection_date": "2026-09-09T00:00:02.719Z",
+     "resolving_domains": [
+      "accscicn.com",
+      "printr.shrw01.cn"
+     ],
+     "cloud_provider": false,
+     "targeted_system_types": [
+      "Endpoint"
+     ],
+     "targeted_system_names": [
+      "Win11"
+     ],
+     "targeted_system_versions": [
+      "10.0.26200"
+     ]
+    }
+   },
+   "labels": [
+    "SplitHost",
+    "phishing"
+   ],
+   "confidence": 10,
+   "pattern": "[ipv4-addr:value = '183.60.202.51']",
+   "created_by_ref": "identity--5bf1ac35-8d08-509e-b31a-044cb09b4199",
+   "pattern_type": "stix",
+   "indicator_types": [
+    "malicious-activity"
+   ],
+   "valid_from": "2026-09-08T00:00:00.000Z",
+   "valid_until": "2026-09-15T00:00:00.000Z"
+  },
+  {
+   "type": "identity",
+   "spec_version": "2.1",
+   "id": "identity--5bf1ac35-8d08-509e-b31a-044cb09b4199",
+   "created": "2026-09-14T22:29:16.816Z",
+   "modified": "2026-09-14T22:29:16.816Z",
+   "name": "Luminar"
+  },
+  {
+   "type": "location",
+   "spec_version": "2.1",
+   "id": "location--377971e1-bc96-5ef1-9547-ba8709f76442",
+   "created": "2026-09-08T00:00:00.000Z",
+   "modified": "2026-09-09T00:00:58.111Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "country": "SI"
+  },
+  {
+   "type": "location",
+   "spec_version": "2.1",
+   "id": "location--2e0f6e25-8e3d-5f8e-8105-eaaeb814550f",
+   "created": "2026-09-08T00:00:00.000Z",
+   "modified": "2026-09-09T00:00:58.111Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "country": "US"
+  },
+  {
+   "type": "location",
+   "spec_version": "2.1",
+   "id": "location--39d71dfb-ddd6-5e7f-854c-be34b59313d6",
+   "created": "2026-09-08T00:00:00.000Z",
+   "modified": "2026-09-09T00:00:58.111Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "country": "CL"
+  },
+  {
+   "type": "location",
+   "spec_version": "2.1",
+   "id": "location--452c3a8a-e72a-52ce-9a2b-41da0f900b59",
+   "created": "2026-09-08T00:00:00.000Z",
+   "modified": "2026-09-09T00:00:58.111Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "country": "KZ"
+  },
+  {
+   "type": "location",
+   "spec_version": "2.1",
+   "id": "location--cbe15c18-0837-5a1f-b402-eb64127c3cb9",
+   "created": "2026-09-08T00:00:00.000Z",
+   "modified": "2026-09-09T00:00:58.111Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "country": "HR"
+  },
+  {
+   "type": "location",
+   "spec_version": "2.1",
+   "id": "location--18bf4cb1-d905-5d01-a155-207359d9584d",
+   "created": "2026-09-08T00:00:00.000Z",
+   "modified": "2026-09-09T00:00:58.111Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "country": "BO"
+  },
+  {
+   "type": "location",
+   "spec_version": "2.1",
+   "id": "location--642f48b9-f18e-5286-835d-7e23b1ea3430",
+   "created": "2026-09-08T00:00:00.000Z",
+   "modified": "2026-09-09T00:00:58.119Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "country": "PL"
+  },
+  {
+   "type": "malware",
+   "spec_version": "2.1",
+   "id": "malware--44306d31-9d0c-591b-8281-a6c95eaea937",
+   "created": "2026-09-08T00:00:00.000Z",
+   "modified": "2026-09-09T00:00:58.119Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "name": "surtr",
+   "malware_types": [],
+   "is_family": true
+  },
+  {
+   "type": "threat-actor",
+   "spec_version": "2.1",
+   "id": "threat-actor--dc973f32-6f4b-5741-be9a-e2969f147a08",
+   "created": "2026-09-08T00:00:00.000Z",
+   "modified": "2026-09-09T00:00:58.119Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "name": "APT28",
+   "aliases": [
+    "Strontium",
+    "Group 74",
+    "Fancy Bear",
+    "Snakemackerel",
+    "Sig40",
+    "Iron Twilight",
+    "Sofacy",
+    "Sednit",
+    "Pawn Storm",
+    "Tg-4127",
+    "Swallowtail",
+    "Tsar Team",
+    "Threat Group-4127",
+    "Forest Blizzard",
+    "Fighting Ursa",
+    "TA422",
+    "BlueDelta",
+    "UAC-0001",
+    "Operation RoundPress"
+   ]
+  },
+  {
+   "type": "extension-definition",
+   "spec_version": "2.1",
+   "id": "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3",
+   "created": "2026-09-14T22:29:16.817Z",
+   "modified": "2026-09-14T22:29:16.817Z",
+   "name": "Luminar Extension Definition",
+   "schema": "https://www.cyberluminar.com/stix/schemas/schema-luminar-meta/v1/",
+   "version": "1.0.0",
+   "created_by_ref": "identity--5bf1ac35-8d08-509e-b31a-044cb09b4199",
+   "extension_types": [
+    "property-extension"
+   ]
+  },
+  {
+   "type": "relationship",
+   "spec_version": "2.1",
+   "id": "relationship--696b2731-c839-5169-b3f9-d3264ee0940a",
+   "created": "2026-09-08T00:00:00.000Z",
+   "modified": "2026-09-09T00:00:58.119Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "relationship_type": "targets",
+   "source_ref": "threat-actor--dc973f32-6f4b-5741-be9a-e2969f147a08",
+   "target_ref": "location--642f48b9-f18e-5286-835d-7e23b1ea3430"
+  },
+  {
+   "type": "relationship",
+   "spec_version": "2.1",
+   "id": "relationship--3e01b064-0267-52a8-8cda-1b876b460c63",
+   "created": "2026-09-08T00:00:00.000Z",
+   "modified": "2026-09-09T00:00:58.119Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "relationship_type": "uses",
+   "source_ref": "threat-actor--dc973f32-6f4b-5741-be9a-e2969f147a08",
+   "target_ref": "malware--44306d31-9d0c-591b-8281-a6c95eaea937"
+  }
+ ]
+}
