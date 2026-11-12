@@ -3810,15 +3810,16 @@ def create_event_command(client: Client, args: dict) -> CommandResults:
             event[field] = value
 
     if (severity := args.get("severity")) is not None:
-        event["severity"] = severity_map.get(severity.lower(), severity)
+        event["severity"] = severity_map.get(str(severity).lower(), str(severity))
 
     if (resolution_state := args.get("resolution_state")) is not None:
         event["resolution_state"] = resolution_state_map.get(resolution_state.lower(), resolution_state)
 
-    client.create_event([event])
+    response = client.create_event([event])
 
     return CommandResults(
         readable_output="Event successfully sent to ServiceNow Event Management.",
+        raw_response=response,
     )
 
 

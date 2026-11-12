@@ -1759,21 +1759,21 @@ script:
       type: Unknown
   - arguments:
     - defaultValue: Cortex
-      description: Source of the event.
+      description: The source of the event.
       name: source
-    - description: Node where the event occurred.
+    - description: The node where the event occurred.
       name: node
       required: true
-    - description: Type of the event.
+    - description: The type of the event.
       name: type
       required: true
-    - description: 'Time the event occurred, in the format: YYYY-MM-DD HH:MM:SS (UTC).'
+    - description: 'The time the event occurred, in the format: YYYY-MM-DD HH:MM:SS (UTC).'
       name: time_of_event
       required: true
-    - description: Resource on the node that triggered the event.
+    - description: The resource on the node that triggered the event.
       name: resource
     - auto: PREDEFINED
-      description: Severity of the event.
+      description: The severity of the event.
       name: severity
       predefined:
       - critical
@@ -1781,14 +1781,14 @@ script:
       - medium
       - low
       - info
-    - description: Description of the event.
+    - description: The description of the event.
       name: description
     - description: 'Additional key-value pairs to attach to the event, in the format: {"key": "value"}.'
       name: additional_info
-    - description: Unique key used to deduplicate events.
+    - description: The unique key used to deduplicate events.
       name: message_key
     - auto: PREDEFINED
-      description: Resolution state of the event.
+      description: The resolution state of the event.
       name: resolution_state
       predefined:
       - new
@@ -2049,8 +2049,8 @@ script:
       description: Ticket close code.
       type: string
   - arguments:
-    - defaultValue: Cortex
-      description: Source of the event. Defaults to "Cortex".
+    - defaultvalue: Cortex
+      description: The source of the event.
       name: source
       prettyname: Source
       required: true
