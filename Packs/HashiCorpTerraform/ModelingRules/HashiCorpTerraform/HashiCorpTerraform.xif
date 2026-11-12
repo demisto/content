@@ -1,0 +1,62 @@
+[MODEL: dataset="hashicorp_terraform_raw"]
+alter
+    // Extract auth fields
+    get_accessor_id      = auth -> accessor_id,
+    get_auth_description = auth -> description,
+    get_auth_type        = auth -> type,
+    get_impersonator_id  = auth -> impersonator_id,
+    get_org_id           = auth -> organization_id,
+    get_org_name         = auth -> organization_name,
+    // Extract resource fields
+    get_resource_id      = resource -> id,
+    get_resource_type    = resource -> type,
+    get_resource_action  = resource -> action,
+    get_meta_sha         = resource -> meta.sha,
+    get_meta_request_id  = resource -> meta.request_id,
+    get_meta_config_ver  = resource -> meta.configuration_version_id,
+    get_meta_run_id      = resource -> meta.run_id,
+    get_meta_run_stage   = resource -> meta.run_stage,
+    get_meta_event       = resource -> meta.event
+| alter
+    // Event fields
+    xdm.event.id                  = id,
+    xdm.event.type                = type,
+    xdm.event.original_event_type = coalesce(get_meta_event, get_resource_action),
+    xdm.event.operation           = if(
+        get_resource_action ~= "(?i)create|add|new|register|apply|run|start|receive_webhook", XDM_CONST.OPERATION_TYPE_CREATE,
+        get_resource_action ~= "(?i)delete|remove|destroy|revoke",                           XDM_CONST.OPERATION_TYPE_DELETE,
+        get_resource_action ~= "(?i)update|modify|change|set|edit|rename|lock|unlock",       XDM_CONST.OPERATION_TYPE_UPDATE,
+        get_resource_action ~= "(?i)read|get|list|view|show|download|fetch",                 XDM_CONST.OPERATION_TYPE_READ,
+        get_resource_action ~= "(?i)login|sign.?in",                                         XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+        null
+    ),
+    xdm.event.operation_sub_type  = get_resource_action,
+    xdm.event.tags                = arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+    xdm.observer.action           = get_resource_action,
+    xdm.observer.version          = version,
+    // Source — actor
+    xdm.source.user.identifier    = get_accessor_id,
+    xdm.source.identity.identifier = get_accessor_id,
+    xdm.source.user.username      = get_auth_description,
+    xdm.source.identity.username  = get_auth_description,
+    xdm.source.user.user_type     = if(
+        get_auth_type = "System",  XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        get_auth_type = "Client",  XDM_CONST.USER_TYPE_REGULAR,
+        null
+    ),
+    xdm.source.identity.user_type = if(
+        get_auth_type = "System",  XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        get_auth_type = "Client",  XDM_CONST.USER_TYPE_REGULAR,
+        null
+    ),
+    xdm.source.cloud.project_id   = get_org_id,
+    xdm.source.cloud.project      = get_org_name,
+    // Target resource
+    xdm.target.resource.id        = coalesce(get_meta_run_id, get_resource_id),
+    xdm.target.resource.name      = get_resource_id,
+    xdm.target.resource.type      = get_resource_type,
+    xdm.target.resource.sub_type  = get_meta_run_stage,
+    xdm.target.resource.parent_id = get_meta_config_ver,
+    xdm.target.resource.value     = get_meta_sha,
+    // Correlation
+    xdm.session_context_id        = get_meta_request_id;

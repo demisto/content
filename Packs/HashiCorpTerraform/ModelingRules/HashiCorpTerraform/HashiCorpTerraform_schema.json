@@ -1,0 +1,24 @@
+{
+    "hashicorp_terraform_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "version": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "auth": {
+            "type": "string",
+            "is_array": false
+        },
+        "resource": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
