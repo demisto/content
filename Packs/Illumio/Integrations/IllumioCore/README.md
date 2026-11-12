@@ -1427,3 +1427,367 @@ Creates & assigns rules to a particular ruleset. Added or updated Rules will rem
 >|Rule HREF|Created At|Updated At|Enabled|Network Type|Ingress Services|Providers|Consumers|Resolve Providers As|Resolve Consumers As|
 >|---|---|---|---|---|---|---|---|---|---|
 >| /orgs/1/sec_policy/draft/rule_sets/2687/sec_rules/dummy | 03 Oct 2022, 12:19 PM | 03 Oct 2022, 12:19 PM | true | brn | /orgs/1/sec_policy/draft/services/1751 | ams | ams | workloads | workloads |
+
+### illumio-labels-get
+
+***
+Retrieves the list of labels based on the provided filters.
+
+#### Base Command
+
+`illumio-labels-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| key | The label key by which to filter (e.g., role, app, env, loc). | Optional |
+| value | Label value on which to filter. Supports partial matches. | Optional |
+| include_deleted | Whether to include deleted labels in the results. Possible values are: true, false. | Optional |
+| usage | Whether to include label usage flags in each result. Possible values are: true, false. | Optional |
+| max_results | Maximum number of labels to return. The value must be a positive integer. The PCE returns at most 500 labels per request. Default is 50. | Optional |
+| external_data_set | The data source from which a label originates. | Optional |
+| external_data_reference | A unique identifier within the external data source. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Illumio.Labels.href | String | URI of the label. |
+| Illumio.Labels.key | String | Key of the label. |
+| Illumio.Labels.value | String | Value of the label. |
+| Illumio.Labels.deleted | Boolean | Whether the label has been deleted. |
+| Illumio.Labels.external_data_set | String | The data source from which the label originates. |
+| Illumio.Labels.external_data_reference | String | A unique identifier within the external data source. |
+| Illumio.Labels.created_at | Date | The timestamp when the label was first created in ISO 8601 format (e.g., 2025-04-01T00:21:27Z). |
+| Illumio.Labels.updated_at | Date | The timestamp when the label was last updated in ISO 8601 format (e.g., 2025-04-01T00:21:27Z). |
+| Illumio.Labels.created_by.href | String | The URI of the user who created the label. |
+| Illumio.Labels.updated_by.href | String | The URI of the user who last updated the label. |
+| Illumio.Labels.usage.label_group | Boolean | Whether the label is used in a label group. |
+| Illumio.Labels.usage.ruleset | Boolean | Whether the label is used in a ruleset. |
+| Illumio.Labels.usage.rule | Boolean | Whether the label is used in a rule. |
+| Illumio.Labels.usage.static_policy_scopes | Boolean | Whether the label is used in a static policy scope. |
+| Illumio.Labels.usage.containers_inherit_host_policy_scopes | Boolean | Whether the label is used in a containers inherit host policy scope. |
+| Illumio.Labels.usage.blocked_connection_reject_scope | Boolean | Whether the label is used in a blocked connection reject scope. |
+| Illumio.Labels.usage.enforcement_boundary | Boolean | Whether the label is used in an enforcement boundary. |
+
+#### Command example
+
+```!illumio-labels-get key=role max_results=2```
+
+#### Context Example
+
+```json
+{
+    "Illumio": {
+        "Labels": [
+            {
+                "href": "/orgs/1/labels/1",
+                "key": "role",
+                "value": "Web",
+                "deleted": false,
+                "created_at": "2025-04-01T00:21:27Z",
+                "updated_at": "2025-04-01T00:21:27Z",
+                "created_by": {
+                    "href": "/users/1"
+                },
+                "updated_by": {
+                    "href": "/users/1"
+                }
+            },
+            {
+                "href": "/orgs/1/labels/2",
+                "key": "role",
+                "value": "Database",
+                "deleted": false,
+                "created_at": "2025-04-01T00:21:27Z",
+                "updated_at": "2025-04-01T00:21:27Z",
+                "created_by": {
+                    "href": "/users/1"
+                },
+                "updated_by": {
+                    "href": "/users/1"
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Labels
+>
+>|HREF|Key|Value|Deleted|Created At|Updated At|
+>|---|---|---|---|---|---|
+>| /orgs/1/labels/1 | role | Web | false | 01 Apr 2025, 12:21 AM | 01 Apr 2025, 12:21 AM |
+>| /orgs/1/labels/2 | role | Database | false | 01 Apr 2025, 12:21 AM | 01 Apr 2025, 12:21 AM |
+
+### illumio-workload-update
+
+***
+Updates a single workload, for example to apply labels to it. At least one field to update must be provided in addition to workload_id.
+
+#### Base Command
+
+`illumio-workload-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| workload_id | The workload UUID or the workload HREF (e.g., /orgs/1/workloads/&lt;uuid&gt;) to update.<br/>Note: Users can retrieve the list of workloads by executing the "illumio-workloads-list" command. | Required |
+| labels | A comma-separated list of label HREFs to assign to the workload (e.g., /orgs/1/labels/1). The provided labels replace the workload's current label set. Removing all labels from a workload is not supported.<br/>Note: Users can retrieve the list of label HREFs by executing the "illumio-labels-get" command. | Optional |
+| name | The short friendly name of the workload. | Optional |
+| description | The long description of the workload. | Optional |
+| enforcement_mode | Workload enforcement mode. Possible values are: idle, visibility_only, selective, full. | Optional |
+| service_provider | Service provider. | Optional |
+| data_center | Data center. | Optional |
+| data_center_zone | Data center zone. | Optional |
+| service_principal_name | The Kerberos Service Principal Name (SPN). | Optional |
+| agent_to_pce_certificate_authentication_id | PKI certificate identifier used by the PCE to authenticate the VEN. | Optional |
+| external_data_set | External data set identifier. | Optional |
+| external_data_reference | External data reference identifier. | Optional |
+| datacenter_nat_1to1 | Whether datacenter NAT 1-to-1 mode is enabled. Enforces creation of a pseudo public interface. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Illumio.Workloads.href | String | URI of workload. |
+| Illumio.Workloads.deleted | Boolean | Whether this workload has been deleted or not. |
+| Illumio.Workloads.delete_type | String | Workload deletion type. |
+| Illumio.Workloads.name | String | The name of the workload. |
+| Illumio.Workloads.description | String | The description of this workload. |
+| Illumio.Workloads.managed | Boolean | True if the workload is managed, else false. |
+| Illumio.Workloads.hostname | String | The hostname of this workload. |
+| Illumio.Workloads.service_principal_name | String | The Kerberos Service Principal Name \(SPN\). |
+| Illumio.Workloads.agent_to_pce_certificate_authentication_id | String | PKI Certificate identifier to be used by the PCE for authenticating the VEN. |
+| Illumio.Workloads.distinguished_name | String | X.509 Subject distinguished name. |
+| Illumio.Workloads.public_ip | String | The public IP address of the server. |
+| Illumio.Workloads.external_data_set | String | External data set identifier. |
+| Illumio.Workloads.external_data_reference | String | External data reference identifier. |
+| Illumio.Workloads.interfaces.name | String | Interface name. |
+| Illumio.Workloads.interfaces.link_state | String | Link state. |
+| Illumio.Workloads.interfaces.address | String | The IP address to assign to this interface. |
+| Illumio.Workloads.interfaces.cidr_block | Number | The number of bits in the subnet /24 is 255.255.255.0. |
+| Illumio.Workloads.interfaces.default_gateway_address | String | The IP address of the default gateway. |
+| Illumio.Workloads.interfaces.network.href | String | URI of the network. |
+| Illumio.Workloads.interfaces.network_detection_mode | String | Network detection mode. |
+| Illumio.Workloads.interfaces.friendly_name | String | User-friendly name for interface. |
+| Illumio.Workloads.service_provider | String | Service provider. |
+| Illumio.Workloads.data_center | String | Data center. |
+| Illumio.Workloads.data_center_zone | String | Data center zone. |
+| Illumio.Workloads.os_id | String | Our OS identifier. |
+| Illumio.Workloads.os_detail | String | Additional OS details - just displayed to the end user. |
+| Illumio.Workloads.online | Boolean | If this workload is online. |
+| Illumio.Workloads.firewall_coexistence.illumio_primary | Boolean | Illumio is the primary firewall if set to true. |
+| Illumio.Workloads.containers_inherit_host_policy | Boolean | This workload will apply the policy it receives both to itself and the containers hosted by it. |
+| Illumio.Workloads.blocked_connection_action | String | Firewall action for blocked connections. |
+| Illumio.Workloads.labels.href | String | URI of this label. |
+| Illumio.Workloads.labels.deleted | Boolean | Assigned labels. |
+| Illumio.Workloads.labels.key | String | Key in key-value pair. |
+| Illumio.Workloads.labels.value | String | Value in key-value pair. |
+| Illumio.Workloads.labels.external_data_set | String | External data set identifier. |
+| Illumio.Workloads.labels.external_data_reference | String | External data reference identifier. |
+| Illumio.Workloads.labels.created_at | Date | Timestamp when this label was first created. |
+| Illumio.Workloads.labels.updated_at | Date | Timestamp when this label was last updated. |
+| Illumio.Workloads.labels.created_by.href | String | User who has originally created this label. |
+| Illumio.Workloads.labels.updated_by.href | String | User who has last updated this label. |
+| Illumio.Workloads.services.uptime_seconds | Number | How long since the last reboot of this box - used as a timestamp for this. |
+| Illumio.Workloads.services.created_at | Date | Timestamp when this service was first created. |
+| Illumio.Workloads.services.open_service_ports.protocol | Number | Transport protocol. |
+| Illumio.Workloads.services.open_service_ports.address | String | The local address this service is bound to. |
+| Illumio.Workloads.services.open_service_ports.port | Number | The local port this service is bound to. |
+| Illumio.Workloads.services.open_service_ports.process_name | String | The process name \(including the full path\). |
+| Illumio.Workloads.services.open_service_ports.user | String | The user account that the process is running under. |
+| Illumio.Workloads.services.open_service_ports.package | String | The RPM/DEB package that the program is part of. |
+| Illumio.Workloads.services.open_service_ports.win_service_name | String | Name of the windows service. |
+| Illumio.Workloads.vulnerabilities_summary.num_vulnerabilities | Number | Number of vulnerabilities associated with the workload. |
+| Illumio.Workloads.vulnerabilities_summary.vulnerable_port_exposure | Number | The aggregated vulnerability port exposure score of the workload across all the vulnerable ports. |
+| Illumio.Workloads.vulnerabilities_summary.vulnerable_port_wide_exposure.any | Boolean | The boolean value represents if at least one port is exposed to the internet \(any rule\) on the workload. |
+| Illumio.Workloads.vulnerabilities_summary.vulnerable_port_wide_exposure.ip_list | Boolean | The boolean value represents if at least one port is exposed to ip_list\(s\) on the workload. |
+| Illumio.Workloads.vulnerabilities_summary.vulnerability_exposure_score | Number | The aggregated vulnerability exposure score of the workload across all the vulnerable ports. |
+| Illumio.Workloads.vulnerabilities_summary.vulnerability_score | Number | The aggregated vulnerability score of the workload across all the vulnerable ports. |
+| Illumio.Workloads.vulnerabilities_summary.max_vulnerability_score | Number | The maximum of all the vulnerability scores associated with the detected_vulnerabilities on the workload. |
+| Illumio.Workloads.detected_vulnerabilities.ip_address | String | The IP address of the host where the vulnerability is found. |
+| Illumio.Workloads.detected_vulnerabilities.port | Number | The port which is associated with the vulnerability. |
+| Illumio.Workloads.detected_vulnerabilities.proto | Number | The protocol which is associated with the vulnerability. |
+| Illumio.Workloads.detected_vulnerabilities.port_exposure | Number | The exposure of the port based on the current policy. |
+| Illumio.Workloads.detected_vulnerabilities.port_wide_exposure.any | Boolean | The boolean value represents if the port is exposed to the internet \(any rule\). |
+| Illumio.Workloads.detected_vulnerabilities.port_wide_exposure.ip_list | Boolean | The boolean value represents if the port is exposed to ip_list\(s\). |
+| Illumio.Workloads.detected_vulnerabilities.workload.href | String | The URI of the workload to which this vulnerability belongs to. |
+| Illumio.Workloads.detected_vulnerabilities.vulnerability.href | String | The URI of the vulnerability class to which this vulnerability belongs to. |
+| Illumio.Workloads.detected_vulnerabilities.vulnerability.score | Number | The normalized score of the vulnerability within the range of 0 to 100. |
+| Illumio.Workloads.detected_vulnerabilities.vulnerability.name | String | The title/name of the vulnerability. |
+| Illumio.Workloads.detected_vulnerabilities.vulnerability_report.href | String | The URI of the report to which this vulnerability belongs to. |
+| Illumio.Workloads.agent.config.mode | String | DEPRECATED AND REPLACED \(Use workload enforcement_mode instead\). |
+| Illumio.Workloads.agent.config.log_traffic | Boolean | True if we want to log traffic events from this workload. |
+| Illumio.Workloads.agent.config.security_policy_update_mode | String | Defines the current policy update mode, which can be either adaptive or static based on static policy scopes. |
+| Illumio.Workloads.agent.href | String | HREF of the service agent. |
+| Illumio.Workloads.agent.secure_connect.matching_issuer_name | String | Issuer name match criteria for certificate used during establishing secure connections. |
+| Illumio.Workloads.agent.status.uid | String | The unique ID reported by the server. |
+| Illumio.Workloads.agent.status.last_heartbeat_on | Date | The last time \(rfc3339 timestamp\) a heartbeat was received from this workload. |
+| Illumio.Workloads.agent.status.uptime_seconds | Number | How long since the last reboot of this server. Recorded in DB at the time of the last heartbeat. |
+| Illumio.Workloads.agent.status.agent_version | String | Agent software version string. |
+| Illumio.Workloads.agent.status.managed_since | Date | The time \(rfc3339 timestamp\) at which this workload became managed by a VEN. |
+| Illumio.Workloads.agent.status.fw_config_current | Boolean | Whether this workload's firewall config is up to date. |
+| Illumio.Workloads.agent.status.firewall_rule_count | Number | DEPRECATED WITH NO REPLACEMENT: Number of firewall rules currently installed. |
+| Illumio.Workloads.agent.status.security_policy_refresh_at | Date | DEPRECATED AND REPLACED \(USE security_policy_applied_at and security_policy_received_at INSTEAD\). |
+| Illumio.Workloads.agent.status.security_policy_applied_at | Date | Last reported time when policy was applied \(UTC\). |
+| Illumio.Workloads.agent.status.security_policy_received_at | Date | Last reported time when policy was received \(UTC\). |
+| Illumio.Workloads.agent.status.agent_health_errors.errors | Unknown | Errors associated with the security policy. |
+| Illumio.Workloads.agent.status.agent_health_errors.warnings | Unknown | Warnings associated with the security policy. |
+| Illumio.Workloads.agent.status.agent_health.type | String | This field describes the error or the warning type. |
+| Illumio.Workloads.agent.status.agent_health.severity | String | Severity of the error type. |
+| Illumio.Workloads.agent.status.agent_health.audit_event | String | The URI of the audit event that was generated for the corresponding error or warning. |
+| Illumio.Workloads.agent.status.security_policy_sync_state | String | Current state of security policy. |
+| Illumio.Workloads.agent.active_pce_fqdn | String | The FQDN of the PCE that received the agent's last heartbeat. |
+| Illumio.Workloads.agent.target_pce_fqdn | String | The FQDN of the PCE the agent will use for future connections. |
+| Illumio.Workloads.agent.type | String | Agent type. |
+| Illumio.Workloads.ven.href | String | The URI of the VEN that manages this workload. This replaces the 'agent' field of this object. |
+| Illumio.Workloads.ven.hostname | String | The hostname of the host managed by the VEN, only displayed in expanded representations. |
+| Illumio.Workloads.ven.name | String | The friendly name of the VEN, only displayed in expanded representations. |
+| Illumio.Workloads.ven.status | String | Status of the VEN, only displayed in expanded representations. |
+| Illumio.Workloads.enforcement_mode | String | Workload's enforcement mode. |
+| Illumio.Workloads.selectively_enforced_services.href | String | Workload's selective enforcement mode. |
+| Illumio.Workloads.created_at | Date | The time \(rfc3339 timestamp\) at which this workload was created. |
+| Illumio.Workloads.updated_at | Date | The time \(rfc3339 timestamp\) at which this workload was last updated. |
+| Illumio.Workloads.deleted_at | Date | The time \(rfc3339 timestamp\) at which this workload was deleted. |
+| Illumio.Workloads.created_by.href | String | The URI of the user who has created this workload. |
+| Illumio.Workloads.updated_by.href | String | The URI of the user who has last updated this workload. |
+| Illumio.Workloads.deleted_by.href | String | The URI of the user who has deleted this workload. |
+| Illumio.Workloads.container_cluster.href | String | Container cluster URI. |
+| Illumio.Workloads.container_cluster.name | String | Container cluster name. |
+| Illumio.Workloads.ike_authentication_certificate | String | IKE authentication certificate for certificate-based Secure Connect and Machine Auth connections. |
+
+#### Command example
+
+```!illumio-workload-update workload_id=dummy labels=/orgs/1/labels/1,/orgs/1/labels/7```
+
+#### Context Example
+
+```json
+{
+    "Illumio": {
+        "Workload": {
+            "agent": {
+                "config": {
+                    "log_traffic": false,
+                    "mode": "illuminated",
+                    "security_policy_update_mode": "adaptive",
+                    "visibility_level": "flow_summary"
+                },
+                "href": "/orgs/1/agents/dummy",
+                "secure_connect": {
+                    "matching_issuer_name": ""
+                },
+                "status": {
+                    "agent_version": "20.2.0",
+                    "firewall_rule_count": 0,
+                    "fw_config_current": false,
+                    "last_heartbeat_on": "2020-10-22T01:27:43.213Z",
+                    "managed_since": "2020-10-22T01:27:42.228Z",
+                    "security_policy_sync_state": "syncing",
+                    "status": "active",
+                    "uptime_seconds": 0
+                },
+                "type": "Host",
+                "unpair_allowed": true
+            },
+            "blocked_connection_action": "drop",
+            "caps": [
+                "write"
+            ],
+            "containers_inherit_host_policy": false,
+            "created_at": "2020-10-22T01:27:42.201Z",
+            "created_by": {
+                "href": "/orgs/1/agents/dummy"
+            },
+            "deleted": false,
+            "enforcement_mode": "visibility_only",
+            "hostname": "perf-workload-56770",
+            "href": "/orgs/1/workloads/b0426bc0-dummy",
+            "interfaces": [
+                {
+                    "address": "0.0.0.0",
+                    "cidr_block": 64,
+                    "loopback": false,
+                    "name": "eth0",
+                    "network": {
+                        "href": "/orgs/1/networks/04ac9819-dummy"
+                    },
+                    "network_detection_mode": "single_private_brn"
+                },
+                {
+                    "address": "127.0.0.1",
+                    "cidr_block": 8,
+                    "default_gateway_address": "127.0.0.1",
+                    "loopback": false,
+                    "name": "eth0",
+                    "network": {
+                        "href": "/orgs/1/networks/6736f2b5-dummy"
+                    },
+                    "network_detection_mode": "single_private_brn"
+                }
+            ],
+            "online": false,
+            "os_detail": "4.4.0-97-generic #120-Ubuntu SMP Tue Sep 19 17:28:18 UTC 2017 (Ubuntu 16.04.1 LTS)",
+            "os_id": "ubuntu-x86_64-xenial",
+            "public_ip": "127.0.0.1",
+            "services": {
+                "open_service_ports": [
+                    {
+                        "address": "0.0.0.0",
+                        "port": 161,
+                        "process_name": "snmpd",
+                        "protocol": 6,
+                        "user": "root"
+                    },
+                    {
+                        "address": "0.0.0.0",
+                        "port": 53,
+                        "process_name": "bind",
+                        "protocol": 6,
+                        "user": "root"
+                    },
+                    {
+                        "address": "0.0.0.0",
+                        "port": 5432,
+                        "process_name": "postgres",
+                        "protocol": 6,
+                        "user": "root"
+                    },
+                    {
+                        "address": "0.0.0.0",
+                        "port": 67,
+                        "process_name": "dhcpd",
+                        "protocol": 17,
+                        "user": "root"
+                    },
+                    {
+                        "address": "0.0.0.0",
+                        "port": 80,
+                        "process_name": "httpd",
+                        "protocol": 6,
+                        "user": "root"
+                    }
+                ],
+                "uptime_seconds": 120708
+            },
+            "updated_at": "2022-10-03T11:28:39.203Z",
+            "updated_by": {
+                "href": "/users/68"
+            },
+            "ven": {
+                "href": "/orgs/1/vens/b0426bc0-dummy"
+            },
+            "visibility_level": "flow_summary"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>The workload dummy was successfully updated.
