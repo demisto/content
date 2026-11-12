@@ -124,6 +124,20 @@ def test_handle_post_path_traversal_blocked(client, requests_mock, target):
     assert not requests_mock.called
 
 
+@pytest.mark.parametrize("body", [None, [], ["/api/v1/status"], "/api/v1/status", 1])
+def test_handle_post_non_dict_body(client, requests_mock, body):
+    """
+    Given: A valid JSON request body that is not a JSON object.
+    When: Posting a proxy request.
+    Then: The request is rejected with HTTP 400 and never forwarded to the upstream API.
+    """
+    response = client.post("/", content=json.dumps(body), headers={"Content-Type": "application/json"})
+
+    assert response.status_code == 400
+    assert response.text == "Invalid request body."
+    assert not requests_mock.called
+
+
 def test_handle_post_target_not_allowlisted(client, requests_mock):
     """
     Given: A target that is not in the allowlist.

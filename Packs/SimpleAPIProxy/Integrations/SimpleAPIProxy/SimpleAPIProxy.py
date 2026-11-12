@@ -2,7 +2,7 @@ from copy import copy
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
 from traceback import format_exc
-from typing import Any
+from typing import Any, TypeGuard
 import urllib.parse
 
 import demistomock as demisto  # noqa: F401
@@ -58,7 +58,7 @@ def fully_unquote(value: str) -> str:
     return value
 
 
-def is_safe_target(target: Any) -> bool:
+def is_safe_target(target: Any) -> TypeGuard[str]:
     """
     Validates that the client-supplied target is a clean absolute path that cannot escape the
     allowlisted prefix once normalized by the HTTP client or the upstream server.
@@ -238,6 +238,9 @@ async def handle_post(
     # Check if METHOD and TARGET from the POST body are allowed per the api_permissions defined as an integration input
 
     body_from_request = await request.json()
+    if not isinstance(body_from_request, dict):
+        return Response(status_code=400, content="Invalid request body.")
+
     target = body_from_request.get("target")
     target_found = False
     allowed_methods = []
@@ -259,7 +262,7 @@ async def handle_post(
         # added to get the method from the client posted body
         method = body_from_request.get("method")
 
-        if method in allowed_methods:
+        if isinstance(method, str) and method in allowed_methods:
             data_for_post = body_from_request.get("body")
             parameters_for_get = body_from_request.get("parameters")
 
