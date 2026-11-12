@@ -7,7 +7,7 @@ Select one of the following authentication types.
 ### Bearer
 
 1. Log in to your Panorays platform.
-2. Navigate to **Settings → Integrations → Public API**.
+2. Navigate to **Settings** > **Integrations** > **Public API**.
 3. Click **Generate API Key** and assign it a role.
 4. Copy the token into the **API Token** parameter.
 5. Save the integration instance and click **Test**.
