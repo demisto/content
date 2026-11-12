@@ -3050,11 +3050,18 @@ def iter_host_list_detections(raw_response: Optional[requests.Response], stream_
 
     simple_response: dict = {}
     raw_response.raw.decode_content = True
+    hosts_parsed = 0
 
     # Single low-memory pass over the streamed body. Data must be extracted from each element *during* iteration,
     # because `stream_xml_elements` clears each element once the generator advances past it.
     for local_tag, element in stream_xml_elements(raw_response.raw, tags=["HOST", "WARNING", "SIMPLE_RETURN"]):
         if local_tag == "HOST":
+            hosts_parsed += 1
+            # Logged before the dict conversion, so a run killed while converting a large host still names the host.
+            demisto.debug(
+                f"[Fetch] Parsing host #{hosts_parsed}: ID={element.findtext('ID')}, "
+                f"detections={len(element.findall('DETECTION_LIST/DETECTION'))}."
+            )
             # Convert this HOST subtree to a dict.
             host_dict = elem_to_internal(element)
             yield host_dict.get("HOST", host_dict)
@@ -3067,6 +3074,10 @@ def iter_host_list_detections(raw_response: Optional[requests.Response], stream_
             simple_return = elem_to_internal(element)
             simple_response = get_simple_response_from_raw(simple_return) or {}
 
+    demisto.debug(
+        f"[Fetch] Finished streaming the host list: {hosts_parsed} hosts, has next page: {bool(stream_state['next_url'])}, "
+        f"API error code: {simple_response.get('CODE')}."
+    )
     if simple_response and simple_response.get("CODE"):
         raise DemistoException(f"\n{simple_response.get('TEXT')} \nCode: {simple_response.get('CODE')}")
 
@@ -3841,6 +3852,11 @@ def iter_host_batches(hosts: Iterable[dict], max_hosts: int, max_rows: int) -> I
     batch_rows = 0
     for host in hosts:
         host_rows = len(get_host_detections(host))
+        if host_rows > max_rows:
+            demisto.debug(
+                f"[Fetch] Host ID={host.get('ID')} has {host_rows} detections, more than {max_rows} per batch; "
+                "it is sent as a batch of its own."
+            )
         if batch and batch_rows + host_rows > max_rows:
             yield batch, True
             batch, batch_rows = [], 0
