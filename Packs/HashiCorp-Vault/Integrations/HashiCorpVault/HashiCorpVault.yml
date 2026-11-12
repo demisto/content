@@ -86,7 +86,7 @@ configuration:
 - display: Using SSH Key Authentication
   name: ssh_key_auth
   type: 8
-  additionalinfo: When enabled, fetches the "username" and "sshkey" fields from HashiCorp Vault secrets and maps the SSH key to the Certificate field of the XSOAR credential. Use this for SSH key-based authentication with integrations such as RemoteAccessV2.
+  additionalinfo: Whether to fetch the "username" and "sshkey" fields from HashiCorp Vault secrets and map the SSH key to the Certificate field of the Cortex XSOAR credential. Use this for SSH key-based authentication with integrations such as RemoteAccessV2.
   defaultvalue: "false"
   required: false
   section: Collect
