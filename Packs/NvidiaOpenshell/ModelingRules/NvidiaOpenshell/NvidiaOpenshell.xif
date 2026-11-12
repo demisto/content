@@ -1,0 +1,133 @@
+[MODEL: dataset="nvidia_openshell_raw"]
+alter
+    // Extract metadata fields
+    get_metadata_version    = metadata -> version,
+    get_product_name        = metadata -> product.name,
+    get_product_version     = metadata -> product.version,
+    get_event_uid           = metadata -> uid,
+    // Extract device fields
+    get_device_hostname     = device -> hostname,
+    get_device_os           = device -> os.name,
+    get_device_type         = device -> type,
+    // Extract container fields
+    get_container_name      = container -> name,
+    get_container_uid       = container -> uid,
+    // Extract endpoint fields
+    get_dst_domain          = dst_endpoint -> domain,
+    get_dst_port            = to_integer(dst_endpoint -> port),
+    get_dst_ip              = dst_endpoint -> ip,
+    get_src_ip              = src_endpoint -> ip,
+    get_src_port            = to_integer(src_endpoint -> port),
+    get_proxy_ip            = proxy_endpoint -> ip,
+    get_proxy_port          = to_integer(proxy_endpoint -> port),
+    // Extract actor fields
+    get_actor_proc_name     = actor -> process.name,
+    get_actor_proc_pid      = to_integer(actor -> process.pid),
+    get_actor_cmd_line      = actor -> process.cmd_line,
+    // Extract firewall rule fields
+    get_fw_rule_name        = firewall_rule -> name,
+    get_fw_rule_type        = firewall_rule -> type,
+    // Extract HTTP request fields
+    get_http_method         = http_request -> http_method,
+    get_http_scheme         = http_request -> url.scheme,
+    get_http_hostname       = http_request -> url.hostname,
+    get_http_path           = http_request -> url.path,
+    get_http_port           = to_integer(http_request -> url.port),
+    // Extract unmapped fields
+    get_mapping_id          = unmapped -> mapping_id,
+    get_norm_domain         = unmapped -> normalized_domain,
+    get_synthetic_ip        = unmapped -> synthetic_ip,
+    get_policy_hash         = unmapped -> policy_hash
+| alter
+    // Derive outcome from status when present, then from action/disposition
+    get_outcome = if(
+        status = "Success",  XDM_CONST.OUTCOME_SUCCESS,
+        status = "Failure",  XDM_CONST.OUTCOME_FAILED,
+        action = "Allowed",  XDM_CONST.OUTCOME_SUCCESS,
+        action = "Denied",   XDM_CONST.OUTCOME_FAILED,
+        null
+    ),
+    // Derive operation from activity_name verb
+    get_operation = if(
+        activity_name ~= "(?i)open|start|create|new|add|register|relay open",   XDM_CONST.OPERATION_TYPE_CREATE,
+        activity_name ~= "(?i)close|delete|remove|destroy",                      XDM_CONST.OPERATION_TYPE_DELETE,
+        activity_name ~= "(?i)update|modify|change|set|edit",                    XDM_CONST.OPERATION_TYPE_UPDATE,
+        activity_name ~= "(?i)read|get|list|view|show|download",                 XDM_CONST.OPERATION_TYPE_READ,
+        activity_name ~= "(?i)log",                                               XDM_CONST.OPERATION_TYPE_AUDIT,
+        null
+    ),
+    // Log level from severity
+    get_log_level = if(
+        severity = "Informational", XDM_CONST.LOG_LEVEL_INFORMATIONAL,
+        severity = "Medium",        XDM_CONST.LOG_LEVEL_WARNING,
+        severity = "High",          XDM_CONST.LOG_LEVEL_ERROR,
+        severity = "Critical",      XDM_CONST.LOG_LEVEL_CRITICAL,
+        severity = "Debug",         XDM_CONST.LOG_LEVEL_DEBUG,
+        null
+    ),
+    // Resolve effective target domain: prefer explicit dst_endpoint.domain, fall back to normalized_domain
+    get_eff_target_domain = coalesce(get_dst_domain, get_norm_domain),
+    // Resolve effective target port: prefer http url port when present
+    get_eff_target_port = coalesce(get_http_port, get_dst_port),
+    // HTTP method constant
+    get_http_method_const = if(
+        get_http_method = "GET",    XDM_CONST.HTTP_METHOD_GET,
+        get_http_method = "POST",   XDM_CONST.HTTP_METHOD_POST,
+        get_http_method = "PUT",    XDM_CONST.HTTP_METHOD_PUT,
+        get_http_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE,
+        get_http_method = "PATCH",  XDM_CONST.HTTP_METHOD_PATCH,
+        get_http_method = "HEAD",   XDM_CONST.HTTP_METHOD_HEAD,
+        get_http_method = "OPTIONS",XDM_CONST.HTTP_METHOD_OPTIONS,
+        null
+    )
+| alter
+    // --- Event ---
+    xdm.event.id                  = get_event_uid,
+    xdm.event.type                = class_name,
+    xdm.event.original_event_type = type_name,
+    xdm.event.operation           = get_operation,
+    xdm.event.operation_sub_type  = activity_name,
+    xdm.event.outcome             = get_outcome,
+    xdm.event.outcome_reason      = coalesce(status_detail, state),
+    xdm.event.description         = message,
+    xdm.event.log_level           = get_log_level,
+    // --- Observer (product metadata) ---
+    xdm.observer.version          = get_metadata_version,
+    xdm.observer.name             = get_device_hostname,
+    // --- Source host ---
+    xdm.source.host.hostname      = get_device_hostname,
+    xdm.source.host.os            = get_device_os,
+    xdm.source.host.device_category = get_device_type,
+    // --- Source process (actor) ---
+    xdm.source.process.name       = get_actor_proc_name,
+    xdm.source.process.pid        = get_actor_proc_pid,
+    xdm.source.process.command_line = get_actor_cmd_line,
+    // --- Source IP ---
+    xdm.source.ipv4               = if(get_src_ip != null and is_ipv4(get_src_ip), get_src_ip, null),
+    xdm.source.port               = get_src_port,
+    // --- Source application ---
+    xdm.source.application.name    = get_product_name,
+    xdm.source.application.version = get_product_version,
+    // --- Target resource (container) ---
+    xdm.target.resource.name      = get_container_name,
+    xdm.target.resource.id        = get_container_uid,
+    xdm.target.resource.type      = get_fw_rule_type,
+    xdm.target.resource.value     = get_policy_hash,
+    // --- Target network ---
+    xdm.target.domain             = get_eff_target_domain,
+    xdm.target.ipv4               = if(get_dst_ip != null and is_ipv4(get_dst_ip), get_dst_ip, null),
+    xdm.target.port               = get_eff_target_port,
+    // --- Intermediate (proxy) ---
+    xdm.intermediate.ipv4         = if(get_proxy_ip != null and is_ipv4(get_proxy_ip), get_proxy_ip, null),
+    xdm.intermediate.port         = get_proxy_port,
+    // --- Network ---
+    xdm.network.rule              = get_fw_rule_name,
+    xdm.network.http.domain       = get_http_hostname,
+    xdm.network.http.path         = get_http_path,
+    xdm.network.http.request.method = get_http_method_const,
+    xdm.network.application_protocol = get_http_scheme,
+    xdm.network.session_id        = get_mapping_id,
+    // --- Observer action ---
+    xdm.observer.action           = coalesce(disposition, action),
+    // --- Correlation ---
+    xdm.session_context_id        = get_event_uid;
