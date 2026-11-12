@@ -592,7 +592,7 @@ def print_debug_msg(msg: str):
 
 def to_feedback_region(region: str) -> str:
     """Translate an incident region to the region name the incident feedback API accepts."""
-    region = region.lower()
+    region = (region or "").lower()
     return FEEDBACK_REGION_ALIASES.get(region, region)
 
 
