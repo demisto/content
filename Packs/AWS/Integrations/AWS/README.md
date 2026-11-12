@@ -7610,3 +7610,32 @@ Creates, updates (UPSERT), or deletes a single resource record set in a hosted z
 >|Id|Status|Submitted At|Comment|
 >|---|---|---|---|
 >| /change/C0074801Q6AQED8TYW4C | PENDING | 2026-11-09T11:42:43 | example create |
+
+#### Command example
+
+```!aws-route53-resource-record-sets-change account_id=123456789012 region=us-east-1 hosted_zone_id=Z0527756206C7VMRR9ARB action=CREATE name=www.example-a.com type=A ttl=60 values=192.0.2.20 set_identifier=blue weight=70 comment="example weighted create"```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "Route53": {
+            "RecordSetsChange": {
+                "Comment": "example weighted create",
+                "Id": "/change/C0291234351RE9AIEFW57",
+                "Status": "PENDING",
+                "SubmittedAt": "2026-11-12T13:17:43"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS Route53 CREATE request submitted for record www.example-a.com (A)
+>
+>|Id|Status|Submitted At|Comment|
+>|---|---|---|---|
+>| /change/C0291234351RE9AIEFW57 | PENDING | 2026-11-12T13:17:43 | example weighted create |
