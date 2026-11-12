@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
-import hcl
 from CommonServerPython import *  # noqa: F401
+import hcl
+
 
 """ GLOBAL VARIABLES """
 
@@ -19,6 +20,8 @@ NAMESPACE = demisto.params().get("namespace")
 USE_APPROLE_AUTH_METHOD = argToBoolean(demisto.params().get("use_approle", "false") or "false")
 BASE_URL = demisto.params().get("server", "")
 SERVER_URL = urljoin(BASE_URL, "/v1")
+
+USE_SSH_KEY_AUTH = argToBoolean(demisto.params().get("ssh_key_auth", "false") or "false")
 
 DEFAULT_STATUS_CODES = {429, 472, 473}
 TIME_BUFFER = 5
@@ -135,6 +138,56 @@ def parse_json_object_arg(raw: Any, arg_name: str) -> dict:
 
     return parsed
 
+
+def parse_ssh_key_secret(secret_data: dict, secret_name: str, concat_username: bool) -> dict:
+    """
+    Parse a secret containing SSH key authentication fields (username + sshkey).
+
+    When 'Using SSH Key Authentication' is enabled, the secret is expected to have
+    'username' and 'sshkey' fields. The sshkey value is placed into the 'sshkey' key
+    of the credential object, which XSOAR maps to the Certificate field.
+
+    Args:
+        secret_data: The secret data dictionary from HashiCorp Vault
+        secret_name: The name of the secret
+        concat_username: Whether to concat username to credential name
+
+    Returns:
+        A credential dictionary with user, sshkey (mapped to Certificate), and name
+    """
+    username = secret_data.get("username", "")
+    sshkey = secret_data.get("sshkey", "")
+
+    if concat_username and username:
+        name = f"{secret_name}_{username}"
+    else:
+        name = secret_name
+
+    return {
+        "user": username,
+        "password": "",
+        "name": name,
+        "sshkey": sshkey,
+    }
+
+def parse_legacy_secret(secret_values: dict, secret_name: str, concat_username: bool) -> list[dict]:
+    """
+    Parse a dictionary of key-value pairs (key=username, value=password)
+    into Cortex XSOAR credential objects.
+
+    Args:
+        secret_values: The inner dictionary of secret key-value pairs.
+        secret_name: The name of the secret.
+        concat_username: Whether to concat username to credential name.
+
+    Returns:
+        A list of credential dictionaries.
+    """
+    credentials = []
+    for k, v in secret_values.items():
+        name = f"{secret_name}_{k}" if concat_username else secret_name
+        credentials.append({"user": k, "password": v, "name": name})
+    return credentials
 
 """ FUNCTIONS """
 
@@ -796,12 +849,13 @@ def get_kv1_secrets(engine_path, concat_username_to_cred_name=False):  # pragma:
 
     for secret in res["data"].get("keys", []):
         secret_data = get_kv1_secret(engine_path, secret)
-        for k, v in secret_data.get("data", {}).items():
-            if concat_username_to_cred_name:
-                name = f"{secret}_{k}"
-            else:
-                name = secret
-            secrets.append({"user": k, "password": v, "name": name})
+        kv_dict = secret_data.get("data", {})
+
+        if USE_SSH_KEY_AUTH and "username" in kv_dict and "sshkey" in kv_dict:
+            credential = parse_ssh_key_secret(kv_dict, secret, concat_username_to_cred_name)
+            secrets.append(credential)
+        else:
+            secrets.extend(parse_legacy_secret(kv_dict, secret, concat_username_to_cred_name))
 
     return secrets
 
@@ -824,13 +878,13 @@ def get_kv2_secrets(engine_path, concat_username_to_cred_name=False, folder=None
             continue
 
         secret_data = get_kv2_secret(engine_path, secret, folder)
-        secret_info = secret_data.get("data", {}).get("data", {})
-        for k in secret_data.get("data", {}).get("data", {}):
-            if concat_username_to_cred_name:
-                name = f"{secret}_{k}"
-            else:
-                name = secret
-            secrets.append({"user": k, "password": secret_info[k], "name": name})
+        kv_dict = secret_data.get("data", {}).get("data", {})
+
+        if USE_SSH_KEY_AUTH and "username" in kv_dict and "sshkey" in kv_dict:
+            credential = parse_ssh_key_secret(kv_dict, secret, concat_username_to_cred_name)
+            secrets.append(credential)
+        else:
+            secrets.extend(parse_legacy_secret(kv_dict, secret, concat_username_to_cred_name))
 
     return secrets
 
@@ -858,12 +912,13 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):  # pragma: 
 
     for secret in res["data"].get("keys", []):
         secret_data = get_ch_secret(engine_path, secret)
-        for k, v in secret_data.get("data", {}).items():
-            if concat_username_to_cred_name:
-                name = f"{secret}_{k}"
-            else:
-                name = secret
-            secrets.append({"user": k, "password": v, "name": name})
+        kv_dict = secret_data.get("data", {})
+
+        if USE_SSH_KEY_AUTH and "username" in kv_dict and "sshkey" in kv_dict:
+            credential = parse_ssh_key_secret(kv_dict, secret, concat_username_to_cred_name)
+            secrets.append(credential)
+        else:
+            secrets.extend(parse_legacy_secret(kv_dict, secret, concat_username_to_cred_name))
 
     return secrets
 

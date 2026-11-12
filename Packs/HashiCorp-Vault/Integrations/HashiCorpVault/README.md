@@ -18,6 +18,38 @@ You are required to fill in only the *Authentication token* parameter. For more 
 
 You are required to fill in only the *Username / Role ID* parameter with the role ID and *Password / Secret ID* parameter with the secret ID, and check the *Use AppRole Auth Method* checkbox. For more details, see the [HashiCorp Vault documentation](https://www.vaultproject.io/docs/auth/approle).
 
+### SSH Key-Based Authentication
+
+The integration supports SSH key-based authentication for managing SSH credentials stored in HashiCorp Vault. When enabled, the integration fetches SSH key credentials from configured secrets engines and maps them to Cortex XSOAR credential objects for use with integrations such as RemoteAccessV2.
+
+#### How SSH Key Authentication Works
+
+When the **Using SSH Key Authentication** parameter is enabled:
+
+1. The integration looks for secrets containing both `username` and `sshkey` fields
+2. The secret data is parsed and mapped to Cortex XSOAR credential objects with:
+   - **User**: The value of the `username` field
+   - **Certificate**: The value of the `sshkey` field (SSH key content)
+   - **Name**: The secret name, optionally concatenated with the username for uniqueness
+
+#### Supported Secret Engines
+
+SSH key authentication is supported for the following secret engines:
+- **KV Versions 1 & 2**: Key-value secrets engines
+- **Cubbyhole**: Cubbyhole secrets engine
+
+#### Configuration
+
+1. Enable **Using SSH Key Authentication** in the integration configuration
+2. Configure at least one secrets engine using the `hashicorp-configure-engine` command
+3. Store SSH credentials in your HashiCorp Vault with the following structure:
+   ```json
+   {
+     "username": "your-username",
+     "sshkey": "-----BEGIN OPENSSH PRIVATE KEY-----\n..."
+   }
+4. Enable **Fetches credentials** to automatically sync credentials to the Cortex XSOAR credential vault.
+
 ## Configure HashiCorp Vault in Cortex
 
 | **Parameter** | **Description**                                                                                                                  | **Required** |

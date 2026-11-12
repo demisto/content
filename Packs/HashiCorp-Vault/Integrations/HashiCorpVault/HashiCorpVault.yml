@@ -83,6 +83,13 @@ configuration:
   additionalinfo: Should be used in case there are several secrets under the same folder in order to make the credential object unique.
   required: false
   section: Collect
+- display: Use SSH Key Authentication
+  name: ssh_key_auth
+  type: 8
+  additionalinfo: Whether to fetch the "username" and "sshkey" fields from HashiCorp Vault secrets and map the SSH key to the Certificate field of the Cortex XSOAR credential. Use this for SSH key-based authentication with integrations such as RemoteAccessV2.
+  defaultvalue: "false"
+  required: false
+  section: Collect
 script:
   script: ''
   type: python
