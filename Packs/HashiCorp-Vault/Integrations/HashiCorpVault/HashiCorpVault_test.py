@@ -1,4 +1,4 @@
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 from HashiCorpVault import *
 
@@ -335,11 +335,10 @@ def test_parse_legacy_secret_single_user():
     assert result[0]["name"] == "system-creds_root"
 
 
-@patch("HashiCorpVault.USE_SSH_KEY_AUTH", True)
-def test_get_kv1_secrets_with_ssh_key_auth_enabled(mock_use_ssh, mocker):
+def test_get_kv1_secrets_with_ssh_key_auth_enabled(mocker):
     """
     Given:
-        KV1 secrets with both username and sshkey fields, and USE_SSH_KEY_AUTH is True.
+        KV1 secrets with both username and sshkey fields, and use_ssh_key_auth is True.
 
     When:
         Calling get_kv1_secrets.
@@ -353,7 +352,7 @@ def test_get_kv1_secrets_with_ssh_key_auth_enabled(mock_use_ssh, mocker):
         {"data": {"username": "ubuntu", "sshkey": "ssh-rsa AAAA..."}},
     ]
 
-    result = get_kv1_secrets("secret/", concat_username_to_cred_name=False)
+    result = get_kv1_secrets("secret/", concat_username_to_cred_name=False, use_ssh_key_auth=True)
 
     assert len(result) == 1
     assert result[0]["user"] == "ubuntu"
@@ -362,11 +361,10 @@ def test_get_kv1_secrets_with_ssh_key_auth_enabled(mock_use_ssh, mocker):
     assert result[0]["password"] == ""
 
 
-@patch("HashiCorpVault.USE_SSH_KEY_AUTH", False)
-def test_get_kv1_secrets_with_ssh_key_auth_disabled(mock_use_ssh, mocker):
+def test_get_kv1_secrets_with_ssh_key_auth_disabled(mocker):
     """
     Given:
-        KV1 secrets with both username and sshkey fields, but USE_SSH_KEY_AUTH is False.
+        KV1 secrets with both username and sshkey fields, but use_ssh_key_auth is False.
 
     When:
         Calling get_kv1_secrets.
@@ -380,18 +378,19 @@ def test_get_kv1_secrets_with_ssh_key_auth_disabled(mock_use_ssh, mocker):
         {"data": {"username": "user1", "password": "pass1"}},
     ]
 
-    result = get_kv1_secrets("secret/", concat_username_to_cred_name=False)
+    result = get_kv1_secrets("secret/", concat_username_to_cred_name=False, use_ssh_key_auth=False)
 
-    assert len(result) == 1
+    assert len(result) == 2
     assert result[0]["user"] == "username"
     assert result[0]["password"] == "user1"
+    assert result[1]["user"] == "password"
+    assert result[1]["password"] == "pass1"
 
 
-@patch("HashiCorpVault.USE_SSH_KEY_AUTH", True)
-def test_get_kv1_secrets_missing_ssh_fields_fallback_to_legacy(mock_use_ssh, mocker):
+def test_get_kv1_secrets_missing_ssh_fields_fallback_to_legacy(mocker):
     """
     Given:
-        KV1 secrets missing either username or sshkey field, with USE_SSH_KEY_AUTH enabled.
+        KV1 secrets missing either username or sshkey field, with use_ssh_key_auth enabled.
 
     When:
         Calling get_kv1_secrets.
@@ -405,18 +404,17 @@ def test_get_kv1_secrets_missing_ssh_fields_fallback_to_legacy(mock_use_ssh, moc
         {"data": {"username": "admin"}},  # Missing sshkey field
     ]
 
-    result = get_kv1_secrets("secret/", concat_username_to_cred_name=False)
+    result = get_kv1_secrets("secret/", concat_username_to_cred_name=False, use_ssh_key_auth=True)
 
     assert len(result) == 1
     assert result[0]["user"] == "username"
     assert result[0]["password"] == "admin"
 
 
-@patch("HashiCorpVault.USE_SSH_KEY_AUTH", True)
-def test_get_kv2_secrets_with_ssh_key_auth_enabled(mock_use_ssh, mocker):
+def test_get_kv2_secrets_with_ssh_key_auth_enabled(mocker):
     """
     Given:
-        KV2 secrets with username and sshkey fields, and USE_SSH_KEY_AUTH is True.
+        KV2 secrets with username and sshkey fields, and use_ssh_key_auth is True.
 
     When:
         Calling get_kv2_secrets.
@@ -429,7 +427,7 @@ def test_get_kv2_secrets_with_ssh_key_auth_enabled(mock_use_ssh, mocker):
     mock_send_request = mocker.patch("HashiCorpVault.send_request")
     mock_send_request.return_value = {"data": {"data": {"username": "centos", "sshkey": "ssh-rsa BBBB..."}}}
 
-    result = get_kv2_secrets("kv/", concat_username_to_cred_name=True)
+    result = get_kv2_secrets("kv/", concat_username_to_cred_name=True, use_ssh_key_auth=True)
 
     assert len(result) == 1
     assert result[0]["user"] == "centos"
@@ -437,11 +435,10 @@ def test_get_kv2_secrets_with_ssh_key_auth_enabled(mock_use_ssh, mocker):
     assert result[0]["name"] == "staging-ssh_centos"
 
 
-@patch("HashiCorpVault.USE_SSH_KEY_AUTH", False)
-def test_get_kv2_secrets_with_ssh_key_auth_disabled(mock_use_ssh, mocker):
+def test_get_kv2_secrets_with_ssh_key_auth_disabled(mocker):
     """
     Given:
-        KV2 secrets with SSH fields, but USE_SSH_KEY_AUTH is False.
+        KV2 secrets with SSH fields, but use_ssh_key_auth is False.
 
     When:
         Calling get_kv2_secrets.
@@ -454,18 +451,17 @@ def test_get_kv2_secrets_with_ssh_key_auth_disabled(mock_use_ssh, mocker):
     mock_send_request = mocker.patch("HashiCorpVault.send_request")
     mock_send_request.return_value = {"data": {"data": {"app_user": "apppass"}}}
 
-    result = get_kv2_secrets("kv/", concat_username_to_cred_name=False)
+    result = get_kv2_secrets("kv/", concat_username_to_cred_name=False, use_ssh_key_auth=False)
 
     assert len(result) == 1
     assert result[0]["user"] == "app_user"
     assert result[0]["password"] == "apppass"
 
 
-@patch("HashiCorpVault.USE_SSH_KEY_AUTH", True)
-def test_get_kv2_secrets_missing_ssh_fields_fallback(mock_use_ssh, mocker):
+def test_get_kv2_secrets_missing_ssh_fields_fallback(mocker):
     """
     Given:
-        KV2 secrets missing sshkey field, with USE_SSH_KEY_AUTH enabled.
+        KV2 secrets missing sshkey field, with use_ssh_key_auth enabled.
 
     When:
         Calling get_kv2_secrets.
@@ -478,18 +474,19 @@ def test_get_kv2_secrets_missing_ssh_fields_fallback(mock_use_ssh, mocker):
     mock_send_request = mocker.patch("HashiCorpVault.send_request")
     mock_send_request.return_value = {"data": {"data": {"user": "testuser", "pass": "testpass"}}}
 
-    result = get_kv2_secrets("kv/", concat_username_to_cred_name=False)
+    result = get_kv2_secrets("kv/", concat_username_to_cred_name=False, use_ssh_key_auth=True)
 
-    assert len(result) == 1
+    assert len(result) == 2
     assert result[0]["user"] == "user"
     assert result[0]["password"] == "testuser"
+    assert result[1]["user"] == "pass"
+    assert result[1]["password"] == "testpass"
 
 
-@patch("HashiCorpVault.USE_SSH_KEY_AUTH", True)
-def test_get_ch_secrets_with_ssh_key_auth_enabled(mock_use_ssh, mocker):
+def test_get_ch_secrets_with_ssh_key_auth_enabled(mocker):
     """
     Given:
-        Cubbyhole secrets with username and sshkey fields, and USE_SSH_KEY_AUTH is True.
+        Cubbyhole secrets with username and sshkey fields, and use_ssh_key_auth is True.
 
     When:
         Calling get_ch_secrets.
@@ -503,7 +500,7 @@ def test_get_ch_secrets_with_ssh_key_auth_enabled(mock_use_ssh, mocker):
         {"data": {"username": "vault-user", "sshkey": "ssh-rsa CCCC..."}},
     ]
 
-    result = get_ch_secrets("cubbyhole/", concat_username_to_cred_name=False)
+    result = get_ch_secrets("cubbyhole/", concat_username_to_cred_name=False, use_ssh_key_auth=True)
 
     assert len(result) == 1
     assert result[0]["user"] == "vault-user"
@@ -511,11 +508,10 @@ def test_get_ch_secrets_with_ssh_key_auth_enabled(mock_use_ssh, mocker):
     assert result[0]["name"] == "cubby-ssh-key"
 
 
-@patch("HashiCorpVault.USE_SSH_KEY_AUTH", False)
-def test_get_ch_secrets_with_ssh_key_auth_disabled(mock_use_ssh, mocker):
+def test_get_ch_secrets_with_ssh_key_auth_disabled(mocker):
     """
     Given:
-        Cubbyhole secrets with USE_SSH_KEY_AUTH disabled.
+        Cubbyhole secrets with use_ssh_key_auth disabled.
 
     When:
         Calling get_ch_secrets.
@@ -529,7 +525,7 @@ def test_get_ch_secrets_with_ssh_key_auth_disabled(mock_use_ssh, mocker):
         {"data": {"db_user": "dbpass"}},
     ]
 
-    result = get_ch_secrets("cubbyhole/", concat_username_to_cred_name=True)
+    result = get_ch_secrets("cubbyhole/", concat_username_to_cred_name=True, use_ssh_key_auth=False)
 
     assert len(result) == 1
     assert result[0]["user"] == "db_user"
@@ -537,11 +533,10 @@ def test_get_ch_secrets_with_ssh_key_auth_disabled(mock_use_ssh, mocker):
     assert result[0]["name"] == "db-secret_db_user"
 
 
-@patch("HashiCorpVault.USE_SSH_KEY_AUTH", True)
-def test_get_ch_secrets_missing_ssh_fields_fallback(mock_use_ssh, mocker):
+def test_get_ch_secrets_missing_ssh_fields_fallback(mocker):
     """
     Given:
-        Cubbyhole secrets missing sshkey, with USE_SSH_KEY_AUTH enabled.
+        Cubbyhole secrets missing sshkey, with use_ssh_key_auth enabled.
 
     When:
         Calling get_ch_secrets.
@@ -555,7 +550,7 @@ def test_get_ch_secrets_missing_ssh_fields_fallback(mock_use_ssh, mocker):
         {"data": {"username": "alice"}},  # Missing sshkey
     ]
 
-    result = get_ch_secrets("cubbyhole/", concat_username_to_cred_name=False)
+    result = get_ch_secrets("cubbyhole/", concat_username_to_cred_name=False, use_ssh_key_auth=True)
 
     assert len(result) == 1
     assert result[0]["user"] == "username"
