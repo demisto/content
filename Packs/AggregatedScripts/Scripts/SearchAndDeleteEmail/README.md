@@ -3,8 +3,7 @@ Searches for emails and optionally deletes them, using one or more of the suppor
 Supported scopes: Gmail and EWS v2 support searching all mailboxes. Microsoft Graph Mail supports only specific mailboxes.
 Delete types: Gmail and EWS v2 support both soft and hard delete. Microsoft Graph Mail supports soft delete only (the emails are moved to Deleted Items).
 EWS v2 honors only the date part of the time frame, so the effective search window can be up to 24 hours wider than requested.
-The search, the retrieval of the files and the deletion are executed synchronously in the first run. The timeout argument is the overall time budget (in seconds) of the whole run.
-When verify_deletion is true (relevant only for "Search & Delete"), the script verifies that the emails were really deleted instead of trusting that the delete command did not fail. The verification is polled (every 20 seconds, for up to 120 seconds, and never beyond the overall time budget).
+The search, the retrieval of the files and the deletion are executed synchronously in a single run. The timeout argument is the overall time budget (in seconds) of the run, checked before each integration instance is run.
 Vendor notes (for example, when the vendor capped the number of returned emails) are shown in a Notes section of the human readable output.
 
 ## Script Data
@@ -53,9 +52,8 @@ This script uses the following commands and scripts.
 | target_mailbox | The mailbox(es) to search in. Required when mailbox_scope is "Specific". Ignored when mailbox_scope is "All". |
 | mailbox_scope | Whether to search specific mailboxes or all mailboxes. Microsoft Graph Mail does not support "All" (an error is returned for it, use Gmail or EWS on-prem instead). Default is Specific. |
 | brands | The brands to run the operation on. If empty, all enabled instances of the supported brands are used. The run fails if no enabled instance of the requested brands is found. |
-| verify_deletion | Whether to verify the deletion by searching again after the emails were deleted and checking that they no longer exist. Relevant only when the operation is "Search &amp; Delete". The verification is polled for up to 120 seconds (and stops when the timeout budget is exhausted). Emails whose deletion cannot be verified are reported as failed. Default is false. |
 | verbose | Whether to include the list of executed commands in the human readable output and the instance name in the AdditionalFields of every email. Default is false. |
-| timeout | The overall time budget of the whole run (the first run and all the verification polling runs together), in seconds (a positive integer, at most 1800, since the first run executes the whole search and delete synchronously within the script timeout). It is not a per-operation timeout. When it is exhausted, vendors that were not started yet are reported as failed, the deletion verification polling stops and the results collected so far are returned. Default is 1800. |
+| timeout | The overall time budget of the run, in seconds (a positive integer, at most 1800, since the whole search and delete runs synchronously within the script timeout). It is not a per-operation timeout. It is checked before each integration instance is run and before each email is processed. When it is exhausted, the integration instances that were not run yet are reported as failed, the remaining emails are not processed (a note is added) and the results collected so far are returned. Default is 1800. |
 
 ## Outputs
 
@@ -80,9 +78,7 @@ This script uses the following commands and scripts.
 | EmailData.AdditionalFields | Additional vendor specific fields. | Unknown |
 | EmailData.AdditionalFields.ObjectID | The vendor specific ID of the email \(for example, the message ID in Microsoft Graph Mail or the item ID in EWS\). | String |
 | EmailData.AdditionalFields.InternetMessageID | The Internet Message ID of the email, when the vendor returns it. | String |
-| EmailData.AdditionalFields.Verified | Whether the deletion of the email was verified. Returned only when verify_deletion is true, the email was deleted and the verification search succeeded. When false, the email was still found after the deletion, Success is false and the email is counted in TotalFailed. | Boolean |
 | EmailData.AdditionalFields.Instance | The name of the integration instance. Returned for records without an email and for every email when verbose is true. | String |
-| EmailData.AdditionalFields.HTMLBodyTruncated | True when the HTML body of the email was truncated to keep the polling state small. | Boolean |
 | EmailData.AdditionalFields.NotFound | True when the email requested by object_id was not found \(the vendor returned a "not found" error for the lookup\). Returned only in the record of the brand instance \(a record without an email\). The vendor error is reported in Reason, but the brand instance is not counted as a hard failure, so the entry is not returned as an error entry. | Boolean |
 | EmailData.AdditionalFields.Note | Notes about the run of the brand instance, for example when the vendor capped the number of returned emails or when Microsoft Graph Mail could not hard delete. Multiple notes are appended to each other. Returned only in the record of the brand instance \(a record without an email, added when the instance found no emails or had errors\). The notes of all brand instances are always shown in the Notes section of the human readable output. | String |
 | TotalFound | The total number of emails that were found across all brands. | Number |
@@ -114,18 +110,11 @@ This script uses the following commands and scripts.
 * **Gmail all mailboxes**: in a domain with more than 500 accounts, Gmail splits the all-mailboxes search into background sub-searches whose results are not available to this script. This is reported as an error for the brand. Use specific mailboxes or another brand.
 * **Pagination**: result pages are followed, and when a vendor caps the number of returned emails the search is repeated after the deletion until no emails are left (up to 10 rounds). A soft deleted Microsoft Graph Mail / EWS email is moved to *Deleted Items* under a new ID, so emails whose mailbox and Internet Message ID were already processed in an earlier round are skipped (they are not counted or deleted again).
 * **EWS email details**: only the first 50 emails that EWS returns are fetched in full (HTML body and attachments). The other emails are reported with the fields returned by the search.
-* **State size**: the polling state is kept below roughly 500 KB. When it grows beyond it, the largest HTML bodies are truncated and marked with `AdditionalFields.HTMLBodyTruncated=true`.
-* **Vendor notes**: notes of a brand instance (for example, capped results or no hard delete) are appended to each other in `AdditionalFields.Note` and are shown in a *Notes* section of the human readable output.
+* **Vendor notes**: notes of a brand instance (for example, capped results, no hard delete or an exhausted timeout budget) are appended to each other in `AdditionalFields.Note` and are shown in a *Notes* section of the human readable output.
 
-### Polling and timeout
+### Timeout
 
-The script never sleeps. The first run executes the search, the retrieval of the files and the deletion synchronously. Polling is used only for the deletion verification: when it is needed, the run schedules itself again (a scheduled command) 20 seconds later, and every polling run performs one verification search per vendor, for up to 120 seconds. The state is passed between the runs in the hidden `state` argument. A short progress message is added to the War Room only when a vendor moves to a new stage.
-
-`timeout` is the overall time budget of the whole run, in seconds (default and maximum 1800, since the first run must finish within the 35 minutes script timeout), measured across all the polling runs. When it is exhausted, vendors that were not started yet are reported as failed, the verification polling stops and the results collected so far are returned. The timeout of each scheduled run is the remaining budget plus 40 seconds.
-
-### Deletion verification
-
-When `verify_deletion` is `true` and the operation is *Search & Delete*, the same search is repeated after the deletion (once per polling run, for up to 120 seconds) and none of the deleted emails may be returned. Emails that are still found are reported with `Success=false` and `AdditionalFields.Verified=false` and are counted in `TotalFailed` instead of `TotalDeleted`. Verified emails have `AdditionalFields.Verified=true`. When searching by `object_id`, a Gmail email with the `TRASH` label counts as deleted, and a "not found" response of Microsoft Graph Mail or EWS v2 counts as verified.
+The script runs once and synchronously: the integration instances are run one after the other, each running the search, the retrieval of the files and the deletion. `timeout` is the overall time budget of the run, in seconds (default and maximum 1800, since the run must finish within the 35 minutes script timeout). It is checked before each integration instance is run and before each email is processed. When it is exhausted, the integration instances that were not run yet are reported as failed, the remaining emails are not processed (in *Search & Delete* they are reported with `Success=false` and counted in `TotalFailed`, and a note is added) and the results collected so far are returned.
 
 ### Output
 
@@ -133,10 +122,10 @@ The script returns a single War Room entry with the `EmailData` context, `TotalF
 
 ### Examples
 
-Search and soft delete an email by its Internet Message ID in specific mailboxes, verify the deletion and limit the run to 30 minutes:
+Search and soft delete an email by its Internet Message ID in specific mailboxes and limit the run to 30 minutes:
 
 ```text
-!SearchAndDeleteEmail operation="Search & Delete" delete_type=soft verify_deletion=true timeout=1800 internet_message_id="<abc@example.com>" target_mailbox="user1@example.com,user2@example.com" time_frame="7 days"
+!SearchAndDeleteEmail operation="Search & Delete" delete_type=soft timeout=1800 internet_message_id="<abc@example.com>" target_mailbox="user1@example.com,user2@example.com" time_frame="7 days"
 ```
 
 Only search all mailboxes for a sender and subject, and retrieve the attachments:

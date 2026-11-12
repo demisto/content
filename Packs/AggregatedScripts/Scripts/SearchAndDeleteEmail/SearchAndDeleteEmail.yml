@@ -14,8 +14,7 @@ comment: |-
   Supported scopes: Gmail and EWS v2 support searching all mailboxes. Microsoft Graph Mail supports only specific mailboxes.
   Delete types: Gmail and EWS v2 support both soft and hard delete. Microsoft Graph Mail supports soft delete only (the emails are moved to Deleted Items).
   EWS v2 honors only the date part of the time frame, so the effective search window can be up to 24 hours wider than requested.
-  The search, the retrieval of the files and the deletion are executed synchronously in the first run. The timeout argument is the overall time budget (in seconds) of the whole run.
-  When verify_deletion is true (relevant only for "Search & Delete"), the script verifies that the emails were really deleted instead of trusting that the delete command did not fail. The verification is polled (every 20 seconds, for up to 120 seconds, and never beyond the overall time budget).
+  The search, the retrieval of the files and the deletion are executed synchronously in a single run. The timeout argument is the overall time budget (in seconds) of the run, checked before each integration instance is run.
   Vendor notes (for example, when the vendor capped the number of returned emails) are shown in a Notes section of the human readable output.
 enabled: true
 args:
@@ -70,13 +69,6 @@ args:
   - Gmail
   - MicrosoftGraphMail
   - EWS v2
-- name: verify_deletion
-  description: Whether to verify the deletion by searching again after the emails were deleted and checking that they no longer exist. Relevant only when the operation is "Search & Delete". The verification is polled for up to 120 seconds (and stops when the timeout budget is exhausted). Emails whose deletion cannot be verified are reported as failed. Default is false.
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  defaultValue: "false"
 - name: verbose
   description: Whether to include the list of executed commands in the human readable output and the instance name in the AdditionalFields of every email. Default is false.
   auto: PREDEFINED
@@ -85,14 +77,8 @@ args:
   - "false"
   defaultValue: "false"
 - name: timeout
-  description: The overall time budget of the whole run (the first run and all the verification polling runs together), in seconds (a positive integer, at most 1800, since the first run executes the whole search and delete synchronously within the script timeout). It is not a per-operation timeout. When it is exhausted, vendors that were not started yet are reported as failed, the deletion verification polling stops and the results collected so far are returned. Default is 1800.
+  description: The overall time budget of the run, in seconds (a positive integer, at most 1800, since the whole search and delete runs synchronously within the script timeout). It is not a per-operation timeout. It is checked before each integration instance is run and before each email is processed. When it is exhausted, the integration instances that were not run yet are reported as failed, the remaining emails are not processed (a note is added) and the results collected so far are returned. Default is 1800.
   defaultValue: "1800"
-- name: state
-  description: The state of the polling flow. Automatically filled by polling, should not be set by the user.
-  hidden: true
-- name: hide_polling_output
-  description: Whether to hide the polling message. Automatically filled by polling, should not be set by the user.
-  hidden: true
 outputs:
 - contextPath: EmailData
   description: The unified results of the search and delete operation. Contains one record per email found, and one record per brand instance that found no emails or had errors.
@@ -145,15 +131,9 @@ outputs:
 - contextPath: EmailData.AdditionalFields.InternetMessageID
   description: The Internet Message ID of the email, when the vendor returns it.
   type: String
-- contextPath: EmailData.AdditionalFields.Verified
-  description: Whether the deletion of the email was verified. Returned only when verify_deletion is true, the email was deleted and the verification search succeeded. When false, the email was still found after the deletion, Success is false and the email is counted in TotalFailed.
-  type: Boolean
 - contextPath: EmailData.AdditionalFields.Instance
   description: The name of the integration instance. Returned for records without an email and for every email when verbose is true.
   type: String
-- contextPath: EmailData.AdditionalFields.HTMLBodyTruncated
-  description: True when the HTML body of the email was truncated to keep the polling state small.
-  type: Boolean
 - contextPath: EmailData.AdditionalFields.NotFound
   description: True when the email requested by object_id was not found (the vendor returned a "not found" error for the lookup). Returned only in the record of the brand instance (a record without an email). The vendor error is reported in Reason, but the brand instance is not counted as a hard failure, so the entry is not returned as an error entry.
   type: Boolean
@@ -197,6 +177,5 @@ marketplaces:
 - xsoar
 - marketplacev2
 - platform
-polling: true
 tests:
 - No tests (auto formatted)

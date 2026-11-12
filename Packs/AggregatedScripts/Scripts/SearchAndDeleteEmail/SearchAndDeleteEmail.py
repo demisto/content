@@ -4,14 +4,12 @@ Search & Delete Email - a unified command over several mail integrations.
 Searches for emails (and optionally deletes them) using the supported mail integrations and normalizes the results of
 all vendors into the unified ``EmailData`` context path. See the README for the arguments and outputs.
 
-Polling (the script never sleeps)
----------------------------------
-Every run is ONE "tick" of a JSON state machine (carried in the hidden ``state`` argument): it advances every vendor that
-is not done by one step and either returns the final results, or returns a ``ScheduledCommand`` that reruns the script in
-``POLL_INTERVAL_SECONDS``. The state holds the absolute deadline of the overall ``timeout`` budget, the search window and,
-per vendor, the stage and the ``VendorResult``. Vendor stages: ``start`` (search -> files -> delete, synchronously within
-one tick) -> ``verify`` (only with ``verify_deletion``: one search per tick, for up to ``VERIFICATION_TIMEOUT_SECONDS``)
--> ``done``.
+Execution
+---------
+The script runs once, synchronously: it resolves the enabled instances of the requested vendors and, for each instance
+in turn, runs the "search -> (retrieve files) -> delete" flow, then returns all the results in a single entry. The
+``timeout`` argument is the overall time budget of the run: it is checked before each instance (and before each email),
+and whatever was not started in time is reported as failed instead.
 
 Supported vendors and their capabilities
 ----------------------------------------
@@ -26,12 +24,11 @@ Supported vendors and their capabilities
 +---------------------------+-------------------------+------------------+------------------------------------------+
 """
 
-import json
 import re
 import time
 import traceback
 from collections.abc import Callable
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta, UTC
 from typing import Any
 from urllib.parse import quote
@@ -48,33 +45,19 @@ SCOPE_ALL = "All"
 DEFAULT_TIME_FRAME = "1 hour"
 
 SCRIPT_NAME = "SearchAndDeleteEmail"
-DEFAULT_TIMEOUT_SECONDS = 1800  # The overall time budget of the whole run, measured across all ticks.
-# The first tick runs the whole search and delete synchronously under the script's YAML timeout (35 minutes): a larger
-# budget could get the first run killed by the platform (and its results lost).
+DEFAULT_TIMEOUT_SECONDS = 1800  # The overall time budget of the run.
+# The run executes synchronously under the script's YAML timeout (35 minutes): a larger budget could get the run killed
+# by the platform (and its results lost).
 MAX_TIMEOUT_SECONDS = 1800
-# The polling interval: the platform minimum is 10 seconds, 20 keeps the load on the vendor APIs low while the deletion
-# verification is polled.
-POLL_INTERVAL_SECONDS = 20
-# Added to the scheduled command timeout, so the platform timeout of a scheduled run never coincides with the next run.
-SCHEDULE_MARGIN_SECONDS = 2 * POLL_INTERVAL_SECONDS
-POLL_MESSAGE = "Search & Delete Email is in progress, the next step runs automatically."
-VERIFICATION_TIMEOUT_SECONDS = 120  # How long to wait for the deleted emails to disappear from the search results.
-MAX_STATE_BYTES = 500_000  # The polling state above this size gets its largest HTML bodies truncated.
-HTML_BODY_PREFIX_CHARS = 1000
-MAX_TRACE_LINES = 200
-STATE_VERSION = 1
-STATE_ARG = "state"
-HIDE_POLLING_OUTPUT_ARG = "hide_polling_output"
-
-STAGE_START = "start"
-STAGE_VERIFY = "verify"
-STAGE_DONE = "done"
-VALID_STAGES = frozenset({STAGE_START, STAGE_VERIFY, STAGE_DONE})
-# The one-line progress that is announced in the War Room when a vendor ENTERS a stage (never on idle polls).
-STAGE_LABELS = {
-    STAGE_VERIFY: "verifying the deletion",
-    STAGE_DONE: "done",
-}
+VENDOR_TIMEOUT_REASON = (
+    "Timed out: the {timeout} seconds timeout budget was exhausted before this integration ran. "
+    "Increase the timeout argument or narrow the search."
+)
+EMAIL_TIMEOUT_REASON = "Timed out: the timeout budget was exhausted before this email was processed."
+EMAIL_TIMEOUT_NOTE = (
+    "The timeout budget was exhausted during the run, the remaining emails were not processed. "
+    "Increase the timeout argument or narrow the search."
+)
 MAX_ROUNDS = 10  # Max number of "search -> delete" rounds when the vendor returns capped result pages.
 GMAIL_PAGE_SIZE = 500
 GRAPH_MAIL_PAGE_SIZE = 50
@@ -92,12 +75,8 @@ INVALID_SENDER_CHARS = re.compile(r'[\s"\\()]')
 # Characters that are kept as is when a literal value is URL-encoded into the Graph Mail $filter (see odata_literal).
 ODATA_LITERAL_SAFE_CHARS = "@<>.-_"
 
+# The commands executed during the current run (shown when verbose is true). Reset at the start of every run.
 COMMAND_TRACE: list[str] = []
-
-# The overall time budget of the run: ``_DEADLINE`` is an absolute ``time.time()`` (epoch) value taken from the state
-# of the current tick (``None`` = no limit).
-_DEADLINE: float | None = None
-_TIMEOUT_SECONDS: int = DEFAULT_TIMEOUT_SECONDS
 
 
 class VendorError(DemistoException):
@@ -117,7 +96,6 @@ GMAIL_SPLIT_SEARCH_ERROR = (
 # What gmail-search-all-mailboxes returns instead of emails when it splits the search (more than 500 accounts): one
 # entry per batch of accounts with this human readable and a scheduled command (``scheduled_commands_for_more_users``).
 GMAIL_SPLIT_SEARCH_TEXT = "Searching mailboxes, please wait"
-GMAIL_TRASH_LABEL = "TRASH"
 
 
 @dataclass
@@ -132,12 +110,17 @@ class SearchParams:
     subjects: list[str]
     sender_address: str
     retrieve_files: bool
-    verify_deletion: bool
     target_mailboxes: list[str]
     mailbox_scope: str
     brands: list[str]
     verbose: bool
     timeout: int
+    # Absolute ``time.time()`` value at which the timeout budget of the run ends (computed once, in parse_args).
+    deadline: float = float("inf")
+
+    @property
+    def deadline_passed(self) -> bool:
+        return time.time() > self.deadline
 
     @property
     def delete(self) -> bool:
@@ -154,7 +137,7 @@ class SearchParams:
 
 @dataclass
 class VendorResult:
-    """Combined outcome of one vendor instance (JSON-safe: it is serialized with ``asdict`` into the polling state)."""
+    """Combined outcome of one vendor instance."""
 
     vendor: str
     brand: str
@@ -164,7 +147,7 @@ class VendorResult:
     total_deleted: int = 0
     total_failed: int = 0
     errors: list[str] = field(default_factory=list)
-    file_entries: list[dict[str, Any]] = field(default_factory=list)  # Published in the tick that retrieved them, never stored.
+    file_entries: list[dict[str, Any]] = field(default_factory=list)  # Published at the end of the run (publish_files).
     additional: dict[str, Any] = field(default_factory=dict)
 
     @property
@@ -257,26 +240,8 @@ def parse_time_frame(value: str) -> timedelta:
     return timedelta(seconds=amount * seconds_per_unit[unit])
 
 
-def budget_exhausted() -> bool:
-    """Whether the overall time budget was exhausted (never, when there is no deadline)."""
-    return _DEADLINE is not None and _DEADLINE - time.time() <= 0
-
-
-def ensure_time_left() -> None:
-    """Raises a ``DemistoException`` when the overall time budget was exhausted."""
-    if budget_exhausted():
-        raise DemistoException(
-            f"Timed out: the {_TIMEOUT_SECONDS} seconds timeout was reached. Increase the timeout argument or narrow the search."
-        )
-
-
 def run_command(command: str, args: dict[str, Any], instance: str) -> list[dict[str, Any]]:
-    """
-    Runs a vendor command on a specific instance and raises ``VendorError`` if it returned an error entry.
-
-    Raises a ``DemistoException`` when the overall time budget is exhausted.
-    """
-    ensure_time_left()
+    """Runs a vendor command on a specific instance and raises ``VendorError`` if it returned an error entry."""
     command_args = {key: value for key, value in args.items() if value not in (None, "")}
     command_args["using"] = instance
     COMMAND_TRACE.append(f"{command} { ({k: v for k, v in command_args.items() if k != 'using'}) } [using={instance}]")
@@ -375,9 +340,6 @@ def collect_files(results: list[dict[str, Any]], email: dict[str, Any], result: 
             email["Attachments"][file_info["Name"]] = file_info.get("SHA256", "")
 
 
-VERIFICATION_FAILED_REASON = "Deletion could not be verified: the email was still found after the delete command succeeded."
-
-
 def email_key(email: dict[str, Any]) -> tuple[str, str]:
     return ",".join(email["Mailbox"]), email["ObjectID"]
 
@@ -390,65 +352,11 @@ def message_key(email: dict[str, Any]) -> tuple[str, str] | None:
 
 @dataclass
 class EmailOps:
-    """The vendor specific callables of a vendor (rebuilt from the params on every tick, never stored in the state)."""
+    """The vendor specific callables of a vendor instance (built from the params by ``VendorSpec.ops``)."""
 
     search: Callable[[], tuple[list[dict[str, Any]], bool]]
     delete: Callable[[dict[str, Any]], None]
     get_files: Callable[[dict[str, Any]], list[dict[str, Any]]]
-
-
-def mark_verification(result: VendorResult, deleted: list[dict[str, Any]], remaining: set[tuple[str, str]]) -> None:
-    """
-    * Emails that are still found: ``Deleted=False`` + ``Reason``, moved from ``total_deleted`` to ``total_failed``.
-    * The other emails get ``DeletionVerified=True``.
-    """
-    for email in deleted:
-        verified = email_key(email) not in remaining
-        email["DeletionVerified"] = verified
-        if not verified:
-            email["Deleted"] = False
-            email["Reason"] = VERIFICATION_FAILED_REASON
-            result.total_deleted -= 1
-            result.total_failed += 1
-
-
-def verify_step(verify_started: float, result: VendorResult, search: Callable[[], tuple[list[dict[str, Any]], bool]]) -> str:
-    """
-    Stage ``verify``: ONE verification search per tick, checking that the successfully deleted emails are really gone.
-
-    The match is done on ``(mailbox, ObjectID)`` of the deleted emails: Gmail's search excludes the trash by default,
-    while Graph Mail and EWS assign a new item ID to an item that was moved to "Deleted Items", so a moved copy is not
-    returned as a match of the old ID. The vendor keeps being polled (indexes can lag) until none of the deleted IDs is
-    returned or ``VERIFICATION_TIMEOUT_SECONDS`` passed: what is still found is then reported as unverified. The overall
-    deadline caps the window as well: once it passed, the search command is refused and the emails stay unverified.
-
-    When searching by ``object_id`` the lookup is not a search: Gmail's ``gmail-get-mail`` still returns a trashed
-    message (it has the ``TRASH`` label, which counts as deleted here), and Graph Mail / EWS return a "not found" error
-    for a deleted ID, which counts as an empty result (``NotFoundError``, raised only by the object_id lookups).
-
-    A failure of the verification search itself does NOT mean the deletion failed: the emails keep ``Deleted=True``,
-    ``DeletionVerified`` is left unset and the error is added to ``result.errors``.
-
-    ``verify_started`` is the epoch time at which the vendor entered the ``verify`` stage.
-    """
-    deleted = [email for email in result.emails if email.get("Deleted") is True]
-    pending = {email_key(email) for email in deleted}
-    deadline = verify_started + VERIFICATION_TIMEOUT_SECONDS
-    try:
-        emails, _ = search()
-    except NotFoundError:
-        emails = []  # The email requested by object_id no longer exists: it was deleted.
-    except Exception as exc:
-        if budget_exhausted():  # The overall budget ended: same as the end of the window, the emails stay unverified.
-            mark_verification(result, deleted, pending)
-        else:
-            result.errors.append(f"Failed verifying the deletion: {exc}")
-        return STAGE_DONE
-    remaining = {email_key(email) for email in emails if not email.get("Trashed")} & pending
-    if remaining and time.time() < deadline:
-        return STAGE_VERIFY
-    mark_verification(result, deleted, remaining)
-    return STAGE_DONE
 
 
 def search_and_delete(params: SearchParams, result: VendorResult, ops: EmailOps) -> None:
@@ -462,12 +370,18 @@ def search_and_delete(params: SearchParams, result: VendorResult, ops: EmailOps)
     A soft delete in Graph Mail / EWS moves the item to "Deleted Items" under a NEW ID, so a later round would see the
     moved copy as a new email (and delete it again, in effect a hard delete). Emails whose ``(mailbox,
     InternetMessageID)`` was already processed in a previous round are therefore skipped as well.
+
+    The timeout budget (``params.deadline``) is checked before every round and every email: once it passed, the run
+    stops gracefully, the remaining emails are reported as not processed and a note is added.
     """
     seen: dict[tuple[str, str], dict[str, Any]] = {}
     seen_message_ids: set[tuple[str, str] | None] = set()  # never holds None: emails without an InternetMessageID are not added
     exhausted = False
     try:
         for _ in range(MAX_ROUNDS if params.delete else 1):
+            if params.deadline_passed:
+                add_note(result, EMAIL_TIMEOUT_NOTE)
+                break
             emails, saturated = ops.search()
             exhausted = False
             fresh = [email for email in emails if email_key(email) not in seen and message_key(email) not in seen_message_ids]
@@ -475,7 +389,7 @@ def search_and_delete(params: SearchParams, result: VendorResult, ops: EmailOps)
                 break
             for email in fresh:
                 seen[email_key(email)] = email
-                process_email(params, result, email, ops)
+            process_round(params, result, fresh, ops)
             # Updated after the round: two copies of the same message in one mailbox found in the SAME round are both kept.
             seen_message_ids.update(key for key in map(message_key, fresh) if key)
             if not saturated:
@@ -491,6 +405,25 @@ def search_and_delete(params: SearchParams, result: VendorResult, ops: EmailOps)
             "The vendor capped the number of returned emails, more matching emails may exist. "
             "Rerun the command to process the remaining emails.",
         )
+
+
+def process_round(params: SearchParams, result: VendorResult, emails: list[dict[str, Any]], ops: EmailOps) -> None:
+    """Processes the emails of one search round, skipping the ones left when the timeout budget is exhausted."""
+    for email in emails:
+        if params.deadline_passed:
+            skip_email(params, result, email)
+        else:
+            process_email(params, result, email, ops)
+
+
+def skip_email(params: SearchParams, result: VendorResult, email: dict[str, Any]) -> None:
+    """Records an email that was not processed because the timeout budget was exhausted."""
+    add_note(result, EMAIL_TIMEOUT_NOTE)
+    if not params.delete:
+        return
+    email["Deleted"] = False
+    email["Reason"] = EMAIL_TIMEOUT_REASON
+    result.total_failed += 1
 
 
 def process_email(params: SearchParams, result: VendorResult, email: dict[str, Any], ops: EmailOps) -> None:
@@ -548,8 +481,6 @@ def gmail_to_email(item: dict[str, Any]) -> dict[str, Any]:
         attachments=attachments,
     )
     email["HasAttachments"] = bool(attachments)
-    # gmail-get-mail (object_id) also returns trashed messages: "Labels" is a list there and a CSV string in the search.
-    email["Trashed"] = GMAIL_TRASH_LABEL in as_list(item.get("Labels"))
     return email
 
 
@@ -829,28 +760,6 @@ VENDORS: dict[str, VendorSpec] = {
 }
 
 
-def vendor_step(params: SearchParams, vendor: dict[str, Any], result: VendorResult) -> str:
-    """
-    Advances a vendor by ONE step and returns its new stage.
-
-    * ``start``: the whole "search -> (files) -> delete" flow, synchronously within one tick. Then ``verify`` (when
-      the deletion should be verified and an email was deleted) or ``done``.
-    * ``verify``: see ``verify_step``.
-    """
-    ops = VENDORS[vendor["key"]].ops(params, vendor["instance"], result)
-    if vendor["stage"] == STAGE_VERIFY:
-        return verify_step(vendor["verify_started"], result, ops.search)
-    try:
-        search_and_delete(params, result, ops)
-    except NotFoundError:
-        result.additional["NotFound"] = True  # The email requested by object_id does not exist (not a hard failure).
-        raise
-    if params.delete and params.verify_deletion and any(email.get("Deleted") is True for email in result.emails):
-        vendor["verify_started"] = time.time()
-        return STAGE_VERIFY
-    return STAGE_DONE
-
-
 def vendor_keys_for_brand(brand: str) -> set[str]:
     """Returns the keys of the vendors that have `brand` (a name, display name or alias) among their aliases."""
     normalized = normalize_name(brand)
@@ -879,151 +788,46 @@ def resolve_instances(requested_brands: list[str]) -> list[tuple[str, str, str]]
     return instances
 
 
-# ---------------------------------------------------------------------------------------------------------------------
-# The state machine: JSON state, one step of every vendor per tick
-# ---------------------------------------------------------------------------------------------------------------------
-def new_vendor_state(key: str, brand: str, instance: str) -> dict[str, Any]:
-    result = VendorResult(vendor=VENDORS[key].display_name, brand=brand, instance=instance)
-    return {
-        "key": key,
-        "instance": instance,
-        "stage": STAGE_START,
-        "result": asdict(result),
-        "verify_started": None,  # epoch time at which the vendor entered the ``verify`` stage
-    }
-
-
-def new_state(params: SearchParams) -> dict[str, Any]:
-    """Builds the state of the first tick: resolves the vendor instances and fixes the absolute deadline and search window."""
+def resolve_target_instances(params: SearchParams) -> list[tuple[str, str, str]]:
+    """``resolve_instances`` plus the checks that at least one instance was found (exactly one vendor for object_id)."""
     instances = resolve_instances(params.brands)
     if params.object_id and len({key for key, _, _ in instances}) != 1:
         raise DemistoException("When object_id is specified, exactly one brand (with an enabled instance) must be selected.")
     if not instances:
         raise DemistoException("No enabled instance was found for the requested brands.")
-    vendors = [new_vendor_state(key, brand, instance) for key, brand, instance in instances]
-    return {
-        "version": STATE_VERSION,
-        "deadline": time.time() + params.timeout,
-        "since": params.since.isoformat(),
-        "command_trace": [],
-        "vendors": vendors,
-    }
+    return instances
 
 
-def validate_state_vendors(vendors: Any) -> None:
-    """Rejects a state whose vendors have an unknown key or stage (the state is a script argument and can be forged)."""
-    if not isinstance(vendors, list):
-        raise DemistoException("The polling state is invalid: 'vendors' must be a list.")
-    for vendor in vendors:
-        if not isinstance(vendor, dict):
-            raise DemistoException("The polling state is invalid: every vendor must be an object.")
-        key, stage, verify_started = vendor.get("key"), vendor.get("stage"), vendor.get("verify_started")
-        if key not in VENDORS:
-            raise DemistoException(f"The polling state is invalid: unknown vendor '{key}'.")
-        if stage not in VALID_STAGES:
-            raise DemistoException(f"The polling state is invalid: unknown stage '{stage}' of vendor '{key}'.")
-        is_number = isinstance(verify_started, int | float) and not isinstance(verify_started, bool)
-        if not is_number and (verify_started is not None or stage == STAGE_VERIFY):
-            raise DemistoException(f"The polling state is invalid: bad 'verify_started' of vendor '{key}'.")
+# ---------------------------------------------------------------------------------------------------------------------
+# Running the vendors
+# ---------------------------------------------------------------------------------------------------------------------
+def run_vendor(params: SearchParams, key: str, brand: str, instance: str) -> VendorResult:
+    """
+    Runs the whole "search -> (files) -> delete" flow of one vendor instance.
 
-
-def load_state(args: dict[str, Any]) -> dict[str, Any] | None:
-    """The state passed by the previous tick (``None`` on the first tick)."""
-    raw = args.get(STATE_ARG)
-    if not raw:
-        return None
-    state = json.loads(raw) if isinstance(raw, str) else raw
-    if not isinstance(state, dict) or state.get("version") != STATE_VERSION:
-        raise DemistoException("The polling state is invalid or was created by an incompatible version of the script.")
-    validate_state_vendors(state.get("vendors", []))
-    return state
-
-
-def dump_state(state: dict[str, Any]) -> str:
-    return json.dumps(state, separators=(",", ":"))
-
-
-def results_from_state(state: dict[str, Any]) -> list[VendorResult]:
-    return [VendorResult(**vendor["result"]) for vendor in state["vendors"]]
+    Never raises: a failure is stored in the result's errors, together with whatever was collected before it. An
+    instance that is reached after the timeout budget was exhausted is not run and is reported as failed.
+    """
+    spec = VENDORS[key]
+    result = VendorResult(vendor=spec.display_name, brand=brand, instance=instance)
+    if params.deadline_passed:
+        result.errors.append(VENDOR_TIMEOUT_REASON.format(timeout=params.timeout))
+        return result
+    try:
+        search_and_delete(params, result, spec.ops(params, instance, result))
+    except Exception as exc:
+        if isinstance(exc, NotFoundError):
+            result.additional["NotFound"] = True  # The email requested by object_id does not exist (not a hard failure).
+        demisto.debug(f"{result.vendor} ({instance}) failed: {exc}\n{traceback.format_exc()}")
+        result.errors.append(str(exc))
+    return result
 
 
 def publish_files(result: VendorResult) -> None:
-    """Publishes the retrieved files right away (they are never carried in the state) and clears them from the result."""
+    """Publishes the retrieved files as War Room file entries and clears them from the result."""
     for file_entry in result.file_entries:
         return_results(file_entry)
     result.file_entries = []
-
-
-def advance_vendor(params: SearchParams, vendor: dict[str, Any]) -> str:
-    """Advances one vendor by ONE step. Never raises: errors are stored in the result together with whatever was collected."""
-    result = VendorResult(**vendor["result"])
-    try:
-        if vendor["stage"] == STAGE_START and budget_exhausted():  # Do not start a vendor when there is no time left.
-            result.errors.append(f"Timed out before this vendor was run: the {params.timeout} seconds timeout was reached.")
-            stage = STAGE_DONE
-        else:
-            stage = vendor_step(params, vendor, result)
-    except Exception as exc:
-        demisto.debug(f"{result.vendor} ({vendor['instance']}) failed: {exc}\n{traceback.format_exc()}")
-        result.errors.append(str(exc))
-        stage = STAGE_DONE
-    publish_files(result)
-    vendor["result"] = asdict(result)
-    vendor["stage"] = stage
-    return stage
-
-
-def set_deadline(deadline: float | None, timeout: int) -> None:
-    """Sets the overall time budget of the current tick from the absolute (epoch) deadline stored in the state."""
-    global _DEADLINE, _TIMEOUT_SECONDS
-    _DEADLINE = deadline
-    _TIMEOUT_SECONDS = timeout
-
-
-def enforce_state_size(state: dict[str, Any]) -> None:
-    """Keeps the serialized state below ``MAX_STATE_BYTES`` by truncating the largest email bodies (and marking them)."""
-    size = len(dump_state(state))
-    if size <= MAX_STATE_BYTES:
-        return
-    bodies = [
-        (len(email.get("HTMLBody") or ""), email)
-        for vendor in state["vendors"]
-        for email in vendor["result"]["emails"]
-        if len(email.get("HTMLBody") or "") > HTML_BODY_PREFIX_CHARS
-    ]
-    for _, email in sorted(bodies, key=lambda item: item[0], reverse=True):
-        before = len(json.dumps(email["HTMLBody"]))
-        email["HTMLBody"] = email["HTMLBody"][:HTML_BODY_PREFIX_CHARS]
-        email["HTMLBodyTruncated"] = True
-        size -= before - len(json.dumps(email["HTMLBody"]))
-        if size <= MAX_STATE_BYTES:
-            return
-    demisto.debug(f"The polling state is still {size} bytes after truncating the HTML bodies.")
-
-
-def run_tick(params: SearchParams, state: dict[str, Any]) -> tuple[dict[str, Any], bool, list[str]]:
-    """
-    Advances every vendor that is not done by one step.
-
-    Returns ``(state, done, progress_messages)``: ``done`` is true when every vendor is done, the messages describe the
-    vendors whose stage changed in this tick (idle polls produce none).
-    """
-    set_deadline(state["deadline"], params.timeout)
-    COMMAND_TRACE[:] = list(state.get("command_trace") or [])
-    messages: list[str] = []
-    for vendor in state["vendors"]:
-        before = vendor["stage"]
-        if before == STAGE_DONE:
-            continue
-        after = advance_vendor(params, vendor)
-        if after != before:
-            messages.append(f"{vendor['result']['vendor']}: {STAGE_LABELS.get(after, after)}")
-    done = all(vendor["stage"] == STAGE_DONE for vendor in state["vendors"])
-    del COMMAND_TRACE[:-MAX_TRACE_LINES]  # only the last lines are kept (and stored in the state)
-    state["command_trace"] = list(COMMAND_TRACE) if params.verbose else []
-    if not done:
-        enforce_state_size(state)
-    return state, done, messages
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -1044,8 +848,8 @@ def parse_timeout(value: Any) -> int:
         raise DemistoException("timeout must be a positive number of seconds.")
     if timeout > MAX_TIMEOUT_SECONDS:
         raise DemistoException(
-            f"timeout must be at most {MAX_TIMEOUT_SECONDS} seconds: the first run executes the whole search and delete "
-            "synchronously and must finish within the script timeout."
+            f"timeout must be at most {MAX_TIMEOUT_SECONDS} seconds: the whole search and delete runs synchronously "
+            "and must finish within the script timeout."
         )
     return timeout
 
@@ -1063,7 +867,8 @@ def validate_search_values(message_ids: list[str], sender: str) -> None:
         )
 
 
-def parse_args(args: dict[str, Any], since: datetime | None = None) -> SearchParams:
+def parse_args(args: dict[str, Any]) -> SearchParams:
+    """Parses and validates the arguments. The timeout budget of the run starts here (``SearchParams.deadline``)."""
     operation = args.get("operation") or ""
     if operation not in (OPERATION_SEARCH_ONLY, OPERATION_SEARCH_AND_DELETE):
         raise DemistoException(f"operation must be '{OPERATION_SEARCH_ONLY}' or '{OPERATION_SEARCH_AND_DELETE}'.")
@@ -1099,9 +904,7 @@ def parse_args(args: dict[str, Any], since: datetime | None = None) -> SearchPar
         raise DemistoException("target_mailbox must be specified when mailbox_scope is 'Specific'.")
 
     timeout = parse_timeout(args.get("timeout"))
-    time_frame = args.get("time_frame") or DEFAULT_TIME_FRAME
-    # `since` is fixed on the first tick (and restored from the state on later ticks): the search window must not slide.
-    since = since or datetime.now(UTC) - parse_time_frame(time_frame)
+    since = datetime.now(UTC) - parse_time_frame(args.get("time_frame") or DEFAULT_TIME_FRAME)
     return SearchParams(
         internet_message_ids=message_ids,
         object_id=object_id,
@@ -1111,12 +914,12 @@ def parse_args(args: dict[str, Any], since: datetime | None = None) -> SearchPar
         subjects=subjects,
         sender_address=sender,
         retrieve_files=argToBoolean(args.get("retrieve_files") or False),
-        verify_deletion=argToBoolean(args.get("verify_deletion") or False),
         target_mailboxes=target_mailboxes,
         mailbox_scope=scope,
         brands=brands,
         verbose=argToBoolean(args.get("verbose") or False),
         timeout=timeout,
+        deadline=time.time() + timeout,
     )
 
 
@@ -1134,10 +937,6 @@ def build_email_data_entries(params: SearchParams, results: list[VendorResult]) 
     for result in results:
         for email in result.emails:
             additional_fields = {"ObjectID": email["ObjectID"], "InternetMessageID": email["InternetMessageID"]}
-            if email.get("DeletionVerified") is not None:
-                additional_fields["Verified"] = email["DeletionVerified"]
-            if email.get("HTMLBodyTruncated"):
-                additional_fields["HTMLBodyTruncated"] = True
             if params.verbose:
                 additional_fields["Instance"] = result.instance
 
@@ -1260,20 +1059,10 @@ def build_command_results(params: SearchParams, results: list[VendorResult]) -> 
 
 
 # ---------------------------------------------------------------------------------------------------------------------
-# Polling entry point: every script run is ONE tick of the state machine
+# Entry point
 # ---------------------------------------------------------------------------------------------------------------------
 class InvalidArgumentsError(DemistoException):
     """The script arguments are invalid (reported with ``return_error``)."""
-
-
-def scheduled_timeout(state: dict[str, Any]) -> int:
-    """
-    The platform level timeout of the scheduled command: the remaining overall budget plus ``SCHEDULE_MARGIN_SECONDS``.
-
-    The margin keeps the platform timeout away from the next run, so the next tick can still run and report the
-    timeout once the budget is exhausted.
-    """
-    return max(int(state["deadline"] - time.time()), 0) + SCHEDULE_MARGIN_SECONDS
 
 
 def failure_results(params: SearchParams, exc: Exception) -> list[CommandResults]:
@@ -1282,44 +1071,25 @@ def failure_results(params: SearchParams, exc: Exception) -> list[CommandResults
     return build_command_results(params, [failure])
 
 
-def polling_results(args: dict[str, Any], state: dict[str, Any], messages: list[str]) -> CommandResults:
+def search_and_delete_email(args: dict[str, Any]) -> list[CommandResults]:
     """
-    The result of an intermediate tick: the progress messages (or the poll message, unless hidden) and the scheduled
-    command that reruns the script with the original arguments, the new ``state`` and ``hide_polling_output=True``.
-    """
-    if messages:
-        readable_output = "\n".join(f"* {message}" for message in messages)
-    else:  # An empty readable output produces no War Room text (CommandResults treats it like None).
-        readable_output = "" if args.get(HIDE_POLLING_OUTPUT_ARG) else POLL_MESSAGE
-    next_args = {**args, STATE_ARG: dump_state(state), HIDE_POLLING_OUTPUT_ARG: True}
-    scheduled_command = ScheduledCommand(
-        command=SCRIPT_NAME,
-        next_run_in_seconds=POLL_INTERVAL_SECONDS,
-        args=next_args,
-        timeout_in_seconds=scheduled_timeout(state),
-    )
-    return CommandResults(readable_output=readable_output, scheduled_command=scheduled_command)
+    Runs the whole search (and delete) synchronously over every resolved vendor instance and returns the final results.
 
-
-def search_and_delete_email(args: dict[str, Any]) -> CommandResults | list[CommandResults]:
+    Invalid arguments raise ``InvalidArgumentsError``; any other failure (e.g. no enabled instance) is returned as an
+    error entry by ``failure_results``.
     """
-    Advances the state machine by one step and returns either the final results or a ``CommandResults`` with a
-    ``ScheduledCommand`` that runs the next tick in ``POLL_INTERVAL_SECONDS`` (the state is carried in the ``state`` arg).
-    """
-    ScheduledCommand.raise_error_if_not_supported()
-    state = load_state(args)
+    COMMAND_TRACE.clear()
     try:
-        params = parse_args(args, since=datetime.fromisoformat(state["since"]) if state else None)
+        params = parse_args(args)
     except Exception as exc:
         raise InvalidArgumentsError(str(exc)) from exc
     try:
-        if state is None:
-            state = new_state(params)
-        state, done, messages = run_tick(params, state)
-        if done:
-            return build_command_results(params, results_from_state(state))
-        return polling_results(args, state, messages)
-    except Exception as exc:  # Never crash and never poll forever: report the failure in HR and in the context.
+        instances = resolve_target_instances(params)
+        results = [run_vendor(params, key, brand, instance) for key, brand, instance in instances]
+        for result in results:
+            publish_files(result)
+        return build_command_results(params, results)
+    except Exception as exc:  # Never crash: report the failure in HR and in the context.
         return failure_results(params, exc)
 
 
