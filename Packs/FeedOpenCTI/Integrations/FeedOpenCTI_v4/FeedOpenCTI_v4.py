@@ -11,6 +11,10 @@ urllib3.disable_warnings()
 # Disable info logging from the api
 logging.getLogger().setLevel(logging.ERROR)
 OPENCTI_LOGS = "opencti_logs"
+# Deterministic ordering is required for cursor-based pagination to be stable across fetch cycles.
+# Without it, OpenCTI paginates by internal ID, so newly created observables may land before the stored cursor.
+PAGINATION_ORDER_BY = "created_at"
+PAGINATION_ORDER_MODE = "asc"
 
 XSOAR_TYPES_TO_OPENCTI = {
     "account": "User-Account",
@@ -81,7 +85,7 @@ def get_indicators(
     last_run_id: str | None = None,
     tlp_color: str | None = None,
     tags: list[str] = None,
-) -> tuple[str, list]:
+) -> tuple[str | None, list]:
     """Retrieving indicators from the API
 
     Args:
@@ -107,8 +111,32 @@ def get_indicators(
     if score:
         filters["filters"].append({"key": "x_opencti_score", "values": score, "operator": "eq", "mode": "or"})
     demisto.debug(f"{OPENCTI_LOGS} - in get_indicators - {filters=}")
-    observables = client.stix_cyber_observable.list(filters=filters, after=last_run_id, first=limit, withPagination=True)
-    new_last_run = observables.get("pagination").get("endCursor")
+    try:
+        observables = client.stix_cyber_observable.list(
+            filters=filters,
+            after=last_run_id,
+            first=limit,
+            orderBy=PAGINATION_ORDER_BY,
+            orderMode=PAGINATION_ORDER_MODE,
+            withPagination=True,
+        )
+    except Exception as e:
+        raise DemistoException(
+            "Failed to retrieve indicators from OpenCTI.\n"
+            f"OpenCTI error: {e}\n"
+            f"Pagination cursor (last_run_id): {last_run_id or 'None (first page)'}\n"
+            f"Request: indicator types={indicator_type}, limit={limit}, "
+            f"orderBy={PAGINATION_ORDER_BY}, orderMode={PAGINATION_ORDER_MODE}.\n"
+            "If the error refers to pagination (e.g. 'DATABASE_ERROR: Fail to execute engine pagination'), "
+            "the stored cursor is likely no longer valid. "
+            "Run !opencti-reset-fetch-indicators to restart fetching from the beginning."
+        ) from e
+    if not observables:
+        raise DemistoException(
+            "Failed to retrieve indicators from OpenCTI: received an empty response.\n"
+            f"Pagination cursor (last_run_id): {last_run_id or 'None (first page)'}"
+        )
+    new_last_run = (observables.get("pagination") or {}).get("endCursor")
     demisto.debug(f"{OPENCTI_LOGS} - in get_indicators - {new_last_run=}")
 
     indicators = []
@@ -161,7 +189,13 @@ def fetch_indicators_command(
     Returns:
         list of indicators(list)
     """
-    last_run_id = demisto.getIntegrationContext().get("last_run_id")
+    integration_context = demisto.getIntegrationContext()
+    last_run_id = integration_context.get("last_run_id")
+    if last_run_id and integration_context.get("order_by") != PAGINATION_ORDER_BY:
+        # Cursors saved by previous versions were produced without ordering and are incompatible
+        # with the current sort, so start over instead of sending an invalid cursor.
+        demisto.info(f"{OPENCTI_LOGS} - in fetch_indicators_command - ignoring legacy cursor {last_run_id}")
+        last_run_id = None
     demisto.info(f"{OPENCTI_LOGS} - in fetch_indicators_command - get last run = {last_run_id}")
 
     new_last_run, indicators_list = get_indicators(
@@ -169,7 +203,7 @@ def fetch_indicators_command(
     )
 
     if new_last_run and not is_test:
-        demisto.setIntegrationContext({"last_run_id": new_last_run})
+        demisto.setIntegrationContext({"last_run_id": new_last_run, "order_by": PAGINATION_ORDER_BY})
         demisto.debug(f"{OPENCTI_LOGS} - in fetch_indicators_command - set last run = {new_last_run}")
         # we submit the indicators in batches
         for b in batch(indicators_list, batch_size=2000):
