@@ -152,22 +152,44 @@ class Client(BaseClient):
         """
         return {key: value for key, value in (self._headers or {}).items() if key.lower() != "content-type"}
 
+    def set_entry_tags(self, incident_id: str | None, entry_id: str | None, tags: list[str]) -> None:
+        """Sets the given tags on a remote entry. Skips when there are no tags or the remote entry ID is unknown."""
+        if not tags:
+            return
+        if not entry_id:
+            demisto.debug(f"Could not find the remote entry ID in incident {incident_id}, skipping setting tags {tags}")
+            return
+        try:
+            self._http_request(
+                method="POST",
+                url_suffix="/entry/tags",
+                json_data={"id": entry_id, "version": -1, "investigationId": incident_id, "tags": tags},
+            )
+        except Exception as e:
+            # The entry itself was already created, failing here would re-send it on the next mirroring cycle.
+            demisto.error(f"Failed to set tags {tags} on remote entry {entry_id} in incident {incident_id}: {e}")
+
     def add_incident_entry(self, incident_id: str | None, entry: dict[str, Any]):
+        entry_tags: list[str] = entry.get("tags") or []
         if entry.get("type") == 3:
             path_res = demisto.getFilePath(entry.get("id"))
             full_file_name = path_res.get("name")
 
             with open(path_res.get("path"), "rb") as file_to_send:
-                self._http_request(
+                upload_response = self._http_request(
                     method="POST",
                     url_suffix=f"/entry/upload/{incident_id}",
                     headers=self._get_multipart_headers(),
                     files={"file": (full_file_name, file_to_send, "application/octet-stream")},
                 )
+            # The upload response is the remote investigation, holding the newly created file entry.
+            uploaded_entries = upload_response.get("entries") if isinstance(upload_response, dict) else None
+            uploaded_entry_id = uploaded_entries[-1].get("id") if uploaded_entries else None
+            self.set_entry_tags(incident_id, uploaded_entry_id, entry_tags)
 
         if not entry.get("note", False):
             demisto.debug(f'the entry has inv_id {incident_id}\nformat {entry.get("format")}\n contents {entry.get("contents")}')
-            self._http_request(
+            text_entry = self._http_request(
                 method="POST",
                 url_suffix="/entry/formatted",
                 json_data={"contents": entry.get("contents"), "format": entry.get("format"), "investigationId": incident_id},
@@ -175,11 +197,12 @@ class Client(BaseClient):
         else:
             demisto.debug(f'the entry has inv_id {incident_id}\ndata {entry.get("date")}\nmarkdown {entry.get("markdown")}')
             entry_format = entry.get("format") == "markdown"
-            self._http_request(
+            text_entry = self._http_request(
                 method="POST",
                 url_suffix="/entry/note",
                 json_data={"investigationId": incident_id, "data": entry.get("contents", "False"), "markdown": entry_format},
             )
+        self.set_entry_tags(incident_id, text_entry.get("id") if isinstance(text_entry, dict) else None, entry_tags)
 
 
 """ HELPER FUNCTIONS """
