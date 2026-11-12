@@ -16179,3 +16179,15 @@ def test_cloud_run_permission_error_reports_declared_permission(mocker, command_
     assert len(error_entries) == 1
     assert error_entries[0]["account_id"] == "mock_project_id"
     assert error_entries[0]["name"] == permission
+
+
+def test_partial_permissions_allowed_commands_have_requirements():
+    """
+    Given: The set of commands allowed with the partial (CSPM remediation) permission set.
+    When: Comparing it to the commands permission requirements.
+    Then: Every allowed command (excluding quick actions, which reuse a base command) is listed in COMMAND_REQUIREMENTS.
+    """
+    from GCP import COMMAND_REQUIREMENTS, PARTIAL_PERMISSIONS_ALLOWED_COMMANDS
+
+    base_commands = {command for command in PARTIAL_PERMISSIONS_ALLOWED_COMMANDS if not command.endswith("-quick-action")}
+    assert base_commands <= COMMAND_REQUIREMENTS.keys()

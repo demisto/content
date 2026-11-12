@@ -11538,6 +11538,92 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-logging-configuration-update": NetworkFirewall.update_logging_configuration_command,
 }
 
+# Commands allowed for users granted only the partial (CSPM remediation) permission set.
+# Each group corresponds to a permission listed in the CSPM remediation permissions policy.
+PARTIAL_PERMISSIONS_ALLOWED_COMMANDS: frozenset[str] = frozenset(
+    {
+        # s3:PutBucketPublicAccessBlock
+        "aws-s3-public-access-block-update",
+        "aws-s3-public-access-block-quick-action",
+        # s3:PutBucketVersioning
+        "aws-s3-bucket-versioning-put",
+        "aws-s3-bucket-versioning-enable-quick-action",
+        # s3:PutBucketAcl
+        "aws-s3-bucket-acl-put",
+        "aws-s3-bucket-acl-set-to-private-quick-action",
+        # s3:PutBucketLogging
+        "aws-s3-bucket-logging-put",
+        "aws-s3-bucket-enable-bucket-access-logging-quick-action",
+        # s3:PutBucketPolicy
+        "aws-s3-bucket-policy-put",
+        "aws-s3-bucket-policy-put-quick-action",
+        # rds:ModifyDBInstance
+        "aws-rds-db-instance-modify",
+        "aws-rds-db-instance-modify-publicly-accessible-quick-action",
+        "aws-rds-db-instance-modify-copy-tags-on-rds-snapshot-quick-action",
+        "aws-rds-db-instance-modify-enable-automatic-backup-quick-action",
+        "aws-rds-db-instance-enable-iam-auth-quick-action",
+        "aws-rds-db-instance-enable-deletion-protection-quick-action",
+        "aws-rds-db-instance-enable-auto-upgrade-quick-action",
+        "aws-rds-db-instance-enable-multi-az-quick-action",
+        # rds:ModifyDBCluster
+        "aws-rds-db-cluster-modify",
+        "aws-rds-db-cluster-enable-iam-auth-quick-action",
+        "aws-rds-db-cluster-enable-deletion-protection-quick-action",
+        # rds:ModifyDBSnapshotAttribute
+        "aws-rds-db-snapshot-attribute-modify",
+        "aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action",
+        # rds:ModifyDBClusterSnapshotAttribute
+        "aws-rds-db-cluster-snapshot-attribute-modify",
+        "aws-rds-db-cluster-snapshot-set-to-private-quick-action",
+        # rds:ModifyEventSubscription
+        "aws-rds-event-subscription-modify",
+        "aws-rds-event-subscription-modify-quick-action",
+        # eks:UpdateClusterConfig
+        "aws-eks-cluster-config-update",
+        "aws-eks-enable-control-plane-logging-quick-action",
+        "aws-eks-disable-public-access-quick-action",
+        # kms:EnableKeyRotation
+        "aws-kms-key-rotation-enable",
+        # cloudtrail:StartLogging
+        "aws-cloudtrail-logging-start",
+        "aws-cloudtrail-logging-start-enable-logging-quick-action",
+        # cloudtrail:UpdateTrail
+        "aws-cloudtrail-trail-update",
+        "aws-cloudtrail-trail-enable-log-validation-quick-action",
+        # iam:UpdateAccountPasswordPolicy
+        "aws-iam-account-password-policy-update",
+        # ec2:RevokeSecurityGroupIngress
+        "aws-ec2-security-group-ingress-revoke",
+        # ec2:RevokeSecurityGroupEgress
+        "aws-ec2-security-group-egress-revoke",
+        # ec2:ModifyInstanceMetadataOptions
+        "aws-ec2-instance-metadata-options-modify",
+        "aws-ec2-enable-imdsv2-quick-action",
+        # ec2:ModifySubnetAttribute
+        "aws-ec2-subnet-attribute-modify",
+        # ec2:ModifyImageAttribute
+        "aws-ec2-image-attribute-modify",
+        "aws-ec2-image-attribute-set-ami-to-private-quick-action",
+        # ec2:ModifySnapshotAttribute
+        "aws-ec2-snapshot-attribute-modify",
+        "aws-ec2-snapshot-permission-modify",
+        "aws-ec2-set-snapshot-to-private-quick-action",
+        # redshift:ModifyCluster
+        "aws-redshift-cluster-modify",
+        # elasticloadbalancing:ModifyLoadBalancerAttributes
+        "aws-elb-load-balancer-attributes-modify",
+        # ecs:UpdateClusterSettings
+        "aws-ecs-cluster-settings-update",
+        # acm:UpdateCertificateOptions
+        "aws-acm-certificate-options-update",
+        # lambda:UpdateFunctionConfiguration
+        "aws-lambda-function-configuration-update",
+        # lambda:UpdateFunctionUrlConfig
+        "aws-lambda-function-url-config-update",
+    }
+)
+
 REQUIRED_ACTIONS: list[str] = [
     "ssm:ListAssociationVersions",
     "ssm:DescribeAssociation",
@@ -12119,6 +12205,10 @@ def main():  # pragma: no cover
     handle_proxy()
 
     try:
+        # TODO: Determine the user type (full vs. partial permissions) once the mechanism is defined.
+        is_all_commands_allowed = True
+        validate_command_is_allowed(command, PARTIAL_PERMISSIONS_ALLOWED_COMMANDS, CloudTypes.AWS.value, is_all_commands_allowed)
+
         if command == "test-module":
             results = (
                 run_health_check_for_accounts(connector_id, CloudTypes.AWS.value, health_check)

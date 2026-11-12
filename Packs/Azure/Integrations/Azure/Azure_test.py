@@ -15430,3 +15430,15 @@ def test_list_subscriptions_request_error(mocker, client):
     assert call_kwargs["api_function_name"] == "list_subscriptions_request"
     assert call_kwargs["resource_type"] == "Subscription"
     assert call_kwargs["subscription_id"] is None
+
+
+def test_partial_permissions_allowed_commands_are_declared_in_yml():
+    """
+    Given: The set of commands allowed with the partial (CSPM remediation) permission set.
+    When: Comparing it to the commands declared in the integration YML.
+    Then: Every allowed command is declared in the YML.
+    """
+    from Azure import PARTIAL_PERMISSIONS_ALLOWED_COMMANDS
+
+    yml_commands = {command["name"] for command in yaml.safe_load(YML_PATH.read_text())["script"]["commands"]}
+    assert yml_commands >= PARTIAL_PERMISSIONS_ALLOWED_COMMANDS
