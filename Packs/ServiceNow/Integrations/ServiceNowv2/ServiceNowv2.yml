@@ -2108,8 +2108,6 @@ script:
     - description: 'Additional key-value pairs to attach to the event, in the format: {"key": "value"}.'
       name: additional_info
       prettyname: Additional Info
-      prettypredefined:
-        Full Issue: ${issue}
     description: Creates an event in ServiceNow Event Management. Requires the evt_mgmt_integration role.
     name: servicenow-create-event-quick-action
     prettyname: Create ServiceNow Event
