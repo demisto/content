@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 from CiscoMerakiApiModule import *  # noqa: E402
 
 """ Imports """
+import functools
 import hashlib
 import http
 import json
@@ -372,11 +373,7 @@ def fetch_events_by_type(
     events_by_type: dict[str, list[dict[str, Any]]] = {}
     next_run = dict(last_run)
     fetchers: dict[str, Callable[[dict[str, Any]], tuple[list[dict[str, Any]], dict[str, Any]]]] = {
-        name: (
-            lambda type_state, event_type=event_type: fetch_windowed_events(
-                client, event_type, type_state, max_events_per_type, now
-            )
-        )
+        name: functools.partial(fetch_windowed_events, client, event_type, max_events=max_events_per_type, now=now)
         for name, event_type in WINDOWED_EVENT_TYPES.items()
     }
     fetchers[NETWORK_EVENTS] = lambda type_state: fetch_network_events(client, network_ids, type_state, max_events_per_type, now)

@@ -1561,9 +1561,7 @@ def integration_context(mocker) -> dict:
     """In-memory integration context shared by get/set."""
     context: dict = {}
     mocker.patch.object(CiscoMerakiv2, "get_integration_context", side_effect=lambda: dict(context))
-    mocker.patch.object(
-        CiscoMerakiv2, "set_integration_context", side_effect=lambda new: (context.clear(), context.update(new))
-    )
+    mocker.patch.object(CiscoMerakiv2, "set_integration_context", side_effect=lambda new: (context.clear(), context.update(new)))
     return context
 
 
