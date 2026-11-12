@@ -2838,3 +2838,5 @@ tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
 system: true
+marketplaces:
+- xsoar
