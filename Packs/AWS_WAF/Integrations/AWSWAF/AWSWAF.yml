@@ -1823,7 +1823,7 @@ script:
       predefined:
       - "Global"
       - "Regional"
-    - name: id
+    - name: web_acl_id
       description: The web ACL ID.
       required: true
     - name: region
@@ -1998,7 +1998,7 @@ script:
       predefined:
       - "Global"
       - "Regional"
-    - name: id
+    - name: web_acl_id
       description: The web ACL ID.
       required: true
     - name: default_action
@@ -2088,7 +2088,7 @@ script:
       predefined:
       - "Global"
       - "Regional"
-    - name: id
+    - name: web_acl_id
       description: The web ACL ID.
       required: true
     - name: region

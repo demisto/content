@@ -11,10 +11,10 @@
 !aws-waf-rule-group-list
 
 !aws-waf-web-acl-list scope=Regional
-!aws-waf-web-acl-get name=my-web-acl id=12345678-1234-1234-1234-123456789012 scope=Regional
+!aws-waf-web-acl-get name=my-web-acl web_acl_id=12345678-1234-1234-1234-123456789012 scope=Regional
 !aws-waf-web-acl-create name=my-web-acl default_action=Allow scope=Regional
-!aws-waf-web-acl-update name=my-web-acl id=12345678-1234-1234-1234-123456789012 scope=Regional default_action=Block
-!aws-waf-web-acl-delete name=my-web-acl id=12345678-1234-1234-1234-123456789012 scope=Regional
+!aws-waf-web-acl-update name=my-web-acl web_acl_id=12345678-1234-1234-1234-123456789012 scope=Regional default_action=Block
+!aws-waf-web-acl-delete name=my-web-acl web_acl_id=12345678-1234-1234-1234-123456789012 scope=Regional
 !aws-waf-web-acl-associate web_acl_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678 resource_arn=arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890
 !aws-waf-web-acl-disassociate resource_arn=arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890
 !aws-waf-web-acl-resource-list web_acl_arn=arn:aws:wafv2:us-east-1:123456789012:regional/webacl/my-web-acl/12345678 resource_type=APPLICATION_LOAD_BALANCER

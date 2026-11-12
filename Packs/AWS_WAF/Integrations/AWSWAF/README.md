@@ -1158,7 +1158,7 @@ Get a specific web ACL.
 | --- | --- | --- |
 | name | The web ACL name. | Required |
 | scope | The web ACL scope. Possible values are: Global, Regional. Default is Regional. | Optional |
-| id | The web ACL ID. | Required |
+| web_acl_id | The web ACL ID. | Required |
 | region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3, us-gov-east-1, us-gov-west-1, af-south-1, ap-east-1, ap-east-2, ap-northeast-3, ap-south-2, ap-southeast-3, ap-southeast-4, cn-north-1, cn-northwest-1, eu-central-2, eu-south-1, eu-south-2, me-south-1, me-central-1. | Optional |
 
 #### Context Output
@@ -1176,7 +1176,7 @@ Get a specific web ACL.
 
 #### Command example
 
-```!aws-waf-web-acl-get name=prod-web-acl id=a1b2c3d4-5678-90ab-cdef-EXAMPLE11111 scope=Regional```
+```!aws-waf-web-acl-get name=prod-web-acl web_acl_id=a1b2c3d4-5678-90ab-cdef-EXAMPLE11111 scope=Regional```
 
 #### Context Example
 
@@ -1291,7 +1291,7 @@ Update a web ACL.
 | --- | --- | --- |
 | name | The web ACL name. | Required |
 | scope | The web ACL scope. Possible values are: Global, Regional. Default is Regional. | Optional |
-| id | The web ACL ID. | Required |
+| web_acl_id | The web ACL ID. | Required |
 | default_action | The default action for the web ACL. Possible values are: Allow, Block. | Optional |
 | rules_json | A JSON string representing the rules array for the web ACL. Replaces existing rules. | Optional |
 | description | The web ACL description. | Optional |
@@ -1306,7 +1306,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!aws-waf-web-acl-update name=test-web-acl id=b2c3d4e5-6789-01ab-cdef-EXAMPLE33333 scope=Regional default_action=Block```
+```!aws-waf-web-acl-update name=test-web-acl web_acl_id=b2c3d4e5-6789-01ab-cdef-EXAMPLE33333 scope=Regional default_action=Block```
 
 #### Human Readable Output
 
@@ -1327,7 +1327,7 @@ Delete a specific web ACL.
 | --- | --- | --- |
 | name | The web ACL name. | Required |
 | scope | The web ACL scope. Possible values are: Global, Regional. Default is Regional. | Optional |
-| id | The web ACL ID. | Required |
+| web_acl_id | The web ACL ID. | Required |
 | region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3, us-gov-east-1, us-gov-west-1, af-south-1, ap-east-1, ap-east-2, ap-northeast-3, ap-south-2, ap-southeast-3, ap-southeast-4, cn-north-1, cn-northwest-1, eu-central-2, eu-south-1, eu-south-2, me-south-1, me-central-1. | Optional |
 
 #### Context Output
@@ -1336,7 +1336,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!aws-waf-web-acl-delete name=test-web-acl id=b2c3d4e5-6789-01ab-cdef-EXAMPLE33333 scope=Regional```
+```!aws-waf-web-acl-delete name=test-web-acl web_acl_id=b2c3d4e5-6789-01ab-cdef-EXAMPLE33333 scope=Regional```
 
 #### Human Readable Output
 

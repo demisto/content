@@ -1603,7 +1603,7 @@ tasks:
     scriptarguments:
       name:
         simple: ${AWS.Waf.WebACL.Name}
-      id:
+      web_acl_id:
         simple: ${AWS.Waf.WebACL.Id}
   '45':
     id: '45'
@@ -1693,7 +1693,7 @@ tasks:
     scriptarguments:
       name:
         simple: ${AWS.Waf.WebACL.Name}
-      id:
+      web_acl_id:
         simple: ${AWS.Waf.WebACL.Id}
       default_action:
         simple: Block
@@ -1928,7 +1928,7 @@ tasks:
     scriptarguments:
       name:
         simple: ${AWS.Waf.WebACL.Name}
-      id:
+      web_acl_id:
         simple: ${AWS.Waf.WebACL.Id}
 view: |-
   {
