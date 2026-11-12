@@ -783,6 +783,19 @@ class Client(BaseClient):
             return response.get("data")[0]
         return {}
 
+    def create_firewall_rule_request(self, filter_data: dict, rule_data: dict) -> dict:
+        payload = {
+            "filter": filter_data,
+            "data": rule_data,
+        }
+        response = self._http_request(method="POST", url_suffix="firewall-control", json_data=payload)
+        return response.get("data") or {}
+
+    def delete_firewall_rule_request(self, filter_data: dict) -> dict:
+        payload = {"filter": filter_data}
+        response = self._http_request(method="DELETE", url_suffix="firewall-control", json_data=payload, ok_codes=[200])
+        return response.get("data") or {}
+
     def delete_unified_exclusion_request(self, exclusions: list[dict]) -> dict:
         body = {"data": {"exclusions": exclusions}}
         response = self._http_request(method="DELETE", url_suffix="unified-exclusions", json_data=body, ok_codes=[200])
@@ -3896,6 +3909,256 @@ def delete_unified_exclusion_command(client: Client, args: dict) -> CommandResul
     )
 
 
+def build_firewall_rule_scope_filter(args: dict) -> dict:
+    """Validate and build the scope filter for firewall rule commands."""
+    tenant_arg = args.get("tenant")
+    tenant = argToBoolean(tenant_arg) if tenant_arg else None
+    account_ids = argToList(args.get("account_ids")) or None
+    site_ids = argToList(args.get("site_ids")) or None
+    group_ids = argToList(args.get("group_ids")) or None
+
+    has_scope_ids = any([account_ids, site_ids, group_ids])
+    if not tenant and not has_scope_ids:
+        raise DemistoException(
+            "You must provide a scope filter: set 'tenant' to true, or specify 'account_ids', 'site_ids', or 'group_ids'."
+        )
+    if tenant and has_scope_ids:
+        raise DemistoException("Cannot set 'tenant' to true when 'account_ids', 'site_ids', or 'group_ids' are specified.")
+
+    return assign_params(
+        tenant=tenant,
+        accountIds=account_ids,
+        siteIds=site_ids,
+        groupIds=group_ids,
+    )
+
+
+def build_remote_hosts(args: dict) -> list[dict] | None:
+    """Validate and build the remoteHosts list for firewall rule creation."""
+    remote_host_type = args.get("remote_host_type")
+    remote_host_values = argToList(args.get("remote_host_values"))
+    if not remote_host_type:
+        if remote_host_values:
+            raise DemistoException("remote_host_type is required when remote_host_values is specified.")
+        return None
+
+    if remote_host_type == "any":
+        if remote_host_values:
+            raise DemistoException("remote_host_values cannot be specified when remote_host_type is 'any'.")
+        return None
+    if not remote_host_values:
+        raise DemistoException("remote_host_values is required when remote_host_type is not 'any'.")
+    if remote_host_type == "range" and len(remote_host_values) != 2:
+        raise DemistoException(
+            "remote_host_values must contain exactly 2 values (start and end IP) when remote_host_type is 'range'."
+        )
+    if remote_host_type in ("fqdn", "cidr"):
+        return [{"type": remote_host_type, "values": [val]} for val in remote_host_values]
+    return [{"type": remote_host_type, "values": remote_host_values}]
+
+
+def build_local_host(args: dict) -> dict | None:
+    """Validate and build the localHost object for firewall rule creation."""
+    local_host_type = args.get("local_host_type")
+    local_host_values = argToList(args.get("local_host_values"))
+    if not local_host_type:
+        if local_host_values:
+            raise DemistoException("local_host_type is required when local_host_values is specified.")
+        return None
+
+    if local_host_type == "any":
+        if local_host_values:
+            raise DemistoException("local_host_values cannot be specified when local_host_type is 'any'.")
+        return None
+    if not local_host_values:
+        raise DemistoException("local_host_values is required when local_host_type is not 'any'.")
+    if local_host_type == "range" and len(local_host_values) != 2:
+        raise DemistoException(
+            "local_host_values must contain exactly 2 values (start and end IP) when local_host_type is 'range'."
+        )
+    if local_host_type in ("fqdn", "cidr") and len(local_host_values) != 1:
+        raise DemistoException(f"local_host_values must contain exactly 1 value when local_host_type is '{local_host_type}'.")
+    return {"type": local_host_type, "values": local_host_values}
+
+
+def build_firewall_rule_port(args: dict, prefix: str) -> dict | None:
+    """Validate and build a port object (remotePort or localPort) for firewall rule creation."""
+    type_arg = f"{prefix}_type"
+    values_arg = f"{prefix}_values"
+    port_type = args.get(type_arg)
+    port_values_raw = argToList(args.get(values_arg))
+    if not port_type:
+        if port_values_raw:
+            raise DemistoException(f"{type_arg} is required when {values_arg} is specified.")
+        return None
+
+    if port_type == "any":
+        if port_values_raw:
+            raise DemistoException(f"{values_arg} cannot be specified when {type_arg} is 'any'.")
+        return None
+    if not port_values_raw:
+        raise DemistoException(f"{values_arg} is required when {type_arg} is not 'any'.")
+    if port_type == "range" and len(port_values_raw) != 2:
+        raise DemistoException(
+            f"{values_arg} must contain exactly 2 port numbers (start and end port) when {type_arg} is 'range'."
+        )
+    port_values = [arg_to_number(p, arg_name=values_arg) for p in port_values_raw]
+    return {"type": port_type, "values": port_values}
+
+
+def build_firewall_rule_application(args: dict) -> dict | None:
+    """Validate and build the application object for firewall rule creation."""
+    application_type = args.get("application_type")
+    application_values = argToList(args.get("application_values"))
+    if not application_type:
+        if application_values:
+            raise DemistoException("application_type is required when application_values is specified.")
+        return None
+
+    if application_type == "any":
+        if application_values:
+            raise DemistoException("application_values cannot be specified when application_type is 'any'.")
+        return None
+    if not application_values:
+        raise DemistoException("application_values is required when application_type is not 'any'.")
+    return {"type": application_type, "values": application_values}
+
+
+def build_firewall_rule_location(args: dict) -> dict | None:
+    """Validate and build the location object for firewall rule creation."""
+    location_type = args.get("location_type")
+    location_ids = argToList(args.get("location_ids"))
+    if not location_type:
+        if location_ids:
+            raise DemistoException("location_type is required when location_ids is specified.")
+        return None
+
+    if location_type != "specific" and location_ids:
+        raise DemistoException("location_ids can only be specified when location_type is 'specific'.")
+    if location_type == "specific" and not location_ids:
+        raise DemistoException("location_ids is required when location_type is 'specific'.")
+    location_values = [{"id": loc_id} for loc_id in location_ids] if location_ids else None
+    return assign_params(type=location_type, values=location_values)
+
+
+def create_firewall_rule_command(client: Client, args: dict) -> CommandResults:
+    """
+    Create a Firewall Control rule for a specified scope (v2.1 firewall-control endpoint).
+    """
+    filter_data = build_firewall_rule_scope_filter(args)
+
+    rule_data = assign_params(
+        name=args["name"],
+        action=args["action"],
+        status=args["status"],
+        direction=args.get("direction"),
+        osTypes=argToList(args.get("os_types")) or None,
+        protocol=args.get("protocol"),
+        description=args.get("description"),
+        tagIds=argToList(args.get("tag_ids")) or None,
+        remoteHosts=build_remote_hosts(args),
+        localHost=build_local_host(args),
+        remotePort=build_firewall_rule_port(args, "remote_port"),
+        localPort=build_firewall_rule_port(args, "local_port"),
+        application=build_firewall_rule_application(args),
+        location=build_firewall_rule_location(args),
+    )
+
+    new_rule = client.create_firewall_rule_request(filter_data=filter_data, rule_data=rule_data)
+    if not new_rule:
+        return CommandResults(
+            readable_output="Sentinel One - The firewall rule was not created. The API returned no data.",
+            raw_response=new_rule,
+        )
+
+    context_entry = {
+        "ID": new_rule.get("id"),
+        "Name": new_rule.get("name"),
+        "Action": new_rule.get("action"),
+        "Status": new_rule.get("status"),
+        "Direction": new_rule.get("direction"),
+        "OsType": new_rule.get("osType"),
+        "OsTypes": new_rule.get("osTypes"),
+        "Protocol": new_rule.get("protocol"),
+        "RemoteHost": new_rule.get("remoteHost"),
+        "RemoteHosts": new_rule.get("remoteHosts"),
+        "LocalHost": new_rule.get("localHost"),
+        "RemotePort": new_rule.get("remotePort"),
+        "LocalPort": new_rule.get("localPort"),
+        "Application": new_rule.get("application"),
+        "Location": new_rule.get("location"),
+        "Scope": new_rule.get("scope"),
+        "ScopeId": new_rule.get("scopeId"),
+        "Order": new_rule.get("order"),
+        "Editable": new_rule.get("editable"),
+        "Creator": new_rule.get("creator"),
+        "CreatorId": new_rule.get("creatorId"),
+        "CreatedAt": new_rule.get("createdAt"),
+        "UpdatedAt": new_rule.get("updatedAt"),
+        "Description": new_rule.get("description"),
+        "RuleCategory": new_rule.get("ruleCategory"),
+        "TagIds": new_rule.get("tagIds"),
+        "TagNames": new_rule.get("tagNames"),
+        "Tags": new_rule.get("tags"),
+        "ProductId": new_rule.get("productId"),
+    }
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Sentinel One - Create Firewall Rule.", context_entry, removeNull=True, headerTransform=pascalToSpace
+        ),
+        outputs_prefix="SentinelOne.FirewallRule.Created",
+        outputs_key_field="ID",
+        outputs=context_entry,
+        raw_response=new_rule,
+    )
+
+
+def delete_firewall_rule_command(client: Client, args: dict) -> CommandResults:
+    """
+    Delete Firewall Control rules that match the filter (v2.1 firewall-control endpoint).
+    """
+    scope_filter = build_firewall_rule_scope_filter(args)
+    rule_filter = assign_params(
+        ids=argToList(args.get("ids")) or None,
+        query=args.get("query"),
+        scopes=argToList(args.get("scopes")) or None,
+        applications=argToList(args.get("applications")) or None,
+        name=args.get("name"),
+        protocols=argToList(args.get("protocols")) or None,
+        osTypes=argToList(args.get("os_types")) or None,
+        directions=argToList(args.get("directions")) or None,
+        actions=argToList(args.get("actions")) or None,
+        statuses=argToList(args.get("statuses")) or None,
+        createdAt__lt=args.get("created_at_lt"),
+        createdAt__gt=args.get("created_at_gt"),
+        createdAt__lte=args.get("created_at_lte"),
+        createdAt__gte=args.get("created_at_gte"),
+        createdAt__between=args.get("created_at_between"),
+        locationIds=argToList(args.get("location_ids")) or None,
+        tagIds=argToList(args.get("tag_ids")) or None,
+        name__contains=argToList(args.get("name_contains")) or None,
+        tagName__contains=argToList(args.get("tag_name_contains")) or None,
+        application__contains=argToList(args.get("application_contains")) or None,
+        protocol__contains=argToList(args.get("protocol_contains")) or None,
+        service__contains=argToList(args.get("service_contains")) or None,
+    )
+
+    if not rule_filter:
+        raise DemistoException("You must provide at least one rule filter parameter to delete firewall rules.")
+
+    filter_data = {**scope_filter, **rule_filter}
+    response = client.delete_firewall_rule_request(filter_data=filter_data)
+    affected = response.get("affected", 0)
+
+    return CommandResults(
+        readable_output="Sentinel One - Firewall Rules Deleted.",
+        outputs_prefix="SentinelOne.FirewallRule.Deleted",
+        outputs={"Affected": affected},
+        raw_response=response,
+    )
+
+
 def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, os_type: str = None) -> list[str | None]:
     """
     Return the IDs of the hash from the white. Helper function for remove_item_from_whitelist
@@ -6613,6 +6876,8 @@ def main():
             "sentinelone-get-unified-exclusions": get_unified_exclusions_command,
             "sentinelone-create-unified-exclusion": create_unified_exclusion_command,
             "sentinelone-delete-unified-exclusions": delete_unified_exclusion_command,
+            "sentinelone-create-firewall-rule": create_firewall_rule_command,
+            "sentinelone-delete-firewall-rule": delete_firewall_rule_command,
             "sentinelone-get-alert-with-raw-indicators": get_alert_with_raw_indicators_command,
         },
         "commands_with_params": {
