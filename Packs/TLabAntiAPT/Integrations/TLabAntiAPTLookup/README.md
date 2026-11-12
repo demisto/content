@@ -7,19 +7,27 @@ This integration was developed against the tLab Anti-APT API of sandbox-core 1.1
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | Base URL of the tLab Anti-APT sandbox API \(tlab-server\). Through the tLab web server use https://&lt;tlab-host&gt;/api; for a direct connection use http://&lt;tlab-host&gt;:8080. | True |
-| Auth server URL \(tlab-auth\) | Used by the tLab account mode. Where the integration logs in to tlab-auth. Leave empty to use https://&lt;Server URL host&gt;:8002/api, the omni-center portal, which forwards /api to tlab-auth over TLS; if its certificate is self-signed, enable Trust any certificate. Not https://&lt;host&gt;/api, which is the sandbox API itself. | False |
-| Authentication mode | tLab account \(tlab-auth\) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway \(balancer\) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when XSOAR runs on the tlab-server host itself. | True |
+| Auth server URL (tlab-auth) | Used by the tLab account mode. Where the integration logs in to tlab-auth. Leave empty to use https://&lt;Server URL host&gt;:8002/api, the omni-center portal, which forwards /api to tlab-auth over TLS; if its certificate is self-signed, enable Trust any certificate. Not https://&lt;host&gt;/api, which is the sandbox API itself. | False |
+| Authentication mode | tLab account \(tlab-auth\) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway \(balancer\) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when Cortex XSOAR runs on the tlab-server host itself. | True |
 | Credentials | Login and password of a tLab account \(tLab account mode\). This integration only reads, so it can use a restricted account: the user role is sufficient. Turn off password expiry for this account: tlab-auth rejects an expired password and every command starts failing. | True |
-| Password / source key / internal token |  | True |
+| Password / source key / internal token | The password of the tLab account, or the source key or internal token, depending on the authentication mode. | True |
+| Use system proxy settings | Whether to use the Cortex XSOAR server's system proxy settings. | False |
+| Trust any certificate (not secure) | Whether to skip TLS certificate verification. Needed when the tLab certificate is self-signed. | False |
 | Client name | Sent as the X-Client header. | False |
 | Source reliability | Reliability attached to every DBotScore this integration produces. | False |
 | Report completeness to consider | Only reports with these completeness values are used for reputation. Defaults to COMPLETE so a partial analysis does not produce a verdict. | False |
 | Reports per hash | How many past analyses to return per hash. The newest is used for the verdict. | False |
 | Treat an unknown verdict as benign | Off by default. "tLab has no record" is not the same statement as "this file is benign", and a Good score would suppress other vendors' findings. | False |
-| Suspicious score threshold |  | False |
-| Malicious score threshold |  | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+| Suspicious score threshold | Scores from this value up to the malicious threshold are Suspicious. Fractional values are allowed. Default is 50, the product default. | False |
+| Malicious score threshold | Scores at or above this value are Malicious. Fractional values are allowed. Default is 85, the product default. | False |
+
+## Search filters and roles
+
+`tlab-search-reports` accepts filters that the server applies only for accounts
+with the `admin` or `developer` role: verdict, score level, source, root-only,
+minimum report ID, minimum score and file name. With a lower role these are
+discarded without an error, so a narrow query silently returns everything. The
+command adds a warning to its output whenever one of them is used.
 
 ## Commands
 
@@ -51,7 +59,7 @@ Return the tLab Anti-APT reputation of one or more file hashes. Accepts full MD5
 | TLabAntiAPT.File.FileVerdict | String | Verdict set manually in tLab for this file. Absent while nobody has set it; not the analysis result, which is in Verdict. | 
 | TLabAntiAPT.File.Score | Number | Sample score of the analysis used for the verdict. | 
 | TLabAntiAPT.File.SampleReportId | Number | Report the verdict was taken from. | 
-| TLabAntiAPT.File.AnalyzedAt | Date | When the sample was analyzed. | 
+| TLabAntiAPT.File.AnalyzedAt | Date | The date when the sample was analyzed in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). | 
 | TLabAntiAPT.File.Found | Boolean | Whether tLab Anti-APT has an analysis for this hash. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The actual score. | 
@@ -159,6 +167,38 @@ Return past tLab Anti-APT analyses of a hash, with more detail than the reputati
 | TLabAntiAPT.ScanResult.Score | Number | Sample score. | 
 | TLabAntiAPT.ScanResult.Found | Boolean | Whether any analysis exists for the hash. | 
 
+#### Command example
+```!tlab-file-scan-result hash=aaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999```
+#### Context Example
+```json
+{
+    "TLabAntiAPT.ScanResult(val.SampleReportId && val.SampleReportId == obj.SampleReportId)": [
+        {
+            "SampleReportId": 412839,
+            "HashSha256": "aaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999",
+            "HashSha1": "aaaabbbbccccddddeeeeffff0000111122223333",
+            "HashMd5": "aaaabbbbccccddddeeeeffff00001111",
+            "Size": 2048,
+            "FileType": "PE",
+            "UploadedFilename": "invoice.exe",
+            "Verdict": "MALWARE",
+            "ScoreLevel": "MALICIOUS",
+            "FileVerdict": "MALWARE",
+            "Score": 91.5,
+            "Completeness": "COMPLETE",
+            "AnalyzedAt": "2026-03-26T08:00:00Z",
+            "Found": true
+        }
+    ]
+}
+```
+#### Human Readable Output
+
+>### tLab Anti-APT scan results for aaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999
+>|AnalyzedAt|Completeness|FileType|FileVerdict|Found|HashMd5|HashSha1|HashSha256|SampleReportId|Score|ScoreLevel|Size|UploadedFilename|Verdict|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 2026-03-26T08:00:00Z | COMPLETE | PE | MALWARE | true | aaaabbbbccccddddeeeeffff00001111 | aaaabbbbccccddddeeeeffff0000111122223333 | aaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999 | 412839 | 91.5 | MALICIOUS | 2048 | invoice.exe | MALWARE |
+
 ### tlab-file-info
 
 ***
@@ -231,7 +271,7 @@ Search past analyses. Note that verdict, score, source and root filters are appl
 | source_id | Filter by submission source ID. Requires the admin or developer role. | Optional | 
 | tags | Filter by analysis tags. | Optional | 
 | indicators | Filter by indicator codes. Use tlab-list-indicator-codes to discover them. | Optional | 
-| root_only | Return only root reports. Requires the admin or developer role. Possible values are: true, false. | Optional | 
+| root_only | Whether to return only root reports. Requires the admin or developer role. Possible values are: true, false. | Optional | 
 | min_report_id | Return reports with an ID greater than or equal to this value. Requires the admin or developer role. | Optional | 
 | min_score | Minimum sample score. Requires the admin or developer role. | Optional | 
 | file_name | Filter by uploaded file name. Requires the admin or developer role. | Optional | 
@@ -330,7 +370,7 @@ Find stored files whose hash starts with the given prefix.
 ### tlab-list-indicator-codes
 
 ***
-List the indicator code catalogue, usable with the indicators filter of tlab-search-reports.
+List the indicator code catalog, usable with the indicators filter of tlab-search-reports.
 
 #### Base Command
 

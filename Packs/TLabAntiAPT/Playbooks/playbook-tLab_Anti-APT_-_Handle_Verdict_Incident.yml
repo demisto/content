@@ -134,7 +134,7 @@ tasks:
     type: regular
     task:
       name: Get the threat indicators
-      description: Behavioural, static, YARA and antivirus findings, so the analyst has the evidence in context rather than in a browser tab.
+      description: Behavioral, static, YARA and antivirus findings, so the analyst has the evidence in context rather than in a browser tab.
       script: TLabAntiAPTSandbox|||tlab-get-threat-indicators
       type: regular
       iscommand: true

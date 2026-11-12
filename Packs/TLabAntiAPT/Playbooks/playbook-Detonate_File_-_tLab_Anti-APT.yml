@@ -5,7 +5,7 @@ description: 'Detonates a file in the tLab Anti-APT sandbox and waits for the ve
 
 
   Follows the Detonate File - Generic contract, so it can be dropped into any playbook that already calls a detonation sub-playbook. The polling is handled inside the command rather than by a loop here:
-  on XSOAR 6.2.0 and later it suspends the task and resumes on a schedule, which does not hold a worker for the length of an analysis.'
+  on Cortex XSOAR 6.2.0 and later it suspends the task and resumes on a schedule, which does not hold a worker for the length of an analysis.'
 starttaskid: '0'
 tasks:
   '0':

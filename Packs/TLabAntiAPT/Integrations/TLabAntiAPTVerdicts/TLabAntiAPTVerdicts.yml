@@ -1,23 +1,14 @@
+name: TLabAntiAPTVerdicts
+display: tLab Anti-APT Verdicts
 category: Forensics & Malware Analysis
 commonfields:
   id: TLabAntiAPTVerdicts
   version: -1
-name: TLabAntiAPTVerdicts
-display: tLab Anti-APT Verdicts
-description: Create XSOAR incidents from finished tLab Anti-APT sandbox analyses.
+description: Create Cortex XSOAR incidents from finished tLab Anti-APT sandbox analyses.
 fromversion: 6.0.0
 defaultmapperin: tLab Anti-APT - Incoming Mapper
 defaultclassifier: tLab Anti-APT - Classifier
 configuration:
-- name: isFetch
-  display: Fetch incidents
-  additionalinfo: 'Do not enable this if the tLab XSOAR connector is running in PUSH mode against the same tenant: both halves create the same incidents, and you will get two of everything.'
-  type: 8
-  required: false
-- name: incidentType
-  display: Incident type
-  type: 13
-  required: false
 - name: url
   display: Server URL
   additionalinfo: Base URL of the tLab Anti-APT sandbox API (tlab-server). Through the tLab web server use https://<tlab-host>/api; for a direct connection use http://<tlab-host>:8080.
@@ -31,7 +22,7 @@ configuration:
   required: false
 - name: auth_mode
   display: Authentication mode
-  additionalinfo: 'tLab account (tlab-auth) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway (balancer) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when XSOAR runs on the tlab-server host itself.'
+  additionalinfo: 'tLab account (tlab-auth) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway (balancer) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when Cortex XSOAR runs on the tlab-server host itself.'
   defaultvalue: tLab account (tlab-auth)
   type: 15
   required: true
@@ -46,9 +37,35 @@ configuration:
   additionalinfo: 'Login and password of a tLab account (tLab account mode). This integration only reads. See the detailed instructions for the role the account needs. Turn off password expiry for this account: tlab-auth rejects an expired password and every command starts failing.'
   type: 9
   required: true
+- name: proxy
+  display: Use system proxy settings
+  additionalinfo: Whether to use the Cortex XSOAR server's system proxy settings.
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  additionalinfo: Whether to skip TLS certificate verification. Needed when the tLab certificate is self-signed.
+  type: 8
+  required: false
+- name: isFetch
+  display: Fetch incidents
+  additionalinfo: 'Do not enable this if the tLab Cortex XSOAR connector is running in PUSH mode against the same tenant: both halves create the same incidents, and you will get two of everything.'
+  type: 8
+  required: false
+- name: incidentType
+  display: Incident type
+  additionalinfo: Incident type for fetched incidents when the classifier does not set one. The pack's classifier sets tLab Anti-APT Verdict.
+  type: 13
+  required: false
+- name: incidentFetchInterval
+  display: Incidents Fetch Interval
+  additionalinfo: How often, in minutes, new verdicts are fetched.
+  defaultvalue: '5'
+  type: 19
+  required: false
 - name: installation_id
   display: Installation ID
-  additionalinfo: Identifies this tLab installation inside every deduplication key. Required, and it must match INSTALLATION_UUID in the tLab XSOAR connector if that connector also runs against this tenant, otherwise the two halves will not recognise each other's incidents as duplicates.
+  additionalinfo: Identifies this tLab installation inside every deduplication key. Required, and it must match INSTALLATION_UUID in the tLab Cortex XSOAR connector if that connector also runs against this tenant, otherwise the two halves will not recognize each other's incidents as duplicates.
   type: 0
   required: true
 - name: client_name
@@ -101,13 +118,13 @@ configuration:
   required: false
 - name: incident_name_template
   display: Incident name template
-  additionalinfo: 'Placeholders: {verdict}, {filename}, {sha256}, {score}, {report_id}, {source_type}. Must match INCIDENT_NAME_TEMPLATE in the tLab XSOAR connector if both halves run against this tenant.'
+  additionalinfo: 'Placeholders: {verdict}, {filename}, {sha256}, {score}, {report_id}, {source_type}. Must match INCIDENT_NAME_TEMPLATE in the tLab Cortex XSOAR connector if both halves run against this tenant.'
   defaultvalue: 'tLab Anti-APT {verdict}: {filename}'
   type: 0
   required: false
 - name: severity_map
   display: Severity map
-  additionalinfo: 'Comma-separated VERDICT:severity pairs. Valid severities are 0, 0.5, 1, 2, 3 and 4 (Unknown, Informational, Low, Medium, High, Critical). Must match SEVERITY_MAP in the tLab XSOAR connector if both halves run against this tenant.'
+  additionalinfo: 'Comma-separated VERDICT:severity pairs. Valid severities are 0, 0.5, 1, 2, 3 and 4 (Unknown, Informational, Low, Medium, High, Critical). Must match SEVERITY_MAP in the tLab Cortex XSOAR connector if both halves run against this tenant.'
   defaultvalue: MALWARE:3,SUSPICIOUS:2,OK:1,CLEAN:1,WHITELIST:0.5,UNKNOWN:1
   type: 0
   required: false
@@ -119,26 +136,15 @@ configuration:
   required: false
 - name: score_threshold_suspicious
   display: Suspicious score threshold
+  additionalinfo: Scores from this value up to the malicious threshold are Suspicious. Fractional values are allowed. Default is 50, the product default.
   defaultvalue: '50'
   type: 0
   required: false
 - name: score_threshold_malicious
   display: Malicious score threshold
+  additionalinfo: Scores at or above this value are Malicious. Fractional values are allowed. Default is 85, the product default.
   defaultvalue: '85'
   type: 0
-  required: false
-- name: incidentFetchInterval
-  display: Incidents Fetch Interval
-  defaultvalue: '5'
-  type: 19
-  required: false
-- name: insecure
-  display: Trust any certificate (not secure)
-  type: 8
-  required: false
-- name: proxy
-  display: Use system proxy settings
-  type: 8
   required: false
 script:
   script: ''

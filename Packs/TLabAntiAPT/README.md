@@ -8,7 +8,7 @@ tLab Anti-APT is an on-premises malware analysis platform by tLab Technologies. 
 performs static, dynamic, antivirus and MITRE ATT&CK analysis and returns a
 score-based verdict per sample.
 
-## What this pack contains
+## What does this pack do?
 
 | Integration | Purpose | Minimum tLab role |
 | --- | --- | --- |
@@ -22,21 +22,21 @@ score-based verdict per sample.
 | Playbook | Use |
 | --- | --- |
 | Detonate File - tLab Anti-APT | Sub-playbook. Follows the Detonate File - Generic contract, so it drops into any playbook that already calls a detonation sub-playbook. |
-| Detonate URL - tLab Anti-APT | Sub-playbook. The sandbox fetches the URL itself; nothing in XSOAR downloads the target. |
+| Detonate URL - tLab Anti-APT | Sub-playbook. The sandbox fetches the URL itself; nothing in Cortex downloads the target. |
 | tLab Anti-APT - File Reputation | Sub-playbook. Asks what tLab already knows, without submitting. Run it before a detonation: a sample already analyzed needs no second analysis. |
 | tLab Anti-APT - Handle Verdict Incident | Triage. Default playbook for the tLab Anti-APT Verdict incident type. Enriches, then closes benign analyses and leaves the rest for an analyst. |
 
 The detonation sub-playbooks do not loop. Polling lives inside the command, which
-on XSOAR 6.2.0 and later suspends the task and resumes on a schedule rather than
+on Cortex XSOAR 6.2.0 and later suspends the task and resumes on a schedule rather than
 holding a worker for the length of an analysis.
 
 The split is driven by roles rather than tidiness. An instance is the unit of
-credential in XSOAR, so keeping lookup separate means enrichment playbooks can
+credential in Cortex XSOAR, so keeping lookup separate means enrichment playbooks can
 run on a restricted account while detonation keeps a privileged one.
 
 ## Before you start
 
-### 1. Create a tLab account for XSOAR
+### 1. Create a tLab account for Cortex XSOAR
 
 The pack calls the tLab Anti-APT API from outside the tLab host. By default each
 instance logs in to **tlab-auth** with a tLab account — the same login the
@@ -61,7 +61,7 @@ its own Server URL, Auth server URL and account.
 A source key (omni-center source keys, type `CORTEX_XSOAR`) needs the
 source-key gateway and covers submissions only, so it is not enough for lookup,
 feed or verdicts. Do not use the tlab-server `Internal` token for a remote
-XSOAR: the server accepts it only from `127.0.0.1`
+Cortex XSOAR: the server accepts it only from `127.0.0.1`
 (`tokenAuth.allowedRemoteAddresses`).
 
 ### 2. Pick the right role
@@ -82,22 +82,22 @@ too low fails quietly rather than loudly:
 The integration's Test button reports the role it detected and warns when
 artifacts will not be reachable.
 
-### 3. Decide how incidents reach XSOAR
+### 3. Decide how incidents reach Cortex XSOAR
 
-Sandbox verdicts can become XSOAR incidents in one of two ways, and enabling
+Sandbox verdicts can become Cortex XSOAR incidents in one of two ways, and enabling
 both produces duplicates:
 
 * **Pull** — the pack's Verdicts integration fetches them. Requires network
-  access from XSOAR to the tLab API.
+  access from Cortex XSOAR to the tLab API.
 * **Push** — the tlab-xsoar-connector service on the tLab side creates them
-  through the XSOAR REST API. Requires network access in the opposite
-  direction and an XSOAR API key stored on the tLab side.
+  through the Cortex XSOAR REST API. Requires network access in the opposite
+  direction and a Cortex XSOAR API key stored on the tLab side.
 
 Choose one. The connector enforces its own side only; the pack side is turned
-off by the XSOAR administrator.
+off by the Cortex XSOAR administrator.
 
 If both run against the same tenant during a migration, three settings must be
-identical or the duplicates will not be recognisable as duplicates:
+identical or the duplicates will not be recognizable as duplicates:
 
 | Verdicts integration | Connector |
 | --- | --- |
@@ -146,7 +146,7 @@ recomputed score.
   endpoint that enumerates them is the admin-only dynamic report.
 * **PDF rendering is synchronous** with no status endpoint, so a large report
   can approach the command timeout. The render timeout is configurable.
-* **Polling on servers below XSOAR 6.2.0** cannot use scheduled commands and
+* **Polling on servers below Cortex XSOAR 6.2.0** cannot use scheduled commands and
   falls back to an inline loop that holds a worker. On those servers prefer
   `tlab-submit-file` followed by a scheduled `tlab-get-submission-status`.
 
@@ -158,8 +158,8 @@ recomputed score.
    in, and record its digest:
    `docker pull demisto/python3:3.12.12.5490952 && docker save -o demisto-python3.tar demisto/python3:3.12.12.5490952`
 3. Transfer both files into the isolated network.
-4. `docker load` the image on the XSOAR server **and on every engine** that will
-   run these integrations. Verify the digest matches: a mismatch means XSOAR
+4. `docker load` the image on the Cortex XSOAR server **and on every engine** that will
+   run these integrations. Verify the digest matches: a mismatch means Cortex XSOAR
    tries to pull at command time and fails then rather than at install time.
-5. In XSOAR, go to Marketplace and upload the zip.
+5. In Cortex XSOAR, go to Marketplace and upload the zip.
 6. Create an instance, then press Test.

@@ -68,6 +68,38 @@ ACTIONABLE_VERDICTS = {
 DEFAULT_SUSPICIOUS_FROM = 50.0
 DEFAULT_MALICIOUS_FROM = 85.0
 
+# Default of the "Late completion lookback (hours)" parameter in the yml files.
+DEFAULT_LOOKBACK_HOURS = 24
+
+
+def score_thresholds(params: dict) -> tuple[float, float]:
+    """Read the suspicious and malicious score thresholds from the instance.
+
+    Scores are fractional, so these are parsed as floats: arg_to_number would
+    turn 72.5 into 72. An empty value falls back to the server's default.
+    """
+
+    def read(key: str, default: float) -> float:
+        raw = params.get(key)
+        if raw is None or str(raw).strip() == "":
+            return default
+        try:
+            return float(raw)
+        except (TypeError, ValueError):
+            raise DemistoException(f"Invalid value for {key}: '{raw}' is not a number.") from None
+
+    return (
+        read("score_threshold_suspicious", DEFAULT_SUSPICIOUS_FROM),
+        read("score_threshold_malicious", DEFAULT_MALICIOUS_FROM),
+    )
+
+
+def lookback_hours(params: dict) -> int:
+    """Read the late completion lookback. Unset means the yml default; 0 disables it."""
+    value = arg_to_number(params.get("maturation_lookback_hours"), arg_name="maturation_lookback_hours")
+    return DEFAULT_LOOKBACK_HOURS if value is None else max(value, 0)
+
+
 COMPLETENESS_EMPTY = "EMPTY"
 COMPLETENESS_PARTIAL = "PARTIALLY_COMPLETE"
 COMPLETENESS_COMPLETE = "COMPLETE"
@@ -1232,8 +1264,8 @@ def analysis_outputs(report: dict, params: dict, access_code: str = "", request_
     score, score_present = score_value(report)
     verdict = canonical_verdict(
         report,
-        suspicious_from=float(params.get("score_threshold_suspicious") or DEFAULT_SUSPICIOUS_FROM),
-        malicious_from=float(params.get("score_threshold_malicious") or DEFAULT_MALICIOUS_FROM),
+        suspicious_from=score_thresholds(params)[0],
+        malicious_from=score_thresholds(params)[1],
         early_verdict=argToBoolean(params.get("early_verdict") or False),
     )
     classifier = report.get("malwareClassifierResult") or {}
@@ -1549,8 +1581,8 @@ def resolve_status(client: TLabClient, access_code: str, args: dict, params: dic
 
     verdict = canonical_verdict(
         main,
-        suspicious_from=float(params.get("score_threshold_suspicious") or DEFAULT_SUSPICIOUS_FROM),
-        malicious_from=float(params.get("score_threshold_malicious") or DEFAULT_MALICIOUS_FROM),
+        suspicious_from=score_thresholds(params)[0],
+        malicious_from=score_thresholds(params)[1],
         early_verdict=early,
     )
     terminal = is_terminal(main.get("sampleReportCompleteness") or "", verdict)

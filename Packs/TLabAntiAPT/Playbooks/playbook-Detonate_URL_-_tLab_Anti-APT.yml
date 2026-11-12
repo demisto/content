@@ -4,7 +4,7 @@ name: Detonate URL - tLab Anti-APT
 description: 'Detonates a URL in the tLab Anti-APT sandbox and waits for the verdict.
 
 
-  Follows the Detonate URL - Generic contract. The sandbox fetches the URL itself, so nothing in XSOAR ever downloads the target.'
+  Follows the Detonate URL - Generic contract. The sandbox fetches the URL itself, so nothing in Cortex XSOAR ever downloads the target.'
 starttaskid: '0'
 tasks:
   '0':

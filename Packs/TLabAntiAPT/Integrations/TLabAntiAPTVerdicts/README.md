@@ -1,4 +1,4 @@
-Create XSOAR incidents from finished tLab Anti-APT sandbox analyses.
+Create Cortex XSOAR incidents from finished tLab Anti-APT sandbox analyses.
 This integration was developed against the tLab Anti-APT API of sandbox-core 1.13.0.
 
 ## Configure tLab Anti-APT Verdicts in Cortex
@@ -6,14 +6,17 @@ This integration was developed against the tLab Anti-APT API of sandbox-core 1.1
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Fetch incidents | Do not enable this if the tLab XSOAR connector is running in PUSH mode against the same tenant: both halves create the same incidents, and you will get two of everything. | False |
-| Incident type |  | False |
 | Server URL | Base URL of the tLab Anti-APT sandbox API \(tlab-server\). Through the tLab web server use https://&lt;tlab-host&gt;/api; for a direct connection use http://&lt;tlab-host&gt;:8080. | True |
-| Auth server URL \(tlab-auth\) | Used by the tLab account mode. Where the integration logs in to tlab-auth. Leave empty to use https://&lt;Server URL host&gt;:8002/api, the omni-center portal, which forwards /api to tlab-auth over TLS; if its certificate is self-signed, enable Trust any certificate. Not https://&lt;host&gt;/api, which is the sandbox API itself. | False |
-| Authentication mode | tLab account \(tlab-auth\) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway \(balancer\) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when XSOAR runs on the tlab-server host itself. | True |
+| Auth server URL (tlab-auth) | Used by the tLab account mode. Where the integration logs in to tlab-auth. Leave empty to use https://&lt;Server URL host&gt;:8002/api, the omni-center portal, which forwards /api to tlab-auth over TLS; if its certificate is self-signed, enable Trust any certificate. Not https://&lt;host&gt;/api, which is the sandbox API itself. | False |
+| Authentication mode | tLab account \(tlab-auth\) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway \(balancer\) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when Cortex XSOAR runs on the tlab-server host itself. | True |
 | Credentials | Login and password of a tLab account \(tLab account mode\). This integration only reads. See the detailed instructions for the role the account needs. Turn off password expiry for this account: tlab-auth rejects an expired password and every command starts failing. | True |
-| Password / source key / internal token |  | True |
-| Installation ID | Identifies this tLab installation inside every deduplication key. Required, and it must match INSTALLATION_UUID in the tLab XSOAR connector if that connector also runs against this tenant, otherwise the two halves will not recognise each other's incidents as duplicates. | True |
+| Password / source key / internal token | The password of the tLab account, or the source key or internal token, depending on the authentication mode. | True |
+| Use system proxy settings | Whether to use the Cortex XSOAR server's system proxy settings. | False |
+| Trust any certificate (not secure) | Whether to skip TLS certificate verification. Needed when the tLab certificate is self-signed. | False |
+| Fetch incidents | Do not enable this if the tLab Cortex XSOAR connector is running in PUSH mode against the same tenant: both halves create the same incidents, and you will get two of everything. | False |
+| Incident type | Incident type for fetched incidents when the classifier does not set one. The pack's classifier sets tLab Anti-APT Verdict. | False |
+| Incidents Fetch Interval | How often, in minutes, new verdicts are fetched. | False |
+| Installation ID | Identifies this tLab installation inside every deduplication key. Required, and it must match INSTALLATION_UUID in the tLab Cortex XSOAR connector if that connector also runs against this tenant, otherwise the two halves will not recognize each other's incidents as duplicates. | True |
 | Client name | Sent as the X-Client header. | False |
 | Verdicts to fetch | Only analyses ending in one of these verdicts become incidents. | False |
 | Maximum incidents per fetch | Upper bound on sample reports processed per run. With enrichment on, each report costs one extra API call. | False |
@@ -22,14 +25,11 @@ This integration was developed against the tLab Anti-APT API of sandbox-core 1.1
 | Enrich incidents | Adds threat indicators, MITRE ATT&amp;CK techniques and the antivirus flag. Costs one extra API call per report. With this off, those three fields are always empty. | False |
 | Root reports only | On by default. Dropped and embedded files get their own sample reports, so turning this off turns one archive into a dozen incidents for a single delivery. | False |
 | Include partially complete analyses | Off by default. A partial verdict can still change, and an incident whose severity drops after the analyst triaged it is worse than a late one. | False |
-| Incident name template | Placeholders: \{verdict\}, \{filename\}, \{sha256\}, \{score\}, \{report_id\}, \{source_type\}. Must match INCIDENT_NAME_TEMPLATE in the tLab XSOAR connector if both halves run against this tenant. | False |
-| Severity map | Comma-separated VERDICT:severity pairs. Valid severities are 0, 0.5, 1, 2, 3 and 4 \(Unknown, Informational, Low, Medium, High, Critical\). Must match SEVERITY_MAP in the tLab XSOAR connector if both halves run against this tenant. | False |
+| Incident name template | Placeholders: \{verdict\}, \{filename\}, \{sha256\}, \{score\}, \{report_id\}, \{source_type\}. Must match INCIDENT_NAME_TEMPLATE in the tLab Cortex XSOAR connector if both halves run against this tenant. | False |
+| Severity map | Comma-separated VERDICT:severity pairs. Valid severities are 0, 0.5, 1, 2, 3 and 4 \(Unknown, Informational, Low, Medium, High, Critical\). Must match SEVERITY_MAP in the tLab Cortex XSOAR connector if both halves run against this tenant. | False |
 | Critical score threshold | A MALWARE verdict at or above this score is raised to Critical. Set to 0 to disable. | False |
-| Suspicious score threshold |  | False |
-| Malicious score threshold |  | False |
-| Incidents Fetch Interval |  | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+| Suspicious score threshold | Scores from this value up to the malicious threshold are Suspicious. Fractional values are allowed. Default is 50, the product default. | False |
+| Malicious score threshold | Scores at or above this value are Malicious. Fractional values are allowed. Default is 85, the product default. | False |
 
 ## Commands
 
@@ -187,3 +187,9 @@ Reset the fetch cursor. Without an argument the next fetch starts from the confi
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+```!tlab-verdicts-reset-cursor from_report_id=412839```
+#### Human Readable Output
+
+>Fetch cursor set to sample report 412839; the next fetch starts there. A First sample report id above it still takes precedence.

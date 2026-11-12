@@ -34,10 +34,10 @@ submissions only, so report and artifact commands do not work with it.
 **Username and password** — the legacy tlab-server sign-in (`/auth/sign_in`
 on the sandbox itself). Use it only with servers that still provide it.
 
-**Internal token (localhost only)** — works **only** when XSOAR runs on the
+**Internal token (localhost only)** — works **only** when Cortex XSOAR runs on the
 tlab-server host. The server checks the caller's address against
 `tokenAuth.allowedRemoteAddresses`, which defaults to `127.0.0.1`, so a remote
-XSOAR always receives 401 in this mode.
+Cortex XSOAR always receives 401 in this mode.
 
 ### Role requirements
 
@@ -46,9 +46,3 @@ needs no credentials at all. Retrieving artifacts — PCAP, memory dumps, droppe
 files, extra logs — requires the `admin` or `developer` role in tLab. Press Test
 after configuring: the result names the role that was detected and warns when
 artifacts will not be reachable.
-
-### Analysis types
-
-The server modifies the requested analysis set: `AV_ANALYSIS` is always added,
-and `DYN_ANALYSIS` is removed on a LITE license or with the `mailer` preset. When
-that happens, command output lists the difference under `RequestedButNotRun`.

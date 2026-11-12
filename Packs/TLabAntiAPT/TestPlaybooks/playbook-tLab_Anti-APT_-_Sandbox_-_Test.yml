@@ -129,7 +129,7 @@ tasks:
     type: regular
     task:
       name: List submission sources
-      description: Confirms the source registry is readable, which is where the XSOAR source key lives.
+      description: Confirms the source registry is readable, which is where the Cortex XSOAR source key lives.
       script: TLabAntiAPTSandbox|||tlab-list-sources
       type: regular
       iscommand: true

@@ -76,6 +76,38 @@ ACTIONABLE_VERDICTS = {
 DEFAULT_SUSPICIOUS_FROM = 50.0
 DEFAULT_MALICIOUS_FROM = 85.0
 
+# Default of the "Late completion lookback (hours)" parameter in the yml files.
+DEFAULT_LOOKBACK_HOURS = 24
+
+
+def score_thresholds(params: dict) -> tuple[float, float]:
+    """Read the suspicious and malicious score thresholds from the instance.
+
+    Scores are fractional, so these are parsed as floats: arg_to_number would
+    turn 72.5 into 72. An empty value falls back to the server's default.
+    """
+
+    def read(key: str, default: float) -> float:
+        raw = params.get(key)
+        if raw is None or str(raw).strip() == "":
+            return default
+        try:
+            return float(raw)
+        except (TypeError, ValueError):
+            raise DemistoException(f"Invalid value for {key}: '{raw}' is not a number.") from None
+
+    return (
+        read("score_threshold_suspicious", DEFAULT_SUSPICIOUS_FROM),
+        read("score_threshold_malicious", DEFAULT_MALICIOUS_FROM),
+    )
+
+
+def lookback_hours(params: dict) -> int:
+    """Read the late completion lookback. Unset means the yml default; 0 disables it."""
+    value = arg_to_number(params.get("maturation_lookback_hours"), arg_name="maturation_lookback_hours")
+    return DEFAULT_LOOKBACK_HOURS if value is None else max(value, 0)
+
+
 COMPLETENESS_EMPTY = "EMPTY"
 COMPLETENESS_PARTIAL = "PARTIALLY_COMPLETE"
 COMPLETENESS_COMPLETE = "COMPLETE"
@@ -1296,7 +1328,7 @@ def severity_for(verdict: str, score: float, present: bool, severity_map: dict, 
     return severity
 
 
-def parse_severity_map(raw) -> dict:
+def parse_severity_map(raw: str | list | None) -> dict:
     """Parses "MALWARE:3,SUSPICIOUS:2" the way the Go connector's env var does."""
     items = argToList(raw)
     if not items:
@@ -1317,7 +1349,7 @@ def parse_severity_map(raw) -> dict:
     return parsed
 
 
-def as_float(value) -> float | None:
+def as_float(value: Any) -> float | None:
     """arg_to_number rejects non-integers, and sandbox scores are fractional."""
     if value in (None, ""):
         return None
@@ -1340,8 +1372,7 @@ def contract_payload(report: dict, params: dict, enrichment: dict | None = None)
     nullable types allow and what keeps the two halves byte-comparable.
     """
     report_id = arg_to_number(report.get("sampleReportId")) or 0
-    suspicious_from = float(params.get("score_threshold_suspicious") or DEFAULT_SUSPICIOUS_FROM)
-    malicious_from = float(params.get("score_threshold_malicious") or DEFAULT_MALICIOUS_FROM)
+    suspicious_from, malicious_from = score_thresholds(params)
     verdict = canonical_verdict(report, suspicious_from=suspicious_from, malicious_from=malicious_from)
     score, present = score_value(report)
     file_dto = report.get("file") or {}
@@ -1577,7 +1608,7 @@ def collect_reports(client: TLabClient, params: dict, last_run: dict, preview: b
     cursor = arg_to_number(last_run.get("report_cursor"))
     cursor = floor if cursor is None else max(cursor, floor)
     page_size = arg_to_number(params.get("max_fetch")) or 50
-    lookback = arg_to_number(params.get("maturation_lookback_hours")) or 0
+    lookback = lookback_hours(params)
 
     reports: dict[int, dict] = {}
     for report in discovery_page(client, cursor, page_size, params).get("content") or []:
@@ -1614,8 +1645,8 @@ def build_incidents(client: TLabClient, params: dict, reports: list, seen: dict)
             continue
         payload_verdict = canonical_verdict(
             report,
-            suspicious_from=float(params.get("score_threshold_suspicious") or DEFAULT_SUSPICIOUS_FROM),
-            malicious_from=float(params.get("score_threshold_malicious") or DEFAULT_MALICIOUS_FROM),
+            suspicious_from=score_thresholds(params)[0],
+            malicious_from=score_thresholds(params)[1],
         )
         if payload_verdict not in verdicts:
             continue
@@ -1625,7 +1656,7 @@ def build_incidents(client: TLabClient, params: dict, reports: list, seen: dict)
             try:
                 enrichment = enrich(client, report_id)
             except Exception as exc:  # noqa: BLE001 - one bad report must not sink the fetch
-                demisto.debug(f"enrichment failed for report {report_id}: {exc}")
+                demisto.debug(f"[Fetch] Enrichment failed for report {report_id}: {exc}")
 
         incidents.append(build_incident(report, params, severity_map, enrichment))
         seen[key] = now
@@ -1640,13 +1671,14 @@ CURSOR_OVERRIDE_KEY = "cursor_override"
 
 def fetch_incidents_command(client: TLabClient, params: dict) -> None:
     last_run = demisto.getLastRun() or {}
+    demisto.debug(f"[Fetch] Starting fetch cycle with report_cursor={last_run.get('report_cursor')}")
     override = (demisto.getIntegrationContext() or {}).get(CURSOR_OVERRIDE_KEY)
     if isinstance(override, dict):
         last_run = {key: value for key, value in last_run.items() if key != "report_cursor"}
         if override.get("report_cursor") is not None:
             last_run["report_cursor"] = override["report_cursor"]
     seen = dict(last_run.get("seen") or {})
-    lookback = arg_to_number(params.get("maturation_lookback_hours")) or 0
+    lookback = lookback_hours(params)
 
     reports, cursor = collect_reports(client, params, last_run)
     incidents = build_incidents(client, params, reports, seen)
@@ -1663,7 +1695,7 @@ def fetch_incidents_command(client: TLabClient, params: dict) -> None:
     )
     if override is not None:
         merge_integration_context(**{CURSOR_OVERRIDE_KEY: None})
-    demisto.debug(f"tLab verdicts: {len(incidents)} incidents from {len(reports)} reports, cursor now {cursor}")
+    demisto.info(f"[Fetch] Completed fetch cycle: {len(incidents)} incidents from {len(reports)} reports, cursor now {cursor}")
 
 
 # --------------------------------------------------------------------------

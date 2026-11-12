@@ -7,17 +7,19 @@ This integration was developed against the tLab Anti-APT API of sandbox-core 1.1
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | Base URL of the tLab Anti-APT sandbox API \(tlab-server\). Through the tLab web server use https://&lt;tlab-host&gt;/api; for a direct connection use http://&lt;tlab-host&gt;:8080. | True |
-| Auth server URL \(tlab-auth\) | Used by the tLab account mode. Where the integration logs in to tlab-auth. Leave empty to use https://&lt;Server URL host&gt;:8002/api, the omni-center portal, which forwards /api to tlab-auth over TLS; if its certificate is self-signed, enable Trust any certificate. Not https://&lt;host&gt;/api, which is the sandbox API itself. | False |
-| Authentication mode | tLab account \(tlab-auth\) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway \(balancer\) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when XSOAR runs on the tlab-server host itself. | True |
+| Auth server URL (tlab-auth) | Used by the tLab account mode. Where the integration logs in to tlab-auth. Leave empty to use https://&lt;Server URL host&gt;:8002/api, the omni-center portal, which forwards /api to tlab-auth over TLS; if its certificate is self-signed, enable Trust any certificate. Not https://&lt;host&gt;/api, which is the sandbox API itself. | False |
+| Authentication mode | tLab account \(tlab-auth\) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway \(balancer\) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when Cortex XSOAR runs on the tlab-server host itself. | True |
 | Credentials | Login and password of a tLab account \(tLab account mode\). Retrieving artifacts needs the admin or developer role. Turn off password expiry for this account: tlab-auth rejects an expired password and every command starts failing. Other modes use only the password field: source key or internal token. | True |
-| Password / source key / internal token |  | True |
+| Password / source key / internal token | The password of the tLab account, or the source key or internal token, depending on the authentication mode. | True |
+| Use system proxy settings | Whether to use the Cortex XSOAR server's system proxy settings. | False |
+| Trust any certificate (not secure) | Whether to skip TLS certificate verification. Needed when the tLab certificate is self-signed. | False |
 | Client name | Sent as the X-Client header and stored on every submission as the analysis property "client". | False |
-| Source UID | Identifies this XSOAR on the tLab side, at most 45 characters. Defaults to the first 45 characters of the XSOAR license ID (Settings > About). Set it to tell apart several instances of this integration on one XSOAR. | False |
+| Source UID | Identifies this Cortex XSOAR instance on the tLab side, at most 45 characters. Defaults to the first 45 characters of the Cortex XSOAR license ID \(Settings &gt; About\). Set it to tell apart several instances of this integration on one Cortex XSOAR instance. | False |
 | Analysis types | AV_ANALYSIS is always added by the server. DYN_ANALYSIS is removed on a LITE license or with the mailer preset - check RequestedButNotRun in the command output. | False |
-| Analysis priority |  | False |
+| Analysis priority | Queue priority of submissions from this instance. A command's analysis_priority argument overrides it. | False |
 | Environment preset | Leave empty to let the server pick an environment by file type. Maximum 50 characters. | False |
 | Dynamic analysis time (seconds) | Maximum 3600 seconds, enforced by the server. | False |
-| Enable network during dynamic analysis |  | False |
+| Enable network during dynamic analysis | Whether the sample may reach the network during dynamic analysis. Off by default; a command's enable_network argument overrides it. The pack's detonation playbooks turn it on. | False |
 | Accept an early verdict | Finalize once static and antivirus analysis complete, without waiting for dynamic analysis. | False |
 | Suspicious score threshold | Mirrors the product default. Scores from this value up to the malicious threshold are Suspicious. | False |
 | Malicious score threshold | Mirrors the product default \(analysisService.minMaliciousScore\). | False |
@@ -25,8 +27,12 @@ This integration was developed against the tLab Anti-APT API of sandbox-core 1.1
 | Maximum artifact size (MB) | Downloads larger than this are aborted rather than buffered. | False |
 | PDF render timeout (seconds) | The PDF endpoint renders synchronously and has no status endpoint, so a large report can take a while. | False |
 | tLab web UI base URL | Used only to build human-readable report links in command output. | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+
+## Analysis types
+
+The server modifies the requested analysis set: `AV_ANALYSIS` is always added,
+and `DYN_ANALYSIS` is removed on a LITE license or with the `mailer` preset. When
+that happens, command output lists the difference under `RequestedButNotRun`.
 
 ## Commands
 
@@ -53,10 +59,10 @@ Submit a war room file to tLab Anti-APT and return immediately with an access co
 | analysis_priority | Queue priority. Possible values are: LOWEST, LOW, MEDIUM, HIGH, HIGHEST. | Optional | 
 | research_time | Dynamic analysis time in seconds. Maximum 3600. | Optional | 
 | env_preset | Environment preset name. Maximum 50 characters. | Optional | 
-| enable_network | Allow network access during dynamic analysis. Possible values are: true, false. | Optional | 
+| enable_network | Whether to allow network access during dynamic analysis. Possible values are: true, false. | Optional | 
 | archive_password | Password for a protected archive. | Optional | 
-| extract_archive | Extract archives before analysis. Possible values are: true, false. | Optional | 
-| ignore_whitelist | Analyze the sample even if it is whitelisted. Possible values are: true, false. | Optional | 
+| extract_archive | Whether to extract archives before analysis. Possible values are: true, false. | Optional | 
+| ignore_whitelist | Whether to analyze the sample even if it is whitelisted. Possible values are: true, false. | Optional | 
 | tags | Comma-separated tags to attach to the analysis. Each tag must be 2-150 characters. | Optional | 
 | properties | JSON object of extra provenance properties stored with the analysis. | Optional | 
 | main_filename | Name of the main file inside an archive submission. | Optional | 
@@ -111,7 +117,7 @@ Submit a URL to tLab Anti-APT and return immediately with an access code.
 | analysis_types | Override the configured analysis types. Possible values are: STAT_ANALYSIS, DYN_ANALYSIS, CODE_ANALYSIS, AV_ANALYSIS. | Optional | 
 | research_time | Dynamic analysis time in seconds. Maximum 3600. | Optional | 
 | env_preset | Environment preset name. | Optional | 
-| enable_network | Allow network access during dynamic analysis. Possible values are: true, false. | Optional | 
+| enable_network | Whether to allow network access during dynamic analysis. Possible values are: true, false. | Optional | 
 | tags | Comma-separated tags to attach to the analysis. | Optional | 
 | properties | JSON object of extra provenance properties. | Optional | 
 
@@ -121,6 +127,27 @@ Submit a URL to tLab Anti-APT and return immediately with an access code.
 | --- | --- | --- |
 | TLabAntiAPT.Submission.AccessCode | String | Access code used to poll this submission. | 
 | TLabAntiAPT.Submission.AnalysisRequestStatus | String | Request status returned by the server. | 
+
+#### Command example
+```!tlab-submit-url url=https://example.com/payload```
+#### Context Example
+```json
+{
+    "TLabAntiAPT.Submission(val.AccessCode && val.AccessCode == obj.AccessCode)": {
+        "AnalysisRequestId": 1001,
+        "AnalysisRequestStatus": "ACCEPTED",
+        "AccessCode": "acc-123",
+        "Whitelisted": false,
+        "Submitted": "https://example.com/payload"
+    }
+}
+```
+#### Human Readable Output
+
+>### Submitted https://example.com/payload to tLab Anti-APT
+>|AccessCode|AnalysisRequestId|AnalysisRequestStatus|Submitted|Whitelisted|
+>|---|---|---|---|---|
+>| acc-123 | 1001 | ACCEPTED | https://example.com/payload | false |
 
 ### tlab-get-submission-status
 
@@ -136,8 +163,8 @@ Poll a submission until tLab Anti-APT reaches a terminal verdict.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | access_code | Access code returned by a submit command. | Required | 
-| early_verdict | Finalize once static and antivirus analysis complete, without waiting for dynamic analysis. Possible values are: true, false. | Optional | 
-| extended | Also fetch the full report so sub-report IDs are available. The public status endpoint does not carry them. Possible values are: true, false. | Optional | 
+| early_verdict | Whether to finalize once static and antivirus analysis complete, without waiting for dynamic analysis. Possible values are: true, false. | Optional | 
+| extended | Whether to also fetch the full report so sub-report IDs are available. The public status endpoint does not carry them. Possible values are: true, false. | Optional | 
 | interval_in_seconds | Seconds between polls. Default is 30. | Optional | 
 | timeout_in_seconds | Total seconds to keep polling. Default is 1800. | Optional | 
 
@@ -278,10 +305,10 @@ Submit a war room file and wait for the tLab Anti-APT verdict.
 | file_name | Override the file name sent to the sandbox. | Optional | 
 | research_time | Dynamic analysis time in seconds. Maximum 3600. | Optional | 
 | env_preset | Environment preset name. | Optional | 
-| enable_network | Allow network access during dynamic analysis. Possible values are: true, false. | Optional | 
+| enable_network | Whether to allow network access during dynamic analysis. Possible values are: true, false. | Optional | 
 | archive_password | Password for a protected archive. | Optional | 
-| early_verdict | Finalize once static and antivirus analysis complete. Possible values are: true, false. | Optional | 
-| extended | Also fetch the full report so sub-report IDs are available. Possible values are: true, false. | Optional | 
+| early_verdict | Whether to finalize once static and antivirus analysis complete, without waiting for dynamic analysis. Possible values are: true, false. | Optional | 
+| extended | Whether to also fetch the full report so sub-report IDs are available. Possible values are: true, false. | Optional | 
 | tags | Comma-separated tags to attach to the analysis. | Optional | 
 | interval_in_seconds | Seconds between polls. Default is 30. | Optional | 
 | timeout_in_seconds | Total seconds to keep polling. Default is 1800. | Optional | 
@@ -422,9 +449,9 @@ Submit a URL and wait for the tLab Anti-APT verdict.
 | url | URL to detonate. | Required | 
 | research_time | Dynamic analysis time in seconds. Maximum 3600. | Optional | 
 | env_preset | Environment preset name. | Optional | 
-| enable_network | Allow network access during dynamic analysis. Possible values are: true, false. | Optional | 
-| early_verdict | Finalize once static and antivirus analysis complete. Possible values are: true, false. | Optional | 
-| extended | Also fetch the full report so sub-report IDs are available. Possible values are: true, false. | Optional | 
+| enable_network | Whether to allow network access during dynamic analysis. Possible values are: true, false. | Optional | 
+| early_verdict | Whether to finalize once static and antivirus analysis complete, without waiting for dynamic analysis. Possible values are: true, false. | Optional | 
+| extended | Whether to also fetch the full report so sub-report IDs are available. Possible values are: true, false. | Optional | 
 | interval_in_seconds | Seconds between polls. Default is 30. | Optional | 
 | timeout_in_seconds | Total seconds to keep polling. Default is 1800. | Optional | 
 
@@ -827,6 +854,21 @@ Retrieve the network capture of a dynamic analysis, either as a PCAP file or as 
 | InfoFile.Name | String | Name of the returned file. | 
 | InfoFile.EntryID | String | War room entry ID of the returned file. | 
 
+#### Command example
+```!tlab-get-pcap dyn_report_id=777```
+#### Context Example
+```json
+{
+    "InfoFile": {
+        "Name": "tlab_777.pcap",
+        "EntryID": "2@a1b2c3"
+    }
+}
+```
+#### Human Readable Output
+
+>Uploaded file: tlab_777.pcap
+
 ### tlab-get-report-pdf
 
 ***
@@ -849,6 +891,21 @@ Render and download the PDF report for a sample.
 | --- | --- | --- |
 | InfoFile.Name | String | Name of the returned PDF. | 
 | InfoFile.EntryID | String | War room entry ID of the returned PDF. | 
+
+#### Command example
+```!tlab-get-report-pdf sample_report_id=412839```
+#### Context Example
+```json
+{
+    "InfoFile": {
+        "Name": "tlab_report_412839.pdf",
+        "EntryID": "2@a1b2c3"
+    }
+}
+```
+#### Human Readable Output
+
+>Uploaded file: tlab_report_412839.pdf
 
 ### tlab-list-env-presets
 

@@ -150,16 +150,14 @@ def test_extract_from_threat_indicators(params):
     found, signatures, filenames = feed.extract_from_threat_indicators(load("threat_indicators"), params, "SUSPICIOUS", NETS)
     by_value = {i["value"]: i for i in found}
 
-    assert "evil.example.com" in by_value
-    assert "203.0.113.5" in by_value
-    assert "https://evil.example.com/gate.php" in by_value
+    assert {"evil.example.com", "203.0.113.5", "https://evil.example.com/gate.php"} <= by_value.keys()
     assert by_value["HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"]["type"] == FeedIndicatorType.Registry
 
     # Excluded by type, level or address space.
     assert "192.168.56.101" not in by_value  # private
     assert "svchost.exe" not in by_value  # PROCESS
     assert "kernel32.dll" not in by_value  # not a domain
-    assert "benign.example.org" not in by_value  # INFO, below the threshold
+    assert by_value.get("benign.example.org") is None  # INFO, below the threshold
 
     assert signatures == ["Trojan.Win32.Emotet.abc"]
     assert filenames == []  # include_filenames is off
@@ -173,13 +171,13 @@ def test_file_names_only_collected_when_enabled(params):
 
 def test_info_level_included_when_threshold_lowered(params):
     found, _, _ = feed.extract_from_threat_indicators(load("threat_indicators"), params, "INFO", NETS)
-    assert "benign.example.org" in {i["value"] for i in found}
+    assert {"benign.example.org"} <= {i["value"] for i in found}
 
 
 def test_malicious_only_threshold(params):
     found, _, _ = feed.extract_from_threat_indicators(load("threat_indicators"), params, "MALICIOUS", NETS)
     values = {i["value"] for i in found}
-    assert "evil.example.com" in values
+    assert {"evil.example.com"} <= values
     assert "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" not in values  # SUSPICIOUS
 
 
@@ -278,8 +276,7 @@ def test_fetch_indicators_collects_and_advances(client, params, requests_mock):
     _wire(requests_mock)
     indicators, cursor = feed.fetch_indicators(client, params)
     values = {i["value"] for i in indicators}
-    assert SHA256 in values
-    assert "evil.example.com" in values
+    assert {SHA256, "evil.example.com"} <= values
     assert cursor == 412841
 
 

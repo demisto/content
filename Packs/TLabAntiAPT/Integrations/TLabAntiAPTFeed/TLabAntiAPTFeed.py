@@ -76,6 +76,38 @@ ACTIONABLE_VERDICTS = {
 DEFAULT_SUSPICIOUS_FROM = 50.0
 DEFAULT_MALICIOUS_FROM = 85.0
 
+# Default of the "Late completion lookback (hours)" parameter in the yml files.
+DEFAULT_LOOKBACK_HOURS = 24
+
+
+def score_thresholds(params: dict) -> tuple[float, float]:
+    """Read the suspicious and malicious score thresholds from the instance.
+
+    Scores are fractional, so these are parsed as floats: arg_to_number would
+    turn 72.5 into 72. An empty value falls back to the server's default.
+    """
+
+    def read(key: str, default: float) -> float:
+        raw = params.get(key)
+        if raw is None or str(raw).strip() == "":
+            return default
+        try:
+            return float(raw)
+        except (TypeError, ValueError):
+            raise DemistoException(f"Invalid value for {key}: '{raw}' is not a number.") from None
+
+    return (
+        read("score_threshold_suspicious", DEFAULT_SUSPICIOUS_FROM),
+        read("score_threshold_malicious", DEFAULT_MALICIOUS_FROM),
+    )
+
+
+def lookback_hours(params: dict) -> int:
+    """Read the late completion lookback. Unset means the yml default; 0 disables it."""
+    value = arg_to_number(params.get("maturation_lookback_hours"), arg_name="maturation_lookback_hours")
+    return DEFAULT_LOOKBACK_HOURS if value is None else max(value, 0)
+
+
 COMPLETENESS_EMPTY = "EMPTY"
 COMPLETENESS_PARTIAL = "PARTIALLY_COMPLETE"
 COMPLETENESS_COMPLETE = "COMPLETE"
@@ -1443,7 +1475,7 @@ def _ip_type(candidate: str, excluded_networks: list, allow_private: bool) -> st
     return FeedIndicatorType.IPv6 if address.version == 6 else FeedIndicatorType.IP
 
 
-def _is_excluded(address, excluded_networks: list) -> bool:
+def _is_excluded(address: ipaddress.IPv4Address | ipaddress.IPv6Address, excluded_networks: list) -> bool:
     for network in excluded_networks:
         try:
             if address in ipaddress.ip_network(network, strict=False):
@@ -1478,7 +1510,7 @@ def sample_file_indicator(report: dict, params: dict, report_url: str = "") -> d
     sha256 = file_dto.get("hashSha256")
     if not sha256:
         return None
-    suspicious_from, malicious_from = _thresholds(params)
+    suspicious_from, malicious_from = score_thresholds(params)
     verdict = canonical_verdict(report, suspicious_from=suspicious_from, malicious_from=malicious_from)
     score, present = score_value(report)
 
@@ -1652,13 +1684,6 @@ def supports_relationships() -> bool:
         return False
 
 
-def _thresholds(params: dict) -> tuple[float, float]:
-    return (
-        float(params.get("score_threshold_suspicious") or DEFAULT_SUSPICIOUS_FROM),
-        float(params.get("score_threshold_malicious") or DEFAULT_MALICIOUS_FROM),
-    )
-
-
 _LEVEL_ORDER = ["INFO", "SUSPICIOUS", "MALICIOUS"]
 
 
@@ -1770,13 +1795,13 @@ def collect_from_report(client: TLabClient, report: dict, params: dict, excluded
         if sample and (signatures or filenames):
             _annotate_sample(sample, signatures, filenames)
     except Exception as exc:  # noqa: BLE001 - one bad report must not sink the fetch
-        demisto.debug(f"threat_indicators failed for report {report_id}: {exc}")
+        demisto.debug(f"[Fetch] Threat indicators failed for report {report_id}: {exc}")
 
     if param_bool(params, "fetch_attack_patterns"):
         try:
             observables.extend(extract_attack_patterns(client.get_attack_matrix(report_id)))
         except Exception as exc:  # noqa: BLE001
-            demisto.debug(f"attack_matrix failed for report {report_id}: {exc}")
+            demisto.debug(f"[Fetch] Attack matrix failed for report {report_id}: {exc}")
 
     build_relationships(
         (report.get("file") or {}).get("hashSha256") or "",
@@ -1835,7 +1860,7 @@ def fetch_indicators(client: TLabClient, params: dict, preview: bool = False) ->
             reports[report_id] = report
     advanced = next_cursor(list(reports.values()), cursor)
 
-    lookback = arg_to_number(params.get("maturation_lookback_hours")) or 0
+    lookback = lookback_hours(params)
     if lookback and not preview:
         for report in maturation_page(client, lookback, page_size, params).get("content") or []:
             report_id = arg_to_number(report.get("sampleReportId"))
@@ -1868,13 +1893,15 @@ def _merge(existing: dict, incoming: dict) -> None:
 
 
 def fetch_indicators_command(client: TLabClient, params: dict) -> None:
+    previous = (demisto.getIntegrationContext() or {}).get("report_cursor")
+    demisto.debug(f"[Fetch] Starting fetch cycle with report_cursor={previous}")
     indicators, cursor = fetch_indicators(client, params)
     for start in range(0, len(indicators), BATCH_SIZE):
         demisto.createIndicators(indicators[start : start + BATCH_SIZE])
     # Only after the batches are accepted, so a failure mid-way re-fetches
     # instead of silently skipping the window.
     merge_integration_context(report_cursor=cursor)
-    demisto.debug(f"tLab feed: created {len(indicators)} indicators, cursor now {cursor}")
+    demisto.info(f"[Fetch] Completed fetch cycle: {len(indicators)} indicators, cursor now {cursor}")
 
 
 def get_indicators_command(client: TLabClient, args: dict, params: dict) -> CommandResults:

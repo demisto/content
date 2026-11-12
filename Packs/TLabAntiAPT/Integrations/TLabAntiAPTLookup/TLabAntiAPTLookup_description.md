@@ -24,12 +24,4 @@ A hash tLab Anti-APT has never analyzed returns DBot score 0 (Unknown), not 1
 (Good). "We have no record of this file" is a different statement from "this
 file is benign", and a Good score would suppress other vendors' findings on the
 same indicator. Set **Treat an unknown verdict as benign** only if your playbooks
-depend on the opposite behaviour.
-
-### Search filters and roles
-
-`tlab-search-reports` accepts filters that the server applies only for accounts
-with the `admin` or `developer` role: verdict, score level, source, root-only,
-minimum report ID, minimum score and file name. With a lower role these are
-discarded without an error, so a narrow query silently returns everything. The
-command adds a warning to its output whenever one of them is used.
+depend on the opposite behavior.

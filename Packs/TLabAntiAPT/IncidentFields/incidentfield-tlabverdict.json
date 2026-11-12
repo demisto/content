@@ -4,7 +4,7 @@
     "modified": "2026-09-30T00:00:00Z",
     "name": "tLab Verdict",
     "ownerOnly": false,
-    "description": "Canonical verdict. Merges the server's two enums: ScoreLevel MALICIOUS normalises to MALWARE, and CLEAN (score 0) stays distinct from OK (0 < score < 50).",
+    "description": "Canonical verdict. Merges the server's two enums: ScoreLevel MALICIOUS normalizes to MALWARE, and CLEAN (score 0) stays distinct from OK (0 < score < 50).",
     "cliName": "tlabverdict",
     "type": "singleSelect",
     "closeForm": false,

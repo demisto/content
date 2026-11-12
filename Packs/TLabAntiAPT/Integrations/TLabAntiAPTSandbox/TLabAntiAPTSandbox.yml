@@ -1,9 +1,9 @@
+name: TLabAntiAPTSandbox
+display: tLab Anti-APT Sandbox
 category: Forensics & Malware Analysis
 commonfields:
   id: TLabAntiAPTSandbox
   version: -1
-name: TLabAntiAPTSandbox
-display: tLab Anti-APT Sandbox
 description: Detonate files and URLs in the tLab Anti-APT malware sandbox and retrieve verdicts, reports and artifacts.
 fromversion: 6.0.0
 configuration:
@@ -20,7 +20,7 @@ configuration:
   required: false
 - name: auth_mode
   display: Authentication mode
-  additionalinfo: 'tLab account (tlab-auth) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway (balancer) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when XSOAR runs on the tlab-server host itself.'
+  additionalinfo: 'tLab account (tlab-auth) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway (balancer) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when Cortex XSOAR runs on the tlab-server host itself.'
   defaultvalue: tLab account (tlab-auth)
   type: 15
   required: true
@@ -35,6 +35,16 @@ configuration:
   additionalinfo: 'Login and password of a tLab account (tLab account mode). Retrieving artifacts needs the admin or developer role. Turn off password expiry for this account: tlab-auth rejects an expired password and every command starts failing. Other modes use only the password field: source key or internal token.'
   type: 9
   required: true
+- name: proxy
+  display: Use system proxy settings
+  additionalinfo: Whether to use the Cortex XSOAR server's system proxy settings.
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  additionalinfo: Whether to skip TLS certificate verification. Needed when the tLab certificate is self-signed.
+  type: 8
+  required: false
 - name: client_name
   display: Client name
   additionalinfo: Sent as the X-Client header and stored on every submission as the analysis property "client".
@@ -43,7 +53,7 @@ configuration:
   required: false
 - name: source_uid
   display: Source UID
-  additionalinfo: Identifies this XSOAR on the tLab side, at most 45 characters. Defaults to the first 45 characters of the XSOAR license ID (Settings > About). Set it to tell apart several instances of this integration on one XSOAR.
+  additionalinfo: Identifies this Cortex XSOAR instance on the tLab side, at most 45 characters. Defaults to the first 45 characters of the Cortex XSOAR license ID (Settings > About). Set it to tell apart several instances of this integration on one Cortex XSOAR instance.
   type: 0
   required: false
 - name: analysis_types
@@ -59,6 +69,7 @@ configuration:
   - AV_ANALYSIS
 - name: analysis_priority
   display: Analysis priority
+  additionalinfo: Queue priority of submissions from this instance. A command's analysis_priority argument overrides it.
   defaultvalue: LOW
   type: 15
   required: false
@@ -76,6 +87,7 @@ configuration:
   required: false
 - name: enable_network
   display: Enable network during dynamic analysis
+  additionalinfo: Whether the sample may reach the network during dynamic analysis. Off by default; a command's enable_network argument overrides it. The pack's detonation playbooks turn it on.
   defaultvalue: 'false'
   type: 8
   required: false
@@ -128,14 +140,6 @@ configuration:
   additionalinfo: Used only to build human-readable report links in command output.
   type: 0
   required: false
-- name: insecure
-  display: Trust any certificate (not secure)
-  type: 8
-  required: false
-- name: proxy
-  display: Use system proxy settings
-  type: 8
-  required: false
 script:
   script: ''
   type: python
@@ -170,17 +174,17 @@ script:
     - name: env_preset
       description: Environment preset name. Maximum 50 characters.
     - name: enable_network
-      description: Allow network access during dynamic analysis.
+      description: Whether to allow network access during dynamic analysis.
       auto: PREDEFINED
       predefined: ['true', 'false']
     - name: archive_password
       description: Password for a protected archive.
     - name: extract_archive
-      description: Extract archives before analysis.
+      description: Whether to extract archives before analysis.
       auto: PREDEFINED
       predefined: ['true', 'false']
     - name: ignore_whitelist
-      description: Analyze the sample even if it is whitelisted.
+      description: Whether to analyze the sample even if it is whitelisted.
       auto: PREDEFINED
       predefined: ['true', 'false']
     - name: tags
@@ -227,7 +231,7 @@ script:
     - name: env_preset
       description: Environment preset name.
     - name: enable_network
-      description: Allow network access during dynamic analysis.
+      description: Whether to allow network access during dynamic analysis.
       auto: PREDEFINED
       predefined: ['true', 'false']
     - name: tags
@@ -250,11 +254,11 @@ script:
       description: Access code returned by a submit command.
       required: true
     - name: early_verdict
-      description: Finalize once static and antivirus analysis complete, without waiting for dynamic analysis.
+      description: Whether to finalize once static and antivirus analysis complete, without waiting for dynamic analysis.
       auto: PREDEFINED
       predefined: ['true', 'false']
     - name: extended
-      description: Also fetch the full report so sub-report IDs are available. The public status endpoint does not carry them.
+      description: Whether to also fetch the full report so sub-report IDs are available. The public status endpoint does not carry them.
       auto: PREDEFINED
       predefined: ['true', 'false']
     - name: interval_in_seconds
@@ -264,7 +268,7 @@ script:
       description: Total seconds to keep polling.
       defaultValue: '1800'
     - name: polling
-      description: Internal argument used by the polling mechanism.
+      description: Whether the command is being called by the polling mechanism. For internal use.
       hidden: true
       auto: PREDEFINED
       predefined: ['true', 'false']
@@ -343,17 +347,17 @@ script:
     - name: env_preset
       description: Environment preset name.
     - name: enable_network
-      description: Allow network access during dynamic analysis.
+      description: Whether to allow network access during dynamic analysis.
       auto: PREDEFINED
       predefined: ['true', 'false']
     - name: archive_password
       description: Password for a protected archive.
     - name: early_verdict
-      description: Finalize once static and antivirus analysis complete.
+      description: Whether to finalize once static and antivirus analysis complete, without waiting for dynamic analysis.
       auto: PREDEFINED
       predefined: ['true', 'false']
     - name: extended
-      description: Also fetch the full report so sub-report IDs are available.
+      description: Whether to also fetch the full report so sub-report IDs are available.
       auto: PREDEFINED
       predefined: ['true', 'false']
     - name: tags
@@ -369,7 +373,7 @@ script:
       description: Internal argument carried across polling runs.
       hidden: true
     - name: polling
-      description: Internal argument used by the polling mechanism.
+      description: Whether the command is being called by the polling mechanism. For internal use.
       hidden: true
       auto: PREDEFINED
       predefined: ['true', 'false']
@@ -386,15 +390,15 @@ script:
     - name: env_preset
       description: Environment preset name.
     - name: enable_network
-      description: Allow network access during dynamic analysis.
+      description: Whether to allow network access during dynamic analysis.
       auto: PREDEFINED
       predefined: ['true', 'false']
     - name: early_verdict
-      description: Finalize once static and antivirus analysis complete.
+      description: Whether to finalize once static and antivirus analysis complete, without waiting for dynamic analysis.
       auto: PREDEFINED
       predefined: ['true', 'false']
     - name: extended
-      description: Also fetch the full report so sub-report IDs are available.
+      description: Whether to also fetch the full report so sub-report IDs are available.
       auto: PREDEFINED
       predefined: ['true', 'false']
     - name: interval_in_seconds
@@ -407,7 +411,7 @@ script:
       description: Internal argument carried across polling runs.
       hidden: true
     - name: polling
-      description: Internal argument used by the polling mechanism.
+      description: Whether the command is being called by the polling mechanism. For internal use.
       hidden: true
       auto: PREDEFINED
       predefined: ['true', 'false']

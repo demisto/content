@@ -69,6 +69,38 @@ ACTIONABLE_VERDICTS = {
 DEFAULT_SUSPICIOUS_FROM = 50.0
 DEFAULT_MALICIOUS_FROM = 85.0
 
+# Default of the "Late completion lookback (hours)" parameter in the yml files.
+DEFAULT_LOOKBACK_HOURS = 24
+
+
+def score_thresholds(params: dict) -> tuple[float, float]:
+    """Read the suspicious and malicious score thresholds from the instance.
+
+    Scores are fractional, so these are parsed as floats: arg_to_number would
+    turn 72.5 into 72. An empty value falls back to the server's default.
+    """
+
+    def read(key: str, default: float) -> float:
+        raw = params.get(key)
+        if raw is None or str(raw).strip() == "":
+            return default
+        try:
+            return float(raw)
+        except (TypeError, ValueError):
+            raise DemistoException(f"Invalid value for {key}: '{raw}' is not a number.") from None
+
+    return (
+        read("score_threshold_suspicious", DEFAULT_SUSPICIOUS_FROM),
+        read("score_threshold_malicious", DEFAULT_MALICIOUS_FROM),
+    )
+
+
+def lookback_hours(params: dict) -> int:
+    """Read the late completion lookback. Unset means the yml default; 0 disables it."""
+    value = arg_to_number(params.get("maturation_lookback_hours"), arg_name="maturation_lookback_hours")
+    return DEFAULT_LOOKBACK_HOURS if value is None else max(value, 0)
+
+
 COMPLETENESS_EMPTY = "EMPTY"
 COMPLETENESS_PARTIAL = "PARTIALLY_COMPLETE"
 COMPLETENESS_COMPLETE = "COMPLETE"
@@ -1231,13 +1263,6 @@ ROLE_SAFE_FILTERS = {
     "indicators",
 }
 ADMIN_ONLY_FILTERS = {"fileVerdict", "scoreLevel", "sourceId", "rootOnly", "minReportId", "minScore", "fileName"}
-
-
-def score_thresholds(params: dict) -> tuple[float, float]:
-    return (
-        float(params.get("score_threshold_suspicious") or DEFAULT_SUSPICIOUS_FROM),
-        float(params.get("score_threshold_malicious") or DEFAULT_MALICIOUS_FROM),
-    )
 
 
 def lookup_reports_by_hash(client: TLabClient, hash_value: str, hash_type: str, params: dict) -> list:

@@ -1,17 +1,12 @@
+name: TLabAntiAPTFeed
+display: tLab Anti-APT Feed
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: TLabAntiAPTFeed
   version: -1
-name: TLabAntiAPTFeed
-display: tLab Anti-APT Feed
 description: Turn observables seen during tLab Anti-APT sandbox analysis into Threat Intel Management indicators.
 fromversion: 6.0.0
 configuration:
-- name: feed
-  display: Fetch indicators
-  defaultvalue: 'true'
-  type: 8
-  required: false
 - name: url
   display: Server URL
   additionalinfo: Base URL of the tLab Anti-APT sandbox API (tlab-server). Through the tLab web server use https://<tlab-host>/api; for a direct connection use http://<tlab-host>:8080.
@@ -25,7 +20,7 @@ configuration:
   required: false
 - name: auth_mode
   display: Authentication mode
-  additionalinfo: 'tLab account (tlab-auth) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway (balancer) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when XSOAR runs on the tlab-server host itself.'
+  additionalinfo: 'tLab account (tlab-auth) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway (balancer) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when Cortex XSOAR runs on the tlab-server host itself.'
   defaultvalue: tLab account (tlab-auth)
   type: 15
   required: true
@@ -40,11 +35,21 @@ configuration:
   additionalinfo: 'Login and password of a tLab account (tLab account mode). This integration only reads, so a restricted account is sufficient. Turn off password expiry for this account: tlab-auth rejects an expired password and every command starts failing.'
   type: 9
   required: true
-- name: client_name
-  display: Client name
-  additionalinfo: Sent as the X-Client header.
-  defaultvalue: xsoar
-  type: 0
+- name: proxy
+  display: Use system proxy settings
+  additionalinfo: Whether to use the Cortex XSOAR server's system proxy settings.
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  additionalinfo: Whether to skip TLS certificate verification. Needed when the tLab certificate is self-signed.
+  type: 8
+  required: false
+- name: feed
+  display: Fetch indicators
+  additionalinfo: Whether to fetch indicators from tLab Anti-APT on the feed fetch interval.
+  defaultvalue: 'true'
+  type: 8
   required: false
 - name: feedReputation
   display: Indicator Reputation
@@ -68,18 +73,21 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
 - name: feedExpirationPolicy
-  display: ''
+  display: Indicator Expiration Method
+  additionalinfo: How fetched indicators expire. Indicator type uses the expiration set for each indicator type in Cortex XSOAR.
   defaultvalue: indicatorType
   type: 17
   required: false
   options: [never, interval, indicatorType, suddenDeath]
 - name: feedExpirationInterval
-  display: ''
+  display: Indicator Expiration Interval (minutes)
+  additionalinfo: Minutes until an indicator expires when the expiration method is Interval.
   defaultvalue: '20160'
   type: 1
   required: false
 - name: feedFetchInterval
   display: Feed Fetch Interval
+  additionalinfo: How often, in minutes, the feed fetches new indicators.
   defaultvalue: '60'
   type: 19
   required: false
@@ -105,6 +113,12 @@ configuration:
   defaultvalue: 'true'
   type: 8
   hidden: true
+  required: false
+- name: client_name
+  display: Client name
+  additionalinfo: Sent as the X-Client header.
+  defaultvalue: xsoar
+  type: 0
   required: false
 - name: min_indicator_level
   display: Minimum threat indicator level
@@ -144,7 +158,7 @@ configuration:
   required: false
 - name: create_relationships
   display: Create relationships
-  additionalinfo: Links each sample to the indicators observed with it. Requires XSOAR 6.2.0 or later; on older servers this is silently skipped.
+  additionalinfo: Links each sample to the indicators observed with it. Requires Cortex XSOAR 6.2.0 or later; on older servers this is silently skipped.
   defaultvalue: 'true'
   type: 8
   required: false
@@ -167,21 +181,15 @@ configuration:
   required: false
 - name: score_threshold_suspicious
   display: Suspicious score threshold
+  additionalinfo: Scores from this value up to the malicious threshold are Suspicious. Fractional values are allowed. Default is 50, the product default.
   defaultvalue: '50'
   type: 0
   required: false
 - name: score_threshold_malicious
   display: Malicious score threshold
+  additionalinfo: Scores at or above this value are Malicious. Fractional values are allowed. Default is 85, the product default.
   defaultvalue: '85'
   type: 0
-  required: false
-- name: insecure
-  display: Trust any certificate (not secure)
-  type: 8
-  required: false
-- name: proxy
-  display: Use system proxy settings
-  type: 8
   required: false
 script:
   script: ''
@@ -205,7 +213,7 @@ script:
       description: The indicator value.
       type: String
     - contextPath: TLabAntiAPT.Indicator.type
-      description: The XSOAR indicator type.
+      description: The Cortex XSOAR indicator type.
       type: String
     - contextPath: TLabAntiAPT.Indicator.score
       description: The DBot score assigned to the indicator.
