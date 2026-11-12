@@ -97,7 +97,7 @@ There is no context output for this command.
 ### duoadmin-get-users
 
 ***
-Return usernames and their user id
+Return usernames and their user IDs. Optionally filter by username or user ID to retrieve specific users (up to 100).
 
 #### Base Command
 
@@ -107,6 +107,8 @@ Return usernames and their user id
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| username_list | A comma-separated list of usernames of the users to retrieve (up to 100). Mutually exclusive with user_id_list. If neither username_list nor user_id_list is provided, all users are returned. | Optional |
+| user_id_list | A comma-separated list of Duo user IDs of the users to retrieve (up to 100). Mutually exclusive with username_list. If neither username_list nor user_id_list is provided, all users are returned. | Optional |
 
 #### Context Output
 

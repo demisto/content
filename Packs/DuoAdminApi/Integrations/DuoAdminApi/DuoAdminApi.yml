@@ -137,7 +137,7 @@ script:
       required: true
     description: Delete a u2f token.
     name: duoadmin-delete-u2f-token
-  - description: Return usernames and their user id.
+  - description: Return usernames and their user IDs. Optionally filter by username or user ID to retrieve specific users (up to 100).
     name: duoadmin-get-users
     outputs:
     - contextPath: DuoAdmin.UserDetails.username
@@ -163,7 +163,13 @@ script:
       type: string
     - contextPath: DuoAdmin.UserDetails.phones
       description: Phone numbers.
-    arguments: []
+    arguments:
+    - name: username_list
+      description: A comma-separated list of usernames of the users to retrieve (up to 100). Mutually exclusive with user_id_list. If neither username_list nor user_id_list is provided, all users are returned.
+      isArray: true
+    - name: user_id_list
+      description: A comma-separated list of Duo user IDs of the users to retrieve (up to 100). Mutually exclusive with username_list. If neither username_list nor user_id_list is provided, all users are returned.
+      isArray: true
   - arguments:
     - description: Username.
       name: username
@@ -337,7 +343,7 @@ script:
     name: duoadmin-modify-user
     compliantpolicies:
     - User Soft Remediation
-  dockerimage: demisto/vendors-sdk:1.0.0.11778894
+  dockerimage: demisto/vendors-sdk:1.0.0.14170433
   script: ''
   type: python
   subtype: python3
