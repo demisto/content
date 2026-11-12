@@ -1,0 +1,47 @@
+{
+    "name": "Panorays Axis MCP",
+    "description": "Integrate and Collaborate with Panorays via the Panorays Axis Model Context Protocol (MCP) server. The system automatically discovers the tools exposed by the server and generates corresponding agentic system actions for Cortex agents. Please note that to enable the tool discovery and functionality of Panorays Axis MCP, you'll need to contact your Panorays Admin to enable the product on Panorays' end due to it being a commercial product.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "serverMinVersion": "8.13.0",
+    "author": "Panorays",
+    "url": "https://panorays.com",
+    "email": "support@panorays.com",
+    "created": "2026-10-13T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence",
+        "Vulnerability Management",
+        "Analytics & SIEM",
+        "Case Management",
+        "Cloud Services",
+        "Cloud Security",
+        "Database",
+        "Deception & Breach Simulation",
+        "Endpoint",
+        "Forensics & Malware Analysis",
+        "IT Services",
+        "Identity and Access Management",
+        "Messaging and Conferencing",
+        "Network Security",
+        "Utilities",
+        "Authentication & Identity Management",
+        "Email",
+        "Cloud Service Provider",
+        "Code Repositories",
+        "CI/CD"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Panorays",
+        "MCP",
+        "TPRM",
+        "TPCRM",
+        "Third Party Intelligence",
+        "Axis",
+        "Supply Chain Security"
+    ],
+    "marketplaces": [
+        "platform"
+    ]
+}
