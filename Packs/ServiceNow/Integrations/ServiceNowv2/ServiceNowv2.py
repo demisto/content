@@ -2544,7 +2544,8 @@ def create_event_command(client: Client, args: dict) -> CommandResults:
             dt = arg_to_datetime(time_of_event_raw, arg_name="time_of_event")
         except ValueError:
             raise DemistoException(
-                f"Could not parse time_of_event '{time_of_event_raw}'. Expected a parseable date (ISO 8601, epoch, or YYYY-MM-DD HH:MM:SS)."
+                f"Could not parse time_of_event '{time_of_event_raw}'. "
+                "Expected a parseable date (ISO 8601, epoch, or YYYY-MM-DD HH:MM:SS)."
             )
         if dt is None:
             raise DemistoException(f"Could not parse time_of_event '{time_of_event_raw}'.")
@@ -2567,7 +2568,8 @@ def create_event_command(client: Client, args: dict) -> CommandResults:
             json.loads(additional_info_raw)  # validate it is well-formed JSON
         except json.JSONDecodeError as e:
             raise DemistoException(
-                f'Invalid additional_info: must be a valid JSON string, e.g. \'{{"key": "value"}}\'. Got: {additional_info_raw!r}. Error: {e}'
+                f"Invalid additional_info: must be a valid JSON string, "
+                f'e.g. \'{{"key": "value"}}\'. Got: {additional_info_raw!r}. Error: {e}'
             )
         event["additional_info"] = additional_info_raw
 
