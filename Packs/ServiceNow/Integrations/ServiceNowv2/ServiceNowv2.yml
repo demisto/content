@@ -2049,7 +2049,7 @@ script:
       description: Ticket close code.
       type: string
   - arguments:
-    - defaultvalue: Cortex
+    - defaultValue: Cortex
       description: The source of the event.
       name: source
       prettyname: Source
