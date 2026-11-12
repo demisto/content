@@ -48,7 +48,7 @@ SSH key authentication is supported for the following secret engines:
      "username": "your-username",
      "sshkey": "-----BEGIN OPENSSH PRIVATE KEY-----\n..."
    }
-4. Enable Fetches credentials to automatically sync credentials to XSOAR credential vault
+4. Enable **Fetches credentials** to automatically sync credentials to the Cortex XSOAR credential vault.
 
 ## Configure HashiCorp Vault in Cortex
 
