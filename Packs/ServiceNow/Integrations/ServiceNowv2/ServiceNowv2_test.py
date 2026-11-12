@@ -3107,7 +3107,12 @@ def test_generic_api_call_command(command, args, response, mocker):
 
 
 _REQUIRED_FIELDS = {"node": "web-server-01", "type": "CPU Utilization", "time_of_event": "2026-01-01 00:00:00"}
-_EXPECTED_REQUIRED = {"source": "Cortex", "node": "web-server-01", "type": "CPU Utilization", "time_of_event": "2026-01-01 00:00:00"}
+_EXPECTED_REQUIRED = {
+    "source": "Cortex",
+    "node": "web-server-01",
+    "type": "CPU Utilization",
+    "time_of_event": "2026-01-01 00:00:00",
+}
 
 
 @pytest.mark.parametrize(

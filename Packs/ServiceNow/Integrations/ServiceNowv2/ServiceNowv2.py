@@ -2543,7 +2543,9 @@ def create_event_command(client: Client, args: dict) -> CommandResults:
         try:
             dt = arg_to_datetime(time_of_event_raw, arg_name="time_of_event")
         except ValueError:
-            raise DemistoException(f"Could not parse time_of_event '{time_of_event_raw}'. Expected a parseable date (ISO 8601, epoch, or YYYY-MM-DD HH:MM:SS).")
+            raise DemistoException(
+                f"Could not parse time_of_event '{time_of_event_raw}'. Expected a parseable date (ISO 8601, epoch, or YYYY-MM-DD HH:MM:SS)."
+            )
         if dt is None:
             raise DemistoException(f"Could not parse time_of_event '{time_of_event_raw}'.")
         if dt.tzinfo:
@@ -2565,15 +2567,13 @@ def create_event_command(client: Client, args: dict) -> CommandResults:
             json.loads(additional_info_raw)  # validate it is well-formed JSON
         except json.JSONDecodeError as e:
             raise DemistoException(
-                f"Invalid additional_info: must be a valid JSON string, e.g. '{{\"key\": \"value\"}}'. Got: {additional_info_raw!r}. Error: {e}"
+                f'Invalid additional_info: must be a valid JSON string, e.g. \'{{"key": "value"}}\'. Got: {additional_info_raw!r}. Error: {e}'
             )
         event["additional_info"] = additional_info_raw
 
     if (severity := args.get("severity")) is not None:
         if (severity_int := EVENT_SEVERITY_MAP.get(str(severity).capitalize())) is None:
-            raise DemistoException(
-                f"Invalid severity '{severity}'. Use {list(EVENT_SEVERITY_MAP)}."
-            )
+            raise DemistoException(f"Invalid severity '{severity}'. Use {list(EVENT_SEVERITY_MAP)}.")
         event["severity"] = severity_int
 
     if (state := args.get("resolution_state")) is not None:
