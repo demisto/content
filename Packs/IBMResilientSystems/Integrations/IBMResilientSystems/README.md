@@ -95,7 +95,7 @@ Updates incidents.
 | --- | --- | --- |
 | incident-id | Incident ID to update. | Required |
 | severity | Severity to update. Possible value: "Low", "Medium", and "High". Possible values are: Low, Medium, High. | Optional |
-| owner | User full name to set as incident owner, e.g., Steve Jobs. | Optional |
+| owner | User full name to set as incident owner. | Optional |
 | incident-type | Incident type (added to the current incident types list). Possible values are: CommunicationError, DenialOfService, ImproperDisposal:DigitalAsset, ImproperDisposal:documents/files, LostDocuments/files/records, LostPC/laptop/tablet, LostPDA/smartphone, LostStorageDevice/media, Malware, NotAnIssue, Other, Phishing, StolenDocuments/files/records, StolenPC/laptop/tablet, StolenPDA/Smartphone, StolenStorageDevice/media, SystemIntrusion, TBD/Unknown, Vendor/3rdPartyError. | Optional |
 | resolution | Incident resolution. Possible value: "Unresolved", "Duplicate", "NotAnIssue", and "Resolved". Possible values are: Unresolved, Duplicate, NotAnIssue, Resolved. | Optional |
 | resolution-summary | Incident resolution summary. | Optional |

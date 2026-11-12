@@ -77,7 +77,7 @@
                         },
                         "resourceMetadata": {
                             "metadata": {
-                                "displayName": "Jane Smith",
+                                "displayName": "jane Test",
                                 "domainName": "rubrikdemo.com",
                                 "idpType": "ON_PREM_AD",
                                 "principalType": "USER",

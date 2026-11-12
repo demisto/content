@@ -850,12 +850,12 @@ def test_extract_name_servers(servers, expected):
         # Test case for tech prefix with some None values
         (
             {
-                "tech_name": "Jane Smith",
+                "tech_name": "jane Test",
                 "tech_email": None,
                 "tech_phone": "+1234567890",
             },
             "tech",
-            {"Name": "Jane Smith", "Phone": "+1234567890"},
+            {"Name": "jane Test", "Phone": "+1234567890"},
         ),
         # Test case for billing prefix (empty result)
         ({"domain_name": "example.com", "creation_date": "2020-01-01"}, "billing", {}),

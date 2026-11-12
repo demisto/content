@@ -2010,15 +2010,15 @@ There is no context output for this command.
 ```
 {
     "Uptycs.UserGroups": {
-        "B schmoll": {
+        "User 1": {
             "email": "goo@test.com", 
             "id": "33436e24-f30f-42d0-8438-d948be12b5af"
         }, 
-        "Mike Boldi": {
+        "User 2": {
             "email": "woo@test.com", 
             "id": "e43b0119-8d23-4ea2-9fd9-3a9ff14fc195"
         }, 
-        "Milan Shah": {
+        "User 3": {
             "email": "foo@test.com", 
             "id": "89d26aa4-f0a8-48d9-a174-ce5285d9dd60"
         }
@@ -2030,7 +2030,7 @@ There is no context output for this command.
 
 ### Uptycs User Asset Groups
 
-|B schmoll|Mike Boldi|Milan Shah|
+|User 1|User 2|User 3|
 |---|---|---|
 |email: goo@test.com<br/>id: 33436e24-f30f-42d0-8438-d948be12b5af|email: woo@test.com<br/>id: e43b0119-8d23-4ea2-9fd9-3a9ff14fc195|email: foo@test.com<br/>id: 89d26aa4-f0a8-48d9-a174-ce5285d9dd60|
 

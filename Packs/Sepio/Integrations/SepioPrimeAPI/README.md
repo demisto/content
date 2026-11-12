@@ -340,7 +340,7 @@ Get Switch Ports
                 "042AE2D31AC0",
                 "04D590D51701"
             ],
-            "Name": "HondaCB500X",
+            "Name": "CB500X",
             "NumberOfMacAddresses": 4,
             "PortID": "Gi0/17",
             "Status": "connected",

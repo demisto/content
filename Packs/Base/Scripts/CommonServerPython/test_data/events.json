@@ -45,47 +45,47 @@
         "events": [
             {
                 "name": "Event 1",
-                "data": "The only way to do great work is to love what you do. - Steve Jobs"
+                "data": "The only way to do great work is to love what you do."
             },
             {
                 "name": "Event 2",
-                "data": "The best way to predict your future is to create it. - Abe Testmancoln"
+                "data": "The best way to predict your future is to create it."
             },
             {
                 "name": "Event 3",
-                "data": "The only thing we have to fear is fear itself. - Franklin D. Roosevelt"
+                "data": "The only thing we have to fear is fear itself."
             },
             {
                 "name": "Event 4",
-                "data": "The greatest glory in living lies not in never falling, but in rising every time we fall. - Nelson Mandela"
+                "data": "The greatest glory in living lies not in never falling, but in rising every time we fall."
             },
             {
                 "name": "Event 5",
-                "data": "Believe you can and you're halfway there. - Theodore Roosevelt"
+                "data": "Believe you can and you're halfway there."
             },
             {
                 "name": "Event 6",
-                "data": "If you want to live a happy life, tie it to a goal, not to people or things. - Albert Einstein"
+                "data": "If you want to live a happy life, tie it to a goal, not to people or things."
             },
             {
                 "name": "Event 7",
-                "data": "The only true wisdom is in knowing you know nothing. - Socrates"
+                "data": "The only true wisdom is in knowing you know nothing."
             },
             {
                 "name": "Event 8",
-                "data": "Life is what happens when you're busy making other plans. - John Testlennon"
+                "data": "Life is what happens when you're busy making other plans."
             },
             {
                 "name": "Event 9",
-                "data": "Spread love everywhere you go. Let no one ever come to you without leaving happier. - Mother Teresa"
+                "data": "Spread love everywhere you go. Let no one ever come to you without leaving happier."
             },
             {
                 "name": "Event 10",
-                "data": "In three words I can sum up everything I've learned about life: it goes on. - Robert Frost"
+                "data": "In three words I can sum up everything I've learned about life: it goes on."
             }
         ],
         "number_of_events": 10,
-        "expected_data": "{\"name\": \"Event 10\", \"data\": \"In three words I can sum up everything I've learned about life: it goes on. - Robert Frost\"}",
+        "expected_data": "{\"name\": \"Event 10\", \"data\": \"In three words I can sum up everything I've learned about life: it goes on.\"}",
         "expected_format": "json",
         "XSIAM_FILE_SIZE": 300
     },
