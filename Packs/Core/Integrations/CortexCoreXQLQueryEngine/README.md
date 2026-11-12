@@ -1,3 +1,40 @@
+# Deprecation Notice
+
+As part of our ongoing commitment to platform performance, reliability, and standardization, the four integrations and commands within the "Core" pack listed below will be officially deprecated in mid-January 2027:
+
+- Indicators detection (Cortex Core - IOC)
+- Investigation & Response (Cortex Core - IR)
+- XQL Query Engine
+- Cortex Platform - Core
+
+## What this means for you
+
+- **Existing custom playbooks:** Automations and playbooks currently using commands from these integrations will continue to function as expected. No existing workflows will abruptly break upon deprecation. We recommend migrating them to the native Cortex built-in commands, which offer higher execution performance and unified platform syntax.
+- **Out-of-the-box Cortex playbooks:** All out-of-the-box playbooks shipped with the platform will be updated by Palo Alto Networks to use built-in commands natively. No action is required on your part for uncustomized, standard playbooks.
+- **Maintenance and support:** Following the deprecation date, these integrations will no longer receive feature updates, enhancements, or bug fixes.
+
+For detailed command-by-command replacement mappings and usage examples, please refer to the [Cortex Built-In Commands Guide](https://cortex-docs.paloaltonetworks.com/cortex-commands-guide).
+
+## Command mapping
+
+The following table maps each command in this integration to its Cortex built-in command. Argument names and output paths can differ between a command and its built-in replacement, so review the built-in command's arguments before migrating. See the [Cortex Built-In Commands Guide](https://cortex-docs.paloaltonetworks.com/cortex-commands-guide) for details.
+
+| Deprecated command | Built-in command | Category |
+|---|---|---|
+| `xdr-xql-generic-query` | `runXQLQuery` | xql |
+| `xdr-xql-get-quota` | `getXQLQuota` | xql |
+| `xdr-xql-get-query-results` | `getXQLQueryResults` | xql |
+| `xdr-xql-file-event-query` | `runXQLFileEventQuery` | xql |
+| `xdr-xql-process-event-query` | `runXQLProcessEventQuery` | xql |
+| `xdr-xql-dll-module-query` | `runXQLDllModuleQuery` | xql |
+| `xdr-xql-network-connection-query` | `runXQLNetworkConnectionQuery` | xql |
+| `xdr-xql-registry-query` | `runXQLRegistryQuery` | xql |
+| `xdr-xql-event-log-query` | `runXQLEventLogQuery` | xql |
+| `xdr-xql-dns-query` | `runXQLDNSQuery` | xql |
+| `xdr-xql-file-dropper-query` | `runXQLFileDropperQuery` | xql |
+| `xdr-xql-process-instance-network-activity-query` | `runXQLProcessInstanceNetworkActivityQuery` | xql |
+| `xdr-xql-process-causality-network-activity-query` | `runXQLProcessCausalityNetworkActivityQuery` | xql |
+
 XQL Query Engine enables you to run XQL queries on your data sources.
 
 ## Commands
