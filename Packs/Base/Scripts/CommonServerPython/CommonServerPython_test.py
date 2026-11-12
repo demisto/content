@@ -12242,7 +12242,7 @@ class TestQuickActionPreviewInitialization:
             "title": None,
             "description": "Another description.",
             "status": None,
-            "assignee": "Jane Roe",
+            "assignee": "Jane Test",
             "creation_date": None,
             "severity": "Medium"
         }
