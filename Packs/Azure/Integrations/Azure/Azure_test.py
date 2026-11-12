@@ -11040,6 +11040,541 @@ def test_extract_fallback_prefix_returns_empty_for_unknown_handler():
     assert extract_fallback_prefix("no_such_command", symbol_index) == set()
 
 
+# ---------------------------------------------------------------------------
+# Storage FileShare command tests (migrated from AzureStorageFileShare pack)
+# ---------------------------------------------------------------------------
+
+
+def test_storage_fileshare_create_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client whose create_share_request (Microsoft.Storage ARM) creates the share.
+    When: The storage_fileshare_create_command function is called with valid snake_case args.
+    Then: The function calls create_share_request on the ARM control plane and returns a success message only.
+    """
+    from Azure import storage_fileshare_create_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "resource_group_name": "mock_resource_group",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+    }
+    mocker.patch.object(client, "create_share_request")
+
+    result = storage_fileshare_create_command(client, mock_params, args)
+
+    client.create_share_request.assert_called_once_with(
+        "mock_subscription_id", "mock_resource_group", "mockaccount", "mock-share"
+    )
+    assert isinstance(result, CommandResults)
+    assert result.outputs is None
+    assert result.readable_output == "Share mock-share successfully created."
+
+
+def test_storage_fileshare_create_command_invalid_name(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to create a file share with an invalid share name.
+    When: The storage_fileshare_create_command function is called with an invalid share name.
+    Then: The function raises an exception about the invalid share name.
+    """
+    from Azure import storage_fileshare_create_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "resource_group_name": "mock_resource_group",
+        "account_name": "mockaccount",
+        "share_name": "mock--share",
+    }
+
+    with pytest.raises(Exception) as excinfo:
+        storage_fileshare_create_command(client, mock_params, args)
+
+    assert "The specified share name is invalid" in str(excinfo.value)
+
+
+def test_storage_fileshare_delete_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to delete a file share via the Microsoft.Storage ARM control plane.
+    When: The storage_fileshare_delete_command function is called with valid snake_case args.
+    Then: The function calls delete_share_request on the ARM control plane and returns a success message.
+    """
+    from Azure import storage_fileshare_delete_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "resource_group_name": "mock_resource_group",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+    }
+    mocker.patch.object(client, "delete_share_request")
+
+    result = storage_fileshare_delete_command(client, mock_params, args)
+
+    client.delete_share_request.assert_called_once_with(
+        "mock_subscription_id", "mock_resource_group", "mockaccount", "mock-share"
+    )
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "Share mock-share successfully deleted."
+
+
+def test_storage_fileshare_list_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client whose list_shares_request (Microsoft.Storage ARM) returns a JSON share list.
+    When: The storage_fileshare_list_command function is called.
+    Then: The function returns CommandResults with the Azure.Storage.FileShares prefix and parsed share names.
+    """
+    from Azure import storage_fileshare_list_command
+
+    json_response = {
+        "value": [
+            {
+                "id": "/subscriptions/mock_subscription_id/resourceGroups/mock_resource_group/providers/"
+                "Microsoft.Storage/storageAccounts/mockaccount/fileServices/default/shares/my-file-share",
+                "name": "my-file-share",
+                "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+                "etag": '"0x8DABCDEF"',
+                "properties": {
+                    "accessTier": "TransactionOptimized",
+                    "shareQuota": 100,
+                    "lastModifiedTime": "2025-01-01T00:00:00.0000000Z",
+                    "enabledProtocols": "SMB",
+                    "leaseState": "Available",
+                },
+            },
+            {
+                "id": "/subscriptions/mock_subscription_id/resourceGroups/mock_resource_group/providers/"
+                "Microsoft.Storage/storageAccounts/mockaccount/fileServices/default/shares/my-share",
+                "name": "my-share",
+                "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+                "etag": '"0x8DFEDCBA"',
+                "properties": {
+                    "accessTier": "Hot",
+                    "shareQuota": 5120,
+                    "lastModifiedTime": "2025-02-02T00:00:00.0000000Z",
+                    "enabledProtocols": "SMB",
+                    "leaseState": "Available",
+                },
+            },
+        ]
+    }
+    mocker.patch.object(client, "list_shares_request", return_value=json_response)
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "resource_group_name": "mock_resource_group",
+        "account_name": "mockaccount",
+    }
+    result = storage_fileshare_list_command(client, mock_params, args)
+
+    client.list_shares_request.assert_called_once_with("mock_subscription_id", "mock_resource_group", "mockaccount", "50", "")
+    assert isinstance(result, CommandResults)
+    shares = result.outputs["Azure.Storage.FileShares(val.id && val.id == obj.id)"]
+    assert len(shares) == 2
+    # Full share objects are passed through as-is with native camelCase keys.
+    assert shares[0].get("name") == "my-file-share"
+    assert shares[1].get("name") == "my-share"
+    assert shares[0].get("properties", {}).get("accessTier") == "TransactionOptimized"
+    assert shares[0].get("properties", {}).get("shareQuota") == 100
+    assert shares[1].get("etag") == '"0x8DFEDCBA"'
+    # No nextLink in the response -> next token is None and no pagination hint.
+    assert result.outputs["Azure.Storage(true)"] == {"FileSharesNextToken": None}
+    assert "next_token" not in result.readable_output
+    # Readable output only surfaces Name/Id/Type.
+    assert "Access Tier" not in result.readable_output
+    assert "my-file-share" in result.readable_output
+
+
+def test_storage_fileshare_list_command_with_next_link(mocker, client, mock_params):
+    """
+    Given: An Azure client whose list_shares_request returns a page of shares along with a nextLink.
+    When: The storage_fileshare_list_command function is called.
+    Then: The shares are returned under Azure.Storage.FileShares and the nextLink under Azure.Storage.FileSharesNextToken,
+          and the readable output instructs the user how to fetch the next page.
+    """
+    from Azure import storage_fileshare_list_command
+
+    next_link = (
+        "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/res9290/providers/"
+        "Microsoft.Storage/storageAccounts/sto1590/fileServices/default/shares?api-version=2022-09-01"
+        "&$maxpagesize=2&$skipToken=/sto1590/share5103"
+    )
+    share_id_prefix = (
+        "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/res9290/providers/"
+        "Microsoft.Storage/storageAccounts/sto1590/fileServices/default/shares/"
+    )
+    paid_bursting = {
+        "paidBurstingEnabled": True,
+        "paidBurstingMaxBandwidthMibps": 10340,
+        "paidBurstingMaxIops": 102400,
+    }
+    json_response = {
+        "nextLink": next_link,
+        "value": [
+            {
+                "name": "share1644",
+                "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+                "etag": '"0x8D589847D51C7DE"',
+                "id": f"{share_id_prefix}share1644",
+                "properties": {
+                    "fileSharePaidBursting": paid_bursting,
+                    "lastModifiedTime": "2019-05-14T08:20:47Z",
+                    "shareQuota": 1024,
+                },
+            },
+            {
+                "name": "share4052",
+                "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+                "etag": '"0x8D589847DAB5AF9"',
+                "id": f"{share_id_prefix}share4052",
+                "properties": {
+                    "fileSharePaidBursting": paid_bursting,
+                    "lastModifiedTime": "2019-05-14T08:20:47Z",
+                    "shareQuota": 1024,
+                },
+            },
+        ],
+    }
+    mocker.patch.object(client, "list_shares_request", return_value=json_response)
+
+    args = {
+        "subscription_id": "00000000-0000-0000-0000-000000000000",
+        "resource_group_name": "res9290",
+        "account_name": "sto1590",
+        "limit": "2",
+    }
+    result = storage_fileshare_list_command(client, mock_params, args)
+
+    client.list_shares_request.assert_called_once_with("00000000-0000-0000-0000-000000000000", "res9290", "sto1590", "2", "")
+    shares = result.outputs["Azure.Storage.FileShares(val.id && val.id == obj.id)"]
+    assert [share["name"] for share in shares] == ["share1644", "share4052"]
+    assert shares[0]["properties"]["fileSharePaidBursting"]["paidBurstingMaxIops"] == 102400
+    assert result.outputs["Azure.Storage(true)"] == {"FileSharesNextToken": next_link}
+    assert result.raw_response == json_response
+
+
+def test_storage_fileshare_list_command_forwards_next_token(mocker, client, mock_params):
+    """
+    Given: A next_token argument holding the nextLink of a previous page, and a response that is the last page.
+    When: The storage_fileshare_list_command function is called.
+    Then: The next_token is forwarded to list_shares_request, and the stale token is cleared from the context.
+    """
+    from Azure import storage_fileshare_list_command
+
+    next_link = "https://management.azure.com/subscriptions/sub/next?api-version=2022-09-01&$skipToken=/acc/share2"
+    share = {"id": "share-2-id", "name": "share2", "type": "Microsoft.Storage/storageAccounts/fileServices/shares"}
+    mocker.patch.object(client, "list_shares_request", return_value={"value": [share]})
+
+    args = {
+        "subscription_id": "sub",
+        "resource_group_name": "rg",
+        "account_name": "acc",
+        "next_token": next_link,
+    }
+    result = storage_fileshare_list_command(client, mock_params, args)
+
+    client.list_shares_request.assert_called_once_with("sub", "rg", "acc", "50", next_link)
+    assert result.outputs["Azure.Storage.FileShares(val.id && val.id == obj.id)"] == [share]
+    assert result.outputs["Azure.Storage(true)"] == {"FileSharesNextToken": None}
+
+
+def test_list_shares_request_uses_next_token(mocker, client):
+    """
+    Given: A next_token (nextLink URI) from a previous page.
+    When: list_shares_request is called with the next_token.
+    Then: The request is sent to the nextLink URI as-is, without adding api-version/$maxpagesize params.
+    """
+    next_link = "https://management.azure.com/next?api-version=2022-09-01&$maxpagesize=2&$skipToken=/sto1590/share5103"
+    http_mock = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.list_shares_request("sub", "rg", "account", "2", next_link)
+
+    http_mock.assert_called_once_with(method="GET", full_url=next_link, params={})
+
+
+def test_list_shares_request_rejects_foreign_next_token(mocker, client):
+    """
+    Given: A next_token pointing at a host other than the configured Azure management endpoint.
+    When: list_shares_request is called with the next_token.
+    Then: A DemistoException is raised and no HTTP request is sent.
+    """
+    http_mock = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.list_shares_request("sub", "rg", "account", "2", "https://attacker.example.com/next?$skipToken=abc")
+
+    http_mock.assert_not_called()
+
+
+def test_list_shares_request_without_next_token(mocker, client):
+    """
+    Given: No next_token.
+    When: list_shares_request is called.
+    Then: The request is sent to the ARM shares URL with api-version and $maxpagesize params.
+    """
+    from Azure import FILESHARE_ARM_API_VERSION
+
+    http_mock = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.list_shares_request("sub", "rg", "account", "2")
+
+    call_kwargs = http_mock.call_args.kwargs
+    assert call_kwargs["full_url"].endswith("/storageAccounts/account/fileServices/default/shares")
+    assert call_kwargs["params"] == {"api-version": FILESHARE_ARM_API_VERSION, "$maxpagesize": "2"}
+
+
+def test_storage_fileshare_content_list_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client with a mocked list_directories_and_files_request returning directory content XML.
+    When: The storage_fileshare_content_list_command function is called with a share name.
+    Then: The function returns CommandResults with the Azure.Storage.FileShares prefix and parsed content.
+    """
+    from Azure import storage_fileshare_content_list_command
+
+    xml_response = (
+        '<?xml version="1.0" encoding="utf-8"?>'
+        "<EnumerationResults>"
+        "<DirectoryId>mock_dir_id</DirectoryId>"
+        "<Entries>"
+        "<File><Name>mock_file.png</Name><FileId>mock_file_id</FileId>"
+        "<Properties>"
+        "<Content-Length>10</Content-Length>"
+        "<CreationTime>2025-01-01T00:00:00.0000000Z</CreationTime>"
+        "<LastAccessTime>2025-01-01T00:00:00.0000000Z</LastAccessTime>"
+        "<LastWriteTime>2025-01-01T00:00:00.0000000Z</LastWriteTime>"
+        "<ChangeTime>2025-01-01T00:00:00.0000000Z</ChangeTime>"
+        "<Last-Modified>Wed, 01 Jan 2025 00:00:00 GMT</Last-Modified>"
+        "</Properties></File>"
+        "<Directory><Name>mock_directory</Name><FileId>mock_directory_id</FileId>"
+        "<Properties>"
+        "<CreationTime>2025-01-01T00:00:00.0000000Z</CreationTime>"
+        "<LastAccessTime>2025-01-01T00:00:00.0000000Z</LastAccessTime>"
+        "<LastWriteTime>2025-01-01T00:00:00.0000000Z</LastWriteTime>"
+        "<ChangeTime>2025-01-01T00:00:00.0000000Z</ChangeTime>"
+        "<Last-Modified>Wed, 01 Jan 2025 00:00:00 GMT</Last-Modified>"
+        "</Properties></Directory>"
+        "</Entries>"
+        "<NextMarker/>"
+        "</EnumerationResults>"
+    )
+    mocker.patch.object(client, "list_directories_and_files_request", return_value=xml_response)
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount", "share_name": "mock-share"}
+    result = storage_fileshare_content_list_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Storage.FileShares"
+    assert result.outputs.get("name") == "mock-share"
+    assert result.outputs.get("Content").get("File")[0].get("Name") == "mock_file.png"
+    assert result.outputs.get("Content").get("Directory")[0].get("Name") == "mock_directory"
+    assert result.outputs.get("ContentNextToken") is None
+    assert "NextToken" not in result.outputs.get("Content")
+    assert "next_token" not in result.readable_output
+
+
+def test_storage_fileshare_content_list_command_with_next_token(mocker, client, mock_params):
+    """
+    Given: An Azure client and a next_token argument, with a response containing a NextMarker value.
+    When: The storage_fileshare_content_list_command function is called with the next_token argument.
+    Then: The next_token value is passed to the client request as the marker, and the returned
+          NextMarker is exposed as ContentNextToken and mentioned in the readable output.
+    """
+    from Azure import storage_fileshare_content_list_command
+
+    xml_response = (
+        '<?xml version="1.0" encoding="utf-8"?>'
+        "<EnumerationResults>"
+        "<DirectoryId>mock_dir_id</DirectoryId>"
+        "<Entries></Entries>"
+        "<NextMarker>mock-next-marker</NextMarker>"
+        "</EnumerationResults>"
+    )
+    request_mock = mocker.patch.object(client, "list_directories_and_files_request", return_value=xml_response)
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+        "next_token": "mock-marker",
+    }
+    result = storage_fileshare_content_list_command(client, mock_params, args)
+
+    request_mock.assert_called_once_with("mockaccount", "mock-share", "", None, "50", "mock-marker")
+    assert result.outputs.get("ContentNextToken") == "mock-next-marker"
+    assert "next_token" in result.readable_output
+
+
+def test_storage_fileshare_directory_create_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to create a directory with a valid name.
+    When: The storage_fileshare_directory_create_command function is called with valid snake_case args.
+    Then: The function calls the client's create_directory_request and returns a success message.
+    """
+    from Azure import storage_fileshare_directory_create_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+        "directory_name": "mock_directory",
+    }
+    mocker.patch.object(client, "create_directory_request")
+
+    result = storage_fileshare_directory_create_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "mock_directory Directory successfully created in mock-share."
+
+
+def test_storage_fileshare_directory_create_command_invalid_name(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to create a directory with an invalid name.
+    When: The storage_fileshare_directory_create_command function is called with an invalid directory name.
+    Then: The function raises an exception about the invalid directory name.
+    """
+    from Azure import storage_fileshare_directory_create_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+        "directory_name": "mock<directory",
+    }
+
+    with pytest.raises(Exception) as excinfo:
+        storage_fileshare_directory_create_command(client, mock_params, args)
+
+    assert "The specified directory name is invalid" in str(excinfo.value)
+
+
+def test_storage_fileshare_directory_delete_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to delete a directory.
+    When: The storage_fileshare_directory_delete_command function is called with valid snake_case args.
+    Then: The function calls the client's delete_directory_request and returns a success message.
+    """
+    from Azure import storage_fileshare_directory_delete_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+        "directory_name": "mock_directory",
+    }
+    mocker.patch.object(client, "delete_directory_request")
+
+    result = storage_fileshare_directory_delete_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "mock_directory Directory successfully deleted from mock-share."
+
+
+def test_storage_fileshare_file_create_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to create a file in a share from a War Room entry ID.
+    When: The storage_fileshare_file_create_command function is called with valid snake_case args.
+    Then: The function calls create_file_request and add_file_content_request and returns a success message.
+    """
+    from Azure import storage_fileshare_file_create_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+        "file_entry_id": "mock_entry_id",
+        "file_name": "mock_file.txt",
+        "directory_path": "mock/path",
+    }
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "mock_path", "name": "mock_file.txt"})
+    mock_stat = mocker.MagicMock()
+    mock_stat.st_size = 1024
+    mocker.patch("Azure.Path.stat", return_value=mock_stat)
+    mock_open = mocker.patch("Azure.Path.open", mocker.mock_open(read_data=b"mock_data"))
+    mocker.patch.object(client, "create_file_request")
+    mocker.patch.object(client, "add_file_content_request")
+
+    result = storage_fileshare_file_create_command(client, mock_params, args)
+
+    client.create_file_request.assert_called_once_with("mockaccount", "mock-share", "mock_file.txt", 1024, "mock/path")
+    client.add_file_content_request.assert_called_once_with(
+        "mockaccount", "mock-share", "mock_file.txt", mock_open.return_value, 1024, "mock/path"
+    )
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "File successfully created in mock-share."
+
+
+def test_storage_fileshare_file_get_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to get a file from a share.
+    When: The storage_fileshare_file_get_command function is called with valid snake_case args.
+    Then: The function calls the client's get_file_request and returns a fileResult.
+    """
+    from Azure import storage_fileshare_file_get_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+        "file_name": "mock_file.txt",
+    }
+    mock_response = mocker.Mock()
+    mock_response.content = b"mock file content"
+    mocker.patch.object(client, "get_file_request", return_value=mock_response)
+    mock_file_result = mocker.patch("Azure.fileResult", return_value="file_result_object")
+
+    result = storage_fileshare_file_get_command(client, mock_params, args)
+
+    mock_file_result.assert_called_once_with(filename="mock_file.txt", data=b"mock file content")
+    assert result == "file_result_object"
+
+
+def test_storage_fileshare_file_delete_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to delete a file from a share.
+    When: The storage_fileshare_file_delete_command function is called with valid snake_case args.
+    Then: The function calls the client's delete_file_request and returns a success message.
+    """
+    from Azure import storage_fileshare_file_delete_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "share_name": "mock-share",
+        "file_name": "mock_file.txt",
+    }
+    mocker.patch.object(client, "delete_file_request")
+
+    result = storage_fileshare_file_delete_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "File mock_file.txt successfully deleted from mock-share."
+
+
+@pytest.mark.parametrize(
+    "method_name, method_kwargs",
+    [
+        ("list_directories_and_files_request", {}),
+        ("create_directory_request", {"directory_name": "mock-dir"}),
+        ("delete_directory_request", {"directory_name": "mock-dir"}),
+        ("create_file_request", {"file_name": "mock_file.txt", "content_length": 10}),
+        ("add_file_content_request", {"file_name": "mock_file.txt", "file_data": b"0123456789", "content_length": 10}),
+        ("get_file_request", {"file_name": "mock_file.txt"}),
+        ("delete_file_request", {"file_name": "mock_file.txt"}),
+    ],
+)
+def test_fileshare_data_plane_requests_send_file_request_intent(mocker, client, method_name, method_kwargs):
+    """
+    Given: An Azure client calling an Azure Files data-plane (file.core.windows.net) request method.
+    When: The request is sent with an OAuth token.
+    Then: The x-ms-file-request-intent header required by Azure Files for OAuth requests is set to "backup".
+    """
+    mocker.patch.object(client, "http_request")
+
+    getattr(client, method_name)(account_name="mockaccount", share_name="mock-share", **method_kwargs)
+
+    client.http_request.assert_called_once()
+    assert client.headers["x-ms-file-request-intent"] == "backup"
+
+
 """ LOG ANALYTICS TESTS (migrated from the standalone Azure Log Analytics pack) """
 
 LOG_ANALYTICS_ARGS = {
