@@ -1,4 +1,4 @@
-# Nozomi Networks Integration
+## Nozomi Networks
 
 This integration utilizes the **Nozomi Networks Universal Open API**.
 
@@ -6,11 +6,10 @@ This integration utilizes the **Nozomi Networks Universal Open API**.
 
 To retrieve the `key_name` and `key_token`, please refer to the instructions provided in the **Nozomi Networks Products Technical Documentation**.
 
-## Features
+For detailed setup instructions, consult the technical documentation provided by Nozomi Networks.
 
-The integration provides the following capabilities:
+### Custom incident name
 
-1. **Fetch Incidents**: Retrieve incidents directly from Nozomi Networks.
-2. **Execute Commands**: Perform actions to gather and update data from Nozomi Networks.
+By default, the incident name is `{name}_{id}`, built from the Nozomi alert name and ID.
 
-For detailed setup and usage instructions, consult the technical documentation provided by Nozomi Networks.
+To build the name from other alert fields, set the **Custom incident name pattern** parameter, for example `{type_id}_{id} - {description}`. Each `{field}` placeholder is replaced with the value of that alert field. Missing fields are rendered as empty, and the name is limited to 76 characters. If the parameter is empty, or the resulting name is empty, the default name is used.

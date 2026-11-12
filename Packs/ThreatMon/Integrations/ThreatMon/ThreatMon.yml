@@ -2,12 +2,12 @@ commonfields:
   id: Threatmon
   version: -1
 name: Threatmon
-display: Threatmon
+display: ThreatMon Incident Management
 sectionorder:
 - Connect
 - Collect
 category: Data Enrichment & Threat Intelligence
-description: Integration with Threatmon for vulnerability threat intelligence.
+description: Fetches ThreatMon alarms as incidents, mirrors their status in both directions, and submits takedown and data removal requests.
 provider: ThreatMon
 configuration:
 - display: API URL
@@ -15,14 +15,22 @@ configuration:
   type: 0
   required: true
   section: Connect
-  defaultvalue: https://external.threatmonit.io/api/threatmon/external/v1
+  defaultvalue: https://external.threatmonit.io/api/threatmon/external
+  additionalinfo: The ThreatMon External API URL. A URL that ends with /v1 also works.
 - displaypassword: API Key
-  additionalinfo: The API Key to use for connection
+  additionalinfo: The External API Key. In ThreatMon, open Settings, then Integrations, then Settings.
   name: credentials
   required: true
   hiddenusername: true
   type: 9
   section: Connect
+- display: Customer Name (MSSP)
+  name: customer_name
+  type: 0
+  required: false
+  section: Connect
+  advanced: true
+  additionalinfo: For MSSP accounts, the exact name of the sub company to work with, as shown in ThreatMon. Leave empty to use the account of the API key.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -33,9 +41,25 @@ configuration:
   type: 8
   required: false
   section: Connect
-- display: Last Incident ID (for initial fetch)
-  name: lastIncidentId
-  type: 0
+- display: Source Reliability
+  name: integrationReliability
+  type: 15
+  required: false
+  section: Connect
+  advanced: true
+  defaultvalue: B - Usually reliable
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: The reliability of ThreatMon for the file verdicts of the sandbox.
+- display: Fetch incidents
+  name: isFetch
+  type: 8
   required: false
   section: Collect
   supportedModules:
@@ -45,24 +69,161 @@ configuration:
   name: incidentType
   type: 13
   required: false
+  section: Collect
+  defaultvalue: ThreatMon Alert
   supportedModules:
   - xsiam
   - agentix
+- display: First Fetch Time
+  name: first_fetch
+  type: 0
+  required: false
   section: Collect
-- display: Fetch incidents
-  name: isFetch
+  defaultvalue: 3 days
+  additionalinfo: How far back to look for alarms on the first fetch, for example "3 days", "12 hours" or "2026-11-01".
+  supportedModules:
+  - xsiam
+  - agentix
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  type: 0
+  required: false
+  section: Collect
+  defaultvalue: '50'
+  additionalinfo: The maximum number of incidents to create in one fetch (1-200). The next fetch continues from the same position.
+  supportedModules:
+  - xsiam
+  - agentix
+- display: Alarm Statuses to Fetch
+  name: fetch_statuses
+  type: 16
+  required: false
+  section: Collect
+  defaultvalue: Open,In Progress
+  options:
+  - Open
+  - In Progress
+  - Resolved
+  - Ignore
+  additionalinfo: Only alarms with one of these statuses are created as incidents. An alarm that moves to one of them later is created then.
+  supportedModules:
+  - xsiam
+  - agentix
+- display: Minimum Severity to Fetch
+  name: min_severity
+  type: 15
+  required: false
+  section: Collect
+  defaultvalue: Information
+  options:
+  - Information
+  - Low
+  - Medium
+  - High
+  - Critical
+  additionalinfo: Alarms with a lower severity are not fetched.
+  supportedModules:
+  - xsiam
+  - agentix
+- display: Alarm Categories to Fetch
+  name: categories
+  type: 16
+  required: false
+  section: Collect
+  options:
+  - Attack Surface Intelligence
+  - Brand Intelligence
+  - Dark Web Intelligence
+  - Strategic Intelligence
+  - VIP Intelligence
+  additionalinfo: Only alarms in these categories are fetched. Leave empty to fetch every category.
+  supportedModules:
+  - xsiam
+  - agentix
+- display: Mask Secrets in Findings
+  name: mask_secrets
   type: 8
   required: false
+  section: Collect
+  defaultvalue: 'true'
+  additionalinfo: When selected, passwords, tokens and cookies in leak findings are shortened (for example "Wi******") before they are stored in Cortex.
   supportedModules:
   - xsiam
   - agentix
+- display: Attach Screenshots
+  name: attach_screenshots
+  type: 8
+  required: false
   section: Collect
-- display: Fetch Interval (minutes)
+  defaultvalue: 'true'
+  additionalinfo: When selected, the screenshots of the findings (for example of a phishing page) are attached to the incident, up to 3 per alarm.
+  supportedModules:
+  - xsiam
+  - agentix
+- display: Look-back Window (minutes)
+  name: lookback_minutes
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+  defaultvalue: '30'
+  additionalinfo: The number of minutes of alarm changes to read again on each fetch and mirroring cycle, because ThreatMon makes changes visible with a delay of a few minutes. Alarms that already exist are not created again.
+  supportedModules:
+  - xsiam
+  - agentix
+- display: Last Incident ID (for initial fetch)
+  name: lastIncidentId
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+  additionalinfo: Alarms with this alarm code or a lower one are never fetched. Leave empty to rely on the First Fetch Time only.
+  supportedModules:
+  - xsiam
+  - agentix
+- display: Incident Mirroring Direction
+  name: mirror_direction
+  type: 15
+  required: false
+  section: Collect
+  defaultvalue: None
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  additionalinfo: 'The direction to mirror the alarm status: Incoming (from ThreatMon to Cortex), Outgoing (from Cortex to ThreatMon), or both. Applies to incidents fetched after the setting is changed. Cortex XSOAR only parameter.'
+  hidden:
+  - marketplacev2
+  - platform
+- display: Close Mirrored Cortex Incident
+  name: close_incident
+  type: 8
+  required: false
+  section: Collect
+  defaultvalue: 'false'
+  additionalinfo: When selected, an incident is closed when its alarm is set to Resolved or Ignore in ThreatMon, and reopened when the alarm is opened again. Cortex XSOAR only parameter.
+  hidden:
+  - marketplacev2
+  - platform
+- display: Close Mirrored ThreatMon Alarm
+  name: close_out
+  type: 8
+  required: false
+  section: Collect
+  defaultvalue: 'false'
+  additionalinfo: When selected, closing an incident sets its alarm to Ignore when the close reason is False Positive or Duplicate, and to Resolved otherwise. Cortex XSOAR only parameter.
+  hidden:
+  - marketplacev2
+  - platform
+- display: Fetch Interval (minutes) (Deprecated)
   name: fetchInterval
   defaultvalue: "5"
   type: 0
   required: false
   section: Collect
+  advanced: true
+  additionalinfo: Deprecated. This parameter is not used. Use Incidents Fetch Interval instead.
   supportedModules:
   - xsiam
   - agentix
@@ -80,11 +241,925 @@ script:
   type: python
   subtype: python3
   commands:
+  - name: threatmon-alarm-list
+    description: Lists ThreatMon alarms, ordered by alarm code, or by change time when updated_after is set. Use the filters to find an alarm and its findings, for example before a takedown request.
+    arguments:
+    - name: limit
+      description: The maximum number of alarms to return (1-100).
+      defaultValue: "10"
+    - name: page
+      description: The page to return, 0-based. Each page holds "limit" alarms.
+      defaultValue: "0"
+    - name: severity
+      description: A comma-separated list of severities to return.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - Information
+      - Low
+      - Medium
+      - High
+      - Critical
+    - name: category
+      description: The category of the alarms to return, for example Brand Intelligence.
+    - name: status
+      description: A comma-separated list of statuses to return. The filter is applied to the alarms of the requested page.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - Open
+      - In Progress
+      - Resolved
+      - Ignore
+    - name: start_date
+      description: Return alarms created at or after this time, for example "7 days" or "2026-11-01T00:00:00Z".
+    - name: end_date
+      description: Return alarms created before this time.
+    - name: updated_after
+      description: Return alarms changed at or after this time, ordered by change time.
+    outputs:
+    - contextPath: ThreatMon.Alarm.AlarmCode
+      description: The alarm code.
+      type: Number
+    - contextPath: ThreatMon.Alarm.Title
+      description: The alarm title.
+      type: String
+    - contextPath: ThreatMon.Alarm.AlarmType
+      description: The alarm type.
+      type: String
+    - contextPath: ThreatMon.Alarm.Category
+      description: The alarm category.
+      type: String
+    - contextPath: ThreatMon.Alarm.SubCategory
+      description: The alarm subcategory.
+      type: String
+    - contextPath: ThreatMon.Alarm.Severity
+      description: The alarm severity.
+      type: String
+    - contextPath: ThreatMon.Alarm.Status
+      description: The alarm status.
+      type: String
+    - contextPath: ThreatMon.Alarm.Source
+      description: The source that detected the alarm.
+      type: String
+    - contextPath: ThreatMon.Alarm.AlarmDate
+      description: The time the alarm was created (e.g., 2026-11-05T09:23:47.553Z).
+      type: Date
+    - contextPath: ThreatMon.Alarm.LastUpdateDate
+      description: The time the alarm was last changed (e.g., 2026-11-06T12:01:10.12Z).
+      type: Date
+    - contextPath: ThreatMon.Alarm.Description
+      description: The alarm description.
+      type: String
+    - contextPath: ThreatMon.Alarm.Mitigation
+      description: The recommended mitigation.
+      type: String
+    - contextPath: ThreatMon.Alarm.Findings
+      description: The findings of the alarm. Secret values are masked.
+      type: Unknown
+    - contextPath: ThreatMon.Alarm.FindingIDs
+      description: The finding IDs of the alarm, used for takedown and data removal requests.
+      type: Number
+  - name: threatmon-alarm-status-update
+    description: Sets the status of one or more ThreatMon alarms.
+    arguments:
+    - name: alarm_ids
+      required: true
+      isArray: true
+      description: A comma-separated list of alarm codes.
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Open
+      - In Progress
+      - Resolved
+      - Ignore
+      description: The new status.
+    - name: remarks
+      description: The remarks to save with the status change in ThreatMon.
+    - name: assigned_email
+      description: The e-mail address of the ThreatMon user to assign the alarm to.
+    - name: info_email_list
+      isArray: true
+      description: A comma-separated list of e-mail addresses that ThreatMon informs about the change.
+    outputs:
+    - contextPath: ThreatMon.Alarm.AlarmCode
+      description: The alarm code.
+      type: Number
+    - contextPath: ThreatMon.Alarm.Status
+      description: The new alarm status.
+      type: String
+  - name: threatmon-alarm-stats
+    description: Returns the number of ThreatMon alarms by status, severity and category.
+    arguments:
+    - name: from_date
+      description: Count alarms from this date, for example "30 days" or "2026-10-01".
+    - name: to_date
+      description: Count alarms up to this date.
+    outputs:
+    - contextPath: ThreatMon.AlarmStats.Status
+      description: The number of alarms per status.
+      type: Unknown
+    - contextPath: ThreatMon.AlarmStats.Severity
+      description: The number of alarms per severity.
+      type: Unknown
+    - contextPath: ThreatMon.AlarmStats.Category
+      description: The number of alarms per category.
+      type: Unknown
+  - name: threatmon-takedown-request
+    description: Submits a takedown request for a finding, such as a phishing domain, a rogue mobile app or a fake social media account. The request is submitted once and never retried automatically.
+    execution: true
+    arguments:
+    - name: finding_id
+      required: true
+      description: The finding ID, from the findings of the alarm.
+    - name: finding
+      required: true
+      description: The finding to take down, for example the phishing domain.
+    outputs:
+    - contextPath: ThreatMon.Takedown.FindingID
+      description: The finding ID.
+      type: Number
+    - contextPath: ThreatMon.Takedown.Finding
+      description: The finding.
+      type: String
+    - contextPath: ThreatMon.Takedown.Result
+      description: 'The result: Submitted, Already Requested, Not Eligible, Not Allowed or Not Found.'
+      type: String
+    - contextPath: ThreatMon.Takedown.Submitted
+      description: Whether a takedown request for the finding exists in ThreatMon.
+      type: Boolean
+    - contextPath: ThreatMon.Takedown.Message
+      description: The explanation of the result.
+      type: String
+  - name: threatmon-data-removal-request
+    description: Submits a Black Market Monitoring data removal request for a finding. Requires Black Market Data Removal credits. The request is submitted once and never retried automatically.
+    execution: true
+    arguments:
+    - name: finding_id
+      required: true
+      description: The finding ID, from the findings of the alarm.
+    - name: finding
+      required: true
+      description: The URL or content identifier of the finding to remove.
+    outputs:
+    - contextPath: ThreatMon.DataRemoval.FindingID
+      description: The finding ID.
+      type: Number
+    - contextPath: ThreatMon.DataRemoval.Finding
+      description: The finding.
+      type: String
+    - contextPath: ThreatMon.DataRemoval.Result
+      description: 'The result: Submitted, Already Requested, Not Eligible, Not Allowed or Not Found.'
+      type: String
+    - contextPath: ThreatMon.DataRemoval.Submitted
+      description: Whether a data removal request for the finding exists in ThreatMon.
+      type: Boolean
+    - contextPath: ThreatMon.DataRemoval.Message
+      description: The explanation of the result.
+      type: String
+  - name: cve
+    description: Returns ThreatMon Vulnerability Knowledge about a CVE, with its CVSS, ThreatMon risk scores, exploitation signals and CISA KEV entry. Requires the Vulnerability Knowledge module.
+    arguments:
+    - name: cve
+      required: true
+      default: true
+      isArray: true
+      description: A comma-separated list of CVE IDs, for example CVE-2024-3400.
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE.
+      type: String
+    - contextPath: CVE.CVSS.Score
+      description: The CVSS score of the CVE.
+      type: Number
+    - contextPath: CVE.Published
+      description: The date the CVE was published (e.g., 2024-04-12T08:15:06Z).
+      type: Date
+    - contextPath: CVE.Modified
+      description: The date the CVE was last modified (e.g., 2025-11-04T16:49:20Z).
+      type: Date
+    - contextPath: CVE.Description
+      description: The description of the CVE.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: ThreatMon.CVE.cve
+      description: The CVE ID.
+      type: String
+    - contextPath: ThreatMon.CVE.severity
+      description: The severity of the newest CVSS version.
+      type: String
+    - contextPath: ThreatMon.CVE.tmvs
+      description: The ThreatMon vulnerability score.
+      type: Number
+    - contextPath: ThreatMon.CVE.brvs
+      description: The Brainify Risk Vulnerability Score, the risk of the CVE for the company.
+      type: Number
+    - contextPath: ThreatMon.CVE.epss
+      description: The EPSS exploit probability.
+      type: Number
+    - contextPath: ThreatMon.CVE.exploit
+      description: Whether a known exploit exists.
+      type: Boolean
+    - contextPath: ThreatMon.CVE.hasPoc
+      description: Whether a public proof of concept exists.
+      type: Boolean
+    - contextPath: ThreatMon.CVE.kev
+      description: The CISA Known Exploited Vulnerabilities entry.
+      type: Unknown
+    - contextPath: ThreatMon.CVE.affectedAssets
+      description: The number of confirmed and potentially affected company assets.
+      type: Unknown
+  - name: threatmon-cve-get
+    description: Gets a ThreatMon Vulnerability Knowledge CVE in detail, optionally with the AI report, the timeline and the mentions. Requires the Vulnerability Knowledge module.
+    arguments:
+    - name: cve_id
+      required: true
+      description: The CVE ID, for example CVE-2024-3400.
+    - name: include
+      description: A comma-separated list of extra sections to return.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - report
+      - timeline
+      - mentions
+    outputs:
+    - contextPath: ThreatMon.CVE.cve
+      description: The CVE ID.
+      type: String
+    - contextPath: ThreatMon.CVE.summary
+      description: The CVE summary.
+      type: String
+    - contextPath: ThreatMon.CVE.severity
+      description: The severity of the newest CVSS version.
+      type: String
+    - contextPath: ThreatMon.CVE.tmvs
+      description: The ThreatMon vulnerability score.
+      type: Number
+    - contextPath: ThreatMon.CVE.brvs
+      description: The Brainify Risk Vulnerability Score, the risk of the CVE for the company.
+      type: Number
+    - contextPath: ThreatMon.CVE.epss
+      description: The EPSS exploit probability.
+      type: Number
+    - contextPath: ThreatMon.CVE.exploit
+      description: Whether a known exploit exists.
+      type: Boolean
+    - contextPath: ThreatMon.CVE.hasPoc
+      description: Whether a public proof of concept exists.
+      type: Boolean
+    - contextPath: ThreatMon.CVE.kev
+      description: The CISA Known Exploited Vulnerabilities entry.
+      type: Unknown
+    - contextPath: ThreatMon.CVE.pocs
+      description: The known proofs of concept.
+      type: Unknown
+    - contextPath: ThreatMon.CVE.riskBreakdown
+      description: The parts of the ThreatMon vulnerability score.
+      type: Unknown
+    - contextPath: ThreatMon.CVE.report
+      description: The AI enrichment report, when requested.
+      type: Unknown
+    - contextPath: ThreatMon.CVE.timeline
+      description: The timeline of the CVE, when requested.
+      type: Unknown
+    - contextPath: ThreatMon.CVE.mentions
+      description: The mentions on X, Reddit and the dark web, when requested.
+      type: Unknown
+  - name: threatmon-cve-search
+    description: Searches ThreatMon Vulnerability Knowledge for CVEs published or updated in a period, oldest first. Requires the Vulnerability Knowledge module.
+    arguments:
+    - name: start_date
+      required: true
+      description: The start of the period, for example "7 days" or "2026-11-01". The period can be at most 366 days.
+    - name: end_date
+      description: The end of the period. Default is now.
+    - name: date_field
+      description: The date to search by.
+      auto: PREDEFINED
+      predefined:
+      - published
+      - updated
+      defaultValue: published
+    - name: cvss
+      description: The severity of the newest CVSS version.
+      auto: PREDEFINED
+      predefined:
+      - NONE
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+    - name: search
+      description: A part of a CVE ID, for example 2026-1234.
+    - name: vendor
+      description: The CPE vendor name.
+    - name: product
+      description: The CPE product name.
+    - name: exploit
+      description: Whether a known exploit exists.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: has_poc
+      description: Whether a public proof of concept exists.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: trending
+      description: Whether the CVE is trending.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: known_ransomware_use
+      description: Whether the CVE is used in ransomware campaigns.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: confirmed_affected
+      description: Whether company assets are confirmed to be affected.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: potentially_affected
+      description: Whether company assets are potentially affected.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: limit
+      description: The maximum number of CVEs to return (1-1000).
+      defaultValue: "50"
+    - name: cursor
+      description: The cursor returned by the previous search, to get the next CVEs.
+    outputs:
+    - contextPath: ThreatMon.CVE.cve
+      description: The CVE ID.
+      type: String
+    - contextPath: ThreatMon.CVE.cweId
+      description: The CWE IDs.
+      type: String
+    - contextPath: ThreatMon.CVE.summary
+      description: The CVE summary.
+      type: String
+    - contextPath: ThreatMon.CVE.severity
+      description: The severity of the newest CVSS version.
+      type: String
+    - contextPath: ThreatMon.CVE.cvssV3_1
+      description: The CVSS v3.1 score.
+      type: Number
+    - contextPath: ThreatMon.CVE.cvssV4
+      description: The CVSS v4 score.
+      type: Number
+    - contextPath: ThreatMon.CVE.tmvs
+      description: The ThreatMon vulnerability score.
+      type: Number
+    - contextPath: ThreatMon.CVE.brvs
+      description: The Brainify Risk Vulnerability Score, the risk of the CVE for the company.
+      type: Number
+    - contextPath: ThreatMon.CVE.epss
+      description: The EPSS exploit probability.
+      type: Number
+    - contextPath: ThreatMon.CVE.exploit
+      description: Whether a known exploit exists.
+      type: Boolean
+    - contextPath: ThreatMon.CVE.hasPoc
+      description: Whether a public proof of concept exists.
+      type: Boolean
+    - contextPath: ThreatMon.CVE.vendors
+      description: The affected vendors and products.
+      type: Unknown
+    - contextPath: ThreatMon.CVE.publishedAt
+      description: The date the CVE was published (e.g., 2026-11-01T00:00:23.604Z).
+      type: Date
+    - contextPath: ThreatMon.CVESearch.NextCursor
+      description: The cursor to get the next CVEs, or empty when there are no more.
+      type: String
+  - name: threatmon-cve-subscription-list
+    description: Lists the vendors and products the company follows in ThreatMon Vulnerability Knowledge, with the recipients of the CVE e-mails.
+    arguments:
+    - name: recipient_email
+      description: Show only the subscriptions of this recipient of the CVE e-mails.
+    - name: limit
+      description: The maximum number of subscriptions to return (1-1000).
+      defaultValue: "50"
+    - name: cursor
+      description: The cursor returned by the previous command, to get the next subscriptions.
+    outputs:
+    - contextPath: ThreatMon.CVESubscription.vendor
+      description: The vendor.
+      type: String
+    - contextPath: ThreatMon.CVESubscription.product
+      description: The product.
+      type: String
+    - contextPath: ThreatMon.CVESubscription.productId
+      description: The product ID.
+      type: Number
+    - contextPath: ThreatMon.CVESubscription.subscribedAt
+      description: The time of the subscription (e.g., 2026-09-01T10:00:00Z).
+      type: Date
+    - contextPath: ThreatMon.CVESubscription.recipients
+      description: The recipients of the CVE e-mails.
+      type: Unknown
+    - contextPath: ThreatMon.CVESubscriptionList.NextCursor
+      description: The cursor to get the next subscriptions, or empty when there are no more.
+      type: String
+  - name: threatmon-subscribed-cve-search
+    description: Searches the CVEs published in a period for the vendors and products the company follows, oldest first.
+    arguments:
+    - name: start_date
+      required: true
+      description: The start of the period, for example "30 days" or "2026-10-01". The period can be at most 366 days.
+    - name: end_date
+      description: The end of the period. Default is now.
+    - name: cvss
+      description: The severity of the newest CVSS version.
+      auto: PREDEFINED
+      predefined:
+      - NONE
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+    - name: recipient_email
+      description: Show only the CVEs e-mailed to this recipient.
+    - name: limit
+      description: The maximum number of CVEs to return (1-1000).
+      defaultValue: "50"
+    - name: cursor
+      description: The cursor returned by the previous search, to get the next CVEs.
+    outputs:
+    - contextPath: ThreatMon.CVE.cve
+      description: The CVE ID.
+      type: String
+    - contextPath: ThreatMon.CVE.summary
+      description: The CVE summary.
+      type: String
+    - contextPath: ThreatMon.CVE.severity
+      description: The severity of the newest CVSS version.
+      type: String
+    - contextPath: ThreatMon.CVE.riskScore
+      description: The risk score of the CVE.
+      type: Number
+    - contextPath: ThreatMon.CVE.subscribedProducts
+      description: The subscribed products the CVE was matched to.
+      type: Unknown
+    - contextPath: ThreatMon.SubscribedCVESearch.NextCursor
+      description: The cursor to get the next CVEs, or empty when there are no more.
+      type: String
+  - name: threatmon-asset-list
+    description: Lists the company assets that ThreatMon discovered (Digital Footprint), such as IP addresses, domains, websites, certificates and technologies.
+    arguments:
+    - name: asset_type
+      required: true
+      description: The type of assets to list.
+      auto: PREDEFINED
+      predefined:
+      - IP
+      - Cloud IP
+      - Domain
+      - Subdomain
+      - Cloud Subdomain
+      - WHOIS
+      - Website
+      - SSL Certificate
+      - Technology
+      - DNS Record
+      - Bucket
+      - Bucket File
+      defaultValue: Domain
+    - name: limit
+      description: The maximum number of assets to return (1-100).
+      defaultValue: "50"
+    - name: page
+      description: The page to return, 0-based. Each page holds "limit" assets.
+      defaultValue: "0"
+    outputs:
+    - contextPath: ThreatMon.Asset.AssetType
+      description: The asset type.
+      type: String
+    - contextPath: ThreatMon.Asset.ip
+      description: The IP address (IP and Cloud IP assets).
+      type: String
+    - contextPath: ThreatMon.Asset.domainName
+      description: The domain name (Domain assets).
+      type: String
+    - contextPath: ThreatMon.Asset.subDomainName
+      description: The subdomain name (Subdomain and Cloud Subdomain assets).
+      type: String
+    - contextPath: ThreatMon.Asset.websiteUrl
+      description: The website URL (Website assets).
+      type: String
+    - contextPath: ThreatMon.Asset.asset
+      description: The asset the record belongs to (WHOIS, SSL Certificate and Technology assets).
+      type: String
+    - contextPath: ThreatMon.Asset.expireDate
+      description: The expiry date of the certificate, for SSL Certificate assets (e.g., 2027-01-13).
+      type: Date
+    - contextPath: ThreatMon.Asset.productName
+      description: The technology name (Technology assets).
+      type: String
+    - contextPath: ThreatMon.Asset.monitor
+      description: Whether ThreatMon monitors the asset.
+      type: Boolean
+  - name: threatmon-ciso-dashboard-get
+    description: Gets the ThreatMon CISO Dashboard, with the Brainify Risk Score, the module scores, the alert statistics and the AI risk report.
+    arguments:
+    - name: include_report
+      description: Whether to show the AI risk report in the War Room.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'true'
+    outputs:
+    - contextPath: ThreatMon.CISODashboard.statistics
+      description: The alert statistics and the average score.
+      type: Unknown
+    - contextPath: ThreatMon.CISODashboard.score.score
+      description: The Brainify Risk Score.
+      type: Number
+    - contextPath: ThreatMon.CISODashboard.score.grade
+      description: The grade of the Brainify Risk Score.
+      type: String
+    - contextPath: ThreatMon.CISODashboard.score.report
+      description: The AI risk report, in Markdown.
+      type: String
+    - contextPath: ThreatMon.CISODashboard.topAlerts
+      description: The most frequent alerts.
+      type: Unknown
+    - contextPath: ThreatMon.CISODashboard.topAssets
+      description: The assets with the most findings.
+      type: Unknown
+    - contextPath: ThreatMon.CISODashboard.topCveAlerts
+      description: The CVEs with the highest risk for the company.
+      type: Unknown
+    - contextPath: ThreatMon.CISODashboard.highDemandAssets
+      description: The company assets offered on black markets.
+      type: Unknown
+  - name: threatmon-screenshot-get
+    description: Downloads the screenshot of a finding, for example of a phishing page, and adds it to the War Room.
+    arguments:
+    - name: blob_name
+      required: true
+      description: The value of the Screenshot item of the finding, as the full URL or the blob name.
+    outputs:
+    - contextPath: InfoFile.Name
+      description: The file name.
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: InfoFile.Size
+      description: The file size.
+      type: Number
+    - contextPath: InfoFile.Type
+      description: The file type.
+      type: String
+    - contextPath: InfoFile.Info
+      description: The basic information of the file.
+      type: String
+    - contextPath: InfoFile.Extension
+      description: The file extension.
+      type: String
+  - name: threatmon-sandbox-file-submit
+    description: Submits a file to the ThreatMon sandbox for malware analysis and waits for the verdict. The file is submitted once.
+    polling: true
+    arguments:
+    - name: entry_id
+      required: true
+      description: The War Room entry ID of the file.
+    - name: archive_password
+      description: The password of an encrypted archive.
+    - name: polling
+      description: Whether to wait for the verdict.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'true'
+    - name: submission_id
+      description: The row ID of the submission. Used for polling.
+      hidden: true
+    - name: hide_polling_output
+      description: Whether to hide the polling message. Used for polling.
+      hidden: true
+    - name: file_name
+      description: The submitted file name. Used for polling.
+      hidden: true
+    - name: submitted_at
+      description: The submission time. Used for polling.
+      hidden: true
+    - name: temporary_sid
+      description: The temporary submission ID returned by ThreatMon. Used for polling.
+      hidden: true
+    - name: file_size
+      description: The size of the submitted file. Used for polling.
+      hidden: true
+    outputs:
+    - contextPath: ThreatMon.Sandbox.ID
+      description: The row ID of the submission. It does not change.
+      type: Number
+    - contextPath: ThreatMon.Sandbox.SID
+      description: The submission ID.
+      type: String
+    - contextPath: ThreatMon.Sandbox.FileName
+      description: The submitted file name.
+      type: String
+    - contextPath: ThreatMon.Sandbox.OverallRating
+      description: The verdict, for example Clean or Malicious.
+      type: String
+    - contextPath: ThreatMon.Sandbox.Results.SHA256
+      description: The SHA-256 of an analyzed file.
+      type: String
+    - contextPath: ThreatMon.Sandbox.Results.Rating
+      description: The rating of an analyzed file.
+      type: String
+    - contextPath: ThreatMon.Sandbox.Results.MalwareName
+      description: The detected malware name.
+      type: String
+    - contextPath: ThreatMon.Sandbox.Results.BehaviorData
+      description: The behavior of the analyzed file.
+      type: Unknown
+    - contextPath: File.SHA256
+      description: The SHA-256 of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA-1 of the file.
+      type: String
+    - contextPath: File.Name
+      description: The file name.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
+  - name: threatmon-sandbox-submission-list
+    description: Lists the files submitted to the ThreatMon sandbox.
+    arguments:
+    - name: limit
+      description: The maximum number of submissions to return (1-100).
+      defaultValue: "20"
+    - name: page
+      description: The page to return, 0-based.
+      defaultValue: "0"
+    outputs:
+    - contextPath: ThreatMon.Sandbox.ID
+      description: The row ID of the submission. It does not change.
+      type: Number
+    - contextPath: ThreatMon.Sandbox.SID
+      description: The submission ID.
+      type: String
+    - contextPath: ThreatMon.Sandbox.FileName
+      description: The submitted file name.
+      type: String
+    - contextPath: ThreatMon.Sandbox.FileSize
+      description: The file size in bytes.
+      type: Number
+    - contextPath: ThreatMon.Sandbox.OverallRating
+      description: The verdict, for example Clean or Malicious.
+      type: String
+    - contextPath: ThreatMon.Sandbox.CreatedAt
+      description: The time of the submission (e.g., 2026-11-10T12:20:45.230084).
+      type: Date
+  - name: threatmon-sandbox-result-get
+    description: Gets the verdict and the analyzed files of a ThreatMon sandbox submission.
+    arguments:
+    - name: sid
+      required: true
+      description: The submission ID (SID) from threatmon-sandbox-submission-list. A new submission gets its final SID when the analysis starts.
+    - name: limit
+      description: The maximum number of analyzed files to return (1-100).
+      defaultValue: "50"
+    - name: page
+      description: The page to return, 0-based.
+      defaultValue: "0"
+    outputs:
+    - contextPath: ThreatMon.Sandbox.ID
+      description: The row ID of the submission. It does not change.
+      type: Number
+    - contextPath: ThreatMon.Sandbox.SID
+      description: The submission ID.
+      type: String
+    - contextPath: ThreatMon.Sandbox.OverallRating
+      description: The verdict, for example Clean or Malicious.
+      type: String
+    - contextPath: ThreatMon.Sandbox.Results.FileName
+      description: The name of an analyzed file.
+      type: String
+    - contextPath: ThreatMon.Sandbox.Results.SHA256
+      description: The SHA-256 of an analyzed file.
+      type: String
+    - contextPath: ThreatMon.Sandbox.Results.Rating
+      description: The rating of an analyzed file.
+      type: String
+    - contextPath: ThreatMon.Sandbox.Results.MalwareName
+      description: The detected malware name.
+      type: String
+    - contextPath: ThreatMon.Sandbox.Results.BehaviorData
+      description: The behavior of the analyzed file.
+      type: Unknown
+    - contextPath: File.SHA256
+      description: The SHA-256 of the file.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
+  - name: threatmon-customer-list
+    description: Lists the customers of a ThreatMon MSSP account.
+    arguments:
+    - name: customer_name
+      description: Return only this customer.
+    - name: page
+      description: The page to return, 0-based.
+      defaultValue: "0"
+    outputs:
+    - contextPath: ThreatMon.Customer.CustomerName
+      description: The customer name.
+      type: String
+    - contextPath: ThreatMon.Customer.License
+      description: The license type, TRIAL or CUSTOMER.
+      type: String
+    - contextPath: ThreatMon.Customer.Domain
+      description: The domain of the customer.
+      type: String
+    - contextPath: ThreatMon.Customer.Keywords
+      description: The monitoring keywords.
+      type: String
+    - contextPath: ThreatMon.Customer.ContractEndDate
+      description: The end of the contract (e.g., 2027-12-31T23:59:59Z).
+      type: Date
+  - name: threatmon-customer-create
+    description: Creates a customer in a ThreatMon MSSP account. The change is applied at once. Requires the API key of the MSSP administrator account.
+    execution: true
+    arguments:
+    - name: customer_name
+      required: true
+      description: The customer name.
+    - name: license
+      required: true
+      description: The license type.
+      auto: PREDEFINED
+      predefined:
+      - TRIAL
+      - CUSTOMER
+    - name: customer_domain
+      required: true
+      description: The domain of the customer.
+    - name: keywords
+      isArray: true
+      description: A comma-separated list of monitoring keywords.
+    - name: contract_end_date
+      description: The end of the contract, for example 2027-12-31.
+    outputs:
+    - contextPath: ThreatMon.Customer.CustomerName
+      description: The customer name.
+      type: String
+    - contextPath: ThreatMon.Customer.License
+      description: The license type.
+      type: String
+    - contextPath: ThreatMon.Customer.Domain
+      description: The domain of the customer.
+      type: String
+  - name: threatmon-customer-update
+    description: Changes the license, the domain or the contract end date of a customer in a ThreatMon MSSP account. Requires the API key of the MSSP administrator account.
+    execution: true
+    arguments:
+    - name: customer_name
+      required: true
+      description: The customer to change.
+    - name: license
+      description: The new license type.
+      auto: PREDEFINED
+      predefined:
+      - TRIAL
+      - CUSTOMER
+    - name: customer_domain
+      description: The new domain of the customer.
+    - name: contract_end_date
+      description: The new end of the contract, for example 2027-12-31.
+    outputs: []
+  - name: threatmon-customer-delete
+    description: Deletes a customer from a ThreatMon MSSP account. The change is applied at once and cannot be undone. Requires the API key of the MSSP administrator account.
+    execution: true
+    arguments:
+    - name: customer_name
+      required: true
+      description: The customer to delete.
+    outputs: []
+  - name: threatmon-customer-keyword-add
+    description: Adds a monitoring keyword to a customer of a ThreatMon MSSP account. Requires the API key of the MSSP administrator account.
+    execution: true
+    arguments:
+    - name: customer_name
+      required: true
+      description: The customer.
+    - name: keyword
+      required: true
+      description: The keyword to add.
+    outputs: []
+  - name: threatmon-customer-keyword-remove
+    description: Removes a monitoring keyword from a customer of a ThreatMon MSSP account. Requires the API key of the MSSP administrator account.
+    execution: true
+    arguments:
+    - name: customer_name
+      required: true
+      description: The customer.
+    - name: keyword
+      required: true
+      description: The keyword to remove.
+    outputs: []
+  - name: threatmon-website-url-submit
+    description: Reports files and directories found on the company websites, so ThreatMon monitors them. The website of each URL must already be a ThreatMon asset.
+    arguments:
+    - name: urls
+      required: true
+      isArray: true
+      description: A comma-separated list of full URLs (at most 1000), for example https://www.example.com/backup/db.zip.
+    outputs:
+    - contextPath: ThreatMon.WebsiteURL.URL
+      description: The submitted URL.
+      type: String
+    - contextPath: ThreatMon.WebsiteURL.NormalizedURL
+      description: The URL as ThreatMon stored it.
+      type: String
+    - contextPath: ThreatMon.WebsiteURL.Status
+      description: 'The result: INSERTED, UPDATED or FAILED.'
+      type: String
+    - contextPath: ThreatMon.WebsiteURL.Reason
+      description: Why the URL failed.
+      type: String
+  - name: get-remote-data
+    description: Gets the latest status of a mirrored alarm. This command is used by mirroring and for debugging; it does not update the current incident.
+    arguments:
+    - name: id
+      required: true
+      description: The alarm code.
+    - name: lastUpdate
+      required: true
+      description: Retrieves changes made after this time.
+  - name: get-modified-remote-data
+    description: Gets the alarms that changed since the last update. This command is used by mirroring and for debugging.
+    arguments:
+    - name: lastUpdate
+      description: A date string. Only alarms changed after this time are returned.
+  - name: update-remote-system
+    description: Updates the ThreatMon alarm with the changes of the mirrored incident. This command is used by mirroring and for debugging; it does not update the current incident.
+    arguments: []
+  - name: get-mapping-fields
+    description: Returns the ThreatMon fields that outgoing mirroring can update.
+    arguments: []
   - name: threatmon_update_incident_status
+    deprecated: true
+    description: Deprecated. Use threatmon-alarm-status-update instead.
     arguments:
     - name: alarmId
       required: true
-      description: Threatmon Incident Code (ID).
+      description: The ThreatMon alarm code.
     - name: status
       required: true
       auto: PREDEFINED
@@ -94,30 +1169,35 @@ script:
       - False Positive
       - Ignore
       - Resolved
-      description: 'Incident Status.'
-    description: Update Incident Status endpoint allows you to change/update status. of specified Threatmon incidents.
+      description: The new status.
   - name: threatmon_request_takedown
+    deprecated: true
+    description: Deprecated. Use threatmon-takedown-request instead.
+    execution: true
     arguments:
     - name: findingId
       required: true
       description: The ID of the finding (alarm row) to submit a takedown request for.
     - name: finding
       required: true
-      description: Description of the finding that justifies the takedown request.
-    description: Submits a takedown request for a specific Threatmon finding. Eligible finding types include Phishing Domain Detected, Rogue Mobile App Detected, Fake SM Account Detected, and similar alarm types.
+      description: The finding that the takedown request is for.
   - name: threatmon_request_data_removal
+    deprecated: true
+    description: Deprecated. Use threatmon-data-removal-request instead.
+    execution: true
     arguments:
     - name: findingId
       description: The ID of the finding (alarm row) to submit a data removal request for.
       required: true
     - name: finding
-      description: The URL or content identifier of the finding to be removed from Black Market Monitoring results.
+      description: The URL or content identifier of the finding to remove from Black Market Monitoring results.
       required: true
-    description: Submits a Black Market Monitoring data removal request for a specific ThreatMon finding. Requires the company to have remaining Black Market Data Removal credits. Returns 403 if the quota is exceeded or rights are insufficient.
   - name: threatmon_list_cves
+    deprecated: true
+    description: Deprecated. Use threatmon-cve-search instead.
     arguments:
     - name: page
-      description: Page number to retrieve (0-based). Each page contains up to 100 CVEs, sorted by last update time (descending).
+      description: The page to return, 0-based.
       defaultValue: "0"
     - name: cvss
       description: Filter CVEs by CVSS v3 severity.
@@ -130,58 +1210,59 @@ script:
       - CRITICAL
     outputs:
     - contextPath: ThreatMon.CVE.cve
-      description: CVE identifier.
+      description: The CVE identifier.
       type: String
     - contextPath: ThreatMon.CVE.summary
-      description: CVE summary.
+      description: The CVE summary.
       type: String
     - contextPath: ThreatMon.CVE.cvssV2
-      description: CVSS v2 score.
+      description: The CVSS v2 score.
       type: Number
     - contextPath: ThreatMon.CVE.severityV2
-      description: CVSS v2 severity level.
+      description: The CVSS v2 severity level.
       type: String
     - contextPath: ThreatMon.CVE.cvssV3
-      description: CVSS v3 score.
+      description: The CVSS v3 score.
       type: Number
     - contextPath: ThreatMon.CVE.severityV3
-      description: CVSS v3 severity level.
+      description: The CVSS v3 severity level.
       type: String
     - contextPath: ThreatMon.CVE.cvssV3_1
-      description: CVSS v3.1 score.
+      description: The CVSS v3.1 score.
       type: Number
     - contextPath: ThreatMon.CVE.severityV3_1
-      description: CVSS v3.1 severity level.
+      description: The CVSS v3.1 severity level.
       type: String
     - contextPath: ThreatMon.CVE.cvssV4
-      description: CVSS v4 score.
+      description: The CVSS v4 score.
       type: Number
     - contextPath: ThreatMon.CVE.severityV4
-      description: CVSS v4 severity level.
+      description: The CVSS v4 severity level.
       type: String
     - contextPath: ThreatMon.CVE.vendors
-      description: Map of vendor names to affected product names.
+      description: The map of vendor names to affected product names.
       type: Unknown
     - contextPath: ThreatMon.CVE.exploit
-      description: Whether a known exploit exists for this CVE.
+      description: Whether a known exploit exists for the CVE.
       type: Boolean
     - contextPath: ThreatMon.CVE.knownRansomwareCampaignUse
-      description: Known ransomware campaign associated with this CVE, if any.
+      description: The known ransomware campaign associated with the CVE, if any.
       type: String
     - contextPath: ThreatMon.CVE.zeroday
-      description: Whether this CVE was disclosed as a zero-day.
+      description: Whether the CVE was disclosed as a zero-day.
       type: Boolean
     - contextPath: ThreatMon.CVE.createdAt
-      description: Date the CVE record was created in ThreatMon.
+      description: The date the CVE record was created in ThreatMon.
       type: Date
     - contextPath: ThreatMon.CVE.updatedAt
-      description: Date the CVE record was last updated in ThreatMon.
+      description: The date the CVE record was last updated in ThreatMon.
       type: Date
-    description: Retrieves a paginated list of all CVEs monitored by ThreatMon.
   - name: threatmon_list_subscribed_cves
+    deprecated: true
+    description: Deprecated. Use threatmon-subscribed-cve-search instead.
     arguments:
     - name: page
-      description: Page number to retrieve (0-based). Each page contains up to 100 CVEs, sorted by last update time (descending).
+      description: The page to return, 0-based.
       defaultValue: "0"
     - name: cvss
       description: Filter CVEs by CVSS v3 severity.
@@ -193,59 +1274,64 @@ script:
       - HIGH
       - CRITICAL
     - name: customer_name
-      description: For MSSP accounts, retrieves subscribed CVEs on behalf of the specified child customer instead of the authenticated company.
+      description: For MSSP accounts, the sub company to list the CVEs for.
     outputs:
     - contextPath: ThreatMon.CVE.cve
-      description: CVE identifier.
+      description: The CVE identifier.
       type: String
     - contextPath: ThreatMon.CVE.summary
-      description: CVE summary.
+      description: The CVE summary.
       type: String
     - contextPath: ThreatMon.CVE.cvssV2
-      description: CVSS v2 score.
+      description: The CVSS v2 score.
       type: Number
     - contextPath: ThreatMon.CVE.severityV2
-      description: CVSS v2 severity level.
+      description: The CVSS v2 severity level.
       type: String
     - contextPath: ThreatMon.CVE.cvssV3
-      description: CVSS v3 score.
+      description: The CVSS v3 score.
       type: Number
     - contextPath: ThreatMon.CVE.severityV3
-      description: CVSS v3 severity level.
+      description: The CVSS v3 severity level.
       type: String
     - contextPath: ThreatMon.CVE.cvssV3_1
-      description: CVSS v3.1 score.
+      description: The CVSS v3.1 score.
       type: Number
     - contextPath: ThreatMon.CVE.severityV3_1
-      description: CVSS v3.1 severity level.
+      description: The CVSS v3.1 severity level.
       type: String
     - contextPath: ThreatMon.CVE.cvssV4
-      description: CVSS v4 score.
+      description: The CVSS v4 score.
       type: Number
     - contextPath: ThreatMon.CVE.severityV4
-      description: CVSS v4 severity level.
+      description: The CVSS v4 severity level.
       type: String
     - contextPath: ThreatMon.CVE.vendors
-      description: Map of vendor names to affected product names.
+      description: The map of vendor names to affected product names.
       type: Unknown
     - contextPath: ThreatMon.CVE.exploit
-      description: Whether a known exploit exists for this CVE.
+      description: Whether a known exploit exists for the CVE.
       type: Boolean
     - contextPath: ThreatMon.CVE.knownRansomwareCampaignUse
-      description: Known ransomware campaign associated with this CVE, if any.
+      description: The known ransomware campaign associated with the CVE, if any.
       type: String
     - contextPath: ThreatMon.CVE.zeroday
-      description: Whether this CVE was disclosed as a zero-day.
+      description: Whether the CVE was disclosed as a zero-day.
       type: Boolean
     - contextPath: ThreatMon.CVE.createdAt
-      description: Date the CVE record was created in ThreatMon.
+      description: The date the CVE record was created in ThreatMon.
       type: Date
     - contextPath: ThreatMon.CVE.updatedAt
-      description: Date the CVE record was last updated in ThreatMon.
+      description: The date the CVE record was last updated in ThreatMon.
       type: Date
-    description: Retrieves a paginated list of CVEs affecting products that the authenticated company (or a specified child customer) is actively subscribed to.
   isfetch: true
-  dockerimage: demisto/python3:3.12.13.10404775
-fromversion: 5.0.0
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+  dockerimage: demisto/python3:3.12.15.14069087
+defaultmapperin: ThreatMon - Incoming Mapper
+defaultmapperout: ThreatMon - Outgoing Mapper
+fromversion: 6.10.0
+supportlevelheader: community
 tests:
-- No tests
+- No tests (auto formatted)

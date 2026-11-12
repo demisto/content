@@ -701,14 +701,17 @@ def test_fetch_incidents_command(response_files_names, mock_params, mock_module,
     """
     from CyberBlindspot import fetch_incidents
 
+    def legacy_page(rows):
+        return {"hits": rows, "has_more": False, "next_cursor": None, "cursor_mode": False}
+
     # First run with no incidents returned
-    mocker.patch.object(mock_client, "fetch_incidents", return_value=[])
+    mocker.patch.object(mock_client, "fetch_incident_page", return_value=legacy_page([]))
     next_run, incidents = fetch_incidents(mock_client, [], mock_params, {})
     assert next_run == {}
     assert incidents == []
 
     # Not first run with 1 duplicate in the returned incidents
-    mocker.patch.object(mock_client, "fetch_incidents", return_value=load_mock_response(response_files_names[0]))
+    mocker.patch.object(mock_client, "fetch_incident_page", return_value=legacy_page(load_mock_response(response_files_names[0])))
     next_run, incidents = fetch_incidents(mock_client, mock_last_fetch_ids(mock_module)[:1], mock_params, {"not_empty": ""})
     assert len(incidents) == 2
     assert len(next_run.get("last_fetch_ids", [])) == 3
@@ -719,7 +722,7 @@ def test_fetch_incidents_command(response_files_names, mock_params, mock_module,
 
     # Not first run with no duplicates in the returned incidents
 
-    mocker.patch.object(mock_client, "fetch_incidents", return_value=load_mock_response(response_files_names[0]))
+    mocker.patch.object(mock_client, "fetch_incident_page", return_value=legacy_page(load_mock_response(response_files_names[0])))
     next_run, incidents = fetch_incidents(mock_client, [], mock_params, {"not_empty": ""})
     assert len(incidents) == 3
     assert next_run.get("last_fetch_ids") == mock_last_fetch_ids(mock_module)
@@ -731,11 +734,165 @@ def test_fetch_incidents_command(response_files_names, mock_params, mock_module,
     # Run with bad params
 
     fetch_exception = DemistoException("Error received: Please contact Threat Manager Team")
-    mocker.patch.object(mock_client, "fetch_incidents", side_effect=fetch_exception)
+    mocker.patch.object(mock_client, "fetch_incident_page", side_effect=fetch_exception)
     bad_mock_params = {**mock_params, "date_from": "abcdefg123"}
     with pytest.raises(DemistoException) as e:
         fetch_incidents(mock_client, [], bad_mock_params, {"not_empty": ""})
     assert str(e.value) == "Error received: Please contact Threat Manager Team"
+
+
+def test_fetch_incidents_advances_cursor_when_page_is_all_duplicates(mock_client, mocker):
+    """A full duplicate page still stores the API cursor so the next cycle moves forward."""
+    from CyberBlindspot import fetch_incidents
+
+    mocker.patch.object(
+        mock_client,
+        "fetch_incident_page",
+        return_value={
+            "hits": [{"id": "a"}, {"id": "b"}],
+            "has_more": True,
+            "next_cursor": "next-token",
+            "cursor_mode": True,
+        },
+    )
+    last_run = {"query_date_from": 111, "fetch_cursor": "old-token", "last_fetched_timestamp": 111}
+    next_run, incidents = fetch_incidents(mock_client, ["a", "b"], {"date_from": 111, "max_hits": 2}, last_run)
+
+    assert incidents == []
+    assert next_run["fetch_cursor"] == "next-token"
+    assert next_run["query_date_from"] == 111
+    assert next_run["last_fetch_ids"] == ["a", "b"]
+
+
+def test_fetch_incidents_keeps_cursor_when_page_is_empty(mock_client, mocker):
+    """An empty cursor page keeps the previous cursor and the frozen lower bound."""
+    from CyberBlindspot import fetch_incidents
+
+    mocker.patch.object(
+        mock_client,
+        "fetch_incident_page",
+        return_value={"hits": [], "has_more": False, "next_cursor": None, "cursor_mode": True},
+    )
+    last_run = {"query_date_from": 111, "fetch_cursor": "old-token", "last_fetched_timestamp": 50}
+    next_run, incidents = fetch_incidents(mock_client, ["a"], {"date_from": 111}, last_run)
+
+    assert incidents == []
+    assert next_run["fetch_cursor"] == "old-token"
+    assert next_run["query_date_from"] == 111
+
+
+def test_fetch_incident_page_raises_cursor_rejected_on_400_without_retrying(mock_client, mocker):
+    """A 400 on a cursor request means the API refused the token itself, so retrying cannot help."""
+    from types import SimpleNamespace
+
+    from CommonServerPython import DemistoException
+    from CyberBlindspot import CursorRejectedError
+
+    http = mocker.patch.object(
+        mock_client,
+        "_http_request",
+        side_effect=DemistoException("Error in API call [400]", res=SimpleNamespace(status_code=400)),
+    )
+
+    with pytest.raises(CursorRejectedError):
+        mock_client.fetch_incident_page({"cursor": "bad-token", "paginate": "search_after"})
+
+    assert 400 not in http.call_args.kwargs["status_list_to_retry"]
+
+
+def test_fetch_incident_page_keeps_plain_400_handling_without_cursor(mock_client, mocker):
+    """Without a cursor a 400 is still retried and surfaces as the ordinary exception."""
+    from types import SimpleNamespace
+
+    from CommonServerPython import DemistoException
+    from CyberBlindspot import CursorRejectedError
+
+    http = mocker.patch.object(
+        mock_client,
+        "_http_request",
+        side_effect=DemistoException("Error in API call [400]", res=SimpleNamespace(status_code=400)),
+    )
+
+    with pytest.raises(DemistoException) as raised:
+        mock_client.fetch_incident_page({"paginate": "search_after"})
+
+    assert not isinstance(raised.value, CursorRejectedError)
+    assert 400 in http.call_args.kwargs["status_list_to_retry"]
+
+
+def test_fetch_incidents_restarts_from_last_timestamp_when_cursor_is_rejected(mock_client, mocker):
+    """A rejected cursor is dropped and the fetch resumes from the last fetched timestamp in the same cycle."""
+    from CyberBlindspot import CursorRejectedError, fetch_incidents
+
+    fetch = mocker.patch.object(
+        mock_client,
+        "fetch_incident_page",
+        side_effect=[
+            CursorRejectedError("Invalid pagination cursor"),
+            {"hits": [{"id": "a"}], "has_more": False, "next_cursor": "fresh-token", "cursor_mode": True},
+        ],
+    )
+    last_run = {"query_date_from": 111, "fetch_cursor": "bad-token", "last_fetched_timestamp": 500, "last_fetch_ids": ["a"]}
+    params = {"date_from": 111, "cursor": "bad-token", "max_hits": 2}
+
+    next_run, incidents = fetch_incidents(mock_client, ["a"], params, last_run)
+
+    assert fetch.call_args_list[1][0][0] == {"date_from": 500, "max_hits": 2}
+    assert incidents == []
+    assert next_run["fetch_cursor"] == "fresh-token"
+    assert next_run["query_date_from"] == 500
+
+
+def test_build_fetch_params_freezes_query_date_and_sends_cursor():
+    from CyberBlindspot import Instance, build_fetch_params
+
+    with patch("CyberBlindspot.INSTANCE", new=Instance(module="compromised_cards")):
+        resumed = build_fetch_params(
+            {"first_fetch": "7 days"},
+            {"query_date_from": 1700000000000, "fetch_cursor": "abc", "last_fetched_timestamp": 1},
+        )
+        stuck = build_fetch_params({"first_fetch": "7 days"}, {"last_fetched_timestamp": 1690000000000})
+        filtered = build_fetch_params(
+            {"first_fetch": "7 days", "severity": ["High", " Critical "]},
+            {"last_fetched_timestamp": 1690000000000},
+        )
+
+    with patch("CyberBlindspot.INSTANCE", new=Instance(module="incidents")):
+        incident_filtered = build_fetch_params(
+            {"first_fetch": "7 days", "severity": ["High", " Critical "]},
+            {"last_fetched_timestamp": 1690000000000},
+        )
+
+    assert resumed["paginate"] == "search_after"
+    assert resumed["date_from"] == 1700000000000
+    assert resumed["cursor"] == "abc"
+    assert resumed["module_type"] == "compromised_cards"
+    assert stuck["date_from"] == 1690000000000
+    assert stuck["paginate"] == "search_after"
+    assert "cursor" not in stuck
+    assert "severity" not in resumed
+    assert "severity" not in filtered
+    assert incident_filtered["severity"] == ["high", "critical"]
+
+
+def test_get_modified_remote_data_pages_until_has_more_is_false(mock_client, mocker):
+    from CyberBlindspot import get_modified_remote_data_command
+
+    mocker.patch.object(
+        mock_client,
+        "fetch_incident_page",
+        side_effect=[
+            {"hits": [{"id": "a"}], "has_more": True, "next_cursor": "page-2", "cursor_mode": True},
+            {"hits": [{"id": "b"}], "has_more": False, "next_cursor": "page-3", "cursor_mode": True},
+        ],
+    )
+    result = get_modified_remote_data_command(mock_client, {"lastUpdate": "2024-01-02T13:30:21.172707565Z"})
+    second_params = mock_client.fetch_incident_page.call_args_list[1][0][0]
+
+    assert result.modified_incident_ids == ["a", "b"]
+    assert second_params["cursor"] == "page-2"
+    assert second_params["date_field"] == "last_seen"
+    assert "fetch_cursor" not in second_params
 
 
 @pytest.mark.parametrize(
@@ -1342,8 +1499,16 @@ def test_get_modified_remote_data(mock_input_file, mock_client, mocker):
         "lastUpdate": "2024-01-02T13:30:21.172707565Z",
     }
     mock_result = load_mock_response(mock_input_file)
-    mocker.patch.object(mock_client, "fetch_incidents", return_value=mock_result)
+    mocker.patch.object(
+        mock_client,
+        "fetch_incident_page",
+        return_value={"hits": mock_result, "has_more": False, "next_cursor": None, "cursor_mode": True},
+    )
     result = get_modified_remote_data_command(mock_client, mock_args)
+    called_params = mock_client.fetch_incident_page.call_args[0][0]
+    assert called_params.get("paginate") == "search_after"
+    assert called_params.get("date_field") == "last_seen"
+    assert "cursor" not in called_params
     mock_assert = [item["id"] for item in mock_result]
     assert result.modified_incident_ids == mock_assert
 

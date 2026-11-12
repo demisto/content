@@ -1,0 +1,40 @@
+{
+    "id": "incident_microsoftgraphsecurityalertstatus",
+    "version": -1,
+    "name": "Microsoft Graph Security Alert Status",
+    "ownerOnly": false,
+    "cliName": "microsoftgraphsecurityalertstatus",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Graph Security Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ],
+    "selectValues": [
+        "new",
+        "inProgress",
+        "resolved",
+        "unknownFutureValue"
+    ]
+}

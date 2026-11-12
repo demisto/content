@@ -5,6 +5,7 @@ from typing import Any
 
 import base64
 
+import demistomock as demisto
 import pytest
 import datetime
 
@@ -283,6 +284,52 @@ def test_get_alerts_excludes_preview_status(requests_mock, reco_client: RecoClie
     sent_filter = requests_mock.last_request.qs["filters"][0]
     assert 'status ne "alert_status_preview"' in sent_filter
     assert 'severity eq "high"' in sent_filter
+
+
+def test_get_alerts_expands_multiple_severities_with_or_not_in(requests_mock, reco_client: RecoClient) -> None:
+    """The External API returns HTTP 500 on the SCIM `in` operator, so multiple severities
+    must be sent as parenthesised `eq` clauses joined with `or`."""
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/list", json=build_alerts_list_response([]))
+
+    reco_client.get_alerts(risk_levels=["MEDIUM", "HIGH", "CRITICAL"])
+
+    sent_filter = requests_mock.last_request.qs["filters"][0]
+    assert " in [" not in sent_filter
+    assert '(severity eq "medium" or severity eq "high" or severity eq "critical")' in sent_filter
+
+
+def test_get_alerts_raises_on_api_error(requests_mock, reco_client: RecoClient) -> None:
+    """A failed alerts/list call must raise instead of looking like 'no new alerts'."""
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/list", status_code=500, json={"code": 13})
+
+    with pytest.raises(Exception):
+        reco_client.get_alerts(risk_levels=["HIGH", "CRITICAL"])
+
+
+def test_fetch_incidents_propagates_api_error(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/list", status_code=500, json={"code": 13})
+
+    with pytest.raises(Exception):
+        fetch_incidents(reco_client=reco_client, last_run={}, max_fetch=10, risk_levels=["HIGH", "CRITICAL"])
+
+
+def test_test_module_uses_fetch_filter(requests_mock, reco_client: RecoClient) -> None:
+    """Test button must send the same severity/Preview filter as fetch-incidents."""
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/list", json={"alerts": [], "totalResults": 0})
+
+    assert reco_client.validate_api_key(risk_levels=["HIGH", "CRITICAL"]) == "ok"
+
+    sent_filter = requests_mock.last_request.qs["filters"][0]
+    assert 'status ne "alert_status_preview"' in sent_filter
+    assert '(severity eq "high" or severity eq "critical")' in sent_filter
+
+
+def test_test_module_fails_when_filtered_query_rejected(requests_mock, mocker, reco_client: RecoClient) -> None:
+    mocker.patch.object(demisto, "error")
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/list", status_code=500, json={"code": 13})
+
+    with pytest.raises(Exception):
+        reco_client.validate_api_key(risk_levels=["HIGH", "CRITICAL"])
 
 
 def test_fetch_incidents_without_assets_info(requests_mock, reco_client: RecoClient) -> None:

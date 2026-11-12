@@ -1,24 +1,30 @@
-# ThreatMon Threat Feed
+ThreatMon is a digital risk protection and threat intelligence platform. Its research and monitoring teams publish tens of thousands of Indicators of Compromise (IOCs) every day: malicious IP addresses, domains, URLs, file hashes, command and control servers and cryptocurrency wallets.
 
-ThreatMon is a threat intelligence platform that publishes Indicators of Compromise (IOCs) collected from its own research and monitoring capabilities.
-
-This pack contains the **ThreatMon Threat Feed** integration, which periodically pulls IOCs from the ThreatMon IOC API and creates them as indicators in Cortex, so they can be used for enrichment, correlation and detection.
+This pack brings the ThreatMon IOC feed into Cortex XSOAR and Cortex XSIAM, so the indicators can be used for enrichment, correlation, detection and blocking.
 
 ## What does this pack do?
 
-- Ingests IP, domain, URL and file hash indicators from the ThreatMon IOC platform.
-- Enriches every indicator with the ThreatMon metadata, such as severity, confidence level, ISP, geolocation, resolved IPs, categories and tags.
-- Lets you narrow the fetch down to a specific IOC type, or to specific ThreatMon collections.
-- Applies the configured reputation, source reliability and TLP color to every ingested indicator.
+- Ingests every ThreatMon IOC from the ThreatMon TAXII 2.1 server as Cortex indicators: IP addresses (with ports), domains, URLs, file hashes, C2 servers and cryptocurrency addresses.
+- Reads every ThreatMon collection completely with TAXII 2.1 cursor paging, and resumes an interrupted fetch from the last saved page, so no indicator is missed.
+- Corrects the indicator type of values that ThreatMon publishes in the wrong STIX type, for example `ip:port` values, URLs and Ethereum wallets published as domains.
+- Adds the ThreatMon labels as tags and keeps the STIX ID, the first and last seen dates and the TLP marking of every indicator.
+- Applies the configured reputation, source reliability and TLP color to every indicator.
+- Runs incrementally: each fetch reads what ThreatMon published since the previous one, with a look-back window so late-published indicators are not missed, and without creating duplicates.
+- Provides troubleshooting commands to list the collections, sample indicators and inspect or reset the fetch state.
 
-The feed is incremental, so each run only ingests indicators that ThreatMon published after the previous run.
+## Content
 
-## Requirements
+| Item | Name |
+| --- | --- |
+| Integration | ThreatMon Threat Feed |
 
-- A ThreatMon account with access to the IOC API.
-- A ThreatMon API token.
-- Network connectivity from your Cortex engine to the ThreatMon IOC API.
+## Before you start
 
----
+- A ThreatMon subscription with access to the IOC feed, and its **IOC API token**. This token is different from the External API Key of the ThreatMon Incident Management pack.
+- Network access from the Cortex server or engine to `https://ioc.threatmonit.io`.
 
-This pack is community supported. For questions about the ThreatMon platform or your API token, contact the ThreatMon team at [integration@threatmonit.io](mailto:integration@threatmonit.io).
+To bring ThreatMon alarms into Cortex as incidents, submit takedowns and enrich CVEs, also install the **ThreatMon Incident Management** pack.
+
+## Support
+
+Contact [support@threatmonit.io](mailto:support@threatmonit.io) or visit [threatmon.io](https://www.threatmon.io).

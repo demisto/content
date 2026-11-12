@@ -4,6 +4,17 @@ This integration was integrated and tested with version 2.0 of Palo Alto Network
 **Note**:
 Incidents are fetched from every control point the tenant can see. Use the *DLP Channels* parameter to narrow the fetch to specific control points.
 
+**Note**:
+Starting from version 2.4.0, incidents are fetched from the Enterprise DLP v4 incident inventory API (`/v4/api/incidents`). This API returns a summary of each incident, so fetched incidents contain fewer attributes than the previous incident notifications API returned:
+
+- The *PAN DLP Tenant ID* and *File SHA256* incident fields are no longer populated. The file SHA-256 is still available from the Enterprise DLP incident details API as `asset_hash`.
+- The *PAN DLP Previous Feedback* incident field now holds the feedback status of the fetched incident itself, as an enum value such as `PENDING_RESPONSE`, instead of the feedback given on an earlier incident with the same report and user. The conditions that check this field in the *DLP Incident Feedback Loop* and *DLP - Get User Feedback* playbooks no longer match.
+- The *PAN DLP Incident Region* incident field holds the region where the incident was created. `SG`, `FR` and `CH` replace the previous `AP`, `PAR` and `SUI` values.
+- The `tenantId`, `checksum`, `appId`, `scanDate`, `updatedAt`, `committedAt`, `resolutionStatus`, `direction`, `url`, `confidenceLevel`, policy, `fileSize`, `priority`, `incidentNotes`, `reasonForAction` and peripheral keys are no longer included in the incident raw JSON. `incidentDetails` contains only the severity header and the application name, so the file, device and content decoder details, and the username, URL, destination IP and firewall version headers, are no longer included.
+- `source` holds the control point in upper case, `createdAt` is in ISO 8601 format, `dataProfileId` is a string and `userId` is `N/A` when the user is unknown.
+
+If you use any of these attributes in a custom mapper, layout or playbook, update it. You can still view these attributes in the incident details in Strata Cloud Manager.
+
 ### Setup
 
 Go to the `Settings` tab on the DLP web interface.

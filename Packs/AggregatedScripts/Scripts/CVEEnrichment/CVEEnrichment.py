@@ -88,6 +88,11 @@ def cve_enrichment_script(
 
 
 def main():  # pragma: no cover
+    if is_xdr_tenant():
+        demisto.debug("CVEEnrichment is not supported on Cortex XDR tenants, returning empty results.")
+        return_results(CommandResults(readable_output="The cve-enrichment script is not supported on this tenant."))
+        return
+
     args = demisto.args()
     cve_list = argToList(args.get("cve_list"))
     external_enrichment = argToBoolean(args.get("external_enrichment", False))

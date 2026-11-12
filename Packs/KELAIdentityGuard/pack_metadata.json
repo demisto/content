@@ -1,0 +1,47 @@
+{
+    "name": "KELA Identity Guard",
+    "description": "Integrate with KELA Identity Guard to fetch and search compromised credentials, bot-market alerts and compromised session-cookie incidents in Cortex.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "KELA",
+    "url": "https://www.kelacyber.com",
+    "email": "support@ke-la.com",
+    "created": "2026-10-20T00:00:00Z",
+    "githubUser": [
+        "hadarsapan-max"
+    ],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence",
+        "Dark Web",
+        "IAM"
+    ],
+    "useCases": [
+        "Threat Intelligence Management",
+        "Identity and Access Management"
+    ],
+    "keywords": [
+        "KELA",
+        "Identity Guard",
+        "infostealer",
+        "compromised credentials",
+        "dark web"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ]
+}
