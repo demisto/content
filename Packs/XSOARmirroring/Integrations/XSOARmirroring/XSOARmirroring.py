@@ -1,4 +1,5 @@
 import json
+import traceback
 from datetime import timedelta, UTC
 from typing import Any
 
@@ -167,7 +168,9 @@ class Client(BaseClient):
             )
         except Exception as e:
             # The entry itself was already created, failing here would re-send it on the next mirroring cycle.
-            demisto.error(f"Failed to set tags {tags} on remote entry {entry_id} in incident {incident_id}: {e}")
+            demisto.error(
+                f"Failed to set tags {tags} on remote entry {entry_id} in incident {incident_id}: {e}\n{traceback.format_exc()}"
+            )
 
     def add_incident_entry(self, incident_id: str | None, entry: dict[str, Any]):
         entry_tags: list[str] = entry.get("tags") or []
