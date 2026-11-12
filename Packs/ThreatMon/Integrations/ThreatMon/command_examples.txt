@@ -1,0 +1,23 @@
+!threatmon-alarm-list limit=1 category="Brand Intelligence" status=Open
+!threatmon-alarm-status-update alarm_ids=20377999 status="In Progress" remarks="Investigating in Cortex."
+!threatmon-alarm-stats from_date="30 days"
+!threatmon-takedown-request finding_id=21541113 finding=examp1e-login.pages.dev
+!threatmon-data-removal-request finding_id=99999999 finding=https://market.example/item/1
+!cve cve=CVE-2024-3400
+!threatmon-cve-get cve_id=CVE-2024-3400 include=report
+!threatmon-cve-search start_date=2026-11-01 cvss=CRITICAL exploit=true limit=1
+!threatmon-cve-subscription-list
+!threatmon-subscribed-cve-search start_date="30 days" cvss=HIGH
+!threatmon-asset-list asset_type="SSL Certificate" limit=1
+!threatmon-ciso-dashboard-get include_report=false
+!threatmon-screenshot-get blob_name="FILE-SHARE/b2da3c55-c8e4-4e0f-96e5-0fce6fa0b7ba.png"
+!threatmon-sandbox-file-submit entry_id=1234@abcd
+!threatmon-sandbox-submission-list limit=1
+!threatmon-sandbox-result-get sid=8049628341845326322
+!threatmon-customer-list customer_name="Example Corp"
+!threatmon-customer-create customer_name="Example Corp" license=TRIAL customer_domain=example.com keywords=example contract_end_date=2027-12-31
+!threatmon-customer-update customer_name="Example Corp" license=CUSTOMER
+!threatmon-customer-delete customer_name="Example Corp"
+!threatmon-customer-keyword-add customer_name="Example Corp" keyword=examplebrand
+!threatmon-customer-keyword-remove customer_name="Example Corp" keyword=examplebrand
+!threatmon-website-url-submit urls=https://www.example.com/backup/db.zip,https://shop.example.net/admin/

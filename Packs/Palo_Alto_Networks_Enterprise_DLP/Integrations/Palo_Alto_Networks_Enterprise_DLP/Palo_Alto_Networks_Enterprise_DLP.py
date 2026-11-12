@@ -103,6 +103,26 @@ START_TIMESTAMP_KEY = "start_timestamp"
 LAST_IDS_KEY = "last_ids"  # Legacy key (list[str]) — kept for migration only
 LAST_IDS_TIMESTAMPS_KEY = "last_ids_timestamps"  # New key: dict[str, int] mapping incident_id → committedAt epoch
 LOCAL_LAST_RUN: dict[str, Any] = {}  # In memory last run object during long running execution
+# The incident feedback API names some regions differently from the v4 incident inventory,
+# which the fetch copies into the incident region field. The other region codes match.
+FEEDBACK_REGION_ALIASES = {"sg": "ap", "fr": "par", "ch": "sui", "sa": "sau"}
+# Service names the incident feedback API accepts in "service_name". It rejects any other
+# value, including channels the v4 fetch can return, such as "saas-api".
+FEEDBACK_SERVICE_NAMES = {
+    "gpcs",
+    "aperture",
+    "redlock",
+    "prisma-cloud",
+    "prisma-saas",
+    "prisma-access",
+    "ngfw",
+    "dlp",
+    "email-dlp",
+    "cortex-xdr",
+    "endpoint-dlp",
+    "prisma-access-browser",
+    "airs",
+}
 
 
 class FeedbackStatus(Enum):
@@ -380,7 +400,7 @@ class Client(BaseClient):
         if error_details:
             payload["error_details"] = error_details
 
-        url = f"{UPDATE_INCIDENT_URL}/{incident_id}?feedback_type={feedback.value}&region={region}"
+        url = f"{UPDATE_INCIDENT_URL}/{incident_id}?feedback_type={feedback.value}&region={to_feedback_region(region)}"
         return self._post_dlp_api_call(url, payload)
 
     def query_for_sleep_time(self):
@@ -570,22 +590,53 @@ def print_debug_msg(msg: str):
     demisto.debug(f"PAN-DLP-Msg - {msg}")
 
 
+def to_feedback_region(region: str) -> str:
+    """Translate an incident region to the region name the incident feedback API accepts."""
+    region = (region or "").lower()
+    return FEEDBACK_REGION_ALIASES.get(region, region)
+
+
+def get_feedback_service_name(dlp_channel: str) -> str:
+    """Return the service name to send for the incident feedback.
+
+    Falls back to the PAN DLP Channel field of the incident the command runs in, since the API
+    rejects feedback without a valid service name and most playbook tasks do not pass the channel.
+    """
+    incident_channel = ((demisto.incident() or {}).get("CustomFields") or {}).get("pandlpchannel")
+    channel = (dlp_channel or incident_channel or "").lower()
+    if not channel:
+        raise DemistoException(
+            "The dlp_channel argument is required. Provide the PAN DLP Channel of the incident, for example ngfw."
+        )
+    if channel not in FEEDBACK_SERVICE_NAMES:
+        raise DemistoException(
+            f"Incidents from the {channel} DLP channel do not support feedback updates. "
+            f"Supported channels: {', '.join(sorted(FEEDBACK_SERVICE_NAMES))}."
+        )
+    return channel
+
+
 def update_incident_command(client: Client, args: dict) -> CommandResults:
     incident_id = args.get("incident_id", "")
     feedback = args.get("feedback", "")
     user_id = args.get("user_id", "")
     region = args.get("region", "")
     report_id = args.get("report_id", "")
-    dlp_channel = args.get("dlp_channel", "")
+    dlp_channel = get_feedback_service_name(args.get("dlp_channel", ""))
     error_details = args.get("error_details")
     feedback_enum = FeedbackStatus[feedback.upper()]
     result_json, status = client.update_dlp_incident(
         incident_id, feedback_enum, user_id, region, report_id, dlp_channel, error_details
     )
+    if status not in (200, 201, 204):
+        error_message = result_json.get("error") or result_json.get("message") or "Could not determine the error reason."
+        raise DemistoException(
+            f"Failed to update the feedback of incident {incident_id}, got status code {status}. {error_message}"
+        )
 
-    output = {"feedback": feedback_enum.value, "success": status == 200}
+    output = {"feedback": feedback_enum.value, "success": True}
     if feedback_enum == FeedbackStatus.EXCEPTION_GRANTED:
-        minutes = result_json["expiration_duration_in_minutes"]
+        minutes = result_json.get("expiration_duration_in_minutes")
         if minutes and minutes < 60:
             output["duration"] = f"{minutes} minutes"
         elif minutes:
