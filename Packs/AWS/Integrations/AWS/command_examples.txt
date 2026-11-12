@@ -10,3 +10,5 @@
 !aws-network-firewall-resource-policy-put account_id=test-account region=us-east-1 resource_arn=arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rulegroup policy="{\"Statement\":[]}"
 !aws-network-firewall-resource-policy-describe account_id=test-account region=us-east-1 resource_arn=arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rulegroup
 !aws-network-firewall-resource-policy-delete account_id=test-account region=us-east-1 resource_arn=arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rulegroup
+!aws-elasticbeanstalk-environment-create account_id=123456789012 region=us-east-1 application_name=my-app environment_name=my-env cname_prefix=my-prefix solution_stack_name="64bit Amazon Linux 2023 v6.1.0 running Node.js 20"
+!aws-elasticbeanstalk-environments-describe account_id=123456789012 region=us-east-1 application_name=my-app include_deleted=true limit=10

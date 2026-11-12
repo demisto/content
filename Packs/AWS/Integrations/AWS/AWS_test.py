@@ -6198,6 +6198,440 @@ def test_elb_modify_lb_attributes_client_error_is_handled(mocker):
     handle_client.assert_called_once_with(err)
 
 
+EB_ENVIRONMENT_RESPONSE = {
+    "EnvironmentName": "my-env",
+    "EnvironmentId": "e-abc123",
+    "EnvironmentArn": "arn:aws:elasticbeanstalk:us-east-1:123456789012:environment/my-app/my-env",
+    "ApplicationName": "my-app",
+    "SolutionStackName": "64bit Amazon Linux 2023 v6.1.0 running Node.js 20",
+    "CNAME": "my-prefix.us-east-1.elasticbeanstalk.com",
+    "DateCreated": datetime(2024, 1, 15, 10, 30, 0),
+    "DateUpdated": datetime(2024, 1, 15, 10, 31, 0),
+    "Status": "Launching",
+    "Health": "Grey",
+    "Tier": {"Name": "WebServer", "Type": "Standard", "Version": "1.0"},
+}
+
+
+def test_elasticbeanstalk_create_environment_success(mocker):
+    """
+    Given: Valid args with application name, environment name, CNAME prefix and solution stack name.
+    When: create_environment_command is called and boto returns HTTP 200.
+    Then: boto is called with the exact kwargs, and the outputs are keyed by EnvironmentId with serialized datetimes.
+    """
+    from AWS import ElasticBeanstalk
+
+    mock_client = mocker.Mock()
+    mock_client.create_environment.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        **EB_ENVIRONMENT_RESPONSE,
+    }
+    mocker.patch("AWS.print_debug_logs")
+
+    args = {
+        "application_name": "my-app",
+        "environment_name": "my-env",
+        "cname_prefix": "my-prefix",
+        "description": "recreated env",
+        "solution_stack_name": "64bit Amazon Linux 2023 v6.1.0 running Node.js 20",
+    }
+
+    result = ElasticBeanstalk.create_environment_command(mock_client, args)
+
+    mock_client.create_environment.assert_called_once_with(
+        ApplicationName="my-app",
+        EnvironmentName="my-env",
+        CNAMEPrefix="my-prefix",
+        Description="recreated env",
+        SolutionStackName="64bit Amazon Linux 2023 v6.1.0 running Node.js 20",
+    )
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.ElasticBeanstalk.Environments"
+    assert result.outputs_key_field == "EnvironmentId"
+    assert result.outputs["EnvironmentId"] == "e-abc123"
+    assert result.outputs["DateCreated"] == "2024-01-15T10:30:00"
+    assert result.outputs["DateUpdated"] == "2024-01-15T10:31:00"
+    assert "ResponseMetadata" not in result.outputs
+    cname = result.outputs["CNAME"]
+    assert cname == EB_ENVIRONMENT_RESPONSE["CNAME"]
+    table_cells = [cell.strip() for line in result.readable_output.splitlines() for cell in line.split("|")]
+    assert cname in table_cells
+    assert result.readable_output.endswith(
+        "Environment creation was initiated and is in progress (Status: Launching). "
+        "Use aws-elasticbeanstalk-environments-describe to track its status."
+    )
+
+
+def test_elasticbeanstalk_create_environment_hr_without_status(mocker):
+    """
+    Given: Boto returns HTTP 200 for CreateEnvironment with a response that has no Status field.
+    When: create_environment_command is called.
+    Then: The asynchronous-creation note is added to the readable output without a status value.
+    """
+    from AWS import ElasticBeanstalk
+
+    mock_client = mocker.Mock()
+    mock_client.create_environment.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "EnvironmentName": "my-env",
+        "EnvironmentId": "e-abc123",
+    }
+    mocker.patch("AWS.print_debug_logs")
+
+    result = ElasticBeanstalk.create_environment_command(mock_client, {"application_name": "my-app", "template_name": "tmpl"})
+
+    mock_client.create_environment.assert_called_once()
+    readable_output = result.readable_output
+    assert "e-abc123" in readable_output
+    assert readable_output.endswith(
+        "Environment creation was initiated and is in progress. "
+        "Use aws-elasticbeanstalk-environments-describe to track its status."
+    )
+    assert "(Status:" not in readable_output
+
+
+@pytest.mark.parametrize(
+    "source_args",
+    [
+        {},
+        {"template_name": "tmpl", "solution_stack_name": "stack"},
+        {"template_name": "tmpl", "platform_arn": "arn:aws:elasticbeanstalk:us-east-1::platform/Node.js/1.0.0"},
+        {
+            "template_name": "tmpl",
+            "solution_stack_name": "stack",
+            "platform_arn": "arn:aws:elasticbeanstalk:us-east-1::platform/Node.js/1.0.0",
+        },
+    ],
+)
+def test_elasticbeanstalk_create_environment_invalid_source_args(mocker, source_args):
+    """
+    Given: Args with none or more than one of template_name, solution_stack_name and platform_arn.
+    When: create_environment_command is called.
+    Then: A ValueError is raised and the API is not called.
+    """
+    from AWS import ElasticBeanstalk
+
+    mock_client = mocker.Mock()
+    args = {"application_name": "my-app", **source_args}
+
+    with pytest.raises(ValueError, match="exactly one of the following arguments"):
+        ElasticBeanstalk.create_environment_command(mock_client, args)
+
+    mock_client.create_environment.assert_not_called()
+
+
+def test_elasticbeanstalk_create_environment_with_tags_and_template(mocker):
+    """
+    Given: Args with a template name and tags in the key=...,value=... format.
+    When: create_environment_command is called.
+    Then: The tags are parsed into the AWS Key/Value format and the template name is sent.
+    """
+    from AWS import ElasticBeanstalk
+
+    mock_client = mocker.Mock()
+    mock_client.create_environment.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        **EB_ENVIRONMENT_RESPONSE,
+    }
+    mocker.patch("AWS.print_debug_logs")
+
+    args = {"application_name": "my-app", "template_name": "my-template", "tags": "key=env,value=prod;key=team,value=sec"}
+
+    ElasticBeanstalk.create_environment_command(mock_client, args)
+
+    mock_client.create_environment.assert_called_once_with(
+        ApplicationName="my-app",
+        TemplateName="my-template",
+        Tags=[{"Key": "env", "Value": "prod"}, {"Key": "team", "Value": "sec"}],
+    )
+
+
+def test_elasticbeanstalk_create_environment_non_ok_calls_handler(mocker):
+    """
+    Given: Boto returns a non-OK status.
+    When: create_environment_command is called.
+    Then: AWSErrorHandler.handle_response_error is invoked with the raw response and account ID.
+    """
+    from AWS import ElasticBeanstalk, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    resp = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.create_environment.return_value = resp
+    handle_resp = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+    mocker.patch("AWS.print_debug_logs")
+
+    args = {"application_name": "my-app", "platform_arn": "arn:platform", "account_id": "123456789012"}
+
+    ElasticBeanstalk.create_environment_command(mock_client, args)
+
+    handle_resp.assert_called_once_with(resp, "123456789012")
+
+
+def test_elasticbeanstalk_create_environment_client_error_propagates(mocker):
+    """
+    Given: client.create_environment raises ClientError.
+    When: create_environment_command is called.
+    Then: The ClientError propagates so main() handles it through AWSErrorHandler.handle_client_error.
+    """
+    from AWS import ElasticBeanstalk
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    err = ClientError(
+        {"Error": {"Code": "AccessDenied", "Message": "nope"}, "ResponseMetadata": {"HTTPStatusCode": 403}},
+        "CreateEnvironment",
+    )
+    mock_client.create_environment.side_effect = err
+    mocker.patch("AWS.print_debug_logs")
+
+    with pytest.raises(ClientError):
+        ElasticBeanstalk.create_environment_command(mock_client, {"application_name": "my-app", "template_name": "tmpl"})
+
+
+def test_elasticbeanstalk_describe_environments_filters_and_pagination(mocker):
+    """
+    Given: All filter args, a limit above the maximum and a next token.
+    When: describe_environments_command is called and boto returns HTTP 200 with a NextToken.
+    Then: boto is called with the mapped filters, MaxRecords capped at 1000, and the NextToken reaches the context.
+    """
+    from AWS import ElasticBeanstalk
+
+    mock_client = mocker.Mock()
+    mock_client.describe_environments.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Environments": [EB_ENVIRONMENT_RESPONSE],
+        "NextToken": "next-123",
+    }
+    mocker.patch("AWS.print_debug_logs")
+
+    args = {
+        "application_name": "my-app",
+        "version_label": "v1",
+        "environment_ids": "e-abc123,e-def456",
+        "environment_names": "my-env",
+        "include_deleted": "true",
+        "included_deleted_back_to": "2024-01-01T00:00:00Z",
+        "limit": "5000",
+        "next_token": "prev-token",
+    }
+
+    result = ElasticBeanstalk.describe_environments_command(mock_client, args)
+
+    mock_client.describe_environments.assert_called_once_with(
+        ApplicationName="my-app",
+        VersionLabel="v1",
+        EnvironmentIds=["e-abc123", "e-def456"],
+        EnvironmentNames=["my-env"],
+        IncludeDeleted=True,
+        IncludedDeletedBackTo="2024-01-01T00:00:00Z",
+        MaxRecords=1000,
+        NextToken="prev-token",
+    )
+    environments = result.outputs[
+        "AWS.ElasticBeanstalk.Environments(val.EnvironmentId && val.EnvironmentId == obj.EnvironmentId)"
+    ]
+    assert environments[0]["EnvironmentId"] == "e-abc123"
+    assert environments[0]["DateCreated"] == "2024-01-15T10:30:00"
+    assert result.outputs["AWS.ElasticBeanstalk(true)"]["EnvironmentsNextToken"] == "next-123"
+    assert "EnvironmentsNextToken: next-123" in result.readable_output
+
+
+def test_elasticbeanstalk_describe_environments_empty(mocker):
+    """
+    Given: No args.
+    When: describe_environments_command is called and boto returns no environments.
+    Then: The default limit is sent once, and only the "not found" message is returned without outputs or raw response.
+    """
+    from AWS import ElasticBeanstalk
+
+    mock_client = mocker.Mock()
+    mock_client.describe_environments.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Environments": [],
+    }
+    mocker.patch("AWS.print_debug_logs")
+
+    result = ElasticBeanstalk.describe_environments_command(mock_client, {})
+
+    mock_client.describe_environments.assert_called_once_with(MaxRecords=50)
+    assert result.outputs is None
+    assert result.raw_response is None
+    assert result.readable_output == "No Elastic Beanstalk environments were found."
+
+
+def test_elasticbeanstalk_describe_environments_empty_limit_uses_default(mocker):
+    """
+    Given: An empty-string limit argument.
+    When: describe_environments_command is called.
+    Then: The default limit of 50 is sent as MaxRecords.
+    """
+    from AWS import ElasticBeanstalk
+
+    mock_client = mocker.Mock()
+    mock_client.describe_environments.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Environments": [],
+    }
+    mocker.patch("AWS.print_debug_logs")
+
+    ElasticBeanstalk.describe_environments_command(mock_client, {"limit": ""})
+
+    mock_client.describe_environments.assert_called_once_with(MaxRecords=50)
+
+
+def test_elasticbeanstalk_build_create_environment_kwargs_parses_tags():
+    """
+    Given: Args with a single source argument and tags in the key=...,value=... format.
+    When: _build_create_environment_kwargs is called.
+    Then: The tags are parsed into the AWS Key/Value format and empty values are removed.
+    """
+    from AWS import ElasticBeanstalk
+
+    kwargs = ElasticBeanstalk._build_create_environment_kwargs(
+        {"application_name": "my-app", "template_name": "tmpl", "tags": "key=env,value=prod;key=team,value=sec"}
+    )
+
+    assert kwargs == {
+        "ApplicationName": "my-app",
+        "TemplateName": "tmpl",
+        "Tags": [{"Key": "env", "Value": "prod"}, {"Key": "team", "Value": "sec"}],
+    }
+
+
+@pytest.mark.parametrize(
+    "source_args",
+    [
+        {},
+        {"template_name": "tmpl", "solution_stack_name": "stack"},
+    ],
+)
+def test_elasticbeanstalk_build_create_environment_kwargs_exactly_one_source(source_args):
+    """
+    Given: Args with no source argument or with two source arguments.
+    When: _build_create_environment_kwargs is called.
+    Then: A ValueError is raised.
+    """
+    from AWS import ElasticBeanstalk
+
+    with pytest.raises(ValueError, match="exactly one of the following arguments"):
+        ElasticBeanstalk._build_create_environment_kwargs({"application_name": "my-app", **source_args})
+
+
+def test_elasticbeanstalk_build_describe_environments_kwargs_include_deleted_false():
+    """
+    Given: include_deleted="false".
+    When: _build_describe_environments_kwargs is called.
+    Then: IncludeDeleted stays False (it is not removed as an empty value) and the default limit is used.
+    """
+    from AWS import ElasticBeanstalk
+
+    kwargs = ElasticBeanstalk._build_describe_environments_kwargs({"include_deleted": "false"})
+
+    assert kwargs == {"IncludeDeleted": False, "MaxRecords": 50}
+
+
+def test_elasticbeanstalk_build_describe_environments_kwargs_limit_validation():
+    """
+    Given: limit="0", and separately limit="" .
+    When: _build_describe_environments_kwargs is called.
+    Then: limit="0" raises a ValueError, while limit="" falls back to MaxRecords == 50.
+    """
+    from AWS import ElasticBeanstalk
+
+    with pytest.raises(ValueError, match="Limit must be at least 1"):
+        ElasticBeanstalk._build_describe_environments_kwargs({"limit": "0"})
+
+    assert ElasticBeanstalk._build_describe_environments_kwargs({"limit": ""})["MaxRecords"] == 50
+
+
+def test_elasticbeanstalk_format_environments_hr_next_token_placement():
+    """
+    Given: A list of environments, with and without a next token.
+    When: _format_environments_hr is called.
+    Then: The token is shown above the table when present, and is absent otherwise.
+    """
+    from AWS import ElasticBeanstalk
+
+    with_token = ElasticBeanstalk._format_environments_hr("Title", [{"EnvironmentId": "e-abc123"}], "tok-1")
+    without_token = ElasticBeanstalk._format_environments_hr("Title", [{"EnvironmentId": "e-abc123"}])
+
+    assert "EnvironmentsNextToken: tok-1" in with_token
+    assert with_token.index("EnvironmentsNextToken: tok-1") < with_token.index("e-abc123")
+    assert "EnvironmentsNextToken" not in without_token
+
+
+def test_elasticbeanstalk_describe_environments_invalid_date(mocker):
+    """
+    Given: An included_deleted_back_to value that is not in AWS UTC format.
+    When: describe_environments_command is called.
+    Then: A DemistoException is raised and the API is not called.
+    """
+    from AWS import ElasticBeanstalk
+
+    mock_client = mocker.Mock()
+
+    with pytest.raises(DemistoException, match="Invalid date format"):
+        ElasticBeanstalk.describe_environments_command(mock_client, {"included_deleted_back_to": "2024-01-01"})
+
+    mock_client.describe_environments.assert_not_called()
+
+
+def test_elasticbeanstalk_describe_environments_non_ok_calls_handler(mocker):
+    """
+    Given: Boto returns a non-OK status.
+    When: describe_environments_command is called.
+    Then: AWSErrorHandler.handle_response_error is invoked with the raw response and account ID.
+    """
+    from AWS import ElasticBeanstalk, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    resp = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.describe_environments.return_value = resp
+    handle_resp = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+    mocker.patch("AWS.print_debug_logs")
+
+    ElasticBeanstalk.describe_environments_command(mock_client, {"account_id": "123456789012"})
+
+    handle_resp.assert_called_once_with(resp, "123456789012")
+
+
+def test_elasticbeanstalk_describe_environments_client_error_propagates(mocker):
+    """
+    Given: client.describe_environments raises ClientError.
+    When: describe_environments_command is called.
+    Then: The ClientError propagates so main() handles it through AWSErrorHandler.handle_client_error.
+    """
+    from AWS import ElasticBeanstalk
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    err = ClientError(
+        {"Error": {"Code": "AccessDenied", "Message": "nope"}, "ResponseMetadata": {"HTTPStatusCode": 403}},
+        "DescribeEnvironments",
+    )
+    mock_client.describe_environments.side_effect = err
+    mocker.patch("AWS.print_debug_logs")
+
+    with pytest.raises(ClientError):
+        ElasticBeanstalk.describe_environments_command(mock_client, {})
+
+
+def test_elasticbeanstalk_wiring():
+    """
+    Given: The AWS integration module.
+    When: Resolving the Elastic Beanstalk service and commands.
+    Then: AWSServices("elasticbeanstalk") resolves, both commands are mapped and their IAM actions are registered.
+    """
+    from AWS import AWSServices, ElasticBeanstalk, COMMANDS_MAPPING, REQUIRED_ACTIONS
+
+    assert AWSServices("elasticbeanstalk") is AWSServices.ElasticBeanstalk
+    assert ElasticBeanstalk.service is AWSServices.ElasticBeanstalk
+    assert COMMANDS_MAPPING["aws-elasticbeanstalk-environment-create"] is ElasticBeanstalk.create_environment_command
+    assert COMMANDS_MAPPING["aws-elasticbeanstalk-environments-describe"] is ElasticBeanstalk.describe_environments_command
+    assert "elasticbeanstalk:CreateEnvironment" in REQUIRED_ACTIONS
+    assert "elasticbeanstalk:DescribeEnvironments" in REQUIRED_ACTIONS
+
+
 def test_get_bucket_website_command_success(mocker):
     """
     Given: A mocked boto3 S3 client and a valid bucket name.
