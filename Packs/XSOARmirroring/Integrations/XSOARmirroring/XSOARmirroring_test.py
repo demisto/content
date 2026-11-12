@@ -1001,7 +1001,7 @@ def test_update_remote_system_keeps_entry_tags_on_outgoing_file(mocker, requests
 
     Then:
         - The tags of the local entry are set on the remote file entry and on the remote note entry
-          through /entry/tags (XSUP-80346).
+          through /entry/tags.
     """
     file_path = tmp_path / "evidence.txt"
     file_path.write_bytes(b"attachment content")
