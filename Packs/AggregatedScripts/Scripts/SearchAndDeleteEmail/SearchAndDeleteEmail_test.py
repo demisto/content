@@ -277,6 +277,48 @@ def test_module_has_no_blocking_poll_and_nothing_sleeps():
         time.sleep(0)
 
 
+MALICIOUS_MESSAGE_ID = '<a" OR Received:>=2000-01-01 OR "b@x>'
+
+
+@pytest.mark.parametrize(
+    "message_id",
+    [
+        MALICIOUS_MESSAGE_ID,
+        '<a"b@x>',
+        "<a b@x>",
+        "<a\\b@x>",
+        "<a(b)@x>",
+        "<a<b@x>",
+        "<a@x> OR <b@x>",
+    ],
+)
+def test_parse_args_rejects_an_unsafe_internet_message_id(message_id):
+    with pytest.raises(module.DemistoException, match="Invalid internet_message_id"):
+        module.parse_args({**BASE_ARGS, "internet_message_id": message_id})
+
+
+def test_entry_point_reports_an_unsafe_internet_message_id_as_invalid_arguments(mocker):
+    fake = setup_demisto(mocker, {"EWS": "EWS v2"}, {})
+    with pytest.raises(module.InvalidArgumentsError, match="Invalid internet_message_id"):
+        module.search_and_delete_email({**ENTRY_ARGS, "internet_message_id": MALICIOUS_MESSAGE_ID, "mailbox_scope": SCOPE_ALL})
+    assert not fake.calls
+
+
+@pytest.mark.parametrize("message_id", ["<abc+1@mail.gmail.com>", "abc+1@mail.gmail.com", "<CAF=x_y-z.1@x.y>"])
+def test_parse_args_accepts_a_normal_internet_message_id(message_id):
+    assert module.parse_args({**BASE_ARGS, "internet_message_id": message_id}).internet_message_ids == [message_id]
+
+
+@pytest.mark.parametrize("sender", ['bad"@evil.com', "bad\\@evil.com", "bad @evil.com", "bad(x)@evil.com", "a@x.com\tb"])
+def test_parse_args_rejects_an_unsafe_sender_address(sender):
+    with pytest.raises(module.DemistoException, match="Invalid sender_address"):
+        module.parse_args({**BASE_ARGS, "sender_address": sender})
+
+
+def test_parse_args_accepts_a_plain_sender_address():
+    assert module.parse_args({**BASE_ARGS, "sender_address": " a+b@x.com "}).sender_address == "a+b@x.com"
+
+
 # ----------------------------------------------------------------------------------------------------------------------
 # Query builders
 # ----------------------------------------------------------------------------------------------------------------------
@@ -293,38 +335,55 @@ def test_gmail_query_subject_and_sender():
     assert 'from:"bad@evil.com"' in query
 
 
-def test_escape_quoted():
-    assert module.escape_quoted('a"b\\c') == 'a\\"b\\\\c'
-    assert module.escape_quoted("plain") == "plain"
+def test_quote_phrase_replaces_quotes_and_backslashes_with_a_space():
+    assert module.quote_phrase('a"b\\c') == "a b c"
+    assert module.quote_phrase("plain") == "plain"
 
 
 INJECTED_SUBJECT = 'x" OR subject:"'
-INJECTED_SENDER = 'evil\\" OR from:"'
 
 
-def test_gmail_query_keeps_quotes_and_backslashes_inside_the_value():
-    query = module.build_gmail_query(make_params(subjects=[INJECTED_SUBJECT], sender_address=INJECTED_SENDER))
-    assert '(subject:"x\\" OR subject:\\"")' in query
-    assert 'from:"evil\\\\\\" OR from:\\""' in query
-    message_query = module.build_gmail_query(make_params(internet_message_ids=['<a"b@x>']))
-    assert '(rfc822msgid:"a\\"b@x")' in message_query
+def test_gmail_query_subject_can_not_break_out_of_the_quotes():
+    query = module.build_gmail_query(make_params(subjects=[INJECTED_SUBJECT, 'a\\" OR "b']))
+    assert '(subject:"x  OR subject: " OR subject:"a   OR  b")' in query
+    assert query.count('"') == 4  # only the quotes that enclose the two phrases
+
+
+def test_ews_query_subject_and_sender_can_not_break_out_of_the_quotes():
+    query = module.build_ews_query(make_params(subjects=[INJECTED_SUBJECT]))
+    assert query.startswith('Subject:"x  OR subject: " AND Received:>=')
+    assert query.count('"') == 2
 
 
 def test_graph_mail_filter_escapes_quotes():
-    assert "contains(subject,'It''s')" in module.build_graph_mail_filter(make_params(subjects=["It's"]))
+    # The doubled single quote (the OData escape) is URL-encoded together with the rest of the value.
+    assert "contains(subject,'It%27%27s')" in module.build_graph_mail_filter(make_params(subjects=["It's"]))
 
 
-def test_ews_query_uses_message_id_with_brackets():
+def test_graph_mail_filter_url_encodes_the_literal_values():
+    """The Graph Mail integration pastes `odata` into the URL as is: `+` must not reach Graph as a (decoded) space."""
+    message_filter = module.build_graph_mail_filter(make_params(internet_message_ids=["<abc+1@mail.gmail.com>", "x&y#z%@h"]))
+    assert "(internetMessageId eq '<abc%2B1@mail.gmail.com>' or internetMessageId eq '<x%26y%23z%25@h>')" in message_filter
+    sender_filter = module.build_graph_mail_filter(make_params(subjects=["50% off & more"], sender_address="a+b@x.com"))
+    assert "(contains(subject,'50%25%20off%20%26%20more'))" in sender_filter
+    assert "from/emailAddress/address eq 'a%2Bb@x.com'" in sender_filter
+    assert sender_filter.startswith("$filter=receivedDateTime ge 2026-01-02T03:04:05Z and ")  # the expression is untouched
+
+
+def test_ews_query_wraps_a_single_message_id_in_parentheses():
     query = module.build_ews_query(make_params(internet_message_ids=["abc@x"]))
-    assert 'Message-ID:"<abc@x>"' in query
+    assert query == '(Message-ID:"<abc@x>") AND Received:>=2026-01-02'
     assert "Subject" not in query
-    # Shouldn't wrap with parenthesis for a single item
-    assert '("Message-ID' not in query
 
 
-def test_ews_query_escapes_quotes_and_wraps_in_parens_if_multiple():
+def test_ews_query_wraps_multiple_message_ids_in_parentheses():
+    query = module.build_ews_query(make_params(internet_message_ids=["<a@x>", "b@x"]))
+    assert query.startswith('(Message-ID:"<a@x>" OR Message-ID:"<b@x>") AND ')
+
+
+def test_ews_query_removes_quotes_and_wraps_in_parens_if_multiple():
     query = module.build_ews_query(make_params(subjects=["sub1", 'su"b2']))
-    assert '(Subject:"sub1" OR Subject:"su\\"b2")' in query
+    assert '(Subject:"sub1" OR Subject:"su b2")' in query
 
     query_single = module.build_ews_query(make_params(subjects=["sub1"]))
     assert 'Subject:"sub1"' in query_single
@@ -1107,7 +1166,7 @@ def test_delete_type_constants_are_lowercase():
     assert (DELETE_SOFT, DELETE_HARD) == ("soft", "hard")
 
 
-@pytest.mark.parametrize("value, expected", [(None, 1800), ("", 1800), ("60", 60), (3600, 3600), ("1", 1)])
+@pytest.mark.parametrize("value, expected", [(None, 1800), ("", 1800), ("60", 60), (1800, 1800), ("1800", 1800), ("1", 1)])
 def test_parse_args_timeout(value, expected):
     args = dict(BASE_ARGS)
     if value is not None:
@@ -1115,8 +1174,14 @@ def test_parse_args_timeout(value, expected):
     assert module.parse_args(args).timeout == expected
 
 
-def test_default_timeout_constant():
-    assert module.DEFAULT_TIMEOUT_SECONDS == 1800
+def test_default_and_max_timeout_constants():
+    assert module.DEFAULT_TIMEOUT_SECONDS == module.MAX_TIMEOUT_SECONDS == 1800
+
+
+@pytest.mark.parametrize("value", ["1801", 1801, 3600, "86400"])
+def test_parse_args_timeout_above_the_maximum_is_rejected(value):
+    with pytest.raises(module.DemistoException, match="timeout must be at most 1800 seconds"):
+        module.parse_args({**BASE_ARGS, "timeout": value})
 
 
 @pytest.mark.parametrize("value", ["0", 0, "-5", -5, "abc", "1.5x"])
@@ -1199,6 +1264,15 @@ def test_context_has_object_id_in_additional_fields():
     assert "ObjectID" in entry["AdditionalFields"]
     assert entry["AdditionalFields"]["ObjectID"] == "m1"
     assert "InternetMessageID" in entry["AdditionalFields"]
+
+
+def test_readable_output_keeps_an_email_without_a_timestamp():
+    """An email without a Date header must still be shown: only the per-vendor status rows are skipped."""
+    no_date = found_email("m-no-date", Timestamp="", Deleted=True)
+    result = vendor_result(emails=[no_date], total_found=1, total_deleted=1, errors=["later round failed"])
+    hr = get_hr(make_params(), [result])
+    assert "| Gmail | a@example.com | m-no-date | Invoice |" in hr
+    assert hr.count("| Gmail |") == 1  # the vendor status row (errors) is not shown as an email
 
 
 def test_context_vendor_failure_entry_has_no_emails_and_success_false():

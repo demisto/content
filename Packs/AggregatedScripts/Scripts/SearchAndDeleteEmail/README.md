@@ -42,20 +42,20 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| internet_message_id | One or more Internet Message IDs of the emails to search for or delete. When specified, it is preferred over subject and sender_address. |
+| internet_message_id | One or more Internet Message IDs of the emails to search for or delete. When specified, it is preferred over subject and sender_address. A message ID that contains whitespace, quotes, backslashes, parentheses or inner angle brackets is rejected. |
 | object_id | The vendor specific ID of the email (for example, the ItemID in EWS). When specified, a single target_mailbox and a single brand must also be specified, and mailbox_scope must be "Specific". |
 | operation | The operation to perform. "Search Only" searches for the emails without deleting them. "Search &amp; Delete" also deletes the emails that were found. |
 | delete_type | The delete type to use when the operation is "Search &amp; Delete": "soft" (the email is moved to the deleted items / trash and can be recovered) or "hard" (the email is permanently deleted). Microsoft Graph Mail supports soft delete only. Default is soft. |
 | time_frame | How far back to search, for example "7 days" or "3 hours". Supported units: minutes, hours, days, weeks and months. EWS v2 honors only the date part. Default is 1 hour. |
 | subject | One or more email subjects to search for. Ignored when internet_message_id is specified. |
-| sender_address | The sender address to search for. Can be used together with subject. Ignored when internet_message_id is specified. |
+| sender_address | The sender address to search for. Can be used together with subject. Ignored when internet_message_id is specified. An address that contains whitespace, quotes, backslashes or parentheses is rejected. |
 | retrieve_files | Whether to retrieve the attachments of the emails before they are deleted. The files are added to the Attachments key of EmailData and returned as file entries. Default is false. |
 | target_mailbox | The mailbox(es) to search in. Required when mailbox_scope is "Specific". Ignored when mailbox_scope is "All". |
 | mailbox_scope | Whether to search specific mailboxes or all mailboxes. Microsoft Graph Mail does not support "All" (an error is returned for it, use Gmail or EWS on-prem instead). Default is Specific. |
 | brands | The brands to run the operation on. If empty, all enabled instances of the supported brands are used. The run fails if no enabled instance of the requested brands is found. |
 | verify_deletion | Whether to verify the deletion by searching again after the emails were deleted and checking that they no longer exist. Relevant only when the operation is "Search &amp; Delete". The verification is polled for up to 120 seconds (and stops when the timeout budget is exhausted). Emails whose deletion cannot be verified are reported as failed. Default is false. |
 | verbose | Whether to include the list of executed commands in the human readable output and the instance name in the AdditionalFields of every email. Default is false. |
-| timeout | The overall time budget of the whole run (the first run and all the verification polling runs together), in seconds (a positive integer). It is not a per-operation timeout. When it is exhausted, vendors that were not started yet are reported as failed, the deletion verification polling stops and the results collected so far are returned. Default is 1800. |
+| timeout | The overall time budget of the whole run (the first run and all the verification polling runs together), in seconds (a positive integer, at most 1800, since the first run executes the whole search and delete synchronously within the script timeout). It is not a per-operation timeout. When it is exhausted, vendors that were not started yet are reported as failed, the deletion verification polling stops and the results collected so far are returned. Default is 1800. |
 
 ## Outputs
 
@@ -107,6 +107,7 @@ This script uses the following commands and scripts.
 
 * **Safety**: at least one of `internet_message_id`, `object_id`, `subject` or `sender_address` is required, so a delete operation can never match every email in the time frame.
 * **Message ID is preferred**: when `internet_message_id` is specified, `subject` and `sender_address` are ignored.
+* **Untrusted values**: the search values may come from attacker controlled email headers. A message ID with whitespace, quotes, backslashes, parentheses or inner angle brackets and a sender address with whitespace, quotes, backslashes or parentheses are rejected. In Gmail and EWS v2 subject queries, `"` and `\` are replaced with a space (the subject is a phrase search). In Microsoft Graph Mail the values are escaped and URL-encoded in the `$filter`.
 * **object_id**: requires exactly one `target_mailbox` and one brand, with `mailbox_scope` set to *Specific*. When the email does not exist, `AdditionalFields.NotFound=true` is returned for the brand.
 * **Enabled instances**: when no enabled instance of the requested brands is found, the run fails with "No enabled instance was found for the requested brands.".
 * **Microsoft Graph Mail** cannot search all mailboxes (an error is reported for the brand, suggesting Gmail or EWS on-prem) and cannot hard delete (the emails are moved to *Deleted Items* and a note is added).
@@ -120,7 +121,7 @@ This script uses the following commands and scripts.
 
 The script never sleeps. The first run executes the search, the retrieval of the files and the deletion synchronously. Polling is used only for the deletion verification: when it is needed, the run schedules itself again (a scheduled command) 20 seconds later, and every polling run performs one verification search per vendor, for up to 120 seconds. The state is passed between the runs in the hidden `state` argument. A short progress message is added to the War Room only when a vendor moves to a new stage.
 
-`timeout` is the overall time budget of the whole run, in seconds (default 1800), measured across all the polling runs. When it is exhausted, vendors that were not started yet are reported as failed, the verification polling stops and the results collected so far are returned. The timeout of each scheduled run is the remaining budget plus 40 seconds.
+`timeout` is the overall time budget of the whole run, in seconds (default and maximum 1800, since the first run must finish within the 35 minutes script timeout), measured across all the polling runs. When it is exhausted, vendors that were not started yet are reported as failed, the verification polling stops and the results collected so far are returned. The timeout of each scheduled run is the remaining budget plus 40 seconds.
 
 ### Deletion verification
 

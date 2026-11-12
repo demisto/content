@@ -20,7 +20,7 @@ comment: |-
 enabled: true
 args:
 - name: internet_message_id
-  description: One or more Internet Message IDs of the emails to search for or delete. When specified, it is preferred over subject and sender_address.
+  description: One or more Internet Message IDs of the emails to search for or delete. When specified, it is preferred over subject and sender_address. A message ID that contains whitespace, quotes, backslashes, parentheses or inner angle brackets is rejected.
   isArray: true
 - name: object_id
   description: The vendor specific ID of the email (for example, the ItemID in EWS). When specified, a single target_mailbox and a single brand must also be specified, and mailbox_scope must be "Specific".
@@ -44,7 +44,7 @@ args:
   description: One or more email subjects to search for. Ignored when internet_message_id is specified.
   isArray: true
 - name: sender_address
-  description: The sender address to search for. Can be used together with subject. Ignored when internet_message_id is specified.
+  description: The sender address to search for. Can be used together with subject. Ignored when internet_message_id is specified. An address that contains whitespace, quotes, backslashes or parentheses is rejected.
 - name: retrieve_files
   description: Whether to retrieve the attachments of the emails before they are deleted. The files are added to the Attachments key of EmailData and returned as file entries. Default is false.
   auto: PREDEFINED
@@ -85,7 +85,7 @@ args:
   - "false"
   defaultValue: "false"
 - name: timeout
-  description: The overall time budget of the whole run (the first run and all the verification polling runs together), in seconds (a positive integer). It is not a per-operation timeout. When it is exhausted, vendors that were not started yet are reported as failed, the deletion verification polling stops and the results collected so far are returned. Default is 1800.
+  description: The overall time budget of the whole run (the first run and all the verification polling runs together), in seconds (a positive integer, at most 1800, since the first run executes the whole search and delete synchronously within the script timeout). It is not a per-operation timeout. When it is exhausted, vendors that were not started yet are reported as failed, the deletion verification polling stops and the results collected so far are returned. Default is 1800.
   defaultValue: "1800"
 - name: state
   description: The state of the polling flow. Automatically filled by polling, should not be set by the user.

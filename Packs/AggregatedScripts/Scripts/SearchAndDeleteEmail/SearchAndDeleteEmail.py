@@ -34,6 +34,7 @@ from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, UTC
 from typing import Any
+from urllib.parse import quote
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -48,6 +49,9 @@ DEFAULT_TIME_FRAME = "1 hour"
 
 SCRIPT_NAME = "SearchAndDeleteEmail"
 DEFAULT_TIMEOUT_SECONDS = 1800  # The overall time budget of the whole run, measured across all ticks.
+# The first tick runs the whole search and delete synchronously under the script's YAML timeout (35 minutes): a larger
+# budget could get the first run killed by the platform (and its results lost).
+MAX_TIMEOUT_SECONDS = 1800
 # The polling interval: the platform minimum is 10 seconds, 20 keeps the load on the vendor APIs low while the deletion
 # verification is polled.
 POLL_INTERVAL_SECONDS = 20
@@ -80,6 +84,13 @@ EWS_ENRICH_LIMIT = 50  # Max number of emails for which the full item (body, att
 
 # Property name used to search by Internet Message ID in the EWS query language.
 EWS_MESSAGE_ID_FIELD = "Message-ID"
+# An RFC 5322 msg-id never contains whitespace, quotes, backslashes or parentheses. The IDs may come from attacker
+# controlled headers, so anything else is rejected: it could break out of the quoted query terms (query injection).
+INTERNET_MESSAGE_ID_PATTERN = re.compile(r'^<?[^\s"<>\\()]+>?$')
+# A plain sender address never contains these characters (they could break out of the quoted query terms).
+INVALID_SENDER_CHARS = re.compile(r'[\s"\\()]')
+# Characters that are kept as is when a literal value is URL-encoded into the Graph Mail $filter (see odata_literal).
+ODATA_LITERAL_SAFE_CHARS = "@<>.-_"
 
 COMMAND_TRACE: list[str] = []
 
@@ -181,9 +192,26 @@ def escape_single_quotes(value: str) -> str:
     return value.replace("'", "''")
 
 
-def escape_quoted(value: str) -> str:
-    """Escapes a value for a double quoted Gmail / EWS (AQS) query term, so it can not break out of the quotes."""
-    return value.replace("\\", "\\\\").replace('"', '\\"')
+def quote_phrase(value: str) -> str:
+    """
+    Prepares a value for a double quoted Gmail / EWS (AQS) phrase term: every ``"`` and ``\\`` is replaced with a space.
+
+    Neither Gmail search nor Exchange AQS documents an escape sequence for a quote inside a quoted phrase, so the value
+    could otherwise break out of the quotes (query injection, the values may come from attacker controlled headers).
+    The terms are phrase searches, so replacing the characters with a space keeps the meaning of the search.
+    """
+    return re.sub(r'["\\]', " ", value)
+
+
+def odata_literal(value: str) -> str:
+    """
+    A literal value for a single quoted OData string in the Graph Mail ``$filter``.
+
+    The single quotes are doubled (the OData escape) and the value is URL-encoded, since the Graph Mail integration
+    pastes the ``odata`` argument into the request URL as is (``MicrosoftGraphMailApiModule.list_mails``): otherwise
+    ``+`` would be decoded as a space, ``&`` / ``#`` would cut the query and ``%`` would start an escape sequence.
+    """
+    return quote(escape_single_quotes(value), safe=ODATA_LITERAL_SAFE_CHARS)
 
 
 def primary_mailbox(email: dict[str, Any]) -> str:
@@ -488,18 +516,18 @@ def process_email(params: SearchParams, result: VendorResult, email: dict[str, A
 # Gmail (specific mailboxes + all mailboxes)
 # ---------------------------------------------------------------------------------------------------------------------
 def build_gmail_query(params: SearchParams) -> str:
-    """Message ID is preferred over subject / sender when it was provided."""
+    """Message ID is preferred over subject / sender when it was provided (the message IDs are validated in parse_args)."""
     clauses: list[str] = []
     if params.internet_message_ids:
         ids = " OR ".join(
-            f'rfc822msgid:"{escape_quoted(strip_brackets(message_id))}"' for message_id in params.internet_message_ids
+            f'rfc822msgid:"{quote_phrase(strip_brackets(message_id))}"' for message_id in params.internet_message_ids
         )
         clauses.append(f"({ids})")
     else:
         if params.subjects:
-            clauses.append("(" + " OR ".join(f'subject:"{escape_quoted(subject)}"' for subject in params.subjects) + ")")
+            clauses.append("(" + " OR ".join(f'subject:"{quote_phrase(subject)}"' for subject in params.subjects) + ")")
         if params.sender_address:
-            clauses.append(f'from:"{escape_quoted(params.sender_address)}"')
+            clauses.append(f'from:"{quote_phrase(params.sender_address)}"')
     clauses.append(f"after:{int(params.since.timestamp())}")
     return " ".join(clauses)
 
@@ -590,16 +618,20 @@ def gmail_ops(params: SearchParams, instance: str, result: VendorResult) -> Emai
 # Microsoft Graph Mail (specific mailboxes only)
 # ---------------------------------------------------------------------------------------------------------------------
 def build_graph_mail_filter(params: SearchParams) -> str:
+    """
+    The ``$filter`` query of msgraph-mail-list-emails. Only the literal values are URL-encoded (``odata_literal``): the
+    spaces of the expression itself are encoded by ``requests`` when the URL is sent.
+    """
     clauses = [f"receivedDateTime ge {params.since.strftime('%Y-%m-%dT%H:%M:%SZ')}"]
     if params.internet_message_ids:
-        ids = " or ".join(f"internetMessageId eq '{escape_single_quotes(with_brackets(i))}'" for i in params.internet_message_ids)
+        ids = " or ".join(f"internetMessageId eq '{odata_literal(with_brackets(i))}'" for i in params.internet_message_ids)
         clauses.append(f"({ids})")
     else:
         if params.subjects:
-            subjects = " or ".join(f"contains(subject,'{escape_single_quotes(s)}')" for s in params.subjects)
+            subjects = " or ".join(f"contains(subject,'{odata_literal(s)}')" for s in params.subjects)
             clauses.append(f"({subjects})")
         if params.sender_address:
-            clauses.append(f"from/emailAddress/address eq '{escape_single_quotes(params.sender_address)}'")
+            clauses.append(f"from/emailAddress/address eq '{odata_literal(params.sender_address)}'")
     return "$filter=" + " and ".join(clauses)
 
 
@@ -678,16 +710,17 @@ def graph_mail_ops(params: SearchParams, instance: str, result: VendorResult) ->
 # EWS on-prem
 # ---------------------------------------------------------------------------------------------------------------------
 def build_ews_query(params: SearchParams) -> str:
+    """The AQS query of ews-search-mailboxes (the message IDs are validated in parse_args)."""
     clauses: list[str] = []
     if params.internet_message_ids:
-        ids = " OR ".join(f'{EWS_MESSAGE_ID_FIELD}:"{with_brackets(i)}"' for i in params.internet_message_ids)
-        clauses.append(f"({ids})" if len(params.internet_message_ids) > 1 else ids)
+        ids = " OR ".join(f'{EWS_MESSAGE_ID_FIELD}:"{quote_phrase(with_brackets(i))}"' for i in params.internet_message_ids)
+        clauses.append(f"({ids})")  # Always wrapped, so the clause can never widen the rest of the query.
     else:
         if params.subjects:
-            subjects_query = " OR ".join(f'Subject:"{escape_quoted(subject)}"' for subject in params.subjects)
+            subjects_query = " OR ".join(f'Subject:"{quote_phrase(subject)}"' for subject in params.subjects)
             clauses.append(f"({subjects_query})" if len(params.subjects) > 1 else subjects_query)
         if params.sender_address:
-            clauses.append(f'From:"{escape_quoted(params.sender_address)}"')
+            clauses.append(f'From:"{quote_phrase(params.sender_address)}"')
 
     clauses.append(f"Received:>={params.since.strftime('%Y-%m-%d')}")
     return " AND ".join(clauses)
@@ -997,7 +1030,10 @@ def run_tick(params: SearchParams, state: dict[str, Any]) -> tuple[dict[str, Any
 # Arguments and outputs
 # ---------------------------------------------------------------------------------------------------------------------
 def parse_timeout(value: Any) -> int:
-    """Parses the ``timeout`` argument (seconds): empty -> default, otherwise it must be a positive integer."""
+    """
+    Parses the ``timeout`` argument (seconds): empty -> default, otherwise a positive integer up to
+    ``MAX_TIMEOUT_SECONDS``.
+    """
     try:
         timeout = arg_to_number(value)
     except ValueError:
@@ -1006,7 +1042,25 @@ def parse_timeout(value: Any) -> int:
         return DEFAULT_TIMEOUT_SECONDS
     if timeout <= 0:
         raise DemistoException("timeout must be a positive number of seconds.")
+    if timeout > MAX_TIMEOUT_SECONDS:
+        raise DemistoException(
+            f"timeout must be at most {MAX_TIMEOUT_SECONDS} seconds: the first run executes the whole search and delete "
+            "synchronously and must finish within the script timeout."
+        )
     return timeout
+
+
+def validate_search_values(message_ids: list[str], sender: str) -> None:
+    """Rejects message IDs and a sender address that could break out of the quoted query terms (query injection)."""
+    if invalid := [message_id for message_id in message_ids if not INTERNET_MESSAGE_ID_PATTERN.fullmatch(message_id)]:
+        raise DemistoException(
+            f"Invalid internet_message_id: {', '.join(invalid)}. A message ID must not contain whitespace, quotes, "
+            "backslashes, parentheses or inner angle brackets."
+        )
+    if sender and INVALID_SENDER_CHARS.search(sender):
+        raise DemistoException(
+            f"Invalid sender_address: {sender}. The address must not contain whitespace, quotes, backslashes or parentheses."
+        )
 
 
 def parse_args(args: dict[str, Any], since: datetime | None = None) -> SearchParams:
@@ -1030,6 +1084,8 @@ def parse_args(args: dict[str, Any], since: datetime | None = None) -> SearchPar
     # Safety: an empty filter would match (and delete) every email in the time frame.
     if not (object_id or message_ids or subjects or sender):
         raise DemistoException("At least one of internet_message_id, object_id, subject or sender_address must be specified.")
+
+    validate_search_values(message_ids, sender)
 
     if object_id:
         if not target_mailboxes or not brands:
@@ -1133,8 +1189,8 @@ def markdown_table(title: str, rows: list[dict[str, Any]], headers: list[str]) -
 def build_readable_output(email_data: list[dict[str, Any]], totals: dict[str, int], params: SearchParams) -> str:
     rows = []
     for email in email_data:
-        # Skip the per-vendor status records (vendors that found nothing or failed): they have no email to show.
-        if not email.get("Timestamp"):
+        # Skip the per-vendor status records (vendors that found nothing or failed): only email records have an ObjectID.
+        if "ObjectID" not in (email.get("AdditionalFields") or {}):
             continue
 
         rows.append(
