@@ -4116,6 +4116,25 @@ class ResponseReaderWrapper(io.RawIOBase):
         return len(cleaned_data)
 
 
+def _post_json(service: client.Service, endpoint: str, body: dict[str, Any], **query: str) -> Any:
+    """POST a JSON body to a splunkd REST endpoint with an explicit JSON content type.
+
+    Without a Content-Type header, splunklib sends POST bodies as ``application/x-www-form-urlencoded``,
+    so splunkd validates the JSON payload as URI-encoded data and rejects any literal ``%`` that is not
+    a valid escape (e.g. "100%") with ``HTTP 400 Unparsable URI-encoded request data``.
+
+    Args:
+        service: Splunk service connection.
+        endpoint: The REST endpoint (relative to the service namespace).
+        body: The JSON-serializable request body.
+        **query: Optional query-string parameters (e.g. ``notable_time``).
+
+    Returns:
+        The splunklib response object.
+    """
+    return service.post(endpoint, headers=[("Content-Type", "application/json")], body=json.dumps(body), **query)
+
+
 def add_investigation_note(
     service: client.Service,
     investigation_or_finding_id: str,
@@ -4151,14 +4170,14 @@ def add_investigation_note(
         first_call_kwargs["notable_time"] = finding_time
 
     try:
-        response = service.post(endpoint, body=json.dumps(body), **first_call_kwargs)
+        response = _post_json(service, endpoint, body, **first_call_kwargs)
     except Exception as e:
         demisto.debug(
             f"Failed to add note to investigation/finding {investigation_or_finding_id} "
             f"{'with notable_time=' + finding_time if finding_time else 'without notable_time param'}, "
             f"retrying with notable_time=now. Error: {e!s}"
         )
-        response = service.post(endpoint, body=json.dumps(body), notable_time="now")
+        response = _post_json(service, endpoint, body, notable_time="now")
 
     response_data = response.body.read()
     result = json.loads(response_data)
@@ -4234,14 +4253,14 @@ def update_investigation_or_finding(
         first_call_kwargs["notable_time"] = finding_time
 
     try:
-        response = service.post(endpoint, body=json.dumps(body), **first_call_kwargs)
+        response = _post_json(service, endpoint, body, **first_call_kwargs)
     except Exception as e:
         demisto.debug(
             f"Failed to update investigation/finding {investigation_or_finding_id} "
             f"{'with notable_time=' + finding_time if finding_time else 'without notable_time param'}, "
             f"retrying with notable_time=now. Error: {e!s}"
         )
-        response = service.post(endpoint, body=json.dumps(body), notable_time="now")
+        response = _post_json(service, endpoint, body, notable_time="now")
 
     response_data = response.body.read()
     result = json.loads(response_data)
@@ -4287,7 +4306,7 @@ def _es_rest_request(
         if method_upper == "GET":
             response = service.get(path, **(query or {}))
         elif method_upper == "POST":
-            response = service.post(path, body=json.dumps(body or {}))
+            response = _post_json(service, path, body or {})
         else:
             raise DemistoException(f"Unsupported HTTP method for ES REST helper: {method}")
     except HTTPError as exc:
@@ -5168,7 +5187,7 @@ def add_findings_to_investigation(
 
     demisto.debug(f"Adding {len(finding_ids)} finding(s) to investigation {investigation_id} via endpoint {endpoint}")
 
-    response = service.post(endpoint, body=json.dumps(body))
+    response = _post_json(service, endpoint, body)
     response_data = response.body.read()
     result = json.loads(response_data) if response_data else {}
     demisto.debug(f"Findings added to investigation {investigation_id}: {result}")
