@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "ThreatMon Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "threatmonfindingids",
+    "closeForm": false,
+    "content": true,
+    "description": "The finding IDs, used for takedown and data removal requests.",
+    "editForm": false,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_threatmonfindingids",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "ThreatMon Finding IDs",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}
