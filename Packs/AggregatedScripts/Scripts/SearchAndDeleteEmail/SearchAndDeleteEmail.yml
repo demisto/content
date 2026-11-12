@@ -9,21 +9,21 @@ tags:
 - email
 - Utility
 comment: |-
-  Searches for emails and optionally deletes them, using one or more of the supported mail integrations: Gmail, Microsoft Graph Mail, Microsoft Graph Security and EWS on-prem (EWS v2). The results of all vendors are normalized into the unified EmailData context path.
+  Searches for emails and optionally deletes them, using one or more of the supported mail integrations: Gmail, Microsoft Graph Mail and EWS on-prem (EWS v2). The results of all vendors are normalized into the unified EmailData context path.
 
-  Supported scopes: Gmail, Microsoft Graph Security and EWS v2 support searching all mailboxes. Microsoft Graph Mail supports only specific mailboxes.
-  Delete types: Gmail, Microsoft Graph Security and EWS v2 support both soft and hard delete. Microsoft Graph Mail supports soft delete only (the emails are moved to Deleted Items).
-  Microsoft Graph Security and EWS v2 honor only the date part of the time frame, so the effective search window can be up to 24 hours wider than requested.
-  The command may take a long time when searching thousands of mailboxes. It uses the built-in polling: long waits (the Microsoft Graph Security eDiscovery operations and the deletion verification) are polled, while the search and delete commands of each run are executed synchronously within that run. The timeout argument is the overall time budget (in seconds) of the whole run.
-  When verify_deletion is true (relevant only for "Search & Delete"), the script verifies that the emails were really deleted instead of trusting that the delete command did not fail (the verification is polled for up to 120 seconds). Verification is not supported for Microsoft Graph Security.
-  Microsoft Graph Security runs in a dedicated eDiscovery case that is created for the run, and returns a single aggregate record (counts only) instead of per-email details. "Search & Delete" estimates the matching emails, starts the purge in the background (fire and forget) and deletes the search and the case. "Search Only" creates the case and the search and returns a warning with the ediscovery_case_id and ediscovery_search_id to re-run the command with; that second run reads the results and deletes the search and the case. "Search & Delete" with mailbox_scope "Specific" is refused for Microsoft Graph Security, because its search would also match the copies of the email in other mailboxes.
+  Supported scopes: Gmail and EWS v2 support searching all mailboxes. Microsoft Graph Mail supports only specific mailboxes.
+  Delete types: Gmail and EWS v2 support both soft and hard delete. Microsoft Graph Mail supports soft delete only (the emails are moved to Deleted Items).
+  EWS v2 honors only the date part of the time frame, so the effective search window can be up to 24 hours wider than requested.
+  The search, the retrieval of the files and the deletion are executed synchronously in the first run. The timeout argument is the overall time budget (in seconds) of the whole run.
+  When verify_deletion is true (relevant only for "Search & Delete"), the script verifies that the emails were really deleted instead of trusting that the delete command did not fail. The verification is polled (every 20 seconds, for up to 120 seconds, and never beyond the overall time budget).
+  Vendor notes (for example, when the vendor capped the number of returned emails) are shown in a Notes section of the human readable output.
 enabled: true
 args:
 - name: internet_message_id
   description: One or more Internet Message IDs of the emails to search for or delete. When specified, it is preferred over subject and sender_address.
   isArray: true
 - name: object_id
-  description: The vendor specific ID of the email (for example, the ItemID in EWS). When specified, a single target_mailbox and a single brand must also be specified, and mailbox_scope must be "Specific". Not supported for Microsoft Graph Security.
+  description: The vendor specific ID of the email (for example, the ItemID in EWS). When specified, a single target_mailbox and a single brand must also be specified, and mailbox_scope must be "Specific".
 - name: operation
   description: The operation to perform. "Search Only" searches for the emails without deleting them. "Search & Delete" also deletes the emails that were found.
   required: true
@@ -38,7 +38,7 @@ args:
   - soft
   - hard
 - name: time_frame
-  description: 'How far back to search, for example "7 days" or "3 hours". Supported units: minutes, hours, days, weeks and months. Microsoft Graph Security and EWS v2 honor only the date part. Default is 1 hour.'
+  description: 'How far back to search, for example "7 days" or "3 hours". Supported units: minutes, hours, days, weeks and months. EWS v2 honors only the date part. Default is 1 hour.'
   defaultValue: 1 hour
 - name: subject
   description: One or more email subjects to search for. Ignored when internet_message_id is specified.
@@ -46,7 +46,7 @@ args:
 - name: sender_address
   description: The sender address to search for. Can be used together with subject. Ignored when internet_message_id is specified.
 - name: retrieve_files
-  description: Whether to retrieve the attachments of the emails before they are deleted. The files are added to the Attachments key of EmailData and returned as file entries. Not supported by Microsoft Graph Security. Default is false.
+  description: Whether to retrieve the attachments of the emails before they are deleted. The files are added to the Attachments key of EmailData and returned as file entries. Default is false.
   auto: PREDEFINED
   predefined:
   - "true"
@@ -56,23 +56,22 @@ args:
   description: The mailbox(es) to search in. Required when mailbox_scope is "Specific". Ignored when mailbox_scope is "All".
   isArray: true
 - name: mailbox_scope
-  description: Whether to search specific mailboxes or all mailboxes. Microsoft Graph Mail does not support "All". Default is Specific.
+  description: Whether to search specific mailboxes or all mailboxes. Microsoft Graph Mail does not support "All" (an error is returned for it, use Gmail or EWS on-prem instead). Default is Specific.
   auto: PREDEFINED
   predefined:
   - Specific
   - All
   defaultValue: Specific
 - name: brands
-  description: The brands to run the operation on. If empty, all enabled instances of the supported brands are used.
+  description: The brands to run the operation on. If empty, all enabled instances of the supported brands are used. The run fails if no enabled instance of the requested brands is found.
   isArray: true
   auto: PREDEFINED
   predefined:
   - Gmail
   - MicrosoftGraphMail
-  - Microsoft Graph
   - EWS v2
 - name: verify_deletion
-  description: Whether to verify the deletion by searching again after the emails were deleted and checking that they no longer exist. Relevant only when the operation is "Search & Delete". Emails whose deletion cannot be verified are reported as failed. Not supported for Microsoft Graph Security, for which a warning is returned. Default is false.
+  description: Whether to verify the deletion by searching again after the emails were deleted and checking that they no longer exist. Relevant only when the operation is "Search & Delete". The verification is polled for up to 120 seconds (and stops when the timeout budget is exhausted). Emails whose deletion cannot be verified are reported as failed. Default is false.
   auto: PREDEFINED
   predefined:
   - "true"
@@ -85,25 +84,18 @@ args:
   - "true"
   - "false"
   defaultValue: "false"
-- name: ediscovery_case_id
-  description: 'The ID of the eDiscovery case that a previous "Search Only" run with Microsoft Graph Security created (returned in its warning). Use together with ediscovery_search_id to read the results of that search, after which the search and the case are deleted. Supported only with the "Search Only" operation and only when brands is Microsoft Graph Security (and no other brand). When specified, no search filter or target_mailbox is required.'
-- name: ediscovery_search_id
-  description: 'The ID of the eDiscovery search that a previous "Search Only" run with Microsoft Graph Security created (returned in its warning). Must be specified together with ediscovery_case_id, with the "Search Only" operation and only with the Microsoft Graph Security brand.'
 - name: timeout
-  description: The overall time budget of the whole run (all polling runs together), in seconds (a positive integer). It is not a per-operation timeout. When it is exhausted, vendors that were not started yet are reported as failed and the results collected so far are returned (the Microsoft Graph Security search and case are always cleaned up, which may take up to an additional 600 seconds grace period). Default is 1800.
+  description: The overall time budget of the whole run (the first run and all the verification polling runs together), in seconds (a positive integer). It is not a per-operation timeout. When it is exhausted, vendors that were not started yet are reported as failed, the deletion verification polling stops and the results collected so far are returned. Default is 1800.
   defaultValue: "1800"
 - name: state
   description: The state of the polling flow. Automatically filled by polling, should not be set by the user.
-  hidden: true
-- name: scheduled_timeout_in_seconds
-  description: The timeout of the scheduled polling command. Automatically filled by polling, should not be set by the user.
   hidden: true
 - name: hide_polling_output
   description: Whether to hide the polling message. Automatically filled by polling, should not be set by the user.
   hidden: true
 outputs:
 - contextPath: EmailData
-  description: The unified results of the search and delete operation. Contains one record per email found, or one record per brand instance that found no emails, failed, or returns aggregate counts only (Microsoft Graph Security).
+  description: The unified results of the search and delete operation. Contains one record per email found, and one record per brand instance that found no emails or had errors.
   type: Unknown
 - contextPath: EmailData.Brand
   description: The brand that was used.
@@ -154,7 +146,7 @@ outputs:
   description: The Internet Message ID of the email, when the vendor returns it.
   type: String
 - contextPath: EmailData.AdditionalFields.Verified
-  description: Whether the deletion of the email was verified. Returned only when verify_deletion is true and the verification could be determined. Never returned for Microsoft Graph Security (its purge is fire and forget).
+  description: Whether the deletion of the email was verified. Returned only when verify_deletion is true, the email was deleted and the verification search succeeded. When false, the email was still found after the deletion, Success is false and the email is counted in TotalFailed.
   type: Boolean
 - contextPath: EmailData.AdditionalFields.Instance
   description: The name of the integration instance. Returned for records without an email and for every email when verbose is true.
@@ -162,20 +154,11 @@ outputs:
 - contextPath: EmailData.AdditionalFields.HTMLBodyTruncated
   description: True when the HTML body of the email was truncated to keep the polling state small.
   type: Boolean
-- contextPath: EmailData.AdditionalFields.Aggregate
-  description: True for the single aggregate record of a brand that returns counts only (Microsoft Graph Security), which has no per-email details.
+- contextPath: EmailData.AdditionalFields.NotFound
+  description: True when the email requested by object_id was not found (the vendor returned a "not found" error for the lookup). Returned only in the record of the brand instance (a record without an email). The vendor error is reported in Reason, but the brand instance is not counted as a hard failure, so the entry is not returned as an error entry.
   type: Boolean
-- contextPath: EmailData.AdditionalFields.SearchPending
-  description: True in the aggregate record of Microsoft Graph Security when a "Search Only" run only initiated the search. The number of emails is not known yet (TotalFound does not include it), re-run the command with the returned eDiscovery IDs to get it.
-  type: Boolean
-- contextPath: EmailData.AdditionalFields.EDiscoveryCaseID
-  description: The ID of the eDiscovery case that was kept for a later run (returned only with SearchPending).
-  type: String
-- contextPath: EmailData.AdditionalFields.EDiscoverySearchID
-  description: The ID of the eDiscovery search that was kept for a later run (returned only with SearchPending).
-  type: String
 - contextPath: EmailData.AdditionalFields.Note
-  description: A note about the run of the brand instance, for example when the vendor capped the number of returned emails. Returned only in records without an email and in aggregate records.
+  description: Notes about the run of the brand instance, for example when the vendor capped the number of returned emails or when Microsoft Graph Mail could not hard delete. Multiple notes are appended to each other. Returned only in the record of the brand instance (a record without an email, added when the instance found no emails or had errors). The notes of all brand instances are always shown in the Notes section of the human readable output.
   type: String
 - contextPath: TotalFound
   description: The total number of emails that were found across all brands.
@@ -203,20 +186,12 @@ dependson:
   - MicrosoftGraphMail|||msgraph-mail-get-email
   - MicrosoftGraphMail|||msgraph-mail-get-attachment
   - MicrosoftGraphMail|||msgraph-mail-delete-email
-  - Microsoft Graph|||msg-create-ediscovery-case
-  - Microsoft Graph|||msg-create-ediscovery-search
-  - Microsoft Graph|||msg-run-estimate-statistics
-  - Microsoft Graph|||msg-get-last-estimate-statistics-operation
-  - Microsoft Graph|||msg-purge-ediscovery-data
-  - Microsoft Graph|||msg-delete-ediscovery-search
-  - Microsoft Graph|||msg-delete-ediscovery-case
-  - Microsoft Graph|||msg-list-ediscovery-cases
   - EWS v2|||ews-search-mailboxes
   - EWS v2|||ews-get-items
   - EWS v2|||ews-get-attachment
   - EWS v2|||ews-delete-items
 dockerimage: demisto/python3:3.12.14.13495286
-timeout: 20m0s
+timeout: 35m0s
 fromversion: 6.10.0
 marketplaces:
 - xsoar
