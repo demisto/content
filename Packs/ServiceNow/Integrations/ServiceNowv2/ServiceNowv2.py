@@ -2536,11 +2536,8 @@ def create_event_command(client: Client, args: dict) -> CommandResults:
         args: Command arguments, usually ``demisto.args()``.
 
     Returns:
-        ``CommandResults`` with a human-readable success message and the raw ServiceNow response.
+        ``CommandResults`` with a human-readable success message.
     """
-    node = args.get("node")
-    event_type = args.get("type")
-
     time_of_event_str: str | None = None
     if time_of_event_raw := args.get("time_of_event"):
         try:
@@ -2553,17 +2550,15 @@ def create_event_command(client: Client, args: dict) -> CommandResults:
             dt = dt.astimezone(UTC)
         time_of_event_str = dt.strftime(SN_EVENT_TIME_FORMAT)
 
-    event: dict = {
-        "source": args.get("source") or "Cortex",
-        "node": node,
-        "type": event_type,
-    }
-    if time_of_event_str is not None:
-        event["time_of_event"] = time_of_event_str
-
-    for field in ("resource", "description", "message_key"):
-        if (value := args.get(field)) is not None:
-            event[field] = value
+    event: dict = assign_params(
+        source=args.get("source") or "Cortex",
+        node=args.get("node"),
+        type=args.get("type"),
+        time_of_event=time_of_event_str,
+        resource=args.get("resource"),
+        description=args.get("description"),
+        message_key=args.get("message_key"),
+    )
 
     if (additional_info_raw := args.get("additional_info")) is not None:
         try:
