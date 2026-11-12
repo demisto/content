@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Darkweb Forum"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibthreadid",
+    "closeForm": true,
+    "content": true,
+    "description": "The identifier of the forum thread.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibthreadid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Thread ID",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Darkweb Forum"
+    ],
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

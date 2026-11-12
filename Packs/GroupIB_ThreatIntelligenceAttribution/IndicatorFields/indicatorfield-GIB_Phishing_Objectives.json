@@ -1,0 +1,32 @@
+{
+    "associatedTypes": [
+        "Domain",
+        "URL",
+        "IP"
+    ],
+    "associatedToAll": false,
+    "caseInsensitive": false,
+    "cliName": "gibphishingobjectives",
+    "closeForm": false,
+    "content": true,
+    "description": "What the phishing page harvests or serves (Login harvest, Card harvest, PII harvest, Malware drop; Index of for an open directory listing); the set of values is open.",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_gibphishingobjectives",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Phishing Objectives",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

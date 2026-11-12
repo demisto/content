@@ -1,0 +1,30 @@
+{
+    "associatedTypes": [
+        "CVE"
+    ],
+    "associatedToAll": false,
+    "caseInsensitive": false,
+    "cliName": "gibepss",
+    "closeForm": false,
+    "content": true,
+    "description": "EPSS exploitation probability (0-1).",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_gibepss",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB EPSS",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "number",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

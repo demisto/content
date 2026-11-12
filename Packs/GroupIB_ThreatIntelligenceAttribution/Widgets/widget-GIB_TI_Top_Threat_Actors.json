@@ -1,0 +1,28 @@
+{
+    "id": "gib-ti-top-threat-actors",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "name": "GIB TI Top Threat Actors",
+    "dataType": "incidents",
+    "widgetType": "bar",
+    "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\" or type:\"GIB OSI Vulnerability\" or type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\" or type:\"GIB Cybercriminal Threat\" or type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat\" or type:\"GIB Nation-State Cybercriminals Threat Actor\" or type:\"GIB Malware\" or type:\"GIB Malware CNC\" or type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\" or type:\"GIB Open Threat\") and gibthreatactorname:*",
+    "isPredefined": true,
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "byFrom": "days",
+            "fromValue": 30
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "params": {
+        "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\" or type:\"GIB OSI Git Leak\" or type:\"GIB OSI Public Leak\" or type:\"GIB OSI Vulnerability\" or type:\"GIB Attacks DDOS\" or type:\"GIB Attacks Phishing Group\" or type:\"GIB Attacks Phishing Kit\" or type:\"GIB Cybercriminal Threat\" or type:\"GIB Cybercriminal Threat Actor\" or type:\"GIB Nation-State Cybercriminals Threat\" or type:\"GIB Nation-State Cybercriminals Threat Actor\" or type:\"GIB Malware\" or type:\"GIB Malware CNC\" or type:\"GIB Suspicious IP TOR Node\" or type:\"GIB Suspicious IP Open Proxy\" or type:\"GIB Suspicious IP Socks Proxy\" or type:\"GIB Suspicious IP VPN\" or type:\"GIB Suspicious IP Scanner\" or type:\"GIB Open Threat\") and gibthreatactorname:*",
+        "timeFrame": "days",
+        "groupBy": [
+            "gibthreatactorname"
+        ]
+    },
+    "size": 3,
+    "description": "Threat actors named most often on Group-IB incidents (a data breach's publishers and a defacer's handle are not attributions and are not counted)."
+}

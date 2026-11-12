@@ -1,0 +1,28 @@
+{
+    "autorun": false,
+    "color": "#2AABEE",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "GIB Darkweb Telegram",
+    "layout": "GIB Darkweb Telegram Layout",
+    "locked": false,
+    "name": "GIB Darkweb Telegram",
+    "onChangeRepAlg": 0,
+    "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence & Attribution",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.10.0"
+}

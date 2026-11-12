@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Attacks Phishing Group"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibfalsepositive",
+    "closeForm": false,
+    "content": true,
+    "description": "Whether Group-IB marks the phishing group as a false positive. Where the pre-processing rule GIB Rule All Types runs, its script sets it on the open incident if Group-IB flags the group afterward and the instance setting Pass flagged phishing groups to the pre-processing rule is on.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibfalsepositive",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB False Positive",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "boolean",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "openEnded": false,
+    "systemAssociatedTypes": [
+        "GIB Attacks Phishing Group"
+    ]
+}

@@ -1,0 +1,31 @@
+{
+    "associatedTypes": [
+        "IP",
+        "IPv6"
+    ],
+    "associatedToAll": false,
+    "caseInsensitive": true,
+    "cliName": "gibproxyports",
+    "closeForm": false,
+    "content": true,
+    "description": "Ports the address is listed on as a public proxy in the latest fetch, comma-separated (3128, 8080).",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_gibproxyports",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Proxy Ports",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

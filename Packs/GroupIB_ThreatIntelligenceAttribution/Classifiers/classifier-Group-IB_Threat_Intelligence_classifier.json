@@ -1,9 +1,9 @@
 {
-    "description": "",
+    "description": "Maps a fetched Group-IB record to its incident type by the collection it comes from (gibType).",
     "feed": false,
     "id": "Group-IB Threat Intelligence (classifier)",
     "keyTypeMap": {
-        "compromised/breached": "GIB Data Breach",
+        "compromised/breacheddb": "GIB Data Breach",
         "osi/git_repository": "GIB OSI Git Leak",
         "osi/public_leak": "GIB OSI Public Leak",
         "compromised/account_group": "GIB Compromised Account Group",
@@ -26,7 +26,12 @@
         "apt/threat": "GIB Nation-State Cybercriminals Threat",
         "osi/vulnerability": "GIB OSI Vulnerability",
         "compromised/masked_card": "GIB Compromised Masked Card",
-        "compromised/spd": "GIB SPD"
+        "compromised/spd": "GIB SPD",
+        "compromised/access": "GIB Compromised Access",
+        "compromised/messenger": "GIB Darkweb Telegram",
+        "compromised/discord": "GIB Darkweb Discord",
+        "darkweb/forums": "GIB Darkweb Forum",
+        "hi/open_threats": "GIB Open Threat"
     },
     "name": "Group-IB Threat Intelligence (classifier)",
     "transformer": {

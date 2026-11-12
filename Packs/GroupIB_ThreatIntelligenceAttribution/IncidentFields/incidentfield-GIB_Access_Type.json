@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Compromised Access"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibaccesstype",
+    "closeForm": true,
+    "content": true,
+    "description": "The category of access a dark web listing sells, such as Logs.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibaccesstype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Access Type",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Compromised Access"
+    ],
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibchannelsubscribers",
+    "closeForm": true,
+    "content": true,
+    "description": "The number of subscribers of the channel or server.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibchannelsubscribers",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Channel Subscribers",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord"
+    ],
+    "threshold": 72,
+    "type": "number",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

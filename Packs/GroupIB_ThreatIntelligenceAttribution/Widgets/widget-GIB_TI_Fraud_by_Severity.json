@@ -1,0 +1,28 @@
+{
+    "id": "gib-ti-fraud-by-severity",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "name": "GIB TI Fraud by Severity",
+    "dataType": "incidents",
+    "widgetType": "bar",
+    "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\")",
+    "isPredefined": true,
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "byFrom": "days",
+            "fromValue": 30
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "params": {
+        "query": "(type:\"GIB Compromised Account Group\" or type:\"GIB Compromised Card Group\" or type:\"GIB Compromised Masked Card\" or type:\"GIB SPD\")",
+        "timeFrame": "days",
+        "groupBy": [
+            "severity"
+        ]
+    },
+    "size": 3,
+    "description": "Severity of fraud intelligence incidents."
+}

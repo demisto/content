@@ -25,7 +25,9 @@
         "GIB Cybercriminal Threat",
         "GIB Suspicious IP Socks Proxy",
         "GIB Nation-State Cybercriminals Threat",
-        "GIB SPD"
+        "GIB SPD",
+        "GIB Compromised Access",
+        "GIB Open Threat"
     ],
     "caseInsensitive": true,
     "cliName": "gibseverity",
@@ -77,6 +79,8 @@
         "GIB Cybercriminal Threat",
         "GIB Suspicious IP Socks Proxy",
         "GIB Nation-State Cybercriminals Threat",
-        "GIB SPD"
+        "GIB SPD",
+        "GIB Compromised Access",
+        "GIB Open Threat"
     ]
 }

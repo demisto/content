@@ -1,0 +1,614 @@
+description: 'Responds to a GIB Attacks Phishing Group incident: a phishing site Group-IB confirmed. Unless Hunting Rules is on and your API user has hunting rules enabled for attacks/phishing_group, or the brands filter keeps your own brands, the collection lists phishing of every brand, so attach the playbook only to groups that impersonate yours. The playbook creates the phishing URL indicators with Group-IB''s verdict and blocks the URLs on the proxy and firewall integrations enabled on your Cortex XSOAR (Block URL - Generic v2). When the inputs allow it, the playbook also blocks the domain on the proxy, mail security, EDR and network integrations and tags it for an External Dynamic List (Block Domain - Generic v2). When SearchAndDeleteIntegration is MS Graph, it searches the mailboxes the analyst picks for messages received in the last 7 days whose body names the domain and deletes them; the other mail integrations need a sender, subject, attachment name or message ID, which a phishing group does not carry. It sends the takedown request to the registrar and the hosting provider by mail, or hands it to the analyst, then polls Group-IB until the group is marked blocked and closes the incident when the inputs allow it. A phishing kit incident fills none of the phishing group fields the inputs read: this playbook is for phishing groups.'
+id: Group-IB TI - Phishing Takedown
+inputs:
+- description: The Group-IB id of the phishing group.
+  key: GroupId
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      root: incident
+      accessor: gibid
+- description: The phishing URLs of the group.
+  key: URLs
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      root: incident
+      accessor: gibphishingurls
+- description: The phishing domain.
+  key: Domain
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      root: incident
+      accessor: gibphishingdomain
+- description: The brand the site impersonates.
+  key: Brand
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      root: incident
+      accessor: gibphishingbrand
+- description: The registrar of the phishing domain.
+  key: Registrar
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      root: incident
+      accessor: gibphishingregistrar
+- description: The addresses hosting the site.
+  key: HostingIPs
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      root: incident
+      accessor: gibphishingiptable.ip
+- description: True asks the analyst before the URLs are blocked; False blocks at once.
+  key: UserVerification
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: 'True'
+- description: True also blocks the phishing domain through Block Domain - Generic v2, which asks no one; a phishing domain is often shared hosting. False leaves the domain to the analyst.
+  key: BlockDomain
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: 'False'
+- description: The mail integration that Search And Delete Emails - Generic v2 runs on (MS Graph, Gmail, EWS or Agari Phishing Defense). Empty skips the mailbox search. With MS Graph the search looks for the phishing domain in the body of the messages received in the last 7 days, and the analyst picks the mailboxes and the delete type. The other integrations need a sender, subject, attachment name or message ID, which a phishing group does not carry.
+  key: SearchAndDeleteIntegration
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: ''
+- description: The abuse addresses the takedown request is sent to, comma-separated (registrar, hosting provider). Empty leaves the request to the analyst.
+  key: TakedownEmail
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: ''
+- description: Minutes between two checks of the group's status at Group-IB.
+  key: PollIntervalMinutes
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: '60'
+- description: Minutes after which the playbook stops waiting for Group-IB to mark the group blocked.
+  key: PollTimeoutMinutes
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: '1440'
+- description: True closes the incident once Group-IB marks the group blocked.
+  key: CloseWhenBlocked
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: 'False'
+name: Group-IB TI - Phishing Takedown
+outputs:
+- contextPath: GIBTI.PhishingGroup.blocked
+  description: When Group-IB marked the group blocked.
+  type: date
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 75c67cd6-ad5c-52d2-827b-a6f54d3566ba
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 75c67cd6-ad5c-52d2-827b-a6f54d3566ba
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -180\n  }\n}"
+    nexttasks:
+      '#none#':
+      - '1'
+  '1':
+    id: '1'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Creates the phishing URL indicators with Group-IB's verdict and the brand.
+      id: 37e43871-d964-5721-8391-fba0a414307d
+      iscommand: false
+      name: Enrich the incident's indicators
+      type: regular
+      version: -1
+      script: GIBTIEnrichIncidentIndicators
+      scriptName: GIBTIEnrichIncidentIndicators
+    taskid: 37e43871-d964-5721-8391-fba0a414307d
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 20\n  }\n}"
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments: {}
+    continueonerror: true
+  '2':
+    id: '2'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Blocks the phishing URLs on the proxy and firewall integrations enabled on this Cortex XSOAR.
+      id: e34fb5e8-f669-54f4-a3a4-a474dd636973
+      iscommand: false
+      name: Block URL - Generic v2
+      type: playbook
+      version: -1
+      playbookName: Block URL - Generic v2
+    taskid: e34fb5e8-f669-54f4-a3a4-a474dd636973
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 220\n  }\n}"
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URLs
+      UserVerification:
+        complex:
+          root: inputs.UserVerification
+      Tag:
+        simple: Group-IB phishing
+    continueonerror: true
+  '15':
+    id: '15'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: BlockDomain decides whether the phishing domain is blocked; Block Domain - Generic v2 asks no one, and a phishing domain is often shared hosting.
+      id: a9ddf375-3e86-59dd-9d7f-7f4a689f00fe
+      iscommand: false
+      name: Block the domain?
+      type: condition
+      version: -1
+    taskid: a9ddf375-3e86-59dd-9d7f-7f4a689f00fe
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 420\n  }\n}"
+    nexttasks:
+      '#default#':
+      - '4'
+      'yes':
+      - '3'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.BlockDomain
+          operator: isEqualString
+          right:
+            value:
+              simple: 'True'
+          ignorecase: true
+  '3':
+    id: '3'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Blocks the phishing domain on the proxy, mail security, EDR and network integrations enabled on this Cortex XSOAR and tags it for an External Dynamic List.
+      id: 38c47a98-0c95-51ab-adb9-d6ce1628dda3
+      iscommand: false
+      name: Block Domain - Generic v2
+      type: playbook
+      version: -1
+      playbookName: Block Domain - Generic v2
+    taskid: 38c47a98-0c95-51ab-adb9-d6ce1628dda3
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 890,\n    \"y\": 620\n  }\n}"
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+      Tag:
+        simple: Group-IB phishing
+    continueonerror: true
+  '4':
+    id: '4'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: SearchAndDeleteIntegration names the mail integration to search; empty skips the step.
+      id: 12db7f30-0163-5575-a85d-21c54581b629
+      iscommand: false
+      name: Search the mailboxes?
+      type: condition
+      version: -1
+    taskid: 12db7f30-0163-5575-a85d-21c54581b629
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 820\n  }\n}"
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '5'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.SearchAndDeleteIntegration
+          operator: isNotEmpty
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: With MS Graph, searches the mailboxes for messages received in the last 7 days whose body names the phishing domain and deletes them; the analyst picks the mailboxes and the delete type. The other mail integrations get no sender, subject, attachment name or message ID from a phishing group.
+      id: 516eb665-dd57-53e9-85a8-3d31ba17bd70
+      iscommand: false
+      name: Search And Delete Emails - Generic v2
+      type: playbook
+      version: -1
+      playbookName: Search And Delete Emails - Generic v2
+    taskid: 516eb665-dd57-53e9-85a8-3d31ba17bd70
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1020\n  }\n}"
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      SearchAndDeleteIntegration:
+        complex:
+          root: inputs.SearchAndDeleteIntegration
+      MsgKQL:
+        simple: (Body:${inputs.Domain})
+      SearchThisWeek:
+        simple: 'true'
+    continueonerror: true
+  '6':
+    id: '6'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: TakedownEmail names the abuse addresses; empty leaves the request to the analyst.
+      id: 32d38dbf-f45e-5226-8ccd-20362f2c0fc6
+      iscommand: false
+      name: Send the takedown request by mail?
+      type: condition
+      version: -1
+    taskid: 32d38dbf-f45e-5226-8ccd-20362f2c0fc6
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1220\n  }\n}"
+    nexttasks:
+      '#default#':
+      - '8'
+      'yes':
+      - '7'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.TakedownEmail
+          operator: isNotEmpty
+  '7':
+    id: '7'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Mails the abuse addresses of the registrar and the hosting provider through the mail sender integration enabled on this Cortex XSOAR.
+      id: 43637a71-6445-57e7-a2df-3a67acb87696
+      iscommand: true
+      name: Send the takedown request
+      type: regular
+      version: -1
+      script: '|||send-mail'
+    taskid: 43637a71-6445-57e7-a2df-3a67acb87696
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1420\n  }\n}"
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      to:
+        complex:
+          root: inputs.TakedownEmail
+      subject:
+        simple: 'Takedown request: phishing site ${inputs.Domain} impersonating ${inputs.Brand}'
+      body:
+        simple: 'Phishing site impersonating ${inputs.Brand}, reported by Group-IB. Domain: ${inputs.Domain}, registrar: ${inputs.Registrar}, hosting: ${inputs.HostingIPs}. URLs: ${inputs.URLs}. Detected ${incident.gibphishingdatedetected}. Please take the site down and confirm.'
+    continueonerror: true
+  '8':
+    id: '8'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Send this to the registrar (${inputs.Registrar}) and the hosting provider of ${inputs.HostingIPs}: Phishing site impersonating ${inputs.Brand}, reported by Group-IB. Domain: ${inputs.Domain}, registrar: ${inputs.Registrar}, hosting: ${inputs.HostingIPs}. URLs: ${inputs.URLs}. Detected ${incident.gibphishingdatedetected}. Please take the site down and confirm.'
+      id: 3f63042a-1797-572d-bb4f-19e9d2b844a1
+      iscommand: false
+      name: Send the takedown request by hand
+      type: regular
+      version: -1
+    taskid: 3f63042a-1797-572d-bb4f-19e9d2b844a1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 890,\n    \"y\": 1420\n  }\n}"
+    nexttasks:
+      '#none#':
+      - '9'
+  '9':
+    id: '9'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Reads the group from Group-IB every PollIntervalMinutes until it is marked blocked or PollTimeoutMinutes pass.
+      id: 13b7c85c-7366-55aa-8702-84f1403f2053
+      iscommand: false
+      name: GenericPolling
+      type: playbook
+      version: -1
+      playbookName: GenericPolling
+    taskid: 13b7c85c-7366-55aa-8702-84f1403f2053
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1620\n  }\n}"
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      Ids:
+        complex:
+          root: inputs.GroupId
+      PollingCommandName:
+        simple: gibti-get-phishing-group-info
+      PollingCommandArgName:
+        simple: id
+      Interval:
+        complex:
+          root: inputs.PollIntervalMinutes
+      Timeout:
+        complex:
+          root: inputs.PollTimeoutMinutes
+      dt:
+        simple: GIBTI.PhishingGroup(!val.blocked).id
+      AdditionalPollingCommandArgNames:
+        simple: using
+      AdditionalPollingCommandArgValues:
+        simple: ${incident.sourceInstance}
+    continueonerror: true
+  '14':
+    id: '14'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: 'Reads the group once more: the polling keeps its reads in its own context.'
+      id: 5a4594ef-cdd4-5935-8f72-663294168f88
+      iscommand: true
+      name: Read the group from Group-IB
+      type: regular
+      version: -1
+      script: '|||gibti-get-phishing-group-info'
+    taskid: 5a4594ef-cdd4-5935-8f72-663294168f88
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1820\n  }\n}"
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      id:
+        complex:
+          root: inputs.GroupId
+      using:
+        complex:
+          root: incident
+          accessor: sourceInstance
+    continueonerror: true
+  '10':
+    id: '10'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Whether the group read after the polling has a blocked date.
+      id: e519358d-2421-5a28-82aa-d38a4e388840
+      iscommand: false
+      name: Does Group-IB mark the group blocked?
+      type: condition
+      version: -1
+    taskid: e519358d-2421-5a28-82aa-d38a4e388840
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2020\n  }\n}"
+    nexttasks:
+      '#default#':
+      - '13'
+      'yes':
+      - '11'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: GIBTI.PhishingGroup.blocked
+          operator: isNotEmpty
+  '13':
+    id: '13'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Group-IB has not marked the group blocked after ${inputs.PollTimeoutMinutes} minutes. Follow up with the registrar and the hosting provider, or ask Group-IB for a takedown, and run the playbook again.
+      id: bc6d3cb1-095d-53f6-a682-9e23caab3561
+      iscommand: false
+      name: Escalate the takedown
+      type: regular
+      version: -1
+    taskid: bc6d3cb1-095d-53f6-a682-9e23caab3561
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 890,\n    \"y\": 2220\n  }\n}"
+    nexttasks:
+      '#none#':
+      - '99'
+  '11':
+    id: '11'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: CloseWhenBlocked decides whether the incident is closed once Group-IB marks the group blocked.
+      id: b1e48207-49a1-57e7-bead-4efe5657a02e
+      iscommand: false
+      name: Close the incident?
+      type: condition
+      version: -1
+    taskid: b1e48207-49a1-57e7-bead-4efe5657a02e
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2220\n  }\n}"
+    nexttasks:
+      '#default#':
+      - '99'
+      'yes':
+      - '12'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.CloseWhenBlocked
+          operator: isEqualString
+          right:
+            value:
+              simple: 'True'
+          ignorecase: true
+  '12':
+    id: '12'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: Builtin
+      description: Group-IB marked the phishing group blocked.
+      id: a72bbce8-cf8c-5cde-b7d2-3a52928f4c20
+      iscommand: true
+      name: Close the incident
+      type: regular
+      version: -1
+      script: Builtin|||closeInvestigation
+    taskid: a72bbce8-cf8c-5cde-b7d2-3a52928f4c20
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2420\n  }\n}"
+    nexttasks:
+      '#none#':
+      - '99'
+    scriptarguments:
+      closeReason:
+        simple: Resolved
+      closeNotes:
+        simple: Group-IB marked the phishing group blocked on ${GIBTI.PhishingGroup.blocked}.
+  '99':
+    id: '99'
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: ''
+      id: 357a4ccf-f8d9-5e2c-bbf8-10fff2b4abf2
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 357a4ccf-f8d9-5e2c-bbf8-10fff2b4abf2
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 2620\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3060,\n      \"width\": 820,\n      \"x\": 450,\n      \"y\": -180\n    }\n  }\n}"
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

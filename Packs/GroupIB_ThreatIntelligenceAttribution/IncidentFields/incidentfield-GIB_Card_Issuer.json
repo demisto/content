@@ -9,7 +9,7 @@
     "cliName": "gibcardissuer",
     "closeForm": false,
     "content": true,
-    "description": "Issuer of compromised card",
+    "description": "Issuer of the compromised card.",
     "editForm": true,
     "group": 0,
     "hidden": false,

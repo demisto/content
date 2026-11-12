@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibposttranslation",
+    "closeForm": false,
+    "content": true,
+    "description": "The post's text translated into English, when Group-IB provides one.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibposttranslation",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Post Translation",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord"
+    ],
+    "threshold": 72,
+    "type": "longText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

@@ -1,0 +1,38 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Cybercriminal Threat",
+        "GIB Nation-State Cybercriminals Threat",
+        "GIB Attacks Phishing Kit"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibrelatedemails",
+    "closeForm": false,
+    "content": true,
+    "description": "The e-mail addresses of a threat report's email-message entries or of a phishing kit, one per line. They are extracted as Email indicators only, so their domains do not become Domain indicators.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibrelatedemails",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Related Emails",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Cybercriminal Threat",
+        "GIB Nation-State Cybercriminals Threat",
+        "GIB Attacks Phishing Kit"
+    ],
+    "threshold": 72,
+    "type": "longText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

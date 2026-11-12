@@ -1,13 +1,14 @@
 {
     "associatedTypes": [
-        "IP"
+        "IP",
+        "IPv6"
     ],
     "associatedToAll": false,
     "caseInsensitive": true,
     "cliName": "gibproxyanonymous",
     "closeForm": false,
     "content": true,
-    "description": "Level of anonymous",
+    "description": "Whether Group-IB lists the proxy as anonymous: 1 when it does, empty when the listing does not say.",
     "editForm": true,
     "group": 2,
     "hidden": false,

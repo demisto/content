@@ -1,0 +1,40 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord",
+        "GIB Darkweb Forum",
+        "GIB Open Threat"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibauthorhandle",
+    "closeForm": true,
+    "content": true,
+    "description": "The handle of the post's author on its platform: a Telegram user name, a Discord tag, a forum nickname or a social network screen name.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibauthorhandle",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Author Handle",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord",
+        "GIB Darkweb Forum",
+        "GIB Open Threat"
+    ],
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

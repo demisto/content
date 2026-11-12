@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Data Breach"
+        "GIB Data Breach",
+        "GIB Darkweb Forum"
     ],
     "caseInsensitive": true,
     "cliName": "gibuploadtime",
@@ -21,7 +22,8 @@
     "sla": 0,
     "system": false,
     "systemAssociatedTypes": [
-        "GIB Data Breach"
+        "GIB Data Breach",
+        "GIB Darkweb Forum"
     ],
     "threshold": 72,
     "type": "date",

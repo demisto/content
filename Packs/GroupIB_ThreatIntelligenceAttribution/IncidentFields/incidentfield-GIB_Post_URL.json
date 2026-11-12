@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Darkweb Forum",
+        "GIB Open Threat"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibposturl",
+    "closeForm": true,
+    "content": true,
+    "description": "The address of the post on its platform.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibposturl",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Post URL",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Darkweb Forum",
+        "GIB Open Threat"
+    ],
+    "threshold": 72,
+    "type": "url",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

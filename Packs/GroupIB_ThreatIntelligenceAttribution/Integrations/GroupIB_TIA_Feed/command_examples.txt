@@ -1,1 +1,4 @@
-!gibti-get-indicators collection=ioc/common
+!gibti-get-indicators collection=ioc/primary limit=10
+!gibti-get-indicators collection=malware/cnc id=0123456789abcdef0123456789abcdef01234567
+!gibti-get-indicators collection=compromised/spd limit=10
+!gibti-get-indicators collection=hi/open_threats limit=10

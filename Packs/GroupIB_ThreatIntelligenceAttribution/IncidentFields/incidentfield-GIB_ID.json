@@ -9,7 +9,6 @@
         "GIB OSI Public Leak",
         "GIB Targeted Malware",
         "GIB Data Breach",
-        "GIB Brand Protection Domain",
         "GIB Compromised Account Group",
         "GIB Compromised Card Group",
         "GIB Compromised Masked Card",
@@ -30,13 +29,18 @@
         "GIB Cybercriminal Threat Actor",
         "GIB Nation-State Cybercriminals Threat Actor",
         "GIB Nation-State Cybercriminals Threat",
-        "GIB SPD"
+        "GIB SPD",
+        "GIB Compromised Access",
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord",
+        "GIB Darkweb Forum",
+        "GIB Open Threat"
     ],
     "caseInsensitive": false,
     "cliName": "gibid",
     "closeForm": false,
     "content": true,
-    "description": "ID of event in GIB TI",
+    "description": "ID of the record in Group-IB Threat Intelligence.",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -67,7 +71,6 @@
         "GIB OSI Public Leak",
         "GIB Targeted Malware",
         "GIB Data Breach",
-        "GIB Brand Protection Domain",
         "GIB Compromised Account Group",
         "GIB Compromised Card Group",
         "GIB Compromised Masked Card",
@@ -88,6 +91,11 @@
         "GIB Cybercriminal Threat Actor",
         "GIB Nation-State Cybercriminals Threat Actor",
         "GIB Nation-State Cybercriminals Threat",
-        "GIB SPD"
+        "GIB SPD",
+        "GIB Compromised Access",
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord",
+        "GIB Darkweb Forum",
+        "GIB Open Threat"
     ]
 }

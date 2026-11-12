@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Suspicious IP VPN"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibvpntypes",
+    "closeForm": true,
+    "content": true,
+    "description": "The deployment types of the VPN gateway, such as commercial, self-hosted or public.",
+    "editForm": true,
+    "fromVersion": "6.10.0",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibvpntypes",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB VPN Types",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Suspicious IP VPN"
+    ],
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1
+}

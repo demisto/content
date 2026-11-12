@@ -26,13 +26,19 @@
         "GIB Cybercriminal Threat Actor",
         "GIB Nation-State Cybercriminals Threat Actor",
         "GIB Nation-State Cybercriminals Threat",
-        "GIB Data Breach"
+        "GIB Data Breach",
+        "GIB Compromised Access",
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord",
+        "GIB Darkweb Forum",
+        "GIB Open Threat",
+        "GIB SPD"
     ],
     "caseInsensitive": true,
     "cliName": "gibsource",
     "closeForm": false,
     "content": true,
-    "description": "Where the feed comes from to GIB",
+    "description": "The source Group-IB gives the record: the source types of a compromised account's events (such as TG Bot), the source types of a card record (such as a card shop), the source types of a payment detail (such as Underground Market), the shop of a dark web listing, the kind of site (such as Blog or Social Network) for a public post; otherwise the record's collection, the Telegram, Discord and forum posts included.",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -80,6 +86,12 @@
         "GIB Cybercriminal Threat Actor",
         "GIB Nation-State Cybercriminals Threat Actor",
         "GIB Nation-State Cybercriminals Threat",
-        "GIB Data Breach"
+        "GIB Data Breach",
+        "GIB Compromised Access",
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord",
+        "GIB Darkweb Forum",
+        "GIB Open Threat",
+        "GIB SPD"
     ]
 }

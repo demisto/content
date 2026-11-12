@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Darkweb Forum"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibforumsection",
+    "closeForm": true,
+    "content": true,
+    "description": "The board and sub-boards of the forum the post was published in.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibforumsection",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Forum Section",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Darkweb Forum"
+    ],
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

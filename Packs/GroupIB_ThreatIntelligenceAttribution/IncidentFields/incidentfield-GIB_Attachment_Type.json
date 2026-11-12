@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibattachmenttype",
+    "closeForm": true,
+    "content": true,
+    "description": "The type of the post's attachment.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibattachmenttype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Attachment Type",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord"
+    ],
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

@@ -1,0 +1,27 @@
+{
+    "id": "gib-ti-tailored-threats",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "name": "GIB TI Tailored Threats",
+    "dataType": "incidents",
+    "widgetType": "number",
+    "query": "(((type:\"GIB Cybercriminal Threat\" or type:\"GIB Nation-State Cybercriminals Threat\") and gibfetchedwithhuntingrules:true) and -type:\"GIB Cybercriminal Threat Actor\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+    "isPredefined": true,
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "byFrom": "days",
+            "fromValue": 30
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "params": {
+        "query": "(((type:\"GIB Cybercriminal Threat\" or type:\"GIB Nation-State Cybercriminals Threat\") and gibfetchedwithhuntingrules:true) and -type:\"GIB Cybercriminal Threat Actor\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+        "timeFrame": "days",
+        "colors": {},
+        "sort": []
+    },
+    "size": 1,
+    "description": "Threat reports fetched through your hunting rules (0 while the instance setting Hunting Rules is off, its default)."
+}

@@ -1,11 +1,16 @@
 {
     "associatedTypes": [
         "IP",
+        "IPv6",
         "File",
         "URL",
         "Domain",
         "GIB Compromised Mule",
-        "GIB Victim IP"
+        "GIB Victim IP",
+        "Cryptocurrency Address",
+        "GIB Suspicious Payment Detail",
+        "Email",
+        "CVE"
     ],
     "associatedToAll": false,
     "caseInsensitive": false,

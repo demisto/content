@@ -2,12 +2,17 @@
     "associatedTypes": [
         "CVE",
         "IP",
+        "IPv6",
         "File",
         "URL",
         "Email",
         "Domain",
         "GIB Compromised Mule",
-        "GIB Victim IP"
+        "GIB Victim IP",
+        "Cryptocurrency Address",
+        "GIB Suspicious Payment Detail",
+        "Malware",
+        "Threat Actor"
     ],
     "associatedToAll": false,
     "caseInsensitive": true,
