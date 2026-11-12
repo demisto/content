@@ -3106,30 +3106,12 @@ def test_generic_api_call_command(command, args, response, mocker):
     assert result.outputs == response
 
 
-def _make_client() -> Client:
-    """Return a minimal Client instance suitable for unit tests."""
-    return Client(
-        "server_url",
-        "sc_server_url",
-        "cr_server_url",
-        "username",
-        "password",
-        "verify",
-        "fetch_time",
-        "sysparm_query",
-        "sysparm_limit",
-        "timestamp_field",
-        "ticket_type",
-        "get_attachments",
-        "incident_name",
-    )
-
-
 _REQUIRED_FIELDS = {"node": "web-server-01", "type": "CPU Utilization", "time_of_event": "2026-01-01 00:00:00"}
+_EXPECTED_REQUIRED = {"source": "Cortex", "node": "web-server-01", "type": "CPU Utilization", "time_of_event": "2026-01-01 00:00:00"}
 
 
 @pytest.mark.parametrize(
-    "args, expected_events",
+    "args, expected_event",
     [
         # Individual fields — all required + optional resource/severity/description.
         (
@@ -3139,70 +3121,120 @@ _REQUIRED_FIELDS = {"node": "web-server-01", "type": "CPU Utilization", "time_of
                 "type": "CPU Utilization",
                 "time_of_event": "2026-01-01 00:00:00",
                 "resource": "CPU",
+                "severity": "high",
+                "description": "CPU usage exceeded 90%",
+            },
+            {
+                "source": "SCOM",
+                "node": "web-server-01",
+                "type": "CPU Utilization",
+                "time_of_event": "2026-01-01 00:00:00",
+                "resource": "CPU",
                 "severity": "2",
                 "description": "CPU usage exceeded 90%",
             },
-            [
-                {
-                    "source": "SCOM",
-                    "node": "web-server-01",
-                    "type": "CPU Utilization",
-                    "time_of_event": "2026-01-01 00:00:00",
-                    "resource": "CPU",
-                    "severity": "2",
-                    "description": "CPU usage exceeded 90%",
-                }
-            ],
         ),
         # source defaults to "Cortex" when omitted.
         (
             {**_REQUIRED_FIELDS},
-            [{"source": "Cortex", **_REQUIRED_FIELDS}],
+            {**_EXPECTED_REQUIRED},
         ),
         # Cortex severity label "high" → ServiceNow "2".
         (
             {**_REQUIRED_FIELDS, "severity": "high"},
-            [{"source": "Cortex", **_REQUIRED_FIELDS, "severity": "2"}],
+            {**_EXPECTED_REQUIRED, "severity": "2"},
         ),
         # Cortex severity label "critical" → ServiceNow "1".
         (
             {**_REQUIRED_FIELDS, "severity": "critical"},
-            [{"source": "Cortex", **_REQUIRED_FIELDS, "severity": "1"}],
+            {**_EXPECTED_REQUIRED, "severity": "1"},
         ),
-        # Cortex resolution_state "resolved" → ServiceNow "closed".
+        # Cortex resolution_state "resolved" → ServiceNow "Closing".
         (
             {**_REQUIRED_FIELDS, "resolution_state": "resolved"},
-            [{"source": "Cortex", **_REQUIRED_FIELDS, "resolution_state": "closed"}],
+            {**_EXPECTED_REQUIRED, "resolution_state": "Closing"},
         ),
-        # Cortex resolution_state "in progress" → ServiceNow "open".
+        # Cortex resolution_state "new" → ServiceNow "New".
         (
-            {**_REQUIRED_FIELDS, "resolution_state": "in progress"},
-            [{"source": "Cortex", **_REQUIRED_FIELDS, "resolution_state": "open"}],
+            {**_REQUIRED_FIELDS, "resolution_state": "new"},
+            {**_EXPECTED_REQUIRED, "resolution_state": "New"},
+        ),
+        # ISO 8601 time_of_event is normalized to YYYY-MM-DD HH:MM:SS UTC.
+        (
+            {**_REQUIRED_FIELDS, "time_of_event": "2026-01-01T00:00:00Z"},
+            {**_EXPECTED_REQUIRED},
+        ),
+        # additional_info is passed as a raw JSON string (not parsed to dict).
+        (
+            {**_REQUIRED_FIELDS, "additional_info": '{"ci": "web-server-01", "env": "prod"}'},
+            {**_EXPECTED_REQUIRED, "additional_info": '{"ci": "web-server-01", "env": "prod"}'},
         ),
     ],
 )
-def test_create_event_command_sends_correct_payload(args, expected_events, mocker):
+def test_create_event_command_sends_correct_payload(args, expected_event, mock_client, mocker):
     """
     Given:
         - Case 1: Individual field arguments with all required fields and optional ones.
         - Case 2: source defaults to "Cortex" when omitted.
         - Case 3-4: Cortex severity labels are mapped to ServiceNow integers.
         - Case 5-6: Cortex resolution_state labels are mapped to ServiceNow values.
+        - Case 7: ISO 8601 time_of_event is normalized to YYYY-MM-DD HH:MM:SS UTC.
+        - Case 8: additional_info is passed as a raw JSON string.
     When:
         - Running create_event_command.
     Then:
-        - The client's create_event method is called with the correct list of event dicts.
+        - The client's create_event method is called with the correct event dict.
         - CommandResults are returned with the expected readable output.
     """
-    client = _make_client()
-    snow_response = {"result": {"status": "inserted", "message": ""}}
-    mock_create_event = mocker.patch.object(client, "create_event", return_value=snow_response)
+    snow_response = "Default Bulk Endpoint:1 events were inserted"
+    mock_client.create_event.return_value = snow_response
 
-    result = create_event_command(client, args)
+    result = create_event_command(mock_client, args)
 
-    mock_create_event.assert_called_once_with(expected_events)
+    mock_client.create_event.assert_called_once_with(expected_event)
     assert result.outputs is None
     assert "Event successfully sent to ServiceNow Event Management." in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "args, expected_error",
+    [
+        # Invalid severity.
+        (
+            {**_REQUIRED_FIELDS, "severity": "extreme"},
+            "Invalid severity 'extreme'",
+        ),
+        # Invalid resolution_state.
+        (
+            {**_REQUIRED_FIELDS, "resolution_state": "in progress"},
+            "Invalid resolution_state 'in progress'",
+        ),
+        # Malformed additional_info (not valid JSON).
+        (
+            {**_REQUIRED_FIELDS, "additional_info": "not-json"},
+            "Invalid additional_info",
+        ),
+        # Unparseable time_of_event.
+        (
+            {**_REQUIRED_FIELDS, "time_of_event": "not-a-date"},
+            "Could not parse time_of_event",
+        ),
+    ],
+)
+def test_create_event_command_raises_on_invalid_args(args, expected_error, mock_client):
+    """
+    Given:
+        - Case 1: An invalid severity value.
+        - Case 2: An invalid resolution_state value.
+        - Case 3: A malformed additional_info string.
+        - Case 4: An unparseable time_of_event string.
+    When:
+        - Running create_event_command.
+    Then:
+        - A DemistoException is raised with an informative message.
+    """
+    with pytest.raises(DemistoException, match=expected_error):
+        create_event_command(mock_client, args)
 
 
 @pytest.mark.parametrize(

@@ -1758,7 +1758,7 @@ script:
       description: state of task.
       type: Unknown
   - arguments:
-    - defaultValue: Cortex
+    - defaultvalue: Cortex
       description: The source of the event.
       name: source
     - description: The node where the event occurred.
@@ -1767,7 +1767,7 @@ script:
     - description: The type of the event.
       name: type
       required: true
-    - description: 'The time the event occurred, in the format: YYYY-MM-DD HH:MM:SS (UTC).'
+    - description: 'The time the event occurred. Accepts any parseable format (ISO 8601, epoch, YYYY-MM-DD HH:MM:SS). Normalized to UTC before sending to ServiceNow.'
       name: time_of_event
       required: true
     - description: The resource on the node that triggered the event.
@@ -1776,14 +1776,15 @@ script:
       description: The severity of the event.
       name: severity
       predefined:
-      - critical
-      - high
-      - medium
-      - low
-      - info
+      - Clear
+      - Critical
+      - High
+      - Medium
+      - Low
+      - Info
     - description: The description of the event.
       name: description
-    - description: 'Additional key-value pairs to attach to the event, in the format: {"key": "value"}.'
+    - description: 'Additional key-value pairs to attach to the event as a JSON string, e.g. {"key": "value"}.'
       name: additional_info
     - description: The unique key used to deduplicate events.
       name: message_key
@@ -1791,10 +1792,9 @@ script:
       description: The resolution state of the event.
       name: resolution_state
       predefined:
-      - new
-      - in progress
-      - resolved
-    description: Creates an event in ServiceNow Event Management.
+      - New
+      - Resolved
+    description: Creates an event in ServiceNow Event Management. Requires the evt_mgmt_integration role.
     name: servicenow-create-event
   - arguments:
     - auto: PREDEFINED
@@ -2054,56 +2054,63 @@ script:
       name: source
       prettyname: Source
       required: true
-    - description: Node (hostname or asset name) where the event occurred.
+    - description: The node where the event occurred.
       name: node
       prettyname: Node
       required: true
       prettypredefined:
         Issue Name: ${issue.name}
-    - description: Event type.
+    - description: The type of the event.
       name: type
       prettyname: Type
       required: true
       prettypredefined:
         Category: ${issue.categoryname}
-    - description: Time the event occurred, in the format "YYYY-MM-DD HH:MM:SS" (UTC).
+    - description: 'The time the event occurred. Accepts any parseable format (ISO 8601, epoch, YYYY-MM-DD HH:MM:SS). Normalized to UTC before sending to ServiceNow.'
       name: time_of_event
       prettyname: Time of Event
       required: true
       prettypredefined:
         Created: ${issue.created}
-    - description: Resource on the node that triggered the event.
+    - description: The resource on the node that triggered the event.
       name: resource
       prettyname: Resource
       prettypredefined:
         Issue ID: ${issue.id}
     - auto: PREDEFINED
-      description: Severity of the event. Accepts Cortex labels (critical, high, medium, low, info) or raw ServiceNow integers (0–5).
+      description: The severity of the event.
       name: severity
       prettyname: Severity
-      prettypredefined:
-        Severity: ${issue.severityStr}
-    - description: Human-readable description of the event.
+      predefined:
+      - Clear
+      - Critical
+      - High
+      - Medium
+      - Low
+      - Info
+    - description: The description of the event.
       name: description
       prettyname: Description
       prettypredefined:
         Details: ${issue.details}
-    - description: Unique key used to deduplicate events.
+    - description: The unique key used to deduplicate events.
       name: message_key
       prettyname: Message Key
       prettypredefined:
         Issue ID: ${issue.id}
-    - description: Resolution state. Accepts Cortex labels (new, in progress, resolved) or raw ServiceNow values.
+    - auto: PREDEFINED
+      description: The resolution state of the event.
       name: resolution_state
       prettyname: Resolution State
-      prettypredefined:
-        Resolution Status: ${issue.resolution_status}
-    - description: Additional key-value pairs as a JSON string. Includes the full issue as serialized JSON.
+      predefined:
+      - New
+      - Resolved
+    - description: 'Additional key-value pairs to attach to the event, in the format: {"key": "value"}.'
       name: additional_info
       prettyname: Additional Info
       prettypredefined:
         Full Issue: ${issue}
-    description: Creates an event in ServiceNow Event Management.
+    description: Creates an event in ServiceNow Event Management. Requires the evt_mgmt_integration role.
     name: servicenow-create-event-quick-action
     prettyname: Create ServiceNow Event
     hidden: true
