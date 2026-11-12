@@ -4,7 +4,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from typing import Any, Literal
-from pydantic import Field, SecretStr, root_validator, validator  # pylint: disable=no-name-in-module
+from pydantic import Field, SecretStr, model_validator, validator  # pylint: disable=no-name-in-module
 
 from ContentClientApiModule import *
 from BaseContentApiModule import *
@@ -309,16 +309,12 @@ class DehashedSearchArgs(ContentBaseModel):
             raise ValueError('"results_to" expected to be greater than zero.')
         return result
 
-    @root_validator(allow_reuse=True)
-    @classmethod
-    def validate_range(cls, values):
-        results_from = values.get("results_from")
-        results_to = values.get("results_to")
-
-        if results_to < results_from:
+    @model_validator(mode="after")
+    def validate_range(self):
+        if self.results_to < self.results_from:
             raise DemistoException('"results_from" expected to be less than or equal to "results_to"')
 
-        return values
+        return self
 
 
 def dehashed_search_command(client: DehashedClient, args: DehashedSearchArgs) -> list[CommandResults] | CommandResults:
