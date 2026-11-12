@@ -545,6 +545,11 @@
         <td>ID of Incident, Get it from previous command</td>
         <td>Required</td>
     </tr>
+    <tr>
+        <td>extend_attachments</td>
+        <td>Whether the attachment list should also contain screenshot and submission attachment types (if available).</td>
+        <td>Optional</td>
+    </tr>
     </tbody>
 </table>
 
