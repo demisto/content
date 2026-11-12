@@ -195,6 +195,25 @@ DEFAULT_RECORD_FIELDS = {
 
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 
+# Cortex severity label → ServiceNow em_event severity integer.
+EVENT_SEVERITY_MAP: dict[str, str] = {
+    "Clear": "0",
+    "Critical": "1",
+    "High": "2",
+    "Medium": "3",
+    "Low": "4",
+    "Info": "5",
+}
+
+# Cortex resolution state label → ServiceNow em_event resolution_state string.
+EVENT_RESOLUTION_STATE_MAP: dict[str, str] = {
+    "New": "New",
+    "Resolved": "Closing",
+}
+
+# ServiceNow em_event.time_of_event required format (UTC/GMT).
+SN_EVENT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+
 
 def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
     """
@@ -1270,6 +1289,22 @@ class Client(BaseClient):
             Response from API.
         """
         return self.send_request(f"change/standard/{template}", "POST", body={}, cr_api=True)
+
+    def create_event(self, event: dict) -> dict:
+        """Create an event in ServiceNow Event Management.
+
+        Sends the event to the /api/global/em/jsonv2 webhook endpoint which writes
+        to the em_events table.
+
+        Args:
+            event: Event dictionary with fields such as source, node, type, resource,
+                   severity, description, time_of_event, and additional_info.
+
+        Returns:
+            Response dict from ServiceNow.
+        """
+        body = {"records": [event]}
+        return self.send_request(path="", method="POST", body=body, custom_api="/api/global/em/jsonv2")
 
     def get_co_tasks(self, sys_id: str) -> dict:
         """Get item details from service catalog by sending a GET request to the Change Request REST API.
@@ -2488,6 +2523,72 @@ def get_item_details_command(client: Client, args: dict) -> tuple[Any, dict[Any,
         )
     entry_context = {"ServiceNow.CatalogItem(val.ID===obj.ID)": createContext(mapped_item, removeNull=True)}
     return human_readable, entry_context, result, True
+
+
+def create_event_command(client: Client, args: dict) -> CommandResults:
+    """Create an event in ServiceNow Event Management via the /api/global/em/jsonv2 webhook.
+
+    Builds the event from named arguments. ``source`` defaults to ``"Cortex"``.
+    ``node``, ``type``, and ``time_of_event`` are required.
+
+    Args:
+        client: Authenticated ServiceNow client.
+        args: Command arguments, usually ``demisto.args()``.
+
+    Returns:
+        ``CommandResults`` with a human-readable success message.
+    """
+    time_of_event_str: str | None = None
+    if time_of_event_raw := args.get("time_of_event"):
+        try:
+            dt = arg_to_datetime(time_of_event_raw, arg_name="time_of_event")
+        except ValueError:
+            raise DemistoException(
+                f"Could not parse time_of_event '{time_of_event_raw}'. "
+                "Expected a parseable date (ISO 8601, epoch, or YYYY-MM-DD HH:MM:SS)."
+            )
+        if dt is None:
+            raise DemistoException(f"Could not parse time_of_event '{time_of_event_raw}'.")
+        if dt.tzinfo:
+            dt = dt.astimezone(UTC)
+        time_of_event_str = dt.strftime(SN_EVENT_TIME_FORMAT)
+
+    event: dict = assign_params(
+        source=args.get("source") or "Cortex",
+        node=args.get("node"),
+        type=args.get("type"),
+        time_of_event=time_of_event_str,
+        resource=args.get("resource"),
+        description=args.get("description"),
+        message_key=args.get("message_key"),
+    )
+
+    if (additional_info_raw := args.get("additional_info")) is not None:
+        try:
+            json.loads(additional_info_raw)  # validate it is well-formed JSON
+        except json.JSONDecodeError as e:
+            raise DemistoException(
+                f"Invalid additional_info: must be a valid JSON string, "
+                f'e.g. \'{{"key": "value"}}\'. Got: {additional_info_raw!r}. Error: {e}'
+            )
+        event["additional_info"] = additional_info_raw
+
+    if (severity := args.get("severity")) is not None:
+        if (severity_int := EVENT_SEVERITY_MAP.get(str(severity).capitalize())) is None:
+            raise DemistoException(f"Invalid severity '{severity}'. Use {list(EVENT_SEVERITY_MAP)}.")
+        event["severity"] = severity_int
+
+    if (state := args.get("resolution_state")) is not None:
+        if (resolution_state := EVENT_RESOLUTION_STATE_MAP.get(str(state).capitalize())) is None:
+            raise DemistoException(f"Invalid resolution_state '{state}'. Valid values: {list(EVENT_RESOLUTION_STATE_MAP)}.")
+        event["resolution_state"] = resolution_state
+
+    response = client.create_event(event)
+
+    return CommandResults(
+        readable_output="Event successfully sent to ServiceNow Event Management.",
+        raw_response=response,
+    )
 
 
 def create_order_item_command(client: Client, args: dict) -> tuple[Any, dict[Any, Any], dict[Any, Any], bool]:
@@ -3969,6 +4070,10 @@ def main():
             demisto.results(get_ticket_command(client, args))
         elif command == "servicenow-delete-ticket":
             return_results(delete_ticket_command(client, args))
+        elif command == "servicenow-create-event":
+            return_results(create_event_command(client, args))
+        elif command == "servicenow-create-event-quick-action":
+            return_results(create_event_command(client, args))
         elif command == "servicenow-generic-api-call":
             return_results(generic_api_call_command(client, args))
         elif command == "get-remote-data":

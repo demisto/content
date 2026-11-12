@@ -2715,7 +2715,39 @@ There is no context output for this command.
 
 >Successfully retrieved attachments for ticket with sys id 111
 
-### Troubleshooting  
+### servicenow-create-event
+
+***
+Creates an event in ServiceNow Event Management. Requires the `evt_mgmt_integration` role.
+
+#### Base Command
+
+`servicenow-create-event`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| source | The source of the event. Default is "Cortex". | Optional |
+| node | The node (hostname or asset name) where the event occurred. | Required |
+| type | The type of the event. | Required |
+| time_of_event | The time the event occurred. Accepts any parseable format (ISO 8601, epoch, YYYY-MM-DD HH:MM:SS). Normalized to UTC before sending to ServiceNow. | Required |
+| resource | The resource on the node that triggered the event. | Optional |
+| severity | The severity of the event. Possible values are: Clear, Critical, High, Medium, Low, Info (case-insensitive). | Optional |
+| description | The description of the event. | Optional |
+| additional_info | Additional key-value pairs to attach to the event as a JSON string, e.g. {"key": "value"}. | Optional |
+| message_key | The unique key used to deduplicate events. | Optional |
+| resolution_state | The resolution state of the event. Possible values are: New, Resolved (case-insensitive). | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+>Event successfully sent to ServiceNow Event Management.
+
+### Troubleshooting
 
 The following are tips for handling issues with mirroring incidents between ServiceNow and Cortex XSOAR.
 
