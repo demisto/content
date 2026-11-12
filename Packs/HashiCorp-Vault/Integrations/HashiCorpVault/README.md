@@ -27,7 +27,7 @@ The integration supports SSH key-based authentication for managing SSH credentia
 When the **Using SSH Key Authentication** parameter is enabled:
 
 1. The integration looks for secrets containing both `username` and `sshkey` fields
-2. The secret data is parsed and mapped to XSOAR credential objects with:
+2. The secret data is parsed and mapped to Cortex XSOAR credential objects with:
    - **User**: The value of the `username` field
    - **Certificate**: The value of the `sshkey` field (SSH key content)
    - **Name**: The secret name, optionally concatenated with the username for uniqueness
