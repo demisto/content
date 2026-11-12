@@ -1,0 +1,466 @@
+name: SoChain
+display: SoChain
+commonfields:
+  id: SoChain
+  version: -1
+category: Data Enrichment & Threat Intelligence
+description: On-chain data for Bitcoin, Litecoin, Dogecoin and Zcash addresses and transactions from SoChain, including address poisoning checks.
+sectionorder:
+- Connect
+- Collect
+configuration:
+- name: url
+  display: Server URL
+  defaultvalue: https://sochain.com/api/v3
+  additionalinfo: The SoChain API v3 base URL.
+  type: 0
+  required: true
+  section: Connect
+- name: credentials
+  displaypassword: API Key
+  type: 9
+  required: false
+  hiddenusername: true
+  section: Connect
+  additionalinfo: 'Optional. Without a key, lookups are limited to 2,500 a day per IP. Get a key at https://sochain.com/dashboard.'
+- name: proxy
+  display: Use system proxy settings
+  additionalinfo: Runs the integration's requests through the system proxy.
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- name: insecure
+  display: Trust any certificate (not secure)
+  additionalinfo: Skips SSL certificate checks on requests to the server URL. Use only for testing.
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- name: integrationReliability
+  display: Source Reliability
+  defaultvalue: C - Fairly reliable
+  additionalinfo: Reliability of the source providing the intelligence data.
+  type: 15
+  required: false
+  section: Collect
+  advanced: true
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+script:
+  commands:
+  - name: crypto
+    description: 'Enriches cryptocurrency addresses (BTC, LTC, DOGE, ZEC) with their activity and the address poisoning check. SoChain does not give verdicts: the DBot score is always 0 (Unknown), and its message says whether look-alike addresses were found.'
+    arguments:
+    - name: crypto
+      default: true
+      isArray: true
+      required: true
+      description: 'A comma-separated list of addresses. A "bitcoin:", "litecoin:", "dogecoin:" or "zcash:" prefix selects the network.'
+    - name: network
+      description: 'The network. If not given, the first of BTC, LTC, DOGE and ZEC on which the address is valid is used.'
+      auto: PREDEFINED
+      predefined:
+      - BTC
+      - LTC
+      - DOGE
+      - ZEC
+      - BTCTEST
+      - LTCTEST
+      - DOGETEST
+      - ZECTEST
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: 'The indicator that was tested.'
+      type: String
+    - contextPath: DBotScore.Type
+      description: 'The indicator type.'
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: 'The vendor used to calculate the score.'
+      type: String
+    - contextPath: DBotScore.Score
+      description: 'The actual score.'
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: 'Reliability of the source providing the intelligence data.'
+      type: String
+    - contextPath: DBotScore.Message
+      description: 'What SoChain found: whether address poisoning look-alikes sent the address dust, or No results found.'
+      type: String
+    - contextPath: Cryptocurrency.Address
+      description: 'The cryptocurrency address.'
+      type: String
+    - contextPath: Cryptocurrency.AddressType
+      description: 'The cryptocurrency type, e.g. bitcoin.'
+      type: String
+    - contextPath: SoChain.Address.Address
+      description: 'The address.'
+      type: String
+    - contextPath: SoChain.Address.Network
+      description: 'The network (BTC, LTC, DOGE, ZEC or a testnet).'
+      type: String
+    - contextPath: SoChain.Address.TxsSent
+      description: 'Transactions in which the address sent coins.'
+      type: Number
+    - contextPath: SoChain.Address.TxsReceived
+      description: 'Transactions in which the address received coins.'
+      type: Number
+    - contextPath: SoChain.Address.TxsTotal
+      description: 'Every transaction the address appears in, each counted once.'
+      type: Number
+    - contextPath: SoChain.Address.ConfirmedBalance
+      description: 'The confirmed balance, in coins (a decimal string).'
+      type: String
+    - contextPath: SoChain.Address.UnconfirmedBalance
+      description: 'The unconfirmed balance change, in coins (a decimal string).'
+      type: String
+    - contextPath: SoChain.Address.ConfirmedReceived
+      description: 'Everything received in confirmed transactions, in coins (a decimal string).'
+      type: String
+    - contextPath: SoChain.Address.FirstActiveHeight
+      description: 'The block height of the address''s first transaction.'
+      type: Number
+    - contextPath: SoChain.Address.FirstActiveTime
+      description: 'The time of the block of the address''s first transaction (UTC, ISO 8601, e.g., 2011-05-13T21:04:05Z).'
+      type: Date
+    - contextPath: SoChain.Address.LastActiveHeight
+      description: 'The block height of the address''s latest transaction.'
+      type: Number
+    - contextPath: SoChain.Address.LastActiveTime
+      description: 'The time of the block of the address''s latest transaction (UTC, ISO 8601, e.g., 2011-05-13T21:04:05Z).'
+      type: Date
+    - contextPath: SoChain.Address.Poisoning.Address
+      description: 'The address checked.'
+      type: String
+    - contextPath: SoChain.Address.Poisoning.Network
+      description: 'The network.'
+      type: String
+    - contextPath: SoChain.Address.Poisoning.Building
+      description: 'True while the check is still catching up on the network''s history.'
+      type: Boolean
+    - contextPath: SoChain.Address.Poisoning.LookalikesFound
+      description: 'True if look-alike addresses sent the address dust.'
+      type: Boolean
+    - contextPath: SoChain.Address.Poisoning.Findings.Sender
+      description: 'The look-alike address that sent the dust.'
+      type: String
+    - contextPath: SoChain.Address.Poisoning.Findings.Imitates
+      description: 'The real address the look-alike copies.'
+      type: String
+    - contextPath: SoChain.Address.Poisoning.Findings.Amount
+      description: 'The dust amount, in coins.'
+      type: String
+    - contextPath: SoChain.Address.Poisoning.Findings.DustTxid
+      description: 'The transaction that sent the dust.'
+      type: String
+    - contextPath: SoChain.Address.Poisoning.Findings.RealTxid
+      description: 'The real transaction with the imitated address.'
+      type: String
+    - contextPath: SoChain.Address.Poisoning.Findings.RealHeight
+      description: 'The block height of the real transaction.'
+      type: Number
+    - contextPath: SoChain.Address.Poisoning.Findings.RealAmount
+      description: 'The amount of the real transaction, in coins.'
+      type: String
+    - contextPath: SoChain.Address.Poisoning.Findings.ReceiverPaid
+      description: 'True if the address later paid a look-alike.'
+      type: Boolean
+    - contextPath: SoChain.Address.Poisoning.Findings.SharedPrefix
+      description: 'The number of leading characters the look-alike shares with the real address.'
+      type: Number
+    - contextPath: SoChain.Address.Poisoning.Findings.SharedSuffix
+      description: 'The number of trailing characters the look-alike shares with the real address.'
+      type: Number
+    - contextPath: SoChain.Address.Poisoning.Findings.SenderKind
+      description: 'The kind of sender (new or dust_bot).'
+      type: String
+    - contextPath: SoChain.Address.Poisoning.Findings.SenderTxs
+      description: 'The number of transactions of the sender.'
+      type: Number
+    - contextPath: SoChain.Address.Poisoning.Findings.Height
+      description: 'The block height of the dust transaction (empty while unconfirmed).'
+      type: Number
+    - contextPath: SoChain.Address.Poisoning.Findings.Confirmed
+      description: 'True if the dust transaction is confirmed.'
+      type: Boolean
+  - name: sochain-address-summary
+    description: Gets an address's transaction counts, balances, total received, and first and last activity.
+    arguments:
+    - name: address
+      required: true
+      description: The address.
+    - name: network
+      description: 'The network. If not given, the first of BTC, LTC, DOGE and ZEC on which the address is valid is used.'
+      auto: PREDEFINED
+      predefined:
+      - BTC
+      - LTC
+      - DOGE
+      - ZEC
+      - BTCTEST
+      - LTCTEST
+      - DOGETEST
+      - ZECTEST
+    outputs:
+    - contextPath: SoChain.Address.Address
+      description: 'The address.'
+      type: String
+    - contextPath: SoChain.Address.Network
+      description: 'The network (BTC, LTC, DOGE, ZEC or a testnet).'
+      type: String
+    - contextPath: SoChain.Address.TxsSent
+      description: 'Transactions in which the address sent coins.'
+      type: Number
+    - contextPath: SoChain.Address.TxsReceived
+      description: 'Transactions in which the address received coins.'
+      type: Number
+    - contextPath: SoChain.Address.TxsTotal
+      description: 'Every transaction the address appears in, each counted once.'
+      type: Number
+    - contextPath: SoChain.Address.ConfirmedBalance
+      description: 'The confirmed balance, in coins (a decimal string).'
+      type: String
+    - contextPath: SoChain.Address.UnconfirmedBalance
+      description: 'The unconfirmed balance change, in coins (a decimal string).'
+      type: String
+    - contextPath: SoChain.Address.ConfirmedReceived
+      description: 'Everything received in confirmed transactions, in coins (a decimal string).'
+      type: String
+    - contextPath: SoChain.Address.FirstActiveHeight
+      description: 'The block height of the address''s first transaction.'
+      type: Number
+    - contextPath: SoChain.Address.FirstActiveTime
+      description: 'The time of the block of the address''s first transaction (UTC, ISO 8601, e.g., 2011-05-13T21:04:05Z).'
+      type: Date
+    - contextPath: SoChain.Address.LastActiveHeight
+      description: 'The block height of the address''s latest transaction.'
+      type: Number
+    - contextPath: SoChain.Address.LastActiveTime
+      description: 'The time of the block of the address''s latest transaction (UTC, ISO 8601, e.g., 2011-05-13T21:04:05Z).'
+      type: Date
+  - name: sochain-transaction
+    description: Gets a transaction with its confirmations, fee, and every input and output.
+    arguments:
+    - name: txid
+      required: true
+      description: The transaction ID.
+    - name: network
+      required: true
+      description: 'The network.'
+      auto: PREDEFINED
+      predefined:
+      - BTC
+      - LTC
+      - DOGE
+      - ZEC
+      - BTCTEST
+      - LTCTEST
+      - DOGETEST
+      - ZECTEST
+    outputs:
+    - contextPath: SoChain.Transaction.Hash
+      description: 'The transaction ID.'
+      type: String
+    - contextPath: SoChain.Transaction.Network
+      description: 'The network.'
+      type: String
+    - contextPath: SoChain.Transaction.Confirmations
+      description: 'The number of confirmations.'
+      type: Number
+    - contextPath: SoChain.Transaction.BlockHash
+      description: 'The hash of the block containing the transaction.'
+      type: String
+    - contextPath: SoChain.Transaction.BlockHeight
+      description: 'The height of the block containing the transaction.'
+      type: Number
+    - contextPath: SoChain.Transaction.Time
+      description: 'The transaction time (UTC, ISO 8601, e.g., 2011-05-13T21:04:05Z).'
+      type: Date
+    - contextPath: SoChain.Transaction.Size
+      description: 'The size in bytes.'
+      type: Number
+    - contextPath: SoChain.Transaction.Vsize
+      description: 'The virtual size in vbytes.'
+      type: Number
+    - contextPath: SoChain.Transaction.Fee
+      description: 'The fee, in coins.'
+      type: String
+    - contextPath: SoChain.Transaction.InputsCount
+      description: 'The number of inputs.'
+      type: Number
+    - contextPath: SoChain.Transaction.OutputsCount
+      description: 'The number of outputs.'
+      type: Number
+    - contextPath: SoChain.Transaction.InputsValue
+      description: 'The total value of the inputs, in coins.'
+      type: String
+    - contextPath: SoChain.Transaction.OutputsValue
+      description: 'The total value of the outputs, in coins.'
+      type: String
+    - contextPath: SoChain.Transaction.Inputs.Index
+      description: 'The input index.'
+      type: Number
+    - contextPath: SoChain.Transaction.Inputs.Address
+      description: 'The address spending the input.'
+      type: String
+    - contextPath: SoChain.Transaction.Inputs.Value
+      description: 'The input value, in coins.'
+      type: String
+    - contextPath: SoChain.Transaction.Outputs.Index
+      description: 'The output index.'
+      type: Number
+    - contextPath: SoChain.Transaction.Outputs.Address
+      description: 'The address receiving the output.'
+      type: String
+    - contextPath: SoChain.Transaction.Outputs.Value
+      description: 'The output value, in coins.'
+      type: String
+    - contextPath: SoChain.Transaction.Outputs.Type
+      description: 'The output script type.'
+      type: String
+    - contextPath: SoChain.Transaction.Outputs.Spent
+      description: 'True if the output has been spent.'
+      type: Boolean
+  - name: sochain-address-counterparties
+    description: Lists who an address paid and was paid by lately (payments of a significant amount, newest first).
+    arguments:
+    - name: address
+      required: true
+      description: The address.
+    - name: network
+      description: 'The network. If not given, the first of BTC, LTC, DOGE and ZEC on which the address is valid is used.'
+      auto: PREDEFINED
+      predefined:
+      - BTC
+      - LTC
+      - DOGE
+      - ZEC
+      - BTCTEST
+      - LTCTEST
+      - DOGETEST
+      - ZECTEST
+    - name: limit
+      description: The number of rows to return, newest first (1 to 100).
+      defaultValue: '50'
+    outputs:
+    - contextPath: SoChain.Counterparties.Address
+      description: 'The address.'
+      type: String
+    - contextPath: SoChain.Counterparties.Network
+      description: 'The network.'
+      type: String
+    - contextPath: SoChain.Counterparties.WindowBlocks
+      description: 'The number of recent blocks the list covers.'
+      type: Number
+    - contextPath: SoChain.Counterparties.FromHeight
+      description: 'The first block height the list covers.'
+      type: Number
+    - contextPath: SoChain.Counterparties.Building
+      description: 'True while the data is still catching up on the network''s history.'
+      type: Boolean
+    - contextPath: SoChain.Counterparties.Counterparties.Address
+      description: 'The counterparty address.'
+      type: String
+    - contextPath: SoChain.Counterparties.Counterparties.Direction
+      description: 'sent (the address paid it) or received (the address was paid by it).'
+      type: String
+    - contextPath: SoChain.Counterparties.Counterparties.Amount
+      description: 'The amount, in coins.'
+      type: String
+    - contextPath: SoChain.Counterparties.Counterparties.Txid
+      description: 'The transaction ID.'
+      type: String
+    - contextPath: SoChain.Counterparties.Counterparties.Height
+      description: 'The block height.'
+      type: Number
+  - name: sochain-address-poisoning
+    description: Checks whether an address was targeted by address poisoning, that is look-alike addresses that sent it dust, imitating an address it really paid or was paid by.
+    arguments:
+    - name: address
+      required: true
+      description: The address.
+    - name: network
+      description: 'The network. If not given, the first of BTC, LTC, DOGE and ZEC on which the address is valid is used.'
+      auto: PREDEFINED
+      predefined:
+      - BTC
+      - LTC
+      - DOGE
+      - ZEC
+      - BTCTEST
+      - LTCTEST
+      - DOGETEST
+      - ZECTEST
+    - name: limit
+      description: The number of rows to return, newest first (1 to 100).
+      defaultValue: '50'
+    outputs:
+    - contextPath: SoChain.AddressPoisoning.Address
+      description: 'The address checked.'
+      type: String
+    - contextPath: SoChain.AddressPoisoning.Network
+      description: 'The network.'
+      type: String
+    - contextPath: SoChain.AddressPoisoning.Building
+      description: 'True while the check is still catching up on the network''s history.'
+      type: Boolean
+    - contextPath: SoChain.AddressPoisoning.LookalikesFound
+      description: 'True if look-alike addresses sent the address dust.'
+      type: Boolean
+    - contextPath: SoChain.AddressPoisoning.Findings.Sender
+      description: 'The look-alike address that sent the dust.'
+      type: String
+    - contextPath: SoChain.AddressPoisoning.Findings.Imitates
+      description: 'The real address the look-alike copies.'
+      type: String
+    - contextPath: SoChain.AddressPoisoning.Findings.Amount
+      description: 'The dust amount, in coins.'
+      type: String
+    - contextPath: SoChain.AddressPoisoning.Findings.DustTxid
+      description: 'The transaction that sent the dust.'
+      type: String
+    - contextPath: SoChain.AddressPoisoning.Findings.RealTxid
+      description: 'The real transaction with the imitated address.'
+      type: String
+    - contextPath: SoChain.AddressPoisoning.Findings.RealHeight
+      description: 'The block height of the real transaction.'
+      type: Number
+    - contextPath: SoChain.AddressPoisoning.Findings.RealAmount
+      description: 'The amount of the real transaction, in coins.'
+      type: String
+    - contextPath: SoChain.AddressPoisoning.Findings.ReceiverPaid
+      description: 'True if the address later paid a look-alike.'
+      type: Boolean
+    - contextPath: SoChain.AddressPoisoning.Findings.SharedPrefix
+      description: 'The number of leading characters the look-alike shares with the real address.'
+      type: Number
+    - contextPath: SoChain.AddressPoisoning.Findings.SharedSuffix
+      description: 'The number of trailing characters the look-alike shares with the real address.'
+      type: Number
+    - contextPath: SoChain.AddressPoisoning.Findings.SenderKind
+      description: 'The kind of sender (new or dust_bot).'
+      type: String
+    - contextPath: SoChain.AddressPoisoning.Findings.SenderTxs
+      description: 'The number of transactions of the sender.'
+      type: Number
+    - contextPath: SoChain.AddressPoisoning.Findings.Height
+      description: 'The block height of the dust transaction (empty while unconfirmed).'
+      type: Number
+    - contextPath: SoChain.AddressPoisoning.Findings.Confirmed
+      description: 'True if the dust transaction is confirmed.'
+      type: Boolean
+  dockerimage: demisto/fastapi:0.125.0.12689358
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- SoChain-Test

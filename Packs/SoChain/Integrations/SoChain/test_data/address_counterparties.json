@@ -1,0 +1,25 @@
+{
+  "status": "success",
+  "data": {
+    "address": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+    "window_blocks": 4320,
+    "from_height": 969166,
+    "building": false,
+    "counterparties": [
+      {
+        "address": "bc1qdux37a0pzr44lrhc8vm44uellvplgyh7g73epq",
+        "direction": "received",
+        "amount": "0.06774527",
+        "txid": "f1363d1f8ceb5753aa5f9f5fee1a9c605545be2d167ae89c44103c04d2b80731",
+        "height": 971286
+      },
+      {
+        "address": "bc1qq2mvrp4g3ugd424dw4xv53rgsf8szkrv853jrc",
+        "direction": "received",
+        "amount": "0.06871954",
+        "txid": "412eb99d45ac2d77c34240f17197ca202385adec870a6ef9be5870f579ab34fb",
+        "height": 969861
+      }
+    ]
+  }
+}
