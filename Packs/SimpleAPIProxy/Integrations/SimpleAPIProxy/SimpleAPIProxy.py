@@ -2,6 +2,7 @@ from copy import copy
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
 from traceback import format_exc
+import urllib.parse
 
 import demistomock as demisto  # noqa: F401
 import uvicorn
@@ -24,6 +25,62 @@ app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name="Authorization")
+
+
+MAX_UNQUOTE_ITERATIONS = 10
+DOT_SEGMENTS = {".", ".."}
+
+
+def fully_unquote(value: str) -> str:
+    """
+    Percent-decodes a string repeatedly until it no longer changes, so double-encoded
+    sequences such as '%252e%252e' are revealed as '..'.
+
+    Args:
+        value (str): The string to decode.
+
+    Returns:
+        str: The fully decoded string.
+    """
+    for _ in range(MAX_UNQUOTE_ITERATIONS):
+        decoded = urllib.parse.unquote(value)
+        if decoded == value:
+            break
+        value = decoded
+    return value
+
+
+def has_dot_segments(target: str) -> bool:
+    """
+    Checks whether the target contains '.' or '..' path segments, either literal or
+    percent-encoded, using '/' or '\\' as separators.
+    Such segments are normalized by the HTTP client or the backend and can be used to escape
+    the allowed target prefix (e.g. '/v1/users/../admin' is sent as '/v1/admin').
+
+    Args:
+        target (str): The target path requested by the client.
+
+    Returns:
+        bool: True if the target contains a dot segment, False otherwise.
+    """
+    decoded_target = fully_unquote(target)
+    return any(segment in DOT_SEGMENTS for segment in re.split(r"[/\\]", decoded_target))
+
+
+def is_same_host_as_api_path(url: str) -> bool:
+    """
+    Checks that the URL built from API_PATH and the client's target still points at the
+    configured API host, so a target such as '@evil.com/' cannot redirect the upstream credentials.
+
+    Args:
+        url (str): The final URL to be requested.
+
+    Returns:
+        bool: True if the scheme and network location match API_PATH, False otherwise.
+    """
+    api_path_parts = urllib.parse.urlsplit(API_PATH)
+    url_parts = urllib.parse.urlsplit(url)
+    return (url_parts.scheme, url_parts.netloc) == (api_path_parts.scheme, api_path_parts.netloc)
 
 
 def is_json(jstr):
@@ -171,12 +228,20 @@ async def handle_post(
     # Check if METHOD and TARGET from the POST body are allowed per the api_permissions defined as an integration input
 
     body_from_request = await request.json()
+    target = body_from_request.get("target")
+    if not isinstance(target, str):
+        return Response(status_code=400, content="Target not found.")
+
+    if has_dot_segments(target):
+        demisto.debug(f"Rejected target containing dot segments: {target}")
+        return Response(status_code=400, content="Target must not contain '.' or '..' path segments.")
+
     target_found = False
     allowed_methods = []
 
     for item in API_PERMISSIONS.get("Permissions"):
         # Matches from beginning of the string, same as ^[Endpoint]*
-        if re.match(item.get("target"), body_from_request.get("target")):
+        if re.match(item.get("target"), target):
             target_found = True
             allowed_methods = item.get("allowed_methods")
             break
@@ -193,9 +258,13 @@ async def handle_post(
             if parameters_for_get:
                 parameters_for_get = dict(subString.split("=") for subString in parameters_for_get[1:].split("&"))
 
-            url = API_PATH + body_from_request.get("target")
+            url = API_PATH + target
 
             demisto.debug(f"Target URL: {url}")
+
+            if not is_same_host_as_api_path(url):
+                demisto.debug(f"Rejected target that changes the API host: {url}")
+                return Response(status_code=400, content="Target must not change the API host.")
 
             result = make_api_request(url, method, data_for_post, parameters_for_get)
 
