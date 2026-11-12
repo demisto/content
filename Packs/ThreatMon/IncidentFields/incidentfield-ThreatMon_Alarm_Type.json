@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "ThreatMon Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "threatmonalarmtype",
+    "closeForm": false,
+    "content": true,
+    "description": "The ThreatMon alarm type.",
+    "editForm": false,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_threatmonalarmtype",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "ThreatMon Alarm Type",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}
