@@ -38,6 +38,8 @@ def make_params(**overrides: Any) -> SearchParams:
         "brands": [],
         "verbose": False,
         "timeout": module.DEFAULT_TIMEOUT_SECONDS,
+        "ediscovery_case_id": "",
+        "ediscovery_search_id": "",
     }
     values.update(overrides)
     return SearchParams(**values)
@@ -161,12 +163,15 @@ def drive(params: SearchParams, state: dict[str, Any] | None = None, max_ticks: 
 
 
 def single_vendor_state(params: SearchParams, key: str, brand: str, instance: str) -> dict[str, Any]:
+    vendor = module.new_vendor_state(key, brand, instance)
+    if params.resume_ediscovery and key == module.GRAPH_SECURITY_KEY:  # the same as new_state does
+        module.resume_graph_security_vendor(vendor, params)
     return {
         "version": module.STATE_VERSION,
         "deadline": CLOCK.now + params.timeout,
         "since": params.since.isoformat(),
         "command_trace": [],
-        "vendors": [module.new_vendor_state(key, brand, instance)],
+        "vendors": [vendor],
     }
 
 
@@ -224,7 +229,8 @@ def test_parse_time_frame_invalid(value):
         module.parse_time_frame(value)
 
 
-def test_parse_args_defaults():
+def test_parse_args_defaults(mocker):
+    setup_demisto(mocker, {}, {})
     params = module.parse_args({"operation": OPERATION_SEARCH_ONLY, "subject": "Invoice", "target_mailbox": "a@example.com"})
     assert params.delete_type == DELETE_SOFT
     assert params.mailbox_scope == SCOPE_SPECIFIC
@@ -236,7 +242,8 @@ def test_parse_args_defaults():
 
 
 @pytest.mark.parametrize("value, expected", [("true", True), ("false", False), (None, False), ("", False)])
-def test_parse_args_verify_deletion(value, expected):
+def test_parse_args_verify_deletion(mocker, value, expected):
+    setup_demisto(mocker, {}, {})
     args = {"operation": OPERATION_SEARCH_AND_DELETE, "subject": "Invoice", "target_mailbox": "a@example.com"}
     if value is not None:
         args["verify_deletion"] = value
@@ -257,14 +264,63 @@ def test_parse_args_verify_deletion(value, expected):
         {"operation": OPERATION_SEARCH_ONLY, "object_id": "1", "brands": "Gmail"},
     ],
 )
-def test_parse_args_invalid(args):
+def test_parse_args_invalid(mocker, args):
+    setup_demisto(mocker, {}, {})
     with pytest.raises(module.DemistoException):
         module.parse_args(args)
 
 
-def test_parse_args_all_mailboxes_does_not_require_target_mailbox():
+def test_parse_args_all_mailboxes_does_not_require_target_mailbox(mocker):
+    setup_demisto(mocker, {}, {})
     params = module.parse_args({"operation": OPERATION_SEARCH_ONLY, "subject": "s", "mailbox_scope": SCOPE_ALL})
     assert params.all_mailboxes
+
+
+EDISCOVERY_ARGS = {
+    "operation": OPERATION_SEARCH_ONLY,
+    "brands": "Microsoft Graph Security",
+    "ediscovery_case_id": " case1 ",
+    "ediscovery_search_id": "search1",
+}
+
+
+@pytest.mark.parametrize("brands", ["Microsoft Graph Security", "Microsoft Graph", "msgraph_security,MicrosoftGraphSecurity"])
+def test_parse_args_ediscovery_ids_valid(mocker, brands):
+    """Phase 2 needs no filter and no target mailbox: the search of phase 1 already has its query."""
+    setup_demisto(mocker, {}, {})
+    params = module.parse_args({**EDISCOVERY_ARGS, "brands": brands})
+    assert (params.ediscovery_case_id, params.ediscovery_search_id) == ("case1", "search1")
+    assert params.resume_ediscovery
+
+
+def test_parse_args_without_ediscovery_ids_is_not_a_resume(mocker):
+    setup_demisto(mocker, {}, {})
+    params = module.parse_args({"operation": OPERATION_SEARCH_ONLY, "subject": "s", "target_mailbox": "a@example.com"})
+    assert (params.ediscovery_case_id, params.ediscovery_search_id, params.resume_ediscovery) == ("", "", False)
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"ediscovery_search_id": ""},  # only the case id
+        {"ediscovery_case_id": ""},  # only the search id
+        {"operation": OPERATION_SEARCH_AND_DELETE, "mailbox_scope": SCOPE_ALL},  # not Search Only
+        {"brands": ""},  # all the brands
+        {"brands": "Gmail"},  # another brand
+        {"brands": "Microsoft Graph Security,Gmail"},  # another brand as well
+        {"brands": "Microsoft Graph Mail"},  # the mail integration is not the security one
+    ],
+)
+def test_parse_args_ediscovery_ids_invalid(mocker, overrides):
+    setup_demisto(mocker, {}, {})
+    with pytest.raises(module.DemistoException, match="must be specified together"):
+        module.parse_args({**EDISCOVERY_ARGS, **overrides})
+
+
+def test_entry_point_invalid_ediscovery_ids_are_reported_as_invalid_arguments(mocker):
+    setup_demisto(mocker, GS_MODULES, {})
+    with pytest.raises(module.InvalidArgumentsError, match="ediscovery_case_id"):
+        module.search_and_delete_email({**EDISCOVERY_ARGS, "brands": "Gmail"})
 
 
 def test_module_has_no_blocking_poll_and_nothing_sleeps():
@@ -618,6 +674,13 @@ def gs_params(**overrides: Any) -> SearchParams:
     return make_params(**{"mailbox_scope": SCOPE_ALL, **overrides})
 
 
+def gs_resume_params(**overrides: Any) -> SearchParams:
+    """"Search Only" phase 2: the case and the search of a previous run are resumed (it starts at the estimate)."""
+    return gs_params(
+        **{"operation": OPERATION_SEARCH_ONLY, "ediscovery_case_id": "case1", "ediscovery_search_id": "search1", **overrides}
+    )
+
+
 def status_responder(statuses: list[Any], build: Any) -> Any:
     """Answers call N with ``build(statuses[N])`` (the last status is repeated)."""
     calls = {"n": 0}
@@ -710,13 +773,52 @@ def test_graph_security_search_purge_and_cleanup(mocker):
     assert_cleanup_last(fake)
 
 
-def test_graph_security_search_only_stages_and_cleanup_without_purge(mocker):
-    """Search Only: the estimate IS polled to completion, its count is reported, then straight to cleanup (no purge)."""
-    fake = setup_demisto(mocker, GS_MODULES, graph_security_responses(["running", "running", 3]))
+def test_graph_security_search_only_phase1_keeps_the_case_and_search_and_warns(mocker):
+    """Search Only without eDiscovery ids: create the case + search, then done right away (no estimate, no cleanup)."""
+    fake = setup_demisto(mocker, GS_MODULES, graph_security_responses([3]))
     params = gs_params(operation=OPERATION_SEARCH_ONLY)
     run = drive_vendor(params, *GS)
+    assert run.visited() == ["create", "done"]
+    assert run.ticks == 1
+    assert [name for name, _ in fake.calls] == ["msg-create-ediscovery-case", "msg-create-ediscovery-search"]
+    assert not delete_order(fake)  # the case and the search stay active for phase 2
+    result = run.results[0]
+    assert result.success
+    assert result.warnings == [
+        "The search has been initiated and may take a significant amount of time. To check the results, re-run this "
+        "command providing the following arguments: ediscovery_case_id=case1 ediscovery_search_id=search1"
+    ]
+    assert result.additional[module.SEARCH_PENDING_KEY] is True
+    assert (result.total_found, result.total_deleted, result.total_failed) == (0, 0, 0)
+
+    (command_result,) = module.build_command_results(params, run.results)
+    assert command_result.entry_type == module.EntryType.WARNING
+    assert "ediscovery_case_id=case1 ediscovery_search_id=search1" in command_result.readable_output
+    assert "No emails were found." not in command_result.readable_output  # the count is not known yet: not "0 found"
+    assert "search initiated, the results are not available yet" in command_result.readable_output
+    fields = outputs_of(command_result)["EmailData"][0]["AdditionalFields"]
+    assert (fields["SearchPending"], fields["EDiscoveryCaseID"], fields["EDiscoverySearchID"]) == (True, "case1", "search1")
+
+
+def test_graph_security_search_only_phase1_failing_search_still_deletes_the_case(mocker):
+    fake, run = failing_graph_security(
+        mocker, {"msg-create-ediscovery-search": [error_entry("search denied")]}, params=gs_params(operation=OPERATION_SEARCH_ONLY)
+    )
+    assert run.visited() == ["create", "cleanup", "done"]
+    assert delete_order(fake) == ["msg-delete-ediscovery-case"]
+    assert run.results[0].warnings == []
+
+
+def test_graph_security_search_only_phase2_starts_at_the_estimate_and_cleans_up(mocker):
+    """Search Only with the eDiscovery ids: no create, the estimate is polled to completion, then the cleanup (no purge)."""
+    fake = setup_demisto(mocker, GS_MODULES, graph_security_responses(["running", "running", 3]))
+    params = gs_resume_params()
+    state = module.new_state(params)
+    assert [(v["stage"], v["data"]["case_id"], v["data"]["search_id"]) for v in state["vendors"]] == [
+        ("estimate_start", "case1", "search1")
+    ]
+    run = drive(params, state)
     assert run.visited() == [
-        "create",
         "estimate_start",
         "estimate_wait",  # entered after the estimate was started
         "estimate_wait",  # still running
@@ -726,12 +828,16 @@ def test_graph_security_search_only_stages_and_cleanup_without_purge(mocker):
     ]
     result = run.results[0]
     assert result.aggregate
+    assert result.warnings == []
     assert (result.total_found, result.total_deleted, result.total_failed) == (3, 0, 0)
-    assert len(fake.called("msg-run-estimate-statistics")) == 1
+    assert not fake.called("msg-create-ediscovery-case")
+    assert not fake.called("msg-create-ediscovery-search")
+    assert fake.called("msg-run-estimate-statistics") == [{"case_id": "case1", "search_id": "search1", "using": "MsGraph"}]
     assert len(fake.called("msg-get-last-estimate-statistics-operation")) == 3
     assert not fake.called("msg-purge-ediscovery-data")
     assert fake.called("msg-list-ediscovery-cases") == [{"case_id": "case1", "using": "MsGraph"}]  # the ownership check
     assert_cleanup_last(fake)
+    assert module.build_command_results(params, run.results)[0].entry_type == module.EntryType.NOTE
 
     outputs = get_outputs(params, run.results)
     assert outputs["TotalFound"] == 3
@@ -749,15 +855,16 @@ def test_graph_security_search_only_stages_and_cleanup_without_purge(mocker):
     assert announced.count("Microsoft Graph Security: estimate running") == 1
 
 
-@pytest.mark.parametrize("purge_status", ["failed", "partiallySucceeded", "submissionFailed"])
-def test_graph_security_cleans_up_when_purge_fails(mocker, purge_status):
-    fake = setup_demisto(mocker, GS_MODULES, graph_security_responses([3], purge_status=purge_status))
-    run = drive_vendor(gs_params(), *GS, max_ticks=15)
+def test_graph_security_cleans_up_when_the_purge_command_fails(mocker):
+    responses = graph_security_responses([3])
+    responses["msg-purge-ediscovery-data"] = [error_entry("purge denied")]
+    fake = setup_demisto(mocker, GS_MODULES, responses)
+    run = drive_vendor(gs_params(), *GS)
     result = run.results[0]
     assert not result.success
-    assert f"purge operation ended with status '{purge_status.lower()}'" in result.errors[0]
-    assert run.visited()[-3:] == ["purge_wait", "cleanup", "done"]
-    assert len(fake.called("msg-list-case-operation")) == 1
+    assert "purge denied" in result.errors[0]
+    assert (result.total_found, result.total_deleted, result.total_failed) == (3, 0, 3)  # nothing was deleted
+    assert run.visited()[-3:] == ["purge_start", "cleanup", "done"]
     assert_cleanup_last(fake)
 
 
@@ -765,7 +872,7 @@ def test_graph_security_uses_a_dedicated_unique_case_and_only_looks_it_up_by_id(
     fake = setup_demisto(mocker, GS_MODULES, graph_security_responses([0]))
     names = []
     for _ in range(2):
-        run_vendor(gs_params(operation=OPERATION_SEARCH_ONLY), *GS)
+        run_vendor(gs_params(), *GS)
         names.append(fake.called("msg-create-ediscovery-case")[-1]["display_name"])
     assert fake.called("msg-list-ediscovery-cases") == [{"case_id": "case1", "using": "MsGraph"}] * 2  # never all cases
     assert all(name.startswith(module.GRAPH_SECURITY_CASE_PREFIX + " ") for name in names)
@@ -1249,29 +1356,20 @@ def test_same_internet_message_id_in_another_mailbox_is_still_processed():
     assert result.total_found == 2
 
 
-def test_verification_graph_security_final_estimate_zero_is_verified(mocker):
-    fake = setup_demisto(mocker, {"MsGraph": "Microsoft Graph"}, graph_security_responses([3, 0]))
-    params = gs_params(verify_deletion=True)
-    result = run_vendor(params, "msgraph_security", "Microsoft Graph", "MsGraph")
-    assert result.additional["DeletionVerified"] is True
-    assert (result.total_found, result.total_deleted, result.total_failed) == (3, 3, 0)
-    assert len(fake.called("msg-get-last-estimate-statistics-operation")) == 2  # no additional API calls
+@pytest.mark.parametrize("verify", [True, False])
+def test_verification_graph_security_is_skipped_for_the_fire_and_forget_purge(mocker, verify):
+    """No re-estimate after the purge: the deleted count is the estimate and DeletionVerified is never set."""
+    fake = setup_demisto(mocker, GS_MODULES, graph_security_responses(["running", 5]))
+    params = gs_params(verify_deletion=verify)
+    result = run_vendor(params, *GS)
+    assert "DeletionVerified" not in result.additional
+    assert (result.total_found, result.total_deleted, result.total_failed) == (5, 5, 0)
+    assert len(fake.called("msg-get-last-estimate-statistics-operation")) == 1
+    assert module.GRAPH_SECURITY_FIRE_AND_FORGET_NOTE in result.additional["Note"]
 
     email_data = get_email_data(params, [result])
-    assert email_data[0]["AdditionalFields"]["Verified"] is True
-
-
-def test_verification_graph_security_remaining_items_are_unverified(mocker):
-    setup_demisto(mocker, {"MsGraph": "Microsoft Graph"}, graph_security_responses([3] + [2] * module.MAX_ROUNDS))
-    params = gs_params(verify_deletion=True)
-    result = run_vendor(params, "msgraph_security", "Microsoft Graph", "MsGraph")
-    assert result.additional["DeletionVerified"] is False
-    assert "could not be verified" in result.additional["Note"]
-    assert (result.total_found, result.total_deleted, result.total_failed) == (3, 1, 2)
-
-    email_data = get_email_data(params, [result])
-    assert email_data[0]["Success"] is False
-    assert email_data[0]["AdditionalFields"]["Verified"] is False
+    assert email_data[0]["Success"] is True
+    assert "Verified" not in email_data[0]["AdditionalFields"]
 
 
 def test_graph_security_without_verification_does_not_set_deletion_verified(mocker):
@@ -1592,7 +1690,7 @@ def test_gmail_pagination_timeout_is_reported_as_a_vendor_error(mocker):
 def test_unexpected_exception_of_a_vendor_is_recorded_and_does_not_stop_the_other_vendor(mocker):
     mocker.patch.object(module, "gmail_search", side_effect=ValueError("kaboom"))
     fake = setup_demisto(mocker, {"Gmail": "Gmail", "MsGraph": "Microsoft Graph"}, graph_security_responses([4]))
-    gmail, graph = drive(make_params(operation=OPERATION_SEARCH_ONLY)).results
+    gmail, graph = drive(make_params(mailbox_scope=SCOPE_ALL)).results
     assert gmail.errors == ["kaboom"]
     assert graph.total_found == 4
     assert_cleanup_last(fake)
@@ -1603,8 +1701,9 @@ def test_unexpected_exception_of_a_vendor_is_recorded_and_does_not_stop_the_othe
 # ----------------------------------------------------------------------------------------------------------------------
 @pytest.mark.parametrize("delete_type, purge_type", [(DELETE_SOFT, "recoverable"), (DELETE_HARD, "permanentlyDelete")])
 @pytest.mark.parametrize("verify", [True, False])
-def test_graph_security_search_and_delete_two_rounds(mocker, delete_type, purge_type, verify):
-    fake = setup_demisto(mocker, GS_MODULES, graph_security_responses([5, 2, 0], purge_status=["running", "succeeded"]))
+def test_graph_security_search_and_delete_fire_and_forget(mocker, delete_type, purge_type, verify):
+    """One purge, never polled: purge_start goes straight to the cleanup (no purge_wait, no re-estimate rounds)."""
+    fake = setup_demisto(mocker, GS_MODULES, graph_security_responses(["running", 5]))
     params = gs_params(delete_type=delete_type, verify_deletion=verify)
     run = drive_vendor(params, *GS)
     result = run.results[0]
@@ -1614,28 +1713,37 @@ def test_graph_security_search_and_delete_two_rounds(mocker, delete_type, purge_
         "create",
         "estimate_start",
         "estimate_wait",
-        "purge_start",
-        "purge_wait",
-        "purge_wait",
-        "estimate_start",
-        "estimate_wait",
-        "purge_start",
-        "purge_wait",
-        "estimate_start",
-        "estimate_wait",
-        "cleanup",
+        "estimate_wait",  # still running
+        "purge_start",  # the estimate finished with 5 items
+        "cleanup",  # the purge was started (fire and forget)
         "done",
     ]
-    purges = fake.called("msg-purge-ediscovery-data")
-    assert [c["purge_type"] for c in purges] == [purge_type, purge_type]
-    assert all(c["purge_areas"] == "mailboxes" for c in purges)
-    assert len(fake.called("msg-run-estimate-statistics")) == 3  # the initial estimate + a re-estimate after every purge
-    assert len(fake.called("msg-list-case-operation")) == 3
+    (purge,) = fake.called("msg-purge-ediscovery-data")
+    assert (purge["purge_type"], purge["purge_areas"]) == (purge_type, "mailboxes")
+    assert len(fake.called("msg-run-estimate-statistics")) == 1  # no re-estimate after the purge
+    assert not fake.called("msg-list-case-operation")  # the purge operation is never polled
+    assert run.state["vendors"][0]["data"]["operation_id"] == "op1"
     assert_cleanup_last(fake)
-    if verify:
-        assert result.additional["DeletionVerified"] is True
-    else:
-        assert "DeletionVerified" not in result.additional
+    assert "DeletionVerified" not in result.additional  # verification is skipped for this vendor
+    assert "Fire and Forget" in result.additional["Note"]
+
+
+def test_graph_security_purge_start_returns_cleanup_right_away(mocker):
+    fake = setup_demisto(mocker, GS_MODULES, graph_security_responses([]))
+    data = {**module.new_graph_security_data(), "case_id": "case1", "search_id": "search1"}
+    result = module.VendorResult(vendor="Microsoft Graph Security", brand="Microsoft Graph", instance="MsGraph", total_found=4)
+    stage = module.graph_security_purge_start(gs_params(), "MsGraph", data, result)
+    assert stage == module.STAGE_CLEANUP
+    assert [name for name, _ in fake.calls] == ["msg-purge-ediscovery-data"]
+    assert (result.total_deleted, result.total_failed) == (4, 0)
+    assert (data["operation_id"], data["purge_requested"]) == ("op1", True)
+
+
+def test_graph_security_purge_wait_stage_was_removed():
+    assert not hasattr(module, "STAGE_PURGE_WAIT")
+    assert not hasattr(module, "graph_security_purge_wait")
+    assert "purge_wait" not in module.GRAPH_SECURITY_STAGES
+    assert "purge_wait" not in module.STAGE_LABELS  # a state with the old stage is rejected by validate_state_vendors
 
 
 def test_graph_security_zero_results_is_a_successful_row_with_total_found_zero(mocker):
@@ -1815,7 +1923,7 @@ def test_graph_security_estimate_without_any_status_records_a_neutral_last_statu
     fake = setup_demisto(mocker, GS_MODULES, responses)
     seen: list[str] = []
     run = drive_vendor(
-        gs_params(operation=OPERATION_SEARCH_ONLY),
+        gs_resume_params(),
         *GS,
         on_tick=lambda tick, state: seen.append(state["vendors"][0]["data"].get("last_status")),
     )
@@ -1872,7 +1980,7 @@ def test_graph_security_timeout_message_names_the_stage_and_last_status(mocker):
 
 def test_graph_security_old_state_without_last_status_still_loads(mocker):
     fake = setup_demisto(mocker, GS_MODULES, graph_security_responses(["running", 3]))
-    params = gs_params(operation=OPERATION_SEARCH_ONLY)
+    params = gs_resume_params()
     state = single_vendor_state(params, *GS)
     vendor = state["vendors"][0]
     vendor["stage"] = "estimate_wait"
@@ -1888,7 +1996,8 @@ def test_graph_security_old_state_without_last_status_still_loads(mocker):
     assert_cleanup_last(fake)
 
 
-def test_graph_security_deadline_mid_purge_still_cleans_up(mocker):
+def test_graph_security_deadline_right_after_the_purge_still_cleans_up(mocker):
+    """The purge was accepted (fire and forget) and then the budget ran out: the items are deleted and the cleanup runs."""
     responses = graph_security_responses([3])
     purge = responses["msg-purge-ediscovery-data"]
 
@@ -1900,8 +2009,9 @@ def test_graph_security_deadline_mid_purge_still_cleans_up(mocker):
     fake = setup_demisto(mocker, GS_MODULES, responses)
     run = drive_vendor(gs_params(), *GS)
     result = run.results[0]
-    assert any("Timed out: the 1800 seconds timeout was reached" in error for error in result.errors)
-    assert run.visited()[-3:] == ["purge_wait", "cleanup", "done"]
+    assert result.errors == []
+    assert (result.total_found, result.total_deleted, result.total_failed) == (3, 3, 0)
+    assert run.visited()[-3:] == ["purge_start", "cleanup", "done"]
     assert not fake.called("msg-list-case-operation")
     assert_cleanup_last(fake)
 
@@ -1910,7 +2020,7 @@ def test_graph_security_cleanup_retries_the_search_deletion_and_never_deletes_tw
     responses = graph_security_responses([0])
     responses["msg-delete-ediscovery-search"] = sequence([error_entry("throttled")], [entry({})])
     fake = setup_demisto(mocker, GS_MODULES, responses)
-    run = drive_vendor(gs_params(operation=OPERATION_SEARCH_ONLY), *GS)
+    run = drive_vendor(gs_resume_params(), *GS)
     result = run.results[0]
     assert run.visited()[-3:] == ["cleanup", "cleanup", "done"]
     assert len(fake.called("msg-delete-ediscovery-search")) == 2
@@ -1923,7 +2033,7 @@ def test_graph_security_cleanup_gives_up_after_max_attempts(mocker):
     responses = graph_security_responses([0])
     responses["msg-delete-ediscovery-case"] = [error_entry("denied")]
     fake = setup_demisto(mocker, GS_MODULES, responses)
-    run = drive_vendor(gs_params(operation=OPERATION_SEARCH_ONLY), *GS)
+    run = drive_vendor(gs_resume_params(), *GS)
     result = run.results[0]
     assert module.MAX_CLEANUP_ATTEMPTS == 3
     assert run.visited()[-4:] == ["cleanup", "cleanup", "cleanup", "done"]  # no infinite polling
@@ -1939,7 +2049,7 @@ def test_graph_security_cleanup_deletes_the_case_even_when_the_search_deletion_k
     responses = graph_security_responses([0])
     responses["msg-delete-ediscovery-search"] = [error_entry("search locked")]
     fake = setup_demisto(mocker, GS_MODULES, responses)
-    run = drive_vendor(gs_params(operation=OPERATION_SEARCH_ONLY), *GS)
+    run = drive_vendor(gs_resume_params(), *GS)
     result = run.results[0]
     assert len(fake.called("msg-delete-ediscovery-case")) == 1
     assert len(fake.called("msg-delete-ediscovery-search")) == module.MAX_CLEANUP_ATTEMPTS
@@ -1960,7 +2070,7 @@ def test_graph_security_cleanup_refuses_to_delete_a_case_that_is_not_ours(mocker
     responses = graph_security_responses([0])
     responses["msg-list-ediscovery-cases"] = case_lookup_entry("Legal hold - CEO", "victim-case")
     fake = setup_demisto(mocker, GS_MODULES, responses)
-    params = gs_params(operation=OPERATION_SEARCH_ONLY)
+    params = gs_resume_params()
     run = drive(params, module.load_state({"state": json.dumps(forged_cleanup_state(params))}))
     result = run.results[0]
     assert run.visited() == ["cleanup", "done"]
@@ -1974,7 +2084,7 @@ def test_graph_security_cleanup_refuses_when_the_case_lookup_returns_another_cas
     responses = graph_security_responses([0])
     responses["msg-list-ediscovery-cases"] = case_lookup_entry(OUR_CASE_NAME, "some-other-case")
     fake = setup_demisto(mocker, GS_MODULES, responses)
-    params = gs_params(operation=OPERATION_SEARCH_ONLY)
+    params = gs_resume_params()
     run = drive(params, forged_cleanup_state(params))
     assert not delete_order(fake)
     assert "Refused to delete eDiscovery case victim-case" in run.results[0].errors[0]
@@ -1984,7 +2094,7 @@ def test_graph_security_cleanup_deletes_nothing_when_the_case_lookup_keeps_faili
     responses = graph_security_responses([0])
     responses["msg-list-ediscovery-cases"] = [error_entry("lookup denied")]
     fake = setup_demisto(mocker, GS_MODULES, responses)
-    run = drive_vendor(gs_params(operation=OPERATION_SEARCH_ONLY), *GS)
+    run = drive_vendor(gs_resume_params(), *GS)
     result = run.results[0]
     assert run.visited()[-4:] == ["cleanup", "cleanup", "cleanup", "done"]
     assert len(fake.called("msg-list-ediscovery-cases")) == module.MAX_CLEANUP_ATTEMPTS
@@ -1998,7 +2108,7 @@ def test_graph_security_cleanup_looks_up_the_case_only_once_across_retries(mocke
     responses = graph_security_responses([0])
     responses["msg-delete-ediscovery-search"] = sequence([error_entry("throttled")], [entry({})])
     fake = setup_demisto(mocker, GS_MODULES, responses)
-    run_vendor(gs_params(operation=OPERATION_SEARCH_ONLY), *GS)
+    run_vendor(gs_resume_params(), *GS)
     assert len(fake.called("msg-list-ediscovery-cases")) == 1
 
 
@@ -2025,9 +2135,13 @@ def test_graph_security_specific_scope_search_only_is_allowed(mocker):
     fake = setup_demisto(mocker, GS_MODULES, graph_security_responses([3]))
     result = run_vendor(make_params(operation=OPERATION_SEARCH_ONLY, mailbox_scope=SCOPE_SPECIFIC), *GS)
     assert result.success
-    assert result.total_found == 3
+    assert result.additional[module.SEARCH_PENDING_KEY] is True  # phase 1: the search was initiated
     assert 'recipients:"a@example.com"' in fake.called("msg-create-ediscovery-search")[0]["content_query"]
     assert not fake.called("msg-purge-ediscovery-data")
+    # phase 2 (Search Only, Specific scope, the ids of phase 1) reads the count
+    result = run_vendor(gs_resume_params(mailbox_scope=SCOPE_SPECIFIC), *GS)
+    assert result.success
+    assert result.total_found == 3
 
 
 def test_graph_security_all_scope_delete_is_allowed(mocker):
@@ -2102,20 +2216,23 @@ MIXED_MODULES = {"Gmail": "Gmail", "MsGraph": "Microsoft Graph"}
 
 
 def test_graph_security_keeps_polling_while_gmail_is_done_and_gmail_is_preserved(mocker):
-    responses = {**graph_security_responses(["running", "running", 2]), "gmail-search": [entry({"Gmail": [GMAIL_ITEM]})]}
+    responses = {
+        **graph_security_responses(["running", "running", 2]),
+        "gmail-search-all-mailboxes": [entry({"Gmail": [GMAIL_ITEM]})],
+    }
     fake = setup_demisto(mocker, MIXED_MODULES, responses)
-    params = make_params(operation=OPERATION_SEARCH_ONLY)
+    params = make_params(mailbox_scope=SCOPE_ALL)  # Search & Delete: Graph Security polls the estimate
     run = drive(params)
     assert run.visited(0)[1:] == ["done"] * run.ticks  # Gmail was finished within the first tick
-    assert run.visited(1)[-3:] == ["estimate_wait", "cleanup", "done"]
+    assert run.visited(1)[-4:] == ["estimate_wait", "purge_start", "cleanup", "done"]
     assert run.ticks > 3
-    assert len(fake.called("gmail-search")) == 1  # a finished vendor is never run again
+    assert len(fake.called("gmail-search-all-mailboxes")) == 1  # a finished vendor is never run again
     gmail, graph = run.results
     assert (gmail.total_found, gmail.aggregate, gmail.emails[0]["ObjectID"]) == (1, False, "m1")
-    assert (graph.total_found, graph.aggregate) == (2, True)
+    assert (graph.total_found, graph.total_deleted, graph.aggregate) == (2, 2, True)
 
     outputs = get_outputs(params, run.results)
-    assert outputs["TotalFound"] == 3
+    assert (outputs["TotalFound"], outputs["TotalDeleted"], outputs["TotalFailed"]) == (3, 3, 0)
 
     email_data = outputs["EmailData"]
     assert [(item["Brand"], item.get("AdditionalFields", {}).get("ObjectID", "")) for item in email_data] == [
@@ -2125,9 +2242,9 @@ def test_graph_security_keeps_polling_while_gmail_is_done_and_gmail_is_preserved
 
 
 def test_one_vendor_failing_does_not_stop_the_other(mocker):
-    responses = {**graph_security_responses([4]), "gmail-search": [error_entry("gmail down")]}
+    responses = {**graph_security_responses([4]), "gmail-search-all-mailboxes": [error_entry("gmail down")]}
     fake = setup_demisto(mocker, MIXED_MODULES, responses)
-    gmail, graph = drive(make_params(operation=OPERATION_SEARCH_ONLY)).results
+    gmail, graph = drive(make_params(mailbox_scope=SCOPE_ALL)).results
     assert not gmail.success
     assert "gmail down" in gmail.errors[0]
     assert graph.success
@@ -2201,6 +2318,10 @@ ENTRY_ARGS = {
 }
 
 
+# Graph Security keeps polling (the estimate) only for "Search & Delete" ("Search Only" phase 1 is done in one run).
+GS_POLL_ARGS = {**ENTRY_ARGS, "operation": OPERATION_SEARCH_AND_DELETE, "mailbox_scope": SCOPE_ALL}
+
+
 def poll_until_done(args: dict[str, Any], max_calls: int = 40) -> list[Any]:
     """Calls the script like the platform does: the next call gets the ``PollingArgs`` of the previous response."""
     responses: list[Any] = []
@@ -2217,13 +2338,13 @@ def poll_until_done(args: dict[str, Any], max_calls: int = 40) -> list[Any]:
 
 def test_entry_point_first_call_schedules_the_next_run_with_the_original_args_and_a_json_state(mocker):
     setup_demisto(mocker, GS_MODULES, graph_security_responses(["running", 3]))
-    response = module.search_and_delete_email(dict(ENTRY_ARGS))
+    response = module.search_and_delete_email(dict(GS_POLL_ARGS))
     assert isinstance(response, module.CommandResults)
     scheduled = response.scheduled_command.to_results()
     assert scheduled["PollingCommand"] == "SearchAndDeleteEmail"
     assert scheduled["NextRun"] == str(module.POLL_INTERVAL_SECONDS)
     poll_args = scheduled["PollingArgs"]
-    assert {key: poll_args[key] for key in ENTRY_ARGS} == ENTRY_ARGS  # the script's own `timeout` is never overwritten
+    assert {key: poll_args[key] for key in GS_POLL_ARGS} == GS_POLL_ARGS  # the script's own `timeout` is never overwritten
     state = json.loads(poll_args["state"])
     assert state["version"] == module.STATE_VERSION
     assert state["deadline"] == START_EPOCH + 1800
@@ -2236,7 +2357,7 @@ def test_entry_point_first_call_schedules_the_next_run_with_the_original_args_an
 
 def test_entry_point_scheduled_timeout_follows_the_remaining_budget(mocker):
     setup_demisto(mocker, GS_MODULES, graph_security_responses(["running"]))
-    first = module.search_and_delete_email(dict(ENTRY_ARGS))
+    first = module.search_and_delete_email(dict(GS_POLL_ARGS))
     CLOCK.advance(100)
     second = module.search_and_delete_email(first.scheduled_command.to_results()["PollingArgs"])
     assert second.scheduled_command.to_results()["Timeout"] == str(1700 + module.CLEANUP_GRACE_SECONDS)
@@ -2245,23 +2366,51 @@ def test_entry_point_scheduled_timeout_follows_the_remaining_budget(mocker):
 
 def test_entry_point_progress_is_only_published_on_a_stage_change(mocker):
     setup_demisto(mocker, GS_MODULES, graph_security_responses(["running", "running", "running", 4]))
-    *polls, final = poll_until_done(dict(ENTRY_ARGS))
+    *polls, final = poll_until_done(dict(GS_POLL_ARGS))
     outputs = [poll.readable_output for poll in polls]
-    assert len(polls) == 6
+    assert len(polls) == 7
     assert "starting the estimate" in outputs[0]
     assert "Microsoft Graph Security: estimate running" in outputs[1]
     assert outputs[2:5] == [None, None, None]  # idle polls produce no War Room noise
-    assert "cleaning up" in outputs[5]
+    assert "starting the purge" in outputs[5]
+    assert "cleaning up" in outputs[6]
     assert isinstance(final, list)
     assert len(final) == 1
-    assert "TotalFound" in final[0].outputs
-    assert final[0].outputs["TotalFound"] == 4
+    assert (final[0].outputs["TotalFound"], final[0].outputs["TotalDeleted"], final[0].outputs["TotalFailed"]) == (4, 4, 0)
     assert "**Total found:** 4" in final[0].readable_output
+    assert final[0].entry_type == module.EntryType.NOTE
+
+
+def test_entry_point_search_only_phase1_returns_a_warning_in_one_call(mocker):
+    fake = setup_demisto(mocker, GS_MODULES, graph_security_responses([3]))
+    response = module.search_and_delete_email({**ENTRY_ARGS, "mailbox_scope": SCOPE_ALL})
+    assert isinstance(response, list)  # no polling
+    (result,) = response
+    assert result.entry_type == module.EntryType.WARNING
+    assert "ediscovery_case_id=case1 ediscovery_search_id=search1" in result.readable_output
+    assert not delete_order(fake)
+    assert not fake.called("msg-run-estimate-statistics")
+
+
+def test_entry_point_search_only_phase2_polls_the_estimate_and_cleans_up(mocker):
+    fake = setup_demisto(mocker, GS_MODULES, graph_security_responses(["running", 6]))
+    args = {
+        "operation": OPERATION_SEARCH_ONLY,
+        "brands": "Microsoft Graph Security",
+        "ediscovery_case_id": "case1",
+        "ediscovery_search_id": "search1",
+    }
+    *polls, final = poll_until_done(args)
+    assert polls  # the estimate is polled across runs
+    assert final[0].entry_type == module.EntryType.NOTE
+    assert (final[0].outputs["TotalFound"], final[0].outputs["TotalDeleted"], final[0].outputs["TotalFailed"]) == (6, 0, 0)
+    assert not fake.called("msg-create-ediscovery-case")
+    assert_cleanup_last(fake)
 
 
 def test_entry_point_verbose_command_trace_survives_the_ticks(mocker):
     setup_demisto(mocker, GS_MODULES, graph_security_responses(["running", 4]))
-    *polls, final = poll_until_done(dict(ENTRY_ARGS))
+    *polls, final = poll_until_done(dict(GS_POLL_ARGS))
     hr = final[0].readable_output
     assert "#### Executed commands" in hr
     for command in ("msg-create-ediscovery-case", "msg-run-estimate-statistics", "msg-delete-ediscovery-case"):
@@ -2271,7 +2420,7 @@ def test_entry_point_verbose_command_trace_survives_the_ticks(mocker):
 
 def test_entry_point_non_verbose_state_carries_no_trace(mocker):
     setup_demisto(mocker, GS_MODULES, graph_security_responses(["running", 4]))
-    response = module.search_and_delete_email({**ENTRY_ARGS, "verbose": "false"})
+    response = module.search_and_delete_email({**GS_POLL_ARGS, "verbose": "false"})
     assert json.loads(response.scheduled_command.to_results()["PollingArgs"]["state"])["command_trace"] == []
 
 
@@ -2353,7 +2502,7 @@ def test_entry_point_no_verification_warning(mocker, modules, overrides):
 
 def test_entry_point_search_window_is_fixed_on_the_first_tick(mocker):
     setup_demisto(mocker, GS_MODULES, graph_security_responses(["running", 4]))
-    first = module.search_and_delete_email(dict(ENTRY_ARGS))
+    first = module.search_and_delete_email(dict(GS_POLL_ARGS))
     poll_args = first.scheduled_command.to_results()["PollingArgs"]
     since = json.loads(poll_args["state"])["since"]
     CLOCK.advance(3600)

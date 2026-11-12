@@ -15,8 +15,13 @@ per-vendor stage, the per-vendor result (``VendorResult``) and vendor specific d
 
 * Per-email vendors (Gmail, Microsoft Graph Mail, EWS): ``start`` (search -> files -> delete, synchronously within one tick)
   -> ``verify`` (only with ``verify_deletion``: one search per tick) -> ``done``.
-* Microsoft Graph Security: ``create`` -> ``estimate_start`` -> ``estimate_wait``* -> [``purge_start`` -> ``purge_wait``* ->
-  ``estimate_start`` ...] -> ``cleanup`` -> ``done``. The ``cleanup`` is always the last stage.
+* Microsoft Graph Security:
+  - "Search & Delete" (fire and forget): ``create`` -> ``estimate_start`` -> ``estimate_wait``* -> ``purge_start`` ->
+    ``cleanup`` -> ``done``. The purge is only started, it is not polled.
+  - "Search Only", phase 1 (no eDiscovery ids given): ``create`` (creates the case and the search) -> ``done``. The case
+    and the search are kept and a WARNING entry tells how to check the results.
+  - "Search Only", phase 2 (``ediscovery_case_id`` + ``ediscovery_search_id`` given): ``estimate_start`` ->
+    ``estimate_wait``* -> ``cleanup`` -> ``done``.
 
 Arguments worth knowing
 -----------------------
@@ -57,7 +62,8 @@ Vendor notes / limits
   search window for those vendors can be up to 24 hours wider than requested.
 * Microsoft Graph Security: a search has to be created inside an eDiscovery case, executed (estimate statistics),
   purged and finally deleted. A DEDICATED case (``XSOAR Search And Delete Email <timestamp>-<id>``) is created for every
-  run and the search AND the case are ALWAYS deleted at the end (also for "Search Only" and also on failure or timeout).
+  run and the search AND the case are deleted at the end (also on failure or timeout), except after the first phase of
+  "Search Only", which keeps them for the second phase (that one deletes them).
   Mailbox scoping for "Specific" is done through the KQL query (``recipients:``) over all tenant mailboxes, which means
   that every copy of the email (for example the sender's Sent Items) matches as well. That is why "Search & Delete" with
   the "Specific" scope is refused for this vendor (search only is allowed). The API does not return per-email details,
@@ -90,8 +96,7 @@ verifies that the deletion really happened instead of trusting that the vendor d
   ``AdditionalFields.Verified=false``) and are not counted in ``TotalDeleted``. When searching by ``object_id``, a Gmail
   message that has the ``TRASH`` label counts as deleted, and a "not found" error of the Microsoft Graph Mail / EWS
   lookup counts as an empty result (verified).
-* Microsoft Graph Security: the final estimate that is calculated after the last purge is used. Remaining items
-  are reported as failed and ``AdditionalFields.Verified`` of the aggregate record is false.
+* Microsoft Graph Security: not supported (the purge is fire and forget): the deleted count is the estimate count.
 """
 
 import json
@@ -140,7 +145,6 @@ STAGE_CREATE = "create"
 STAGE_ESTIMATE_START = "estimate_start"
 STAGE_ESTIMATE_WAIT = "estimate_wait"
 STAGE_PURGE_START = "purge_start"
-STAGE_PURGE_WAIT = "purge_wait"
 STAGE_CLEANUP = "cleanup"
 STAGE_DONE = "done"
 # The one-line progress that is announced in the War Room when a vendor ENTERS a stage (never on idle polls).
@@ -150,7 +154,6 @@ STAGE_LABELS = {
     STAGE_ESTIMATE_START: "starting the estimate",
     STAGE_ESTIMATE_WAIT: "estimate running",
     STAGE_PURGE_START: "starting the purge",
-    STAGE_PURGE_WAIT: "purge running",
     STAGE_VERIFY: "verifying the deletion",
     STAGE_CLEANUP: "cleaning up",
     STAGE_DONE: "done",
@@ -206,6 +209,18 @@ GMAIL_SPLIT_SEARCH_ERROR = (
 # entry per batch of accounts with this human readable and a scheduled command (``scheduled_commands_for_more_users``).
 GMAIL_SPLIT_SEARCH_TEXT = "Searching mailboxes, please wait"
 GMAIL_TRASH_LABEL = "TRASH"
+GRAPH_SECURITY_KEY = "msgraph_security"
+# "Search Only" phase 1: the case and the search were created and kept, the results are read by a later run (phase 2).
+SEARCH_PENDING_KEY = "SearchPending"
+
+GRAPH_SECURITY_FIRE_AND_FORGET_NOTE = (
+    "The purge was started in the background (Fire and Forget): the deleted count is based on the estimate and the "
+    "deletion was not verified."
+)
+EDISCOVERY_IDS_ERROR = (
+    "'ediscovery_case_id' and 'ediscovery_search_id' must be specified together, only with the "
+    f"'{OPERATION_SEARCH_ONLY}' operation and only with the Microsoft Graph Security brand (and no other brand)."
+)
 GRAPH_SECURITY_SPECIFIC_DELETE_ERROR = (
     "Microsoft Graph Security can not delete from specific mailboxes: the eDiscovery search runs over all tenant "
     "mailboxes and the recipients: filter also matches the other copies of the email (for example the sender's Sent "
@@ -233,10 +248,17 @@ class SearchParams:
     brands: list[str]
     verbose: bool
     timeout: int
+    ediscovery_case_id: str = ""
+    ediscovery_search_id: str = ""
 
     @property
     def delete(self) -> bool:
         return self.operation == OPERATION_SEARCH_AND_DELETE
+
+    @property
+    def resume_ediscovery(self) -> bool:
+        """"Search Only" phase 2: read the results of an eDiscovery search that was created by a previous run."""
+        return bool(self.ediscovery_case_id and self.ediscovery_search_id)
 
     @property
     def hard_delete(self) -> bool:
@@ -260,6 +282,7 @@ class VendorResult:
     total_failed: int = 0
     errors: list[str] = field(default_factory=list)
     file_entries: list[dict[str, Any]] = field(default_factory=list)  # Published in the tick that retrieved them, never stored.
+    warnings: list[str] = field(default_factory=list)  # Not failures: they turn the final entry into a WARNING entry.
     additional: dict[str, Any] = field(default_factory=dict)
     aggregate: bool = False  # The vendor returns aggregate counts only (Graph Security): one aggregate record, no emails.
 
@@ -851,9 +874,7 @@ def new_graph_security_data() -> dict[str, Any]:
         "case_id": "",
         "search_id": "",
         "case_name": "",
-        "rounds": 0,  # The number of finished purge rounds.
-        "remaining": 0,  # The items that still matched the search in the last estimate.
-        "operation_id": "",
+        "operation_id": "",  # The purge operation (fire and forget: it is recorded, never polled).
         "purge_requested": False,
         "cleanup_attempts": 0,
         "search_deleted": False,
@@ -895,7 +916,29 @@ def graph_security_create(params: SearchParams, instance: str, data: dict[str, A
     if not search_id:
         raise VendorError("Could not determine the ID of the created eDiscovery search.")
     data["search_id"] = search_id
+    if not params.delete:
+        return graph_security_search_initiated(data, result)
     return STAGE_ESTIMATE_START
+
+
+def graph_security_search_initiated(data: dict[str, Any], result: VendorResult) -> str:
+    """
+    "Search Only" phase 1: the case and the search are KEPT (no estimate, no cleanup) and the vendor is done.
+
+    The count is not known yet, so ``total_found`` stays 0 and the aggregate record is marked ``SearchPending`` (it is not
+    reported as "0 found"). A later run with ``ediscovery_case_id`` / ``ediscovery_search_id`` reads the results (phase 2).
+    """
+    case_id, search_id = data["case_id"], data["search_id"]
+    demisto.debug(f"Graph Security search initiated, keeping {case_id=} {search_id=} for a later run.")
+    
+    GRAPH_SECURITY_SEARCH_INITIATED_WARNING = (
+    "The search has been initiated and may take a significant amount of time. To check the results, re-run this command\n"
+    f'`!{SCRIPT_NAME} operation="{OPERATION_SEARCH_ONLY}" brands="Microsoft Graph" '
+    f'ediscovery_case_id={case_id} ediscovery_search_id={search_id}`'
+)
+    result.warnings.append(GRAPH_SECURITY_SEARCH_INITIATED_WARNING.format(case_id=case_id, search_id=search_id))
+    result.additional.update({SEARCH_PENDING_KEY: True, "EDiscoveryCaseID": case_id, "EDiscoverySearchID": search_id})
+    return STAGE_DONE
 
 
 def graph_security_estimate_start(params: SearchParams, instance: str, data: dict[str, Any], result: VendorResult) -> str:
@@ -903,22 +946,8 @@ def graph_security_estimate_start(params: SearchParams, instance: str, data: dic
     return STAGE_ESTIMATE_WAIT
 
 
-def graph_security_finish_loop(params: SearchParams, data: dict[str, Any], result: VendorResult) -> str:
-    """Leaves the estimate / purge loop: reports the deletion totals ("Search & Delete") and moves to the cleanup."""
-    remaining = data["remaining"]
-    if params.delete:
-        result.total_deleted = result.total_found - remaining
-        result.total_failed = remaining
-    if params.delete and params.verify_deletion and result.total_found > 0:
-        # The estimate that was calculated after the last purge is the verification (no additional API calls).
-        result.additional["DeletionVerified"] = remaining == 0
-        if remaining > 0:
-            note = (
-                f"Deletion could not be verified: {remaining} item(s) still matched the search "
-                "after the last purge, they are reported as failed."
-            )
-            result.additional["Note"] = f"{result.additional['Note']} {note}" if result.additional.get("Note") else note
-    return STAGE_CLEANUP
+def append_note(result: VendorResult, note: str) -> None:
+    result.additional["Note"] = f"{result.additional['Note']} {note}" if result.additional.get("Note") else note
 
 
 def status_from_human_readable(results: list[dict[str, Any]]) -> str:
@@ -956,7 +985,12 @@ def parse_estimate(results: list[dict[str, Any]]) -> tuple[str, int | None]:
 
 
 def graph_security_estimate_wait(params: SearchParams, instance: str, data: dict[str, Any], result: VendorResult) -> str:
-    """Stage ``estimate_wait``: ONE status check per tick."""
+    """
+    Stage ``estimate_wait``: ONE status check per tick.
+
+    The finished estimate is the number of the emails that were found. "Search Only" (and an empty result) moves to the
+    cleanup, "Search & Delete" moves to the (single, fire and forget) purge.
+    """
     results = run_command(
         "msg-get-last-estimate-statistics-operation", {"case_id": data["case_id"], "search_id": data["search_id"]}, instance
     )
@@ -968,16 +1002,20 @@ def graph_security_estimate_wait(params: SearchParams, instance: str, data: dict
         return STAGE_ESTIMATE_WAIT  # still running: the polling decorator schedules the next tick
     if count is None:  # never report "0 found" just because the output shape changed
         raise VendorError("The estimate statistics operation finished but did not return the number of items.")
-    data["remaining"] = count
-    if data["rounds"] == 0:  # the first estimate is the number of the emails that were found
-        result.total_found = data["remaining"]
-    # A single purge removes a limited amount of items per mailbox, so purge and re-estimate until nothing is left.
-    if not params.delete or data["remaining"] == 0 or data["rounds"] >= MAX_ROUNDS:
-        return graph_security_finish_loop(params, data, result)
+    result.total_found = count
+    if not params.delete or count == 0:
+        return STAGE_CLEANUP
     return STAGE_PURGE_START
 
 
 def graph_security_purge_start(params: SearchParams, instance: str, data: dict[str, Any], result: VendorResult) -> str:
+    """
+    Stage ``purge_start`` (fire and forget): starts the purge and goes straight to the cleanup, the purge is not polled.
+
+    The found items count as failed until the purge was accepted, then as deleted (based on the estimate). There is no
+    deletion verification for this vendor (``DeletionVerified`` is never set), a note says the purge runs in the background.
+    """
+    result.total_failed = result.total_found  # if the purge command raises, nothing was deleted
     purge_type = "permanentlyDelete" if params.hard_delete else "recoverable"
     results = run_command(
         "msg-purge-ediscovery-data",
@@ -989,21 +1027,10 @@ def graph_security_purge_start(params: SearchParams, instance: str, data: dict[s
         raise VendorError("Could not determine the ID of the purge operation.")
     data["operation_id"] = operation_id
     data["purge_requested"] = True
-    return STAGE_PURGE_WAIT
-
-
-def graph_security_purge_wait(params: SearchParams, instance: str, data: dict[str, Any], result: VendorResult) -> str:
-    """Stage ``purge_wait``: ONE status check per tick. A finished purge is followed by a new estimate."""
-    operation = run_command(
-        "msg-list-case-operation", {"case_id": data["case_id"], "operation_id": data["operation_id"]}, instance
-    )
-    status = str(find_in_results(operation, "Status") or "").lower()
-    if status in GRAPH_SECURITY_FAILED_STATUSES:
-        raise VendorError(f"The purge operation ended with status '{status}'.")
-    if status not in GRAPH_SECURITY_SUCCESS_STATUSES:
-        return STAGE_PURGE_WAIT
-    data["rounds"] += 1
-    return STAGE_ESTIMATE_START
+    result.total_deleted, result.total_failed = result.total_found, 0
+    append_note(result, GRAPH_SECURITY_FIRE_AND_FORGET_NOTE)
+    demisto.debug(f"Graph Security purge {operation_id} started (fire and forget), moving to the cleanup.")
+    return STAGE_CLEANUP
 
 
 def graph_security_delete(command: str, args: dict[str, Any], instance: str, what: str, errors: list[str]) -> bool:
@@ -1094,7 +1121,6 @@ GRAPH_SECURITY_STAGES: dict[str, Callable[[SearchParams, str, dict[str, Any], Ve
     STAGE_ESTIMATE_START: graph_security_estimate_start,
     STAGE_ESTIMATE_WAIT: graph_security_estimate_wait,
     STAGE_PURGE_START: graph_security_purge_start,
-    STAGE_PURGE_WAIT: graph_security_purge_wait,
     STAGE_CLEANUP: graph_security_cleanup,
 }
 
@@ -1112,7 +1138,9 @@ def graph_security_step(params: SearchParams, vendor: dict[str, Any], result: Ve
     """
     Advances the Graph Security machine by one stage.
 
-    ``create -> estimate_start -> estimate_wait* -> [purge_start -> purge_wait* -> estimate_start ...] -> cleanup -> done``.
+    * "Search & Delete": ``create -> estimate_start -> estimate_wait* -> purge_start -> cleanup -> done``.
+    * "Search Only" phase 1: ``create -> done`` (the case and the search are kept for phase 2).
+    * "Search Only" phase 2 (resumed with the eDiscovery ids): ``estimate_start -> estimate_wait* -> cleanup -> done``.
     The overall deadline is checked in every stage but the cleanup; a failing stage raises and ``advance_vendor`` routes
     the vendor to the cleanup (the case, if it was already created, is always deleted).
     """
@@ -1306,12 +1334,26 @@ def new_vendor_state(key: str, brand: str, instance: str) -> dict[str, Any]:
     }
 
 
+def resume_graph_security_vendor(vendor: dict[str, Any], params: SearchParams) -> None:
+    """
+    "Search Only" phase 2: the Graph Security vendor skips ``create`` and starts at ``estimate_start`` with the eDiscovery
+    case and search of the previous run. The cleanup still checks that the case is a dedicated case of this script.
+    """
+    vendor["data"].update({"case_id": params.ediscovery_case_id, "search_id": params.ediscovery_search_id})
+    vendor["stage"] = STAGE_ESTIMATE_START
+    demisto.debug(f"Resuming the Graph Security search {params.ediscovery_search_id} of case {params.ediscovery_case_id}.")
+
+
 def new_state(params: SearchParams) -> dict[str, Any]:
     """Builds the state of the first tick: resolves the vendor instances and fixes the absolute deadline and search window."""
     instances = resolve_instances(params.brands)
     if params.object_id and len({key for key, _, _ in instances}) != 1:
         raise DemistoException("When object_id is specified, exactly one brand (with an enabled instance) must be selected.")
     vendors: list[dict[str, Any]] = [new_vendor_state(key, brand, instance) for key, brand, instance in instances]
+    if params.resume_ediscovery:
+        for vendor in vendors:
+            if vendor["key"] == GRAPH_SECURITY_KEY:
+                resume_graph_security_vendor(vendor, params)
     if not vendors:
         failure = VendorResult(
             vendor="None", brand="", instance="", errors=["No enabled instance was found for the requested brands."]
@@ -1465,6 +1507,23 @@ def parse_timeout(value: Any) -> int:
     return timeout
 
 
+def parse_ediscovery_ids(args: dict[str, Any], operation: str, brands: list[str]) -> tuple[str, str]:
+    """
+    The ``(ediscovery_case_id, ediscovery_search_id)`` of "Search Only" phase 2 (empty strings when not given).
+
+    When either one is given: both are required, the operation must be "Search Only" and every requested brand must be
+    Microsoft Graph Security (an empty ``brands`` means all the vendors, which is refused as well).
+    """
+    case_id = str(args.get("ediscovery_case_id") or "").strip()
+    search_id = str(args.get("ediscovery_search_id") or "").strip()
+    if not (case_id or search_id):
+        return "", ""
+    only_graph_security = bool(brands) and all(vendor_keys_for_brand(brand) == {GRAPH_SECURITY_KEY} for brand in brands)
+    if not (case_id and search_id) or operation != OPERATION_SEARCH_ONLY or not only_graph_security:
+        raise DemistoException(EDISCOVERY_IDS_ERROR)
+    return case_id, search_id
+
+
 def parse_args(args: dict[str, Any], since: datetime | None = None) -> SearchParams:
     operation = args.get("operation") or ""
     if operation not in (OPERATION_SEARCH_ONLY, OPERATION_SEARCH_AND_DELETE):
@@ -1482,9 +1541,15 @@ def parse_args(args: dict[str, Any], since: datetime | None = None) -> SearchPar
     sender = (args.get("sender_address") or "").strip()
     target_mailboxes = argToList(args.get("target_mailbox"))
     brands = argToList(args.get("brands"))
+    ediscovery_case_id, ediscovery_search_id = parse_ediscovery_ids(args, operation, brands)
+    resume = bool(ediscovery_case_id)
+    
+    # We must know whether the Microsoft Graph Security brand is explicitly used to apply its specific logic
+    is_graph_security = bool(brands) and GRAPH_SECURITY_KEY in [k for b in brands for k in vendor_keys_for_brand(b)]
 
-    # Safety: an empty filter would match (and delete) every email in the time frame.
-    if not (object_id or message_ids or subjects or sender):
+    # Safety: an empty filter would match (and delete) every email in the time frame. A resumed eDiscovery search
+    # (Search Only) already has its query, so no filter is required then.
+    if not (object_id or message_ids or subjects or sender or resume):
         raise DemistoException("At least one of internet_message_id, object_id, subject or sender_address must be specified.")
 
     if object_id:
@@ -1497,8 +1562,10 @@ def parse_args(args: dict[str, Any], since: datetime | None = None) -> SearchPar
             )
         if "msgraph_security" in vendor_keys_for_brand(brands[0]):
             raise DemistoException("'object_id' is not supported for Microsoft Graph Security.")
-    elif scope == SCOPE_SPECIFIC and not target_mailboxes:
-        raise DemistoException("target_mailbox must be specified when mailbox_scope is 'Specific'.")
+    elif scope == SCOPE_SPECIFIC and not target_mailboxes and not resume:
+        # Microsoft Graph Security relies on KQL for targeted searches across all mailboxes, so we relax the requirement
+        if not is_graph_security:
+             raise DemistoException("target_mailbox must be specified when mailbox_scope is 'Specific'.")
 
     timeout = parse_timeout(args.get("timeout"))
     time_frame = args.get("time_frame") or DEFAULT_TIME_FRAME
@@ -1520,7 +1587,10 @@ def parse_args(args: dict[str, Any], since: datetime | None = None) -> SearchPar
         brands=brands,
         verbose=argToBoolean(args.get("verbose") or False),
         timeout=timeout,
+        ediscovery_case_id=ediscovery_case_id,
+        ediscovery_search_id=ediscovery_search_id,
     )
+
 
 
 def compute_totals(results: list[VendorResult]) -> dict[str, int]:
@@ -1607,10 +1677,17 @@ def markdown_table(title: str, rows: list[dict[str, Any]], headers: list[str]) -
     return f"### {title}\n|{'|'.join(headers)}|\n|{'|'.join(['---'] * len(headers))}|\n"
 
 
+def is_search_pending(result: VendorResult) -> bool:
+    """Whether the vendor only initiated its search ("Search Only" phase 1): its count is not known yet (it is not "0 found")."""
+    return bool(result.additional.get(SEARCH_PENDING_KEY))
+
+
 def aggregate_summary_lines(results: list[VendorResult]) -> list[str]:
     """One line with the totals of every aggregate (Microsoft Graph Security) instance, which has no table rows."""
     return [
-        f"{result.vendor} ({result.instance}): found {result.total_found}, "
+        f"{result.vendor} (Using: {result.instance}): search initiated, the results are not available yet"
+        if is_search_pending(result)
+        else f"{result.vendor} ({result.instance}): found {result.total_found}, "
         f"deleted {result.total_deleted}, failed {result.total_failed}"
         for result in results
         if result.aggregate
@@ -1648,7 +1725,9 @@ def build_readable_output(
     )
     aggregates = "".join(f"{line}\n\n" for line in aggregate_summary_lines(results))
     if totals["TotalFound"] == 0:
-        return f"No emails were found.\n\n{aggregates}{summary}"
+        # A pending search (Search Only phase 1) has no count yet: that is not "nothing was found".
+        not_found = "" if any(is_search_pending(result) for result in results) else "No emails were found.\n\n"
+        return f"{not_found}{aggregates}{summary}"
     table = markdown_table(f"Search & Delete Email - {params.operation}", rows, READABLE_HEADERS)
     return f"{table}\n{aggregates}{summary}"
 
@@ -1667,6 +1746,9 @@ def build_command_results(params: SearchParams, results: list[VendorResult]) -> 
 
     outputs = {"EmailData": email_data, **totals}
     readable_output = build_readable_output(email_data, totals, params, results)
+    warnings = [warning for result in results for warning in result.warnings]
+    if warnings:
+        readable_output = "".join(f"**Warning:** {warning}\n\n" for warning in warnings) + readable_output
 
     if params.verbose and COMMAND_TRACE:
         readable_output += "\n#### Executed commands\n" + "\n".join(f"* `{line}`" for line in COMMAND_TRACE)
@@ -1682,14 +1764,8 @@ def build_command_results(params: SearchParams, results: list[VendorResult]) -> 
             f"The operation failed for all the integrations ({brands}).\n\n**Reason:**\n{error_text}\n\n---\n{readable_output}"
         )
 
-    return [
-        CommandResults(
-            readable_output=readable_output,
-            outputs=outputs,
-            raw_response=outputs,
-            entry_type=EntryType.ERROR if all_failed else EntryType.NOTE,
-        )
-    ]
+    entry_type = EntryType.ERROR if all_failed else EntryType.WARNING if warnings else EntryType.NOTE
+    return [CommandResults(readable_output=readable_output, outputs=outputs, raw_response=outputs, entry_type=entry_type)]
 
 
 # ---------------------------------------------------------------------------------------------------------------------

@@ -16,7 +16,7 @@ comment: |-
   Microsoft Graph Security and EWS v2 honor only the date part of the time frame, so the effective search window can be up to 24 hours wider than requested.
   The command may take a long time when searching thousands of mailboxes. It uses the built-in polling: long waits (the Microsoft Graph Security eDiscovery operations and the deletion verification) are polled, while the search and delete commands of each run are executed synchronously within that run. The timeout argument is the overall time budget (in seconds) of the whole run.
   When verify_deletion is true (relevant only for "Search & Delete"), the script verifies that the emails were really deleted instead of trusting that the delete command did not fail (the verification is polled for up to 120 seconds). Verification is not supported for Microsoft Graph Security.
-  Microsoft Graph Security runs in a dedicated eDiscovery case that is created for the run and is always deleted at the end, together with its search, and returns a single aggregate record (counts only) instead of per-email details. "Search & Delete" with mailbox_scope "Specific" is refused for Microsoft Graph Security, because its search would also match the copies of the email in other mailboxes.
+  Microsoft Graph Security runs in a dedicated eDiscovery case that is created for the run, and returns a single aggregate record (counts only) instead of per-email details. "Search & Delete" estimates the matching emails, starts the purge in the background (fire and forget) and deletes the search and the case. "Search Only" creates the case and the search and returns a warning with the ediscovery_case_id and ediscovery_search_id to re-run the command with; that second run reads the results and deletes the search and the case. "Search & Delete" with mailbox_scope "Specific" is refused for Microsoft Graph Security, because its search would also match the copies of the email in other mailboxes.
 enabled: true
 args:
 - name: internet_message_id
@@ -37,7 +37,6 @@ args:
   predefined:
   - soft
   - hard
-  defaultValue: soft
 - name: time_frame
   description: 'How far back to search, for example "7 days" or "3 hours". Supported units: minutes, hours, days, weeks and months. Microsoft Graph Security and EWS v2 honor only the date part. Default is 1 hour.'
   defaultValue: 1 hour
@@ -86,6 +85,10 @@ args:
   - "true"
   - "false"
   defaultValue: "false"
+- name: ediscovery_case_id
+  description: 'The ID of the eDiscovery case that a previous "Search Only" run with Microsoft Graph Security created (returned in its warning). Use together with ediscovery_search_id to read the results of that search, after which the search and the case are deleted. Supported only with the "Search Only" operation and only when brands is Microsoft Graph Security (and no other brand). When specified, no search filter or target_mailbox is required.'
+- name: ediscovery_search_id
+  description: 'The ID of the eDiscovery search that a previous "Search Only" run with Microsoft Graph Security created (returned in its warning). Must be specified together with ediscovery_case_id, with the "Search Only" operation and only with the Microsoft Graph Security brand.'
 - name: timeout
   description: The overall time budget of the whole run (all polling runs together), in seconds (a positive integer). It is not a per-operation timeout. When it is exhausted, vendors that were not started yet are reported as failed and the results collected so far are returned (the Microsoft Graph Security search and case are always cleaned up, which may take up to an additional 600 seconds grace period). Default is 1800.
   defaultValue: "1800"
@@ -151,7 +154,7 @@ outputs:
   description: The Internet Message ID of the email, when the vendor returns it.
   type: String
 - contextPath: EmailData.AdditionalFields.Verified
-  description: Whether the deletion of the email was verified. Also returned in the aggregate record of Microsoft Graph Security, where it reflects the estimate that was calculated after the last purge. Returned only when verify_deletion is true and the verification could be determined.
+  description: Whether the deletion of the email was verified. Returned only when verify_deletion is true and the verification could be determined. Never returned for Microsoft Graph Security (its purge is fire and forget).
   type: Boolean
 - contextPath: EmailData.AdditionalFields.Instance
   description: The name of the integration instance. Returned for records without an email and for every email when verbose is true.
@@ -162,6 +165,15 @@ outputs:
 - contextPath: EmailData.AdditionalFields.Aggregate
   description: True for the single aggregate record of a brand that returns counts only (Microsoft Graph Security), which has no per-email details.
   type: Boolean
+- contextPath: EmailData.AdditionalFields.SearchPending
+  description: True in the aggregate record of Microsoft Graph Security when a "Search Only" run only initiated the search. The number of emails is not known yet (TotalFound does not include it), re-run the command with the returned eDiscovery IDs to get it.
+  type: Boolean
+- contextPath: EmailData.AdditionalFields.EDiscoveryCaseID
+  description: The ID of the eDiscovery case that was kept for a later run (returned only with SearchPending).
+  type: String
+- contextPath: EmailData.AdditionalFields.EDiscoverySearchID
+  description: The ID of the eDiscovery search that was kept for a later run (returned only with SearchPending).
+  type: String
 - contextPath: EmailData.AdditionalFields.Note
   description: A note about the run of the brand instance, for example when the vendor capped the number of returned emails. Returned only in records without an email and in aggregate records.
   type: String
@@ -196,7 +208,6 @@ dependson:
   - Microsoft Graph|||msg-run-estimate-statistics
   - Microsoft Graph|||msg-get-last-estimate-statistics-operation
   - Microsoft Graph|||msg-purge-ediscovery-data
-  - Microsoft Graph|||msg-list-case-operation
   - Microsoft Graph|||msg-delete-ediscovery-search
   - Microsoft Graph|||msg-delete-ediscovery-case
   - Microsoft Graph|||msg-list-ediscovery-cases
