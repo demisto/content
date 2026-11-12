@@ -20,6 +20,12 @@ DEFAULT_PAGE_SIZE = 50  # Default page size to use
 MATCH_DEFAULT_VALUE = "any"  # Default "match" value to use when using search filters. Can be either "all" or "any".
 REMOVE_RESPONSE_LINKS = True  # Whether to remove `links` keys from responses.
 REPORT_DOWNLOAD_WAIT_TIME = 60  # Time in seconds to wait before downloading a report after starting its generation
+# Bounds on the fetch-assets report status loop (XSUP-77463). Previously a failed/aborted report was regenerated
+# every 60s with no limit, so a report the Rapid7 console could not complete (or that an admin aborted) was
+# resubmitted indefinitely within a single fetch invocation.
+MAX_REPORT_REGENERATIONS = 2  # Regenerations allowed after the first attempt fails, per fetch invocation.
+REPORT_REGENERATION_BACKOFF_SECONDS = [180, 600]  # Extra wait before each regeneration, on top of the poll interval.
+REPORT_STATUS_TIMEOUT_SECONDS = 12 * 60 * 60  # Max time to wait for a report to complete in one fetch invocation.
 CONNECTION_ERRORS_RETRIES = 5  # num of times to retry in case of connection-errors
 CONNECTION_ERRORS_INTERVAL = 1  # num of seconds between each time to send an http-request in case of a connection error.
 VALID_TAG_TYPES = ["custom", "location", "owner"]
@@ -29,6 +35,7 @@ VALID_TAG_COLORS = ["blue", "green", "orange", "red", "purple", "default"]
 urllib3.disable_warnings()  # Disable insecure warnings
 
 DEFAULT_BATCH_SIZE = 3000
+DEFAULT_LOOKBACK_DAYS = 100  # Default fetch-assets lookback window (days) for asset scans and vulnerability findings.
 # Max number of concurrent send-to-XSIAM HTTP requests in flight at once (XSUP-69895).
 # Without this cap the integration fans out one asyncio task + one aiohttp.ClientSession per batch,
 # opening dozens of simultaneous connections to the ingestion endpoint on large reports, which causes
@@ -150,7 +157,8 @@ asset_service AS (
         GROUP BY
             dahn.asset_id
     ),
--- Finds the single, absolute latest scan for each asset (regardless of status)
+-- Finds the latest completed scan for each asset. Unfinished scans (running, paused, stopped, aborted) have a NULL
+-- finish time, which sorts first in DESC order and would otherwise hide the asset's completed scans.
 asset_latest_scan AS (
     SELECT DISTINCT ON (fas.asset_id)
         fas.asset_id,
@@ -167,8 +175,11 @@ asset_latest_scan AS (
         fact_asset_scan fas
     JOIN
         dim_scan ds ON fas.scan_id = ds.scan_id
+    WHERE
+        ds.status_id = 'C'
+        AND ds.finished IS NOT NULL
     ORDER BY
-        fas.asset_id, ds.finished DESC -- Order by asset ID, then descending finish time to get the absolute latest
+        fas.asset_id, ds.finished DESC -- Order by asset ID, then descending finish time to get the latest completed scan
 ),
 latest_os_certainty AS (
     SELECT DISTINCT ON (fasos.asset_id)
@@ -258,7 +269,7 @@ LEFT JOIN
     asset_service ase ON da.asset_id = ase.asset_id
 
 WHERE
-    als.last_scan_date >= CURRENT_DATE - INTERVAL '100 days'
+    als.last_scan_date >= CURRENT_DATE - INTERVAL '{lookback_days} days'
     AND als.last_scan_status_id = 'C'
 
 ORDER BY
@@ -314,6 +325,9 @@ aggregated_details AS (
         ON fasvi.asset_id = favf.asset_id
         AND fasvi.vulnerability_id = favf.vulnerability_id
         AND fasvi.scan_id = favf.scan_id
+    -- Filter before aggregating so only findings within the lookback window are converted and aggregated.
+    WHERE
+        fasvi.date >= CURRENT_DATE - INTERVAL '{lookback_days} days'
     GROUP BY
         fasvi.asset_id,
         fasvi.vulnerability_id,
@@ -356,12 +370,22 @@ LEFT JOIN aggregated_categories AS ac
     ON ad.vulnerability_id = ac.vulnerability_id
 LEFT JOIN cve_references cef
     ON ad.vulnerability_id = cef.vulnerability_id
-WHERE
-    ad.scan_date >= CURRENT_DATE - INTERVAL '100 days'
 ORDER BY
     ad.asset_id, ad.vulnerability_id, ad.scan_date DESC
 """
 BASE_QUERY = {"asset": BASE_QUERY_FOR_ASSETS, "vulnerability": BASE_QUERY_FOR_VULNERABILITIES}
+
+
+def get_lookback_days(params: dict) -> int:
+    """Returns the validated fetch-assets lookback (in days) from the integration parameters."""
+    lookback_days = arg_to_number(params.get("lookback_days"), arg_name="Lookback (days)")
+    if lookback_days is None:
+        return DEFAULT_LOOKBACK_DAYS
+    if lookback_days < 1:
+        raise DemistoException(f"Lookback (days) must be a positive integer. Got: {lookback_days}")
+    return lookback_days
+
+
 VENDOR = {"asset": "Rapid7", "vulnerability": "Rapid7"}
 PRODUCT = {"asset": "nexpose_assets", "vulnerability": "nexpose_vulnerabilities"}
 XSIAM_EVENT_CHUNK_SIZE = 2**20  # 1 Mib
@@ -6940,7 +6964,9 @@ def get_list_asset_group_command(
 ##############################################################################
 
 
-async def create_report_config_from_template(client: InsightVMClient, event_type: str) -> str:
+async def create_report_config_from_template(
+    client: InsightVMClient, event_type: str, lookback_days: int = DEFAULT_LOOKBACK_DAYS
+) -> str:
     """
     Creates a new report configuration asynchronously.
 
@@ -6953,7 +6979,7 @@ async def create_report_config_from_template(client: InsightVMClient, event_type
     payload = {
         "format": "sql-query",
         "name": f"PA_Asset_Collector_{int(time.time())}",
-        "query": BASE_QUERY.get(event_type),
+        "query": BASE_QUERY[event_type].format(lookback_days=int(lookback_days)),
         "version": "2.3.0",
     }
     log(event_type, "Creating report config.")
@@ -6992,14 +7018,28 @@ async def generate_report(client: InsightVMClient, report_id: str, event_type: s
     return instance_id
 
 
+def _monotonic() -> float:
+    """Wraps time.monotonic so tests can control the report-status clock without patching the asyncio loop's clock."""
+    return time.monotonic()
+
+
 async def check_status_of_report(client: InsightVMClient, report_id: str, instance_id: str, event_type: str) -> str:
-    """Checks the status of a report instance with non-blocking waits."""
+    """
+    Polls a report instance until it completes, with bounded regeneration and an overall timeout.
+
+    A failed/aborted instance is regenerated at most MAX_REPORT_REGENERATIONS times per invocation, with backoff,
+    and the new instance ID is persisted immediately so a killed run resumes it instead of regenerating again.
+
+    Raises:
+        DemistoException: If the report keeps failing after the allowed regenerations, or does not complete
+            within REPORT_STATUS_TIMEOUT_SECONDS.
+    """
+    regenerations = 0
+    deadline = _monotonic() + REPORT_STATUS_TIMEOUT_SECONDS
+
     while True:
         endpoint = f"/api/3/reports/{report_id}/history/{instance_id}"
-
-        # Use the client's http_request method for GET
         response = await client.http_request("GET", endpoint)
-
         status_data = await response.json()
         await response.release()
         status = status_data.get("status", "unknown").lower()
@@ -7010,11 +7050,33 @@ async def check_status_of_report(client: InsightVMClient, report_id: str, instan
             return instance_id
 
         if status in ["failed", "aborted"]:
-            log(event_type, f"Report {instance_id} status is '{status}'. Re-triggering report generation")
+            if regenerations >= MAX_REPORT_REGENERATIONS:
+                raise DemistoException(
+                    f"Rapid7 report {report_id} (instance {instance_id}) ended with status '{status}' after "
+                    f"{regenerations + 1} attempt(s). Not regenerating again in this run to avoid adding load to the "
+                    "Rapid7 console. The next scheduled fetch will retry."
+                )
+            backoff = REPORT_REGENERATION_BACKOFF_SECONDS[min(regenerations, len(REPORT_REGENERATION_BACKOFF_SECONDS) - 1)]
+            regenerations += 1
+            log(
+                event_type,
+                f"Report {instance_id} status is '{status}'. Regenerating in {backoff}s "
+                f"(attempt {regenerations + 1} of {MAX_REPORT_REGENERATIONS + 1}).",
+            )
+            await asyncio.sleep(backoff)
             instance_id = await generate_report(client, report_id, event_type)
+            # Persist now: if this run is killed before the report completes, the next run must poll this
+            # instance rather than the failed one (which would trigger yet another regeneration).
+            update_integration_context_by_event_type(event_type, {"instance_id": instance_id})
+        else:
+            log(event_type, f"Report {instance_id} still processing. Waiting {REPORT_DOWNLOAD_WAIT_TIME} seconds")
 
-        if status in ["generated", "running", "unknown"]:
-            log(event_type, f"Report {instance_id} still processing. Waiting 60 seconds")
+        if _monotonic() >= deadline:
+            raise DemistoException(
+                f"Rapid7 report {report_id} (instance {instance_id}) did not complete within "
+                f"{REPORT_STATUS_TIMEOUT_SECONDS // 3600} hours (last status: '{status}'). The next scheduled fetch "
+                "will resume polling this instance."
+            )
 
         await asyncio.sleep(REPORT_DOWNLOAD_WAIT_TIME)
 
@@ -8032,7 +8094,9 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
     log(event_type, "--- Cleanup Phase Complete ---")
 
 
-async def ensure_report_config_exists(client: InsightVMClient, event_type: str, context: dict) -> None:
+async def ensure_report_config_exists(
+    client: InsightVMClient, event_type: str, context: dict, lookback_days: int = DEFAULT_LOOKBACK_DAYS
+) -> None:
     """
     Checks if a report configuration exists in the integration context.
     If not, it creates one sequentially and updates the context.
@@ -8046,7 +8110,7 @@ async def ensure_report_config_exists(client: InsightVMClient, event_type: str, 
     log(event_type, "No report config found. Creating new configuration.")
 
     # We await this call so it finishes completely before moving on
-    new_report_id = await create_report_config_from_template(client, event_type)
+    new_report_id = await create_report_config_from_template(client, event_type, lookback_days)
 
     update_integration_context_by_event_type(event_type, {"report_id": new_report_id})
     log(event_type, f"Context updated with new Report ID: {new_report_id}")
@@ -8055,6 +8119,7 @@ async def ensure_report_config_exists(client: InsightVMClient, event_type: str, 
 async def run_all_collectors(
     client: InsightVMClient,
     batch_size: int = DEFAULT_BATCH_SIZE,
+    lookback_days: int = DEFAULT_LOOKBACK_DAYS,
 ):
     """
     Runs the Asset and Vulnerability report collector workflows concurrently,
@@ -8063,8 +8128,8 @@ async def run_all_collectors(
 
     try:
         context = get_integration_context()
-        await ensure_report_config_exists(client, "asset", context)
-        await ensure_report_config_exists(client, "vulnerability", context)
+        await ensure_report_config_exists(client, "asset", context, lookback_days)
+        await ensure_report_config_exists(client, "vulnerability", context, lookback_days)
 
     except Exception as e:
         raise DemistoException(f"FATAL: Failed during report configuration setup. Aborting run. Error: {e}")
@@ -8102,7 +8167,8 @@ async def fetch_assets_command(params: dict, token: str) -> None:
     The platform's fetch-assets scheduler handles re-invocation at the configured interval.
     Each invocation runs the full collector pipeline once.
     """
-    demisto.debug("Starting fetch-assets execution")
+    lookback_days = get_lookback_days(params)
+    demisto.debug(f"Starting fetch-assets execution with a lookback of {lookback_days} days")
     async with InsightVMClient(
         base_url=params["server"],
         username=params["credentials"].get("identifier"),
@@ -8110,7 +8176,7 @@ async def fetch_assets_command(params: dict, token: str) -> None:
         token=token,
         verify=not params.get("unsecure"),
     ) as client:
-        await run_all_collectors(client, batch_size=DEFAULT_BATCH_SIZE)
+        await run_all_collectors(client, batch_size=DEFAULT_BATCH_SIZE, lookback_days=lookback_days)
     demisto.debug("Finished fetch-assets execution")
 
 
@@ -8145,6 +8211,7 @@ def main():  # pragma: no cover
         results: CommandResults | list[CommandResults] | dict | str
 
         if command == "test-module":
+            get_lookback_days(params)
             client.get_assets(page_size=1, limit=1)
             results = "ok"
         elif command == "fetch-assets":
