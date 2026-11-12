@@ -55,6 +55,63 @@ class MockedBoto3Client:
     def delete_rule_group(self, **kwargs):
         pass
 
+    def list_web_acls(self, **kwargs):
+        pass
+
+    def get_web_acl(self, **kwargs):
+        pass
+
+    def create_web_acl(self, **kwargs):
+        pass
+
+    def update_web_acl(self, **kwargs):
+        pass
+
+    def delete_web_acl(self, **kwargs):
+        pass
+
+    def associate_web_acl(self, **kwargs):
+        pass
+
+    def disassociate_web_acl(self, **kwargs):
+        pass
+
+    def list_resources_for_web_acl(self, **kwargs):
+        pass
+
+    def get_web_acl_for_resource(self, **kwargs):
+        pass
+
+    def put_logging_configuration(self, **kwargs):
+        pass
+
+    def get_logging_configuration(self, **kwargs):
+        pass
+
+    def delete_logging_configuration(self, **kwargs):
+        pass
+
+    def list_logging_configurations(self, **kwargs):
+        pass
+
+    def tag_resource(self, **kwargs):
+        pass
+
+    def untag_resource(self, **kwargs):
+        pass
+
+    def list_tags_for_resource(self, **kwargs):
+        pass
+
+    def get_sampled_requests(self, **kwargs):
+        pass
+
+    def list_available_managed_rule_groups(self, **kwargs):
+        pass
+
+    def describe_managed_rule_group(self, **kwargs):
+        pass
+
 
 def util_load_json(path):
     with open(f"test_data/{path}.json", encoding="utf-8") as f:
@@ -726,3 +783,335 @@ def test_main_credentials_params_retrieval(mocker, access_key_password, secret_k
     assert client_kwargs["aws_secret_access_key"] == secret_key_password
     assert not isinstance(client_kwargs["aws_access_key_id"], dict)
     assert not isinstance(client_kwargs["aws_secret_access_key"], dict)
+
+
+"""WEB ACL COMMANDS TESTS"""
+
+
+def test_list_web_acl_command(mocker):
+    from AWSWAF import list_web_acl_command
+
+    client = MockedBoto3Client()
+    args = {"scope": "Regional"}
+    list_mock = mocker.patch.object(client, "list_web_acls")
+    list_web_acl_command(client=client, args=args)
+    list_mock.assert_called_with(Scope="REGIONAL", Limit=50)
+
+
+def test_get_web_acl_command(mocker):
+    from AWSWAF import get_web_acl_command
+
+    client = MockedBoto3Client()
+    args = {"name": "test-acl", "scope": "Regional", "id": "acl-id"}
+    get_mock = mocker.patch.object(client, "get_web_acl")
+    get_web_acl_command(client=client, args=args)
+    get_mock.assert_called_with(Name="test-acl", Scope="REGIONAL", Id="acl-id")
+
+
+def test_create_web_acl_command(mocker):
+    from AWSWAF import create_web_acl_command
+
+    client = MockedBoto3Client()
+    args = {
+        "name": "test-acl",
+        "scope": "Regional",
+        "default_action": "Allow",
+        "cloud_watch_metrics_enabled": True,
+        "sampled_requests_enabled": True,
+    }
+    expected_visibility = {"CloudWatchMetricsEnabled": True, "MetricName": "test-acl", "SampledRequestsEnabled": True}
+    create_mock = mocker.patch.object(client, "create_web_acl")
+    create_web_acl_command(client=client, args=args)
+    create_mock.assert_called_with(
+        Name="test-acl",
+        Scope="REGIONAL",
+        DefaultAction={"Allow": {}},
+        VisibilityConfig=expected_visibility,
+    )
+
+
+def test_create_web_acl_with_rules_json(mocker):
+    from AWSWAF import create_web_acl_command
+
+    client = MockedBoto3Client()
+    rules = [
+        {
+            "Name": "rule1",
+            "Priority": 1,
+            "Statement": {},
+            "Action": {"Block": {}},
+            "VisibilityConfig": {
+                "SampledRequestsEnabled": True,
+                "CloudWatchMetricsEnabled": True,
+                "MetricName": "rule1",
+            },
+        }
+    ]
+    args = {
+        "name": "test-acl",
+        "scope": "Regional",
+        "default_action": "Block",
+        "cloud_watch_metrics_enabled": True,
+        "sampled_requests_enabled": True,
+        "rules_json": json.dumps(rules),
+    }
+    create_mock = mocker.patch.object(client, "create_web_acl")
+    create_web_acl_command(client=client, args=args)
+    call_kwargs = create_mock.call_args.kwargs
+    assert call_kwargs["Rules"] == rules
+    assert call_kwargs["DefaultAction"] == {"Block": {}}
+
+
+def test_update_web_acl_command(mocker):
+    from AWSWAF import update_web_acl_command
+
+    client = MockedBoto3Client()
+    args = {"name": "test-acl", "scope": "Regional", "id": "acl-id", "default_action": "Block"}
+    get_response = util_load_json("get_web_acl_response")
+    mocker.patch.object(client, "get_web_acl", return_value=get_response)
+    update_mock = mocker.patch.object(client, "update_web_acl")
+    update_web_acl_command(client=client, args=args)
+    call_kwargs = update_mock.call_args.kwargs
+    assert call_kwargs["DefaultAction"] == {"Block": {}}
+    assert call_kwargs["LockToken"] == "lockToken"
+
+
+def test_update_web_acl_keeps_existing_when_no_override(mocker):
+    from AWSWAF import update_web_acl_command
+
+    client = MockedBoto3Client()
+    args = {"name": "test-acl", "scope": "Regional", "id": "acl-id"}
+    get_response = util_load_json("get_web_acl_response")
+    mocker.patch.object(client, "get_web_acl", return_value=get_response)
+    update_mock = mocker.patch.object(client, "update_web_acl")
+    update_web_acl_command(client=client, args=args)
+    call_kwargs = update_mock.call_args.kwargs
+    assert call_kwargs["DefaultAction"] == {"Allow": {}}
+    assert call_kwargs["Rules"] == []
+
+
+def test_delete_web_acl_command(mocker):
+    from AWSWAF import delete_web_acl_command
+
+    client = MockedBoto3Client()
+    args = {"name": "test-acl", "scope": "Regional", "id": "acl-id"}
+    get_response = util_load_json("get_web_acl_response")
+    mocker.patch.object(client, "get_web_acl", return_value=get_response)
+    delete_mock = mocker.patch.object(client, "delete_web_acl")
+    delete_web_acl_command(client=client, args=args)
+    delete_mock.assert_called_with(Name="test-acl", Id="acl-id", Scope="REGIONAL", LockToken="lockToken")
+
+
+def test_associate_web_acl_command(mocker):
+    from AWSWAF import associate_web_acl_command
+
+    client = MockedBoto3Client()
+    args = {
+        "web_acl_arn": "arn:aws:wafv2:us-east-1:123:webacl/test/id",
+        "resource_arn": "arn:aws:elasticloadbalancing:us-east-1:123:loadbalancer/app/my-alb/123",
+    }
+    associate_mock = mocker.patch.object(client, "associate_web_acl")
+    associate_web_acl_command(client=client, args=args)
+    associate_mock.assert_called_with(
+        WebACLArn="arn:aws:wafv2:us-east-1:123:webacl/test/id",
+        ResourceArn="arn:aws:elasticloadbalancing:us-east-1:123:loadbalancer/app/my-alb/123",
+    )
+
+
+def test_disassociate_web_acl_command(mocker):
+    from AWSWAF import disassociate_web_acl_command
+
+    client = MockedBoto3Client()
+    args = {"resource_arn": "arn:aws:elasticloadbalancing:us-east-1:123:loadbalancer/app/my-alb/123"}
+    disassociate_mock = mocker.patch.object(client, "disassociate_web_acl")
+    disassociate_web_acl_command(client=client, args=args)
+    disassociate_mock.assert_called_with(
+        ResourceArn="arn:aws:elasticloadbalancing:us-east-1:123:loadbalancer/app/my-alb/123",
+    )
+
+
+def test_list_resources_for_web_acl_command(mocker):
+    from AWSWAF import list_resources_for_web_acl_command
+
+    client = MockedBoto3Client()
+    args = {"web_acl_arn": "arn:aws:wafv2:us-east-1:123:webacl/test/id", "resource_type": "APPLICATION_LOAD_BALANCER"}
+    list_mock = mocker.patch.object(client, "list_resources_for_web_acl")
+    list_resources_for_web_acl_command(client=client, args=args)
+    list_mock.assert_called_with(
+        WebACLArn="arn:aws:wafv2:us-east-1:123:webacl/test/id",
+        ResourceType="APPLICATION_LOAD_BALANCER",
+    )
+
+
+def test_get_web_acl_for_resource_command(mocker):
+    from AWSWAF import get_web_acl_for_resource_command
+
+    client = MockedBoto3Client()
+    args = {"resource_arn": "arn:aws:elasticloadbalancing:us-east-1:123:loadbalancer/app/my-alb/123"}
+    get_mock = mocker.patch.object(client, "get_web_acl_for_resource")
+    get_web_acl_for_resource_command(client=client, args=args)
+    get_mock.assert_called_with(
+        ResourceArn="arn:aws:elasticloadbalancing:us-east-1:123:loadbalancer/app/my-alb/123",
+    )
+
+
+"""LOGGING CONFIGURATION COMMANDS TESTS"""
+
+
+def test_put_logging_configuration_command(mocker):
+    from AWSWAF import put_logging_configuration_command
+
+    client = MockedBoto3Client()
+    args = {
+        "resource_arn": "arn:aws:wafv2:us-east-1:123:webacl/test/id",
+        "log_destination": "arn:aws:firehose:us-east-1:123:deliverystream/aws-waf-logs-test",
+    }
+    put_mock = mocker.patch.object(client, "put_logging_configuration")
+    put_logging_configuration_command(client=client, args=args)
+    put_mock.assert_called_with(
+        LoggingConfiguration={
+            "ResourceArn": "arn:aws:wafv2:us-east-1:123:webacl/test/id",
+            "LogDestinationConfigs": ["arn:aws:firehose:us-east-1:123:deliverystream/aws-waf-logs-test"],
+        }
+    )
+
+
+def test_get_logging_configuration_command(mocker):
+    from AWSWAF import get_logging_configuration_command
+
+    client = MockedBoto3Client()
+    args = {"resource_arn": "arn:aws:wafv2:us-east-1:123:webacl/test/id"}
+    get_mock = mocker.patch.object(client, "get_logging_configuration")
+    get_logging_configuration_command(client=client, args=args)
+    get_mock.assert_called_with(ResourceArn="arn:aws:wafv2:us-east-1:123:webacl/test/id")
+
+
+def test_delete_logging_configuration_command(mocker):
+    from AWSWAF import delete_logging_configuration_command
+
+    client = MockedBoto3Client()
+    args = {"resource_arn": "arn:aws:wafv2:us-east-1:123:webacl/test/id"}
+    delete_mock = mocker.patch.object(client, "delete_logging_configuration")
+    delete_logging_configuration_command(client=client, args=args)
+    delete_mock.assert_called_with(ResourceArn="arn:aws:wafv2:us-east-1:123:webacl/test/id")
+
+
+def test_list_logging_configurations_command(mocker):
+    from AWSWAF import list_logging_configurations_command
+
+    client = MockedBoto3Client()
+    args = {"scope": "Regional"}
+    list_mock = mocker.patch.object(client, "list_logging_configurations")
+    list_logging_configurations_command(client=client, args=args)
+    list_mock.assert_called_with(Scope="REGIONAL", Limit=50)
+
+
+"""TAG COMMANDS TESTS"""
+
+
+def test_tag_resource_command(mocker):
+    from AWSWAF import tag_resource_command
+
+    client = MockedBoto3Client()
+    args = {
+        "resource_arn": "arn:aws:wafv2:us-east-1:123:webacl/test/id",
+        "tag_key": "env,team",
+        "tag_value": "prod,security",
+    }
+    tag_mock = mocker.patch.object(client, "tag_resource")
+    tag_resource_command(client=client, args=args)
+    tag_mock.assert_called_with(
+        ResourceARN="arn:aws:wafv2:us-east-1:123:webacl/test/id",
+        Tags=[{"Key": "env", "Value": "prod"}, {"Key": "team", "Value": "security"}],
+    )
+
+
+def test_untag_resource_command(mocker):
+    from AWSWAF import untag_resource_command
+
+    client = MockedBoto3Client()
+    args = {
+        "resource_arn": "arn:aws:wafv2:us-east-1:123:webacl/test/id",
+        "tag_keys": "env,team",
+    }
+    untag_mock = mocker.patch.object(client, "untag_resource")
+    untag_resource_command(client=client, args=args)
+    untag_mock.assert_called_with(
+        ResourceARN="arn:aws:wafv2:us-east-1:123:webacl/test/id",
+        TagKeys=["env", "team"],
+    )
+
+
+def test_list_tags_for_resource_command(mocker):
+    from AWSWAF import list_tags_for_resource_command
+
+    client = MockedBoto3Client()
+    args = {"resource_arn": "arn:aws:wafv2:us-east-1:123:webacl/test/id"}
+    list_mock = mocker.patch.object(client, "list_tags_for_resource")
+    list_tags_for_resource_command(client=client, args=args)
+    list_mock.assert_called_with(
+        ResourceARN="arn:aws:wafv2:us-east-1:123:webacl/test/id",
+        Limit=50,
+    )
+
+
+"""SAMPLED REQUESTS COMMANDS TESTS"""
+
+
+def test_get_sampled_requests_command(mocker):
+    from AWSWAF import get_sampled_requests_command
+
+    client = MockedBoto3Client()
+    args = {
+        "web_acl_arn": "arn:aws:wafv2:us-east-1:123:webacl/test/id",
+        "rule_metric_name": "test-metric",
+        "scope": "Regional",
+        "start_time": "2024-01-01T00:00:00Z",
+        "end_time": "2024-01-01T01:00:00Z",
+        "max_items": "50",
+    }
+    get_response = util_load_json("get_sampled_requests_response")
+    get_mock = mocker.patch.object(client, "get_sampled_requests", return_value=get_response)
+    result = get_sampled_requests_command(client=client, args=args)
+    assert get_mock.call_count == 1
+    call_kwargs = get_mock.call_args.kwargs
+    assert call_kwargs["WebAclArn"] == "arn:aws:wafv2:us-east-1:123:webacl/test/id"
+    assert call_kwargs["RuleMetricName"] == "test-metric"
+    assert call_kwargs["Scope"] == "REGIONAL"
+    assert call_kwargs["MaxItems"] == 50
+    assert result.outputs[0]["Action"] == "ALLOW"
+
+
+"""MANAGED RULE GROUP COMMANDS TESTS"""
+
+
+def test_list_available_managed_rule_groups_command(mocker):
+    from AWSWAF import list_available_managed_rule_groups_command
+
+    client = MockedBoto3Client()
+    args = {"scope": "Regional"}
+    list_mock = mocker.patch.object(client, "list_available_managed_rule_groups")
+    list_available_managed_rule_groups_command(client=client, args=args)
+    list_mock.assert_called_with(Scope="REGIONAL", Limit=50)
+
+
+def test_describe_managed_rule_group_command(mocker):
+    from AWSWAF import describe_managed_rule_group_command
+
+    client = MockedBoto3Client()
+    args = {"vendor_name": "AWS", "name": "AWSManagedRulesCommonRuleSet", "scope": "Regional"}
+    describe_mock = mocker.patch.object(client, "describe_managed_rule_group")
+    describe_managed_rule_group_command(client=client, args=args)
+    describe_mock.assert_called_with(VendorName="AWS", Name="AWSManagedRulesCommonRuleSet", Scope="REGIONAL")
+
+
+def test_describe_managed_rule_group_with_version(mocker):
+    from AWSWAF import describe_managed_rule_group_command
+
+    client = MockedBoto3Client()
+    args = {"vendor_name": "AWS", "name": "AWSManagedRulesCommonRuleSet", "scope": "Regional", "version_name": "Version_1.0"}
+    describe_mock = mocker.patch.object(client, "describe_managed_rule_group")
+    describe_managed_rule_group_command(client=client, args=args)
+    describe_mock.assert_called_with(
+        VendorName="AWS", Name="AWSManagedRulesCommonRuleSet", Scope="REGIONAL", VersionName="Version_1.0"
+    )

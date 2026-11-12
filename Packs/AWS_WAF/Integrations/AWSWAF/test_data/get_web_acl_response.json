@@ -1,0 +1,19 @@
+{
+    "WebACL": {
+        "Name": "test-web-acl",
+        "Id": "web-acl-id",
+        "ARN": "arn:aws:wafv2:us-east-1:123456789012:regional/webacl/test-web-acl/web-acl-id",
+        "Description": "Test web ACL",
+        "Capacity": 100,
+        "DefaultAction": {
+            "Allow": {}
+        },
+        "Rules": [],
+        "VisibilityConfig": {
+            "SampledRequestsEnabled": true,
+            "CloudWatchMetricsEnabled": true,
+            "MetricName": "test-web-acl"
+        }
+    },
+    "LockToken": "lockToken"
+}

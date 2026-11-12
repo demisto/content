@@ -1,24 +1,24 @@
 id: TEST_AWS_WAF
 version: -1
 name: TEST_AWS_WAF
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 13f489c2-bab8-487d-8122-ae0e4bed85cc
     type: start
     task:
       id: 13f489c2-bab8-487d-8122-ae0e4bed85cc
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -33,8 +33,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 089a2e53-fdb0-489d-8e81-e7fc6a9c2776
     type: regular
     task:
@@ -44,15 +44,15 @@ tasks:
       script: DeleteContext
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -67,8 +67,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: b5eee366-3fb3-47b7-8e66-3030ce4b92f9
     type: regular
     task:
@@ -81,7 +81,7 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       addresses:
         simple: 1.1.1.1/32
@@ -90,7 +90,7 @@ tasks:
       name:
         simple: TestPlybook
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -105,8 +105,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 5c163cc4-0220-44fd-84df-523694a885b8
     type: condition
     task:
@@ -115,13 +115,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "6"
+      'yes':
+      - '6'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -140,7 +140,7 @@ tasks:
             value:
               simple: AWS.Waf.IpSet.ARN
             iscontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -155,8 +155,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: bd3a440b-bb55-4f89-8db1-1d7cea0860af
     type: regular
     task:
@@ -169,14 +169,14 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       id:
         simple: ${AWS.Waf.IpSet.Id}
       name:
         simple: ${AWS.Waf.IpSet.Name}
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -191,8 +191,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: d6ee246b-d78e-4276-86f7-9fdb0982f3be
     type: condition
     task:
@@ -201,13 +201,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "10"
+      'yes':
+      - '10'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: hasLength
           left:
@@ -216,8 +216,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
-    continueonerrortype: ""
+              simple: '2'
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -232,8 +232,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 38e2f283-07cd-45ae-81bd-8d0aeadf3b76
     type: regular
     task:
@@ -246,7 +246,7 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       addresses:
         simple: 1.1.2.2/32
@@ -255,7 +255,7 @@ tasks:
       name:
         simple: ${AWS.Waf.IpSet.Name}
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -270,8 +270,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 7112b1c5-6afc-4a76-82ef-7e94867ab690
     type: regular
     task:
@@ -284,12 +284,12 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       limit:
-        simple: "1"
+        simple: '1'
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -304,8 +304,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: fc954f40-8804-486b-88b6-0844d1323f33
     type: regular
     task:
@@ -318,14 +318,14 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     scriptarguments:
       id:
         simple: ${AWS.Waf.IpSet.Id}
       name:
         simple: ${AWS.Waf.IpSet.Name}
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -340,8 +340,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: 1c41ece8-f56a-42bf-8bc6-a3493b74aa69
     type: regular
     task:
@@ -354,14 +354,14 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       name:
         simple: TestPlaybook
       regex_pattern:
         simple: tpb
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -376,8 +376,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: 982e40e1-f1f9-4207-8ed1-754a533c379e
     type: condition
     task:
@@ -386,13 +386,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "14"
+      'yes':
+      - '14'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -416,7 +416,7 @@ tasks:
             value:
               simple: AWS.Waf.RegexSet.ARN
             iscontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -431,8 +431,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: 982daf12-bee2-4e18-8dbb-9dc223702d92
     type: regular
     task:
@@ -445,14 +445,14 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     scriptarguments:
       id:
         simple: ${AWS.Waf.RegexSet.Id}
       name:
         simple: ${AWS.Waf.RegexSet.Name}
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -467,8 +467,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: 2773edfc-14ce-421a-8299-a558177a437b
     type: condition
     task:
@@ -477,13 +477,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "23"
+      'yes':
+      - '23'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: hasLength
           left:
@@ -492,8 +492,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "3"
-    continueonerrortype: ""
+              simple: '3'
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -508,8 +508,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     taskid: 4c191004-9cdd-4f4a-86b8-b6481256fc96
     type: regular
     task:
@@ -522,7 +522,7 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     scriptarguments:
       id:
         simple: ${AWS.Waf.RegexSet.Id}
@@ -531,7 +531,7 @@ tasks:
       regex_pattern:
         simple: tg1, tg3
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -546,8 +546,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: c17f6f09-01fe-414e-8dcd-717973a16fd3
     type: regular
     task:
@@ -557,12 +557,12 @@ tasks:
       script: AWS-WAF|||aws-waf-regex-set-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -577,8 +577,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: 990fb39c-50a9-422d-8013-f5dfd9d7b670
     type: regular
     task:
@@ -591,14 +591,14 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       id:
         simple: ${AWS.Waf.RegexSet.Id}
       name:
         simple: ${AWS.Waf.RegexSet.Name}
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -613,8 +613,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: 1e4cdbbe-37a8-4ba4-8ee4-beca1568f4dd
     type: regular
     task:
@@ -624,12 +624,12 @@ tasks:
       script: AWS-WAF|||aws-waf-rule-group-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "34"
+      - '36'
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -644,8 +644,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: 1c64dcd0-ef5d-47aa-8d15-6a14388c08d4
     type: regular
     task:
@@ -658,14 +658,14 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "21"
+      - '21'
     scriptarguments:
       id:
         simple: ${AWS.Waf.RuleGroup.Id}
       name:
         simple: ${AWS.Waf.RuleGroup.Name}
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -680,8 +680,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     taskid: f997b8ff-41c7-45f2-8add-5914c922b5b9
     type: condition
     task:
@@ -690,13 +690,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "28"
+      'yes':
+      - '28'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -717,13 +717,13 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "4"
+              simple: '4'
       - - operator: isNotEmpty
           left:
             value:
               simple: AWS.Waf.RuleGroup.ARN
             iscontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -738,8 +738,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: 49eaffb5-c696-47ad-813d-af7f8b4c37f4
     type: regular
     task:
@@ -752,14 +752,14 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       id:
         simple: ${AWS.Waf.RuleGroup.Id}
       name:
         simple: ${AWS.Waf.RuleGroup.Name}
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -774,8 +774,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: a811bc53-c9e7-4b5d-8d32-7e1943af0f48
     type: regular
     task:
@@ -788,14 +788,14 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
     scriptarguments:
       capacity:
-        simple: "1500"
+        simple: '1500'
       name:
         simple: TestPlaybook
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -810,8 +810,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: 7ead5501-c4d0-455f-8da9-1b094e328ee4
     type: condition
     task:
@@ -820,13 +820,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "25"
+      'yes':
+      - '25'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -850,7 +850,7 @@ tasks:
             value:
               simple: AWS.Waf.RuleGroup.ARN
             iscontext: true
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -865,8 +865,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: 72a825c1-5c7e-42a2-8f69-822a4ebcb8a2
     type: regular
     task:
@@ -879,7 +879,7 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "26"
+      - '26'
     scriptarguments:
       action:
         simple: Allow
@@ -890,11 +890,11 @@ tasks:
       ip_set_arn:
         simple: ${AWS.Waf.IpSet.ARN}
       priority:
-        simple: "1"
+        simple: '1'
       rule_name:
         simple: TestPlaybookIP
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -909,8 +909,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     taskid: 2eaf0896-0b3b-410d-8276-cbb2d55d5280
     type: regular
     task:
@@ -923,7 +923,7 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     scriptarguments:
       action:
         simple: Allow
@@ -934,11 +934,11 @@ tasks:
       group_name:
         simple: ${AWS.Waf.RuleGroup.Name}
       priority:
-        simple: "2"
+        simple: '2'
       rule_name:
         simple: TestPlaybookCountry
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -953,8 +953,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     taskid: 39322aaf-7bab-4333-88cd-60d15bf6991b
     type: regular
     task:
@@ -967,7 +967,7 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "35"
+      - '35'
     scriptarguments:
       action:
         simple: Allow
@@ -980,7 +980,7 @@ tasks:
       oversize_handling:
         simple: CONTINUE
       priority:
-        simple: "3"
+        simple: '3'
       regex_set_arn:
         simple: ${AWS.Waf.RegexSet.ARN}
       rule_name:
@@ -988,7 +988,7 @@ tasks:
       web_request_component:
         simple: Cookies
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -1003,8 +1003,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
+  '28':
+    id: '28'
     taskid: edf95c0a-b6be-4d1a-84cb-bafa933b9c72
     type: regular
     task:
@@ -1017,7 +1017,7 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     scriptarguments:
       group_id:
         simple: ${AWS.Waf.RuleGroup.Id}
@@ -1026,7 +1026,7 @@ tasks:
       rule_name:
         simple: TestPlaybookIP
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -1041,8 +1041,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
+  '29':
+    id: '29'
     taskid: 8a526e81-00b7-4050-814e-0ac86de772d5
     type: regular
     task:
@@ -1055,7 +1055,7 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "30"
+      - '30'
     scriptarguments:
       condition_operator:
         simple: And
@@ -1068,7 +1068,7 @@ tasks:
       rule_name:
         simple: TestPlaybookIP
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -1083,8 +1083,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
+  '30':
+    id: '30'
     taskid: e6771d4f-3024-4a81-8920-e8d76ad679ee
     type: regular
     task:
@@ -1097,7 +1097,7 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
     scriptarguments:
       country_codes:
         simple: AU,TC
@@ -1108,7 +1108,7 @@ tasks:
       rule_name:
         simple: TestPlaybookIP
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -1123,8 +1123,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
+  '31':
+    id: '31'
     taskid: 9bf77cae-6b6d-4d83-83e6-d269af098f53
     type: regular
     task:
@@ -1137,7 +1137,7 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
     scriptarguments:
       group_id:
         simple: ${AWS.Waf.RuleGroup.Id}
@@ -1156,7 +1156,7 @@ tasks:
       web_request_component:
         simple: Cookies
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -1171,8 +1171,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
+  '34':
+    id: '34'
     taskid: b05d2734-ed6e-4e8f-8c3c-6224cea41641
     type: title
     task:
@@ -1181,15 +1181,15 @@ tasks:
       name: Test Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5270
+          "y": 8245
         }
       }
     note: false
@@ -1199,8 +1199,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
+  '35':
+    id: '35'
     taskid: 2cbdecd7-7993-4d4f-82db-f219166e4a18
     type: regular
     task:
@@ -1213,7 +1213,7 @@ tasks:
       brand: AWS-WAF
     nexttasks:
       '#none#':
-      - "29"
+      - '29'
     scriptarguments:
       action:
         simple: Allow
@@ -1224,7 +1224,7 @@ tasks:
       match_type:
         simple: Starts With String
       priority:
-        simple: "4"
+        simple: '4'
       rule_name:
         simple: TestPlaybookStringMatch
       string_to_match:
@@ -1232,7 +1232,7 @@ tasks:
       web_request_component:
         simple: Uri Path
     separatecontext: false
-    continueonerrortype: ""
+    continueonerrortype: ''
     view: |-
       {
         "position": {
@@ -1247,12 +1247,695 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  '36':
+    id: '36'
+    taskid: 4feaa760-f207-4cfc-8e90-1e8a51520bbc
+    type: regular
+    task:
+      id: 4feaa760-f207-4cfc-8e90-1e8a51520bbc
+      version: -1
+      name: aws-waf-managed-rule-group-list
+      script: AWS-WAF|||aws-waf-managed-rule-group-list
+      type: regular
+      iscommand: true
+      brand: AWS-WAF
+    nexttasks:
+      '#none#':
+      - '37'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      limit:
+        simple: '5'
+  '37':
+    id: '37'
+    taskid: adc668a3-1693-4b64-8769-7caf62265848
+    type: condition
+    task:
+      id: adc668a3-1693-4b64-8769-7caf62265848
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '38'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Waf.ManagedRuleGroup.VendorName
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Waf.ManagedRuleGroup.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '38':
+    id: '38'
+    taskid: 5f9bc2fe-aba2-4210-b224-28023774b9b9
+    type: regular
+    task:
+      id: 5f9bc2fe-aba2-4210-b224-28023774b9b9
+      version: -1
+      name: aws-waf-managed-rule-group-describe
+      script: AWS-WAF|||aws-waf-managed-rule-group-describe
+      type: regular
+      iscommand: true
+      brand: AWS-WAF
+    nexttasks:
+      '#none#':
+      - '39'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      vendor_name:
+        simple: AWS
+      name:
+        simple: AWSManagedRulesCommonRuleSet
+  '39':
+    id: '39'
+    taskid: 8477f745-b4e1-4711-9fc8-b944145b47e5
+    type: condition
+    task:
+      id: 8477f745-b4e1-4711-9fc8-b944145b47e5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '40'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Waf.ManagedRuleGroup.Capacity
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Waf.ManagedRuleGroup.Rules
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '40':
+    id: '40'
+    taskid: 986847ad-dcd1-4710-a107-0c502db236bb
+    type: regular
+    task:
+      id: 986847ad-dcd1-4710-a107-0c502db236bb
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '41'
+    scriptarguments:
+      all:
+        simple: 'yes'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '41':
+    id: '41'
+    taskid: 71c930dc-c1ec-4c0d-86e5-4e3909dd68e1
+    type: regular
+    task:
+      id: 71c930dc-c1ec-4c0d-86e5-4e3909dd68e1
+      version: -1
+      name: aws-waf-web-acl-create
+      script: AWS-WAF|||aws-waf-web-acl-create
+      type: regular
+      iscommand: true
+      brand: AWS-WAF
+    nexttasks:
+      '#none#':
+      - '42'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      name:
+        simple: TestPlaybookWebACL
+      default_action:
+        simple: Allow
+  '42':
+    id: '42'
+    taskid: c4532b3c-a7e6-4a3d-84cc-7aaf4244f3d3
+    type: condition
+    task:
+      id: c4532b3c-a7e6-4a3d-84cc-7aaf4244f3d3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '43'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Waf.WebACL.Id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Waf.WebACL.Name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Waf.WebACL.ARN
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '43':
+    id: '43'
+    taskid: 4c320552-f057-4772-b8eb-dde63d3d5f9a
+    type: regular
+    task:
+      id: 4c320552-f057-4772-b8eb-dde63d3d5f9a
+      version: -1
+      name: aws-waf-web-acl-list
+      script: AWS-WAF|||aws-waf-web-acl-list
+      type: regular
+      iscommand: true
+      brand: AWS-WAF
+    nexttasks:
+      '#none#':
+      - '44'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      limit:
+        simple: '10'
+  '44':
+    id: '44'
+    taskid: 211e75a0-dd66-4e9b-8469-15ebc6bf2177
+    type: regular
+    task:
+      id: 211e75a0-dd66-4e9b-8469-15ebc6bf2177
+      version: -1
+      name: aws-waf-web-acl-get
+      script: AWS-WAF|||aws-waf-web-acl-get
+      type: regular
+      iscommand: true
+      brand: AWS-WAF
+    nexttasks:
+      '#none#':
+      - '45'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      name:
+        simple: ${AWS.Waf.WebACL.Name}
+      web_acl_id:
+        simple: ${AWS.Waf.WebACL.Id}
+  '45':
+    id: '45'
+    taskid: 42ed7903-6abc-4088-b7e3-9f21e74db2c2
+    type: condition
+    task:
+      id: 42ed7903-6abc-4088-b7e3-9f21e74db2c2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '46'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Waf.WebACL.Id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Waf.WebACL.DefaultAction
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Waf.WebACL.ARN
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '46':
+    id: '46'
+    taskid: a754ecf9-2862-499a-8af8-2b2ab05188d5
+    type: regular
+    task:
+      id: a754ecf9-2862-499a-8af8-2b2ab05188d5
+      version: -1
+      name: aws-waf-web-acl-update
+      script: AWS-WAF|||aws-waf-web-acl-update
+      type: regular
+      iscommand: true
+      brand: AWS-WAF
+    nexttasks:
+      '#none#':
+      - '47'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      name:
+        simple: ${AWS.Waf.WebACL.Name}
+      web_acl_id:
+        simple: ${AWS.Waf.WebACL.Id}
+      default_action:
+        simple: Block
+  '47':
+    id: '47'
+    taskid: eda21001-ce32-4115-b279-d94a34a424ba
+    type: regular
+    task:
+      id: eda21001-ce32-4115-b279-d94a34a424ba
+      version: -1
+      name: aws-waf-resource-tag
+      script: AWS-WAF|||aws-waf-resource-tag
+      type: regular
+      iscommand: true
+      brand: AWS-WAF
+    nexttasks:
+      '#none#':
+      - '48'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      resource_arn:
+        simple: ${AWS.Waf.WebACL.ARN}
+      tag_key:
+        simple: Environment,Team
+      tag_value:
+        simple: Test,Security
+  '48':
+    id: '48'
+    taskid: b0f07286-90a6-4557-95ac-dc9ada9e5a5d
+    type: regular
+    task:
+      id: b0f07286-90a6-4557-95ac-dc9ada9e5a5d
+      version: -1
+      name: aws-waf-tag-list
+      script: AWS-WAF|||aws-waf-tag-list
+      type: regular
+      iscommand: true
+      brand: AWS-WAF
+    nexttasks:
+      '#none#':
+      - '49'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      resource_arn:
+        simple: ${AWS.Waf.WebACL.ARN}
+  '49':
+    id: '49'
+    taskid: 91791b28-f718-49a6-81d0-50e29e85e8a0
+    type: condition
+    task:
+      id: 91791b28-f718-49a6-81d0-50e29e85e8a0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '50'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Waf.TagInfoForResource.ResourceARN
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.Waf.TagInfoForResource.TagList
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '50':
+    id: '50'
+    taskid: 9821e85e-5dd6-4c0a-bcea-37c42e68b40f
+    type: regular
+    task:
+      id: 9821e85e-5dd6-4c0a-bcea-37c42e68b40f
+      version: -1
+      name: aws-waf-resource-untag
+      script: AWS-WAF|||aws-waf-resource-untag
+      type: regular
+      iscommand: true
+      brand: AWS-WAF
+    nexttasks:
+      '#none#':
+      - '51'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      resource_arn:
+        simple: ${AWS.Waf.WebACL.ARN}
+      tag_keys:
+        simple: Environment,Team
+  '51':
+    id: '51'
+    taskid: 8a37cb15-17f9-45de-82ac-aff7958b8268
+    type: regular
+    task:
+      id: 8a37cb15-17f9-45de-82ac-aff7958b8268
+      version: -1
+      name: aws-waf-sampled-requests-get
+      script: AWS-WAF|||aws-waf-sampled-requests-get
+      type: regular
+      iscommand: true
+      brand: AWS-WAF
+    nexttasks:
+      '#none#':
+      - '52'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      web_acl_arn:
+        simple: ${AWS.Waf.WebACL.ARN}
+      rule_metric_name:
+        simple: TestPlaybookWebACL
+      start_time:
+        simple: 3 hours ago
+      end_time:
+        simple: now
+      max_items:
+        simple: '10'
+  '52':
+    id: '52'
+    taskid: 2b7812b5-2769-47a9-add5-a32dcba9c121
+    type: regular
+    task:
+      id: 2b7812b5-2769-47a9-add5-a32dcba9c121
+      version: -1
+      name: aws-waf-web-acl-delete
+      script: AWS-WAF|||aws-waf-web-acl-delete
+      type: regular
+      iscommand: true
+      brand: AWS-WAF
+    nexttasks:
+      '#none#':
+      - '34'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      name:
+        simple: ${AWS.Waf.WebACL.Name}
+      web_acl_id:
+        simple: ${AWS.Waf.WebACL.Id}
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5285,
+        "height": 8310,
         "width": 380,
         "x": 50,
         "y": 50

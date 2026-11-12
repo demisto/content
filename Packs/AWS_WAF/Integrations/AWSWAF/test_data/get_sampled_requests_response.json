@@ -1,0 +1,24 @@
+{
+    "SampledRequests": [
+        {
+            "Request": {
+                "ClientIP": "1.2.3.4",
+                "Country": "US",
+                "HTTPVersion": "HTTP/2.0",
+                "Headers": [
+                    {"Name": "Host", "Value": "example.com"}
+                ],
+                "Method": "GET",
+                "URI": "/index.html"
+            },
+            "Weight": 1,
+            "Timestamp": 1700000000,
+            "Action": "ALLOW"
+        }
+    ],
+    "PopulationSize": 100,
+    "TimeWindow": {
+        "StartTime": 1699996400,
+        "EndTime": 1700000000
+    }
+}
