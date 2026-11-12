@@ -1,84 +1,105 @@
 {
     "gitguardian_enterprise_raw": {
+        "dataset_description": "GitGuardian is a code security platform that detects secrets exposed in source code repositories.",
         "source_log_type": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The event type of the GitGuardian record."
         },
         "tags": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The tags GitGuardian attached to the secret incident."
         },
         "who": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The developers involved in the GitGuardian secret incident."
         },
         "id": {
             "type": "int",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The unique ID GitGuardian assigns to the secret incident or audit log entry."
         },
         "display_name": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The display name of the secret detector that triggered the GitGuardian incident."
         },
         "severity": {
             "type": "int",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The numeric severity GitGuardian assigns to the secret incident."
         },
         "category": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The category of the GitGuardian secret incident."
         },
         "status": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The current remediation status of the GitGuardian secret incident."
         },
         "assignee": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The user the GitGuardian secret incident is assigned to."
         },
         "repo_name": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The name of the source code repository in which the secret was detected."
         },
         "commit_sha": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The SHA hash of the commit in which the secret was detected."
         },
         "file_path": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The path of the file in which the secret was detected."
         },
         "api_url": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The GitGuardian API URL of the secret incident resource."
         },
         "actor_email": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The email address of the GitGuardian user who performed the audited action."
         },
         "actor_name": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The name of the GitGuardian user who performed the audited action."
         },
         "actor_ip": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The IP address from which the GitGuardian user performed the audited action."
         },
         "type": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The type of action recorded in the GitGuardian audit trail."
         },
         "payload": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "Additional details of the action recorded in the GitGuardian audit trail."
         },
         "target_user_email": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The email address of the GitGuardian user affected by the audited action."
         },
         "url": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The URL associated with the GitGuardian secret incident."
         }
     }
 }

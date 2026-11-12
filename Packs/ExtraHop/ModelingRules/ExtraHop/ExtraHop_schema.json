@@ -1,100 +1,125 @@
 {
-    "extrahop_revealx_raw": {
-      "id": {
-        "type": "int",
-        "is_array": false
-      },
-      "end_time": {
-        "type": "int",
-        "is_array": false
-      },
-      "mod_time": {
-        "type": "int",
-        "is_array": false
-      },
-      "risk_score": {
-        "type": "int",
-        "is_array": false
-      },
-      "start_time": {
-        "type": "int",
-        "is_array": false
-      },
-      "create_time": {
-        "type": "int",
-        "is_array": false
-      },
-      "recommended": {
-        "type": "string",
-        "is_array": false
-      },
-      "update_time": {
-        "type": "int",
-        "is_array": false
-      },
-      "appliance_id": {
-        "type": "int",
-        "is_array": false
-      },
-      "is_user_created": {
-        "type": "string",
-        "is_array": false
-      },
-      "url": {
-        "type": "string",
-        "is_array": false
-      },
-      "type": {
-        "type": "string",
-        "is_array": false
-      },
-      "title": {
-        "type": "string",
-        "is_array": false
-      },
-      "status": {
-        "type": "string",
-        "is_array": false
-      },
-      "assignee": {
-        "type": "string",
-        "is_array": false
-      },
-      "ticket_id": {
-        "type": "string",
-        "is_array": false
-      },
-      "categories": {
-        "type": "string",
-        "is_array": false
-      },
-      "properties": {
-        "type": "string",
-        "is_array": false
-      },
-      "resolution": {
-        "type": "string",
-        "is_array": false
-      },
-      "description": {
-        "type": "string",
-        "is_array": false
-      },
-      "participants": {
-        "type": "string",
-        "is_array": false
-      },
-      "mitre_tactics": {
-        "type": "string",
-        "is_array": false
-      },
-      "mitre_techniques": {
-        "type": "string",
-        "is_array": false
-      },
-      "recommended_factors": {
-        "type": "string",
-        "is_array": false
-      }
+  "extrahop_revealx_raw": {
+    "dataset_description": "ExtraHop Reveal(x) is a network detection and response (NDR) platform that detects threats in network traffic.",
+    "id": {
+      "type": "int",
+      "is_array": false,
+      "field_description": "The unique ID ExtraHop assigns to the detection."
+    },
+    "end_time": {
+      "type": "int",
+      "is_array": false,
+      "field_description": "The time the detection activity ended, in epoch milliseconds."
+    },
+    "mod_time": {
+      "type": "int",
+      "is_array": false,
+      "field_description": "The time the detection was last modified, in epoch milliseconds."
+    },
+    "risk_score": {
+      "type": "int",
+      "is_array": false,
+      "field_description": "The risk score ExtraHop assigns to the detection."
+    },
+    "start_time": {
+      "type": "int",
+      "is_array": false,
+      "field_description": "The time the detection activity started, in epoch milliseconds."
+    },
+    "create_time": {
+      "type": "int",
+      "is_array": false,
+      "field_description": "The time the detection was created in the ExtraHop system."
+    },
+    "recommended": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "Indicates whether ExtraHop recommends the detection."
+    },
+    "update_time": {
+      "type": "int",
+      "is_array": false,
+      "field_description": "The time the detection was last updated, in epoch milliseconds."
+    },
+    "appliance_id": {
+      "type": "int",
+      "is_array": false,
+      "field_description": "The ID of the ExtraHop sensor or appliance that generated the detection."
+    },
+    "is_user_created": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "Indicates whether a user created the ExtraHop detection."
+    },
+    "url": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The URL associated with the ExtraHop detection."
+    },
+    "type": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The event type of the ExtraHop record."
+    },
+    "title": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The display title of the ExtraHop detection."
+    },
+    "status": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The current triage status of the detection in ExtraHop."
+    },
+    "assignee": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The user the detection is assigned to for investigation."
+    },
+    "ticket_id": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The ID of the ticket associated with the detection."
+    },
+    "categories": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The list of categories the detection belongs to."
+    },
+    "properties": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The detection-specific properties of the ExtraHop detection."
+    },
+    "resolution": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The resolution recorded for the detection when it was closed."
+    },
+    "description": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The description of the threat the detection identifies."
+    },
+    "participants": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The devices and other objects involved in the detection."
+    },
+    "mitre_tactics": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The MITRE ATT&CK tactics associated with the detection."
+    },
+    "mitre_techniques": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The MITRE ATT&CK techniques associated with the detection."
+    },
+    "recommended_factors": {
+      "type": "string",
+      "is_array": false,
+      "field_description": "The list of factors behind ExtraHop's recommendation of the detection."
     }
   }
+}

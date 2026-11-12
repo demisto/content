@@ -1,176 +1,220 @@
 {
     "cyberark_epm_raw": {
+        "dataset_description": "CyberArk Endpoint Privilege Manager (EPM) is an endpoint security solution that enforces least privilege and application control.",
         "Description": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The description of the EPM administrative action."
         },
         "PermissionDescription": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "Description of the permission held by the EPM administrator who performed the action."
         },
         "Role": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The EPM role assigned to the administrator who performed the action."
         },
         "SetName": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The name of the EPM set in which the administrative action was performed."
         },
         "Administrator": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The user principal name of the EPM administrator who performed the action."
         },
         "InternalSessionId": {
             "type": "int",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The internal EPM ID of the administrator session in which the action was performed."
         },
         "Feature": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The EPM feature or area through which the administrative action was performed."
         },
         "LoggedFrom": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The IP address from which the EPM administrator performed the action."
         },
         "accessAction": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "Indicates whether EPM took an access action."
         },
         "userName": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The domain-qualified name of the user who initiated the activity."
         },
         "operatingSystemType": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The operating system type of the endpoint on which the EPM agent recorded the activity."
         },
         "winEventType": {
             "type": "int",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The Windows event type code associated with the EPM event."
         },
         "fileName": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The file name of the application involved in the EPM event."
         },
         "packageName": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The name of the application package that the file involved in the EPM event belongs to."
         },
         "policyName": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The name of the EPM policy that matched the application and determined the action taken."
         },
         "publisher": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The publisher (vendor or company) of the application involved in the EPM event."
         },
         "eventType": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The type of EPM event recorded for the application."
         },
         "filePath": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The full file path of the application executable involved in the EPM event."
         },
         "runAsUsername": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The user name of the account under which the application was run."
         },
         "sourceProcessUsername": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The user name of the account that ran the source process that started the application."
         },
         "fileSize": {
             "type": "int",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The size of the application file involved in the EPM event, in kilobytes."
         },
         "threatProtectionAction": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The threat protection action setting EPM applied to the event."
         },
         "productName": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The product name of the application."
         },
         "bundleName": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The name of the macOS application bundle that contains the file involved in the event."
         },
         "productVersion": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The product version of the application."
         },
         "bundleVersion": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The version of the macOS application bundle that contains the file involved in the event."
         },
         "originUserUID": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The unique ID of the user who initiated the activity on the endpoint."
         },
         "accessTargetType": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The type of resource the application attempted to access."
         },
         "accessTargetName": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The name of the resource the application attempted to access."
         },
         "sourceProcessCommandLine": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The command line of the source process that started the application."
         },
         "processCommandLine": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The command line used to run the application process recorded by EPM."
         },
         "sourceProcessHash": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The hash of the source process executable that started the application."
         },
         "sourceProcessSigner": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The signer of the source process executable that started the application."
         },
         "sourceWSName": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The name of the source workstation from which the activity originated."
         },
         "computerName": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The host name of the endpoint on which the EPM agent recorded the activity."
         },
         "sourceWSIp": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The IP address of the source workstation from which the activity originated."
         },
         "winEventRecordId": {
             "type": "int",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The record ID of the Windows event associated with the EPM event."
         },
         "agentId": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The ID of the EPM agent on the endpoint that recorded the activity."
         },
         "logonAttemptTypeId": {
             "type": "int",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The numeric Windows logon type of the logon attempt recorded by EPM."
         },
         "logonStatusId": {
             "type": "int",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The numeric Windows status code that indicates the result of the logon attempt."
         },
         "policyAction": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The action the EPM policy applied to the application."
         },
         "commandInfo": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The command line of the application process recorded in the EPM policy audit."
         },
         "source_log_type": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "The event type of the EPM record."
         }
     }
 }
