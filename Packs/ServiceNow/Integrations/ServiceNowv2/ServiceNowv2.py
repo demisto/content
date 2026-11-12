@@ -2543,7 +2543,10 @@ def create_event_command(client: Client, args: dict) -> CommandResults:
 
     time_of_event_str: str | None = None
     if time_of_event_raw := args.get("time_of_event"):
-        dt = arg_to_datetime(time_of_event_raw, arg_name="time_of_event")
+        try:
+            dt = arg_to_datetime(time_of_event_raw, arg_name="time_of_event")
+        except ValueError:
+            raise DemistoException(f"Could not parse time_of_event '{time_of_event_raw}'. Expected a parseable date (ISO 8601, epoch, or YYYY-MM-DD HH:MM:SS).")
         if dt is None:
             raise DemistoException(f"Could not parse time_of_event '{time_of_event_raw}'.")
         if dt.tzinfo:
