@@ -30,6 +30,7 @@ MAX_TRIPLE_FILTER_VALUE = 5
 MAX_CHAR_LENGTH_FOR_FILTER_VALUE = 255
 MAX_LIMIT_VALUE = 1000
 DEFAULT_LIMIT_VALUE = 50
+MAX_SSM_EMPTY_PAGES_TO_SKIP = 10  # Max number of empty pages (with a NextToken) to skip when listing SSM parameters.
 DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval for polling commands.
 DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for polling commands.
 TERMINAL_COMMAND_STATUSES = {  # the status for run command command
@@ -395,6 +396,48 @@ def parse_name_value_type_format_filter(filter_string: str | None):
                 "Values": match_filter.group(2).split(",")[0:MAX_FILTER_VALUES],
                 "Type": match_filter.group(3),
             }
+        )
+
+    return filters
+
+
+def parse_parameter_filters(filter_string: str | None) -> list[dict[str, Any]]:
+    """
+    Parses a list representation of SSM Parameter Store filters with the form of
+    'key=<key>,option=<option>,values=<values>'. The option pair is optional (AWS defaults it to Equals).
+    The values pair must be last, so everything after it is treated as a comma-separated list of values.
+    Args:
+        filter_string: The key, option and values list, separated by ';'.
+    Returns:
+        A list of dicts with the form {"Key": <key>, "Values": [<value>], "Option": <option>}
+    """
+    filters: list[dict[str, Any]] = []
+    # The key and values character sets follow the AWS tag key/value pattern (letters, digits, spaces, and _ . : / = + - @),
+    # plus * in values. The negative lookahead rejects an option pair placed after the values pair.
+    regex = re.compile(
+        r"^key=(?P<key>[\w :./=+@-]+),(?:option=(?P<option>\w+),)?values=(?!(?:[^,]*,)*\s*option=)(?P<values>[\w ,:./=+@*-]+)$",
+        flags=re.I,
+    )
+    for parameter_filter in argToList(filter_string, separator=";"):
+        if not parameter_filter:
+            continue
+        match_filter = regex.match(parameter_filter.strip())
+        if match_filter is None:
+            raise ValueError(
+                f"Could not parse the filter: {parameter_filter}. Please make sure you provided "
+                "like so: key=<key>,values=<value1>,<value2>;key=<key>,option=<option>,values=<value>..."
+            )
+        values = [value for value in argToList(match_filter["values"]) if value]
+        if not values:
+            raise ValueError(f"Could not parse the filter: {parameter_filter}. The values pair must contain at least one value.")
+        filters.append(
+            remove_empty_elements(
+                {
+                    "Key": match_filter["key"],
+                    "Option": match_filter["option"],
+                    "Values": values,
+                }
+            )
         )
 
     return filters
@@ -9448,6 +9491,70 @@ class SSM:
             args_for_next_run=args,
         )
 
+    @staticmethod
+    def parameters_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Lists the SSM Parameter Store parameters in the current AWS account and Region,
+        including parameters shared with the account when the shared option is enabled.
+        The AWS API returns the parameter metadata only, it never returns the parameter values.
+
+        Args:
+            client (BotoClient): The boto3 client for SSM service.
+            args (Dict[str, Any]): Command arguments including optional filters, shared, limit, and next_token.
+
+        Returns:
+            CommandResults: Results containing the list of SSM parameters with pagination token.
+        """
+        kwargs: Dict[str, Any] = remove_empty_elements(
+            {
+                "ParameterFilters": parse_parameter_filters(args.get("filters")),
+                "Shared": arg_to_bool_or_none(args.get("shared")),
+            }
+        )
+        kwargs.update(build_pagination_kwargs(args, minimum_limit=1, max_limit=50))
+
+        # With filters, AWS can return an empty page that still has a NextToken (its internal scan limit was reached
+        # before a match was found), so keep following the NextToken until a page has results or there are no more pages.
+        for _ in range(MAX_SSM_EMPTY_PAGES_TO_SKIP + 1):
+            print_debug_logs(client, f"Listing SSM parameters with {kwargs=}")
+
+            response = client.describe_parameters(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            response = serialize_response_with_datetime_encoding(response)
+            parameters = response.get("Parameters", [])
+            next_token = response.get("NextToken")
+
+            if parameters or not next_token:
+                break
+            kwargs["NextToken"] = next_token
+
+        if not parameters and not next_token:
+            return CommandResults(
+                readable_output="No SSM parameters found.",
+                outputs={"AWS.SSM(true)": {"ParametersNextToken": None}},
+            )
+
+        # Outputs are intentionally not cleaned, so a missing NextToken is written as null and clears a stale token.
+        outputs = {
+            "AWS.SSM.Parameters(val.ARN && val.ARN == obj.ARN)": parameters,
+            "AWS.SSM(true)": {"ParametersNextToken": next_token},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS SSM Parameters",
+                parameters,
+                headers=["Name", "Type", "DataType", "Tier", "Version", "LastModifiedDate", "LastModifiedUser", "Description"],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
 
 class CloudWatchLogs:
     service = AWSServices.CloudWatchLogs
@@ -11483,6 +11590,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ssm-commands-list": SSM.command_list_command,
     "aws-ssm-command-cancel": SSM.command_cancel_command,
     "aws-ssm-tags-list": SSM.list_tags_for_resource_command,
+    "aws-ssm-parameters-list": SSM.parameters_list_command,
     "aws-ec2-vpc-delete": EC2.delete_vpc_command,
     "aws-ec2-vpc-endpoint-create": EC2.create_vpc_endpoint_command,
     "aws-ec2-internet-gateway-describe": EC2.describe_internet_gateways_command,
@@ -11554,6 +11662,7 @@ REQUIRED_ACTIONS: list[str] = [
     "ssm:StopAutomationExecution",
     "ssm:ListCommands",
     "ssm:CancelCommand",
+    "ssm:DescribeParameters",
     "kms:CreateGrant",
     "kms:Decrypt",
     "kms:DescribeKey",
