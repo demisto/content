@@ -1304,6 +1304,29 @@ def wait_for_started_chrome(port: str, process: subprocess.Popen) -> pychrome.Br
     return None
 
 
+def get_tabs_count_for_log(browser: pychrome.Browser) -> int | str:
+    """Returns the number of open tabs for logging, without raising if Chrome is gone.
+
+    Chrome can crash during a rasterization (e.g. a renderer crash under --single-process takes the
+    whole browser down). Calling browser.list_tab() then raises ConnectionError, and if that happens
+    inside a log line it skips the Chrome cleanup that follows and leaves a stale chrome_instances record.
+
+    Args:
+        browser (pychrome.Browser): The connected browser.
+
+    Returns:
+        int | str: The tabs count, or "unavailable" if Chrome cannot be reached.
+    """
+    try:
+        return len(browser.list_tab())
+    except Exception as ex:
+        demisto.debug(
+            f"get_tabs_count_for_log: could not list Chrome tabs, Chrome is probably not running: {ex}\n"
+            f"Trace:{traceback.format_exc()}"
+        )
+        return "unavailable"
+
+
 def close_orphaned_tabs(browser: pychrome.Browser, max_allowed_tabs: int = MAX_CHROME_TABS_COUNT) -> int:
     """Closes tabs that were leaked by previous executions.
 
@@ -1643,7 +1666,14 @@ def chrome_manager_one_port() -> tuple[pychrome.Browser | None, str | None]:
     if chrome_options in chrome_options_dict:
         demisto.debug("chrome_manager: condition chrome_options in chrome_options_dict is true")
         browser = get_chrome_browser(chrome_port)
-        return browser, chrome_port
+        if browser:
+            return browser, chrome_port
+        # The saved record points to a Chrome that is no longer running (e.g. it crashed, or the previous
+        # execution was killed before its cleanup). Drop the stale record and start a new Chrome instead of
+        # failing, otherwise every later execution with the same Chrome options fails the same way.
+        demisto.info(f"chrome_manager: could not connect to the saved Chrome on {chrome_port=}, starting a new Chrome.")
+        terminate_chrome(chrome_port=chrome_port)
+        return generate_new_chrome_instance(instance_id, chrome_options)
     for chrome_port_ in chrome_instances_contents:
         if chrome_port_ == "None":
             terminate_port_chrome_instances_file(chrome_port_)
@@ -2400,7 +2430,7 @@ def perform_rasterize(
                 executor.shutdown(wait=True)
                 demisto.info(
                     f"perform_rasterize Finished {len(rasterization_threads)} rasterize operations,"
-                    f"active tabs len: {len(browser.list_tab())}, {path=}"
+                    f"active tabs len: {get_tabs_count_for_log(browser)}, {path=}"
                 )
 
                 chrome_instances_file_content: dict = read_json_file()  # CR fix name
@@ -2411,7 +2441,7 @@ def perform_rasterize(
 
                 demisto.debug(
                     f"perform_rasterize checking if the chrome in port:{chrome_port} should be deleted:"
-                    f"{rasterization_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}, {path=}"
+                    f"{rasterization_count=}, {MAX_RASTERIZATIONS_COUNT=}, tabs_count={get_tabs_count_for_log(browser)}, {path=}"
                 )
                 if not chrome_port:
                     demisto.debug(f"perform_rasterize: the chrome port was not found, {path=}")
