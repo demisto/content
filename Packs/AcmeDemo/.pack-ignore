@@ -1,0 +1,6 @@
+[file:AcmeDemoAuditLogsEventCollector.yml]
+ignore=BA124
+
+[known_words]
+acmedemo
+auditlogs

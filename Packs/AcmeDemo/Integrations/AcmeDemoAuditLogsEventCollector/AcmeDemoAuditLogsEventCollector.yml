@@ -1,0 +1,122 @@
+category: Analytics & SIEM
+provider: AcmeDemo
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: AcmeDemo AuditLogs Event Collector
+  version: -1
+configuration:
+- defaultvalue: https://api.acmedemo.example.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: ""
+  displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+  section: Connect
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- defaultvalue: '1000'
+  display: Maximum number of events per fetch
+  name: max_fetch
+  type: 0
+  section: Collect
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: Demo event collector for Cortex XSIAM that generates synthetic AcmeDemo audit log events locally. Use the acmedemo-get-events command to preview or push events.
+display: AcmeDemo AuditLogs Event Collector
+name: AcmeDemo AuditLogs Event Collector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - defaultValue: '10'
+      description: Maximum number of events to return.
+      name: limit
+    - description: The time from which to get events. Supports free text such as "3 days" or an ISO 8601 timestamp. Default is 3 days.
+      name: start_time
+    description: Gets synthetic audit events from AcmeDemo. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
+    name: acmedemo-get-events
+    outputs:
+    - contextPath: AcmeDemo.Event.id
+      description: The event ID.
+      type: String
+    - contextPath: AcmeDemo.Event.created_time
+      description: The event creation time.
+      type: Date
+    - contextPath: AcmeDemo.Event.event_type
+      description: The event type.
+      type: String
+    - contextPath: AcmeDemo.Event.outcome
+      description: The event outcome.
+      type: String
+    - contextPath: AcmeDemo.Event.severity
+      description: The event severity.
+      type: String
+    - contextPath: AcmeDemo.Event.message
+      description: The event message.
+      type: String
+    - contextPath: AcmeDemo.Event.source_ip
+      description: The source IP address of the event.
+      type: String
+    - contextPath: AcmeDemo.Event.user_agent
+      description: The user agent of the event.
+      type: String
+    - contextPath: AcmeDemo.Event.user.id
+      description: The ID of the user who performed the action.
+      type: String
+    - contextPath: AcmeDemo.Event.user.name
+      description: The name of the user who performed the action.
+      type: String
+    - contextPath: AcmeDemo.Event.user.email
+      description: The email of the user who performed the action.
+      type: String
+    - contextPath: AcmeDemo.Event.target.type
+      description: The type of the target resource.
+      type: String
+    - contextPath: AcmeDemo.Event.target.name
+      description: The name of the target resource.
+      type: String
+  dockerimage: demisto/python3:3.12.14.13495286
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+- platform
+fromversion: 8.2.0
+tests:
+- No tests
+supportedModules:
+- xsiam
