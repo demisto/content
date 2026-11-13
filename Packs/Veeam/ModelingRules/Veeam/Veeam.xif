@@ -1,0 +1,132 @@
+[MODEL: dataset=veeam_veeam_raw]
+
+filter _raw_log ~= "Veeam_MP|Veeam_Security"
+| alter
+    _event_id        = arrayindex(regextract(_raw_log, "instanceId=(\d+)"), 0),
+    _enterprise_id   = arrayindex(regextract(_raw_log, "enterpriseId\=\"(\d+)\""), 0),
+    _job_result      = arrayindex(regextract(_raw_log, "JobResult\=\"(\d+)\""), 0),
+    _vbr_host        = arrayindex(regextract(_raw_log, "VbrHostName\=\"([^\"]+)\""), 0),
+    _vbr_version     = arrayindex(regextract(_raw_log, "VbrVersion\=\"([^\"]+)\""), 0),
+    _job_id          = arrayindex(regextract(_raw_log, "JobID\=\"([^\"]+)\""), 0),
+    _session_id      = arrayindex(regextract(_raw_log, "JobSessionID\=\"([^\"]+)\""), 0),
+    _description     = arrayindex(regextract(_raw_log, "Description\=\"([^\"]+)\""), 0),
+    _job_name        = arrayindex(regextract(_raw_log, "Description\=\"[^']*'([^']+)'"), 0),
+    _object_name     = arrayindex(regextract(_raw_log, "ObjectName\=\"([^\"]+)\""), 0),
+    _vm_name         = arrayindex(regextract(_raw_log, "VmName\=\"([^\"]+)\""), 0),
+    _initiator_name  = arrayindex(regextract(_raw_log, "InitiatorName\=\"([^\"]+)\""), 0),
+    _original_type   = arrayindex(regextract(_raw_log, "Veeam_MP|Veeam_Security"),0)
+| alter
+    _target_vm = coalesce(_vm_name, _object_name)
+| alter
+    _category = if(
+        _event_id in ("41600","42205","42210","42220","42230","42260","42270","42280","42290"), "ransomware",
+        _event_id in ("25500","31200","31210","31320","31400","31600","31700","31800","31900","40201","40202","40204","40205","40206","42301","42302","42401","42402","42404","42405","44001","44002","44005","44006"), "security_auth",
+        _event_id in ("10050","23090","23420","23520","28200","28500","28920","28950","28980","29120","29150","29900","30200","32120","32200","41402","41800","41810"), "data_destruction",
+        _event_id in ("21224","28100","28970","29800","30100","40400","40500","40600"), "infrastructure",
+        _event_id in ("24114","24120","25210","26600","26900","27000"), "cloud",
+        _event_id in ("24030","24040","24050","24060","24070","24080"), "license",
+        _event_id in ("210","40210","290","40290","250","251","41500","41510"), "restore",
+        "operations"
+    )
+| alter
+    _sev_level = if(
+        _event_id in ("10050","21224","23090","23520","24120","25500","28200","28980","29900","30200","31210","31320","31400","31800","32200","40201","40204","40206","41402","41600","41800","41810","42205","42220","42301","42401","42402","42702","43002","44001","44002","44006"), "Critical",
+        _event_id in ("115","23230","23320","23420","23490","23632","23633","24030","24050","24080","24114","25210","25400","26600","26900","27000","28500","28920","28950","29120","29150","30100","31200","31700","31900","32120","40202","40205","40400","40600","42210","42260","42280","42290","42302","42405","42701","42901","42902","43001","44005"), "High",
+        _event_id in ("122","21214","21234","23050","23130","23220","23450","24040","24060","24070","24160","25700","26100","26110","26700","27300","27600","27900","28100","28800","28850","28970","29800","31310","32800","36013","40500"), "Medium",
+        _event_id in ("24020","30400","30500","31500","31600","41610","42230","42270","42404","42500"), "Information",
+        "Information"
+    )
+| alter
+    _outcome = if(
+        _job_result = "0", XDM_CONST.OUTCOME_SUCCESS,
+        _job_result = "1", XDM_CONST.OUTCOME_PARTIAL,
+        _job_result = "2", XDM_CONST.OUTCOME_FAILED,
+        XDM_CONST.OUTCOME_UNKNOWN
+    )
+| alter
+    _event_type = if(
+        _category = "ransomware",       "PROCESS",
+        _category = "security_auth",    "AUDIT",
+        _category = "data_destruction", "PROCESS",
+        _category = "infrastructure",   "HOST",
+        _category = "cloud",            "NETWORK",
+        _category = "license",          "AUDIT",
+        _category = "restore",          "AUDIT",
+        "AUDIT"
+    )
+| alter
+    xdm.event.id                  = _event_id,
+    xdm.event.description         = _description,
+    xdm.event.outcome             = _outcome,
+    xdm.event.outcome_reason      = _description,
+    xdm.event.type                = _event_type,
+    xdm.event.original_event_type = _original_type,
+    xdm.event.operation_sub_type  = _category,
+    xdm.alert.severity            = _sev_level,
+    xdm.observer.name             = _vbr_host,
+    xdm.observer.version          = _vbr_version,
+    xdm.target.resource.id        = _job_id,
+    xdm.target.resource.name      = coalesce(_job_name, _description),
+    xdm.target.host.hostname      = _target_vm,
+    xdm.session_context_id        = _session_id,
+    xdm.source.user.username      = _initiator_name,
+    xdm.source.identity.username  = _initiator_name,
+    xdm.source.cloud.project_id   = _enterprise_id;
+
+filter _raw_log ~= "veeamdcs-alarm"
+| alter
+    _alarm_id      = arrayindex(regextract(_raw_log, "predefined_alarm_id\=\"(\d+)\""), 0),
+    _alarm_name    = arrayindex(regextract(_raw_log, "alarm_name\=\"([^\"]*)(?:\"|$)"), 0),
+    _alarm_type    = arrayindex(regextract(_raw_log, "alarm_type\=\"([^\"]*)(?:\"|$)"), 0),
+    _alarm_details = arrayindex(regextract(_raw_log, "alarm_details\=\"([^\"]*)(?:\"|$)"), 0),
+    _object_name   = arrayindex(regextract(_raw_log, "object_name\=\"([^\"]*)(?:\"|$)"), 0),
+    _object_path   = arrayindex(regextract(_raw_log, "object_path\=\"([^\"]*)(?:\"|$)"), 0),
+    _status_new    = arrayindex(regextract(_raw_log, "status_new\=\"([^\"]*)(?:\"|$)"), 0),
+    _enterprise_id = arrayindex(regextract(_raw_log, "enterpriseId\=\"(\d+)\""), 0),
+    _one_host      = arrayindex(regextract(_raw_log, "syslog_source_host=(\S+)"), 0)
+| alter
+    _outcome = if(
+        _status_new ~= "(?i)reset|resolved", XDM_CONST.OUTCOME_SUCCESS,
+        _status_new ~= "(?i)warning",        XDM_CONST.OUTCOME_PARTIAL,
+        _status_new ~= "(?i)error",          XDM_CONST.OUTCOME_FAILED,
+        XDM_CONST.OUTCOME_UNKNOWN
+    )
+| alter
+    _sev_level = if(
+        _alarm_id in ("314","315","331","332","342","344","364","365","370","391","403","419"), "Critical",
+        _alarm_id in ("316","369"), "High",
+        _alarm_id in ("376","377","378","381","395"), "Medium",
+        "Information"
+    )
+| alter
+    _category = if(
+        _alarm_id in ("342","344","364","403","419"), "ransomware",
+        _alarm_id in ("314","315","331","332","365","370","391"), "backup_coverage",
+        _alarm_id in ("316","369","378","381"), "operations",
+        _alarm_id in ("376","377","395"), "compliance",
+        "other"
+    )
+| alter
+    _event_type = if(
+        _category = "ransomware",       "PROCESS",
+        _category = "backup_coverage",  "AUDIT",
+        _category = "operations",       "AUDIT",
+        _category = "compliance",       "AUDIT",
+        "AUDIT"
+    )
+| alter
+    xdm.event.id                  = _alarm_id,
+    xdm.event.description         = _alarm_details,
+    xdm.event.outcome             = _outcome,
+    xdm.event.outcome_reason      = _alarm_details,
+    xdm.event.type                = _event_type,
+    xdm.event.original_event_type = "veeamdcs-alarm",
+    xdm.event.operation_sub_type  = _category,
+    xdm.alert.name                = _alarm_name,
+    xdm.alert.severity            = _sev_level,
+    xdm.alert.category            = _alarm_type,
+    xdm.observer.name             = _one_host,
+    xdm.target.resource.name      = _object_name,
+    xdm.target.resource.value     = _object_path,
+    xdm.target.host.hostname      = _object_name,
+    xdm.source.cloud.project_id   = _enterprise_id;
