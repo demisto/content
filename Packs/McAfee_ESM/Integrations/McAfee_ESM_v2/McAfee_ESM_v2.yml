@@ -80,9 +80,19 @@ configuration:
   section: Collect
 - defaultvalue: '0'
   display: McAfee ESM Timezone in hours
-  additionalinfo: The ESM timezone offset in hours (e.g. if the ESM timezone is +0300, enter 3).
+  additionalinfo: The ESM timezone offset in hours (e.g. if the ESM timezone is +0300, enter 3). For a half-hour offset, enter a decimal number (e.g. for +0530, enter 5.5).
   name: timezone
   type: 0
+  required: false
+  section: Connect
+- defaultvalue: MM/DD/YYYY
+  display: ESM date format
+  additionalinfo: The date format of the ESM. Select `DD/MM/YYYY` if the ESM shows dates with the day first (for example, 10-11-2026 for November 10). An ESM with a day-first date format reads the alarms query time range with the day and month swapped, so the integration adjusts the time range it sends.
+  name: dateFormat
+  options:
+  - MM/DD/YYYY
+  - DD/MM/YYYY
+  type: 15
   required: false
   section: Connect
 - display: Trust any certificate (not secure)

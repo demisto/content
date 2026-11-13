@@ -755,3 +755,194 @@ def test_add_watchlist_sends_real_booleans(mocker):
     watchlist = json.loads(http_request.call_args.kwargs["data"])["watchlist"]
     assert watchlist["dynamic"] is False
     assert watchlist["enabled"] is True
+
+
+@pytest.mark.parametrize(
+    "start_time, end_time, difference, expected",
+    [
+        pytest.param(
+            "2026-11-10T09:00:00Z",
+            "2026-11-10T10:00:00Z",
+            0,
+            ("CUSTOM", "2026-10-11T09:00:00Z", "2026-10-11T10:00:00Z"),
+            id="day and month swapped",
+        ),
+        pytest.param(
+            "2026-11-10T03:30:00Z",
+            "2026-11-10T04:30:00Z",
+            5.5,
+            ("CUSTOM", "2026-10-11T09:00:00Z", "2026-10-11T10:00:00Z"),
+            id="half-hour timezone",
+        ),
+        pytest.param(
+            "2026-11-09T00:00:00Z",
+            "2026-12-01T00:00:00Z",
+            0,
+            ("CUSTOM", "2026-09-11T00:00:00Z", "2026-01-12T00:00:00Z"),
+            id="order validated before the swap",
+        ),
+    ],
+)
+def test_set_query_times_day_first(start_time, end_time, difference, expected):
+    """
+    Given:
+    - A custom time range, and an ESM with a day-first date format.
+    When:
+    - Building the query times.
+    Then:
+    - The times are converted to the ESM timezone and sent with the day and month swapped, which the ESM reads as the
+      intended dates. A valid range is not rejected because the swapped strings no longer sort in order.
+    """
+    assert set_query_times(None, start_time, end_time, difference, day_first=True) == expected
+
+
+def test_set_query_times_month_first_unchanged():
+    """
+    Given:
+    - A custom time range, and an ESM with the default month-first date format.
+    When:
+    - Building the query times.
+    Then:
+    - The times are sent as before, without swapping.
+    """
+    assert set_query_times(None, "2026-11-10T09:00:00Z", "2026-11-10T10:00:00Z") == (
+        "CUSTOM",
+        "2026-11-10T09:00:00Z",
+        "2026-11-10T10:00:00Z",
+    )
+
+
+@freeze_time("2026-11-11T10:23:17Z")
+@pytest.mark.parametrize(
+    "date_format, expected_start, expected_end",
+    [
+        pytest.param("DD/MM/YYYY", "2026-11-11T14:53:17Z", "2026-11-11T15:53:17Z", id="day first, 11/11 reads the same"),
+        pytest.param(None, "2026-11-11T14:53:17Z", "2026-11-11T15:53:17Z", id="default"),
+    ],
+)
+def test_fetch_alarms_query_times_day_first_same_day_month(mocker, date_format, expected_start, expected_end):
+    """
+    Given:
+    - An ESM set to India time (+05:30), with the McAfee ESM Timezone in hours parameter set to 5.5.
+    When:
+    - Fetching alarms from the last hour on November 11.
+    Then:
+    - The query range is sent in India time. November 11 reads the same in either date order.
+    """
+    params = {
+        "url": "https://example.com",
+        "credentials": {"identifier": "TEST", "password": "TEST"},
+        "version": "11.6.11",
+        "timezone": "5.5",
+        "dateFormat": date_format,
+    }
+    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__set_session", return_value={})
+    request = mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__request", return_value=[])
+    mocker.patch.object(demisto, "args", return_value={})
+    client = McAfeeESMClient(params)
+    client.fetch_alarms(start_time="2026-11-11T09:23:17Z", end_time="2026-11-11T10:23:17Z", raw=True)
+
+    assert request.call_args.kwargs["params"] == {
+        "triggeredTimeRange": "CUSTOM",
+        "customStart": expected_start,
+        "customEnd": expected_end,
+    }
+
+
+def test_fetch_incidents_day_first_queries_intended_date(mocker):
+    """
+    Given:
+    - The XSUP-80724 setup: an ESM with a day-first date format (DD-MM-YYYY) in India time (+05:30), which reads the
+      custom query time 2026-11-10T09:00:00Z as October 11, and the instance parameters DD/MM/YYYY and 5.5.
+    - A lastRun at November 10, 03:30 UTC (09:00 India time).
+    When:
+    - Fetching incidents.
+    Then:
+    - The query starts at 2026-10-11T09:00:00Z, which the ESM reads as November 10, 09:00 India time.
+    - The alarm returned in the ESM format (DD-MM-YYYY, India time) becomes an incident in UTC.
+    """
+    params = {
+        "url": "https://example.com",
+        "credentials": {"identifier": "TEST", "password": "TEST"},
+        "version": "11.6.11",
+        "timezone": "5.5",
+        "dateFormat": "DD/MM/YYYY",
+        "fetchLimitAlarms": "50",
+        "startingFetchID": "0",
+        "fetchTime": "1 hour",
+    }
+    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__set_session", return_value={})
+    request = mocker.patch.object(
+        McAfeeESMClient, "_McAfeeESMClient__request", return_value=[{"id": 912430, "triggeredDate": "10-11-2026 09:31:39"}]
+    )
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "getLastRun", return_value={"alarms": {"id": 912429, "time": "2026-11-10T03:30:00Z"}})
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "incidents")
+
+    with freeze_time("2026-11-10T04:30:00Z"):
+        McAfeeESMClient(params).fetch_incidents(params)
+
+    request_params = request.call_args.kwargs["params"]
+    assert request_params["customStart"] == "2026-10-11T09:00:00Z"
+    assert request_params["customEnd"] == "2026-10-11T10:00:00Z"
+    assert demisto.incidents.call_args[0][0][0]["occurred"] == "2026-11-10T04:01:39Z"
+    assert demisto.setLastRun.call_args[0][0] == {"alarms": {"time": "2026-11-10T04:01:39Z", "id": 912430}}
+
+
+@pytest.mark.parametrize(
+    "date_format, expected",
+    [(None, False), ("", False), ("MM/DD/YYYY", False), ("DD/MM/YYYY", True)],
+)
+def test_is_day_first_date_format(date_format, expected):
+    """
+    Given:
+    - The ESM date format parameter.
+    When:
+    - Checking whether the ESM uses a day-first date format.
+    Then:
+    - Only DD/MM/YYYY is day first, and the default is month first.
+    """
+    assert is_day_first_date_format(date_format) is expected
+
+
+def test_is_day_first_date_format_rejects_invalid_value():
+    """
+    Given:
+    - An invalid ESM date format value.
+    When:
+    - Checking the date format.
+    Then:
+    - An error is raised.
+    """
+    with pytest.raises(DemistoException, match="Invalid ESM date format"):
+        is_day_first_date_format("YYYY.MM.DD")
+
+
+@pytest.mark.parametrize(
+    "timezone_offset, expected",
+    [(None, 0), ("", 0), ("3", 3), ("-5", -5), ("5.5", 5.5)],
+)
+def test_parse_timezone_offset(timezone_offset, expected):
+    """
+    Given:
+    - The McAfee ESM Timezone in hours parameter.
+    When:
+    - Parsing the offset.
+    Then:
+    - Whole and decimal offsets are returned in hours.
+    """
+    assert parse_timezone_offset(timezone_offset) == expected
+
+
+def test_parse_timezone_offset_rejects_invalid_value():
+    """
+    Given:
+    - An offset that is not a number (e.g. +05:30).
+    When:
+    - Parsing the offset.
+    Then:
+    - An error explaining the expected format is raised.
+    """
+    with pytest.raises(DemistoException, match="Invalid McAfee ESM Timezone in hours"):
+        parse_timezone_offset("+05:30")
