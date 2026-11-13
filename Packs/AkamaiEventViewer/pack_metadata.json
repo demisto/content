@@ -1,0 +1,29 @@
+{
+    "name": "Akamai Event Viewer",
+    "description": "Collect Akamai Control Center portal-visible events (such as configuration changes, login attempts, alert activity, and log deliveries) stored in the Akamai Event Logger system.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Akamai",
+        "Event Viewer",
+        "Control Center",
+        "Audit"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam"
+    ],
+    "defaultDataSource": "AkamaiEventViewer",
+    "created": "2026-09-28T00:00:00Z"
+}

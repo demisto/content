@@ -1,0 +1,129 @@
+name: AkamaiEventViewer
+display: Akamai Event Viewer
+category: Analytics & SIEM
+provider: Akamai Technologies
+description: Use the Akamai Event Viewer integration to collect Control Center portal-visible events (such as configuration changes, login attempts, alert activity, and log deliveries) stored in the Akamai Event Logger system.
+supportlevelheader: xsoar
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: AkamaiEventViewer
+  version: -1
+configuration:
+- name: host
+  display: Server URL
+  required: true
+  defaultvalue: https://akaa-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net
+  type: 0
+  additionalinfo: The customer-specific EdgeGrid API host, e.g., https://akaa-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net. The /event-viewer-api/v1 base path is appended by the integration.
+  section: Connect
+- name: clienttoken_creds
+  type: 9
+  displaypassword: Client token
+  hiddenusername: true
+  required: true
+  additionalinfo: The EdgeGrid client token of the Akamai API client.
+  section: Connect
+- name: accesstoken_creds
+  type: 9
+  displaypassword: Access token
+  hiddenusername: true
+  required: true
+  additionalinfo: The EdgeGrid access token of the Akamai API client.
+  section: Connect
+- name: clientsecret_creds
+  type: 9
+  displaypassword: Client secret
+  hiddenusername: true
+  required: true
+  additionalinfo: The EdgeGrid client secret of the Akamai API client.
+  section: Connect
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- name: account_switch_key
+  display: Account switch key
+  type: 0
+  additionalinfo: The account switch key for customers who manage more than one account. Runs the operation from another account.
+  required: false
+  section: Connect
+  advanced: true
+- name: isFetchEvents
+  display: Fetch events
+  type: 8
+  required: false
+  section: Collect
+- name: event_type_names
+  display: Event Type Names
+  type: 0
+  defaultvalue: all
+  additionalinfo: The comma-separated list of event type names to fetch (for example, "All Logins,Alert Activity"). Use "all" to fetch all event types. Up to 10 event types can be selected.
+  required: false
+  section: Collect
+- name: max_events_per_fetch
+  display: The maximum number of events per fetch
+  type: 0
+  defaultvalue: '500'
+  additionalinfo: The maximum number of events to fetch per fetch cycle. The maximum is 500. When multiple event types are selected, the limit is shared between them.
+  required: false
+  section: Collect
+  advanced: true
+- name: eventFetchInterval
+  display: Events Fetch Interval
+  type: 19
+  defaultvalue: '1'
+  additionalinfo: The interval, in minutes, between fetch cycles.
+  required: false
+  section: Collect
+  advanced: true
+script:
+  commands:
+  - name: akamai-event-viewer-get-events
+    description: Gets events from Akamai Event Viewer. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
+    arguments:
+    - name: limit
+      description: The maximum number of events to return. The maximum is 500.
+      defaultValue: '50'
+    - name: event_type
+      description: The comma-separated list of event type names to retrieve (for example, "All Logins,Alert Activity"). Use "all" to retrieve all event types. If not specified, the Event Type Names instance parameter is used.
+      isArray: true
+    - name: start_time
+      description: The start time to retrieve events from (for example, "3 days ago" or "2026-01-01T00:00:00Z").
+      defaultValue: 1 minute ago
+    - name: end_time
+      description: The end time to retrieve events until (for example, "now" or "2026-01-01T00:00:00Z").
+      defaultValue: now
+    - name: should_push_events
+      description: Whether to create events (true) or only display them (false).
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    outputs: []
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  isfetchevents: true
+  isfetchevents:xsoar: false
+  dockerimage: demisto/auth-utils:1.0.0.13548907
+fromversion: 8.4.0
+tests:
+- No tests
+marketplaces:
+- marketplacev2
+- platform
+supportedModules:
+- xsiam
