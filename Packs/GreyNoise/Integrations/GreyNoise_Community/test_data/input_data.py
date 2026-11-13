@@ -289,6 +289,28 @@ valid_tag_data_response = ["ADB Check (suspicious - activity)"]
 get_ip_tag_names_data = [(valid_tag_data, valid_tag_data_response)]
 
 
+def ip_response_with_business_service(business_service):
+    """Return a scanner hit whose business service intelligence is empty or absent."""
+    payload = copy.deepcopy(valid_ip_response)
+    if business_service == "missing":
+        payload.pop("business_service_intelligence", None)
+    else:
+        payload["business_service_intelligence"] = business_service
+    return payload
+
+
+def expected_ip_output(payload):
+    """Match the ip command context: the API body with ip renamed to address."""
+    expected = copy.deepcopy(payload)
+    expected["address"] = expected.pop("ip")
+    business_service = expected.get("business_service_intelligence")
+    if isinstance(business_service, dict) and "found" in business_service and business_service.get("found") is None:
+        business_service["business_service_status"] = (
+            "Business Service Intelligence data is not available with the current license."
+        )
+    return expected
+
+
 ip_reputation_command_data = [
     (
         {"ip": "71.6.135.131"},
@@ -335,6 +357,34 @@ ip_reputation_command_data = [
     ),
     (
         {"ip": "71.6.135.131"},
+        "positive",
+        ip_response_with_business_service({}),
+        200,
+        expected_ip_output(ip_response_with_business_service({})),
+    ),
+    (
+        {"ip": "71.6.135.131"},
+        "positive",
+        ip_response_with_business_service(None),
+        200,
+        expected_ip_output(ip_response_with_business_service(None)),
+    ),
+    (
+        {"ip": "71.6.135.131"},
+        "positive",
+        ip_response_with_business_service("missing"),
+        200,
+        expected_ip_output(ip_response_with_business_service("missing")),
+    ),
+    (
+        {"ip": "71.6.135.131"},
+        "positive",
+        ip_response_with_business_service({"found": None}),
+        200,
+        expected_ip_output(ip_response_with_business_service({"found": None})),
+    ),
+    (
+        {"ip": "71.6.135.131"},
         "negative",
         "invalid ip response",
         400,
@@ -376,3 +426,10 @@ ip_reputation_command_data = [
         "Invalid response from GreyNoise. Response: Invalid IP address: '5844.2204.2191.2471'",
     ),
 ]
+
+
+# Real API response: business_service_intelligence.found is null, scanner hit present.
+real_api_sample_null_found = {'ip': '45.83.65.120', 'business_service_intelligence': {'found': None, 'category': '', 'name': '', 'description': '', 'explanation': '', 'last_updated': '', 'reference': '', 'trust_level': ''}, 'internet_scanner_intelligence': {'first_seen': '', 'last_seen': '2026-11-13', 'found': True, 'tags': [{'id': '804e348c-2a55-46f5-bad5-a521f0dd8571', 'slug': 'ping-scanner', 'name': 'Ping Scanner', 'description': 'IP addresses with this tag have been observed scanning the Internet for live hosts using ICMP packets.', 'category': 'activity', 'intention': 'unknown', 'references': [], 'cves': [], 'recommend_block': False, 'created': '', 'updated_at': '2026-03-12T16:28:32Z'}, {'id': 'd0e29be3-fda4-4ae7-ae0c-4833ab1d07d1', 'slug': 'icmpv4-protocol', 'name': 'ICMPv4 Protocol', 'description': 'IP addresses with this tag have been observed attempting to connect using the ICMPv4 protocol, which is a control and error-reporting protocol used by IPv4 networks for operations like echo (ping), destination unreachable, and routing diagnostics.', 'category': 'protocol', 'intention': 'unknown', 'references': [], 'cves': [], 'recommend_block': False, 'created': '', 'updated_at': '2026-03-12T16:28:32Z'}], 'tag_volumes': [{'tag_id': '804e348c-2a55-46f5-bad5-a521f0dd8571', 'session_count': 600000}, {'tag_id': 'd0e29be3-fda4-4ae7-ae0c-4833ab1d07d1', 'session_count': 600000}], 'actor': 'unknown', 'spoofable': True, 'classification': 'unknown', 'cves': [], 'callback_ips': [], 'vpn': False, 'vpn_service': '', 'tor': False, 'metadata': {'asn': 'AS132203', 'asn_subnet': '', 'source_country': 'Germany', 'source_country_code': 'DE', 'source_city': 'Frankfurt am Main', 'domain': 'tencent.com', 'rdns_parent': '', 'rdns_validated': False, 'organization': 'Tencent Building, Kejizhongyi Avenue', 'category': 'hosting', 'rdns': '', 'os': '', 'sensor_count': 0, 'sensor_hits': 0, 'region': 'Hesse', 'mobile': False, 'single_destination': False, 'destination_countries': ['United Arab Emirates', 'Albania', 'Argentina', 'Austria', 'Australia', 'Azerbaijan', 'Belgium', 'Brazil', 'Canada', 'Switzerland', 'Chile', 'Czech Republic', 'Germany', 'Denmark', 'Algeria', 'Egypt', 'Spain', 'France', 'United Kingdom', 'Hong Kong', 'Hungary', 'Indonesia', 'India', 'Iceland', 'Japan', 'South Korea', 'Luxembourg', 'Moldova', 'Montenegro', 'Mexico', 'Malaysia', 'Netherlands', 'Oman', 'Panama', 'Poland', 'Romania', 'Serbia', 'Saudi Arabia', 'Sweden', 'Singapore', 'Thailand', 'Taiwan', 'United States', 'South Africa'], 'destination_country_codes': ['AE', 'AL', 'AR', 'AT', 'AU', 'AZ', 'BE', 'BR', 'CA', 'CH', 'CL', 'CZ', 'DE', 'DK', 'DZ', 'EG', 'ES', 'FR', 'GB', 'HK', 'HU', 'ID', 'IN', 'IS', 'JP', 'KR', 'LU', 'MD', 'ME', 'MX', 'MY', 'NL', 'OM', 'PA', 'PL', 'RO', 'RS', 'SA', 'SE', 'SG', 'TH', 'TW', 'US', 'ZA'], 'destination_asns': [], 'destination_cities': [], 'carrier': '', 'datacenter': '', 'longitude': 0, 'latitude': 0}, 'raw_data': {'scan': [], 'ja3': [], 'hassh': [], 'http': {'md5': [], 'cookie_keys': [], 'ja4h': [], 'request_authorization': [], 'request_cookies': [], 'request_header': [], 'method': [], 'path': [], 'request_origin': [], 'useragent': []}, 'source': {'bytes': 0, 'sessions': 600000}, 'tls': {'cipher': [], 'ja4': []}, 'ssh': {'key': [], 'ja4ssh': []}, 'tcp': {'ja4t': [], 'ja4l': []}}, 'last_seen_timestamp': '2026-11-13 18:01:27', 'last_seen_malicious': '', 'last_seen_suspicious': '', 'last_seen_benign': ''}, 'request_metadata': {'restricted_fields': ['asn_subnet', 'body_md5_hash', 'business_service_intelligence', 'bytes', 'callback_ips', 'cipher', 'cookie_keys', 'cve', 'destination_asns', 'destination_cities', 'first_seen', 'hassh_fingerprint', 'hassh_port', 'ja3_fingerprint', 'ja3_port', 'ja4', 'ja4h', 'ja4l', 'ja4ssh', 'ja4t', 'key', 'last_seen_benign', 'last_seen_malicious', 'last_seen_suspicious', 'os', 'product', 'profile_ids', 'profiles', 'request_authorization_header', 'request_cookies', 'request_header_values', 'request_method', 'request_origin_header', 'scan_ports', 'scan_protocols', 'sensor_counts', 'sensor_hits', 'source_latitude', 'source_longitude', 'user_agent', 'vendor', 'web_paths']}}
+
+# Real API response: business service found, no internet scanner activity.
+real_api_sample_business_service = {'ip': '1.1.2.2', 'business_service_intelligence': {'found': True, 'category': 'public_dns', 'name': 'Cloudflare Public DNS', 'description': 'Cloudflare, Inc. is an American web infrastructure and website security company, providing content delivery network (CDN) services, distributed denial of service (DDoS) mitigation, Internet security, and distributed domain name system (DNS) services. This is their public DNS offering.', 'explanation': "Public DNS services are used as alternatives to ISP's name servers. You may see devices on your network communicating with Cloudflare Public DNS over port 53/TCP or 53/UDP to resolve DNS lookups.", 'last_updated': '2026-11-13T00:00:00Z', 'reference': 'https://one.one.one.one', 'trust_level': '1'}, 'internet_scanner_intelligence': {'first_seen': '', 'last_seen': '', 'found': False, 'tags': [], 'actor': '', 'spoofable': False, 'classification': '', 'cves': [], 'callback_ips': [], 'vpn': False, 'vpn_service': '', 'tor': False, 'metadata': {'asn': '', 'asn_subnet': '', 'source_country': '', 'source_country_code': '', 'source_city': '', 'domain': '', 'rdns_parent': '', 'rdns_validated': False, 'organization': '', 'category': '', 'rdns': '', 'os': '', 'sensor_count': 0, 'sensor_hits': 0, 'region': '', 'mobile': False, 'single_destination': False, 'destination_countries': [], 'destination_country_codes': [], 'destination_asns': [], 'destination_cities': [], 'carrier': '', 'datacenter': '', 'longitude': 0, 'latitude': 0}, 'raw_data': {'scan': [], 'ja3': [], 'hassh': [], 'http': {'md5': [], 'cookie_keys': [], 'ja4h': [], 'request_authorization': [], 'request_cookies': [], 'request_header': [], 'method': [], 'path': [], 'request_origin': [], 'useragent': []}, 'source': {'bytes': 0}, 'tls': {'cipher': [], 'ja4': []}, 'ssh': {'key': [], 'ja4ssh': []}, 'tcp': {'ja4t': [], 'ja4l': []}}, 'last_seen_timestamp': '', 'last_seen_malicious': '', 'last_seen_suspicious': '', 'last_seen_benign': ''}, 'request_metadata': {'restricted_fields': []}}

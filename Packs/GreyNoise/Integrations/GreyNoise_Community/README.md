@@ -90,6 +90,7 @@ Queries IPs in the GreyNoise Community API.
 | GreyNoise.IP.raw_data.source.bytes | number | The number of bytes sent by the source. |
 | GreyNoise.IP.reference | string | If there is a business service, indicates the references used to validate the entry. |
 | GreyNoise.IP.riot | boolean | Whether the IP is in the business services dataset. |
+| GreyNoise.IP.business_service_intelligence.business_service_status | string | Set when Business Service Intelligence is not included in the current license. |
 | GreyNoise.IP.seen | boolean | Whether the IP is in the internet scanner dataset. |
 | GreyNoise.IP.spoofable | boolean | Whether the IP complete a three-way handshake during scanning. |
 | GreyNoise.IP.tags.category | string | The category of the given tag. |

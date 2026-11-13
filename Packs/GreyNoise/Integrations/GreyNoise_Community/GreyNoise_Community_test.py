@@ -7,6 +7,8 @@ from test_data.input_data import (  # type: ignore
     get_ip_context_data_data,
     get_ip_reputation_score_data,
     ip_reputation_command_data,
+    real_api_sample_business_service,
+    real_api_sample_null_found,
     test_module_data,
     get_ip_tag_names_data,
 )
@@ -117,3 +119,65 @@ def test_main_success(mocker):
     mocker.patch.object(GreyNoise_Community, "test_module", return_value="ok")
     GreyNoise_Community.main()
     assert GreyNoise_Community.test_module.called
+
+
+def test_ip_reputation_command_real_null_found_response(mocker):
+    """
+    Business service intelligence with found=null means the data is not included
+    in the current license.
+    """
+    api_config = GreyNoise_Community.APIConfig(
+        api_key="true_api_key",
+        api_server="dummy_server",
+        cache_ttl=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
+    client = GreyNoise_Community.Client(api_config)
+    dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(real_api_sample_null_found), 200)
+    mocker.patch("requests.Session.get", return_value=dummy_response)
+
+    response = GreyNoise_Community.ip_reputation_command(client, {"ip": "45.83.65.120"}, "B - Usually reliable")
+
+    assert len(response) == 1
+    assert response[0].outputs["address"] == "45.83.65.120"
+    assert (
+        response[0].outputs["business_service_intelligence"]["business_service_status"]
+        == GreyNoise_Community.BUSINESS_SERVICE_LICENSE_MESSAGE
+    )
+    assert response[0].outputs["business_service_intelligence"]["found"] is None
+    assert GreyNoise_Community.BUSINESS_SERVICE_LICENSE_MESSAGE in response[0].readable_output
+    assert "Not Associated with a Business Service" not in response[0].readable_output
+
+
+def test_ip_reputation_command_real_business_service_response(mocker):
+    """
+    A known business service with no scanner activity is Good and is not mass-internet scanning.
+    """
+    api_config = GreyNoise_Community.APIConfig(
+        api_key="true_api_key",
+        api_server="dummy_server",
+        cache_ttl=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
+    client = GreyNoise_Community.Client(api_config)
+    dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(real_api_sample_business_service), 200)
+    mocker.patch("requests.Session.get", return_value=dummy_response)
+
+    response = GreyNoise_Community.ip_reputation_command(client, {"ip": "1.1.2.2"}, "B - Usually reliable")
+
+    assert len(response) == 1
+    result = response[0]
+    assert result.outputs["address"] == "1.1.2.2"
+    assert result.outputs["business_service_intelligence"]["found"] is True
+    assert result.outputs["business_service_intelligence"]["name"] == "Cloudflare Public DNS"
+    assert result.outputs["business_service_intelligence"]["trust_level"] == "1"
+    assert result.outputs["internet_scanner_intelligence"]["found"] is False
+    assert "Reputation: Good" in result.readable_output
+    assert "Belongs to Common Business Service: Cloudflare Public DNS" in result.readable_output
+    assert "1 - Reasonably Ignore" in result.readable_output
+    assert "No Mass-Internet Scanning Observed" in result.readable_output
+    assert result.indicator.dbot_score.score == 1

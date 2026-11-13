@@ -115,7 +115,9 @@ STATS_H_KEY = {
     "category": "Category",
     "asn": "ASN",
     "count": "Count",
+    "id": "ID",
 }
+BUSINESS_SERVICE_LICENSE_MESSAGE = "Business Service Intelligence data is not available with the current license."
 QUERY_OUTPUT_PREFIX: dict[str, str] = {
     "IP": "GreyNoise.IP(val.address && val.address == obj.address)",
     "QUERY": "GreyNoise.Query(val.query && val.query == obj.query)",
@@ -259,11 +261,11 @@ def get_ip_context_data(responses: list) -> list:
     return ip_context_responses
 
 
-def get_ip_reputation_score(classification: str) -> tuple[int, str]:
+def get_ip_reputation_score(classification: str | None) -> tuple[int, str]:
     """Get DBot score and human-readable of score.
 
-    :type classification: ``str``
-    :param classification: classification of ip provided from GreyNoise.
+    :type classification: ``str | None``
+    :param classification: classification of ip provided from GreyNoise. A missing value is Unknown.
 
     :return: tuple of dbot score and it's readable form.
     :rtype: ``tuple``
@@ -380,12 +382,23 @@ def ip_quick_check_command(client: Client, args: dict[str, Any]) -> CommandResul
     original_response = copy.deepcopy(response)
     hr_list = []
     for record in response:
+        scanner_intelligence = record.get("internet_scanner_intelligence")
+        business_service = record.get("business_service_intelligence")
+        if not isinstance(scanner_intelligence, dict):
+            scanner_intelligence = {}
+        if not isinstance(business_service, dict):
+            business_service = {}
+        if "found" in business_service and business_service.get("found") is None:
+            business_service["business_service_status"] = BUSINESS_SERVICE_LICENSE_MESSAGE
+            business_service_display = BUSINESS_SERVICE_LICENSE_MESSAGE
+        else:
+            business_service_display = business_service.get("found")
         hr_record = {
             "IP": record.get("ip") or record.get("address"),
-            "Internet Scanner": record["internet_scanner_intelligence"].get("found"),
-            "Classification": record["internet_scanner_intelligence"].get("classification"),
-            "Business Service": record["business_service_intelligence"].get("found"),
-            "Trust Level": record["business_service_intelligence"].get("trust_level"),
+            "Internet Scanner": scanner_intelligence.get("found"),
+            "Classification": scanner_intelligence.get("classification"),
+            "Business Service": business_service_display,
+            "Trust Level": business_service.get("trust_level"),
         }
         ip = hr_record["IP"]
         hr_record["IP"] = f"[{ip}](https://viz.greynoise.io/ip/{ip})"
@@ -404,6 +417,54 @@ def ip_quick_check_command(client: Client, args: dict[str, Any]) -> CommandResul
         readable_output=hr,
         raw_response=original_response,
     )
+
+
+def business_service_is_unlicensed(business_service: Any) -> bool:
+    """Return whether Business Service Intelligence was withheld by the license.
+
+    A null ``found`` value means the current license does not include this data.
+    A false value means the IP is not a business service.
+
+    :type business_service: ``Any``
+    :param business_service: ``business_service_intelligence`` object from a v3 IP response.
+
+    :return: True when ``found`` is null.
+    :rtype: ``bool``
+    """
+    return isinstance(business_service, dict) and "found" in business_service and business_service.get("found") is None
+
+
+def business_service_not_associated_heading(ip: str, unlicensed: bool) -> str:
+    """Heading for an IP that is not returned as a business service."""
+    if unlicensed:
+        return f"### IP: {ip} {BUSINESS_SERVICE_LICENSE_MESSAGE}\n"
+    return f"### IP: {ip} Not Associated with a Business Service\n"
+
+
+def normalize_business_service_intelligence(api_response: dict) -> dict:
+    """Copy business service intelligence and record whether the IP was found.
+
+    A null ``found`` value means Business Service Intelligence is not included in
+    the current license. Missing or empty objects, and ``found: false``, mean the
+    IP is not a business service.
+
+    :type api_response: ``dict``
+    :param api_response: IP lookup response from GreyNoise.
+
+    :return: Business service intelligence with ``address`` and either ``riot`` or a license status.
+    :rtype: ``dict``
+    """
+    raw_business_service = api_response.get("business_service_intelligence")
+    if not isinstance(raw_business_service, dict):
+        raw_business_service = {}
+
+    riot_response = copy.deepcopy(raw_business_service)
+    if business_service_is_unlicensed(riot_response):
+        riot_response["business_service_status"] = BUSINESS_SERVICE_LICENSE_MESSAGE
+    else:
+        riot_response["riot"] = riot_response.get("found", False)
+    riot_response["address"] = api_response.get("ip")
+    return riot_response
 
 
 @exception_handler
@@ -439,45 +500,56 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
         ):
             raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(api_response))
 
-        if "internet_scanner_intelligence" in api_response:
-            response = api_response["internet_scanner_intelligence"]
-            response["seen"] = response.get("found", False)
-            response["address"] = api_response["ip"]
-            response["ip"] = api_response["ip"]
-            riot_response = api_response["business_service_intelligence"]
-            riot_response["riot"] = riot_response.get("found", False)
-            riot_response["address"] = api_response["ip"]
+        scanner_intelligence = api_response.get("internet_scanner_intelligence")
+        if isinstance(scanner_intelligence, dict):
+            response = scanner_intelligence
+            found = response.get("found", False)
+            response["seen"] = False if found is None else found
+            response["address"] = api_response.get("ip")
+            response["ip"] = api_response.get("ip")
+            riot_response = normalize_business_service_intelligence(api_response)
             tmp_response = get_ip_context_data([response])
         else:
-            response = {}
-            riot_response = {}
+            response = {
+                "seen": False,
+                "address": api_response.get("ip"),
+                "ip": api_response.get("ip"),
+            }
+            riot_response = normalize_business_service_intelligence(api_response)
             tmp_response = []
 
         original_response = copy.deepcopy(api_response)
 
-        response = remove_empty_elements(response)
+        response = remove_empty_elements(response) or {}
 
-        riot_response = remove_empty_elements(riot_response)
+        riot_response = remove_empty_elements(riot_response) or {}
+        if riot_response.get("business_service_status"):
+            response["business_service_status"] = riot_response["business_service_status"]
+        is_business_service = bool(riot_response.get("riot"))
+        business_service_unlicensed = bool(riot_response.get("business_service_status"))
+        business_service_display = riot_response.get("business_service_status", riot_response.get("riot"))
+        is_internet_scanner = bool(response.get("seen"))
 
-        if riot_response["riot"]:
-            if riot_response["trust_level"] == "1":
+        if is_business_service:
+            trust_level = riot_response.get("trust_level")
+            if trust_level == "1":
                 riot_response["classification"] = "benign"
                 riot_response["trust_level"] = "1 - Reasonably Ignore"
-            elif riot_response["trust_level"] == "2":
+            elif trust_level == "2":
                 riot_response["classification"] = "unknown"
                 riot_response["trust_level"] = "2 - Commonly Seen"
-            elif riot_response["trust_level"] == "3":
+            elif trust_level == "3":
                 riot_response["classification"] = "unknown"
                 riot_response["trust_level"] = "3 - Context Only"
             if riot_response.get("logo_url", "") != "":
                 del riot_response["logo_url"]
 
-        if response["seen"] and response["classification"] == "malicious":
+        if is_internet_scanner and response.get("classification") == "malicious":
             malicious_description = "This IP has been observed scanning the internet in a malicious manner."
         else:
             malicious_description = ""
 
-        if response["seen"] and not riot_response["riot"]:
+        if is_internet_scanner and not is_business_service:
             dbot_score_int, dbot_score_string = get_ip_reputation_score(response.get("classification"))
 
             human_readable = f"### IP: {ip} found with Reputation: {dbot_score_string}\n"
@@ -485,9 +557,9 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 name="GreyNoise Internet Scanner Intelligence Lookup", t=tmp_response, headers=IP_CONTEXT_HEADERS, removeNull=True
             )
 
-            riot_tmp_response = {"IP": riot_response.get("address"), "Business Service": riot_response.get("riot")}
+            riot_tmp_response = {"IP": riot_response.get("address"), "Business Service": business_service_display}
 
-            human_readable += f"### IP: {ip} Not Associated with a Business Service\n"
+            human_readable += business_service_not_associated_heading(ip, business_service_unlicensed)
             human_readable += tableToMarkdown(
                 name="GreyNoise Business Service Intelligence Lookup",
                 t=riot_tmp_response,
@@ -530,7 +602,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 )
             )
 
-        if riot_response["riot"] and not response["seen"]:
+        if is_business_service and not is_internet_scanner:
             riot_tmp_response = {
                 "IP": f"[{riot_response.get('address')}](https://viz.greynoise.io/ip/{riot_response.get('address')})",
                 "Business Service": riot_response.get("riot"),
@@ -580,7 +652,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 )
             )
 
-        if response["seen"] and riot_response["riot"]:
+        if is_internet_scanner and is_business_service:
             combo_response = response.copy()
             combo_response.update(riot_response)
             dbot_score_int, dbot_score_string = get_ip_reputation_score(response.get("classification"))
@@ -641,12 +713,12 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 )
             )
 
-        if not response["seen"] and not riot_response["riot"]:
+        if not is_internet_scanner and not is_business_service:
             combo_response = response.copy()
             combo_response.update(riot_response)
             combo_tmp_response = {
                 "IP": combo_response.get("address"),
-                "Business Service": combo_response.get("riot"),
+                "Business Service": combo_response.get("business_service_status", combo_response.get("riot")),
                 "Internet Scanner": combo_response.get("seen"),
             }
 
@@ -671,7 +743,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 removeNull=True,
             )
 
-            human_readable += f"### IP: {ip} Not Associated with a Business Service\n"
+            human_readable += business_service_not_associated_heading(ip, bool(combo_response.get("business_service_status")))
             human_readable += tableToMarkdown(
                 name="GreyNoise Business Service Intelligence Lookup",
                 t=combo_tmp_response,
@@ -726,10 +798,22 @@ def query_command(client: Client, args: dict) -> CommandResults:
     if query_response["request_metadata"]["message"] == "ok" or query_response["request_metadata"]["message"] == "":
         tmp_response = []
         for each in query_response.get("data", []):
-            scanner_response = each["internet_scanner_intelligence"]
-            scanner_response["seen"] = scanner_response.get("found", False)
-            scanner_response["address"] = each["ip"]
-            scanner_response["ip"] = each["ip"]
+            if not isinstance(each, dict):
+                continue
+            scanner_raw = each.get("internet_scanner_intelligence")
+            if isinstance(scanner_raw, dict):
+                found = scanner_raw.get("found", False)
+                scanner_raw["seen"] = False if found is None else found
+                scanner_raw["address"] = each.get("ip")
+                scanner_raw["ip"] = each.get("ip")
+                scanner_response = scanner_raw
+            else:
+                scanner_response = {
+                    "ip": each.get("ip"),
+                    "address": each.get("ip"),
+                    "seen": False,
+                    "found": False,
+                }
             tmp_response += get_ip_context_data([scanner_response])
 
         human_readable = "### GreyNoise Internet Scanner Intelligence\n"
@@ -801,26 +885,31 @@ def stats_command(client: Client, args: dict) -> Any:
         demisto.debug(f"Error in stats_command: {e}")
         raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(e))
 
-    if response["count"] > 0:
+    if response.get("count", 0) > 0:
         human_readable = "### GreyNoise Internet Scanner Intelligence\n"
-        human_readable += f"#### Stats Query: {response.get('adjusted_query')}\n"
+        human_readable += f"#### Stats Query: {response.get('adjusted_query') or response.get('query')}\n"
         human_readable += f"#### Total IP Count: {response.get('count', '0')}\n"
 
         for key, value in response.get("stats", {}).items():
-            hr_list: list = []
-            if value is None:
+            if not isinstance(value, list):
                 continue
+            # The legacy countries aggregate duplicates source_countries.
             if key == "countries":
                 continue
+            hr_list: list = []
+            header: list = []
             for rec in value:
+                if not isinstance(rec, dict):
+                    continue
                 hr_rec: dict = {}
-                header = []
-                for k, v in rec.items():
-                    hr_rec.update({f"{STATS_H_KEY.get(k)}": f"{v}"})
-                    header.append(STATS_H_KEY.get(k))
+                for field_name, field_value in rec.items():
+                    header_name = STATS_H_KEY.get(field_name) or str(field_name).replace("_", " ").title()
+                    hr_rec[header_name] = f"{field_value}"
+                    if header_name not in header:
+                        header.append(header_name)
                 hr_list.append(hr_rec)
             human_readable += tableToMarkdown(name=f"{STATS_KEY.get(key, key)}", t=hr_list, headers=header, removeNull=True)
-    elif response.get("count") == 0:
+    else:
         human_readable = "### GreyNoise Stats Query returned No Results."
 
     return CommandResults(
@@ -834,67 +923,24 @@ def stats_command(client: Client, args: dict) -> Any:
 
 @exception_handler
 @logger
-def similarity_command(client: Client, args: dict) -> Any:
-    """Get similarity information for a specified IP.
+def similarity_command(client: Client, args: dict) -> Any:  # noqa: ARG001
+    """Report that GreyNoise similarity is no longer supported.
 
     :type client: ``Client``
-    :param client: Client object for interaction with GreyNoise.
+    :param client: Client object retained for the command dispatcher. The API is not called.
 
     :type args: ``dict``
     :param args: All command arguments, usually passed from ``demisto.args()``.
 
-    :return: A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains the IP information.
+    :return: A ``CommandResults`` object stating that similarity is deprecated.
     :rtype: ``CommandResults``
     """
-    ip = args.get("ip", "")
-    min_score = args.get("minimum_score", 90)
-    limit = args.get("maximum_results", 50)
-    if isinstance(min_score, str):
-        min_score = int(min_score)
-    if isinstance(limit, str):
-        limit = int(limit)
-    response = client.similar(ip, min_score=min_score, limit=limit)
-    original_response = copy.deepcopy(response)
-    response = remove_empty_elements(response)
-    if not isinstance(response, dict):
-        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(response))
-
-    if response.get("similar_ips"):
-        tmp_response = []
-        for sim_ip in response.get("similar_ips", []):
-            modified_sim_ip = copy.deepcopy(sim_ip)
-            modified_sim_ip["IP"] = sim_ip.get("ip")
-            modified_sim_ip["Score"] = sim_ip.get("score", "0") * 100
-            modified_sim_ip["Classification"] = sim_ip.get("classification")
-            modified_sim_ip["Actor"] = sim_ip.get("actor")
-            modified_sim_ip["Organization"] = sim_ip.get("organization")
-            modified_sim_ip["Source Country"] = sim_ip.get("source_country")
-            modified_sim_ip["Last Seen"] = sim_ip.get("last_seen")
-            modified_sim_ip["Similarity Features"] = sim_ip.get("features")
-            tmp_response.append(modified_sim_ip)
-
-        human_readable = f"### IP: {ip} - Similar Internet Scanners found in GreyNoise\n"
-        human_readable += f"#### Total Similar IPs with Score above {min_score}%: {response.get('total')}\n"
-        if response.get("total", 0) > limit:
-            human_readable += f"##### Displaying {limit} results below.  To see all results, visit the GreyNoise Visualizer.\n "
-
-        human_readable += tableToMarkdown(name="GreyNoise Similar IPs", t=tmp_response, headers=SIMILAR_HEADERS, removeNull=True)
-
-        similarity_link = f"https://viz.greynoise.io/ip-similarity/{ip}"
-        human_readable += f"\n*To view the detailed similarity result please click [here]({similarity_link}).*"
-
-    elif response["message"] == "ip not found":
-        human_readable = "### GreyNoise Similarity Lookup returned No Results."
-        viz_link = f"https://viz.greynoise.io/ip/{ip}"
-        human_readable += f"\n*To view this IP on the GreyNoise Visualizer please click [here]({viz_link}).*"
-
+    message = "The GreyNoise similarity functionality is deprecated and no longer supported."
+    demisto.debug(f"greynoise-similarity called for {args.get('ip', '')}: {message}")
     return CommandResults(
+        readable_output=f"### {message}",
         outputs_prefix="GreyNoise.Similar",
-        outputs_key_field="ip",
-        readable_output=human_readable,
-        outputs=remove_empty_elements(response),
-        raw_response=original_response,
+        outputs={"message": message},
     )
 
 
@@ -920,13 +966,44 @@ def timeline_command(client: Client, args: dict) -> Any:
         days = int(days)
     if isinstance(limit, str):
         limit = int(limit)
-    response = client.timelinedaily(ip, days=days, limit=limit)
+    response = client.timelinedaily(ip, days=days)
     original_response = copy.deepcopy(response)
     response = remove_empty_elements(response)
     if not isinstance(response, dict):
         raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(response))
 
-    if response.get("activity"):
+    if response.get("data"):
+        entries = response.get("data", [])[:limit]
+        tmp_response = []
+        for entry in entries:
+            date_value = entry.get("date") or ""
+            tmp_response.append(
+                {
+                    "Date": date_value.split("T")[0] if isinstance(date_value, str) else date_value,
+                    "Classification": entry.get("classification"),
+                    "Tags": entry.get("tags"),
+                    "rDNS": entry.get("rdns"),
+                    "Organization": entry.get("organizations"),
+                    "ASN": entry.get("asns"),
+                    "Ports": entry.get("ports"),
+                    "Web Paths": entry.get("web_paths"),
+                    "User Agents": entry.get("user_agents"),
+                }
+            )
+
+        human_readable = f"### IP: {ip} - GreyNoise IP Timeline\n"
+        human_readable += tableToMarkdown(
+            name="Internet Scanner Timeline Details - Daily Activity Summary",
+            t=tmp_response,
+            headers=TIMELINE_HEADERS,
+            removeNull=True,
+        )
+        if len(response.get("data", [])) > limit:
+            human_readable += f"\nDisplaying {limit} of {len(response.get('data', []))} daily results."
+        timeline_link = f"https://viz.greynoise.io/ip/{ip}?view=timeline"
+        human_readable += f"\n*To view the detailed timeline result please click [here]({timeline_link}).*"
+
+    elif response.get("activity"):
         tmp_response = []
         for activity in response.get("activity", []):
             modified_activity = copy.deepcopy(activity)
@@ -997,13 +1074,28 @@ def riot_command(client: Client, args: dict, reliability: str) -> CommandResults
         demisto.debug(f"Error in riot_command: {e}")
         raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(e))
 
-    response = api_response.get("business_service_intelligence", {})
+    raw_business_service = api_response.get("business_service_intelligence")
+    if not isinstance(raw_business_service, dict):
+        raw_business_service = {}
+    response = copy.deepcopy(raw_business_service)
     response["ip"] = api_response.get("ip", "")
-    response["riot"] = response.get("found", False)
+    if business_service_is_unlicensed(response):
+        response["business_service_status"] = BUSINESS_SERVICE_LICENSE_MESSAGE
+    else:
+        response["riot"] = response.get("found", False)
     original_response = copy.deepcopy(api_response)
-    response = remove_empty_elements(response)
+    response = remove_empty_elements(response) or {}
     name = ""
-    if response.get("riot") is False or response.get("riot") == "false":
+    if response.get("business_service_status"):
+        name = "GreyNoise Business Service Intelligence Lookup"
+        hr = {
+            "IP": response.get("ip"),
+            "Business Service": response.get("business_service_status"),
+        }
+        human_readable = business_service_not_associated_heading(ip, True)
+        human_readable += tableToMarkdown(name=name, t=hr, headers=["IP", "Business Service"], removeNull=False)
+        dbot_score_int = 0
+    elif response.get("riot") is False or response.get("riot") == "false":
         name = "GreyNoise Business Service Intelligence Lookup"
         hr = {
             "IP": response.get("ip"),
@@ -1043,6 +1135,10 @@ def riot_command(client: Client, args: dict, reliability: str) -> CommandResults
     else:
         dbot_score_int = 0
         demisto.debug(f'{response.get("riot")=} -> {dbot_score_int=}')
+        name = "GreyNoise Business Service Intelligence Lookup"
+        hr = {"IP": response.get("ip"), "Business Service": response.get("riot")}
+        human_readable = f"### IP: {ip} Not Associated with a Business Service\n"
+        human_readable += tableToMarkdown(name=name, t=hr, headers=["IP", "Business Service"], removeNull=False)
 
     dbot_score = Common.DBotScore(
         indicator=response.get("ip"),
@@ -1119,6 +1215,16 @@ def context_command(client: Client, args: dict, reliability: str) -> CommandResu
     human_readable += tableToMarkdown(
         name="GreyNoise Internet Scanner Intelligence Lookup", t=tmp_response, headers=headers, removeNull=True
     )
+
+    if business_service_is_unlicensed(api_response.get("business_service_intelligence")):
+        response["business_service_status"] = BUSINESS_SERVICE_LICENSE_MESSAGE
+        human_readable += business_service_not_associated_heading(ip, True)
+        human_readable += tableToMarkdown(
+            name="GreyNoise Business Service Intelligence Lookup",
+            t={"IP": ip, "Business Service": BUSINESS_SERVICE_LICENSE_MESSAGE},
+            headers=["IP", "Business Service"],
+            removeNull=False,
+        )
 
     if response["found"] and response["classification"] == "malicious":
         malicious_description = "This IP has been observed scanning the internet in a malicious manner."
