@@ -1,0 +1,71 @@
+{
+    "GoogleThreatIntelligenceAgentic.Session(val.id && val.id == obj.id)": {
+        "type": "agentic_session",
+        "id": "44444444-4444-4444-4444-000000000005",
+        "title": "Investigation of a phishing domain",
+        "creation_date": "2026-10-06T10:00:00.123456Z",
+        "last_modification_date": "2026-10-06T10:07:31.654321Z",
+        "events": [
+            {
+                "id": "55555555-5555-5555-5555-000000000008",
+                "message_type": "USER_MESSAGE",
+                "user_message": {
+                    "timestamp_seconds": 1791280800,
+                    "widgets": [
+                        {
+                            "widget_type": "MARKDOWN_TEXT",
+                            "markdown_text_widget": {
+                                "text": "Is the domain example.com malicious?"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "id": "55555555-5555-5555-5555-000000000009",
+                "message_type": "AGENT_FINAL_RESPONSE",
+                "agent_final_response": {
+                    "agent_id": "gti-assistant",
+                    "widgets": [
+                        {
+                            "widget_type": "MARKDOWN_TEXT",
+                            "markdown_text_widget": {
+                                "text": "The domain is flagged as **phishing** by 7 security vendors."
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "id": "55555555-5555-5555-5555-000000000010",
+                "message_type": "USER_MESSAGE",
+                "user_message": {
+                    "timestamp_seconds": 1791281100,
+                    "widgets": [
+                        {
+                            "widget_type": "MARKDOWN_TEXT",
+                            "markdown_text_widget": {
+                                "text": "Which threat actors are linked to it?"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "id": "55555555-5555-5555-5555-000000000011",
+                "message_type": "AGENT_FINAL_RESPONSE",
+                "agent_final_response": {
+                    "agent_id": "gti-assistant",
+                    "widgets": [
+                        {
+                            "widget_type": "MARKDOWN_TEXT",
+                            "markdown_text_widget": {
+                                "text": "### Linked Threat Actors\n\n- UNC0000: credential phishing campaigns\n- APT00: initial access through lookalike domains"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

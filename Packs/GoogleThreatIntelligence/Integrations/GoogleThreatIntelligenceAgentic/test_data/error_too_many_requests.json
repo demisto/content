@@ -1,0 +1,6 @@
+{
+    "error": {
+        "code": "QuotaExceededError",
+        "message": "Quota exceeded, please retry later."
+    }
+}

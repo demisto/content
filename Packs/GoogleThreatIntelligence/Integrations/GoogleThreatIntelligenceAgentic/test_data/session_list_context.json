@@ -1,0 +1,19 @@
+{
+    "GoogleThreatIntelligenceAgentic.Session(val.id && val.id == obj.id)": [
+        {
+            "id": "44444444-4444-4444-4444-000000000001",
+            "type": "agentic_session",
+            "title": "Daily malicious-URL digest",
+            "last_modification_date": "2026-09-16T06:41:42.378515Z"
+        },
+        {
+            "id": "44444444-4444-4444-4444-000000000002",
+            "type": "agentic_session",
+            "title": "Malware analysis of a suspicious file",
+            "last_modification_date": "2026-09-16T06:35:00.005325Z"
+        }
+    ],
+    "GoogleThreatIntelligenceAgentic.PageToken.Session(true)": {
+        "next_cursor": "eyJvZmZzZXQiOjJ9"
+    }
+}

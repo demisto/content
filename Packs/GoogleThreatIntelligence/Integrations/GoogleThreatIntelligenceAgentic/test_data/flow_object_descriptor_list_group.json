@@ -1,0 +1,12 @@
+{
+    "data": {
+        "type": "group",
+        "id": "acmecorp"
+    },
+    "links": {
+        "self": "https://www.virustotal.com/api/v3/flows/11111111-1111-1111-1111-111111111111/relationships/group"
+    },
+    "meta": {
+        "count": 1
+    }
+}

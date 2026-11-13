@@ -1,0 +1,75 @@
+[
+    {
+        "id": "11111111-1111-1111-1111-111111111111",
+        "type": "flow",
+        "links": {
+            "self": "https://www.virustotal.com/api/v3/flows/11111111-1111-1111-1111-111111111111"
+        },
+        "relationships": {
+            "group": {
+                "data": {
+                    "type": "group",
+                    "id": "acmecorp"
+                }
+            }
+        },
+        "enabled": true,
+        "last_modification_date": "2026-09-10T07:52:49Z",
+        "nodes": [
+            {
+                "id": "n1",
+                "type": "NODE_TYPE_SCHEDULE_TIME",
+                "name": "Every morning",
+                "schedule_node": {
+                    "cron_expression": "0 9 * * *",
+                    "timezone": "UTC"
+                }
+            },
+            {
+                "id": "n2",
+                "type": "NODE_TYPE_RUN_PROMPT",
+                "name": "Summarise new detections",
+                "run_prompt_node": {
+                    "prompt": "Summarise URLs first seen in the last 24h that are flagged malicious by 5+ engines.",
+                    "reuse_session": false
+                }
+            },
+            {
+                "id": "n3",
+                "type": "NODE_TYPE_SEND_EMAIL",
+                "name": "Email the SOC",
+                "send_email_node": {
+                    "notification_emails": [
+                        "soc@example.com"
+                    ],
+                    "email_subject": "Daily malicious-URL digest",
+                    "message": "See attached summary."
+                }
+            }
+        ],
+        "trigger_state": {
+            "last_run_at": "2026-09-15T09:04:24Z"
+        },
+        "connections": [
+            {
+                "source_node_id": "n1",
+                "target_node_id": "n2"
+            },
+            {
+                "source_node_id": "n2",
+                "target_node_id": "n3"
+            }
+        ],
+        "creation_date": "2026-09-10T07:52:49Z",
+        "name": "Daily malicious-URL digest",
+        "private": true
+    },
+    {
+        "id": "22222222-2222-2222-2222-222222222222",
+        "type": "flow",
+        "enabled": false,
+        "name": "Weekly infrastructure review",
+        "creation_date": "2026-09-09T07:52:49Z",
+        "last_modification_date": "2026-09-10T07:52:49Z"
+    }
+]

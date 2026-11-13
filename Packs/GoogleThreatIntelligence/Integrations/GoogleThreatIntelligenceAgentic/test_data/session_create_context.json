@@ -1,0 +1,41 @@
+{
+    "GoogleThreatIntelligenceAgentic.Session(val.id && val.id == obj.id)": {
+        "type": "agentic_session",
+        "id": "44444444-4444-4444-4444-000000000003",
+        "title": "Overview of Google Threat Intelligence",
+        "creation_date": "2026-10-05T09:00:00.123456Z",
+        "last_modification_date": "2026-10-05T09:00:42.654321Z",
+        "events": [
+            {
+                "id": "55555555-5555-5555-5555-000000000001",
+                "message_type": "USER_MESSAGE",
+                "user_message": {
+                    "timestamp_seconds": 1791190800,
+                    "widgets": [
+                        {
+                            "widget_type": "MARKDOWN_TEXT",
+                            "markdown_text_widget": {
+                                "text": "What is GTI?"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "id": "55555555-5555-5555-5555-000000000002",
+                "message_type": "AGENT_FINAL_RESPONSE",
+                "agent_final_response": {
+                    "agent_id": "gti-assistant",
+                    "widgets": [
+                        {
+                            "widget_type": "MARKDOWN_TEXT",
+                            "markdown_text_widget": {
+                                "text": "### Overview of Google Threat Intelligence\n\nGoogle Threat Intelligence combines the intelligence of Mandiant, VirusTotal and Google.\n\n- Threat actors and campaigns\n- Malware families and indicators"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

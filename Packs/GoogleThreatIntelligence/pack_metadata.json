@@ -2,7 +2,7 @@
     "name": "GoogleThreatIntelligence",
     "description": "Analyzes suspicious hashes, URLs, domains, and IP addresses, and fetch incidents as DTM Alerts or ASM Issues from the Google Threat Intelligence platform.",
     "support": "partner",
-    "currentVersion": "3.0.5",
+    "currentVersion": "4.0.0",
     "author": "Google",
     "url": "https://www.virustotal.com",
     "email": "contact@virustotal.com",
@@ -36,7 +36,10 @@
         "ASM Issues",
         "Threat Intelligence",
         "Issues",
-        "Data"
+        "Data",
+        "Agentic",
+        "Agentic Flows",
+        "Agentic Sessions"
     ],
     "dependencies": {
         "CoreAlertFields": {

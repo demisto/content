@@ -1,0 +1,60 @@
+{
+    "data": {
+        "id": "8975c8a7-d574-42c0-8a85-3b3f2e07b53e",
+        "type": "flow_execution",
+        "links": {
+            "self": "https://www.virustotal.com/api/v3/flow_executions/8975c8a7-d574-42c0-8a85-3b3f2e07b53e"
+        },
+        "attributes": {
+            "status": "EXECUTION_STATUS_COMPLETED",
+            "flow_id": "11111111-1111-1111-1111-111111111111",
+            "steps": [
+                {
+                    "step_id": "8975c8a7-0000-4000-8000-000000000001",
+                    "execution_id": "8975c8a7-d574-42c0-8a85-3b3f2e07b53e",
+                    "node_id": "n1",
+                    "node_type": "NODE_TYPE_SCHEDULE_TIME",
+                    "status": "STEP_STATUS_SUCCESS",
+                    "ended_at": "2026-09-28T09:00:00.396297845Z"
+                },
+                {
+                    "step_id": "8975c8a7-0000-4000-8000-000000000002",
+                    "execution_id": "8975c8a7-d574-42c0-8a85-3b3f2e07b53e",
+                    "node_id": "n2",
+                    "node_type": "NODE_TYPE_RUN_PROMPT",
+                    "status": "STEP_STATUS_SUCCESS",
+                    "input_json": "{\"prompt\":\"Brief about GTI\"}",
+                    "output_json": "{\"session_id\":\"63bb000d-67e5-4937-844b-7c04656e7a34\",\"gti_agentic_response\":\"### Overview of Google Threat Intelligence\\n\\nGoogle Threat Intelligence combines the intelligence of Mandiant, VirusTotal and Google.\"}",
+                    "started_at": "2026-09-28T09:00:00.414575744Z",
+                    "ended_at": "2026-09-28T09:00:33.261625963Z",
+                    "enqueued_at": "2026-09-28T09:00:00.336720448Z",
+                    "duration_seconds": "33",
+                    "run_prompt_output": {
+                        "session_id": "63bb000d-67e5-4937-844b-7c04656e7a34",
+                        "gti_agentic_response": "### Overview of Google Threat Intelligence\n\nGoogle Threat Intelligence combines the intelligence of Mandiant, VirusTotal and Google."
+                    },
+                    "expires_at": "2026-09-28T09:15:00.414575744Z"
+                },
+                {
+                    "step_id": "8975c8a7-0000-4000-8000-000000000003",
+                    "execution_id": "8975c8a7-d574-42c0-8a85-3b3f2e07b53e",
+                    "node_id": "n3",
+                    "node_type": "NODE_TYPE_SEND_EMAIL",
+                    "status": "STEP_STATUS_SUCCESS",
+                    "input_json": "{\"emails\":[\"soc@example.com\"],\"flow_name\":\"Daily malicious-URL digest\",\"source_node_id\":\"n2\",\"subject\":\"Daily malicious-URL digest\"}",
+                    "output_json": "{\"dispatched\":true}",
+                    "started_at": "2026-09-28T09:00:33.327145100Z",
+                    "ended_at": "2026-09-28T09:00:34.754639311Z",
+                    "duration_seconds": "1",
+                    "send_email_output": {
+                        "dispatched": true
+                    },
+                    "expires_at": "2026-09-28T09:03:33.327145100Z"
+                }
+            ],
+            "creation_date": 1790586000,
+            "last_modification_date": 1790586035,
+            "duration_seconds": 0
+        }
+    }
+}

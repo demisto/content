@@ -1,0 +1,13 @@
+{
+    "GoogleThreatIntelligenceAgentic.FlowExecutionRelationshipDescriptor(val.execution_id && val.execution_id == obj.execution_id && val.relationship && val.relationship == obj.relationship)": {
+        "execution_id": "22222222-2222-2222-2222-222222222222",
+        "relationship": "group",
+        "type": "group",
+        "data": [
+            {
+                "type": "group",
+                "id": "acmecorp"
+            }
+        ]
+    }
+}
