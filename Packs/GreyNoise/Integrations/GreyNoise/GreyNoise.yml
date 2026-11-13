@@ -287,6 +287,9 @@ script:
     - contextPath: GreyNoise.IP.riot
       description: Whether the IP is a common business service.
       type: boolean
+    - contextPath: GreyNoise.IP.business_service_status
+      description: Set when Business Service Intelligence is not included in the current license.
+      type: string
     - contextPath: GreyNoise.IP.last_updated
       description: When was the last time the business service information was updated.
       type: date
@@ -447,8 +450,11 @@ script:
       description: Whether the IP has been observed scanning the internet.
       type: boolean
     - contextPath: GreyNoise.IP.business_service_intelligence.found
-      description: Whether the IP is a common business service.
+      description: Whether the IP is a common business service. Null means this data is not included in the current license.
       type: boolean
+    - contextPath: GreyNoise.IP.business_service_intelligence.business_service_status
+      description: Set when Business Service Intelligence is not included in the current license.
+      type: string
     - contextPath: GreyNoise.IP.internet_scanner_intelligence.classification
       description: If the IP has been observed, what is the GreyNoise classification.
       type: string
@@ -990,6 +996,9 @@ script:
     - contextPath: GreyNoise.Riot.trust_level
       description: The trust level of the IP if riot is "True".
       type: String
+    - contextPath: GreyNoise.IP.business_service_status
+      description: Set when Business Service Intelligence is not included in the current license.
+      type: String
   - arguments:
     - default: true
       description: The IP address to query in GreyNoise Context Command.
@@ -1010,6 +1019,9 @@ script:
     - contextPath: GreyNoise.IP.seen
       description: Whether the IP is in record with GreyNoise.
       type: boolean
+    - contextPath: GreyNoise.IP.business_service_status
+      description: Set when Business Service Intelligence is not included in the current license.
+      type: string
     - contextPath: GreyNoise.IP.tags
       description: A list of the tags the device has been assigned over the past 90 days.
       type: array
@@ -1201,8 +1213,7 @@ script:
       type: Boolean
   - name: greynoise-similarity
     description: >-
-      Search for similar internet scanner IPs found in the GreyNoise Noise
-      (internet scanner) dataset.
+      Deprecated. The GreyNoise similarity functionality is no longer supported.
     arguments:
     - name: ip
       default: true
@@ -1217,16 +1228,17 @@ script:
       description: The maximum number of results to return. Default value is 50.
       defaultValue: '50'
     outputs:
-    - contextPath: GreyNoise.Similar.ip_address
-      description: Similar IP address.
+    - contextPath: GreyNoise.Similar.message
+      description: States that GreyNoise similarity is deprecated and no longer supported.
       type: string
+    deprecated: true
   - name: greynoise-timeline
     description: >-
       Retrieve daily scanner timeline information for an Internet Scanner.
     arguments:
     - name: ip
       default: true
-      description: IP address to find similar IPs to.
+      description: IP address to retrieve the daily timeline for.
       required: true
     - name: days
       description: >-
@@ -1237,9 +1249,45 @@ script:
       description: The maximum number of results to return. Default value is 50.
       defaultValue: '50'
     outputs:
-    - contextPath: GreyNoise.Timeline.ip_address
-      description: Timeline IP address.
+    - contextPath: GreyNoise.Timeline.metadata.ip
+      description: The IP address the daily timeline was requested for.
       type: string
+    - contextPath: GreyNoise.Timeline.metadata.days
+      description: The number of days of daily timeline data requested.
+      type: number
+    - contextPath: GreyNoise.Timeline.metadata.granularity
+      description: The timeline bucket size. Daily results use 1d.
+      type: string
+    - contextPath: GreyNoise.Timeline.data
+      description: Daily internet scanner activity summaries.
+      type: array
+    - contextPath: GreyNoise.Timeline.data.date
+      description: The date of the daily summary.
+      type: string
+    - contextPath: GreyNoise.Timeline.data.classification
+      description: The classification observed on that day.
+      type: string
+    - contextPath: GreyNoise.Timeline.data.tags
+      description: Tags observed on that day.
+      type: array
+    - contextPath: GreyNoise.Timeline.data.rdns
+      description: Reverse DNS values observed on that day.
+      type: array
+    - contextPath: GreyNoise.Timeline.data.organizations
+      description: Organizations observed on that day.
+      type: array
+    - contextPath: GreyNoise.Timeline.data.asns
+      description: ASNs observed on that day.
+      type: array
+    - contextPath: GreyNoise.Timeline.data.ports
+      description: Ports observed on that day.
+      type: array
+    - contextPath: GreyNoise.Timeline.data.web_paths
+      description: Web paths observed on that day.
+      type: array
+    - contextPath: GreyNoise.Timeline.data.user_agents
+      description: User agents observed on that day.
+      type: array
   dockerimage: demisto/greynoise:1.0.0.14169403
   runonce: false
   script: '-'

@@ -166,6 +166,9 @@ script:
     - contextPath: GreyNoise.IP.metadata.destination_county_codes
       description: The list of countries (codes) targeted by scanning.
       type: array
+    - contextPath: GreyNoise.IP.metadata.destination_country_codes
+      description: The list of country codes targeted by scanning.
+      type: array
     - contextPath: GreyNoise.IP.metadata.domain
       description: The domain associated with the IP address.
       type: string
@@ -226,6 +229,9 @@ script:
     - contextPath: GreyNoise.IP.riot
       description: Whether the IP is a common business service.
       type: boolean
+    - contextPath: GreyNoise.IP.business_service_intelligence.business_service_status
+      description: Set when Business Service Intelligence is not included in the current license.
+      type: string
     - contextPath: GreyNoise.IP.seen
       description: IP is in record with GreyNoise.
       type: boolean

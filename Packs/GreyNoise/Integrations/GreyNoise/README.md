@@ -111,6 +111,7 @@ Runs reputation on IPs.
 | GreyNoise.IP.description | string | Description of the business service. |
 | GreyNoise.IP.explanation | string | Explanation of why the IP is considered a business service. |
 | GreyNoise.IP.riot | boolean | Whether the IP is a common business service. |
+| GreyNoise.IP.business_service_status | string | Set when Business Service Intelligence is not included in the current license. |
 | GreyNoise.IP.last_updated | date | When was the last time the business service information was updated. |
 | GreyNoise.IP.name | string | The name of the business service. |
 | GreyNoise.IP.reference | string | Reference link for the business service. |
@@ -166,7 +167,8 @@ Check whether a given IP address is "Internet background noise", or has been obs
 | --- | --- | --- |
 | GreyNoise.IP.address | string | The IP address of the scanning device IP. |
 | GreyNoise.IP.internet_scanner_intelligence.found | boolean | Whether the IP has been observed scanning the internet. |
-| GreyNoise.IP.business_service_intelligence.found | boolean | Whether the IP is a common business service. |
+| GreyNoise.IP.business_service_intelligence.found | boolean | Whether the IP is a common business service. Null means this data is not included in the current license. |
+| GreyNoise.IP.business_service_intelligence.business_service_status | string | Set when Business Service Intelligence is not included in the current license. |
 | GreyNoise.IP.internet_scanner_intelligence.classification  | string | If the IP has been observed, what is the GreyNoise classification. |
 | GreyNoise.IP.business_service_intelligence.trust_level| string | If the IP is a business service, how trustworthy is the IP. |
 
@@ -519,6 +521,7 @@ Identifies IPs from known benign services and organizations that commonly cause 
 | GreyNoise.IP.name | String | The name of the IP if the riot is "True". |
 | GreyNoise.IP.reference | String | The reference of the IP if riot is "True". |
 | GreyNoise.IP.riot | String | Indicates if the IP is business service. |
+| GreyNoise.IP.business_service_status | String | Set when Business Service Intelligence is not included in the current license. |
 | GreyNoise.IP.trust_level | String | The trust level of the IP if riot is "True". |
 
 #### Example Command
@@ -617,6 +620,7 @@ Identifies IPs that have been observed mass-scanning the internet.
 | GreyNoise.IP.raw_data.web.paths | array | Any HTTP paths the device has been observed crawling the Internet for. |
 | GreyNoise.IP.raw_data.web.useragents | array | Any HTTP user-agents the device has been observed using while crawling the Internet. |
 | GreyNoise.IP.seen | boolean | Whether the IP is in record with GreyNoise. |
+| GreyNoise.IP.business_service_status | string | Set when Business Service Intelligence is not included in the current license. |
 | GreyNoise.IP.spoofable | boolean | Whether the ip is spoofable. |
 | GreyNoise.IP.tags.category | string | The category of the given tag. |
 | GreyNoise.IP.tags.created | date | The date the tag was added to the GreyNoise system. |
@@ -648,56 +652,19 @@ Identifies IPs that have been observed mass-scanning the internet.
 ### greynoise-similarity
 
 ***
-Identify IPs with a similar internet scanning profile.
+Deprecated. The GreyNoise similarity functionality is no longer supported.
 
 #### Base Command
 
 `greynoise-similarity`
 
-#### Input
-
-| **Argument Name** | **Description**                        | **Required** |
-| --- |----------------------------------------| --- |
-| ip | The IP address to find similar IPs for | Required |
-| minimum_score | The similar score to return results above.  Valid from 85 to 100. Default is 90. | Optional |
-| maximum_results | The maximum number of similar results to return.  Default is 50. | Optional |
-
-#### Context Output
-
-| **Path**                           | **Type** | **Description** |
-|------------------------------------| --- | --- |
-| GreyNoise.Similar.ip               | string | The IP address of the scanning device IP. |
-| GreyNoise.Similar.first_seen       | date | The date the device was first observed by GreyNoise. Format is ISO8601. |
-| GreyNoise.Similar.last_seen        | date | The date the device was last observed by GreyNoise. Format is ISO8601. |
-| GreyNoise.Similar.actor            | string | The overt actor the device has been associated with. |
-| GreyNoise.Similar.classification        | string | Whether the device has been categorized as unknown, benign, or malicious. |
-| GreyNoise.Similar.asn           | string | The autonomous system identification number. |
-| GreyNoise.Similar.city          | string | The city the device is geographically located in. |
-| GreyNoise.Similar.country       | string | The full name of the country. |
-| GreyNoise.Similar.country_code  | string | The two-character country code of the country. |
-| GreyNoise.Similar.organization  | string | The organization that owns the network that the IP address belongs to. |
-| GreyNoise.Similar.similar_ips    | array | Details of similar IPs |
-
 #### Command Example
 
-```!greynoise-similarity   ip="1.2.3.4" minimum_score="90" maximum_results="50"```
+```!greynoise-similarity ip="1.1.1.1"```
 
-#### Human Readable Output - Results
+#### Human Readable Output
 
-IP: 59.88.225.2 - Similar Internet Scanners found in GreyNoise
-Total Similar IPs with Score above 90%: 100
-Displaying 50 results below.  To see all results, visit the GreyNoise Visualizer.
-GreyNoise Similar IPs
-
-| IP      | Score | Classification | Actor   | Organization | Last Seen  | Similarity Features   |
-|---------|-------|----------------|---------|--------------|------------|-----------------------|
-| 1.2.3.4 | 100   | malicious      | unknown | GoogleBot    | 2023-04-05 | ports,spoofable_bool  |
-
-``` !greynoise-similarity  ip="114.119.130.178" ```
-
-#### Human Readable Output - No Results
-
-GreyNoise Similarity Lookup returned No Results.
+The GreyNoise similarity functionality is deprecated and no longer supported.
 
 ### greynoise-timeline
 
@@ -714,35 +681,45 @@ Get timeline activity for an IP address.
 | --- | --- | --- |
 | ip | The IP address to get timeline activity for | Required |
 | days | The number of days from today to get activity.  Valid from 1 to 90. Default is 30. | Optional |
-| maximum_results | The maximum number of similar results to return.  Default is 50. | Optional |
+| maximum_results | The maximum number of daily results to display. Default is 50. | Optional |
 
 #### Context Output
 
-| **Path**                                | **Type** | **Description**                           |
-|-----------------------------------------|----------|-------------------------------------------|
-| GreyNoise.Timeline.ip                   | string   | The IP address of the scanning device IP. |
-| GreyNoise.Timeline.metadata.start_time  | date     | The start time of the activity period     |
-| GreyNoise.Timeline.metadata.end_time    | date     | The end time of the activity period       |
-| GreyNoise.Timeline.metadata.limit       | string   | Limit of activity events returned         |
-| GreyNoise.Timeline.metadata.next_cursor | string   | Cursor value to pull next page of results |
-| GreyNoise.Timeline.activity             | array    | Daily activity summaries                  |
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GreyNoise.Timeline.metadata.ip | string | The IP address the daily timeline was requested for. |
+| GreyNoise.Timeline.metadata.days | number | The number of days of daily timeline data requested. |
+| GreyNoise.Timeline.metadata.granularity | string | The timeline bucket size. Daily results use 1d. |
+| GreyNoise.Timeline.data | array | Daily internet scanner activity summaries. |
+| GreyNoise.Timeline.data.date | string | The date of the daily summary. |
+| GreyNoise.Timeline.data.classification | string | The classification observed on that day. |
+| GreyNoise.Timeline.data.tags | array | Tags observed on that day. |
+| GreyNoise.Timeline.data.rdns | array | Reverse DNS values observed on that day. |
+| GreyNoise.Timeline.data.organizations | array | Organizations observed on that day. |
+| GreyNoise.Timeline.data.asns | array | ASNs observed on that day. |
+| GreyNoise.Timeline.data.ports | array | Ports observed on that day. |
+| GreyNoise.Timeline.data.web_paths | array | Web paths observed on that day. |
+| GreyNoise.Timeline.data.user_agents | array | User agents observed on that day. |
 
 #### Command Example
 
-```!greynoise-timeline ip="1.1.2.2" days="30" maximum_results="30"```
+```!greynoise-timeline ip="1.1.1.1" days="30" maximum_results="1"```
 
 #### Human Readable Output - Results
 
-IP: 45.164.214.212 - GreyNoise IP Timeline
-Internet Scanner Timeline Details - Daily Activity Summary
+### IP: 1.1.1.1 - GreyNoise IP Timeline
 
-| Date    | Classification | Tags        | rDNS        | Organization | ASN     | Ports                | Web Paths  | User Agents     |
-|---------|----------------|-------------|-------------|--------------|---------|----------------------|------------|-----------------|
-| 1.2.3.4 | malicious      | BruteForcer | me.acme.lcl | Acme, Inc    | AS12345 | ports,spoofable_bool | /root/home | MozillaFirefox  |
+### Internet Scanner Timeline Details - Daily Activity Summary
+
+| Date | Classification | Tags | rDNS | Organization | ASN | Ports | Web Paths | User Agents |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 2026-11-12 | unknown | Ping Scanner | one.one.one.one | Cloudflare | AS13335 | 53 |  |  |
+
+Displaying 1 of 2 daily results.
 
 #### Human Readable Output - No Results
 
-GreyNoise IP Timeline Returned No Results.
+### GreyNoise IP Timeline Returned No Results
 
 ### cve
 
