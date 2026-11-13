@@ -212,11 +212,11 @@ def get_ip_context_data(responses: list) -> list:
     return ip_context_responses
 
 
-def get_ip_reputation_score(classification: str) -> tuple[int, str]:
+def get_ip_reputation_score(classification: str | None) -> tuple[int, str]:
     """Get DBot score and human-readable of score.
 
-    :type classification: ``str``
-    :param classification: classification of ip provided from GreyNoise.
+    :type classification: ``str | None``
+    :param classification: classification of ip provided from GreyNoise. A missing value is Unknown.
 
     :return: tuple of dbot score and it's readable form.
     :rtype: ``tuple``
