@@ -1,3 +1,30 @@
+# Deprecation Notice
+
+As part of our ongoing commitment to platform performance, reliability, and standardization, the four integrations and commands within the "Core" pack listed below will be officially deprecated in mid-January 2027:
+
+- Indicators detection (Cortex Core - IOC)
+- Investigation & Response (Cortex Core - IR)
+- XQL Query Engine
+- Cortex Platform - Core
+
+## What this means for you
+
+- **Existing custom playbooks:** Automations and playbooks currently using commands from these integrations will continue to function as expected. No existing workflows will abruptly break upon deprecation. We recommend migrating them to the native Cortex built-in commands, which offer higher execution performance and unified platform syntax.
+- **Out-of-the-box Cortex playbooks:** All out-of-the-box playbooks shipped with the platform will be updated by Palo Alto Networks to use built-in commands natively. No action is required on your part for uncustomized, standard playbooks.
+- **Maintenance and support:** Following the deprecation date, these integrations will no longer receive feature updates, enhancements, or bug fixes.
+
+For detailed command-by-command replacement mappings and usage examples, please refer to the [Cortex Built-In Commands Guide](https://cortex-docs.paloaltonetworks.com/cortex-commands-guide).
+
+## Command mapping
+
+The following table maps each command in this integration to its Cortex built-in command. Argument names and output paths can differ between a command and its built-in replacement, so review the built-in command's arguments before migrating. See the [Cortex Built-In Commands Guide](https://cortex-docs.paloaltonetworks.com/cortex-commands-guide) for details.
+
+| Deprecated command | Built-in command | Category |
+|---|---|---|
+| `core-iocs-push` | `pushIOCs` | indicators |
+| `core-iocs-enable` | `enableIOCs` | indicators |
+| `core-iocs-disable` | `disableIOCs` | indicators |
+
 The Cortex Core - IOCs integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
 
 ## Configure Indicators detection
