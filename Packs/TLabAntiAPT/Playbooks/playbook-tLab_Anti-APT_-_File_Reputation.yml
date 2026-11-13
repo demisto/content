@@ -1,0 +1,181 @@
+id: tLab Anti-APT - File Reputation
+version: -1
+name: tLab Anti-APT - File Reputation
+description: 'Looks up what tLab Anti-APT already knows about a file, without submitting anything.
+
+
+  Use this before a detonation sub-playbook: a sample the sandbox has already analyzed needs no second analysis, and the answer comes back in one call instead of minutes.'
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 9d12514a-5a92-5d02-a9ce-3aed4c9d04b9
+    type: start
+    task:
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 9d12514a-5a92-5d02-a9ce-3aed4c9d04b9
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '1'
+  '1':
+    id: '1'
+    taskid: 01720592-d718-56d6-be74-d5a3906b4f6c
+    type: title
+    task:
+      name: tLab Anti-APT - File Reputation
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 01720592-d718-56d6-be74-d5a3906b4f6c
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '2'
+  '2':
+    id: '2'
+    taskid: 9acd7eaf-4f83-5ee9-906f-d3d17cb816f9
+    type: condition
+    task:
+      name: Is there a hash to look up?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+      id: 9acd7eaf-4f83-5ee9-906f-d3d17cb816f9
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.File
+                accessor: SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.File
+                accessor: MD5
+            iscontext: true
+    nexttasks:
+      '#default#':
+      - '4'
+      'yes':
+      - '3'
+  '3':
+    id: '3'
+    taskid: eb487b86-7cf6-50d1-9705-82477244ddfe
+    type: regular
+    task:
+      name: Look up the file reputation
+      description: 'Reads the stored verdict. An unknown file returns no DBot score rather than a benign one: "tLab has no record" is not the same statement as "this is safe", and a Good score would suppress
+        other vendors'' findings.'
+      script: TLabAntiAPTLookup|||file
+      type: regular
+      iscommand: true
+      brand: TLabAntiAPTLookup
+      id: eb487b86-7cf6-50d1-9705-82477244ddfe
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 590\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.File
+          accessor: SHA256
+          filters: []
+          transformers: []
+    nexttasks:
+      '#none#':
+      - '4'
+    continueonerror: true
+  '4':
+    id: '4'
+    taskid: f00ba146-1999-5171-a46d-a47d5ddaca78
+    type: title
+    task:
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: f00ba146-1999-5171-a46d-a47d5ddaca78
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1150,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+      filters: []
+      transformers: []
+  required: false
+  description: The file to look up. Defaults to every file in the incident.
+  playbookInputQuery: null
+outputs:
+- contextPath: TLabAntiAPT.File
+  description: What tLab knows about the file.
+  type: Unknown
+- contextPath: DBotScore
+  description: The DBot score object.
+  type: Unknown
+- contextPath: File
+  description: The file object.
+  type: Unknown
+fromversion: 6.0.0

@@ -1,0 +1,202 @@
+id: tLab Anti-APT - Lookup - Test
+version: -1
+name: tLab Anti-APT - Lookup - Test
+description: 'Smoke test for the tLab Anti-APT Lookup integration.
+
+
+  Deliberately submits nothing. A test that needs a malware sample needs one in the test environment too, and a build that fails for want of a sample teaches nobody anything. This exercises connectivity,
+  authentication and the command surface, which is what breaks in practice.'
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 375522e4-2045-5c4a-be75-25e361a8bc5a
+    type: start
+    task:
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 375522e4-2045-5c4a-be75-25e361a8bc5a
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '1'
+  '1':
+    id: '1'
+    taskid: 2f6e6181-c1d6-57e4-93a3-38e4a34cd96c
+    type: title
+    task:
+      name: tLab Anti-APT - Lookup - Test
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 2f6e6181-c1d6-57e4-93a3-38e4a34cd96c
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '2'
+  '2':
+    id: '2'
+    taskid: b18a6114-1fed-5e22-af2d-da6a0496ce93
+    type: regular
+    task:
+      name: Search recent reports
+      description: 'One page of one report. Also proves the sort key is accepted: the server silently reorders rather than rejecting an unknown one, so the client validates it before the request leaves.'
+      script: TLabAntiAPTLookup|||tlab-search-reports
+      type: regular
+      iscommand: true
+      brand: TLabAntiAPTLookup
+      id: b18a6114-1fed-5e22-af2d-da6a0496ce93
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      limit:
+        simple: '1'
+      sort:
+        simple: sampleReportId,desc
+    nexttasks:
+      '#none#':
+      - '3'
+  '3':
+    id: '3'
+    taskid: 05123d6f-b720-5513-9c4c-bad824b73b39
+    type: regular
+    task:
+      name: List indicator codes
+      description: Reads the indicator dictionary, which needs no analysis history to exist.
+      script: TLabAntiAPTLookup|||tlab-list-indicator-codes
+      type: regular
+      iscommand: true
+      brand: TLabAntiAPTLookup
+      id: 05123d6f-b720-5513-9c4c-bad824b73b39
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 590\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments: {}
+    nexttasks:
+      '#none#':
+      - '4'
+  '4':
+    id: '4'
+    taskid: c9dcf8f5-ede6-5f35-b5d9-c375b5ece935
+    type: condition
+    task:
+      name: Did the indicator dictionary come back?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+      id: c9dcf8f5-ede6-5f35-b5d9-c375b5ece935
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: TLabAntiAPT.IndicatorCode
+                accessor: Code
+            iscontext: true
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '5'
+  '5':
+    id: '5'
+    taskid: fa30862d-0192-5af3-8b7d-abeb4c6a8099
+    type: title
+    task:
+      name: Passed
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: fa30862d-0192-5af3-8b7d-abeb4c6a8099
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 950\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: a90252a2-3165-5851-aec9-d8b21e99a08e
+    type: title
+    task:
+      name: Failed - the indicator dictionary was empty
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: a90252a2-3165-5851-aec9-d8b21e99a08e
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1130\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1510,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 6.0.0

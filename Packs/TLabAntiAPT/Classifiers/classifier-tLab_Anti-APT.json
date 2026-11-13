@@ -1,0 +1,26 @@
+{
+    "description": "Routes tLab Anti-APT sample reports to an incident type by verdict.",
+    "feed": false,
+    "id": "tLab Anti-APT - Classifier",
+    "name": "tLab Anti-APT - Classifier",
+    "type": "classification",
+    "defaultIncidentType": "tLab Anti-APT Verdict",
+    "keyTypeMap": {
+        "MALWARE": "tLab Anti-APT Verdict",
+        "SUSPICIOUS": "tLab Anti-APT Verdict",
+        "OK": "tLab Anti-APT Verdict",
+        "CLEAN": "tLab Anti-APT Verdict",
+        "WHITELIST": "tLab Anti-APT Verdict",
+        "UNKNOWN": "tLab Anti-APT Verdict"
+    },
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "tlab_verdict",
+            "transformers": []
+        }
+    },
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

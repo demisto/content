@@ -1,0 +1,31 @@
+{
+    "id": "incident_tlabdedupekey",
+    "version": -1,
+    "modified": "2026-09-30T00:00:00Z",
+    "name": "tLab Dedupe Key",
+    "ownerOnly": false,
+    "description": "tlab-apt:<installation>:<sample report id>. Stable across restarts and re-sends, so it is the key a pre-process rule should deduplicate on.",
+    "cliName": "tlabdedupekey",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "tLab Anti-APT Verdict"
+    ],
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

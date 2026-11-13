@@ -1,0 +1,545 @@
+name: TLabAntiAPTSandbox
+display: tLab Anti-APT Sandbox
+category: Forensics & Malware Analysis
+commonfields:
+  id: TLabAntiAPTSandbox
+  version: -1
+description: Detonate files and URLs in the tLab Anti-APT malware sandbox and retrieve verdicts, reports and artifacts.
+fromversion: 6.0.0
+configuration:
+- name: url
+  display: Server URL
+  additionalinfo: Base URL of the tLab Anti-APT sandbox API (tlab-server). Through the tLab web server use https://<tlab-host>/api; for a direct connection use http://<tlab-host>:8080.
+  defaultvalue: https://tlab.example.com/api
+  type: 0
+  required: true
+- name: auth_url
+  display: Auth server URL (tlab-auth)
+  additionalinfo: Used by the tLab account mode. Where the integration logs in to tlab-auth. Leave empty to use https://<Server URL host>:8002/api, the omni-center portal, which forwards /api to tlab-auth over TLS; if its certificate is self-signed, enable Trust any certificate. Not https://<host>/api, which is the sandbox API itself.
+  type: 0
+  required: false
+- name: auth_mode
+  display: Authentication mode
+  additionalinfo: 'tLab account (tlab-auth) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway (balancer) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when Cortex XSOAR runs on the tlab-server host itself.'
+  defaultvalue: tLab account (tlab-auth)
+  type: 15
+  required: true
+  options:
+  - tLab account (tlab-auth)
+  - Source key (Bearer)
+  - Username and password
+  - Internal token (localhost only)
+- name: credentials
+  display: Credentials
+  displaypassword: Password / source key / internal token
+  additionalinfo: 'Login and password of a tLab account (tLab account mode). Retrieving artifacts needs the admin or developer role. Turn off password expiry for this account: tlab-auth rejects an expired password and every command starts failing. Other modes use only the password field: source key or internal token.'
+  type: 9
+  required: true
+- name: proxy
+  display: Use system proxy settings
+  additionalinfo: Whether to use the Cortex XSOAR server's system proxy settings.
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  additionalinfo: Whether to skip TLS certificate verification. Needed when the tLab certificate is self-signed.
+  type: 8
+  required: false
+- name: client_name
+  display: Client name
+  additionalinfo: Sent as the X-Client header and stored on every submission as the analysis property "client".
+  defaultvalue: xsoar
+  type: 0
+  required: false
+- name: source_uid
+  display: Source UID
+  additionalinfo: Identifies this Cortex XSOAR instance on the tLab side, at most 45 characters. Defaults to the first 45 characters of the Cortex XSOAR license ID (Settings > About). Set it to tell apart several instances of this integration on one Cortex XSOAR instance.
+  type: 0
+  required: false
+- name: analysis_types
+  display: Analysis types
+  additionalinfo: AV_ANALYSIS is always added by the server. DYN_ANALYSIS is removed on a LITE license or with the mailer preset - check RequestedButNotRun in the command output.
+  defaultvalue: STAT_ANALYSIS,DYN_ANALYSIS
+  type: 16
+  required: false
+  options:
+  - STAT_ANALYSIS
+  - DYN_ANALYSIS
+  - CODE_ANALYSIS
+  - AV_ANALYSIS
+- name: analysis_priority
+  display: Analysis priority
+  additionalinfo: Queue priority of submissions from this instance. A command's analysis_priority argument overrides it.
+  defaultvalue: LOW
+  type: 15
+  required: false
+  options: [LOWEST, LOW, MEDIUM, HIGH, HIGHEST]
+- name: env_preset
+  display: Environment preset
+  additionalinfo: Leave empty to let the server pick an environment by file type. Maximum 50 characters.
+  type: 0
+  required: false
+- name: research_time
+  display: Dynamic analysis time (seconds)
+  additionalinfo: Maximum 3600 seconds, enforced by the server.
+  defaultvalue: '120'
+  type: 0
+  required: false
+- name: enable_network
+  display: Enable network during dynamic analysis
+  additionalinfo: Whether the sample may reach the network during dynamic analysis. Off by default; a command's enable_network argument overrides it. The pack's detonation playbooks turn it on.
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: early_verdict
+  display: Accept an early verdict
+  additionalinfo: Finalize once static and antivirus analysis complete, without waiting for dynamic analysis.
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: score_threshold_suspicious
+  display: Suspicious score threshold
+  additionalinfo: Mirrors the product default. Scores from this value up to the malicious threshold are Suspicious.
+  defaultvalue: '50'
+  type: 0
+  required: false
+- name: score_threshold_malicious
+  display: Malicious score threshold
+  additionalinfo: Mirrors the product default (analysisService.minMaliciousScore).
+  defaultvalue: '85'
+  type: 0
+  required: false
+- name: reliability
+  display: Source reliability
+  additionalinfo: Reliability attached to every DBotScore this integration produces.
+  defaultvalue: B - Usually reliable
+  type: 15
+  required: false
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+- name: max_artifact_size_mb
+  display: Maximum artifact size (MB)
+  additionalinfo: Downloads larger than this are aborted rather than buffered.
+  defaultvalue: '50'
+  type: 0
+  required: false
+- name: pdf_timeout
+  display: PDF render timeout (seconds)
+  additionalinfo: The PDF endpoint renders synchronously and has no status endpoint, so a large report can take a while.
+  defaultvalue: '180'
+  type: 0
+  required: false
+- name: report_url_base
+  display: tLab web UI base URL
+  additionalinfo: Used only to build human-readable report links in command output.
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.15.14069087
+  isfetch: false
+  longRunning: false
+  runonce: false
+  commands:
+  - name: tlab-submit-file
+    description: Submit a war room file to tLab Anti-APT and return immediately with an access code.
+    arguments:
+    - name: entry_id
+      description: War room entry ID of the file to submit.
+      required: true
+    - name: file_name
+      description: Override the file name sent to the sandbox.
+    - name: additional_files_entry_ids
+      description: Comma-separated entry IDs of supporting files submitted alongside the main one.
+      isArray: true
+    - name: analysis_types
+      description: Override the configured analysis types.
+      isArray: true
+      auto: PREDEFINED
+      predefined: [STAT_ANALYSIS, DYN_ANALYSIS, CODE_ANALYSIS, AV_ANALYSIS]
+    - name: analysis_priority
+      description: Queue priority.
+      auto: PREDEFINED
+      predefined: [LOWEST, LOW, MEDIUM, HIGH, HIGHEST]
+    - name: research_time
+      description: Dynamic analysis time in seconds. Maximum 3600.
+    - name: env_preset
+      description: Environment preset name. Maximum 50 characters.
+    - name: enable_network
+      description: Whether to allow network access during dynamic analysis.
+      auto: PREDEFINED
+      predefined: ['true', 'false']
+    - name: archive_password
+      description: Password for a protected archive.
+    - name: extract_archive
+      description: Whether to extract archives before analysis.
+      auto: PREDEFINED
+      predefined: ['true', 'false']
+    - name: ignore_whitelist
+      description: Whether to analyze the sample even if it is whitelisted.
+      auto: PREDEFINED
+      predefined: ['true', 'false']
+    - name: tags
+      description: Comma-separated tags to attach to the analysis. Each tag must be 2-150 characters.
+      isArray: true
+    - name: properties
+      description: JSON object of extra provenance properties stored with the analysis.
+    - name: main_filename
+      description: Name of the main file inside an archive submission.
+    - name: command_line_args
+      description: Command line passed to the sample. Maximum 200 characters.
+    outputs:
+    - contextPath: TLabAntiAPT.Submission.AccessCode
+      description: Access code used to poll this submission. Polling needs no credentials.
+      type: String
+    - contextPath: TLabAntiAPT.Submission.AnalysisRequestId
+      description: Numeric analysis request ID.
+      type: Number
+    - contextPath: TLabAntiAPT.Submission.AnalysisRequestStatus
+      description: One of UNKNOWN, WAITING_FOR_PROCESSING, PROCESSING, ACCEPTED, REJECTED.
+      type: String
+    - contextPath: TLabAntiAPT.Submission.RejectionCode
+      description: Raw rejection code when the submission was refused.
+      type: String
+    - contextPath: TLabAntiAPT.Submission.RejectionReason
+      description: Readable explanation of the rejection code.
+      type: String
+    - contextPath: TLabAntiAPT.Submission.Whitelisted
+      description: Whether the sample is whitelisted in tLab Anti-APT.
+      type: Boolean
+  - name: tlab-submit-url
+    description: Submit a URL to tLab Anti-APT and return immediately with an access code.
+    arguments:
+    - name: url
+      description: URL to analyze.
+      required: true
+    - name: analysis_types
+      description: Override the configured analysis types.
+      isArray: true
+      auto: PREDEFINED
+      predefined: [STAT_ANALYSIS, DYN_ANALYSIS, CODE_ANALYSIS, AV_ANALYSIS]
+    - name: research_time
+      description: Dynamic analysis time in seconds. Maximum 3600.
+    - name: env_preset
+      description: Environment preset name.
+    - name: enable_network
+      description: Whether to allow network access during dynamic analysis.
+      auto: PREDEFINED
+      predefined: ['true', 'false']
+    - name: tags
+      description: Comma-separated tags to attach to the analysis.
+      isArray: true
+    - name: properties
+      description: JSON object of extra provenance properties.
+    outputs:
+    - contextPath: TLabAntiAPT.Submission.AccessCode
+      description: Access code used to poll this submission.
+      type: String
+    - contextPath: TLabAntiAPT.Submission.AnalysisRequestStatus
+      description: Request status returned by the server.
+      type: String
+  - name: tlab-get-submission-status
+    description: Poll a submission until tLab Anti-APT reaches a terminal verdict.
+    polling: true
+    arguments:
+    - name: access_code
+      description: Access code returned by a submit command.
+      required: true
+    - name: early_verdict
+      description: Whether to finalize once static and antivirus analysis complete, without waiting for dynamic analysis.
+      auto: PREDEFINED
+      predefined: ['true', 'false']
+    - name: extended
+      description: Whether to also fetch the full report so sub-report IDs are available. The public status endpoint does not carry them.
+      auto: PREDEFINED
+      predefined: ['true', 'false']
+    - name: interval_in_seconds
+      description: Seconds between polls.
+      defaultValue: '30'
+    - name: timeout_in_seconds
+      description: Total seconds to keep polling.
+      defaultValue: '1800'
+    - name: polling
+      description: Whether the command is being called by the polling mechanism. For internal use.
+      hidden: true
+      auto: PREDEFINED
+      predefined: ['true', 'false']
+    outputs: &analysis_outputs
+    - contextPath: TLabAntiAPT.Analysis.SampleReportId
+      description: Report ID in tLab Anti-APT.
+      type: Number
+    - contextPath: TLabAntiAPT.Analysis.Verdict
+      description: Canonical verdict - MALWARE, SUSPICIOUS, OK, CLEAN, WHITELIST or UNKNOWN.
+      type: String
+    - contextPath: TLabAntiAPT.Analysis.ScoreLevel
+      description: Raw ScoreLevel value as returned by the server, where MALICIOUS means MALWARE.
+      type: String
+    - contextPath: TLabAntiAPT.Analysis.FileVerdict
+      description: Verdict set manually in tLab for this file. Absent while nobody has set it; not the analysis result, which is in Verdict.
+      type: String
+    - contextPath: TLabAntiAPT.Analysis.Score
+      description: Sample score. Absent when the sandbox has not computed one.
+      type: Number
+    - contextPath: TLabAntiAPT.Analysis.Completeness
+      description: EMPTY, PARTIALLY_COMPLETE or COMPLETE.
+      type: String
+    - contextPath: TLabAntiAPT.Analysis.DBotScore
+      description: DBot score derived from the verdict.
+      type: Number
+    - contextPath: TLabAntiAPT.Analysis.RequestedButNotRun
+      description: Analysis types that were requested but not executed, for example when a LITE license strips dynamic analysis.
+      type: Unknown
+    - contextPath: TLabAntiAPT.Analysis.DynReportId
+      description: Dynamic analysis report ID. Available only with extended=true.
+      type: Number
+    - contextPath: TLabAntiAPT.Analysis.StatReportId
+      description: Static analysis report ID. Available only with extended=true.
+      type: Number
+    - contextPath: TLabAntiAPT.Analysis.File.HashSha256
+      description: SHA256 of the analyzed sample.
+      type: String
+    - contextPath: TLabAntiAPT.Analysis.MalwareClassifier.PrimaryType
+      description: Malware family predicted by the classifier.
+      type: String
+    - contextPath: TLabAntiAPT.Analysis.ReportUrl
+      description: Link to the full report in the tLab web UI.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: Vendor that decided the file is malicious.
+      type: String
+  - name: tlab-detonate-file
+    description: Submit a war room file and wait for the tLab Anti-APT verdict.
+    polling: true
+    arguments:
+    - name: entry_id
+      description: War room entry ID of the file to detonate.
+      required: true
+    - name: file_name
+      description: Override the file name sent to the sandbox.
+    - name: research_time
+      description: Dynamic analysis time in seconds. Maximum 3600.
+    - name: env_preset
+      description: Environment preset name.
+    - name: enable_network
+      description: Whether to allow network access during dynamic analysis.
+      auto: PREDEFINED
+      predefined: ['true', 'false']
+    - name: archive_password
+      description: Password for a protected archive.
+    - name: early_verdict
+      description: Whether to finalize once static and antivirus analysis complete, without waiting for dynamic analysis.
+      auto: PREDEFINED
+      predefined: ['true', 'false']
+    - name: extended
+      description: Whether to also fetch the full report so sub-report IDs are available.
+      auto: PREDEFINED
+      predefined: ['true', 'false']
+    - name: tags
+      description: Comma-separated tags to attach to the analysis.
+      isArray: true
+    - name: interval_in_seconds
+      description: Seconds between polls.
+      defaultValue: '30'
+    - name: timeout_in_seconds
+      description: Total seconds to keep polling.
+      defaultValue: '1800'
+    - name: access_code
+      description: Internal argument carried across polling runs.
+      hidden: true
+    - name: polling
+      description: Whether the command is being called by the polling mechanism. For internal use.
+      hidden: true
+      auto: PREDEFINED
+      predefined: ['true', 'false']
+    outputs: *analysis_outputs
+  - name: tlab-detonate-url
+    description: Submit a URL and wait for the tLab Anti-APT verdict.
+    polling: true
+    arguments:
+    - name: url
+      description: URL to detonate.
+      required: true
+    - name: research_time
+      description: Dynamic analysis time in seconds. Maximum 3600.
+    - name: env_preset
+      description: Environment preset name.
+    - name: enable_network
+      description: Whether to allow network access during dynamic analysis.
+      auto: PREDEFINED
+      predefined: ['true', 'false']
+    - name: early_verdict
+      description: Whether to finalize once static and antivirus analysis complete, without waiting for dynamic analysis.
+      auto: PREDEFINED
+      predefined: ['true', 'false']
+    - name: extended
+      description: Whether to also fetch the full report so sub-report IDs are available.
+      auto: PREDEFINED
+      predefined: ['true', 'false']
+    - name: interval_in_seconds
+      description: Seconds between polls.
+      defaultValue: '30'
+    - name: timeout_in_seconds
+      description: Total seconds to keep polling.
+      defaultValue: '1800'
+    - name: access_code
+      description: Internal argument carried across polling runs.
+      hidden: true
+    - name: polling
+      description: Whether the command is being called by the polling mechanism. For internal use.
+      hidden: true
+      auto: PREDEFINED
+      predefined: ['true', 'false']
+    outputs: *analysis_outputs
+  - name: tlab-get-report
+    description: Retrieve a full sample report by its ID.
+    arguments:
+    - name: sample_report_id
+      description: Report ID in tLab Anti-APT.
+      required: true
+    outputs:
+    - contextPath: TLabAntiAPT.Report.SampleReportId
+      description: Report ID in tLab Anti-APT.
+      type: Number
+    - contextPath: TLabAntiAPT.Report.Verdict
+      description: Canonical verdict.
+      type: String
+    - contextPath: TLabAntiAPT.Report.Score
+      description: Sample score.
+      type: Number
+    - contextPath: TLabAntiAPT.Report.DynReportId
+      description: Dynamic analysis report ID.
+      type: Number
+    - contextPath: TLabAntiAPT.Report.StatReportId
+      description: Static analysis report ID.
+      type: Number
+  - name: tlab-get-threat-indicators
+    description: Retrieve aggregated threat indicators for a report. This is the richest source of observables tLab Anti-APT produces.
+    arguments:
+    - name: sample_report_id
+      description: Report ID in tLab Anti-APT.
+      required: true
+    - name: level
+      description: Keep only indicators at these threat levels.
+      isArray: true
+      auto: PREDEFINED
+      predefined: [MALICIOUS, SUSPICIOUS, INFO]
+    - name: source
+      description: Keep only indicators from these analysis sources.
+      isArray: true
+      auto: PREDEFINED
+      predefined: [BEHAVIOR, SIGMA, DEEP_SLICER, ANOMALY_INSPECTOR, STATIC, YARA, AV, OTHER]
+    - name: limit
+      description: Maximum number of indicators to return.
+      defaultValue: '100'
+    outputs:
+    - contextPath: TLabAntiAPT.ThreatIndicator.SampleReportId
+      description: Report the indicators belong to.
+      type: Number
+    - contextPath: TLabAntiAPT.ThreatIndicator.Indicators
+      description: Threat indicators with their observed objects.
+      type: Unknown
+    - contextPath: TLabAntiAPT.ThreatIndicator.Totals
+      description: Indicator counts per threat level.
+      type: Unknown
+  - name: tlab-get-attack-matrix
+    description: Retrieve the MITRE ATT&CK techniques mapped for a report.
+    arguments:
+    - name: sample_report_id
+      description: Report ID in tLab Anti-APT.
+      required: true
+    outputs:
+    - contextPath: TLabAntiAPT.AttackMatrix.SampleReportId
+      description: Report the matrix belongs to.
+      type: Number
+    - contextPath: TLabAntiAPT.AttackMatrix.Techniques
+      description: Mapped ATT&CK techniques.
+      type: Unknown
+    - contextPath: TLabAntiAPT.AttackMatrix.CatalogVersion
+      description: ATT&CK catalog version used for the mapping.
+      type: String
+  - name: tlab-get-pcap
+    description: Retrieve the network capture of a dynamic analysis, either as a PCAP file or as the analyzer's JSON report.
+    arguments:
+    - name: dyn_report_id
+      description: Dynamic analysis report ID.
+      required: true
+    - name: format
+      description: pcap returns the capture file; json returns the analyzer report.
+      auto: PREDEFINED
+      predefined: [pcap, json]
+      defaultValue: pcap
+    outputs:
+    - contextPath: TLabAntiAPT.PcapReport.DynReportId
+      description: Dynamic report the capture belongs to.
+      type: Number
+    - contextPath: InfoFile.Name
+      description: Name of the returned file.
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: War room entry ID of the returned file.
+      type: String
+  - name: tlab-get-report-pdf
+    description: Render and download the PDF report for a sample.
+    arguments:
+    - name: sample_report_id
+      description: Report ID in tLab Anti-APT.
+      required: true
+    - name: timeout
+      description: Seconds to wait for the synchronous render.
+      defaultValue: '180'
+    outputs:
+    - contextPath: InfoFile.Name
+      description: Name of the returned PDF.
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: War room entry ID of the returned PDF.
+      type: String
+  - name: tlab-list-env-presets
+    description: List the dynamic analysis environment presets available on the server.
+    arguments:
+    - name: scope
+      description: Which preset scope to list.
+      auto: PREDEFINED
+      predefined: [global, user]
+      defaultValue: global
+    outputs:
+    - contextPath: TLabAntiAPT.EnvPreset.Name
+      description: Preset name accepted by the env_preset argument.
+      type: String
+  - name: tlab-list-sources
+    description: List submission sources registered on the server, with their IDs.
+    outputs:
+    - contextPath: TLabAntiAPT.Source.SourceId
+      description: Numeric source ID, usable in report filters.
+      type: Number
+    - contextPath: TLabAntiAPT.Source.Type
+      description: Source type display code, for example "Cortex XSOAR".
+      type: String
+tests:
+- tLab Anti-APT - Sandbox - Test

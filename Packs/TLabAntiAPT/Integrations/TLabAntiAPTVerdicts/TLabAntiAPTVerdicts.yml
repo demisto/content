@@ -1,0 +1,196 @@
+name: TLabAntiAPTVerdicts
+display: tLab Anti-APT Verdicts
+category: Forensics & Malware Analysis
+commonfields:
+  id: TLabAntiAPTVerdicts
+  version: -1
+description: Create Cortex XSOAR incidents from finished tLab Anti-APT sandbox analyses.
+fromversion: 6.0.0
+defaultmapperin: tLab Anti-APT - Incoming Mapper
+defaultclassifier: tLab Anti-APT - Classifier
+configuration:
+- name: url
+  display: Server URL
+  additionalinfo: Base URL of the tLab Anti-APT sandbox API (tlab-server). Through the tLab web server use https://<tlab-host>/api; for a direct connection use http://<tlab-host>:8080.
+  defaultvalue: https://tlab.example.com/api
+  type: 0
+  required: true
+- name: auth_url
+  display: Auth server URL (tlab-auth)
+  additionalinfo: Used by the tLab account mode. Where the integration logs in to tlab-auth. Leave empty to use https://<Server URL host>:8002/api, the omni-center portal, which forwards /api to tlab-auth over TLS; if its certificate is self-signed, enable Trust any certificate. Not https://<host>/api, which is the sandbox API itself.
+  type: 0
+  required: false
+- name: auth_mode
+  display: Authentication mode
+  additionalinfo: 'tLab account (tlab-auth) is recommended: the integration logs in to tlab-auth like the omni-center portal and sends the token as Bearer. Source key needs the source-key gateway (balancer) and covers submissions only. Username and password is the legacy tlab-server sign-in. Internal token works only when Cortex XSOAR runs on the tlab-server host itself.'
+  defaultvalue: tLab account (tlab-auth)
+  type: 15
+  required: true
+  options:
+  - tLab account (tlab-auth)
+  - Source key (Bearer)
+  - Username and password
+  - Internal token (localhost only)
+- name: credentials
+  display: Credentials
+  displaypassword: Password / source key / internal token
+  additionalinfo: 'Login and password of a tLab account (tLab account mode). This integration only reads. See the detailed instructions for the role the account needs. Turn off password expiry for this account: tlab-auth rejects an expired password and every command starts failing.'
+  type: 9
+  required: true
+- name: proxy
+  display: Use system proxy settings
+  additionalinfo: Whether to use the Cortex XSOAR server's system proxy settings.
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  additionalinfo: Whether to skip TLS certificate verification. Needed when the tLab certificate is self-signed.
+  type: 8
+  required: false
+- name: isFetch
+  display: Fetch incidents
+  additionalinfo: 'Do not enable this if the tLab Cortex XSOAR connector is running in PUSH mode against the same tenant: both halves create the same incidents, and you will get two of everything.'
+  type: 8
+  required: false
+- name: incidentType
+  display: Incident type
+  additionalinfo: Incident type for fetched incidents when the classifier does not set one. The pack's classifier sets tLab Anti-APT Verdict.
+  type: 13
+  required: false
+- name: incidentFetchInterval
+  display: Incidents Fetch Interval
+  additionalinfo: How often, in minutes, new verdicts are fetched.
+  defaultvalue: '5'
+  type: 19
+  required: false
+- name: installation_id
+  display: Installation ID
+  additionalinfo: Identifies this tLab installation inside every deduplication key. Required, and it must match INSTALLATION_UUID in the tLab Cortex XSOAR connector if that connector also runs against this tenant, otherwise the two halves will not recognize each other's incidents as duplicates.
+  type: 0
+  required: true
+- name: client_name
+  display: Client name
+  additionalinfo: Sent as the X-Client header.
+  defaultvalue: xsoar
+  type: 0
+  required: false
+- name: verdicts
+  display: Verdicts to fetch
+  additionalinfo: Only analyses ending in one of these verdicts become incidents.
+  defaultvalue: MALWARE,SUSPICIOUS
+  type: 16
+  required: false
+  options: [MALWARE, SUSPICIOUS, OK, CLEAN, WHITELIST, UNKNOWN]
+- name: max_fetch
+  display: Maximum incidents per fetch
+  additionalinfo: Upper bound on sample reports processed per run. With enrichment on, each report costs one extra API call.
+  defaultvalue: '50'
+  type: 0
+  required: false
+- name: first_report_id
+  display: First sample report id
+  additionalinfo: Lowest sample report id to fetch. Takes effect on the next fetch, also when fetching has already started - raise it to skip a backfill. Leave empty to start from the beginning of history, which on a long-running installation means a very large backfill.
+  type: 0
+  required: false
+- name: maturation_lookback_hours
+  display: Late completion lookback (hours)
+  additionalinfo: 'The sandbox finishes analyses out of id order, so a report can complete after a higher-numbered one already did. Each run also re-scans reports updated within this window. Set to 0 to disable, at the cost of losing late completions permanently.'
+  defaultvalue: '24'
+  type: 0
+  required: false
+- name: enrich_incidents
+  display: Enrich incidents
+  additionalinfo: Adds threat indicators, MITRE ATT&CK techniques and the antivirus flag. Costs one extra API call per report. With this off, those three fields are always empty.
+  defaultvalue: 'true'
+  type: 8
+  required: false
+- name: root_reports_only
+  display: Root reports only
+  additionalinfo: On by default. Dropped and embedded files get their own sample reports, so turning this off turns one archive into a dozen incidents for a single delivery.
+  defaultvalue: 'true'
+  type: 8
+  required: false
+- name: include_partial
+  display: Include partially complete analyses
+  additionalinfo: Off by default. A partial verdict can still change, and an incident whose severity drops after the analyst triaged it is worse than a late one.
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: incident_name_template
+  display: Incident name template
+  additionalinfo: 'Placeholders: {verdict}, {filename}, {sha256}, {score}, {report_id}, {source_type}. Must match INCIDENT_NAME_TEMPLATE in the tLab Cortex XSOAR connector if both halves run against this tenant.'
+  defaultvalue: 'tLab Anti-APT {verdict}: {filename}'
+  type: 0
+  required: false
+- name: severity_map
+  display: Severity map
+  additionalinfo: 'Comma-separated VERDICT:severity pairs. Valid severities are 0, 0.5, 1, 2, 3 and 4 (Unknown, Informational, Low, Medium, High, Critical). Must match SEVERITY_MAP in the tLab Cortex XSOAR connector if both halves run against this tenant.'
+  defaultvalue: MALWARE:3,SUSPICIOUS:2,OK:1,CLEAN:1,WHITELIST:0.5,UNKNOWN:1
+  type: 0
+  required: false
+- name: severity_critical_score
+  display: Critical score threshold
+  additionalinfo: A MALWARE verdict at or above this score is raised to Critical. Set to 0 to disable.
+  defaultvalue: '0'
+  type: 0
+  required: false
+- name: score_threshold_suspicious
+  display: Suspicious score threshold
+  additionalinfo: Scores from this value up to the malicious threshold are Suspicious. Fractional values are allowed. Default is 50, the product default.
+  defaultvalue: '50'
+  type: 0
+  required: false
+- name: score_threshold_malicious
+  display: Malicious score threshold
+  additionalinfo: Scores at or above this value are Malicious. Fractional values are allowed. Default is 85, the product default.
+  defaultvalue: '85'
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.15.14069087
+  isfetch: true
+  feed: false
+  longRunning: false
+  runonce: false
+  commands:
+  - name: tlab-get-verdicts
+    description: Preview the incidents the next fetch would create, without creating them and without moving the fetch cursor. Use it to check the verdict filter and the name template before enabling fetch.
+    arguments:
+    - name: limit
+      description: Maximum number of verdicts to return.
+      defaultValue: '10'
+      required: false
+    - name: from_report_id
+      description: Preview from this sample report id instead of the current cursor.
+      required: false
+    outputs:
+    - contextPath: TLabAntiAPT.Verdict.tlab_dedupe_key
+      description: Deduplication key, stable across restarts and re-sends.
+      type: String
+    - contextPath: TLabAntiAPT.Verdict.tlab_sample_report_id
+      description: Sample report identifier in tLab Anti-APT.
+      type: Number
+    - contextPath: TLabAntiAPT.Verdict.tlab_verdict
+      description: Canonical verdict.
+      type: String
+    - contextPath: TLabAntiAPT.Verdict.tlab_score
+      description: Sandbox score from 0 to 100.
+      type: Number
+    - contextPath: TLabAntiAPT.Verdict.tlab_file_sha256
+      description: SHA256 of the analyzed sample.
+      type: String
+    - contextPath: TLabAntiAPT.Verdict.tlab_report_url
+      description: Link to the full report.
+      type: String
+  - name: tlab-verdicts-reset-cursor
+    description: Reset the fetch cursor. Without an argument the next fetch starts from the configured first sample report id. Incidents already created are not removed.
+    arguments:
+    - name: from_report_id
+      description: Set the cursor to this sample report id instead of resetting it entirely.
+      required: false
+    outputs: []
+tests:
+- tLab Anti-APT - Verdicts - Test

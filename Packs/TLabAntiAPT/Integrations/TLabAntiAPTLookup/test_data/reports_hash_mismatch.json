@@ -1,0 +1,18 @@
+{
+  "totalElements": 1,
+  "last": true,
+  "content": [
+    {
+      "sampleReportId": 999,
+      "sampleReportCompleteness": "COMPLETE",
+      "sampleScoreExists": true,
+      "sampleScore": 95,
+      "verdict": "MALICIOUS",
+      "uploadedFilename": "archive.zip",
+      "file": {
+        "hashSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "fileVerdict": "MALWARE"
+      }
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+id: tLab Anti-APT - Verdicts - Test
+version: -1
+name: tLab Anti-APT - Verdicts - Test
+description: 'Smoke test for the tLab Anti-APT Verdicts integration.
+
+
+  Deliberately submits nothing. A test that needs a malware sample needs one in the test environment too, and a build that fails for want of a sample teaches nobody anything. This exercises connectivity,
+  authentication and the command surface, which is what breaks in practice.
+
+
+  Uses the preview command rather than a fetch, so it creates no incidents and does not move the fetch cursor.'
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: f61a45b3-7231-585b-9cf5-68c107fe77b3
+    type: start
+    task:
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+      id: f61a45b3-7231-585b-9cf5-68c107fe77b3
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '1'
+  '1':
+    id: '1'
+    taskid: 8836dbca-d464-5a0d-a0c6-ceb9861c6c97
+    type: title
+    task:
+      name: tLab Anti-APT - Verdicts - Test
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: 8836dbca-d464-5a0d-a0c6-ceb9861c6c97
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - '2'
+  '2':
+    id: '2'
+    taskid: 0cb9b67d-9b77-5b47-8cf9-5d86b23e211e
+    type: regular
+    task:
+      name: Preview verdicts
+      description: Exercises the cursor, the verdict filter and the incident builder without creating anything. An empty result is legitimate on a quiet installation.
+      script: TLabAntiAPTVerdicts|||tlab-get-verdicts
+      type: regular
+      iscommand: true
+      brand: TLabAntiAPTVerdicts
+      id: 0cb9b67d-9b77-5b47-8cf9-5d86b23e211e
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      limit:
+        simple: '5'
+    nexttasks:
+      '#none#':
+      - '3'
+  '3':
+    id: '3'
+    taskid: b1f0ef03-77ec-5a7e-9345-6cf20e9f777f
+    type: title
+    task:
+      name: Passed
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+      id: b1f0ef03-77ec-5a7e-9345-6cf20e9f777f
+      version: -1
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 590\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 970,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 6.0.0

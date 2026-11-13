@@ -1,0 +1,31 @@
+{
+    "id": "incident_tlabreporturl",
+    "version": -1,
+    "modified": "2026-09-30T00:00:00Z",
+    "name": "tLab Report URL",
+    "ownerOnly": false,
+    "description": "Link to the full report in the tLab Anti-APT web interface.",
+    "cliName": "tlabreporturl",
+    "type": "url",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "tLab Anti-APT Verdict"
+    ],
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,33 @@
+{
+  "sampleReportId": 412839,
+  "totals": {"MALICIOUS": 3, "SUSPICIOUS": 1, "INFO": 1},
+  "sources": [{"source": "BEHAVIOR", "status": "OK"}],
+  "indicators": [
+    {"id": 1, "source": "BEHAVIOR", "analysisType": "DYN_ANALYSIS", "key": "inet", "level": "MALICIOUS",
+     "title": "Connects to a known bad host", "count": 5, "objectsTotal": 6,
+     "objects": [
+       {"kind": "VALUE", "name": "evil.example.com"},
+       {"kind": "VALUE", "name": "203.0.113.5"},
+       {"kind": "VALUE", "name": "192.168.56.101"},
+       {"kind": "VALUE", "name": "https://evil.example.com/gate.php"},
+       {"kind": "PROCESS", "name": "svchost.exe"},
+       {"kind": "FILE", "name": "C:\\Users\\admin\\AppData\\payload.dll"}
+     ],
+     "attack": ["T1071", "not-a-technique"]},
+    {"id": 2, "source": "STATIC", "analysisType": "STAT_ANALYSIS", "key": "packer", "level": "SUSPICIOUS",
+     "title": "Packed executable", "count": 1, "objectsTotal": 2,
+     "objects": [
+       {"kind": "VALUE", "name": "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"},
+       {"kind": "VALUE", "name": "kernel32.dll"}
+     ],
+     "attack": []},
+    {"id": 3, "source": "AV", "analysisType": "AV_ANALYSIS", "key": "av", "level": "MALICIOUS",
+     "title": "Antivirus detection", "count": 1, "objectsTotal": 1,
+     "objects": [{"kind": "SIGNATURE", "name": "Trojan.Win32.Emotet.abc"}],
+     "attack": []},
+    {"id": 4, "source": "BEHAVIOR", "analysisType": "DYN_ANALYSIS", "key": "noise", "level": "INFO",
+     "title": "Reads the system language", "count": 1, "objectsTotal": 1,
+     "objects": [{"kind": "VALUE", "name": "benign.example.org"}],
+     "attack": []}
+  ]
+}

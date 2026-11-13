@@ -1,0 +1,275 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "type": "canvas",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "name": "Case Details",
+                        "static": false,
+                        "type": "header",
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "i": "19e1f625-fd69-418f-a966-f49593f6db6f",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabverdict",
+                                "height": 22,
+                                "id": "bb6a59de-dde0-4426-a4c8-5bac5bcbe519",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabscore",
+                                "height": 22,
+                                "id": "ffa5f323-1b9d-49a0-82de-45635dbad0a5",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabscorelevel",
+                                "height": 22,
+                                "id": "1523929c-bff2-4aa5-b762-24e1f19fa4ed",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabfileverdict",
+                                "height": 22,
+                                "id": "b7190fa8-fa86-43ca-9c46-acbdb7ec9b10",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabcompleteness",
+                                "height": 22,
+                                "id": "aaac7639-5548-43dc-8580-de20dfafd3d5",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabavdetected",
+                                "height": 22,
+                                "id": "c9c62ca5-d789-4789-a9a3-9fcf7fc1d74c",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabmalwarefamily",
+                                "height": 22,
+                                "id": "c123ffeb-34dd-4447-bb9b-1d5a52a8a472",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "name": "Verdict",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "62c0982b-eeaf-4775-905e-e5dbb4e3e1ee",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabfilename",
+                                "height": 22,
+                                "id": "97fb8afb-2df9-4464-b63c-b9cc1c7018f8",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabfilesha256",
+                                "height": 22,
+                                "id": "b92f87b7-86dc-4b72-bb9e-74f24edb4f7e",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabfiletype",
+                                "height": 22,
+                                "id": "6521877e-087c-4539-8b76-d4f2678c2b08",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabreporttype",
+                                "height": 22,
+                                "id": "846265df-9f74-4f11-9871-41d6b50990cf",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabsourcetype",
+                                "height": 22,
+                                "id": "19887046-6150-4c50-a30f-985664c0f3c6",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "name": "Sample",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "1ecd6876-6bfa-46b5-8a2c-1257b684b178",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabsamplereportid",
+                                "height": 22,
+                                "id": "53ba9afc-8f56-4506-aede-b7e21c70c38c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabaccesscode",
+                                "height": 22,
+                                "id": "bc98f774-8fcf-44a7-a14c-0b55b540cbfb",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabreporturl",
+                                "height": 22,
+                                "id": "ceee00c1-532c-473b-80d8-9e26a277f5ca",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabattacktechniques",
+                                "height": 22,
+                                "id": "29832d44-875f-4bec-bc09-5ff0148bf039",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "name": "Analysis",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 7
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "40243ed5-0cff-4965-b465-bcebb4679afe",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabdeliverymode",
+                                "height": 22,
+                                "id": "d8b79f29-eba1-49df-a751-e51bf579b902",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_tlabdedupekey",
+                                "height": 22,
+                                "id": "2647aa5f-9190-4945-a685-3e9746827aa1",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "name": "Provenance",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 10
+                    }
+                ]
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "tLab Anti-APT Verdict",
+    "name": "tLab Anti-APT Verdict",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

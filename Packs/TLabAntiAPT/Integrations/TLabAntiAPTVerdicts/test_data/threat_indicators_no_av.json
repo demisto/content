@@ -1,0 +1,7 @@
+{
+  "sampleReportId": 412840,
+  "indicators": [
+    {"id": 1, "source": "AV", "analysisType": "AV_ANALYSIS", "key": "av", "level": "SUSPICIOUS",
+     "title": "Heuristic hit", "count": 1, "objects": [], "attack": []}
+  ]
+}

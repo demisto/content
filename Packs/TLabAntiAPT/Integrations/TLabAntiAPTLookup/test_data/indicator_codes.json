@@ -1,0 +1,4 @@
+[
+  {"indicatorCode": 9, "name": "PUBLIC_SIGNATURES", "analysisType": "STAT_ANALYSIS"},
+  {"indicatorCode": 6, "name": "INET_CONNECT", "analysisType": "DYN_ANALYSIS"}
+]
