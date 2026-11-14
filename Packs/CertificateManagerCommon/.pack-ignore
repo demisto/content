@@ -1,0 +1,5 @@
+# Add per-file validator exemptions here, e.g.
+# [file:<filename>]
+# ignore=<code>
+#
+# Only codes listed under `ignorable_errors` in validation_config.toml may be used.
