@@ -1,17 +1,71 @@
 {
-    "raw_response": [
-        {
-            "propertyId": 12345,
-            "propertyName": "Test Property"
-        }
-    ],
-    "human_readable": "### Akamai WAF - list datastream active properties command\n|propertyId|propertyName|\n|---|---|\n| 12345 | Test Property |\n",
-    "context_entry": {
-        "Akamai.DataStream.Group": [
+    "api_response": {
+        "groupId": "12345",
+        "objects": [
             {
-                "propertyId": 12345,
-                "propertyName": "Test Property"
+                "contractId": "ctr_1-23456",
+                "hostnames": [
+                    "www.example.com",
+                    "test.edgekey.net"
+                ],
+                "objectId": 67890,
+                "objectName": "Test Property",
+                "productId": "Ion_Standard",
+                "productName": "Ion Standard",
+                "streams": [
+                    {
+                        "streamId": 12345,
+                        "streamName": "Test Stream"
+                    }
+                ]
             }
         ]
+    },
+    "raw_response": {
+        "groupId": "12345",
+        "properties": [
+            {
+                "contractId": "ctr_1-23456",
+                "hostnames": [
+                    "www.example.com",
+                    "test.edgekey.net"
+                ],
+                "propertyId": 67890,
+                "propertyName": "Test Property",
+                "productId": "Ion_Standard",
+                "productName": "Ion Standard",
+                "streams": [
+                    {
+                        "streamId": 12345,
+                        "streamName": "Test Stream"
+                    }
+                ]
+            }
+        ]
+    },
+    "human_readable": "### Akamai WAF - list datastream active properties command\n|groupId|properties|\n|---|---|\n| 12345 | {'contractId': 'ctr_1-23456', 'hostnames': ['www.example.com', 'test.edgekey.net'], 'propertyId': 67890, 'propertyName': 'Test Property', 'productId': 'Ion_Standard', 'productName': 'Ion Standard', 'streams': [{'streamId': 12345, 'streamName': 'Test Stream'}]} |\n",
+    "context_entry": {
+        "Akamai.DataStream.Group": {
+            "groupId": "12345",
+            "properties": [
+                {
+                    "contractId": "ctr_1-23456",
+                    "hostnames": [
+                        "www.example.com",
+                        "test.edgekey.net"
+                    ],
+                    "propertyId": 67890,
+                    "propertyName": "Test Property",
+                    "productId": "Ion_Standard",
+                    "productName": "Ion Standard",
+                    "streams": [
+                        {
+                            "streamId": 12345,
+                            "streamName": "Test Stream"
+                        }
+                    ]
+                }
+            ]
+        }
     }
 }

@@ -429,7 +429,7 @@ def test_list_datastream_groups_command(requests_mock, akamai_waf_client):
     expected_context_entry = test_data.get("context_entry")
 
     requests_mock.get(
-        "https://hostname/datastream-config-api/v2/log/groups",
+        "https://hostname/datastream-config-api/v3/log/cdn/groups",
         json=expected_raw_response,
     )
 
@@ -485,7 +485,7 @@ def test_patch_datastream_command(requests_mock, akamai_waf_client):
     expected_context_entry = test_data.get("context_entry")
 
     requests_mock.patch(
-        f"https://hostname/datastream-config-api/v2/log/streams/{stream_id}?activate=true",
+        f"https://hostname/datastream-config-api/v3/log/cdn/streams/{stream_id}?activate=true",
         json=expected_raw_response,
     )
 
@@ -520,7 +520,7 @@ def test_delete_datastream_command(requests_mock, akamai_waf_client):
     expected_context_entry = test_data.get("context_entry")
 
     requests_mock.delete(
-        f"https://hostname/datastream-config-api/v2/log/streams/{stream_id}",
+        f"https://hostname/datastream-config-api/v3/log/cdn/streams/{stream_id}",
         status_code=204,
     )
 
@@ -549,7 +549,7 @@ def test_list_datastreams_command(requests_mock, akamai_waf_client):
     expected_context_entry = test_data.get("context_entry")
 
     requests_mock.get(
-        "https://hostname/datastream-config-api/v2/log/streams",
+        f"https://hostname/datastream-config-api/v3/log/cdn/streams?groupId={group_id}",
         json=expected_raw_response,
     )
 
@@ -618,10 +618,11 @@ def test_list_idam_properties_command(requests_mock, akamai_waf_client):
 def test_list_datastream_properties_bygroup_command(requests_mock, akamai_waf_client):
     """
     Given:
-        - A group_id.
+        - A group_id and a DataStream API v3 response that lists the properties as "objects".
     When:
         - running the command list_datastream_properties_bygroup_command.
     Then:
+        - The objects are returned as "properties" with "propertyId" and "propertyName", like in API v2.
         - The returned values (human_readable, context_entry, raw_response) are correct.
     """
     from Akamai_WAF import list_datastream_properties_bygroup_command
@@ -629,13 +630,14 @@ def test_list_datastream_properties_bygroup_command(requests_mock, akamai_waf_cl
     group_id = 12345
 
     test_data = util_load_json("test_data/list_datastream_properties_bygroup_test.json")
+    api_response = test_data.get("api_response")
     expected_raw_response = test_data.get("raw_response")
     expected_human_readable = test_data.get("human_readable")
     expected_context_entry = test_data.get("context_entry")
 
     requests_mock.get(
-        f"https://hostname/datastream-config-api/v2/log/groups/{group_id}/properties",
-        json=expected_raw_response,
+        f"https://hostname/datastream-config-api/v3/log/cdn/groups/{group_id}/properties",
+        json=api_response,
     )
 
     human_readable, context_entry, raw_response = list_datastream_properties_bygroup_command(
@@ -666,7 +668,7 @@ def test_toggle_datastream_command(requests_mock, akamai_waf_client):
     expected_context_entry = test_data.get("context_entry")
 
     requests_mock.post(
-        f"https://hostname/datastream-config-api/v2/log/streams/{stream_id}/{option}",
+        f"https://hostname/datastream-config-api/v3/log/cdn/streams/{stream_id}/{option}",
         json=expected_raw_response,
     )
 
@@ -998,7 +1000,7 @@ def test_get_datastream_command(requests_mock, akamai_waf_client):
     expected_context_entry = test_data.get("context_entry")
 
     requests_mock.get(
-        f"https://hostname/datastream-config-api/v2/log/streams/{stream_id}",
+        f"https://hostname/datastream-config-api/v3/log/cdn/streams/{stream_id}",
         json=expected_raw_response,
     )
 
@@ -1060,7 +1062,7 @@ def test_new_datastream_command(requests_mock, akamai_waf_client):
     expected_context_entry = test_data.get("context_entry")
 
     requests_mock.post(
-        "https://hostname/datastream-config-api/v2/log/streams",
+        "https://hostname/datastream-config-api/v3/log/cdn/streams",
         json=expected_raw_response,
     )
 

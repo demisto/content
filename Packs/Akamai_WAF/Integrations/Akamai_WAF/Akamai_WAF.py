@@ -2291,7 +2291,7 @@ class Client(BaseClient):
             Creates a stream configuration. Within a stream configuration,
             you can select properties to monitor in the stream, data set fields to collect in logs,
             and a destination to send these log files to. Get the streamId value from the response
-            to use in the https://{hostname}/datastream-config-api/v2/log/streams/{streamId} endpoint URL.
+            to use in the https://{hostname}/datastream-config-api/v3/log/cdn/streams/{streamId} endpoint URL.
             Apart from the log and delivery frequency configurations, you can decide whether to activate
             the stream on making the request or later using the activate parameter.
             Note that only active streams collect and send logs to their destinations.
@@ -2306,7 +2306,7 @@ class Client(BaseClient):
             The response confirms the stream has been created and returns its details.
         """
         method = "post"
-        url_suffix = "datastream-config-api/v2/log/streams"
+        url_suffix = "datastream-config-api/v3/log/cdn/streams"
         headers = {"Content-Type": "application/json", "accept": "application/json"}
         params = {"activate": activate}
 
@@ -2416,7 +2416,7 @@ class Client(BaseClient):
             A list of dictionaries that each dictionary includes a datastream.
             <Response [200]>
         """
-        url_suffix = "/datastream-config-api/v2/log/streams"
+        url_suffix = "/datastream-config-api/v3/log/cdn/streams"
         if group_id != 0:
             url_suffix = f"{url_suffix}?groupId={group_id}"
 
@@ -2440,7 +2440,7 @@ class Client(BaseClient):
             <Response [200]>
         """
 
-        url_suffix = f"/datastream-config-api/v2/log/streams/{stream_id}"
+        url_suffix = f"/datastream-config-api/v3/log/cdn/streams/{stream_id}"
         if version != 0:
             url_suffix = f"{url_suffix}?version={version}"
         datastream = self._http_request(method="GET", url_suffix=url_suffix)
@@ -2460,7 +2460,7 @@ class Client(BaseClient):
             A dictionary that includes a list of dictionaries of groups.
             <Response [200]>
         """
-        url_suffix = "datastream-config-api/v2/log/groups"
+        url_suffix = "datastream-config-api/v3/log/cdn/groups"
         if contract_id:
             url_suffix = f"{url_suffix}?contractId={contract_id}"
         groups = self._http_request(method="GET", url_suffix=url_suffix)
@@ -2480,8 +2480,16 @@ class Client(BaseClient):
             <Response [200]>
         """
 
-        url_suffix = f"datastream-config-api/v2/log/groups/{group_id}/properties"
+        url_suffix = f"datastream-config-api/v3/log/cdn/groups/{group_id}/properties"
         properties = self._http_request(method="GET", url_suffix=url_suffix)
+
+        # API v3 lists the properties as "objects" with "objectId" and "objectName".
+        # Map them back to the API v2 "properties" list so the command output stays the same.
+        if "objects" in properties:
+            v2_keys = {"objectId": "propertyId", "objectName": "propertyName"}
+            properties["properties"] = [
+                {v2_keys.get(key, key): value for key, value in obj.items()} for obj in properties.pop("objects")
+            ]
 
         return properties
 
@@ -2498,7 +2506,7 @@ class Client(BaseClient):
             <Response [204]>
         """
 
-        url_suffix = f"datastream-config-api/v2/log/streams/{stream_id}"
+        url_suffix = f"datastream-config-api/v3/log/cdn/streams/{stream_id}"
         output = self._http_request(method="DELETE", url_suffix=url_suffix, resp_type="response")
         return output
 
@@ -2532,7 +2540,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method="PATCH",
-            url_suffix=f"datastream-config-api/v2/log/streams/{stream_id}?activate={activate}",
+            url_suffix=f"datastream-config-api/v3/log/cdn/streams/{stream_id}?activate={activate}",
             headers=headers,
             json_data=body,
         )
@@ -2557,7 +2565,7 @@ class Client(BaseClient):
         headers = {"accept": "application/json"}
 
         return self._http_request(
-            method="POST", url_suffix=f"datastream-config-api/v2/log/streams/{stream_id}/{option}", headers=headers
+            method="POST", url_suffix=f"datastream-config-api/v3/log/cdn/streams/{stream_id}/{option}", headers=headers
         )
 
     def get_client_lists(self):
@@ -6863,7 +6871,7 @@ def new_datastream_command(
         Creates a stream configuration. Within a stream configuration,
         you can select properties to monitor in the stream, data set fields to collect in logs,
         and a destination to send these log files to. Get the streamId value from the response
-        to use in the https://{hostname}/datastream-config-api/v2/log/streams/{streamId} endpoint URL.
+        to use in the https://{hostname}/datastream-config-api/v3/log/cdn/streams/{streamId} endpoint URL.
         Apart from the log and delivery frequency configurations, you can decide whether to activate
         the stream on making the request or later using the activate parameter.
         Note that only active streams collect and send logs to their destinations.
