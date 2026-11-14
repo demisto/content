@@ -1,0 +1,13 @@
+# Add per-file validator exemptions here, e.g.
+# [file:<filename>]
+# ignore=<code>
+#
+# Only codes listed under `ignorable_errors` in validation_config.toml may be used.
+
+# The playbooks route writes to the instance that returned the certificate (`using=`).
+# PB106 flags any `using`, and its auto-fix deletes it, so never run `validate --fix` on these files.
+[file:CertManagerSaaS_Certificate_Compromise_Response.yml]
+ignore=PB106
+
+[file:CertManagerSaaS_Certificate_Request.yml]
+ignore=PB106

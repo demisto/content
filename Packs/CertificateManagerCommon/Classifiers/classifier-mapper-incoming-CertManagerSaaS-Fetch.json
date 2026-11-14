@@ -1,0 +1,211 @@
+{
+    "id": "CertManagerSaaS - Fetch Incoming Mapper",
+    "name": "CertManagerSaaS - Fetch Incoming Mapper",
+    "description": "Maps issues fetched by the Certificate Manager SaaS and Next-Gen Trust Security integrations into the CertManagerSaaS incident fields, for both incident types (Certificate Expiry and Revocation Failed). The fetch rawJSON is the integrations' CertManagerSaaS.Certificate context shape, so paths are rooted at the certificate itself. Name, occurrence time and severity are set by the integration and are not remapped here. Issuer, owning application, owning TSG and installation location use the same sources as the playbooks, so a field reads the same whichever created it.",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "feed": false,
+    "mapping": {
+        "CertManagerSaaS Certificate Expiry": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "CertManagerSaaS Certificate ID": {
+                    "complex": null,
+                    "simple": "ID"
+                },
+                "CertManagerSaaS Common Name": {
+                    "complex": null,
+                    "simple": "CommonName"
+                },
+                "CertManagerSaaS Expiry Date": {
+                    "complex": null,
+                    "simple": "ValidTo"
+                },
+                "CertManagerSaaS Days To Expiry": {
+                    "complex": null,
+                    "simple": "DaysUntilExpiry"
+                },
+                "CertManagerSaaS Issuer": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "IssuerCommonName",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "defaultValue": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "IssuerDN"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "CertManagerSaaS Owning Application": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Applications.Name",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ", "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "CertManagerSaaS Installation Location": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "InstallationLocations",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ", "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "CertManagerSaaS Owning TSG": {
+                    "simple": "TSGID"
+                },
+                "CertManagerSaaS Fingerprint": {
+                    "simple": "Fingerprint"
+                }
+            }
+        },
+        "CertManagerSaaS Revocation Failed": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "CertManagerSaaS Certificate ID": {
+                    "complex": null,
+                    "simple": "ID"
+                },
+                "CertManagerSaaS Common Name": {
+                    "complex": null,
+                    "simple": "CommonName"
+                },
+                "CertManagerSaaS Expiry Date": {
+                    "complex": null,
+                    "simple": "ValidTo"
+                },
+                "CertManagerSaaS Days To Expiry": {
+                    "complex": null,
+                    "simple": "DaysUntilExpiry"
+                },
+                "CertManagerSaaS Issuer": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "IssuerCommonName",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "defaultValue": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "IssuerDN"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "CertManagerSaaS Owning Application": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Applications.Name",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ", "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "CertManagerSaaS Installation Location": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "InstallationLocations",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ", "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "CertManagerSaaS Owning TSG": {
+                    "simple": "TSGID"
+                },
+                "CertManagerSaaS Fingerprint": {
+                    "simple": "Fingerprint"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,31 @@
+{
+    "id": "incident_certmanagersaasowningtsg",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "name": "CertManagerSaaS Owning TSG",
+    "cliName": "certmanagersaasowningtsg",
+    "description": "The owner that Next-Gen Trust Security reports for the certificate: the TSG ID for a tenant-owned certificate, otherwise the workspace ID. Next-Gen Trust Security only.",
+    "type": "shortText",
+    "group": 0,
+    "ownerOnly": false,
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "hidden": false,
+    "associatedTypes": [
+        "CertManagerSaaS Certificate Expiry",
+        "CertManagerSaaS Revocation Failed"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}
