@@ -1,0 +1,504 @@
+id: CertificateManagerSaaS - Test
+version: -1
+name: CertificateManagerSaaS - Test
+description: |-
+  Test playbook for the CyberArk Certificate Manager SaaS integration. Runs every implemented command against a live tenant and asserts the shape of the results.
+
+  The write commands - revoke, request, request status and download - are deliberately not exercised here: they mutate a real tenant's certificate inventory and revocation cannot be undone.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: d64c0ed9-1672-5981-9a45-08b51518dbbf
+    type: start
+    task:
+      id: d64c0ed9-1672-5981-9a45-08b51518dbbf
+      version: -1
+      name: ''
+      description: ''
+      type: start
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 35d8c29f-4d7d-5925-89eb-194b4e9844de
+    type: regular
+    task:
+      id: 35d8c29f-4d7d-5925-89eb-194b4e9844de
+      version: -1
+      name: Clear the context
+      description: Starts each run from a known-empty context so an assertion cannot pass on a leftover
+        value. Only legal in a test playbook - PB105 forbids DeleteContext with all set to yes in a shipped
+        playbook.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: 'yes'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 0139eb95-7ad1-5625-bacb-399ef0a81beb
+    type: regular
+    task:
+      id: 0139eb95-7ad1-5625-bacb-399ef0a81beb
+      version: -1
+      name: cmsaas-certificate-search
+      description: Searches the certificate inventory.
+      script: '|||cmsaas-certificate-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      limit:
+        simple: '5'
+      max_pages:
+        simple: '2'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 5a62c8bb-16f9-5539-a72d-74e658ddb721
+    type: condition
+    task:
+      id: 5a62c8bb-16f9-5539-a72d-74e658ddb721
+      version: -1
+      name: Verify the search returned a fingerprint
+      description: Fingerprint is the natural key, so its absence means the search shape is wrong even
+        if the call succeeded.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '4'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CertManagerSaaS.Certificate.Fingerprint
+            iscontext: true
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 2a6a4d02-e5c3-5aed-b289-4e1e39488b34
+    type: regular
+    task:
+      id: 2a6a4d02-e5c3-5aed-b289-4e1e39488b34
+      version: -1
+      name: cmsaas-certificate-get
+      description: Retrieves one certificate by the fingerprint the search returned.
+      script: '|||cmsaas-certificate-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      fingerprint:
+        complex:
+          root: CertManagerSaaS.Certificate.Fingerprint
+      include_machine_details:
+        simple: 'false'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 4154728a-87a3-5d0a-ae3f-86f68c0af988
+    type: regular
+    task:
+      id: 4154728a-87a3-5d0a-ae3f-86f68c0af988
+      version: -1
+      name: cmsaas-certificate-list-expiring
+      description: Lists certificates expiring inside a 30-day window.
+      script: '|||cmsaas-certificate-list-expiring'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      days:
+        simple: '30'
+      limit:
+        simple: '5'
+      max_pages:
+        simple: '2'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 62088480-883a-59c1-8a16-4b364347c7ac
+    type: regular
+    task:
+      id: 62088480-883a-59c1-8a16-4b364347c7ac
+      version: -1
+      name: cmsaas-application-list
+      description: Lists the applications defined in the tenant.
+      script: '|||cmsaas-application-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      limit:
+        simple: '5'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: ca7553eb-3944-57b2-85ce-11b5285fe1a1
+    type: regular
+    task:
+      id: ca7553eb-3944-57b2-85ce-11b5285fe1a1
+      version: -1
+      name: cmsaas-machine-list
+      description: Lists the machines known to the tenant.
+      script: '|||cmsaas-machine-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      limit:
+        simple: '5'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: e8a08a43-22a9-50c0-9498-47ac8d0f29ed
+    type: condition
+    task:
+      id: e8a08a43-22a9-50c0-9498-47ac8d0f29ed
+      version: -1
+      name: Verify a machine was returned
+      description: Skips the machine detail call on a tenant with no machines rather than failing it.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '10'
+      'yes':
+      - '9'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CertManagerSaaS.Machine.ID
+            iscontext: true
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 2c7b3a15-1a78-523b-96f3-ea56650da2a0
+    type: regular
+    task:
+      id: 2c7b3a15-1a78-523b-96f3-ea56650da2a0
+      version: -1
+      name: cmsaas-machine-get
+      description: Retrieves one machine, including its connection details. Roughly half of machines carry
+        no host - cloud connectors expose a vault name instead - so the host is not asserted.
+      script: '|||cmsaas-machine-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      machine_identifier:
+        complex:
+          root: CertManagerSaaS.Machine.ID
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: b8848bb5-6489-5edf-8890-d8e426fa97c5
+    type: regular
+    task:
+      id: b8848bb5-6489-5edf-8890-d8e426fa97c5
+      version: -1
+      name: certificate
+      description: Runs the certificate reputation command on the fingerprint the search returned.
+      script: CertificateManagerSaaS|||certificate
+      type: regular
+      iscommand: true
+      brand: CertificateManagerSaaS
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      certificate:
+        complex:
+          root: CertManagerSaaS.Certificate.Fingerprint
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: a97ea9ab-7fe9-50b5-a76e-b611efebb4fd
+    type: condition
+    task:
+      id: a97ea9ab-7fe9-50b5-a76e-b611efebb4fd
+      version: -1
+      name: Verify the reputation produced a DBot score
+      description: The certificate indicator type is first class, so a missing DBot score means the reputation
+        command is not wired up correctly.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '12'
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          ignorecase: true
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: certificate
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 684121d4-e33d-504b-a4ac-3d15691c36fb
+    type: title
+    task:
+      id: 684121d4-e33d-504b-a4ac-3d15691c36fb
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2530,
+        "width": 480,
+        "x": 400,
+        "y": 0
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

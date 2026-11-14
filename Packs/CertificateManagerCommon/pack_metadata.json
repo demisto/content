@@ -1,0 +1,39 @@
+{
+    "name": "Certificate Manager Common",
+    "description": "Shared content for the Certificate Manager SaaS and Next-Gen Trust Security packs: the certificate-expiry issue type, fields, layout and mapper, and the certificate playbooks.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2026-09-24T00:00:00Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Certificate",
+        "Certificate Manager",
+        "NGTS",
+        "TLS"
+    ],
+    "itemPrefix": [
+        "CertManagerSaaS"
+    ],
+    "dependencies": {
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

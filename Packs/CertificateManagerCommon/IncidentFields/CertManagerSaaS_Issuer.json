@@ -1,0 +1,31 @@
+{
+    "id": "incident_certmanagersaasissuer",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "name": "CertManagerSaaS Issuer",
+    "cliName": "certmanagersaasissuer",
+    "description": "The common name of the certificate authority that issued the certificate, or its distinguished name when the common name is missing.",
+    "type": "shortText",
+    "group": 0,
+    "ownerOnly": false,
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "hidden": false,
+    "associatedTypes": [
+        "CertManagerSaaS Certificate Expiry",
+        "CertManagerSaaS Revocation Failed"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}
