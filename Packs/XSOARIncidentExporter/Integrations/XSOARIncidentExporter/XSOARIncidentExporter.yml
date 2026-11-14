@@ -2,7 +2,7 @@ commonfields:
   id: XSOARIncidentExporter
   version: -1
 name: XSOARIncidentExporter
-display: XSOAR Incident Exporter
+display: Xporter
 category: Utilities
 provider: Open Source
 description: Pushes Cortex XSOAR 6 or Cortex XSOAR 8 incidents to Cortex XSIAM as parsed alerts using the Insert Parsed Alerts API.
@@ -87,6 +87,13 @@ configuration:
   defaultvalue: "0"
   section: Collect
   additionalinfo: Minutes to add to the original Cortex XSOAR incident timestamp. The event timestamp defaults to the Cortex XSOAR occurred/created time. Use a positive offset to shift forward. Cortex XSIAM drops alerts with timestamps too far in the past.
+- display: Sync War Room entries on push
+  name: sync_war_room
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: Whether to automatically sync War Room entries from Cortex XSOAR to the matching Cortex XSIAM issue when pushing incidents. Entries are deduplicated so re-pushes do not create duplicates.
 script:
   type: python
   subtype: python3
@@ -166,6 +173,41 @@ script:
     - contextPath: XSOARExporter.CloseSync.ClosedAlerts
       description: The details of closed alerts.
       type: Unknown
+  - name: xsoar-exporter-sync-war-room
+    description: Syncs War Room entries from a Cortex XSOAR incident to the matching Cortex XSIAM issue.
+    arguments:
+    - name: incident_id
+      description: The Cortex XSOAR incident ID whose War Room entries to sync.
+      required: true
+    - name: xsiam_alert_id
+      description: The Cortex XSIAM alert external ID to sync entries to. If not provided, automatically looks up the matching alert by Cortex XSOAR incident ID.
+      required: false
+    - name: categories
+      description: A comma-separated list of War Room entry categories to sync. If not provided, all non-empty entries are synced.
+      required: false
+      isArray: true
+    outputs:
+    - contextPath: XSOARExporter.WarRoom.IncidentID
+      description: The Cortex XSOAR incident ID.
+      type: String
+    - contextPath: XSOARExporter.WarRoom.XSIAMAlertID
+      description: The Cortex XSIAM alert ID entries were synced to.
+      type: String
+    - contextPath: XSOARExporter.WarRoom.SyncedCount
+      description: The number of War Room entries synced.
+      type: Number
+    - contextPath: XSOARExporter.WarRoom.SkippedCount
+      description: The number of entries skipped because they were already synced.
+      type: Number
+    - contextPath: XSOARExporter.WarRoom.ErrorCount
+      description: The number of entries that failed to sync.
+      type: Number
+    - contextPath: XSOARExporter.WarRoom.TotalEntries
+      description: The total number of War Room entries in the Cortex XSOAR incident.
+      type: Number
+    - contextPath: XSOARExporter.WarRoom.FilteredEntries
+      description: The number of entries after filtering empty and category filters.
+      type: Number
   dockerimage: demisto/python3:3.12.15.14069087
 fromversion: 6.10.0
 tests:

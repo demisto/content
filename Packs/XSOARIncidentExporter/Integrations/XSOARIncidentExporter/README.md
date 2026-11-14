@@ -1,6 +1,6 @@
 Pushes Cortex XSOAR 6 or Cortex XSOAR 8 incidents to Cortex XSIAM as parsed alerts using the Insert Parsed Alerts API.
 
-## Configure XSOAR Incident Exporter in Cortex
+## Configure Xporter in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -16,6 +16,7 @@ Pushes Cortex XSOAR 6 or Cortex XSOAR 8 incidents to Cortex XSIAM as parsed aler
 | Incident query filter | A Cortex XSOAR incident query to filter which incidents to push \(e.g., type:Phishing\). | False |
 | Elevate Low severity to Medium | Whether to map Low severity incidents to Medium so they create cases in Cortex XSIAM instead of issues. Only Medium or higher severity alerts automatically trigger playbooks. | False |
 | Timestamp offset (minutes) | Minutes to add to the original Cortex XSOAR incident timestamp. The event timestamp defaults to the Cortex XSOAR occurred/created time. Use a positive offset to shift forward. Cortex XSIAM drops alerts with timestamps too far in the past. | False |
+| Sync War Room entries on push | Whether to automatically sync War Room entries from Cortex XSOAR to the matching Cortex XSIAM issue when pushing incidents. Entries are deduplicated so re-pushes do not create duplicates. | False |
 
 ## Commands
 
@@ -133,3 +134,58 @@ Queries Cortex XSIAM for open XSOAR-sourced alerts and resolves those whose XSOA
 | XSOARExporter.CloseSync.ClosedCount | Number | The number of alerts closed. |
 | XSOARExporter.CloseSync.SkippedCount | Number | The number of open alerts skipped. |
 | XSOARExporter.CloseSync.ClosedAlerts | Unknown | The details of closed alerts. |
+
+### xsoar-exporter-sync-war-room
+
+***
+Syncs War Room entries from a Cortex XSOAR incident to the matching Cortex XSIAM issue.
+
+#### Base Command
+
+`xsoar-exporter-sync-war-room`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The Cortex XSOAR incident ID whose War Room entries to sync. | Required |
+| xsiam_alert_id | The Cortex XSIAM alert external ID to sync entries to. If not provided, automatically looks up the matching alert by Cortex XSOAR incident ID. | Optional |
+| categories | A comma-separated list of War Room entry categories to sync. If not provided, all non-empty entries are synced. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| XSOARExporter.WarRoom.IncidentID | String | The Cortex XSOAR incident ID. |
+| XSOARExporter.WarRoom.XSIAMAlertID | String | The Cortex XSIAM alert ID entries were synced to. |
+| XSOARExporter.WarRoom.SyncedCount | Number | The number of War Room entries synced. |
+| XSOARExporter.WarRoom.SkippedCount | Number | The number of entries skipped because they were already synced. |
+| XSOARExporter.WarRoom.ErrorCount | Number | The number of entries that failed to sync. |
+| XSOARExporter.WarRoom.TotalEntries | Number | The total number of War Room entries in the Cortex XSOAR incident. |
+| XSOARExporter.WarRoom.FilteredEntries | Number | The number of entries after filtering empty and category filters. |
+
+#### Command example
+
+```!xsoar-exporter-sync-war-room incident_id="100"```
+
+#### Context Example
+
+```json
+{
+    "XSOARExporter": {
+        "WarRoom": {
+            "ErrorCount": 0,
+            "FilteredEntries": 3,
+            "IncidentID": "100",
+            "SkippedCount": 0,
+            "SyncedCount": 3,
+            "TotalEntries": 5,
+            "XSIAMAlertID": "199895"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Synced 3 War Room entries from XSOAR incident 100 to XSIAM alert 199895
