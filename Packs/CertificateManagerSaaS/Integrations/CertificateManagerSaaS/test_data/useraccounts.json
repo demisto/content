@@ -1,0 +1,1 @@
+{ "user": { "id": "user-0001", "username": "svc-cortex@example.com", "userType": "EXTERNAL" }, "company": { "id": "comp-0001", "name": "Example Ltd" } }
