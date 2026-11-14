@@ -25,13 +25,15 @@
         "GIB Cybercriminal Threat",
         "GIB Suspicious IP Socks Proxy",
         "GIB Nation-State Cybercriminals Threat",
-        "GIB SPD"
+        "GIB SPD",
+        "GIB Compromised Access",
+        "GIB Open Threat"
     ],
     "caseInsensitive": true,
     "cliName": "gibreliability",
     "closeForm": false,
     "content": true,
-    "description": "Reliability of the source",
+    "description": "Reliability of the source.",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -78,6 +80,8 @@
         "GIB Cybercriminal Threat",
         "GIB Suspicious IP Socks Proxy",
         "GIB Nation-State Cybercriminals Threat",
-        "GIB SPD"
+        "GIB SPD",
+        "GIB Compromised Access",
+        "GIB Open Threat"
     ]
 }

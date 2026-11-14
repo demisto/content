@@ -7,7 +7,7 @@
     "cliName": "gibtargetcategory",
     "closeForm": false,
     "content": true,
-    "description": "What category was targeted by phishing",
+    "description": "The category of the brand the phishing page targets.",
     "editForm": true,
     "group": 2,
     "hidden": false,

@@ -12,8 +12,7 @@ from GIBIncidentUpdateAllTypes import (
     main,
 )
 
-# EntryType.ERROR is 4 in CommonServerPython; use the literal here so tests
-# stay independent of XSOAR runtime imports.
+# EntryType.ERROR of CommonServerPython.
 ENTRY_TYPE_ERROR = 4
 
 GIBID = "aaaaaaaabbbbccccddddeeeeeeeeeeeeeeeeee01"
@@ -52,42 +51,32 @@ GET_INCIDENTS_MULTIPLE = [
 ]
 
 
-# ---------------------------------------------------------------------------
-# get_gibid
-# ---------------------------------------------------------------------------
-
-
-def test_gibid_from_custom_fields():
+def test_the_gib_id_is_read_from_the_custom_fields():
     assert get_gibid({"CustomFields": {"gibid": GIBID}}) == GIBID
 
 
-def test_gibid_from_top_level():
+def test_the_gib_id_is_read_from_the_top_level_field():
     assert get_gibid({"gibid": GIBID}) == GIBID
 
 
-def test_gibid_from_label_id():
+def test_the_gib_id_is_read_from_the_id_label():
     assert get_gibid({"labels": [{"type": "id", "value": GIBID}]}) == GIBID
 
 
-def test_gibid_from_label_gibid():
+def test_the_gib_id_is_read_from_the_gibid_label():
     assert get_gibid({"labels": [{"type": "gibid", "value": GIBID}]}) == GIBID
 
 
-def test_gibid_from_raw_json():
+def test_the_gib_id_is_read_from_the_raw_json():
     assert get_gibid({"rawJSON": json.dumps({"id": GIBID})}) == GIBID
 
 
-def test_gibid_missing():
+def test_an_incident_without_a_gib_id_has_none():
     assert get_gibid({"name": "test"}) is None
 
 
-def test_gibid_whitespace_only_is_missing():
+def test_a_blank_gib_id_is_none():
     assert get_gibid({"CustomFields": {"gibid": "   "}}) is None
-
-
-# ---------------------------------------------------------------------------
-# iter_existing_incidents - streaming behavior
-# ---------------------------------------------------------------------------
 
 
 def _make_full_page(start: int = 0) -> list[dict]:
@@ -98,8 +87,7 @@ def _wrap_page(data: list[dict]) -> list[dict]:
     return [{"Type": 1, "Contents": {"data": data}}]
 
 
-def test_iter_existing_query_shape(mocker):
-    """First page request must carry the canonical query, sort and pagination."""
+def test_the_first_page_is_asked_with_the_query_the_sort_and_the_page_size(mocker):
     execute_command_mock = mocker.patch.object(
         demisto, "executeCommand", return_value=_wrap_page([{"id": "100", "gibid": GIBID}])
     )
@@ -107,14 +95,13 @@ def test_iter_existing_query_shape(mocker):
 
     args = execute_command_mock.call_args.args
     assert args[0] == "getIncidents"
-    assert args[1]["query"] == f"gibid: {GIBID} and -status:Closed"
+    assert args[1]["query"] == f'gibid:"{GIBID}" and -status:closed'
     assert args[1]["sort"] == "created.desc"
     assert args[1]["size"] == PAGE_SIZE
     assert args[1]["page"] == 0
 
 
-def test_iter_existing_stops_on_partial_page(mocker):
-    """A page shorter than PAGE_SIZE means there are no further pages."""
+def test_a_page_shorter_than_the_page_size_is_the_last(mocker):
     execute_command_mock = mocker.patch.object(
         demisto,
         "executeCommand",
@@ -125,8 +112,7 @@ def test_iter_existing_stops_on_partial_page(mocker):
     assert execute_command_mock.call_count == 1
 
 
-def test_iter_existing_fetches_subsequent_pages_when_full(mocker):
-    """A full PAGE_SIZE page must trigger a follow-up page request."""
+def test_a_full_page_is_followed_by_the_next_page(mocker):
     pages = [
         _wrap_page(_make_full_page(start=0)),
         _wrap_page([{"id": "999", "gibid": GIBID}]),
@@ -140,20 +126,17 @@ def test_iter_existing_fetches_subsequent_pages_when_full(mocker):
     assert execute_command_mock.call_args_list[1].args[1]["page"] == 1
 
 
-def test_iter_existing_respects_max_total_cap(mocker):
-    """Iterator stops after `max_total` even if more data is available."""
+def test_the_existing_incidents_stop_at_max_total(mocker):
     pages = [_wrap_page(_make_full_page(start=0))] * 10
     execute_command_mock = mocker.patch.object(demisto, "executeCommand", side_effect=pages)
 
     result = list(iter_existing_incidents(GIBID, max_total=50))
 
     assert len(result) == 50
-    # 50 < PAGE_SIZE so a single API call is sufficient.
     assert execute_command_mock.call_count == 1
 
 
-def test_iter_existing_max_total_across_multiple_pages(mocker):
-    """`max_total` may straddle page boundaries; only the needed pages fetched."""
+def test_max_total_reads_only_the_pages_it_needs(mocker):
     pages = [
         _wrap_page(_make_full_page(start=0)),
         _wrap_page(_make_full_page(start=PAGE_SIZE)),
@@ -164,12 +147,10 @@ def test_iter_existing_max_total_across_multiple_pages(mocker):
     result = list(iter_existing_incidents(GIBID, max_total=PAGE_SIZE + 5))
 
     assert len(result) == PAGE_SIZE + 5
-    # Two pages are required: full first page + 5 from the second page.
     assert execute_command_mock.call_count == 2
 
 
-def test_iter_existing_streams_lazily(mocker):
-    """Generator must not eagerly load every page on construction."""
+def test_a_page_is_read_when_its_first_incident_is_pulled(mocker):
     pages = [
         _wrap_page(_make_full_page(start=0)),
         _wrap_page(_make_full_page(start=PAGE_SIZE)),
@@ -178,86 +159,114 @@ def test_iter_existing_streams_lazily(mocker):
 
     iterator = iter_existing_incidents(GIBID)
 
-    # Constructing the generator must NOT trigger any API call.
     assert execute_command_mock.call_count == 0
 
-    # Pulling the first item triggers exactly one API call.
     next(iterator)
     assert execute_command_mock.call_count == 1
 
-    # Draining page 0 still costs one API call.
     for _ in range(PAGE_SIZE - 1):
         next(iterator)
     assert execute_command_mock.call_count == 1
 
-    # Item PAGE_SIZE+1 forces the second page fetch.
     next(iterator)
     assert execute_command_mock.call_count == 2
 
 
-def test_iter_existing_handles_error_response_gracefully(mocker):
-    """An XSOAR error response must terminate iteration without raising."""
-    error_response = [{"Type": ENTRY_TYPE_ERROR, "Contents": "boom"}]
+def test_an_error_entry_from_get_incidents_ends_the_existing_incidents(mocker):
+    error_response = [{"Type": ENTRY_TYPE_ERROR, "Contents": "getIncidents failed"}]
     mocker.patch.object(demisto, "executeCommand", return_value=error_response)
     assert list(iter_existing_incidents(GIBID)) == []
 
 
-def test_iter_existing_handles_empty_response(mocker):
+def test_an_empty_answer_from_get_incidents_lists_no_incident(mocker):
     mocker.patch.object(demisto, "executeCommand", return_value=GET_INCIDENTS_EMPTY)
     assert list(iter_existing_incidents(GIBID)) == []
 
 
-def test_iter_existing_handles_none_response(mocker):
+def test_a_null_answer_from_get_incidents_lists_no_incident(mocker):
     mocker.patch.object(demisto, "executeCommand", return_value=None)
     assert list(iter_existing_incidents(GIBID)) == []
 
 
-def test_iter_existing_invalid_max_total_returns_nothing(mocker):
+def test_a_max_total_or_page_size_of_zero_asks_nothing(mocker):
     execute_command_mock = mocker.patch.object(demisto, "executeCommand")
     assert list(iter_existing_incidents(GIBID, max_total=0)) == []
     assert list(iter_existing_incidents(GIBID, page_size=0)) == []
     assert execute_command_mock.call_count == 0
 
 
-# ---------------------------------------------------------------------------
-# build_update_fields
-# ---------------------------------------------------------------------------
-
-
-def test_build_update_fields_flattens_custom_fields_and_propagates_all_other_fields():
-    """All incoming fields propagate; only `id` and the `CustomFields` container itself are stripped.
-
-    `id` is excluded because it is the target identifier for `setIncident`
-    (passing it would silently redirect the update to the incoming incident).
-    `CustomFields` is excluded as a *container* because its members are
-    flattened into top-level kwargs.
-    """
+def test_build_update_fields_flattens_custom_fields_and_leaves_the_target_attributes_alone():
+    """Only the record's data travels: the flattened CustomFields, name, occurred and details; status, owner, severity,
+    type, labels, rawJSON and id stay the target's."""
     incident = deepcopy(INCOMING_INCIDENT)
     incident["occurred"] = "2025-01-01T00:00:00Z"
+    incident["details"] = "some details"
     incident["rawJSON"] = '{"id":"abc"}'
+    incident["owner"] = "fetcher"
+    incident["severity"] = 3
 
     update_fields = build_update_fields(incident)
 
-    # Hard guards: protect `setIncident` call correctness.
     assert "id" not in update_fields
     assert "CustomFields" not in update_fields
+    for forbidden in ("labels", "rawJSON", "type", "status", "owner", "severity"):
+        assert forbidden not in update_fields
 
-    # All previously-skipped XSOAR fields now propagate as-is.
-    assert update_fields["labels"] == incident["labels"]
     assert update_fields["occurred"] == "2025-01-01T00:00:00Z"
-    assert update_fields["rawJSON"] == '{"id":"abc"}'
-    assert update_fields["type"] == "GIB Compromised Card Group"
-    assert update_fields["status"] == 1
-
-    # CustomFields are flattened into top-level keys.
+    assert update_fields["details"] == "some details"
     assert update_fields["gibid"] == GIBID
     assert update_fields["gibcredibility"] == 80
     assert update_fields["gibseverity"] == "High"
     assert update_fields["name"] == "Test GIB Incident"
 
 
-def test_build_update_fields_strips_id_from_custom_fields_too():
-    """If `id` ever leaks into CustomFields, it must still be filtered out."""
+def test_a_quote_in_the_gib_id_is_escaped_in_the_query(mocker):
+    execute_command_mock = mocker.patch.object(demisto, "executeCommand", return_value=_wrap_page([]))
+    list(iter_existing_incidents('a"b'))
+    assert execute_command_mock.call_args.args[1]["query"] == 'gibid:"a\\"b" and -status:closed'
+
+
+def test_a_refused_grid_field_is_left_out_of_the_retry(mocker):
+    """When setIncident rejects a grid field value, the retry leaves that field out and the incoming incident is dropped."""
+    incoming = deepcopy(INCOMING_INCIDENT)
+    incoming["CustomFields"]["gibcybercriminalthreatactorreportstable"] = [{"datepublished": "2026-08-28", "name": "r"}]
+    mocker.patch.object(demisto, "incident", return_value=incoming)
+    calls = []
+
+    def mock_execute_command(command, args):
+        calls.append((command, args))
+        if command == "getIncidents":
+            return GET_INCIDENTS_FOUND
+        if "gibcybercriminalthreatactorreportstable" in args:
+            return [{"Type": ENTRY_TYPE_ERROR, "Contents": "Invalid grid column in row 0: '2026-08-28' is not a legal date"}]
+        return [{"Type": 1, "Contents": "ok"}]
+
+    mocker.patch.object(demisto, "executeCommand", side_effect=mock_execute_command)
+    mock_results = mocker.patch("GIBIncidentUpdateAllTypes.return_results")
+    main()
+    mock_results.assert_called_once_with(False)
+    set_calls = [a for c, a in calls if c == "setIncident"]
+    assert len(set_calls) == 2
+    assert "gibcybercriminalthreatactorreportstable" not in set_calls[1]
+    assert set_calls[1]["gibseverity"] == "High"
+    assert set_calls[1]["id"] == "100"
+
+
+def test_the_incoming_incident_is_kept_when_every_update_fails(mocker):
+    mocker.patch.object(demisto, "incident", return_value=deepcopy(INCOMING_INCIDENT))
+
+    def mock_execute_command(command, args):
+        if command == "getIncidents":
+            return GET_INCIDENTS_FOUND
+        return [{"Type": ENTRY_TYPE_ERROR, "Contents": "setIncident failed"}]
+
+    mocker.patch.object(demisto, "executeCommand", side_effect=mock_execute_command)
+    mock_results = mocker.patch("GIBIncidentUpdateAllTypes.return_results")
+    main()
+    mock_results.assert_called_once_with(True)
+
+
+def test_an_id_inside_the_custom_fields_is_dropped_too():
     incident = {
         "id": "incoming-1",
         "name": "x",
@@ -267,20 +276,24 @@ def test_build_update_fields_strips_id_from_custom_fields_too():
     assert "id" not in update_fields
 
 
-def test_build_update_fields_drops_none_values():
+def test_the_update_fields_drop_null_values():
     incident = {"name": "x", "details": None, "CustomFields": {"gibid": GIBID, "gibsource": None}}
     update_fields = build_update_fields(incident)
-    assert "details" not in update_fields
-    assert "gibsource" not in update_fields
     assert update_fields == {"name": "x", "gibid": GIBID}
 
 
-# ---------------------------------------------------------------------------
-# main
-# ---------------------------------------------------------------------------
+def test_the_update_fields_drop_empty_values():
+    """A fetched incident arrives with details "": an empty value never erases the analyst's notes."""
+    incident = {"name": "x", "details": "", "CustomFields": {"gibid": GIBID, "gibsource": "", "gibemails": [], "gibrecord": {}}}
+    update_fields = build_update_fields(incident)
+    assert "details" not in update_fields
+    assert "gibsource" not in update_fields
+    assert "gibemails" not in update_fields
+    assert update_fields["gibid"] == GIBID
+    assert update_fields == {"name": "x", "gibid": GIBID}
 
 
-def test_main_no_gibid_returns_true(mocker):
+def test_an_incident_without_a_gib_id_is_kept(mocker):
     mocker.patch.object(demisto, "incident", return_value={"name": "test"})
     mock_results = mocker.patch("GIBIncidentUpdateAllTypes.return_results")
 
@@ -289,7 +302,7 @@ def test_main_no_gibid_returns_true(mocker):
     mock_results.assert_called_once_with(True)
 
 
-def test_main_no_duplicate_returns_true(mocker):
+def test_an_incident_without_a_duplicate_is_kept(mocker):
     mocker.patch.object(demisto, "incident", return_value=deepcopy(INCOMING_INCIDENT))
     mocker.patch.object(demisto, "executeCommand", return_value=GET_INCIDENTS_EMPTY)
     mock_results = mocker.patch("GIBIncidentUpdateAllTypes.return_results")
@@ -299,7 +312,7 @@ def test_main_no_duplicate_returns_true(mocker):
     mock_results.assert_called_once_with(True)
 
 
-def test_main_duplicate_found_calls_setincident_and_returns_false(mocker):
+def test_a_duplicate_is_updated_and_the_incoming_incident_is_dropped(mocker):
     mocker.patch.object(demisto, "incident", return_value=deepcopy(INCOMING_INCIDENT))
 
     def mock_execute_command(command, args):
@@ -323,7 +336,7 @@ def test_main_duplicate_found_calls_setincident_and_returns_false(mocker):
     assert payload["gibseverity"] == "High"
 
 
-def test_main_updates_all_open_duplicates(mocker):
+def test_every_open_duplicate_is_updated(mocker):
     mocker.patch.object(demisto, "incident", return_value=deepcopy(INCOMING_INCIDENT))
 
     def mock_execute_command(command, args):
@@ -340,8 +353,7 @@ def test_main_updates_all_open_duplicates(mocker):
     assert [c.args[1]["id"] for c in set_calls] == ["100", "101", "102"]
 
 
-def test_main_uses_existing_id_not_incoming(mocker):
-    """The setIncident call must target the duplicate's id, not the incoming one."""
+def test_the_update_targets_the_duplicate_not_the_incoming_incident(mocker):
     mocker.patch.object(demisto, "incident", return_value=deepcopy(INCOMING_INCIDENT))
 
     def mock_execute_command(command, args):
@@ -358,7 +370,7 @@ def test_main_uses_existing_id_not_incoming(mocker):
     assert set_call.args[1]["id"] == "100"
 
 
-def test_main_does_not_mutate_incident(mocker):
+def test_the_incoming_incident_is_left_unchanged(mocker):
     incident = deepcopy(INCOMING_INCIDENT)
     original = deepcopy(incident)
     mocker.patch.object(demisto, "incident", return_value=incident)
@@ -376,11 +388,9 @@ def test_main_does_not_mutate_incident(mocker):
     assert incident == original
 
 
-def test_main_streams_pages_without_loading_all_into_memory(mocker):
-    """Drives `main` against PAGE_SIZE+1 duplicates and verifies that the fetch
-    and the update phases are interleaved (page-streamed), i.e. the very first
-    setIncident call happens before the second getIncidents page is fetched.
-    """
+def test_the_first_duplicate_is_updated_before_the_second_page_is_read(mocker):
+    """The first setIncident call happens before the second getIncidents page is read: the fetch and the update phases are
+    interleaved."""
     mocker.patch.object(demisto, "incident", return_value=deepcopy(INCOMING_INCIDENT))
 
     page_zero = _wrap_page(_make_full_page(start=0))
@@ -407,20 +417,13 @@ def test_main_streams_pages_without_loading_all_into_memory(mocker):
     set_events = [e for e in call_log if e.startswith("setIncident:")]
     assert len(set_events) == PAGE_SIZE + 1
 
-    # Streaming guarantee: the first setIncident call must happen BEFORE
-    # the second getIncidents page is fetched. This is the property that
-    # keeps memory usage at O(PAGE_SIZE) instead of O(MAX_INCIDENTS).
+    # One page in memory at a time, not MAX_INCIDENTS incidents.
     first_set_idx = next(i for i, e in enumerate(call_log) if e.startswith("setIncident:"))
     second_get_idx = next(i for i, e in enumerate(call_log) if e == "getIncidents:1")
-    assert first_set_idx < second_get_idx, (
-        "setIncident calls must be interleaved with getIncidents pages "
-        "so that memory usage stays bounded by PAGE_SIZE; observed call "
-        f"log: {call_log}"
-    )
+    assert first_set_idx < second_get_idx, f"call log: {call_log}"
 
 
-def test_main_max_incidents_circuit_breaker_is_strict(mocker):
-    """`main` must never call setIncident more than MAX_INCIDENTS times."""
+def test_no_more_than_max_incidents_duplicates_are_updated(mocker):
     mocker.patch.object(demisto, "incident", return_value=deepcopy(INCOMING_INCIDENT))
 
     full_page = _wrap_page(_make_full_page(start=0))
@@ -439,14 +442,14 @@ def test_main_max_incidents_circuit_breaker_is_strict(mocker):
     assert len(set_calls) <= MAX_INCIDENTS
 
 
-def test_main_setincident_failure_does_not_abort_remaining_updates(mocker):
+def test_a_failed_update_does_not_stop_the_other_duplicates(mocker):
     mocker.patch.object(demisto, "incident", return_value=deepcopy(INCOMING_INCIDENT))
 
     def mock_execute_command(command, args):
         if command == "getIncidents":
             return GET_INCIDENTS_MULTIPLE
         if args["id"] == "101":
-            return [{"Type": ENTRY_TYPE_ERROR, "Contents": "boom"}]
+            return [{"Type": ENTRY_TYPE_ERROR, "Contents": "setIncident failed"}]
         return [{"Type": 1, "Contents": "ok"}]
 
     execute_command_mock = mocker.patch.object(demisto, "executeCommand", side_effect=mock_execute_command)
@@ -455,7 +458,5 @@ def test_main_setincident_failure_does_not_abort_remaining_updates(mocker):
     main()
 
     set_calls = [c for c in execute_command_mock.call_args_list if c.args[0] == "setIncident"]
-    # All three duplicates were attempted, even though the middle one failed.
     assert [c.args[1]["id"] for c in set_calls] == ["100", "101", "102"]
-    # The incoming incident is still dropped because real duplicates exist.
     mock_results.assert_called_once_with(False)

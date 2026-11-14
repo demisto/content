@@ -7,7 +7,7 @@
     "cliName": "gibcardissuercountryname",
     "closeForm": false,
     "content": true,
-    "description": "Country name of the card issuer",
+    "description": "Country name of the card issuer.",
     "editForm": true,
     "group": 0,
     "hidden": false,

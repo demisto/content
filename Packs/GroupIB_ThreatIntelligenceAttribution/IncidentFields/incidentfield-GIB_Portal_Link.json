@@ -28,7 +28,12 @@
         "GIB Nation-State Cybercriminals Threat Actor",
         "GIB Nation-State Cybercriminals Threat",
         "GIB OSI Vulnerability",
-        "GIB SPD"
+        "GIB SPD",
+        "GIB Compromised Access",
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord",
+        "GIB Darkweb Forum",
+        "GIB Open Threat"
     ],
     "caseInsensitive": true,
     "cliName": "gibportallink",
@@ -83,6 +88,11 @@
         "GIB Nation-State Cybercriminals Threat Actor",
         "GIB Nation-State Cybercriminals Threat",
         "GIB OSI Vulnerability",
-        "GIB SPD"
+        "GIB SPD",
+        "GIB Compromised Access",
+        "GIB Darkweb Telegram",
+        "GIB Darkweb Discord",
+        "GIB Darkweb Forum",
+        "GIB Open Threat"
     ]
 }

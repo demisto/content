@@ -1,13 +1,14 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
+        "GIB Compromised Card Group",
         "GIB Compromised Masked Card"
     ],
     "caseInsensitive": false,
     "cliName": "gibcardcategory",
     "closeForm": false,
     "content": true,
-    "description": "Category of the card",
+    "description": "Category of the card.",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -29,6 +30,7 @@
     "fromVersion": "6.10.0",
     "openEnded": false,
     "systemAssociatedTypes": [
+        "GIB Compromised Card Group",
         "GIB Compromised Masked Card"
     ]
 }

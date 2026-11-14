@@ -1,7 +1,9 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Compromised Card Group"
+        "GIB Compromised Card Group",
+        "GIB Malware",
+        "GIB Malware CNC"
     ],
     "caseInsensitive": true,
     "cliName": "gibthreatactorstable",
@@ -61,5 +63,10 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "systemAssociatedTypes": [
+        "GIB Compromised Card Group",
+        "GIB Malware",
+        "GIB Malware CNC"
+    ]
 }

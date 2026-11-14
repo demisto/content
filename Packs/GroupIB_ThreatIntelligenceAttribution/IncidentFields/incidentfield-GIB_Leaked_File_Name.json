@@ -7,6 +7,7 @@
     "cliName": "gibleakedfilename",
     "closeForm": false,
     "content": true,
+    "description": "URL of the public repository whose files matched the hunting rules.",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -30,8 +31,5 @@
     "openEnded": false,
     "systemAssociatedTypes": [
         "GIB OSI Git Leak"
-    ],
-    "marketplaces": [
-        "xsoar"
     ]
 }

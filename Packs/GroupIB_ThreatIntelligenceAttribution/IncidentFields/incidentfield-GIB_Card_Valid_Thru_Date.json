@@ -7,7 +7,7 @@
     "cliName": "gibcardvalidthrudate",
     "closeForm": false,
     "content": true,
-    "description": "Valid thru date of the card",
+    "description": "Valid thru date of the card.",
     "editForm": true,
     "group": 0,
     "hidden": false,

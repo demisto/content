@@ -1,5 +1,5 @@
 {
-    "description": "",
+    "description": "Maps the fields of a fetched Group-IB record to the incident fields of its incident type.",
     "feed": false,
     "id": "Group-IB Threat Intelligence (mapper)",
     "mapping": {
@@ -393,47 +393,11 @@
         "GIB Data Breach": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "GIB Email": {
-                    "complex": {
-                        "filters": [],
-                        "root": "email",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "separator": {
-                                        "value": {
-                                            "simple": ", "
-                                        }
-                                    }
-                                },
-                                "operator": "join"
-                            }
-                        ]
-                    }
-                },
                 "GIB ID": {
                     "simple": "id"
                 },
                 "GIB Leak Name": {
                     "simple": "leakName"
-                },
-                "GIB Password": {
-                    "complex": {
-                        "filters": [],
-                        "root": "password",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "separator": {
-                                        "value": {
-                                            "simple": ", "
-                                        }
-                                    }
-                                },
-                                "operator": "join"
-                            }
-                        ]
-                    }
                 },
                 "GIB Severity": {
                     "simple": "evaluation.severity"
@@ -449,14 +413,6 @@
                 },
                 "GIB Reliability": {
                     "simple": "evaluation.reliability"
-                },
-                "Country": {
-                    "complex": {
-                        "accessor": "[0]",
-                        "filters": [],
-                        "root": "countries",
-                        "transformers": []
-                    }
                 },
                 "Description": {
                     "simple": "description"
@@ -485,20 +441,8 @@
                 "GIB Upload Time": {
                     "simple": "uploadTime"
                 },
-                "Target": {
-                    "complex": {
-                        "accessor": "[0]",
-                        "filters": [],
-                        "root": "targetedCompany",
-                        "transformers": []
-                    }
-                },
                 "name": {
-                    "complex": {
-                        "filters": [],
-                        "root": "title",
-                        "transformers": []
-                    }
+                    "simple": "leakName"
                 },
                 "GIB TLP": {
                     "complex": {
@@ -507,6 +451,15 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB Threat Actor Name": {
+                    "simple": "threat_actor_name"
+                },
+                "GIB Breach Record Details": {
+                    "simple": "record_details"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 }
             }
         },
@@ -593,7 +546,7 @@
                     "simple": "files"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
                 },
                 "GIB TLP": {
                     "complex": {
@@ -602,6 +555,9 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 }
             }
         },
@@ -694,6 +650,9 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 }
             }
         },
@@ -798,7 +757,7 @@
                     "simple": "portalLink"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
                 },
                 "GIB Reliability": {
                     "simple": "evaluation.reliability"
@@ -828,6 +787,9 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 }
             }
         },
@@ -871,7 +833,7 @@
                     "simple": "providerDomain"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
                 },
                 "GIB Reliability": {
                     "simple": "evaluation.reliability"
@@ -922,6 +884,9 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 }
             }
         },
@@ -932,16 +897,10 @@
                     "simple": "evaluation.admiraltyCode"
                 },
                 "GIB Country Name": {
-                    "simple": "phishing_ip.countryName"
+                    "simple": "countryName"
                 },
                 "GIB Credibility": {
                     "simple": "evaluation.credibility"
-                },
-                "GIB Date First Seen": {
-                    "simple": "dateFirstSeen"
-                },
-                "GIB Date Last Seen": {
-                    "simple": "dateLastSeen"
                 },
                 "GIB ID": {
                     "simple": "id"
@@ -973,9 +932,6 @@
                 "GIB Phishing IP Table": {
                     "simple": "phishing_ip"
                 },
-                "GIB Phishing Kit Source": {
-                    "simple": "source"
-                },
                 "GIB Phishing Kit Table": {
                     "simple": "phishing_kit_table"
                 },
@@ -995,7 +951,7 @@
                     "simple": "portalLink"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
                 },
                 "GIB Reliability": {
                     "simple": "evaluation.reliability"
@@ -1022,6 +978,15 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
+                },
+                "GIB False Positive": {
+                    "simple": "falsePositive"
+                },
+                "GIB Allow Listed": {
+                    "simple": "whitelist"
                 }
             }
         },
@@ -1062,7 +1027,10 @@
                     "simple": "portalLink"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
+                },
+                "GIB Related Emails": {
+                    "simple": "relatedEmails"
                 },
                 "GIB Reliability": {
                     "simple": "evaluation.reliability"
@@ -1083,15 +1051,15 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 }
             }
         },
         "GIB Compromised Account Group": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "GIB Address": {
-                    "simple": "person.address"
-                },
                 "GIB Admiralty Code": {
                     "simple": "evaluation.admiraltyCode"
                 },
@@ -1116,12 +1084,6 @@
                 "GIB Date Last Seen": {
                     "simple": "dateLastSeen"
                 },
-                "GIB Date of Detection": {
-                    "simple": "person.dateDetected"
-                },
-                "GIB Email": {
-                    "simple": "person.email"
-                },
                 "GIB ID": {
                     "simple": "id"
                 },
@@ -1134,14 +1096,11 @@
                 "GIB Password": {
                     "simple": "password"
                 },
-                "GIB Person": {
-                    "simple": "person.name"
-                },
                 "GIB Portal Link": {
                     "simple": "portalLink"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
                 },
                 "GIB Reliability": {
                     "simple": "evaluation.reliability"
@@ -1161,9 +1120,6 @@
                 "GIB Source": {
                     "simple": "sourceType"
                 },
-                "Phone Number": {
-                    "simple": "person.phone"
-                },
                 "severity": {
                     "simple": "systemSeverity"
                 },
@@ -1174,20 +1130,17 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 }
             }
         },
         "GIB Compromised Card Group": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "GIB Address": {
-                    "simple": "address"
-                },
                 "GIB Admiralty Code": {
                     "simple": "evaluation.admiraltyCode"
-                },
-                "GIB CVV": {
-                    "simple": "cvv"
                 },
                 "GIB Card Issuer": {
                     "simple": "issuer"
@@ -1219,9 +1172,6 @@
                 "GIB Date Last Seen": {
                     "simple": "dateLastSeen"
                 },
-                "GIB Email": {
-                    "simple": "email"
-                },
                 "GIB ID": {
                     "simple": "id"
                 },
@@ -1231,14 +1181,11 @@
                 "GIB Payment System": {
                     "simple": "payment_system"
                 },
-                "GIB Person": {
-                    "simple": "owner_name"
-                },
                 "GIB Portal Link": {
                     "simple": "portalLink"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
                 },
                 "GIB Reliability": {
                     "simple": "evaluation.reliability"
@@ -1252,9 +1199,6 @@
                 "GIB Threat Actors Table": {
                     "simple": "threatActor"
                 },
-                "Phone Number": {
-                    "simple": "phone"
-                },
                 "severity": {
                     "simple": "systemSeverity"
                 },
@@ -1265,6 +1209,15 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB Card Issuer Country Code": {
+                    "simple": "issuer_country_code"
+                },
+                "GIB Card Category": {
+                    "simple": "card_category"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 }
             }
         },
@@ -1314,7 +1267,7 @@
                     "simple": "portalLink"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
                 },
                 "GIB Reliability": {
                     "simple": "evaluation.reliability"
@@ -1377,14 +1330,14 @@
                 "GIB ID": {
                     "simple": "id"
                 },
-                "GIB Is Tailored": {
-                    "simple": "isTailored"
-                },
                 "GIB Portal Link": {
                     "simple": "portalLink"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
+                },
+                "GIB Related Emails": {
+                    "simple": "relatedEmails"
                 },
                 "GIB Reliability": {
                     "simple": "evaluation.reliability"
@@ -1420,6 +1373,33 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB Report Type": {
+                    "simple": "report_type"
+                },
+                "GIB Threat Sources": {
+                    "simple": "sources"
+                },
+                "GIB Targeted Companies": {
+                    "simple": "targeted_companies"
+                },
+                "GIB Targeted Partners And Clients": {
+                    "simple": "targeted_partners_and_clients"
+                },
+                "GIB Target Domains": {
+                    "simple": "target_domains"
+                },
+                "GIB Threat Files Table": {
+                    "simple": "files"
+                },
+                "GIB Cybercriminal Threat Countries": {
+                    "simple": "countries"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
+                },
+                "GIB Cybercriminal Threat Labels": {
+                    "simple": "labels"
                 }
             }
         },
@@ -1468,6 +1448,9 @@
                 "GIB Source": {
                     "simple": "sourceType"
                 },
+                "GIB Threat Actor ID": {
+                    "simple": "threat_actor_id"
+                },
                 "GIB Threat Actor Name": {
                     "simple": "threat_actor_name"
                 },
@@ -1476,6 +1459,9 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 }
             }
         },
@@ -1522,16 +1508,22 @@
                     "simple": "sourceType"
                 },
                 "GIB Threat Actor ID": {
-                    "simple": "taList.id"
+                    "simple": "threat_actor_id"
                 },
                 "GIB Threat Actor Name": {
-                    "simple": "taList.name"
+                    "simple": "threat_actor_name"
                 },
                 "GIB Threat Actors Table": {
                     "simple": "taList"
                 },
                 "GIB Threat Level": {
                     "simple": "threatLevel"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
+                },
+                "severity": {
+                    "simple": "systemSeverity"
                 }
             }
         },
@@ -1560,13 +1552,19 @@
                     "simple": "malwareList"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
                 },
                 "GIB Source": {
                     "simple": "sourceType"
                 },
                 "GIB Threat Actors Table": {
                     "simple": "threatActor"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
+                },
+                "severity": {
+                    "simple": "systemSeverity"
                 }
             }
         },
@@ -1593,9 +1591,6 @@
                 },
                 "GIB ID": {
                     "simple": "id"
-                },
-                "GIB Is Tailored": {
-                    "simple": "isTailored"
                 },
                 "GIB Nation-State Cybercriminal Forums Table": {
                     "simple": "forumsAccounts"
@@ -1631,7 +1626,10 @@
                     "simple": "portalLink"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
+                },
+                "GIB Related Emails": {
+                    "simple": "relatedEmails"
                 },
                 "GIB Reliability": {
                     "simple": "evaluation.reliability"
@@ -1664,6 +1662,27 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB Report Type": {
+                    "simple": "report_type"
+                },
+                "GIB Threat Sources": {
+                    "simple": "sources"
+                },
+                "GIB Targeted Companies": {
+                    "simple": "targeted_companies"
+                },
+                "GIB Targeted Partners And Clients": {
+                    "simple": "targeted_partners_and_clients"
+                },
+                "GIB Target Domains": {
+                    "simple": "target_domains"
+                },
+                "GIB Threat Files Table": {
+                    "simple": "files"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 }
             }
         },
@@ -1727,6 +1746,9 @@
                 "GIB Source": {
                     "simple": "sourceType"
                 },
+                "GIB Threat Actor ID": {
+                    "simple": "threat_actor_id"
+                },
                 "GIB Threat Actor Name": {
                     "simple": "threat_actor_name"
                 },
@@ -1735,6 +1757,9 @@
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 }
             }
         },
@@ -1808,7 +1833,7 @@
                     "simple": "portalLink"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
                 },
                 "GIB Reliability": {
                     "simple": "evaluation.reliability"
@@ -1835,6 +1860,24 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB EPSS": {
+                    "simple": "epssScore"
+                },
+                "GIB EPSS Percentile": {
+                    "simple": "epssPercentile"
+                },
+                "GIB Exploit Count": {
+                    "simple": "exploitCount"
+                },
+                "GIB Seen In The Wild": {
+                    "simple": "seenInTheWild"
+                },
+                "GIB Provider": {
+                    "simple": "provider"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 }
             }
         },
@@ -1875,7 +1918,7 @@
                     "simple": "type"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
                 },
                 "GIB Reliability": {
                     "simple": "evaluation.reliability"
@@ -1896,6 +1939,21 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB Country Name": {
+                    "simple": "countryName"
+                },
+                "GIB Country Code": {
+                    "simple": "countryCode"
+                },
+                "GIB ASN": {
+                    "simple": "asn"
+                },
+                "GIB Provider": {
+                    "simple": "provider"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 }
             }
         },
@@ -1921,7 +1979,7 @@
                     "simple": "portalLink"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
                 },
                 "GIB Reliability": {
                     "simple": "evaluation.reliability"
@@ -1948,6 +2006,21 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB Country Name": {
+                    "simple": "countryName"
+                },
+                "GIB Country Code": {
+                    "simple": "countryCode"
+                },
+                "GIB ASN": {
+                    "simple": "asn"
+                },
+                "GIB Provider": {
+                    "simple": "provider"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 }
             }
         },
@@ -1976,7 +2049,7 @@
                     "simple": "portalLink"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
                 },
                 "GIB Reliability": {
                     "simple": "evaluation.reliability"
@@ -2000,6 +2073,21 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB Country Name": {
+                    "simple": "countryName"
+                },
+                "GIB Country Code": {
+                    "simple": "countryCode"
+                },
+                "GIB ASN": {
+                    "simple": "asn"
+                },
+                "GIB Provider": {
+                    "simple": "provider"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 }
             }
         },
@@ -2025,7 +2113,7 @@
                     "simple": "portalLink"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
                 },
                 "GIB Reliability": {
                     "simple": "evaluation.reliability"
@@ -2046,6 +2134,30 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB Country Name": {
+                    "simple": "countryName"
+                },
+                "GIB Country Code": {
+                    "simple": "countryCode"
+                },
+                "GIB ASN": {
+                    "simple": "asn"
+                },
+                "GIB Provider": {
+                    "simple": "provider"
+                },
+                "GIB IP Source": {
+                    "simple": "source"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
+                },
+                "GIB Tor Flags": {
+                    "simple": "torFlags"
+                },
+                "GIB Tor Exit": {
+                    "simple": "torExit"
                 }
             }
         },
@@ -2071,7 +2183,7 @@
                     "simple": "portalLink"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
                 },
                 "GIB Reliability": {
                     "simple": "evaluation.reliability"
@@ -2098,6 +2210,24 @@
                         "root": "evaluation",
                         "transformers": []
                     }
+                },
+                "GIB Country Name": {
+                    "simple": "countryName"
+                },
+                "GIB Country Code": {
+                    "simple": "countryCode"
+                },
+                "GIB ASN": {
+                    "simple": "asn"
+                },
+                "GIB Provider": {
+                    "simple": "provider"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
+                },
+                "GIB VPN Types": {
+                    "simple": "types"
                 }
             }
         },
@@ -2355,10 +2485,13 @@
                     "simple": "portalLink"
                 },
                 "GIB Related Indicators Data": {
-                    "simple": "indicators"
+                    "simple": "relatedIndicators"
                 },
                 "severity": {
                     "simple": "systemSeverity"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 }
             }
         },
@@ -2380,8 +2513,20 @@
                 "GIB Date Last Seen": {
                     "simple": "lastSeenAt"
                 },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
+                },
                 "GIB ID": {
                     "simple": "id"
+                },
+                "GIB Portal Link": {
+                    "simple": "portalLink"
+                },
+                "GIB Related Indicators Data": {
+                    "simple": "relatedIndicators"
+                },
+                "GIB Reliability": {
+                    "simple": "evaluation.reliability"
                 },
                 "GIB SPD Events Table": {
                     "simple": "events"
@@ -2395,17 +2540,8 @@
                 "GIB SPD Owner Name": {
                     "simple": "ownerName"
                 },
-                "GIB Portal Link": {
-                    "simple": "portalLink"
-                },
-                "GIB Reliability": {
-                    "simple": "evaluation.reliability"
-                },
                 "GIB SPD Service Type": {
                     "simple": "serviceType"
-                },
-                "GIB Severity": {
-                    "simple": "evaluation.severity"
                 },
                 "GIB SPD Sources Table": {
                     "simple": "sources"
@@ -2413,17 +2549,408 @@
                 "GIB SPD Threat Actor Table": {
                     "simple": "threatActor"
                 },
+                "GIB SPD Type": {
+                    "simple": "type"
+                },
+                "GIB SPD Value": {
+                    "simple": "value"
+                },
+                "GIB Severity": {
+                    "simple": "evaluation.severity"
+                },
                 "GIB TLP": {
                     "simple": "evaluation.tlp"
                 },
                 "GIB TTL": {
                     "simple": "evaluation.ttl"
                 },
-                "GIB SPD Type": {
-                    "simple": "type"
+                "severity": {
+                    "simple": "systemSeverity"
                 },
-                "GIB SPD Value": {
-                    "simple": "value"
+                "GIB Source": {
+                    "simple": "sourceType"
+                }
+            }
+        },
+        "GIB Compromised Access": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB ID": {
+                    "simple": "id"
+                },
+                "GIB Access Type": {
+                    "simple": "accessType"
+                },
+                "GIB Target Host": {
+                    "simple": "target.host"
+                },
+                "GIB Target Domain": {
+                    "simple": "target.domain"
+                },
+                "GIB Device OS": {
+                    "simple": "target.os"
+                },
+                "GIB Device Browser": {
+                    "simple": "target.browser"
+                },
+                "GIB Device Name": {
+                    "simple": "target.systemName"
+                },
+                "GIB Malware Name": {
+                    "simple": "malware_name"
+                },
+                "GIB Malware ID": {
+                    "simple": "malware_id"
+                },
+                "GIB Seller": {
+                    "simple": "seller"
+                },
+                "GIB Shop Domain": {
+                    "simple": "shop.domain"
+                },
+                "GIB Shop URL": {
+                    "simple": "shop.url"
+                },
+                "GIB Shop IP": {
+                    "simple": "shop.ip"
+                },
+                "GIB Price Value": {
+                    "simple": "priceValue"
+                },
+                "GIB Price Currency": {
+                    "simple": "priceCurrency"
+                },
+                "GIB Date Compromised": {
+                    "simple": "dateCompromised"
+                },
+                "GIB Date of Detection": {
+                    "simple": "dateDetected"
+                },
+                "GIB Archive File List": {
+                    "simple": "archiveFiles"
+                },
+                "GIB Admiralty Code": {
+                    "simple": "evaluation.admiraltyCode"
+                },
+                "GIB Credibility": {
+                    "simple": "evaluation.credibility"
+                },
+                "GIB Reliability": {
+                    "simple": "evaluation.reliability"
+                },
+                "GIB Severity": {
+                    "simple": "evaluation.severity"
+                },
+                "GIB TLP": {
+                    "simple": "evaluation.tlp"
+                },
+                "GIB Source": {
+                    "simple": "sourceType"
+                },
+                "GIB Portal Link": {
+                    "simple": "portalLink"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
+                },
+                "severity": {
+                    "simple": "systemSeverity"
+                }
+            }
+        },
+        "GIB Darkweb Telegram": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB ID": {
+                    "simple": "id"
+                },
+                "GIB Post Text": {
+                    "simple": "text"
+                },
+                "GIB Post Translation": {
+                    "simple": "translation"
+                },
+                "GIB Post Date": {
+                    "simple": "postDate"
+                },
+                "GIB Post Edit Date": {
+                    "simple": "editDate"
+                },
+                "GIB Post Deleted Date": {
+                    "simple": "deletedDate"
+                },
+                "GIB Reply Text": {
+                    "simple": "reply.text"
+                },
+                "GIB Post Edits Table": {
+                    "simple": "edits"
+                },
+                "GIB Author ID": {
+                    "simple": "author.id"
+                },
+                "GIB Author Handle": {
+                    "simple": "author.handle"
+                },
+                "GIB Author Name": {
+                    "simple": "author.name"
+                },
+                "GIB Channel ID": {
+                    "simple": "channel.id"
+                },
+                "GIB Channel Name": {
+                    "simple": "channel.name"
+                },
+                "GIB Channel Title": {
+                    "simple": "channel.title"
+                },
+                "GIB Channel Description": {
+                    "simple": "channel.description"
+                },
+                "GIB Channel Subscribers": {
+                    "simple": "channel.subscribers"
+                },
+                "GIB Channel Messages": {
+                    "simple": "channel.messages"
+                },
+                "GIB Attachment Name": {
+                    "simple": "attachment.name"
+                },
+                "GIB Attachment Type": {
+                    "simple": "attachment.type"
+                },
+                "GIB Attachment Size": {
+                    "simple": "attachment.size"
+                },
+                "GIB Source": {
+                    "simple": "sourceType"
+                },
+                "GIB Portal Link": {
+                    "simple": "portalLink"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
+                },
+                "severity": {
+                    "simple": "systemSeverity"
+                }
+            }
+        },
+        "GIB Darkweb Discord": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB ID": {
+                    "simple": "id"
+                },
+                "GIB Post Text": {
+                    "simple": "text"
+                },
+                "GIB Post Translation": {
+                    "simple": "translation"
+                },
+                "GIB Post Date": {
+                    "simple": "postDate"
+                },
+                "GIB Post Deleted Date": {
+                    "simple": "deletedDate"
+                },
+                "GIB Reply Text": {
+                    "simple": "reply.text"
+                },
+                "GIB Post Edits Table": {
+                    "simple": "edits"
+                },
+                "GIB Author ID": {
+                    "simple": "author.id"
+                },
+                "GIB Author Handle": {
+                    "simple": "author.handle"
+                },
+                "GIB Channel ID": {
+                    "simple": "channel.id"
+                },
+                "GIB Channel Name": {
+                    "simple": "channel.name"
+                },
+                "GIB Server Name": {
+                    "simple": "channel.server"
+                },
+                "GIB Channel Subscribers": {
+                    "simple": "channel.subscribers"
+                },
+                "GIB Channel Messages": {
+                    "simple": "channel.messages"
+                },
+                "GIB Attachment Name": {
+                    "simple": "attachment.name"
+                },
+                "GIB Attachment Type": {
+                    "simple": "attachment.type"
+                },
+                "GIB Attachment Size": {
+                    "simple": "attachment.size"
+                },
+                "GIB Source": {
+                    "simple": "sourceType"
+                },
+                "GIB Portal Link": {
+                    "simple": "portalLink"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
+                },
+                "severity": {
+                    "simple": "systemSeverity"
+                }
+            }
+        },
+        "GIB Darkweb Forum": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB ID": {
+                    "simple": "id"
+                },
+                "GIB Title": {
+                    "simple": "topic"
+                },
+                "GIB Post Text": {
+                    "simple": "text"
+                },
+                "GIB Image Text": {
+                    "simple": "imageText"
+                },
+                "GIB Post Date": {
+                    "simple": "postDate"
+                },
+                "GIB Upload Time": {
+                    "simple": "uploadTime"
+                },
+                "GIB Forum": {
+                    "simple": "forum"
+                },
+                "GIB Forum Section": {
+                    "simple": "forumSection"
+                },
+                "GIB Thread ID": {
+                    "simple": "threadId"
+                },
+                "GIB Author Handle": {
+                    "simple": "author.handle"
+                },
+                "GIB Categories": {
+                    "simple": "categories"
+                },
+                "GIB Languages": {
+                    "simple": "languages"
+                },
+                "GIB Post URL": {
+                    "simple": "url"
+                },
+                "GIB Data Hash": {
+                    "simple": "messageHash"
+                },
+                "GIB Source": {
+                    "simple": "sourceType"
+                },
+                "GIB Portal Link": {
+                    "simple": "portalLink"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
+                },
+                "severity": {
+                    "simple": "systemSeverity"
+                }
+            }
+        },
+        "GIB Open Threat": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB ID": {
+                    "simple": "id"
+                },
+                "GIB Title": {
+                    "simple": "title"
+                },
+                "GIB Post Text": {
+                    "simple": "text"
+                },
+                "GIB Post URL": {
+                    "simple": "url"
+                },
+                "GIB Source Name": {
+                    "simple": "sourceName"
+                },
+                "GIB Author ID": {
+                    "simple": "author.id"
+                },
+                "GIB Author Handle": {
+                    "simple": "author.handle"
+                },
+                "GIB Author Name": {
+                    "simple": "author.name"
+                },
+                "GIB Author Profile URL": {
+                    "simple": "author.profileUrl"
+                },
+                "GIB Date Created At": {
+                    "simple": "createdAt"
+                },
+                "GIB Date of Detection": {
+                    "simple": "dateDetected"
+                },
+                "GIB Date Updated At": {
+                    "simple": "updatedAt"
+                },
+                "GIB Threat Actor Name": {
+                    "simple": "threat_actor_name"
+                },
+                "GIB Threat Actor ID": {
+                    "simple": "threat_actor_id"
+                },
+                "GIB Malware Name": {
+                    "simple": "malware_name"
+                },
+                "GIB Country Name": {
+                    "simple": "countryName"
+                },
+                "GIB Tags": {
+                    "simple": "tags"
+                },
+                "GIB CVE IDs": {
+                    "simple": "cveIds"
+                },
+                "GIB Hunting Rule IDs": {
+                    "simple": "huntingRuleIds"
+                },
+                "GIB Company Tags": {
+                    "simple": "companyTags"
+                },
+                "GIB Related Indicators Data": {
+                    "simple": "relatedIndicators"
+                },
+                "GIB Admiralty Code": {
+                    "simple": "evaluation.admiraltyCode"
+                },
+                "GIB Credibility": {
+                    "simple": "evaluation.credibility"
+                },
+                "GIB Reliability": {
+                    "simple": "evaluation.reliability"
+                },
+                "GIB Severity": {
+                    "simple": "evaluation.severity"
+                },
+                "GIB TLP": {
+                    "simple": "evaluation.tlp"
+                },
+                "GIB Source": {
+                    "simple": "sourceType"
+                },
+                "GIB Portal Link": {
+                    "simple": "portalLink"
+                },
+                "GIB Fetched With Hunting Rules": {
+                    "simple": "huntingRulesApplied"
                 },
                 "severity": {
                     "simple": "systemSeverity"

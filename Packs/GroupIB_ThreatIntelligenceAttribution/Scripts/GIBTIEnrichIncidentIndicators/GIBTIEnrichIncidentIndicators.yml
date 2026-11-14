@@ -1,0 +1,124 @@
+args:
+- description: Group-IB record ID. Defaults to the GIB ID of the incident the script runs in.
+  name: gib_id
+- auto: PREDEFINED
+  description: Group-IB collection the ID belongs to. Defaults to the collection behind the incident type the script runs in.
+  name: collection
+  predefined:
+  - compromised/account_group
+  - compromised/bank_card_group
+  - compromised/masked_card
+  - compromised/spd
+  - compromised/breacheddb
+  - attacks/phishing_kit
+  - attacks/phishing_group
+  - attacks/ddos
+  - attacks/deface
+  - osi/git_repository
+  - osi/public_leak
+  - osi/vulnerability
+  - suspicious_ip/tor_node
+  - suspicious_ip/open_proxy
+  - suspicious_ip/socks_proxy
+  - suspicious_ip/vpn
+  - suspicious_ip/scanner
+  - malware/cnc
+  - malware/malware
+  - hi/threat
+  - apt/threat
+  - hi/threat_actor
+  - apt/threat_actor
+  - compromised/access
+  - compromised/messenger
+  - compromised/discord
+  - darkweb/forums
+  - hi/open_threats
+- description: Name of the Group-IB Threat Intelligence instance to read the record with. Defaults to the instance that fetched the incident, or to the only active instance; with several active instances and none of them the one that fetched the incident, the command runs on every instance.
+  name: instance
+- auto: PREDEFINED
+  defaultValue: "true"
+  description: Create the Malware / Threat Actor objects the record names (with createNewIndicator), so that the relationships of the indicators point at existing objects.
+  name: create_objects
+  predefined:
+  - "true"
+  - "false"
+comment: |-
+  Enriches the indicators of a Group-IB incident. It reads the record again with the matching gibti-get-*-info command and creates every observable of the record with the built-in createNewIndicator, with the verdict, tags, malware family, TLP, geo data, ASN, file hashes and size, CVSS score and vector, CVE dates and description, and GIB Collection of the record, so the indicators exist whatever the task's indicator extraction mode. A Cryptocurrency Address indicator gets no tags, malware family or TLP, and an Email or CVE indicator no malware family. The indicators are related to the malware families and threat actors the record names, and those Malware / Threat Actor objects are created with createNewIndicator too. Each object is Bad, tagged with the collection and stamped with GIB Collection. A new object gets the most restrictive TLP of the record's observables and of the incident's GIB TLP; an object that already exists keeps its own. The names on a GIB Data Breach incident (the leak's publishers) and on a defacement incident (the defacer's handle) make no object. A phishing group that Group-IB flags as a false positive or allow-listed gives no indicator and no object. When run inside a Group-IB incident, it needs no arguments, except in an incident of a legacy type (a renamed or removed collection), where it returns a note and enriches nothing unless collection is passed.
+commonfields:
+  id: GIBTIEnrichIncidentIndicators
+  version: -1
+dependson:
+  must:
+  - gibti-get-compromised-account-info
+  - gibti-get-compromised-card-group-info
+  - gibti-get-compromised-masked-card-info
+  - gibti-get-compromised-spd-info
+  - gibti-get-compromised-breached-info
+  - gibti-get-phishing-kit-info
+  - gibti-get-phishing-group-info
+  - gibti-get-attacks-ddos-info
+  - gibti-get-attacks-deface-info
+  - gibti-get-osi-git-leak-info
+  - gibti-get-osi-public-leak-info
+  - gibti-get-osi-vulnerability-info
+  - gibti-get-suspicious-ip-tor-node-info
+  - gibti-get-suspicious-ip-open-proxy-info
+  - gibti-get-suspicious-ip-socks-proxy-info
+  - gibti-get-suspicious-ip-vpn-info
+  - gibti-get-suspicious-ip-scanner-info
+  - gibti-get-malware-cnc-info
+  - gibti-get-malware-malware-info
+  - gibti-get-threat-info
+  - gibti-get-threat-actor-info
+  - gibti-get-compromised-access-info
+  - gibti-get-darkweb-telegram-info
+  - gibti-get-darkweb-discord-info
+  - gibti-get-darkweb-forum-info
+  - gibti-get-open-threat-info
+dockerimage: demisto/python3:3.12.14.13495286
+enabled: true
+name: GIBTIEnrichIncidentIndicators
+outputs:
+- contextPath: GIBTI.IncidentEnrichment.gibId
+  description: Group-IB record ID the indicators were read from.
+  type: String
+- contextPath: GIBTI.IncidentEnrichment.collection
+  description: Group-IB collection of the record.
+  type: String
+- contextPath: GIBTI.IncidentEnrichment.command
+  description: The lookup command that read the record.
+  type: String
+- contextPath: GIBTI.IncidentEnrichment.instance
+  description: The integration instance the record was read with (empty when the command ran on every instance).
+  type: String
+- contextPath: GIBTI.IncidentEnrichment.indicators.value
+  description: Value of an enriched indicator.
+  type: String
+- contextPath: GIBTI.IncidentEnrichment.indicators.type
+  description: Type of an enriched indicator.
+  type: String
+- contextPath: GIBTI.IncidentEnrichment.objects.type
+  description: Type (Malware or Threat Actor) of an object the indicators are related to.
+  type: String
+- contextPath: GIBTI.IncidentEnrichment.objects.name
+  description: Name of an object the indicators are related to.
+  type: String
+- contextPath: GIBTI.IncidentEnrichment.objectsCreated.type
+  description: Type (Malware or Threat Actor) of an object the run created or updated.
+  type: String
+- contextPath: GIBTI.IncidentEnrichment.objectsCreated.name
+  description: Name of an object the run created or updated.
+  type: String
+- contextPath: GIBTI.IncidentEnrichment.errors
+  description: Indicators and objects that could not be created, with the error.
+  type: String
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- threat-intel
+- enrichment
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

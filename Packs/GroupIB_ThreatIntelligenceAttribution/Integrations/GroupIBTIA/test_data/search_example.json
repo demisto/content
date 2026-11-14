@@ -2,7 +2,7 @@
     {
         "apiPath": "suspicious_ip/scanner",
         "label": "Suspicious IP :: Scanners",
-        "link": "https://tap.group-ib.com/api/v2/suspicious_ip/scanner?q=ip:8.8.8.8",
+        "link": "https://api.example.com/api/v2/suspicious_ip/scanner?q=ip:198.51.100.88",
         "count": 1,
         "time": 0.29085319,
         "detailedLinks": null
@@ -10,7 +10,7 @@
     {
         "apiPath": "attacks/deface",
         "label": "Attack :: Deface",
-        "link": "https://tap.group-ib.com/api/v2/attacks/deface?q=ip:8.8.8.8",
+        "link": "https://api.example.com/api/v2/attacks/deface?q=ip:198.51.100.88",
         "count": 1,
         "time": 0.406312784,
         "detailedLinks": null
@@ -18,7 +18,7 @@
     {
         "apiPath": "osi/public_leak",
         "label": "Compromise & leaks :: Public Leaks",
-        "link": "https://tap.group-ib.com/api/v2/osi/public_leak?q=ip:8.8.8.8",
+        "link": "https://api.example.com/api/v2/osi/public_leak?q=ip:198.51.100.88",
         "count": 21847,
         "time": 0.429146568,
         "detailedLinks": null
@@ -26,7 +26,7 @@
     {
         "apiPath": "suspicious_ip/open_proxy",
         "label": "Suspicious IP :: Open Proxy",
-        "link": "https://tap.group-ib.com/api/v2/suspicious_ip/open_proxy?q=ip:8.8.8.8",
+        "link": "https://api.example.com/api/v2/suspicious_ip/open_proxy?q=ip:198.51.100.88",
         "count": 17,
         "time": 0.522133669,
         "detailedLinks": null
@@ -34,7 +34,7 @@
     {
         "apiPath": "malware/config",
         "label": "Malware/Source",
-        "link": "https://tap.group-ib.com/api/v2/malware/config?q=ip:8.8.8.8",
+        "link": "https://api.example.com/api/v2/malware/config?q=ip:198.51.100.88",
         "count": 20,
         "time": 0.655176984,
         "detailedLinks": null

@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Darkweb Telegram"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibposteditdate",
+    "closeForm": true,
+    "content": true,
+    "description": "When the post was last edited.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibposteditdate",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Post Edit Date",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Darkweb Telegram"
+    ],
+    "threshold": 72,
+    "type": "date",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

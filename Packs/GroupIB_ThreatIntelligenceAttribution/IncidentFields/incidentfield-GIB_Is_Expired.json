@@ -7,7 +7,7 @@
     "cliName": "gibisexpired",
     "closeForm": false,
     "content": true,
-    "description": "Whether the card record is marked as expired by Group-IB",
+    "description": "Whether the card record is marked as expired by Group-IB.",
     "editForm": true,
     "group": 0,
     "hidden": false,

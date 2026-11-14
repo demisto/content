@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Compromised Access"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibshopip",
+    "closeForm": true,
+    "content": true,
+    "description": "The IP address of the marketplace a dark web listing is sold on.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibshopip",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Shop IP",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Compromised Access"
+    ],
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

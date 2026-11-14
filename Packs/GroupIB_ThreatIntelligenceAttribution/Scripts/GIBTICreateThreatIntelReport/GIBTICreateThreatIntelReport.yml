@@ -1,0 +1,85 @@
+args:
+- description: Group-IB record ID. Defaults to the GIB ID of the incident the script runs in.
+  name: gib_id
+- auto: PREDEFINED
+  description: Group-IB collection the ID belongs to. Defaults to the collection behind the incident type the script runs in.
+  name: collection
+  predefined:
+  - hi/threat
+  - apt/threat
+  - hi/threat_actor
+  - apt/threat_actor
+  - malware/malware
+  - osi/vulnerability
+- auto: PREDEFINED
+  description: Alternative to collection for threat reports (true = apt/threat, false = hi/threat); ignored when collection is given.
+  name: is_apt
+  predefined:
+  - "true"
+  - "false"
+- auto: PREDEFINED
+  description: Threat Intel Report type to create. Defaults to the type that fits the collection (Campaign for threat reports, Threat Actor for actor profiles, Malware, Vulnerability). The body goes into the type's own body field; a tenant-defined type gets no body.
+  name: report_type
+  predefined:
+  - Campaign
+  - Threat Actor
+  - Malware
+  - Vulnerability
+  - Executive Brief
+- description: Name of the Group-IB Threat Intelligence instance to read the record with. Defaults to the instance that fetched the incident, or to the only active instance; with several active instances and none of them the one that fetched the incident, the command runs on every instance.
+  name: instance
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Build and return the report payload without creating anything.
+  name: dry_run
+  predefined:
+  - "true"
+  - "false"
+comment: |-
+  Creates a Threat Intel Report from a Group-IB record: threat reports become Campaign reports, actor profiles Threat Actor reports, malware descriptions Malware reports and vulnerabilities Vulnerability reports. When run inside a threat report, actor profile, malware or vulnerability incident, it needs no arguments. The record is read with the matching gibti-get-*-info command and written with the built-in createThreatIntelReport / setThreatIntelReport commands.
+commonfields:
+  id: GIBTICreateThreatIntelReport
+  version: -1
+dependson:
+  must:
+  - gibti-get-threat-info
+  - gibti-get-threat-actor-info
+  - gibti-get-malware-malware-info
+  - gibti-get-osi-vulnerability-info
+dockerimage: demisto/python3:3.12.14.13495286
+enabled: true
+name: GIBTICreateThreatIntelReport
+outputs:
+- contextPath: GIBTI.ThreatIntelReport.id
+  description: ID of the created Threat Intel Report.
+  type: String
+- contextPath: GIBTI.ThreatIntelReport.name
+  description: Name of the report.
+  type: String
+- contextPath: GIBTI.ThreatIntelReport.type
+  description: Report type.
+  type: String
+- contextPath: GIBTI.ThreatIntelReport.gibId
+  description: Group-IB record ID the report was built from.
+  type: String
+- contextPath: GIBTI.ThreatIntelReport.collection
+  description: Group-IB collection the record came from.
+  type: String
+- contextPath: GIBTI.ThreatIntelReport.created
+  description: Whether a report was created.
+  type: Boolean
+- contextPath: GIBTI.ThreatIntelReport.dryRun
+  description: Whether the run was a dry run.
+  type: Boolean
+- contextPath: GIBTI.ThreatIntelReport.payload
+  description: The report payload (name, type and fields) built in a dry run; absent otherwise.
+  type: Unknown
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- threat-intel
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

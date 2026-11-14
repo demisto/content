@@ -1,0 +1,28 @@
+{
+    "id": "gib-ti-threats-by-severity",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "name": "GIB TI Threats by Severity",
+    "dataType": "incidents",
+    "widgetType": "pie",
+    "query": "((type:\"GIB Cybercriminal Threat\" or type:\"GIB Nation-State Cybercriminals Threat\") and -type:\"GIB Cybercriminal Threat Actor\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+    "isPredefined": true,
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "byFrom": "days",
+            "fromValue": 30
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "params": {
+        "query": "((type:\"GIB Cybercriminal Threat\" or type:\"GIB Nation-State Cybercriminals Threat\") and -type:\"GIB Cybercriminal Threat Actor\") and -type:\"GIB Nation-State Cybercriminals Threat Actor\"",
+        "timeFrame": "days",
+        "groupBy": [
+            "severity"
+        ]
+    },
+    "size": 3,
+    "description": "Severity of threat reports."
+}

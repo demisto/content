@@ -12,7 +12,9 @@
         "GIB Suspicious IP Open Proxy",
         "GIB Malware CNC",
         "GIB Attacks Phishing Group",
-        "GIB Suspicious IP Socks Proxy"
+        "GIB Suspicious IP Socks Proxy",
+        "GIB Compromised Access",
+        "GIB Open Threat"
     ],
     "caseInsensitive": true,
     "cliName": "gibdateofdetection",
@@ -51,6 +53,8 @@
         "GIB Suspicious IP Open Proxy",
         "GIB Malware CNC",
         "GIB Attacks Phishing Group",
-        "GIB Suspicious IP Socks Proxy"
+        "GIB Suspicious IP Socks Proxy",
+        "GIB Compromised Access",
+        "GIB Open Threat"
     ]
 }

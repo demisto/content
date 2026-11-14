@@ -46,9 +46,9 @@
             }
         ]
     ],
-    "scriptName": "GIBIncidentUpdateAllTypes",
+    "scriptName": "GIBTIIncidentUpdateAllTypes",
     "searchClosed": false,
-    "system": true,
+    "system": false,
     "toServerVersion": "",
     "version": -1,
     "fromVersion": "6.10.0"

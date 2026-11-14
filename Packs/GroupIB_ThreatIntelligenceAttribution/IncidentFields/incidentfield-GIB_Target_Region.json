@@ -7,6 +7,7 @@
     "cliName": "gibtargetregion",
     "closeForm": true,
     "content": true,
+    "description": "Continent of the defaced site's hosting IP (Europe, North America, Asia, Oceania, South America, Africa), not a region within a country.",
     "editForm": true,
     "group": 0,
     "hidden": false,

@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Compromised Access"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibtargethost",
+    "closeForm": true,
+    "content": true,
+    "description": "The host of your organization a dark web listing offers access to.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibtargethost",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Target Host",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Compromised Access"
+    ],
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

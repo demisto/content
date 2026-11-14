@@ -19,6 +19,9 @@
     "required": false,
     "sla": 0,
     "system": false,
+    "systemAssociatedTypes": [
+        "GIB OSI Public Leak"
+    ],
     "threshold": 72,
     "type": "markdown",
     "unmapped": false,

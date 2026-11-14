@@ -1,8 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Attacks Phishing Kit",
-        "GIB Attacks Phishing Group"
+        "GIB Attacks Phishing Kit"
     ],
     "caseInsensitive": true,
     "cliName": "gibphishingkitsource",
@@ -23,8 +22,7 @@
     "sla": 0,
     "system": false,
     "systemAssociatedTypes": [
-        "GIB Attacks Phishing Kit",
-        "GIB Attacks Phishing Group"
+        "GIB Attacks Phishing Kit"
     ],
     "threshold": 72,
     "type": "multiSelect",

@@ -1,8 +1,23 @@
-description: Obtains additional information on the threat actor involved in the incident and associates related indicators to the incident.
+description: |-
+  Enriches a Group-IB incident. The GIBTIEnrichIncidentIndicators automation reads the record again with the matching gibti-get-*-info command, so every observable of the record is created with the verdict, tags, malware family, TLP, geo data, ASN, file hashes and size, CVSS score and vector, CVE dates and description, and GIB Collection of the record, and related to the Malware / Threat Actor objects it names (the automation creates those objects). A Cryptocurrency Address indicator gets no tags, malware family or TLP, and an Email or CVE indicator no malware family. The names on a GIB Data Breach incident (the leak's publishers) and on a defacement incident (the defacer's handle) make no object. A phishing group that Group-IB flags as a false positive or allow-listed gives no indicator and no object. In an incident of a legacy type (a renamed or removed collection), the automation returns a note and enriches nothing.
+  Incidents that name threat actors then get every actor profile (hi/threat_actor or apt/threat_actor; the incident's APT flag picks the collection searched first, and an actor missing there is read from the other one) and the first threat report each kind of profile lists (hi/threat, apt/threat). An actor that neither actor collection publishes (a defacer known from attacks/deface only, or a profile Group-IB has not published) is noted in the War Room and the playbook goes on.
+  It is the default playbook of every Group-IB incident type, and none of them runs it automatically: start it from the incident, or turn on Run playbook automatically in the incident type. Incidents without a threat actor finish after the indicator enrichment. A failed lookup never stops the playbook.
 id: Incident Postprocessing - Group-IB Threat Intelligence & Attribution
 inputs: []
 name: Incident Postprocessing - Group-IB Threat Intelligence & Attribution
-outputs: []
+outputs:
+- contextPath: GIBTI.GIBCybercriminalThreatActorProfile
+  description: Cybercriminal threat actor profile (hi/threat_actor).
+  type: unknown
+- contextPath: GIBTI.Nation-StateCybercriminalsThreatActorProfile
+  description: Nation-state threat actor profile (apt/threat_actor).
+  type: unknown
+- contextPath: GIBTI.GIBCybercriminalThreatReport
+  description: Cybercriminal threat report (hi/threat).
+  type: unknown
+- contextPath: GIBTI.Nation-StateCybercriminalsThreatReport
+  description: Nation-state threat report (apt/threat).
+  type: unknown
 starttaskid: "0"
 tasks:
   "0":
@@ -32,253 +47,18 @@ tasks:
           "y": -180
         }
       }
-  "7":
-    id: "7"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 696afe4a-65dc-4d73-8daf-93b39716a156
-      iscommand: false
-      name: Done
-      type: title
-      version: -1
-      description: ''
-    taskid: 696afe4a-65dc-4d73-8daf-93b39716a156
-    timertriggers: []
-    type: title
-    view: |-
-      {
-        "position": {
-          "x": 680,
-          "y": 1070
-        }
-      }
-  "9":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: type
-                root: incident
-          operator: isEqualString
-          right:
-            value:
-              simple: GIB Compromised Account
-        - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: type
-                root: incident
-          operator: isEqualString
-          right:
-            value:
-              simple: GIB Compromised Card
-        - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: type
-                root: incident
-          operator: isEqualString
-          right:
-            value:
-              simple: GIB Targeted Malware
-      label: "Yes"
-    id: "9"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "7"
-      "Yes":
-      - "19"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Checks if this incident type needs postprocessing.
-      id: f4a2738a-e405-4a4a-8ec4-d44619413cce
-      iscommand: false
-      name: Does this incident type need postprocessing?
-      type: condition
-      version: -1
-    taskid: f4a2738a-e405-4a4a-8ec4-d44619413cce
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 890,
-          "y": 140
-        }
-      }
-  "10":
-    id: "10"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "16"
-    note: false
-    quietmode: 0
-    reputationcalc: 1
-    scriptarguments:
-      id:
-        complex:
-          accessor: gibthreatactorid
-          root: incident
-      isAPT:
-        complex:
-          accessor: gibthreatactorisapt
-          root: incident
-    separatecontext: false
-    skipunavailable: true
-    task:
-      brand: ""
-      description: Command performs Group IB event lookup in hi/threat_actor (or in apt/threat_actor if the APT flag is true) collection with provided ID.
-      id: ff71936b-d74f-4a5a-86cd-ea5ff4b610f6
-      iscommand: true
-      name: gibtia-get-threat-actor-info
-      script: '|||gibtia-get-threat-actor-info'
-      type: regular
-      version: -1
-    taskid: ff71936b-d74f-4a5a-86cd-ea5ff4b610f6
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1090,
-          "y": 510
-        }
-      }
-  "11":
-    id: "11"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "7"
-    note: false
-    quietmode: 0
-    reputationcalc: 1
-    scriptarguments:
-      id:
-        complex:
-          accessor: id
-          root: GIBTIA.ThreatActor.stat.reports
-      isAPT:
-        complex:
-          accessor: isAPT
-          root: GIBTIA.ThreatActor
-    separatecontext: false
-    skipunavailable: true
-    task:
-      brand: ""
-      description: Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT flag is true) collection with provided ID.
-      id: 5701ade1-4390-4c6f-859e-e9a8a70758ae
-      iscommand: true
-      name: gibtia-get-threat-info
-      script: '|||gibtia-get-threat-info'
-      type: regular
-      version: -1
-    taskid: 5701ade1-4390-4c6f-859e-e9a8a70758ae
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1090,
-          "y": 860
-        }
-      }
-  "16":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: id
-                root: GIBTIA.ThreatActor.stat.reports
-          operator: isNotEmpty
-      label: "yes"
-    id: "16"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "11"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Checks if there is a threat report in the threat actor info.
-      id: b9d8b836-178a-4278-8b1b-d6b4ed606345
-      iscommand: false
-      name: Is there a report?
-      type: condition
-      version: -1
-    taskid: b9d8b836-178a-4278-8b1b-d6b4ed606345
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 1090,
-          "y": 680
-        }
-      }
-  "19":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: gibthreatactorid
-                root: incident
-          operator: isNotEmpty
-      label: "yes"
-    id: "19"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "10"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Checks if there is a threat actor in the incident.
-      id: c606d45e-1d1c-40cc-8b1e-e382f9587455
-      iscommand: false
-      name: Is there a threat actor?
-      type: condition
-      version: -1
-    taskid: c606d45e-1d1c-40cc-8b1e-e382f9587455
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 1000,
-          "y": 340
-        }
-      }
   "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     conditions:
     - condition:
       - - left:
@@ -306,23 +86,12 @@ tasks:
                 root: modules
           operator: isExists
       label: "yes"
-    id: "20"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "9"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
     task:
       brand: ""
-      description: Checks if the integration is available.
+      description: Checks that an active Group-IB Threat Intelligence instance exists.
       id: 9815ee7f-c6ff-4e04-8d4b-f034a70ecd32
       iscommand: false
-      name: Is Group-IB Threat Intelligence & Attribution enabled?
+      name: Is Group-IB Threat Intelligence enabled?
       type: condition
       version: -1
     taskid: 9815ee7f-c6ff-4e04-8d4b-f034a70ecd32
@@ -335,20 +104,329 @@ tasks:
           "y": -40
         }
       }
+  "40":
+    id: "40"
+    continueonerror: true
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments: {}
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Reads the record again with the matching gibti-get-*-info command and creates every observable of the record with the verdict, tags, malware family, TLP, geo data, ASN, file hashes and size, CVSS score and vector, CVE dates and description, and GIB Collection of the record, and related to the Malware / Threat Actor objects it names (the automation creates those objects). A Cryptocurrency Address indicator gets no tags, malware family or TLP, and an Email or CVE indicator no malware family. The names on a GIB Data Breach incident (the leak's publishers) and on a defacement incident (the defacer's handle) make no object. A phishing group that Group-IB flags as a false positive or allow-listed gives no indicator and no object. In an incident of a legacy type (a renamed or removed collection), it returns a note and enriches nothing.
+      id: 5f0c1b2e-6d3a-4c6b-9a0e-7f2d4a1b8c40
+      iscommand: false
+      name: Enrich the incident's indicators
+      script: GIBTIEnrichIncidentIndicators
+      scriptName: GIBTIEnrichIncidentIndicators
+      type: regular
+      version: -1
+    taskid: 5f0c1b2e-6d3a-4c6b-9a0e-7f2d4a1b8c40
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 140
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: gibthreatactorid
+                root: incident
+          operator: isNotEmpty
+      label: "yes"
+    task:
+      brand: ""
+      description: Checks whether the incident names a Group-IB threat actor.
+      id: c606d45e-1d1c-40cc-8b1e-e382f9587455
+      iscommand: false
+      name: Is there a threat actor?
+      type: condition
+      version: -1
+    taskid: c606d45e-1d1c-40cc-8b1e-e382f9587455
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 320
+        }
+      }
+  "10":
+    id: "10"
+    continueonerror: true
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      using:
+        complex:
+          accessor: sourceInstance
+          root: incident
+      id:
+        complex:
+          accessor: gibthreatactorid
+          root: incident
+      isAPT:
+        complex:
+          accessor: gibthreatactorisapt
+          root: incident
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Looks up every threat actor the incident names, in hi/threat_actor, or first in apt/threat_actor when the incident marks the actor as APT; an actor the first collection does not have is read from the other one, and an actor neither publishes is noted in the War Room.
+      id: ff71936b-d74f-4a5a-86cd-ea5ff4b610f6
+      iscommand: true
+      name: Get threat actor profile
+      script: '|||gibti-get-threat-actor-info'
+      type: regular
+      version: -1
+    taskid: ff71936b-d74f-4a5a-86cd-ea5ff4b610f6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 500
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: reports.id
+                root: GIBTI.GIBCybercriminalThreatActorProfile
+          operator: isNotEmpty
+      label: "yes"
+    task:
+      brand: ""
+      description: Checks whether a cybercriminal actor profile (hi/threat_actor) lists threat reports.
+      id: b9d8b836-178a-4278-8b1b-d6b4ed606345
+      iscommand: false
+      name: Does a cybercriminal profile list a report?
+      type: condition
+      version: -1
+    taskid: b9d8b836-178a-4278-8b1b-d6b4ed606345
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 680
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "31"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: reports.id
+                root: GIBTI.Nation-StateCybercriminalsThreatActorProfile
+          operator: isNotEmpty
+      label: "yes"
+    task:
+      brand: ""
+      description: Checks whether a nation-state actor profile (apt/threat_actor) lists threat reports.
+      id: 6d0b2b0e-4c1a-4d0c-9c1e-2f1e5a7c9d31
+      iscommand: false
+      name: Does a nation-state profile list a report?
+      type: condition
+      version: -1
+    taskid: 6d0b2b0e-4c1a-4d0c-9c1e-2f1e5a7c9d31
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1040
+        }
+      }
+  "11":
+    id: "11"
+    continueonerror: true
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      using:
+        complex:
+          accessor: sourceInstance
+          root: incident
+      id:
+        complex:
+          accessor: reports.id
+          root: GIBTI.GIBCybercriminalThreatActorProfile
+          transformers:
+          - operator: FirstArrayElement
+      isAPT:
+        simple: "false"
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Fetches from hi/threat the first threat report the cybercriminal actor profiles list; a report hi/threat does not have is read from apt/threat.
+      id: 5701ade1-4390-4c6f-859e-e9a8a70758ae
+      iscommand: true
+      name: Get cybercriminal threat report
+      script: '|||gibti-get-threat-info'
+      type: regular
+      version: -1
+    taskid: 5701ade1-4390-4c6f-859e-e9a8a70758ae
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 860
+        }
+      }
+  "31":
+    id: "31"
+    continueonerror: true
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      using:
+        complex:
+          accessor: sourceInstance
+          root: incident
+      id:
+        complex:
+          accessor: reports.id
+          root: GIBTI.Nation-StateCybercriminalsThreatActorProfile
+          transformers:
+          - operator: FirstArrayElement
+      isAPT:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Fetches from apt/threat the first threat report the nation-state actor profiles list; a report apt/threat does not have is read from hi/threat.
+      id: 2f7c1d3a-8e5b-4b7a-a1c4-9d3e6f0b7a31
+      iscommand: true
+      name: Get nation-state threat report
+      script: '|||gibti-get-threat-info'
+      type: regular
+      version: -1
+    taskid: 2f7c1d3a-8e5b-4b7a-a1c4-9d3e6f0b7a31
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1220
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 696afe4a-65dc-4d73-8daf-93b39716a156
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 696afe4a-65dc-4d73-8daf-93b39716a156
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1400
+        }
+      }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {
-      "16_7_#default#": 0.35,
+      "16_30_#default#": 0.35,
       "19_7_#default#": 0.18,
       "20_7_#default#": 0.22,
-      "9_7_#default#": 0.18
+      "30_7_#default#": 0.5
     },
     "paper": {
       "dimensions": {
-        "height": 1315,
+        "height": 1645,
         "width": 790,
-        "x": 680,
+        "x": 450,
         "y": -180
       }
     }

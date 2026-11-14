@@ -1,0 +1,68 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Data Breach"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibbreachrecorddetails",
+    "closeForm": true,
+    "content": true,
+    "description": "The other columns of the breached record, as attribute and value pairs.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibbreachrecorddetails",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Breach Record Details",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "GIB Data Breach"
+    ],
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "columns": [
+        {
+            "displayName": "Attribute",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "key",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Value",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "value",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "defaultRows": [
+        {}
+    ],
+    "propagationLabels": [
+        "all"
+    ]
+}
