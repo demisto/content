@@ -284,11 +284,17 @@ class TestGetFetchStartTime:
         assert "T" in result
 
     def test_default_first_fetch(self):
-        """Test default first_fetch when not specified."""
+        """Test default first_fetch is 1 day back, floored to midnight UTC."""
         params = {}
         last_run = {}
         result = get_fetch_start_time(params, last_run)
-        assert result is not None
+        expected_date = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")  # noqa: UP017
+        assert result == f"{expected_date}T00:00:00.000000Z"
+
+    def test_first_run_floors_to_midnight_utc(self):
+        """Test that the first_fetch start is floored to midnight UTC so same-day midnight-dated events are covered."""
+        result = get_fetch_start_time({"first_fetch": "2026-10-28T14:23:45Z"}, {})
+        assert result == "2026-10-28T00:00:00.000000Z"
 
 
 # ========================================
@@ -632,11 +638,76 @@ class TestFetchEventsCommand:
 
         params = {"max_fetch": "1000", "first_fetch": "3 days"}
         mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
         mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
 
         fetch_events_command(client, params)
 
         mock_send.assert_not_called()
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert last_run_arg["last_fetch"].endswith("T00:00:00.000000Z")
+        assert last_run_arg["last_fetched_ids"] == []
+
+    def test_fetch_no_events_first_run_persists_start_time(self, client, mocker):
+        """Test that an empty first fetch persists the start time so the window does not slide forward."""
+        mock_get_events = mocker.patch.object(client, "get_history_events", return_value=[])
+
+        params = {"max_fetch": "1000", "first_fetch": "2026-10-25T09:00:00Z"}
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+        mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
+
+        fetch_events_command(client, params)
+
+        mock_send.assert_not_called()
+        assert mock_get_events.call_args[1]["date_from"] == "2026-10-25T00:00:00.000000Z"
+        mock_set_last_run.assert_called_once_with({"last_fetch": "2026-10-25T00:00:00.000000Z", "last_fetched_ids": []})
+
+    def test_fetch_no_events_preserves_existing_last_run(self, client, mocker):
+        """Test that an empty fetch keeps the existing high-water mark and dedup IDs unchanged."""
+        mock_get_events = mocker.patch.object(client, "get_history_events", return_value=[])
+
+        params = {"max_fetch": "1000", "first_fetch": "3 days"}
+        previous_last_run = {"last_fetch": "2026-10-28T00:00:00.000Z", "last_fetched_ids": [1, 2]}
+        mocker.patch.object(demisto, "getLastRun", return_value=previous_last_run)
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(client, params)
+
+        assert mock_get_events.call_args[1]["date_from"] == "2026-10-28T00:00:00.000Z"
+        mock_set_last_run.assert_called_once_with(previous_last_run)
+
+    def test_fetch_events_published_after_empty_first_run(self, client, mocker):
+        """Test that midnight-dated events published after an empty first fetch are collected on the next cycle.
+
+        Reproduces the scenario where every cycle queried only the last minute and never matched
+        events dated at midnight UTC.
+        """
+        mocker.patch.object(client, "get_history_events", return_value=[])
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+        mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
+
+        params = {"max_fetch": "1000", "first_fetch": "2026-10-26T12:00:00Z"}
+        fetch_events_command(client, params)
+        first_last_run = mock_set_last_run.call_args[0][0]
+
+        midnight_event = {
+            "id": 42,
+            "date": "2026-10-28T00:00:00.000Z",
+            "event_type": "issues",
+        }
+        mock_get_events = mocker.patch.object(client, "get_history_events", return_value=[midnight_event])
+        mocker.patch.object(demisto, "getLastRun", return_value=first_last_run)
+        mock_set_last_run_2 = mocker.patch.object(demisto, "setLastRun")
+        mock_send = mocker.patch("SecurityScorecardEventCollector.send_events_to_xsiam")
+
+        fetch_events_command(client, params)
+
+        assert mock_get_events.call_args[1]["date_from"] == "2026-10-26T00:00:00.000000Z"
+        mock_send.assert_called_once()
+        assert mock_send.call_args[1]["events"][0]["id"] == 42
+        mock_set_last_run_2.assert_called_once_with({"last_fetch": "2026-10-28T00:00:00.000Z", "last_fetched_ids": [42]})
 
     def test_fetch_rate_limit_on_detail_url(self, client, mocker):
         """Test fetch handles rate limit on detail URL - sends partial results."""
