@@ -130,5 +130,9 @@
             "type": "grid",
             "name": "Bmc Customer"
         }
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

@@ -25,5 +25,9 @@
     "type": "boolean",
     "unmapped": false,
     "unsearchable": true,
-    "useAsKpi": false
+    "useAsKpi": false,
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }
