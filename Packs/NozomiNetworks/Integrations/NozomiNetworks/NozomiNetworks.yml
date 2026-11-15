@@ -1,10 +1,11 @@
+name: Nozomi Networks
+display: Nozomi Networks
 commonfields:
   id: Nozomi Networks
   version: -1
-name: Nozomi Networks
-display: Nozomi Networks
 category: Network Security
 provider: Mitsubishi Electric
+supportlevelheader: xsoar
 fromversion: 5.0.0
 tests:
 - No tests
@@ -104,6 +105,12 @@ configuration:
   advanced: true
   required: false
   additionalinfo: The Cortex XSOAR role assigned to incidents created from fetched Nozomi alerts, for example Analyst_L2. Multiple roles can be specified as a comma-separated list. Leave empty to not assign a role.
+- display: Custom incident name pattern
+  name: customIncidentNamePattern
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: 'The pattern used to build the incident name by concatenating Nozomi alert fields written as {field} placeholders. For example: {type_id}_{id} - {description}. Missing fields are rendered as empty. The name is limited to 76 characters (longer names are truncated with "..."). If the pattern is empty, or the resulting name is empty, the default name <alert name>_<alert id> is used.'
 script:
   script: ''
   type: python

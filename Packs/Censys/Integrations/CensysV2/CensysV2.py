@@ -1,5 +1,4 @@
 from collections.abc import Callable
-from itertools import zip_longest
 from typing import Any
 
 import demistomock as demisto
@@ -15,7 +14,7 @@ STATUS_CODE_TO_RETRY = (429, *(status_code for status_code in requests.status_co
 OK_CODES = (200, 201)
 BACKOFF_FACTOR = 7.5  # Sleep for [0s, 15s, 30s, 60s] between retries.
 DATE_FORMAT: str = "%Y-%m-%dT%H:%M:%S.000Z"
-PACK_VERSION = get_pack_version() or "3.2.0"
+PACK_VERSION = get_pack_version() or "3.2.4"
 DEMISTO_XSOAR_VERSION = get_demisto_version_as_str().split("-")[0]
 CONNECTOR_NAME_VERSION = f"CensysXSOAR/{PACK_VERSION} (XSOAR/{DEMISTO_XSOAR_VERSION}; ts={int(time.time())})"
 
@@ -68,6 +67,32 @@ IP_SEARCH_FIELDS = [
     "host.whois.network.cidrs",
 ]
 
+# Requested only when host reputation scoring is enabled, as host reputation data is limited to Censys Core customers.
+IP_REPUTATION_SEARCH_FIELDS = [
+    "host.reputation.label",
+    "host.reputation.score",
+    "host.reputation.score_level",
+    "host.reputation.score_suppressed",
+    "host.reputation.model_version",
+    "host.reputation.class_probabilities.label",
+    "host.reputation.class_probabilities.probability",
+    "host.reputation.evidence.category",
+    "host.reputation.evidence.evidence_score",
+    "host.reputation.evidence.additional_fields.field",
+    "host.reputation.evidence.additional_fields.value",
+    "host.reputation.evidence.external_signals.source",
+    "host.reputation.evidence.external_signals.description",
+    "host.reputation.evidence.external_signals.tlp",
+    "host.reputation.evidence.threats.threat_id",
+    "host.reputation.evidence.threats.threat_types",
+    "host.reputation.evidence.threats.last_observed_time",
+    "host.reputation.evidence.feature.id",
+    "host.reputation.evidence.feature.name",
+    "host.reputation.evidence.feature.value",
+    "host.reputation.evidence.feature.category",
+    "host.reputation.evidence.feature.contribution",
+]
+
 ERRORS = {
     "INVALID_OBJECT": "Failed to parse {} object from response: {}",
     "REQUIRED_ARGUMENT": "Please provide a valid value for the '{}'. It is required field.",
@@ -102,10 +127,17 @@ DEFAULT_PORTS = [80, 443]
 DEFAULT_TRANSPORT_PROTOCOL = "Unknown"
 MIN_PORT = 1
 MAX_PORT = 65535
+IP_INFO_SOURCE = "IPINFO"
 
 VALID_IOC_TYPE = {"service": "Service", "web property": "Web Property"}
 VALID_TRANSPORT_PROTOCOL = {"unknown": "Unknown", "tcp": "TCP", "udp": "UDP", "icmp": "ICMP", "quic": "QUIC"}
 VALID_RELATED_INFRA_IOC_TYPE = {"host": "Host", "web property": "Web Property", "certificate": "Certificate"}
+# Censys host reputation labels that are mapped to a DBot score. Any other label is not scored.
+REPUTATION_LABEL_TO_DBOT_SCORE = {
+    "MALICIOUS": Common.DBotScore.BAD,
+    "SUSPICIOUS": Common.DBotScore.SUSPICIOUS,
+    "BENIGN": Common.DBotScore.GOOD,
+}
 
 
 class Client(BaseClient):
@@ -501,7 +533,7 @@ def handle_exceptions(e: Exception, results: list[CommandResults], execution_met
         # Handle non-premium access error
         raise DemistoException(
             "Your user does not have permission for premium features. "
-            "Please ensure that you deselect the 'Labels premium feature available' option "
+            "Please ensure that you deselect the 'Determine IP score using Censys Labels' option "
             f"for non-premium access. Error: {message}"
         )
 
@@ -535,6 +567,55 @@ def get_dbot_score(params: dict, result_labels: list):
         return Common.DBotScore.SUSPICIOUS, description
 
     return Common.DBotScore.NONE, None
+
+
+def get_reputation_dbot_score(params: dict, reputation_label: str) -> tuple[int, str | None]:
+    """Calculate the DBot score of a host based on the Censys host reputation label.
+
+    Args:
+        params: Integration parameters, used for the "host_reputation_score" option.
+        reputation_label: The Censys host reputation label (host.reputation.label).
+
+    Returns:
+        Tuple of the DBot score and its description. The score is NONE when the option is
+        disabled or the reputation label is not MALICIOUS, SUSPICIOUS or BENIGN.
+    """
+    if not argToBoolean(params.get("host_reputation_score") or False):
+        return Common.DBotScore.NONE, None
+
+    reputation_label = reputation_label.upper()
+    if reputation_label not in REPUTATION_LABEL_TO_DBOT_SCORE:
+        return Common.DBotScore.NONE, None
+
+    return REPUTATION_LABEL_TO_DBOT_SCORE[reputation_label], f"Censys host reputation label: {reputation_label}"
+
+
+def get_ip_dbot_score(params: dict, resource: dict) -> tuple[int, str | None]:
+    """Calculate the DBot score of a host based on its labels and its Censys host reputation label.
+
+    Both host labels (host.labels.value) and service labels (host.services.labels.value) are used for label scoring.
+    The highest of the two scores is returned. When both have the same score, their descriptions are combined.
+
+    Args:
+        params: Integration parameters.
+        resource: The host resource data from Censys API.
+
+    Returns:
+        Tuple of the DBot score and its description.
+    """
+    host_labels = resource.get("labels") or []
+
+    service_labels: list[dict] = []
+    for service in resource.get("services") or []:
+        service_labels.extend(service.get("labels") or [])
+
+    labels = list({label.get("value") for label in host_labels + service_labels if label.get("value")})
+    reputation_label = demisto.get(resource, "reputation.label") or ""
+    candidates = [get_dbot_score(params, labels), get_reputation_dbot_score(params, reputation_label)]
+
+    score = max(candidate_score for candidate_score, _ in candidates)
+    descriptions = [description for candidate_score, description in candidates if candidate_score == score and description]
+    return score, "; ".join(descriptions) or None
 
 
 def trim_spaces_from_args(args: dict) -> dict:
@@ -745,12 +826,24 @@ def validate_related_infra_command_args(ioc_type: str, ioc_value: str) -> None:
         # Validate that ioc_value includes port (format: hostname:port)
         if ":" not in ioc_value:
             raise ValueError("For Web Property IOC type, ioc_value must include port in the format hostname:port")
-        parts = ioc_value.rsplit(":", 1)
-        if len(parts) != 2:
-            raise ValueError("For Web Property IOC type, ioc_value must include port in the format hostname:port")
-
-        port = int(parts[1])
+        port = int(ioc_value.rsplit(":", 1)[1])
         validate_port_argument(port)
+
+
+def find_first_by_source(items: list[dict], source: str) -> dict:
+    """Find the first item reported by the given source.
+
+    Args:
+        items: The list of items, each containing a "source" key
+        source: The source to match
+
+    Returns:
+        The first item whose source matches, else an empty dictionary
+    """
+    for item in items:
+        if item.get("source") == source:
+            return item
+    return {}
 
 
 def prepare_hr_for_greynoise(resource: dict) -> str:
@@ -784,28 +877,23 @@ def prepare_hr_for_ip_info(resource: dict) -> str:
     Returns:
         Human-readable output string for the IP information section
     """
-    networks: list[dict] = resource.get("network") or []
-    privacies: list[dict] = resource.get("privacy") or []
-    if not networks and not privacies:
+    # Only the first entry reported by the IPINFO source is considered.
+    network = find_first_by_source(resource.get("network") or [], IP_INFO_SOURCE)
+    privacy = find_first_by_source(resource.get("privacy") or [], IP_INFO_SOURCE)
+    if not network and not privacy:
         return ""
 
-    hr_data = []
-    empty_entry: dict = {}
-
-    # The network and the privacy data are reported as parallel lists, one entry per source.
-    for network, privacy in zip_longest(networks, privacies, fillvalue=empty_entry):
-        hr_data.append(
-            {
-                "Network Hosting": network.get("hosting"),
-                "Network Mobile": network.get("mobile"),
-                "Network Satellite": network.get("satellite"),
-                "Privacy Anonymous": privacy.get("anonymous"),
-                "Privacy Tor": privacy.get("tor"),
-                "Privacy Proxy": privacy.get("proxy"),
-                "Privacy Relay": privacy.get("relay"),
-                "Privacy VPN": privacy.get("vpn"),
-            }
-        )
+    # A flag missing from the IPINFO entry is reported as False.
+    hr_data = {
+        "Network Hosting": network.get("hosting", False),
+        "Network Mobile": network.get("mobile", False),
+        "Network Satellite": network.get("satellite", False),
+        "Privacy Anonymous": privacy.get("anonymous", False),
+        "Privacy Tor": privacy.get("tor", False),
+        "Privacy Proxy": privacy.get("proxy", False),
+        "Privacy Relay": privacy.get("relay", False),
+        "Privacy VPN": privacy.get("vpn", False),
+    }
 
     headers = [
         "Network Hosting",
@@ -821,71 +909,81 @@ def prepare_hr_for_ip_info(resource: dict) -> str:
     return tableToMarkdown("IP Info", hr_data, headers=headers, removeNull=True, sort_headers=False)
 
 
-def prepare_hr_for_mallory(resource: dict) -> str:
-    """Prepare human-readable output for the Mallory third party data of a host resource.
+def prepare_hr_for_reputation(resource: dict) -> str:
+    """Prepare human-readable output for the reputation data of a host resource.
 
     Args:
         resource: The host resource data from Censys API
 
     Returns:
-        Human-readable output string for the Mallory section
+        Human-readable output string for the reputation section
     """
-    mallory_entries = demisto.get(resource, "third_party.mallory") or []
-    if not mallory_entries:
+    reputation = resource.get("reputation") or {}
+    if not reputation:
         return ""
 
-    hr_data = []
+    hr_output = tableToMarkdown(
+        "Reputation",
+        [
+            {"Field": "Label", "Value": reputation.get("label")},
+            # The API reports the score as a fraction, display it on a 0-100 scale.
+            {"Field": "Score", "Value": round((reputation.get("score") or 0) * 100, 2)},
+            {"Field": "Score Suppressed", "Value": reputation.get("score_suppressed", False)},
+        ],
+        headers=["Field", "Value"],
+        removeNull=True,
+        sort_headers=False,
+    )
 
-    for entry in mallory_entries:
-        observable = entry.get("observable") or {}
-        verdict_summary = entry.get("verdict_summary") or {}
-        verdicts = [f"{verdict}: {count}" for verdict, count in verdict_summary.items() if count]
-        opinions = entry.get("opinions") or []
-        sources = list(dict.fromkeys([opinion.get("source") for opinion in opinions if opinion.get("source")]))
-        confidences = list(dict.fromkeys([opinion.get("confidence") for opinion in opinions if opinion.get("confidence")]))
-        tags = list(
-            dict.fromkeys([tag for opinion in opinions for tag in (demisto.get(opinion, "attributes.tags") or []) if tag])
-        )
-
-        hr_data.append(
+    class_probabilities = reputation.get("class_probabilities") or []
+    if class_probabilities:
+        probability_hr_data = [
             {
-                "Name": observable.get("name"),
-                "Type": observable.get("type"),
-                "First Seen At": entry.get("first_seen_at"),
-                "Last Seen At": entry.get("last_seen_at"),
-                "Last Update At": observable.get("updated_at"),
-                "Description": observable.get("description"),
-                "Verdict": ", ".join(verdicts),
-                "Confidence": ", ".join(confidences),
-                "Source": ", ".join(sources),
-                "Source Count": entry.get("source_count"),
-                "Tags": ", ".join(tags),
+                "Label": class_probability.get("label"),
+                # The API reports the probability as a fraction, display it as a percentage.
+                "Probability (%)": round((class_probability.get("probability") or 0) * 100, 2),
             }
+            for class_probability in class_probabilities
+        ]
+        hr_output += "\n" + tableToMarkdown(
+            "Class Probabilities",
+            probability_hr_data,
+            headers=["Label", "Probability (%)"],
+            removeNull=True,
+            sort_headers=False,
         )
 
-    headers = [
-        "Name",
-        "Type",
-        "First Seen At",
-        "Last Seen At",
-        "Last Update At",
-        "Description",
-        "Verdict",
-        "Confidence",
-        "Source",
-        "Source Count",
-        "Tags",
-    ]
+    evidences = reputation.get("evidence") or []
+    if evidences:
+        evidence_hr_data = []
+        for evidence in evidences:
+            feature = evidence.get("feature") or {}
+            # The API reports the contribution as a fraction, display it as a signed percentage.
+            contribution = round((feature.get("contribution") or 0) * 100, 2)
+            evidence_hr_data.append(
+                {
+                    "Contribution (%)": f"{contribution:+}",
+                    "Feature": feature.get("name"),
+                    "Value": feature.get("value"),
+                    "Category": feature.get("category"),
+                }
+            )
+        hr_output += "\n" + tableToMarkdown(
+            "Top Signals",
+            evidence_hr_data,
+            headers=["Contribution (%)", "Feature", "Value", "Category"],
+            removeNull=True,
+            sort_headers=False,
+        )
 
-    return tableToMarkdown("Mallory", hr_data, headers=headers, removeNull=True, sort_headers=False)
+    return hr_output
 
 
-def prepare_hr_for_ip_resource(resources: list[dict] | dict, table_name: str = "Enriched Host Data") -> str:
+def prepare_hr_for_ip_resource(resources: list[dict] | dict) -> str:
     """Prepare human-readable output for IP resource(s).
 
     Args:
         resources: The host resource data from Censys API (single dict or list of dicts)
-        table_name: The title of the host data table. Defaults to "Enriched Host Data".
 
     Returns:
         Human-readable output string
@@ -987,13 +1085,15 @@ def prepare_hr_for_ip_resource(resources: list[dict] | dict, table_name: str = "
         }
         hr_data.append(hr_content)
 
-    human_readable = tableToMarkdown(table_name, hr_data, removeNull=True, sort_headers=False)
+    # The reputation section is displayed first, ahead of the host data table.
+    reputation_sections = [prepare_hr_for_reputation(resource) for resource in resources]
+    human_readable = "".join(f"{section}\n" for section in reputation_sections if section)
+    human_readable += tableToMarkdown("Enriched Host Data", hr_data, removeNull=True, sort_headers=False)
 
     for resource in resources:
         sections = [
             prepare_hr_for_greynoise(resource),
             prepare_hr_for_ip_info(resource),
-            prepare_hr_for_mallory(resource),
         ]
         human_readable += "".join(f"\n{section}" for section in sections if section)
 
@@ -1147,8 +1247,7 @@ def prepare_command_result_for_ip_resource(
         CommandResults for the given host resource.
     """
     ip = resource.get("ip")
-    labels = list({label.get("value") for label in resource.get("labels", [])})
-    score, malicious_description = get_dbot_score(params, labels)
+    score, malicious_description = get_ip_dbot_score(params, resource)
     dbot_score = Common.DBotScore(
         indicator=ip,
         indicator_type=DBotScoreType.IP,
@@ -1168,10 +1267,9 @@ def prepare_command_result_for_ip_resource(
     }
     indicator = Common.IP(dbot_score=dbot_score, **content)
 
-    hr_output = f"### Censys results for IP: {ip}\n\n"
-    table_name = "Enriched Host Data (Enrichment API)" if host_enrichment_used else "Enriched Host Data"
-
-    hr_output += prepare_hr_for_ip_resource(resource, table_name)
+    source_suffix = " (Enrichment API)" if host_enrichment_used else ""
+    hr_output = f"### Censys results for IP: {ip}{source_suffix}\n\n"
+    hr_output += prepare_hr_for_ip_resource(resource)
     outputs = {**resource, "HostEnrichmentUsed": host_enrichment_used}
     return CommandResults(
         outputs_prefix="Censys.IP",
@@ -1238,7 +1336,11 @@ def get_ip_data_using_search_endpoint(
         List of command results for the given IP addresses.
     """
     results: List[CommandResults] = []
-    fields = IP_SEARCH_FIELDS if params.get("premium_access") else None
+    fields = None
+    if params.get("premium_access"):
+        fields = IP_SEARCH_FIELDS
+        if params.get("host_reputation_score"):
+            fields = IP_SEARCH_FIELDS + IP_REPUTATION_SEARCH_FIELDS
 
     # Build query for all IPs
     query = " or ".join([f'host.ip="{ip_addr}"' for ip_addr in ips])
@@ -1275,12 +1377,12 @@ def get_ip_data_using_search_endpoint(
 
 
 def test_module(client: Client, params: dict[str, Any]) -> str:
-    # Check if the user has selected malicious or suspicious labels without premium access
+    # Check if the user has selected malicious or suspicious labels without enabling label scoring
     if not params.get("premium_access") and (params.get("malicious_labels") or params.get("suspicious_labels")):
         raise DemistoException(
-            "The 'Determine IP score by label' feature only works for Censys paid subscribers (v3 API). "
-            "If you have paid access select the 'Determine IP score by label' option "
-            "to utilize this functionality, or deselect labels"
+            "Malicious or suspicious labels are selected but the 'Determine IP score using Censys Labels' option is not. "
+            "Please select the 'Determine IP score using Censys Labels' option to utilize this functionality, "
+            "or deselect labels."
         )
 
     fields = ["labels"] if params.get("premium_access") else None
@@ -1301,8 +1403,8 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
                 # Handle permission error for non-premium users attempting to access premium features
                 if "specific fields" in e.message:
                     raise DemistoException(
-                        "Your user does not have permission for premium features (v3 API). "
-                        "Please ensure that you deselect the 'Determine IP score by label' option "
+                        "Your user does not have permission for premium features. "
+                        "Please ensure that you deselect the 'Determine IP score using Censys Labels' option "
                         "for non-premium access."
                     )
                 # Handle organization authorization error
@@ -1339,8 +1441,7 @@ def censys_view_command(client: Client, args: dict[str, Any]) -> CommandResults:
         lon = demisto.get(resource, "location.coordinates.longitude")
 
         params = demisto.params()
-        labels = list({label.get("value") for label in resource.get("labels", [])})
-        score, malicious_description = get_dbot_score(params, labels)
+        score, malicious_description = get_ip_dbot_score(params, resource)
         dbot_score = Common.DBotScore(
             indicator=query,
             indicator_type=DBotScoreType.IP,
@@ -1531,7 +1632,7 @@ def ip_command(client: Client, args: dict, params: dict) -> List[CommandResults]
             - use_enrichment_endpoint (str, optional): Whether to retrieve the host data from the
                 host enrichment endpoint. Takes precedence over the "use_host_enrichment" parameter.
         params: Integration parameters, used for the reputation calculation
-            (malicious and suspicious labels, thresholds, source reliability, premium access)
+            (malicious and suspicious labels, thresholds, host reputation, source reliability, premium access)
             and for the "use_host_enrichment" default of the enrichment endpoint.
 
     Returns:
@@ -1987,7 +2088,7 @@ def censys_rescan_command(client: Client, args: dict[str, Any]) -> CommandResult
     else:
         human_readable = prepare_hr_for_web_property_resource(resource)
 
-    hr_output = f"### Scan completed successfully for {ioc_value}:{port}.\n" + human_readable
+    hr_output = f"### Scan completed successfully for {ioc_value}:{port}.\n\n" + human_readable
     outputs.update({"enrichment_data": resource, "status": "completed", "is_completed": True})
 
     return CommandResults(
@@ -2119,24 +2220,21 @@ def run_polling_command(
     if is_completed:
         return result
 
-    if not is_completed:
-        polling_args = {**args, "polling": True}
-        scan_id = outputs.get("scan_id")
-        job_id = outputs.get("job_id")
-        if scan_id:
-            polling_args["scan_id"] = scan_id
-        if job_id:
-            polling_args["job_id"] = job_id
-        scheduled_command = ScheduledCommand(
-            command=command_name,
-            next_run_in_seconds=DEFAULT_POLLING_INTERVAL,
-            args=polling_args,
-            timeout_in_seconds=DEFAULT_POLLING_TIMEOUT,
-        )
-        command_results = CommandResults(scheduled_command=scheduled_command)
-        return [result, command_results]
-
-    return result
+    polling_args = {**args, "polling": True}
+    scan_id = outputs.get("scan_id")
+    job_id = outputs.get("job_id")
+    if scan_id:
+        polling_args["scan_id"] = scan_id
+    if job_id:
+        polling_args["job_id"] = job_id
+    scheduled_command = ScheduledCommand(
+        command=command_name,
+        next_run_in_seconds=DEFAULT_POLLING_INTERVAL,
+        args=polling_args,
+        timeout_in_seconds=DEFAULT_POLLING_TIMEOUT,
+    )
+    command_results = CommandResults(scheduled_command=scheduled_command)
+    return [result, command_results]
 
 
 """ MAIN FUNCTION """

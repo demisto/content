@@ -1,0 +1,55 @@
+name: Trigger AI Reviewer
+on:
+  # content-bot adds "Contribution Form Filled" once the contribution form is processed.
+  # pull_request_target (unlike pull_request) is not held for approval on fork PRs.
+  pull_request_target:
+    types: [labeled]
+
+permissions:
+  pull-requests: write
+  issues: read
+  contents: read
+
+jobs:
+  add_ready_for_ai_review_label:
+    runs-on: ubuntu-latest
+    # Filtered at job level so no runner is spent on unrelated labels.
+    # '[Marketplace Contribution]' PRs are intentionally included: handle-new-external-pr.yml adds the form label
+    # to them on open, so they get the AI review right away. Test PRs are excluded, same as in the other workflows.
+    if: >-
+      github.repository == 'demisto/content'
+      && github.event.pull_request.head.repo.fork == true
+      && github.event.label.name == 'Contribution Form Filled'
+      && contains(github.head_ref, 'xsoar-bot-contrib-ContributionTestPack') == false
+    concurrency:
+      group: ready-for-ai-review-${{ github.event.pull_request.number }}
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"  # The Python version set here is the minimum supported by content, if you change it here, please change all the places containing this comment.
+
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
+
+      - name: Install Python Dependencies
+        run: |
+          poetry install --with github-actions
+
+      - name: set pythonpath
+        run: |
+          echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+
+      - name: Add ready-for-ai-review label
+        env:
+          CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+          EVENT_PAYLOAD: ${{ toJson(github.event) }}
+        run: |
+          cd .github/github_workflow_scripts
+          poetry run ./add_ready_for_ai_review_label.py

@@ -1,0 +1,22 @@
+commonfields:
+  id: FormatDeviceSecurityDestinationPort
+  version: -1
+name: FormatDeviceSecurityDestinationPort
+comment: Formats destination ports and protocols into a comma-separated string for an incident field.
+script: '-'
+type: python
+tags:
+- transformer
+- entirelist
+enabled: true
+args:
+- name: value
+  description: The connection data containing destination port and optional ipProto values to format.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.14.13495286
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

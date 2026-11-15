@@ -1082,6 +1082,138 @@ def test_test_module(capfd, custom_mapping, direction, should_raise_error):
                 pytest.fail(f"Unexpected exception raised for input {input}: {e}")
 
 
+@pytest.mark.parametrize(
+    "configured_url, local_server_url",
+    [
+        ("https://tenant.xdr.pan.local", "https://tenant.xdr.pan.local"),
+        # Scheme and trailing slash differences.
+        ("http://tenant.xdr.pan.local/", "https://tenant.xdr.pan.local"),
+        # Path suffix differences (e.g. the integration appends /public_api/v1).
+        ("https://tenant.xdr.pan.local/public_api/v1", "https://tenant.xdr.pan.local"),
+        # Port differences.
+        ("https://tenant.xdr.pan.local:443", "https://tenant.xdr.pan.local:8443"),
+        # api- prefix differences (API host vs. UI host of the same tenant).
+        ("https://api-tenant.xdr.pan.local", "https://tenant.xdr.pan.local"),
+        # api. prefix differences.
+        ("https://api.tenant.xdr.pan.local", "https://tenant.xdr.pan.local"),
+        # Case sensitivity.
+        ("https://TENANT.xdr.pan.local", "https://tenant.xdr.pan.local"),
+    ],
+    ids=["identical", "scheme-and-slash", "path-suffix", "port", "api-dash-prefix", "api-dot-prefix", "case-insensitive"],
+)
+def test_check_self_pointing_url_raises_on_platform(mocker, configured_url, local_server_url):
+    """
+    Given:
+        - Running on the Cortex Platform.
+        - A configured Cortex XDR server URL that resolves to the same host as the local tenant,
+          possibly differing only by scheme, trailing slash, path, port, api- prefix, or casing.
+    When:
+        - check_self_pointing_url is called.
+    Then:
+        - A DemistoException is raised.
+    """
+    from CortexXDRIR import check_self_pointing_url
+
+    mocker.patch("CortexXDRIR.is_platform", return_value=True)
+
+    with pytest.raises(DemistoException, match="points to the tenant this integration instance is running on"):
+        check_self_pointing_url(configured_url, local_server_url)
+
+
+@pytest.mark.parametrize(
+    "configured_url, local_server_url",
+    [
+        ("https://tenant-a.xdr.pan.local", "https://tenant-b.xdr.pan.local"),
+        ("", "https://tenant.xdr.pan.local"),
+        ("https://tenant.xdr.pan.local", ""),
+        ("", ""),
+    ],
+    ids=["different-hosts", "empty-configured-url", "empty-local-url", "both-empty"],
+)
+def test_check_self_pointing_url_passes_on_platform(mocker, configured_url, local_server_url):
+    """
+    Given:
+        - Running on the Cortex Platform.
+        - A configured Cortex XDR server URL that resolves to a different host than the local tenant,
+          or either URL is missing/empty (e.g. running on an engine).
+    When:
+        - check_self_pointing_url is called.
+    Then:
+        - No exception is raised.
+    """
+    from CortexXDRIR import check_self_pointing_url
+
+    mocker.patch("CortexXDRIR.is_platform", return_value=True)
+
+    check_self_pointing_url(configured_url, local_server_url)
+
+
+def test_check_self_pointing_url_not_enforced_outside_platform(mocker):
+    """
+    Given:
+        - Not running on the Cortex Platform (e.g. Cortex XSOAR).
+        - A configured Cortex XDR server URL that resolves to the same host as the local tenant.
+    When:
+        - check_self_pointing_url is called.
+    Then:
+        - No exception is raised, since this check is only relevant on the Cortex Platform.
+    """
+    from CortexXDRIR import check_self_pointing_url
+
+    mocker.patch("CortexXDRIR.is_platform", return_value=False)
+
+    check_self_pointing_url("https://tenant.xdr.pan.local", "https://tenant.xdr.pan.local")
+
+
+def test_client_init_blocks_self_pointing_url_on_platform(mocker):
+    """
+    Given:
+        - Running on the Cortex Platform.
+        - A Client configured with a url that points back to the local tenant.
+    When:
+        - The Client is instantiated (as done once in main(), before any command is dispatched).
+    Then:
+        - A DemistoException is raised, so every command (not only test-module) is blocked.
+    """
+    from CortexXDRIR import Client
+
+    mocker.patch("CortexXDRIR.is_platform", return_value=True)
+    mocker.patch.object(demisto, "demistoUrls", return_value={"server": "https://tenant.xdr.pan.local"})
+
+    with pytest.raises(DemistoException, match="points to the tenant this integration instance is running on"):
+        Client(
+            base_url="https://tenant.xdr.pan.local/public_api/v1",
+            proxy=False,
+            verify=False,
+            timeout=120,
+            params={"url": "https://tenant.xdr.pan.local"},
+        )
+
+
+def test_client_init_allows_self_pointing_url_outside_platform(mocker):
+    """
+    Given:
+        - Not running on the Cortex Platform (e.g. Cortex XSOAR).
+        - A Client configured with a url that happens to match the local tenant's URL.
+    When:
+        - The Client is instantiated.
+    Then:
+        - No exception is raised, since this check is only relevant on the Cortex Platform.
+    """
+    from CortexXDRIR import Client
+
+    mocker.patch("CortexXDRIR.is_platform", return_value=False)
+    mocker.patch.object(demisto, "demistoUrls", return_value={"server": "https://tenant.xdr.pan.local"})
+
+    Client(
+        base_url="https://tenant.xdr.pan.local/public_api/v1",
+        proxy=False,
+        verify=False,
+        timeout=120,
+        params={"url": "https://tenant.xdr.pan.local"},
+    )
+
+
 @freeze_time("1997-10-05 15:00:00 GMT")
 def test_convert_datetime_to_epoch():
     """

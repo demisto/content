@@ -3309,6 +3309,222 @@ Sets properties for the blob service in a specific account storage. Required per
 | Azure.Storage.BlobServices.sku.name | String | The SKU name. |
 | Azure.Storage.BlobServices.sku.tier | String | The SKU tier. |
 
+### azure-vn-firewall-policy-rule-collection-groups-create
+
+***
+Creates a rule collection group in a firewall policy. The group contains a network rule collection with a single network rule. Required permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write.
+
+#### Base Command
+
+`azure-vn-firewall-policy-rule-collection-groups-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+| policy_name | The name of the firewall policy in which to create the rule collection group. | Required |
+| collection_name | The name of the network rule collection to create. | Required |
+| collection_priority | The priority of the network rule collection. Must be between 100 and 65000. | Required |
+| action | The action type of the network rule collection. Possible values are: Allow, Deny. | Required |
+| rule_name | The name of the network rule to create in the collection. | Required |
+| description | The description of the created network rule. | Optional |
+| protocols | A comma-separated list of protocols for the created network rule. Possible values are: TCP, UDP, ICMP, Any. | Required |
+| source_type | The source type of the created network rule. Possible values are: ip_address, ip_group. | Required |
+| source_ips | A comma-separated list of source IP addresses for the created network rule. Required when source_type is ip_address. | Optional |
+| source_ip_group_ids | A comma-separated list of source IP group IDs for the created network rule. Required when source_type is ip_group. | Optional |
+| destination_type | The destination type of the created network rule. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required |
+| destinations | A comma-separated list of destinations for the created network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs. | Required |
+| destination_ports | A comma-separated list of destination ports for the created network rule. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The time, in seconds, after which polling stops. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group. The ETag prevents concurrent updates from overwriting each other. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
+
+### azure-vn-firewall-policy-rule-collection-groups-update
+
+***
+Updates the priority or the action of a network rule collection in a firewall policy rule collection group. Required permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write.
+
+#### Base Command
+
+`azure-vn-firewall-policy-rule-collection-groups-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+| policy_name | The name of the firewall policy that contains the rule collection group. | Required |
+| collection_name | The name of the network rule collection to update. | Required |
+| priority | The new priority of the network rule collection. Must be between 100 and 65000. It is mandatory to provide priority, action, or both. | Optional |
+| action | The new action type of the network rule collection. It is mandatory to provide priority, action, or both. Possible values are: Allow, Deny. | Optional |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The time, in seconds, after which polling stops. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group. The ETag prevents concurrent updates from overwriting each other. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
+
+### azure-vn-firewall-policy-rule-collection-groups-delete
+
+***
+Deletes a rule collection group from a firewall policy. Required permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete.
+
+#### Base Command
+
+`azure-vn-firewall-policy-rule-collection-groups-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+| policy_name | The name of the firewall policy that contains the rule collection group. | Required |
+| collection_name | The name of the rule collection group to delete. This is the network rule collection name that was used when the group was created. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The time, in seconds, after which polling stops. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-firewall-network-rule-create
+
+***
+Creates a network rule in an existing network rule collection of an Azure Firewall. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write.
+
+#### Base Command
+
+`azure-firewall-network-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+| firewall_name | The name of the Azure Firewall that contains the network rule collection. | Required |
+| collection_name | The name of the network rule collection in which to create the network rule. | Required |
+| rule_name | The name of the network rule to create. | Required |
+| description | The description of the created network rule. | Optional |
+| protocols | A comma-separated list of protocols for the created network rule. Possible values are: TCP, UDP, ICMP, Any. | Required |
+| source_type | The source type of the created network rule. Possible values are: ip_address, ip_group. | Required |
+| source_ips | A comma-separated list of source IP addresses for the created network rule. Required when source_type is ip_address. | Optional |
+| source_ip_group_ids | A comma-separated list of source IP group IDs for the created network rule. Required when source_type is ip_group. | Optional |
+| destination_type | The destination type of the created network rule. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required |
+| destinations | A comma-separated list of destinations for the created network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs. | Required |
+| destination_ports | A comma-separated list of destination ports for the created network rule. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The time, in seconds, after which polling stops. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Firewalls.name | String | The name of the Azure Firewall. |
+| Azure.Firewall.Firewalls.id | String | The ID of the Azure Firewall. |
+| Azure.Firewall.Firewalls.type | String | The type of the Azure Firewall resource. |
+| Azure.Firewall.Firewalls.location | String | The location of the Azure Firewall. |
+| Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall. The ETag prevents concurrent updates from overwriting each other. |
+| Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
+| Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
+
+### azure-firewall-network-rule-update
+
+***
+Updates a network rule in a network rule collection of an Azure Firewall. Only the provided properties are replaced. The rest of the rule configuration remains unchanged. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write.
+
+#### Base Command
+
+`azure-firewall-network-rule-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+| firewall_name | The name of the Azure Firewall that contains the network rule collection. | Required |
+| collection_name | The name of the network rule collection that contains the network rule. | Required |
+| rule_name | The name of the network rule to update. | Required |
+| description | The new description of the network rule. | Optional |
+| protocols | A comma-separated list of protocols that replaces the protocols of the network rule. Possible values are: TCP, UDP, ICMP, Any. | Optional |
+| source_type | The new source type of the network rule. If provided, you must also provide source_ips or source_ip_group_ids. Possible values are: ip_address, ip_group. | Optional |
+| source_ips | A comma-separated list of source IP addresses that replaces the sources of the network rule. Required when source_type is ip_address. | Optional |
+| source_ip_group_ids | A comma-separated list of source IP group IDs that replaces the sources of the network rule. Required when source_type is ip_group. | Optional |
+| destination_type | The new destination type of the network rule. Required when destinations is provided. Possible values are: ip_address, ip_group, service_tag, fqdn. | Optional |
+| destinations | A comma-separated list of destinations that replaces the destinations of the network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs. | Optional |
+| destination_ports | A comma-separated list of destination ports that replaces the destination ports of the network rule. | Optional |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The time, in seconds, after which polling stops. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Firewalls.name | String | The name of the Azure Firewall. |
+| Azure.Firewall.Firewalls.id | String | The ID of the Azure Firewall. |
+| Azure.Firewall.Firewalls.type | String | The type of the Azure Firewall resource. |
+| Azure.Firewall.Firewalls.location | String | The location of the Azure Firewall. |
+| Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall. The ETag prevents concurrent updates from overwriting each other. |
+| Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
+| Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
+
+### azure-firewall-network-rule-delete
+
+***
+Deletes network rules from a network rule collection of an Azure Firewall. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write.
+
+#### Base Command
+
+`azure-firewall-network-rule-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+| firewall_name | The name of the Azure Firewall that contains the network rule collection. | Required |
+| collection_name | The name of the network rule collection that contains the network rules. | Required |
+| rule_names | A comma-separated list of network rule names to delete from the collection. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The time, in seconds, after which polling stops. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Firewalls.name | String | The name of the Azure Firewall. |
+| Azure.Firewall.Firewalls.id | String | The ID of the Azure Firewall. |
+| Azure.Firewall.Firewalls.type | String | The type of the Azure Firewall resource. |
+| Azure.Firewall.Firewalls.location | String | The location of the Azure Firewall. |
+| Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall. The ETag prevents concurrent updates from overwriting each other. |
+| Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
+| Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
+
 ### azure-auth-test
 
 ***
@@ -4775,3 +4991,969 @@ Creates a shared access signature (SAS) token for a container.
 | --- | --- | --- |
 | Azure.Storage.Container.SAS.name | String | The name of the container. |
 | Azure.Storage.Container.SAS.SASURL | String | The generated SAS URL for the container. |
+
+### azure-rg-list-operations
+
+***
+Gets all Azure Resource Graph operations permissions and descriptions. Deprecated. Use the azure-rg-operations-list command instead. Required permission: Microsoft.ResourceGraph/operations/read.
+
+#### Base Command
+
+`azure-rg-list-operations`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ResourceGraph.Operations.Name | String | The name of the Azure Resource Graph operation. |
+| Azure.ResourceGraph.Operations.Display | Unknown | The display information of the Azure Resource Graph operation, including provider, resource, operation, and description. |
+
+### azure-rg-operations-list
+
+***
+Gets all Azure Resource Graph operations permissions and descriptions. Required permission: Microsoft.ResourceGraph/operations/read.
+
+#### Base Command
+
+`azure-rg-operations-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ResourceGraph.Operations.Name | String | The name of the Azure Resource Graph operation. |
+| Azure.ResourceGraph.Operations.Display | Unknown | The display information of the Azure Resource Graph operation, including provider, resource, operation, and description. |
+
+### azure-rg-query
+
+***
+Executes an Azure Resource Graph query based on Kusto Query Language (KQL). For example: query="Resources | project name, type | limit 5 | order by name asc". Required permission: Microsoft.ResourceGraph/resources/read.
+
+#### Base Command
+
+`azure-rg-query`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| query | The query for the Azure Resource Graph to execute.<br/>For example: `resources \| where (resourceGroup =~ ('demisto-sentinel2'))`.<br/>The query is based on Kusto Query Language (KQL). Reference: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/. | Required |
+| limit | The maximum number of resources to return. Accepted values are 1 to 1000. Note: Do not use with page and page_size. Default is 50. | Optional |
+| page_size | The maximum number of resources to return per page. Accepted values are 1 to 1000. | Optional |
+| page | The page number to return. | Optional |
+| management_groups | A comma-separated list of Azure management groups against which to execute the query. For example: 'mg1, mg2'. | Optional |
+| subscriptions | A comma-separated list of Azure subscriptions against which to execute the query. For example: 'sub1, sub2'. | Optional |
+| next_token | The token for the next set of results to return, used for pagination. Retrieved from the Azure.ResourceGraph.QueryNextToken output of a previous run. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ResourceGraph.Query.id | String | The resource ID of the resource returned by the query. |
+| Azure.ResourceGraph.Query.name | String | The name of the resource returned by the query. |
+| Azure.ResourceGraph.Query.type | String | The type of the resource returned by the query. |
+| Azure.ResourceGraph.Query.location | String | The location of the resource returned by the query. |
+| Azure.ResourceGraph.Query.tags | Unknown | The tags of the resource returned by the query. |
+| Azure.ResourceGraph.QueryNextToken | String | The token to pass as the next_token argument to retrieve the next set of query results. |
+
+### azure-vn-virtual-networks-list
+
+***
+Gets virtual networks in a resource group. Required permissions: Microsoft.Network/virtualNetworks/read.
+
+#### Base Command
+
+`azure-vn-virtual-networks-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The URI to fetch the next page of results as returned in the Azure.VirtualNetworks.VirtualNetworksNextToken output of a previous run. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.VirtualNetworksNextToken | String | The URI to fetch the next page of virtual networks. Run the same command with the next_token argument to get the next page. |
+| Azure.VirtualNetworks.VirtualNetworks.name | String | The virtual network's name. |
+| Azure.VirtualNetworks.VirtualNetworks.id | String | The virtual network's ID. |
+| Azure.VirtualNetworks.VirtualNetworks.etag | String | The virtual network's ETag. |
+| Azure.VirtualNetworks.VirtualNetworks.type | String | The resource type. |
+| Azure.VirtualNetworks.VirtualNetworks.location | String | The virtual network's location. |
+| Azure.VirtualNetworks.VirtualNetworks.tags | Unknown | The tags associated with the virtual network. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.provisioningState | String | The provisioning state of the virtual network resource. Possible values are Succeeded, Updating, Deleting, or Failed. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.resourceGuid | String | The resource GUID property of the virtual network resource. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.addressSpace | Unknown | The address space object of the virtual network. Contains the addressPrefixes field, which is a list of address blocks reserved for this virtual network in CIDR notation. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.subnets | Unknown | The list of subnets in the virtual network. Each subnet contains the name, ID, and properties fields. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.virtualNetworkPeerings | Unknown | The list of peerings in the virtual network. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.dhcpOptions | Unknown | The dhcpOptions object of the virtual network. Contains the dnsServers field, which is a list of DNS servers IP addresses. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.enableDdosProtection | Boolean | Whether DDoS protection is enabled for all the protected resources in the virtual network. |
+
+### azure-rm-subscriptions-list
+
+***
+Gets all subscriptions for a tenant. Required permissions: Microsoft.Resources/subscriptions/read.
+
+#### Base Command
+
+`azure-rm-subscriptions-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID used to authenticate the request. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The URI to fetch the next page of results as returned in the Azure.ResourceManagement.SubscriptionsNextToken output of a previous run. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ResourceManagement.SubscriptionsNextToken | String | The URI to fetch the next page of subscriptions. Run the same command with the next_token argument to get the next page. |
+| Azure.ResourceManagement.Subscriptions.id | String | The unique identifier of the subscription. |
+| Azure.ResourceManagement.Subscriptions.subscriptionId | String | The ID of the subscription. |
+| Azure.ResourceManagement.Subscriptions.tenantId | String | The ID of the tenant associated with the subscription. |
+| Azure.ResourceManagement.Subscriptions.displayName | String | The display name of the subscription. |
+| Azure.ResourceManagement.Subscriptions.state | String | The current state of the subscription. Possible values are Enabled, Warned, PastDue, Disabled, or Deleted. |
+| Azure.ResourceManagement.Subscriptions.authorizationSource | String | The authorization source of the request. Possible values are Legacy, RoleBased, Bypassed, Direct, or Management. |
+| Azure.ResourceManagement.Subscriptions.managedByTenants | Unknown | The list of tenants that have access to manage the subscription. |
+| Azure.ResourceManagement.Subscriptions.tags | Unknown | The tags associated with the subscription. |
+| Azure.ResourceManagement.Subscriptions.subscriptionPolicies.locationPlacementId | String | The ID of the location placement policy for the subscription. |
+| Azure.ResourceManagement.Subscriptions.subscriptionPolicies.quotaId | String | The ID of the quota policy for the subscription. |
+| Azure.ResourceManagement.Subscriptions.subscriptionPolicies.spendingLimit | String | The spending limit policy for the subscription. |
+
+### azure-firewall-rule-collection-groups-create
+
+***
+Creates a network rule collection that contains a single network rule in an Azure Firewall. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write.
+
+#### Base Command
+
+`azure-firewall-rule-collection-groups-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+| firewall_name | The name of the Azure Firewall in which to create the network rule collection. | Required |
+| collection_name | The name of the network rule collection to create. | Required |
+| collection_priority | The priority of the network rule collection. Must be between 100 and 65000. | Required |
+| action | The action type of the network rule collection. Possible values are: Allow, Deny. | Required |
+| rule_name | The name of the network rule to create in the collection. | Required |
+| description | The description of the created network rule. | Optional |
+| protocols | A comma-separated list of protocols for the created network rule. Possible values are: TCP, UDP, ICMP, Any. | Required |
+| source_type | The source type of the created network rule. Possible values are: ip_address, ip_group. | Required |
+| source_ips | A comma-separated list of source IP addresses for the created network rule. Required when source_type is ip_address. | Optional |
+| source_ip_group_ids | A comma-separated list of source IP group IDs for the created network rule. Required when source_type is ip_group. | Optional |
+| destination_type | The destination type of the created network rule. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required |
+| destinations | A comma-separated list of destinations for the created network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs. | Required |
+| destination_ports | A comma-separated list of destination ports for the created network rule. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The time, in seconds, after which polling stops. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Firewalls.name | String | The name of the Azure Firewall. |
+| Azure.Firewall.Firewalls.id | String | The ID of the Azure Firewall. |
+| Azure.Firewall.Firewalls.type | String | The type of the Azure Firewall resource. |
+| Azure.Firewall.Firewalls.location | String | The location of the Azure Firewall. |
+| Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall. The ETag prevents concurrent updates from overwriting each other. |
+| Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
+| Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
+
+### azure-firewall-rule-collection-groups-update
+
+***
+Updates the priority or the action of a network rule collection in an Azure Firewall. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write.
+
+#### Base Command
+
+`azure-firewall-rule-collection-groups-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+| firewall_name | The name of the Azure Firewall that contains the network rule collection. | Required |
+| collection_name | The name of the network rule collection to update. | Required |
+| priority | The new priority of the network rule collection. Must be between 100 and 65000. It is mandatory to provide priority, action, or both. | Optional |
+| action | The new action type of the network rule collection. It is mandatory to provide priority, action, or both. Possible values are: Allow, Deny. | Optional |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The time, in seconds, after which polling stops. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Firewalls.name | String | The name of the Azure Firewall. |
+| Azure.Firewall.Firewalls.id | String | The ID of the Azure Firewall. |
+| Azure.Firewall.Firewalls.type | String | The type of the Azure Firewall resource. |
+| Azure.Firewall.Firewalls.location | String | The location of the Azure Firewall. |
+| Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall. The ETag prevents concurrent updates from overwriting each other. |
+| Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
+| Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
+
+### azure-firewall-rule-collection-groups-delete
+
+***
+Deletes a network rule collection from an Azure Firewall. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write.
+
+#### Base Command
+
+`azure-firewall-rule-collection-groups-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+| firewall_name | The name of the Azure Firewall that contains the network rule collection. | Required |
+| collection_name | The name of the network rule collection to delete. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The time, in seconds, after which polling stops. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Firewalls.name | String | The name of the Azure Firewall. |
+| Azure.Firewall.Firewalls.id | String | The ID of the Azure Firewall. |
+| Azure.Firewall.Firewalls.type | String | The type of the Azure Firewall resource. |
+| Azure.Firewall.Firewalls.location | String | The location of the Azure Firewall. |
+| Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall. The ETag prevents concurrent updates from overwriting each other. |
+| Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
+| Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
+
+### azure-vn-firewall-policy-network-rule-create
+
+***
+Creates a network rule in an existing network rule collection of a firewall policy rule collection group. Required permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write.
+
+#### Base Command
+
+`azure-vn-firewall-policy-network-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+| policy_name | The name of the firewall policy that contains the rule collection group. | Required |
+| collection_name | The name of the network rule collection in which to create the network rule. | Required |
+| rule_name | The name of the network rule to create. | Required |
+| description | The description of the created network rule. | Optional |
+| protocols | A comma-separated list of protocols for the created network rule. Possible values are: TCP, UDP, ICMP, Any. | Required |
+| source_type | The source type of the created network rule. Possible values are: ip_address, ip_group. | Required |
+| source_ips | A comma-separated list of source IP addresses for the created network rule. Required when source_type is ip_address. | Optional |
+| source_ip_group_ids | A comma-separated list of source IP group IDs for the created network rule. Required when source_type is ip_group. | Optional |
+| destination_type | The destination type of the created network rule. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required |
+| destinations | A comma-separated list of destinations for the created network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs. | Required |
+| destination_ports | A comma-separated list of destination ports for the created network rule. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The time, in seconds, after which polling stops. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group. The ETag prevents concurrent updates from overwriting each other. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
+
+### azure-vn-firewall-policy-network-rule-update
+
+***
+Updates a network rule in a network rule collection of a firewall policy rule collection group. Only the provided properties are replaced. The rest of the rule configuration remains unchanged. Required permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write.
+
+#### Base Command
+
+`azure-vn-firewall-policy-network-rule-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+| policy_name | The name of the firewall policy that contains the rule collection group. | Required |
+| collection_name | The name of the network rule collection that contains the network rule. | Required |
+| rule_name | The name of the network rule to update. | Required |
+| description | The new description of the network rule. | Optional |
+| protocols | A comma-separated list of protocols that replaces the protocols of the network rule. Possible values are: TCP, UDP, ICMP, Any. | Optional |
+| source_type | The new source type of the network rule. If provided, you must also provide source_ips or source_ip_group_ids. Possible values are: ip_address, ip_group. | Optional |
+| source_ips | A comma-separated list of source IP addresses that replaces the sources of the network rule. Required when source_type is ip_address. | Optional |
+| source_ip_group_ids | A comma-separated list of source IP group IDs that replaces the sources of the network rule. Required when source_type is ip_group. | Optional |
+| destination_type | The new destination type of the network rule. Required when destinations is provided. Possible values are: ip_address, ip_group, service_tag, fqdn. | Optional |
+| destinations | A comma-separated list of destinations that replaces the destinations of the network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs. | Optional |
+| destination_ports | A comma-separated list of destination ports that replaces the destination ports of the network rule. | Optional |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The time, in seconds, after which polling stops. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group. The ETag prevents concurrent updates from overwriting each other. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
+
+### azure-vn-firewall-policy-network-rule-delete
+
+***
+Deletes network rules from a network rule collection of a firewall policy rule collection group. Required permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write.
+
+#### Base Command
+
+`azure-vn-firewall-policy-network-rule-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+| policy_name | The name of the firewall policy that contains the rule collection group. | Required |
+| collection_name | The name of the network rule collection that contains the network rules. | Required |
+| rule_names | A comma-separated list of network rule names to delete from the collection. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The time, in seconds, after which polling stops. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group. The ETag prevents concurrent updates from overwriting each other. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
+
+### azure-log-analytics-saved-searches-list
+
+***
+Gets the saved searches of a Log Analytics workspace. Required permission: Microsoft.OperationalInsights/workspaces/savedSearches/read.
+
+#### Base Command
+
+`azure-log-analytics-saved-searches-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| workspace_name | The name of the Log Analytics workspace. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.LogAnalytics.SavedSearches.id | String | The fully qualified resource ID for the resource. |
+| Azure.LogAnalytics.SavedSearches.name | String | The name of the resource. |
+| Azure.LogAnalytics.SavedSearches.etag | String | The ETag of the saved search. |
+| Azure.LogAnalytics.SavedSearches.type | String | The resource type. |
+| Azure.LogAnalytics.SavedSearches.properties.category | String | The category of the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.displayName | String | The display name of the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.functionAlias | String | The function alias if the query serves as a function. |
+| Azure.LogAnalytics.SavedSearches.properties.functionParameters | String | The optional function parameters if the query serves as a function. |
+| Azure.LogAnalytics.SavedSearches.properties.query | String | The query expression for the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.tags | Unknown | The tags attached to the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.version | Number | The version number of the query language. |
+| Azure.LogAnalytics.SavedSearches.systemData | Unknown | The Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+
+### azure-log-analytics-saved-search-get
+
+***
+Gets a specified saved search from a Log Analytics workspace. Required permission: Microsoft.OperationalInsights/workspaces/savedSearches/read.
+
+#### Base Command
+
+`azure-log-analytics-saved-search-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| saved_search_id | The ID of the saved search. | Required |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| workspace_name | The name of the Log Analytics workspace. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.LogAnalytics.SavedSearches.id | String | The fully qualified resource ID for the resource. |
+| Azure.LogAnalytics.SavedSearches.name | String | The name of the resource. |
+| Azure.LogAnalytics.SavedSearches.etag | String | The ETag of the saved search. |
+| Azure.LogAnalytics.SavedSearches.type | String | The resource type. |
+| Azure.LogAnalytics.SavedSearches.properties.category | String | The category of the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.displayName | String | The display name of the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.functionAlias | String | The function alias if the query serves as a function. |
+| Azure.LogAnalytics.SavedSearches.properties.functionParameters | String | The optional function parameters if the query serves as a function. |
+| Azure.LogAnalytics.SavedSearches.properties.query | String | The query expression for the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.tags | Unknown | The tags attached to the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.version | Number | The version number of the query language. |
+| Azure.LogAnalytics.SavedSearches.systemData | Unknown | The Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+
+### azure-log-analytics-saved-search-create-update
+
+***
+Creates or updates a saved search in a Log Analytics workspace. Required permissions: Microsoft.OperationalInsights/workspaces/savedSearches/read, Microsoft.OperationalInsights/workspaces/savedSearches/write.
+
+#### Base Command
+
+`azure-log-analytics-saved-search-create-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| saved_search_id | The ID of the saved search. | Required |
+| etag | The ETag of the saved search. This argument is required for updating an existing saved search. | Optional |
+| category | The category of the saved search. | Required |
+| display_name | The display name of the saved search. | Required |
+| function_alias | The function alias if the query serves as a function. | Optional |
+| function_parameters | The optional function parameters if the query serves as a function. The value should be in the following format: param-name1:type1 = default_value1, param-name2:type2 = default_value2. | Optional |
+| query | The query expression for the saved search. | Required |
+| tags | The tags attached to the saved search. The value should be in the following format: name=value;name=value. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| workspace_name | The name of the Log Analytics workspace. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.LogAnalytics.SavedSearches.id | String | The fully qualified resource ID for the resource. |
+| Azure.LogAnalytics.SavedSearches.name | String | The name of the resource. |
+| Azure.LogAnalytics.SavedSearches.etag | String | The ETag of the saved search. |
+| Azure.LogAnalytics.SavedSearches.type | String | The resource type. |
+| Azure.LogAnalytics.SavedSearches.properties.category | String | The category of the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.displayName | String | The display name of the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.functionAlias | String | The function alias if the query serves as a function. |
+| Azure.LogAnalytics.SavedSearches.properties.functionParameters | String | The optional function parameters if the query serves as a function. |
+| Azure.LogAnalytics.SavedSearches.properties.query | String | The query expression for the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.tags | Unknown | The tags attached to the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.version | Number | The version number of the query language. |
+| Azure.LogAnalytics.SavedSearches.systemData | Unknown | The Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+
+### azure-log-analytics-saved-search-delete
+
+***
+Deletes a specified saved search in a Log Analytics workspace. Required permission: Microsoft.OperationalInsights/workspaces/savedSearches/delete.
+
+#### Base Command
+
+`azure-log-analytics-saved-search-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| saved_search_id | The ID of the saved search. | Required |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| workspace_name | The name of the Log Analytics workspace. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-log-analytics-workspaces-list
+
+***
+Gets Log Analytics workspaces in a resource group. Required permission: Microsoft.OperationalInsights/workspaces/read.
+
+#### Base Command
+
+`azure-log-analytics-workspaces-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.LogAnalytics.Workspaces.id | String | The fully qualified resource ID for the resource. |
+| Azure.LogAnalytics.Workspaces.name | String | The name of the resource. |
+| Azure.LogAnalytics.Workspaces.type | String | The resource type. |
+| Azure.LogAnalytics.Workspaces.location | String | The geo-location where the resource lives. |
+| Azure.LogAnalytics.Workspaces.etag | String | The ETag of the workspace. |
+| Azure.LogAnalytics.Workspaces.identity | Unknown | The identity of the resource. |
+| Azure.LogAnalytics.Workspaces.tags | Unknown | The resource tags. |
+| Azure.LogAnalytics.Workspaces.properties.createdDate | Date | The date and time when the workspace was created in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| Azure.LogAnalytics.Workspaces.properties.customerId | String | The ID associated with the workspace. |
+| Azure.LogAnalytics.Workspaces.properties.defaultDataCollectionRuleResourceId | String | The resource ID of the default data collection rule to use for this workspace. |
+| Azure.LogAnalytics.Workspaces.properties.failover | Unknown | The workspace failover properties. |
+| Azure.LogAnalytics.Workspaces.properties.features | Unknown | The workspace features. |
+| Azure.LogAnalytics.Workspaces.properties.forceCmkForQuery | Boolean | Whether customer managed storage is mandatory for query management. |
+| Azure.LogAnalytics.Workspaces.properties.modifiedDate | Date | The date and time when the workspace was modified in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| Azure.LogAnalytics.Workspaces.properties.privateLinkScopedResources | Unknown | The list of linked private link scope resources. |
+| Azure.LogAnalytics.Workspaces.properties.provisioningState | String | The provisioning state of the workspace. |
+| Azure.LogAnalytics.Workspaces.properties.publicNetworkAccessForIngestion | String | The network access type for accessing Log Analytics ingestion. |
+| Azure.LogAnalytics.Workspaces.properties.publicNetworkAccessForQuery | String | The network access type for accessing Log Analytics query. |
+| Azure.LogAnalytics.Workspaces.properties.replication | Unknown | Workspace replication properties. |
+| Azure.LogAnalytics.Workspaces.properties.retentionInDays | Number | The workspace data retention in days. Allowed values are per pricing plan. See pricing tiers documentation for details. |
+| Azure.LogAnalytics.Workspaces.properties.sku | Unknown | The SKU of the workspace. |
+| Azure.LogAnalytics.Workspaces.properties.workspaceCapping | Unknown | The daily volume cap for ingestion. |
+| Azure.LogAnalytics.Workspaces.systemData | Unknown | The Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+
+### azure-log-analytics-table-get
+
+***
+Gets a Log Analytics workspace table (search job). Required permission: Microsoft.OperationalInsights/workspaces/tables/read.
+
+#### Base Command
+
+`azure-log-analytics-table-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| table_name | The name of the table. Example value: AuditLogs_SRCH. | Required |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| workspace_name | The name of the Log Analytics workspace. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.LogAnalytics.Tables.id | String | The fully qualified resource ID for the resource. |
+| Azure.LogAnalytics.Tables.name | String | The name of the resource. |
+| Azure.LogAnalytics.Tables.type | String | The resource type. |
+| Azure.LogAnalytics.Tables.properties.archiveRetentionInDays | Number | The table's long-term retention in days. Calculated as \(totalRetentionInDays-retentionInDays\). |
+| Azure.LogAnalytics.Tables.properties.lastPlanModifiedDate | String | The date and time when the table plan was last modified \(UTC\) in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| Azure.LogAnalytics.Tables.properties.plan | String | The instruction for the system on how to handle and charge the logs ingested into this table. |
+| Azure.LogAnalytics.Tables.properties.protectionLevel | String | The protection level of the table. Determines the default data access isolation behavior. |
+| Azure.LogAnalytics.Tables.properties.provisioningState | String | The table's current provisioning state. If set to updating, it indicates a resource lock due to an ongoing operation, forbidding any update to the table until the ongoing operation is concluded. |
+| Azure.LogAnalytics.Tables.properties.restoredLogs | Unknown | The parameters of the restore operation that created the table. |
+| Azure.LogAnalytics.Tables.properties.resultStatistics | Unknown | The search job execution statistics. |
+| Azure.LogAnalytics.Tables.properties.retentionInDays | Number | The table's analytics retention in days for Analytics tables, between 4 and 730. Setting this property to -1 defaults to the workspace retention. For Basic and Auxiliary tables, this is a read-only property. |
+| Azure.LogAnalytics.Tables.properties.retentionInDaysAsDefault | Boolean | Whether the value originates from workspace retention in days \(true\) or is customer specific \(false\). |
+| Azure.LogAnalytics.Tables.properties.schema | Unknown | The table schema. |
+| Azure.LogAnalytics.Tables.properties.searchResults | Unknown | The parameters of the search job that initiated the table. |
+| Azure.LogAnalytics.Tables.properties.totalRetentionInDays | Number | The table's total retention in days, between 4 and 4383. Setting this property to -1 defaults to retentionInDays. |
+| Azure.LogAnalytics.Tables.properties.totalRetentionInDaysAsDefault | Boolean | Whether the value originates from retention in days \(true\) or is customer specific \(false\). |
+| Azure.LogAnalytics.Tables.systemData | Unknown | The Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+
+### azure-log-analytics-table-run
+
+***
+Runs a search job to fetch records from large datasets into a new search results table in the workspace, and polls until the table is provisioned. Required permissions: Microsoft.OperationalInsights/workspaces/tables/read, Microsoft.OperationalInsights/workspaces/tables/write, Microsoft.OperationalInsights/workspaces/searchJobs/write.
+
+#### Base Command
+
+`azure-log-analytics-table-run`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| table_name | The name of the table to add. Must contain the _SRCH suffix. For example, AuditLogs_SRCH. | Required |
+| limit | The maximum number of records to return in the result set. Default is 50. | Optional |
+| query | The log query written in KQL format to retrieve data. Search job queries must start with a table name. | Required |
+| start_search_time | The start of the time range to search. The value can be in minutes, days, weeks, or  ISO 8601 format (for example, 2023-10-31T00:00:00Z). Default is 1 day. | Optional |
+| end_search_time | The end of the time range to search. The value can be in minutes, days, weeks, or ISO 8601 format (for example, 2023-10-31T00:00:00Z). Default is now. | Optional |
+| timeout | The timeout in seconds until polling ends. Default is 600. | Optional |
+| interval | The interval in seconds between each poll. Default is 60. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| workspace_name | The name of the Log Analytics workspace. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.LogAnalytics.Tables.TableName | String | The table name. |
+| Azure.LogAnalytics.Tables.Query | String | The query that was used to create the table. |
+
+### azure-log-analytics-table-delete
+
+***
+Deletes a Log Analytics workspace table (search job). Required permission: Microsoft.OperationalInsights/workspaces/tables/delete.
+
+#### Base Command
+
+`azure-log-analytics-table-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| table_name | The name of the table. Must contain the _SRCH suffix. For example, AuditLogs_SRCH. | Required |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| workspace_name | The name of the Log Analytics workspace. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-postgres-flexible-server-configuration-update
+
+***
+Updates the configuration of a PostgreSQL Flexible Server. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write.
+
+#### Base Command
+
+`azure-postgres-flexible-server-configuration-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The name of the resource group. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| server_name | The name of the PostgreSQL Flexible Server. | Required |
+| configuration_name | The name of the server configuration parameter to update. | Required |
+| source | The source of the configuration value (for example, user-override). | Optional |
+| value | The new value of the configuration, which is also known as a server parameter. Required for updating the value assigned to a specific modifiable configuration. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-sqldb-servers-list
+
+***
+Lists all SQL servers, optionally filtered by resource group. Required permissions: Microsoft.Sql/servers/read.
+
+#### Base Command
+
+`azure-sqldb-servers-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.Servers | Unknown | A list of SQL servers. |
+| Azure.SqlDB.Servers.id | String | The server resource ID. |
+| Azure.SqlDB.Servers.name | String | The server name. |
+| Azure.SqlDB.Servers.location | String | The server location. |
+| Azure.SqlDB.Servers.kind | String | The kind of server. |
+| Azure.SqlDB.Servers.type | String | The server resource type. |
+| Azure.SqlDB.Servers.properties.administratorLogin | String | The username of the server administrator. |
+| Azure.SqlDB.Servers.properties.version | String | The server version. |
+| Azure.SqlDB.Servers.properties.state | String | The server state. |
+| Azure.SqlDB.Servers.properties.fullyQualifiedDomainName | String | The fully qualified domain name of the server. |
+| Azure.SqlDB.Servers.properties.publicNetworkAccess | String | Whether public endpoint access is enabled. |
+| Azure.SqlDB.ServersNextToken | String | The URL to the next page of SQL servers. Pass this value as next_token to retrieve the next page. |
+
+### azure-sqldb-databases-list
+
+***
+Lists all databases for a SQL server. Required permissions: Microsoft.Sql/servers/read, Microsoft.Sql/servers/databases/read.
+
+#### Base Command
+
+`azure-sqldb-databases-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the SQL server. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.Databases | Unknown | A list of SQL databases. |
+| Azure.SqlDB.Databases.id | String | The database resource ID. |
+| Azure.SqlDB.Databases.name | String | The database name. |
+| Azure.SqlDB.Databases.location | String | The database location. |
+| Azure.SqlDB.Databases.kind | String | The kind of database. |
+| Azure.SqlDB.Databases.type | String | The database resource type. |
+| Azure.SqlDB.Databases.properties.status | String | The database status. |
+| Azure.SqlDB.Databases.managedBy | String | The resource that manages the database. |
+| Azure.SqlDB.Databases.properties.sku | Unknown | A dictionary of the database SKU details. |
+| Azure.SqlDB.Databases.properties.collation | String | The database collation. |
+| Azure.SqlDB.Databases.properties.maxSizeBytes | Number | The maximum size of the database in bytes. |
+| Azure.SqlDB.Databases.properties.zoneRedundant | Boolean | Whether the database is zone redundant. |
+| Azure.SqlDB.DatabasesNextToken | String | The URL to the next page of SQL databases. Pass this value as next_token to retrieve the next page. |
+
+### azure-sqldb-server-auditing-settings-list
+
+***
+Gets the auditing settings of a SQL database. Required permissions: Microsoft.Sql/servers/databases/read, Microsoft.Sql/servers/databases/auditingSettings/read.
+
+#### Base Command
+
+`azure-sqldb-server-auditing-settings-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the SQL server. | Required |
+| db_name | The name of the database. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.ServerAuditingSettings | Unknown | A list of database audit policies. |
+| Azure.SqlDB.ServerAuditingSettings.id | String | The audit policy resource ID. |
+| Azure.SqlDB.ServerAuditingSettings.name | String | The audit policy name. |
+| Azure.SqlDB.ServerAuditingSettings.type | String | The resource type. |
+| Azure.SqlDB.ServerAuditingSettings.properties.state | String | The policy state. Possible values are Enabled or Disabled. |
+| Azure.SqlDB.ServerAuditingSettings.properties.retentionDays | Number | The number of days to keep audit logs. |
+| Azure.SqlDB.ServerAuditingSettings.properties.isAzureMonitorTargetEnabled | Boolean | Whether audit events are sent to Azure Monitor. |
+| Azure.SqlDB.ServerAuditingSettings.properties.storageAccountSubscriptionId | String | The storage subscription ID. |
+| Azure.SqlDB.ServerAuditingSettings.properties.isManagedIdentityInUse | Boolean | Whether managed identity is used to access blob storage. |
+| Azure.SqlDB.ServerAuditingSettingsNextToken | String | The URL to the next page of database audit policies. Pass this value as next_token to retrieve the next page. |
+
+### azure-sqldb-audit-policy-create-update
+
+***
+Creates or fully replaces the auditing settings of a SQL database. Warning: this is a full replacement and not a partial update. The command removes or resets to its default any property that you do not provide as an argument (for example, audit_actions_groups, retention_days, or storage_endpoint). Required permissions: Microsoft.Sql/servers/databases/auditingSettings/read, Microsoft.Sql/servers/databases/auditingSettings/write.
+
+#### Base Command
+
+`azure-sqldb-audit-policy-create-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the SQL server. | Required |
+| db_name | The name of the database. | Required |
+| state | The state of the audit policy. When state is Enabled, it is mandatory to provide storage_endpoint, is_azure_monitor_target_enabled, or both. Possible values are: Enabled, Disabled. | Required |
+| audit_actions_groups | A comma-separated list of actions and groups to audit. See https://docs.microsoft.com/en-us/sql/relational-databases/security/auditing/sql-server-audit-action-groups-and-actions for possible values. | Optional |
+| is_azure_monitor_target_enabled | Whether audit events are sent to Azure Monitor. Possible values are: true, false. | Optional |
+| is_storage_secondary_key_in_use | Whether the storage account access key value is the storage secondary key. Possible values are: true, false. | Optional |
+| queue_delay_ms | The time in milliseconds that can elapse before audit actions are forced to be processed. The default minimum value is 1000 (1 second). | Optional |
+| retention_days | The number of days to keep the policy in the audit logs. | Optional |
+| storage_account_access_key | The identifier key of the auditing storage account. | Optional |
+| storage_account_subscription_id | The storage subscription ID. | Optional |
+| storage_endpoint | The storage endpoint. Required when state is Enabled and is_azure_monitor_target_enabled is not set. | Optional |
+| is_managed_identity_in_use | Whether managed identity is used to access blob storage. Possible values are: true, false. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.ServerAuditingSettings.id | String | The audit policy resource ID. |
+| Azure.SqlDB.ServerAuditingSettings.name | String | The audit policy name. |
+| Azure.SqlDB.ServerAuditingSettings.type | String | The resource type. |
+| Azure.SqlDB.ServerAuditingSettings.properties.state | String | The policy state. Possible values are Enabled or Disabled. |
+| Azure.SqlDB.ServerAuditingSettings.properties.retentionDays | Number | The number of days to keep audit logs. |
+| Azure.SqlDB.ServerAuditingSettings.properties.isAzureMonitorTargetEnabled | Boolean | Whether audit events are sent to Azure Monitor. |
+| Azure.SqlDB.ServerAuditingSettings.properties.storageAccountSubscriptionId | String | The storage subscription ID. |
+| Azure.SqlDB.ServerAuditingSettings.properties.auditActionsAndGroups | Unknown | A list of the audit actions and groups. |
+| Azure.SqlDB.ServerAuditingSettings.properties.isStorageSecondaryKeyInUse | Boolean | Whether the storage account access key is the secondary key. |
+| Azure.SqlDB.ServerAuditingSettings.properties.queueDelayMs | String | The time in milliseconds before audit actions are forced to be processed. |
+| Azure.SqlDB.ServerAuditingSettings.properties.storageEndpoint | String | The storage endpoint. |
+| Azure.SqlDB.ServerAuditingSettings.properties.isManagedIdentityInUse | Boolean | Whether managed identity is used to access blob storage. |
+
+### azure-sqldb-security-alert-policy-create
+
+***
+Creates a database's security alert policy. Required permissions: Microsoft.Sql/servers/databases/securityAlertPolicies/write.
+
+#### Base Command
+
+`azure-sqldb-security-alert-policy-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the SQL server. | Required |
+| db_name | The name of the database. | Required |
+| state | The state of the threat detection policy. Possible values are: Enabled, Disabled. | Required |
+| disabled_alerts | A comma-separated list of disabled alerts. Possible values: None, Sql_Injection, Sql_Injection_Vulnerability, Access_Anomaly, Data_Exfiltration, Unsafe_Action. | Optional |
+| email_account_admins | Whether the alert is sent to the account administrators. Possible values are: true, false. | Optional |
+| email_addresses | A comma-separated list of email addresses to which the alert is sent. | Optional |
+| retention_days | The number of days to keep the policy in the audit logs. | Optional |
+| storage_account_access_key | The identifier key of the threat detection audit storage account. | Optional |
+| storage_endpoint | The blob storage endpoint for Threat Detection audit logs. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.SecurityAlertPolicies.id | String | The threat policy resource ID. |
+| Azure.SqlDB.SecurityAlertPolicies.name | String | The threat policy name. |
+| Azure.SqlDB.SecurityAlertPolicies.type | String | The resource type. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.state | String | The threat policy state. Possible values are Enabled or Disabled. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.retentionDays | Number | The number of days to keep Threat Detection audit logs. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.storageEndpoint | String | The Threat Detection audit storage account endpoint. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.emailAccountAdmins | Boolean | Whether account administrators are emailed on alert. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.emailAddresses | String | The list of email addresses to which the alert is sent. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.disabledAlerts | String | The list of disabled alerts, or an empty string if none are disabled. |
+
+### azure-sqldb-firewall-rules-list
+
+***
+Retrieves a list of firewall rules or a specific firewall rule for a SQL server. Required permissions: Microsoft.Sql/servers/firewallRules/read.
+
+#### Base Command
+
+`azure-sqldb-firewall-rules-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the SQL server. | Required |
+| firewall_rule_name | The name of the firewall rule. If not provided, all firewall rules for the server are returned. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets. Not applicable when firewall_rule_name is provided. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.FirewallRules | Unknown | A list of SQL server firewall rules. |
+| Azure.SqlDB.FirewallRules.id | String | The firewall rule resource ID. |
+| Azure.SqlDB.FirewallRules.name | String | The firewall rule name. |
+| Azure.SqlDB.FirewallRules.type | String | The resource type. |
+| Azure.SqlDB.FirewallRules.properties.startIpAddress | String | The start IP address of the firewall rule. |
+| Azure.SqlDB.FirewallRules.properties.endIpAddress | String | The end IP address of the firewall rule. |
+| Azure.SqlDB.FirewallRulesNextToken | String | The URL to the next page of firewall rules. Pass this value as next_token to retrieve the next page. |
+
+### azure-sqldb-firewall-rule-create-update
+
+***
+Creates or updates a firewall rule for a SQL server. Required permissions: Microsoft.Sql/servers/firewallRules/write.
+
+#### Base Command
+
+`azure-sqldb-firewall-rule-create-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the SQL server. | Required |
+| firewall_rule_name | The name of the firewall rule. | Required |
+| start_ip_address | The start IP address of the firewall rule. The address must be in IPv4 format. Use 0.0.0.0 for all Azure-internal IP addresses. | Required |
+| end_ip_address | The end IP address of the firewall rule. The address must be in IPv4 format and greater than or equal to start_ip_address. Use 0.0.0.0 for all Azure-internal IP addresses. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.FirewallRules.id | String | The firewall rule resource ID. |
+| Azure.SqlDB.FirewallRules.name | String | The firewall rule name. |
+| Azure.SqlDB.FirewallRules.type | String | The resource type. |
+| Azure.SqlDB.FirewallRules.properties.startIpAddress | String | The start IP address of the firewall rule. |
+| Azure.SqlDB.FirewallRules.properties.endIpAddress | String | The end IP address of the firewall rule. |
+
+### azure-sqldb-firewall-rule-delete
+
+***
+Deletes a firewall rule from a SQL server. Required permissions: Microsoft.Sql/servers/firewallRules/delete.
+
+#### Base Command
+
+`azure-sqldb-firewall-rule-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the SQL server. | Required |
+| firewall_rule_name | The name of the firewall rule to delete. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-sqldb-firewall-rule-replace
+
+***
+Replaces all firewall rules on a SQL server. Required permissions: Microsoft.Sql/servers/firewallRules/write.
+
+#### Base Command
+
+`azure-sqldb-firewall-rule-replace`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the SQL server. | Required |
+| firewall_rule_name | The name of the firewall rule. Required unless entry_id is provided. | Optional |
+| start_ip_address | The start IP address of the firewall rule. The address must be in IPv4 format. Use 0.0.0.0 for all Azure-internal IP addresses. Required unless you provide entry_id. | Optional |
+| end_ip_address | The end IP address of the firewall rule. The address must be in IPv4 format and greater than or equal to start_ip_address. Use 0.0.0.0 for all Azure-internal IP addresses. Required unless you provide entry_id. | Optional |
+| entry_id | The entry ID of a file containing the full request JSON in FirewallRuleList format. If provided, firewall_rule_name, start_ip_address, and end_ip_address must not be set. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.FirewallRules.id | String | The firewall rule resource ID. |
+| Azure.SqlDB.FirewallRules.name | String | The firewall rule name. |
+| Azure.SqlDB.FirewallRules.type | String | The resource type. |
+| Azure.SqlDB.FirewallRules.properties.startIpAddress | String | The start IP address of the firewall rule. |
+| Azure.SqlDB.FirewallRules.properties.endIpAddress | String | The end IP address of the firewall rule. |

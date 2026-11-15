@@ -479,6 +479,9 @@ tasks:
       '#none#':
       - "148"
     scriptarguments:
+      IAMUserDomain:
+        complex:
+          root: inputs.IAMUserDomain
       UserContainment:
         complex:
           root: inputs.UserContainment
@@ -1335,7 +1338,7 @@ inputs:
 - key: IAMUserDomain
   value: {}
   required: false
-  description: The Okta IAM users domain. The domain will be appended to the username. e.g. username@IAMUserDomain.
+  description: The IAM users domain. The domain will be appended to the username. E.g., username@IAMUserDomain.
   playbookInputQuery:
 - key: UserVerification
   value:
