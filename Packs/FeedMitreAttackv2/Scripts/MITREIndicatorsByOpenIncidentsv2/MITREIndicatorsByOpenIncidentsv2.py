@@ -1,4 +1,7 @@
+import json
 import traceback
+from datetime import UTC
+from typing import Any
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -24,7 +27,7 @@ def parse_date_arg(date_arg: Any, arg_name: str) -> str | None:
     if not parsed_date:
         return None
     if not parsed_date.tzinfo:
-        parsed_date = parsed_date.replace(tzinfo=timezone.utc)
+        parsed_date = parsed_date.replace(tzinfo=UTC)
     return parsed_date.isoformat()
 
 
