@@ -23,12 +23,12 @@ from ServiceNowv2 import (
     Client,
     ServiceNowClient,
     add_comment_command,
-    create_event_command,
     add_link_command,
     add_tag_command,
     check_assigned_to_field,
     convert_to_notes_result,
     converts_close_code_or_state_to_close_reason,
+    create_event_command,
     create_order_item_command,
     create_record_command,
     create_ticket_command,
@@ -3169,11 +3169,21 @@ _EXPECTED_REQUIRED = {
             {**_REQUIRED_FIELDS, "time_of_event": "2026-01-01T00:00:00Z"},
             {**_EXPECTED_REQUIRED},
         ),
-        # additional_info is passed as a raw JSON string (not parsed to dict).
+        # additional_info JSON string is validated and passed through as-is.
         (
             {**_REQUIRED_FIELDS, "additional_info": '{"ci": "web-server-01", "env": "prod"}'},
             {**_EXPECTED_REQUIRED, "additional_info": '{"ci": "web-server-01", "env": "prod"}'},
         ),
+    ],
+    ids=[
+        "all_fields_with_named_severity",
+        "default_source_cortex",
+        "severity_high_maps_to_2",
+        "severity_critical_maps_to_1",
+        "resolution_state_resolved_maps_to_closing",
+        "resolution_state_new_maps_to_new",
+        "iso8601_time_normalized_to_utc",
+        "additional_info_string_passthrough",
     ],
 )
 def test_create_event_command_sends_correct_payload(args, expected_event, mock_client, mocker):
@@ -3184,11 +3194,12 @@ def test_create_event_command_sends_correct_payload(args, expected_event, mock_c
         - Case 3-4: Cortex severity labels are mapped to ServiceNow integers.
         - Case 5-6: Cortex resolution_state labels are mapped to ServiceNow values.
         - Case 7: ISO 8601 time_of_event is normalized to YYYY-MM-DD HH:MM:SS UTC.
-        - Case 8: additional_info is passed as a raw JSON string.
+        - Case 8: additional_info JSON string is validated and passed through as-is.
     When:
         - Running create_event_command.
     Then:
         - The client's create_event method is called with the correct event dict.
+        - additional_info strings are validated and passed through unchanged.
         - CommandResults are returned with the expected readable output.
     """
     snow_response = "Default Bulk Endpoint:1 events were inserted"
@@ -3225,6 +3236,7 @@ def test_create_event_command_sends_correct_payload(args, expected_event, mock_c
             "Could not parse time_of_event",
         ),
     ],
+    ids=["invalid_severity", "invalid_resolution_state", "malformed_additional_info", "unparseable_time"],
 )
 def test_create_event_command_raises_on_invalid_args(args, expected_error, mock_client):
     """
@@ -3240,6 +3252,53 @@ def test_create_event_command_raises_on_invalid_args(args, expected_error, mock_
     """
     with pytest.raises(DemistoException, match=expected_error):
         create_event_command(mock_client, args)
+
+
+def test_client_create_event_sends_correct_url_and_body(requests_mock):
+    """
+    Given:
+        - A Client instance configured with a ServiceNow base URL.
+        - An event dict to send.
+    When:
+        - Calling client.create_event(event).
+    Then:
+        - The POST request is sent to /api/global/em/jsonv2.
+        - The request body wraps the event in {"records": [event]}.
+    """
+    base_url = "https://instance.service-now.com/api/now/v2/"
+    event = {
+        "source": "Cortex",
+        "node": "web-server-01",
+        "type": "CPU Utilization",
+        "time_of_event": "2026-01-01 00:00:00",
+        "severity": "2",
+    }
+    expected_response = "Default Bulk Endpoint:1 events were inserted"
+    mock = requests_mock.post(
+        "https://instance.service-now.com/api/global/em/jsonv2",
+        text=expected_response,
+        status_code=201,
+    )
+
+    client = Client(
+        server_url=base_url,
+        sc_server_url="",
+        cr_server_url="",
+        username="user",
+        password="pass",
+        verify=False,
+        fetch_time="10 minutes",
+        sysparm_query="",
+        sysparm_limit=10,
+        timestamp_field="opened_at",
+        ticket_type="incident",
+        get_attachments=False,
+        incident_name="number",
+    )
+    client.create_event(event)
+
+    assert mock.called
+    assert mock.last_request.json() == {"records": [event]}
 
 
 @pytest.mark.parametrize(

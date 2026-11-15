@@ -1784,7 +1784,7 @@ script:
       - Info
     - description: The description of the event.
       name: description
-    - description: 'Additional key-value pairs to attach to the event as a JSON string, e.g. {"key": "value"}.'
+    - description: 'The additional key-value pairs to attach to the event, as a JSON string (e.g. {"key": "value"}).'
       name: additional_info
     - description: The unique key used to deduplicate events.
       name: message_key
@@ -2105,7 +2105,7 @@ script:
       predefined:
       - New
       - Resolved
-    - description: 'Additional key-value pairs to attach to the event, in the format: {"key": "value"}.'
+    - description: 'The additional key-value pairs to attach to the event, as a JSON string (e.g. {"key": "value"}).'
       name: additional_info
       prettyname: Additional Info
     description: Creates an event in ServiceNow Event Management. Requires the evt_mgmt_integration role.

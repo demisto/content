@@ -2565,7 +2565,7 @@ def create_event_command(client: Client, args: dict) -> CommandResults:
 
     if (additional_info_raw := args.get("additional_info")) is not None:
         try:
-            json.loads(additional_info_raw)  # validate it is well-formed JSON
+            json.loads(additional_info_raw)  # validate well-formed JSON
         except json.JSONDecodeError as e:
             raise DemistoException(
                 f"Invalid additional_info: must be a valid JSON string, "
