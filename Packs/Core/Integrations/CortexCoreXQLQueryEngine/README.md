@@ -8,7 +8,7 @@ As part of our ongoing commitment to platform performance, reliability, and stan
 - **Out-of-the-box Cortex playbooks:** All out-of-the-box playbooks shipped with the platform will be updated by Palo Alto Networks to use built-in commands natively. No action is required on your part for uncustomized, standard playbooks.
 - **Maintenance and support:** Following the deprecation date, this integration will no longer receive feature updates, enhancements, or bug fixes.
 
-The command-by-command replacement mapping for this integration is provided in the [Command mapping](#command-mapping) section below. For usage examples and full details of the built-in commands, refer to the [Cortex Built-In Commands Guide](https://cortex-docs.paloaltonetworks.com/cortex-commands-guide).
+The [Command mapping](#command-mapping) section below provides the command-by-command replacement mapping for this integration. For usage examples and full details of the built-in commands, refer to the [Cortex Built-In Commands Guide](https://cortex-docs.paloaltonetworks.com/cortex-commands-guide).
 
 ## Command mapping
 
