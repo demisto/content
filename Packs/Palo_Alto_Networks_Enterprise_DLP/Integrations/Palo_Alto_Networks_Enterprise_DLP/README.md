@@ -126,17 +126,20 @@ Updates a DLP incident with user feedback.
 | incident_id | The ID of the incident to update.                                                                                                                                                                                         | Required |
 | feedback | The user feedback. Possible values are: PENDING_RESPONSE, CONFIRMED_SENSITIVE, CONFIRMED_FALSE_POSITIVE, EXCEPTION_REQUESTED, EXCEPTION_GRANTED, EXCEPTION_NOT_REQUESTED, OPERATIONAL_ERROR, SEND_NOTIFICATION_FAILURE, EXCEPTION_DENIED. | Required |
 | user_id | The ID of the user the feedback is collected from.                                                                                                                                                                        | Required |
-| region | The region where the incident originated.                                                                                                                                                                                 | Optional |
+| region | The region where the incident originated (the PAN DLP Incident Region incident field). | Optional |
 | report_id | The DLP report ID, needed only for granting exemptions.                                                                                                                                                                   | Optional |
-| dlp_channel | The DLP channel, needed only for granting exemptions.                                                                                                                                                                     | Optional |
+| dlp_channel | The DLP channel of the incident (the PAN DLP Channel incident field), for example ngfw. When not provided, the channel of the incident the command runs in is used. | Optional |
 | error_details | Error details if status is SEND_NOTIFICATION_FAILURE.                                                                                                                                                                     | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DLP.IncidentUpdate.success | boolean | Whether the update was successful. |
-| DLP.IncidentUpdate.exemption_duration | number | The exemption duration, only available for "EXCEPTION_GRANTED". |
+| IncidentUpdate.feedback | String | The feedback that was saved. Not available for "EXCEPTION_GRANTED". |
+| IncidentUpdate.success | boolean | Whether the update was successful. Not available for "EXCEPTION_GRANTED". |
+| Exemption.feedback | string | The feedback that was saved, only available for "EXCEPTION_GRANTED". |
+| Exemption.success | boolean | Whether the exemption was granted, only available for "EXCEPTION_GRANTED". |
+| Exemption.duration | string | The exemption duration, for example "30 minutes" or "2.0 hours", only available for "EXCEPTION_GRANTED". |
 
 ### pan-dlp-exemption-eligible
 
