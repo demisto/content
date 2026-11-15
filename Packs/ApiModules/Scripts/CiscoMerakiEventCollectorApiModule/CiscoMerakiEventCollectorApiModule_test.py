@@ -102,6 +102,48 @@ def test_fetch_windowed_saves_next_url_when_budget_reached(client, requests_mock
     assert state["window_end"] == "2026-01-01T12:00:00Z"
 
 
+@pytest.mark.parametrize(
+    "event_type, limit, expected_per_page",
+    [
+        (CONFIGURATION_CHANGES, 10000, "10000"),  # the endpoint accepts up to 100,000 per page: one request covers the limit
+        (CONFIGURATION_CHANGES, 500, "500"),  # a small limit is never exceeded
+        (CONFIGURATION_CHANGES, 250000, "100000"),  # capped at the endpoint maximum, the rest comes from pagination
+        (API_REQUESTS, 10000, "1000"),  # the endpoint maximum is 1,000 per page: pagination is needed
+        (APPLIANCE_SECURITY_EVENTS, 10000, "1000"),
+    ],
+)
+def test_fetch_windowed_requests_the_largest_page_that_fits_the_limit(
+    client, requests_mock, event_type, limit, expected_per_page
+):
+    """
+    Given: a per-type event limit and an endpoint with its own maximum page size.
+    When:  fetching the first page.
+    Then:  perPage is the smaller of the limit and the endpoint maximum, so a high limit is served by as few requests as possible.
+    """
+    mock = requests_mock.get(
+        f"{BASE_URL}/{WINDOWED_EVENT_TYPES[event_type].url_template.format(organization_id=ORG_ID)}", json=[]
+    )
+    fetch_windowed_events(client, WINDOWED_EVENT_TYPES[event_type], {}, limit, NOW)
+    assert mock.call_count == 1
+    assert mock.last_request.qs["perpage"] == [expected_per_page]
+
+
+def test_fetch_windowed_configuration_changes_single_request_for_default_limit(client, requests_mock):
+    """
+    Given: the default limit of 10,000 and fewer events than that in the window.
+    When:  fetching configuration changes.
+    Then:  exactly one request is made and the window is completed.
+    """
+    mock = requests_mock.get(
+        f"{BASE_URL}/organizations/{ORG_ID}/configurationChanges",
+        json=[config_change("2026-01-01T11:10:00Z", str(i)) for i in range(2500)],
+    )
+    events, state = fetch_windowed_events(client, WINDOWED_EVENT_TYPES[CONFIGURATION_CHANGES], {}, 10000, NOW)
+    assert mock.call_count == 1
+    assert len(events) == 2500
+    assert "next_url" not in state
+
+
 def test_fetch_windowed_resumes_next_url(client, requests_mock):
     next_link = f"{BASE_URL}/organizations/{ORG_ID}/configurationChanges?startingAfter=abc"
     requests_mock.get(next_link, json=[config_change("2026-01-01T11:50:00Z")])

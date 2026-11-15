@@ -51,7 +51,8 @@ WINDOWED_EVENT_TYPES: dict[str, WindowedEventType] = {
         display="Configuration changes",
         url_template="organizations/{organization_id}/configurationChanges",
         time_field="ts",
-        max_page_size=5000,
+        # The API accepts perPage up to 100,000, so a per-type limit up to that size is fetched in a single request.
+        max_page_size=100000,
         max_lookback=timedelta(days=365),
     ),
     API_REQUESTS: WindowedEventType(
