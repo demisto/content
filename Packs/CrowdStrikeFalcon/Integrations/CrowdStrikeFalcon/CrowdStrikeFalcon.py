@@ -255,6 +255,8 @@ IOC_HEADERS = [
 ]
 
 IOC_DEVICE_COUNT_MAP = {"id": "ID", "type": "Type", "value": "Value", "device_count": "DeviceCount"}
+# Safety cap on the number of pages fetched from the IOC devices query endpoint (100 device IDs per page by default).
+MAX_IOC_DEVICE_PAGES = 1000
 
 SEARCH_DEVICE_KEY_MAP = {
     "device_id": "ID",
@@ -7131,20 +7133,50 @@ def delete_custom_ioc_command(ioc_id: str) -> dict:
     return create_entry_object(contents=raw_res, hr=f"Custom IOC {ioc_id} was successfully deleted.")
 
 
-def get_ioc_device_count_command(ioc_type: str, value: str):
+def get_ioc_device_count_command(ioc_type: str, value: str | list[str] | None):
+    """
+    :param ioc_type: The type of the indicator, applied to every value
+    :param value: The IOC value, or a list / comma-separated string of IOC values
+    :return: A single result for a single value (backward compatible), or a list with one result per value.
+    """
+    values = argToList(value)
+    if len(values) <= 1:
+        return get_single_ioc_device_count(ioc_type, values[0] if values else value)  # type: ignore[arg-type]
+    return [get_single_ioc_device_count(ioc_type, single_value) for single_value in values]
+
+
+def build_zero_ioc_device_count_result(ioc_type: str, value: str, raw_response: dict | None = None) -> CommandResults:
+    """
+    Builds a result with DeviceCount 0 for an indicator that no device has observed.
+
+    :param ioc_type: The type of the indicator
+    :param value: The IOC value
+    :param raw_response: The raw API response, if there is one
+    :return: CommandResults with a CrowdStrike.IOC entry whose DeviceCount is 0
+    """
+    return CommandResults(
+        outputs_prefix="CrowdStrike.IOC",
+        outputs_key_field="ID",
+        outputs={"ID": f"{ioc_type}:{value}", "Type": ioc_type, "Value": value, "DeviceCount": 0},
+        readable_output=f"No results found for {ioc_type} - {value}",
+        raw_response=raw_response,
+    )
+
+
+def get_single_ioc_device_count(ioc_type: str, value: str):
     """
     :param ioc_type: The type of the indicator
     :param value: The IOC value
     """
     raw_res = get_ioc_device_count(ioc_type, value)
-    if "No results found for" in raw_res:
-        return raw_res
+    if isinstance(raw_res, str):  # 404 - no device has observed the indicator
+        return build_zero_ioc_device_count_result(ioc_type, value)
     else:
         handle_response_errors(raw_res)
         device_count_res = raw_res.get("resources")
         ioc_id = f"{ioc_type}:{value}"
         if not device_count_res:
-            return create_entry_object(raw_res, hr=f"Could not find any devices the IOC **{ioc_id}** was detected in.")
+            return build_zero_ioc_device_count_result(ioc_type, value, raw_response=raw_res)
 
         device_count = device_count_res[0].get("device_count")
         if argToBoolean(device_count_res[0].get("limit_exceeded", False)):
@@ -7152,17 +7184,8 @@ def get_ioc_device_count_command(ioc_type: str, value: str):
             # rate limit exceeded, so we will get the count by running the run_indicator_device_id_request function
             # see https://falcon.crowdstrike.com/documentation/page/ed1b4a95/detection-and-prevention-policy-apis
 
-            device_count = 0
-            params = assign_params(type=ioc_type, value=value)
-
-            while True:
-                device_ids_raw = run_indicator_device_id_request(params)
-                device_count += len(device_ids_raw.get("resources", []))
-                offset = demisto.get(device_ids_raw, "meta.pagination.offset")
-                if not offset:
-                    break
-                params["offset"] = offset
-
+            _, all_device_ids = fetch_all_indicator_device_ids(ioc_type, value)
+            device_count = len(all_device_ids)
             device_count_res[0]["device_count"] = device_count
 
         context = [
@@ -8141,19 +8164,54 @@ def run_indicator_device_id_request(params):
     )
 
 
+def fetch_all_indicator_device_ids(ioc_type: str | None, ioc_value: str | None) -> tuple[dict, list[str]]:
+    """
+    Follows `meta.pagination.offset` on the IOC devices query endpoint and collects the device IDs from all pages.
+    Every page request keeps the legacy-route fallback on HTTP 403.
+    Paging stops when no offset is returned, when an empty page is returned, or after MAX_IOC_DEVICE_PAGES requests.
+
+    :return: The raw response of the first page (used for error handling) and the device IDs from all pages.
+    """
+    params = assign_params(type=ioc_type, value=ioc_value)
+    first_page_response: dict = {}
+    device_ids: list[str] = []
+    for page_number in range(MAX_IOC_DEVICE_PAGES):
+        response = run_indicator_device_id_request(params)
+        if page_number == 0:
+            first_page_response = response
+        page_device_ids = response.get("resources") or []
+        device_ids.extend(page_device_ids)
+        offset = demisto.get(response, "meta.pagination.offset")
+        if not page_device_ids or not offset:
+            return first_page_response, device_ids
+        params["offset"] = offset
+    demisto.debug(f"Reached the maximum of {MAX_IOC_DEVICE_PAGES} pages for {ioc_type}:{ioc_value}, stopping pagination.")
+    return first_page_response, device_ids
+
+
 def get_indicator_device_id():
+    """
+    Runs cs-falcon-device-ran-on / cs-device-ran-on.
+    Returns a single result for a single value (backward compatible), or a list with one result per value.
+    """
     args = demisto.args()
     ioc_type = args.get("type")
-    ioc_value = args.get("value")
-    params = assign_params(type=ioc_type, value=ioc_value)
-    raw_res = run_indicator_device_id_request(params=params)
-    errors = raw_res.get("errors", [])
+    ioc_values = argToList(args.get("value"))
+    if len(ioc_values) <= 1:
+        return get_single_indicator_device_id(ioc_type, ioc_values[0] if ioc_values else args.get("value"))
+    return [get_single_indicator_device_id(ioc_type, ioc_value) for ioc_value in ioc_values]
+
+
+def get_single_indicator_device_id(ioc_type: str | None, ioc_value: str | None) -> CommandResults | str:
+    raw_res, all_device_ids = fetch_all_indicator_device_ids(ioc_type, ioc_value)
+    errors = raw_res.get("errors") or []
     for error in errors:
         if error.get("code") == 404:
             return f"No results found for {ioc_type} - {ioc_value}"
     devices_response = []
     if validate_response(raw_res):
-        devices_response = raw_res.get("resources")
+        devices_response = all_device_ids
+        raw_res = raw_res | {"resources": all_device_ids}
     else:
         error_message = build_error_message(raw_res)
         return_error(error_message)

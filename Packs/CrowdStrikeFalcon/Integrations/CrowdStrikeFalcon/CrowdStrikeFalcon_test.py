@@ -2513,6 +2513,153 @@ def test_get_indicator_device_id_legacy_fallback_on_403(mocker, requests_mock):
     assert res.outputs["DeviceIOC"]["DeviceID"] == res.outputs["DeviceID"]
 
 
+DEVICES_QUERY_URL = f"{SERVER_URL}/iocs/queries/indicators/devices/v1"
+LEGACY_DEVICES_QUERY_URL = f"{SERVER_URL}/indicators/queries/devices/v1"
+
+
+def test_get_indicator_device_id_follows_pagination(mocker, requests_mock):
+    """
+    Given
+     - The devices query endpoint returns three pages linked by meta.pagination.offset
+    When
+     - Running cs-falcon-device-ran-on with a single value
+    Then
+     - All device IDs from all pages are returned, and paging stops once no offset is returned
+    """
+    from CrowdStrikeFalcon import get_indicator_device_id
+
+    requests_mock.get(DEVICES_QUERY_URL, json={"resources": ["d1", "d2"], "meta": {"pagination": {"offset": "off1"}}})
+    requests_mock.get(
+        f"{DEVICES_QUERY_URL}?offset=off1", json={"resources": ["d3", "d4"], "meta": {"pagination": {"offset": "off2"}}}
+    )
+    requests_mock.get(f"{DEVICES_QUERY_URL}?offset=off2", json={"resources": ["d5"], "meta": {"pagination": {}}})
+    mocker.patch.object(demisto, "args", return_value={"type": "sha256", "value": "example_sha"})
+
+    res = get_indicator_device_id()
+
+    assert res.outputs["DeviceID"] == ["d1", "d2", "d3", "d4", "d5"]
+    assert res.outputs["DeviceIOC"]["DeviceID"] == ["d1", "d2", "d3", "d4", "d5"]
+    assert requests_mock.call_count == 3
+
+
+def test_get_indicator_device_id_stops_on_empty_page(mocker, requests_mock):
+    """
+    Given
+     - The second page is empty but still carries an offset
+    When
+     - Running cs-falcon-device-ran-on
+    Then
+     - Paging stops on the empty page
+    """
+    from CrowdStrikeFalcon import get_indicator_device_id
+
+    requests_mock.get(DEVICES_QUERY_URL, json={"resources": ["d1"], "meta": {"pagination": {"offset": "off1"}}})
+    requests_mock.get(f"{DEVICES_QUERY_URL}?offset=off1", json={"resources": [], "meta": {"pagination": {"offset": "off2"}}})
+    requests_mock.get(f"{DEVICES_QUERY_URL}?offset=off2", json={"resources": ["should_not_be_fetched"]})
+    mocker.patch.object(demisto, "args", return_value={"type": "sha256", "value": "example_sha"})
+
+    res = get_indicator_device_id()
+
+    assert res.outputs["DeviceID"] == ["d1"]
+    assert requests_mock.call_count == 2
+
+
+def test_get_indicator_device_id_stops_at_safety_cap(mocker, requests_mock):
+    """
+    Given
+     - The API keeps returning a non-empty page with an offset forever
+    When
+     - Running cs-falcon-device-ran-on
+    Then
+     - Paging stops after MAX_IOC_DEVICE_PAGES requests
+    """
+    import CrowdStrikeFalcon
+
+    mocker.patch.object(CrowdStrikeFalcon, "MAX_IOC_DEVICE_PAGES", 3)
+    requests_mock.get(DEVICES_QUERY_URL, json={"resources": ["d1"], "meta": {"pagination": {"offset": "loop"}}})
+    mocker.patch.object(demisto, "args", return_value={"type": "sha256", "value": "example_sha"})
+
+    CrowdStrikeFalcon.get_indicator_device_id()
+
+    assert requests_mock.call_count == 3
+
+
+def test_get_indicator_device_id_legacy_fallback_on_403_with_pagination(mocker, requests_mock):
+    """
+    Given
+     - The modern devices route returns 403 on every request, and the legacy route returns two pages
+    When
+     - Running cs-falcon-device-ran-on
+    Then
+     - Every page request falls back to the legacy route and all device IDs are returned
+    """
+    from CrowdStrikeFalcon import get_indicator_device_id
+
+    requests_mock.get(
+        DEVICES_QUERY_URL,
+        json={"errors": [{"code": 403, "message": "access denied, scope not permitted"}]},
+        status_code=403,
+        reason="Forbidden",
+    )
+    requests_mock.get(LEGACY_DEVICES_QUERY_URL, json={"resources": ["d1", "d2"], "meta": {"pagination": {"offset": "off1"}}})
+    requests_mock.get(f"{LEGACY_DEVICES_QUERY_URL}?offset=off1", json={"resources": ["d3"], "meta": {"pagination": {}}})
+    mocker.patch.object(demisto, "args", return_value={"type": "sha256", "value": "example_sha"})
+
+    res = get_indicator_device_id()
+
+    assert res.outputs["DeviceID"] == ["d1", "d2", "d3"]
+
+
+def test_get_indicator_device_id_multiple_values(mocker, requests_mock):
+    """
+    Given
+     - Two comma-separated hash values
+    When
+     - Running cs-falcon-device-ran-on
+    Then
+     - One lookup is made per value, and one result per value is returned with its own ID, Type and Value
+    """
+    from CrowdStrikeFalcon import get_indicator_device_id
+
+    requests_mock.get(f"{DEVICES_QUERY_URL}?type=sha256&value=sha_a", json={"resources": ["a1", "a2"]})
+    requests_mock.get(f"{DEVICES_QUERY_URL}?type=sha256&value=sha_b", json={"resources": ["b1"]})
+    mocker.patch.object(demisto, "args", return_value={"type": "sha256", "value": "sha_a,sha_b"})
+
+    results = get_indicator_device_id()
+
+    assert isinstance(results, list)
+    assert len(results) == 2
+    assert results[0].outputs["DeviceIOC"] == {"Type": "sha256", "Value": "sha_a", "ID": "sha256:sha_a", "DeviceID": ["a1", "a2"]}
+    assert results[1].outputs["DeviceIOC"] == {"Type": "sha256", "Value": "sha_b", "ID": "sha256:sha_b", "DeviceID": ["b1"]}
+    assert requests_mock.call_count == 2
+
+
+def test_get_indicator_device_id_mixed_not_found_and_found(mocker, requests_mock):
+    """
+    Given
+     - Two values, the first returns 404 and the second returns devices
+    When
+     - Running cs-falcon-device-ran-on
+    Then
+     - The first value keeps the "No results found" message and the second value still returns its devices
+    """
+    from CrowdStrikeFalcon import get_indicator_device_id
+
+    requests_mock.get(
+        f"{DEVICES_QUERY_URL}?type=sha256&value=sha_missing",
+        json={"resources": [], "errors": [{"code": 404, "message": "Resource Not Found"}]},
+        status_code=404,
+    )
+    requests_mock.get(f"{DEVICES_QUERY_URL}?type=sha256&value=sha_b", json={"resources": ["b1"]})
+    mocker.patch.object(demisto, "args", return_value={"type": "sha256", "value": ["sha_missing", "sha_b"]})
+
+    results = get_indicator_device_id()
+
+    assert results[0] == "No results found for sha256 - sha_missing"
+    assert results[1].outputs["DeviceIOC"]["ID"] == "sha256:sha_b"
+    assert results[1].outputs["DeviceID"] == ["b1"]
+
+
 def test_validate_response():
     from CrowdStrikeFalcon import validate_response
 
@@ -3344,11 +3491,11 @@ def test_get_ioc_device_count_command_does_not_exist(requests_mock, mocker):
     Test cs-falcon-device-count-ioc with an unsuccessful query (doesn't exist)
 
     Given
-     - There is no device with a process that ran md5:testmd5
+     - There is no device with a process that ran md5:testmd5 (the API returns 404)
     When
      - The user is running cs-falcon-device-count-ioc with md5:testmd5
     Then
-     - Raise an error
+     - A CommandResults is returned with DeviceCount 0 in the context and the "No results found" message
     """
     from CrowdStrikeFalcon import get_ioc_device_count_command
 
@@ -3362,7 +3509,35 @@ def test_get_ioc_device_count_command_does_not_exist(requests_mock, mocker):
     )
     mocker.patch(RETURN_ERROR_TARGET)
     res = get_ioc_device_count_command(ioc_type="md5", value="testmd5")
-    assert res == "No results found for md5 - testmd5"
+    assert isinstance(res, CommandResults)
+    assert res.outputs_prefix == "CrowdStrike.IOC"
+    assert res.outputs_key_field == "ID"
+    assert res.outputs == {"ID": "md5:testmd5", "Type": "md5", "Value": "testmd5", "DeviceCount": 0}
+    assert res.readable_output == "No results found for md5 - testmd5"
+
+
+def test_get_ioc_device_count_command_empty_resources(requests_mock):
+    """
+    Given
+     - The device count API returns 200 with an empty resources list
+    When
+     - The user is running cs-falcon-device-count-ioc with md5:testmd5
+    Then
+     - A CommandResults is returned with DeviceCount 0 in the context and the "No results found" message
+    """
+    from CrowdStrikeFalcon import get_ioc_device_count_command
+
+    requests_mock.get(
+        f"{SERVER_URL}/iocs/aggregates/indicators/device-count/v1",
+        json={"resources": []},
+        status_code=200,
+    )
+    res = get_ioc_device_count_command(ioc_type="md5", value="testmd5")
+    assert isinstance(res, CommandResults)
+    assert res.outputs_prefix == "CrowdStrike.IOC"
+    assert res.outputs_key_field == "ID"
+    assert res.outputs == {"ID": "md5:testmd5", "Type": "md5", "Value": "testmd5", "DeviceCount": 0}
+    assert "No results found for md5 - testmd5" in res.readable_output
 
 
 def test_get_ioc_device_count_command_exists(requests_mock):
@@ -3458,6 +3633,95 @@ def test_get_ioc_device_count_command_rate_limit_exceeded(requests_mock):
     res = get_ioc_device_count_command(ioc_type="md5", value="testmd5")
 
     assert "device count: **6**" in res["HumanReadable"]
+
+
+def test_get_ioc_device_count_command_limit_exceeded_stops_on_empty_page(requests_mock):
+    """
+    Given
+     - limit_exceeded is set, and the second devices page is empty but still carries an offset
+    When
+     - Running cs-falcon-device-count-ioc
+    Then
+     - Counting stops on the empty page and the count only includes the devices that were returned
+    """
+    from CrowdStrikeFalcon import get_ioc_device_count_command
+
+    requests_mock.get(
+        f"{SERVER_URL}/iocs/aggregates/indicators/device-count/v1",
+        json={"resources": [{"type": "md5", "value": "testmd5", "limit_exceeded": True, "device_count": 100}]},
+    )
+    requests_mock.get(DEVICES_QUERY_URL, json={"resources": ["d1", "d2"], "meta": {"pagination": {"offset": "off1"}}})
+    requests_mock.get(f"{DEVICES_QUERY_URL}?offset=off1", json={"resources": [], "meta": {"pagination": {"offset": "off2"}}})
+    requests_mock.get(f"{DEVICES_QUERY_URL}?offset=off2", json={"resources": ["should_not_be_counted"]})
+
+    res = get_ioc_device_count_command(ioc_type="md5", value="testmd5")
+
+    assert "device count: **2**" in res["HumanReadable"]
+
+
+def test_get_ioc_device_count_command_multiple_values(requests_mock):
+    """
+    Given
+     - Two comma-separated md5 values
+    When
+     - Running cs-falcon-device-count-ioc
+    Then
+     - One IOC entry is returned per value, each with its correct ID and device count
+    """
+    from CrowdStrikeFalcon import get_ioc_device_count_command
+
+    count_url = f"{SERVER_URL}/iocs/aggregates/indicators/device-count/v1"
+    requests_mock.get(
+        f"{count_url}?type=md5&value=md5_a", json={"resources": [{"type": "md5", "value": "md5_a", "device_count": 3}]}
+    )
+    requests_mock.get(
+        f"{count_url}?type=md5&value=md5_b", json={"resources": [{"type": "md5", "value": "md5_b", "device_count": 7}]}
+    )
+
+    results = get_ioc_device_count_command(ioc_type="md5", value="md5_a,md5_b")
+
+    assert isinstance(results, list)
+    assert len(results) == 2
+    first_context = results[0]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]
+    second_context = results[1]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]
+    assert (first_context["ID"], first_context["DeviceCount"]) == ("md5:md5_a", 3)
+    assert (second_context["ID"], second_context["DeviceCount"]) == ("md5:md5_b", 7)
+    assert results[0]["HumanReadable"] == "Indicator of Compromise **md5:md5_a** device count: **3**"
+    assert results[1]["HumanReadable"] == "Indicator of Compromise **md5:md5_b** device count: **7**"
+
+
+def test_get_ioc_device_count_command_mixed_not_found_and_found(requests_mock):
+    """
+    Given
+     - Two values, the first returns 404 and the second returns a count
+    When
+     - Running cs-falcon-device-count-ioc
+    Then
+     - The first value returns a DeviceCount 0 entry with the "No results found" message
+     - The second value still returns its normal count
+    """
+    from CrowdStrikeFalcon import get_ioc_device_count_command
+
+    count_url = f"{SERVER_URL}/iocs/aggregates/indicators/device-count/v1"
+    requests_mock.get(
+        f"{count_url}?type=md5&value=md5_missing",
+        json={"resources": [], "errors": [{"code": 404, "message": "Resource Not Found"}]},
+        status_code=404,
+    )
+    requests_mock.get(
+        f"{count_url}?type=md5&value=md5_b", json={"resources": [{"type": "md5", "value": "md5_b", "device_count": 4}]}
+    )
+
+    results = get_ioc_device_count_command(ioc_type="md5", value=["md5_missing", "md5_b"])
+
+    assert len(results) == 2
+    missing_result = results[0]
+    assert isinstance(missing_result, CommandResults)
+    assert missing_result.outputs == {"ID": "md5:md5_missing", "Type": "md5", "Value": "md5_missing", "DeviceCount": 0}
+    assert missing_result.readable_output == "No results found for md5 - md5_missing"
+    found_context = results[1]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]
+    assert (found_context["ID"], found_context["DeviceCount"]) == ("md5:md5_b", 4)
+    assert results[1]["HumanReadable"] == "Indicator of Compromise **md5:md5_b** device count: **4**"
 
 
 def test_get_process_details_command_not_exists(requests_mock, mocker):

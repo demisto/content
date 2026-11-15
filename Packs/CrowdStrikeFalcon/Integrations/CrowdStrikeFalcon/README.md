@@ -1720,6 +1720,8 @@ There is no context output for this command.
 
 ***
 The number of hosts that observed the provided IOC.
+When more than one value is provided, a separate result is returned for each value.
+If no devices have observed an indicator, the command returns a *DeviceCount* of 0 for that indicator in the context.
 
 #### Base Command
 
@@ -1729,8 +1731,8 @@ The number of hosts that observed the provided IOC.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The IOC type. Possible values are: sha256, sha1, md5, domain, ipv4, ipv6. | Required |
-| value | The string representation of the indicator. | Required |
+| type | The IOC type. Applies to all the provided values. Possible values are: sha256, sha1, md5, domain, ipv4, ipv6. | Required |
+| value | A comma-separated list of string representations of indicators. All values must be of the type given in the type argument. | Required |
 
 #### Context Output
 
@@ -1888,6 +1890,8 @@ Retrieves the details of a process, according to the process ID that is running 
 
 ***
 Returns a list of device IDs an indicator ran on.
+The command pages through all the results, so all device IDs are returned (not only the first 100).
+When more than one value is provided, a separate result is returned for each value.
 
 #### Base Command
 
@@ -1897,8 +1901,8 @@ Returns a list of device IDs an indicator ran on.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The type of indicator. Possible values are: domain, ipv4, ipv6, md5, sha1, sha256. | Required |
-| value | The string representation of the indicator. | Required |
+| type | The type of indicator. Applies to all the provided values. Possible values are: domain, ipv4, ipv6, md5, sha1, sha256. | Required |
+| value | A comma-separated list of string representations of indicators. All values must be of the type given in the type argument. | Required |
 
 #### Context Output
 
