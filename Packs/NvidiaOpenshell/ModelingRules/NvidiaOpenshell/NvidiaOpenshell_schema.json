@@ -1,84 +1,105 @@
 {
     "nvidia_openshell_raw": {
+        "dataset_description": "NVIDIA OpenShell OCSF events (network, HTTP, SSH, device configuration and base events) ingested via the HTTP Collector.",
         "class_name": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OCSF event class name (e.g. Network Activity, HTTP Activity)."
         },
         "activity_name": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OCSF activity name describing the action performed in the event."
         },
         "type_name": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OCSF event type name (class name combined with activity)."
         },
         "severity": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OCSF severity of the event (e.g. Informational, Medium, High)."
         },
         "status": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OCSF event status (e.g. Success, Failure)."
         },
         "message": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "Human-readable description of the event."
         },
         "metadata": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OCSF metadata object: event UID, schema version and product details."
         },
         "device": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OCSF device object describing the host running the OpenShell supervisor."
         },
         "container": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OCSF container object describing the sandboxed workload (name, UID)."
         },
         "dst_endpoint": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OCSF destination endpoint object (domain, IP, port)."
         },
         "proxy_endpoint": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OCSF proxy endpoint object for the OpenShell network proxy (IP, port)."
         },
         "unmapped": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OpenShell-specific attributes not covered by OCSF (mapping ID, normalized domain, policy hash)."
         },
         "state": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "State of the configuration or connection reported by the event."
         },
         "action": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OCSF action taken by the security control (e.g. Allowed, Denied)."
         },
         "disposition": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OCSF disposition of the event as determined by the security control."
         },
         "status_detail": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "Additional details about the event status or failure reason."
         },
         "actor": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OCSF actor object describing the process that initiated the activity."
         },
         "src_endpoint": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OCSF source endpoint object (IP, port)."
         },
         "firewall_rule": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OCSF firewall rule object for the policy rule that matched (name, type)."
         },
         "http_request": {
             "type": "string",
-            "is_array": false
+            "is_array": false,
+            "field_description": "OCSF HTTP request object (method, URL scheme, hostname, path, port)."
         }
     }
 }

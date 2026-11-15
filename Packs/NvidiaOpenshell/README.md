@@ -4,11 +4,12 @@
 
 NVIDIA OpenShell is a sandbox supervisor and network proxy product that runs inside containerised workloads. It enforces network policy, monitors outbound connections, and logs security-control events, device-configuration state changes, and SSH/HTTP activity using the Open Cybersecurity Schema Framework (OCSF). OpenShell generates structured JSON events that describe container network activity, policy enforcement decisions, and configuration lifecycle events.
 
-## This pack includes:
+## This pack includes
 
 Data normalization capabilities:
-  * Rules for parsing and modeling NVIDIA OpenShell logs that are ingested via the HTTP Collector into Cortex XSIAM.
-    * The ingested NVIDIA OpenShell logs can be queried in XQL Search using the *`nvidia_openshell_raw`* dataset.
+
+- Rules for modeling NVIDIA OpenShell logs that are ingested via the HTTP Collector into Cortex XSIAM.
+  - The ingested NVIDIA OpenShell logs can be queried in XQL Search using the *`nvidia_openshell_raw`* dataset.
 
 ## Supported log categories
 
