@@ -65,7 +65,7 @@ configuration:
   required: false
 - display: Region For Region Discovery
   name: discovery_region
-  additionalinfo: Used only when AWS Default Region is all. The region in which the enabled regions are discovered (ec2:DescribeRegions). Default is us-east-1.
+  additionalinfo: The region in which the enabled regions are discovered (ec2:DescribeRegions). Used only when AWS Default Region is all.
   defaultvalue: us-east-1
   type: 0
   section: Connect
@@ -131,6 +131,7 @@ configuration:
   section: Collect
 - display: Create issues from events
   name: create_issues_from_events
+  additionalinfo: Whether to create issues from the collected events.
   type: 8
   required: false
   defaultvalue: 'false'

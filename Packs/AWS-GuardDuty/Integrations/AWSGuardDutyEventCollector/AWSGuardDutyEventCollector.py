@@ -1,4 +1,5 @@
 import json
+import traceback
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta, UTC
 from typing import TYPE_CHECKING
@@ -497,6 +498,9 @@ def get_events_all_regions(
             region_clients[region] = aws_client.aws_session(service=CLIENT_SERVICE, region=region)
         except Exception as e:
             region_errors[region] = str(e)
+            demisto.debug(
+                f"AWSGuardDutyEventCollector - Failed to create a client for region {region}:\n{traceback.format_exc()}"
+            )
 
     def fetch_region(region: str) -> Optional[tuple[list, dict, dict]]:
         if deadline and region != regions[0] and datetime.now(UTC) >= deadline:
@@ -523,6 +527,7 @@ def get_events_all_regions(
             result = future.result()
         except Exception as e:
             region_errors[region] = str(e)
+            demisto.debug(f"AWSGuardDutyEventCollector - Region {region} failed:\n{''.join(traceback.format_exception(e))}")
             continue
         if result is None:
             skipped_regions.append(region)
@@ -599,7 +604,7 @@ def run_all_regions_command(
             aws_client=aws_client,
             regions=get_enabled_regions(aws_client, discovery_region),
             collect_from={},
-            collect_from_default=arg_to_datetime(args.get("collect_from", demisto.params().get("first_fetch"))),
+            collect_from_default=arg_to_datetime(args.get("collect_from")) or first_fetch,
             last_ids={},
             severity=args.get("severity", severity),
             limit=command_limit or MAX_RESULTS,
@@ -611,7 +616,7 @@ def run_all_regions_command(
                 raw_response=events,
             )
         )
-        if argToBoolean(args.get("should_push_events", "true")):
+        if argToBoolean(args.get("should_push_events", "false")):
             send_events_to_xsiam(events, VENDOR, PRODUCT)
 
     elif command == "fetch-events":
@@ -725,7 +730,7 @@ def main():  # pragma: no cover
             )
             return_results(command_results)
 
-            if argToBoolean(demisto.args().get("should_push_events", "true")):
+            if argToBoolean(demisto.args().get("should_push_events", "false")):
                 send_events_to_xsiam(events, VENDOR, PRODUCT)
 
         elif command == "fetch-events":
