@@ -5,7 +5,15 @@ This integration was integrated and tested with version 2.0 of Palo Alto Network
 Incidents are fetched from every control point the tenant can see. Use the *DLP Channels* parameter to narrow the fetch to specific control points.
 
 **Note**:
-Starting from version 2.4.0, incidents are fetched from the Enterprise DLP v4 incident inventory API (`/v4/api/incidents`). This API returns a summary of each incident, so fetched incidents no longer include several attributes that the previous incident notifications API returned under `incidentDetails`. These include the URL, source and destination IP addresses, user name, email, department, location and manager, upload or download direction, asset size and hash, data patterns, device information and every data profile except the last one. The fields mapped by the default *Data Loss Prevention* mapper are still populated. If you mapped any of these attributes in a custom mapper, layout or playbook, they are now empty. You can still view these attributes in the incident details in Strata Cloud Manager.
+Starting from version 2.4.0, incidents are fetched from the Enterprise DLP v4 incident inventory API (`/v4/api/incidents`). This API returns a summary of each incident, so fetched incidents contain fewer attributes than the previous incident notifications API returned:
+
+- The *PAN DLP Tenant ID* and *File SHA256* incident fields are no longer populated. The file SHA-256 is still available from the Enterprise DLP incident details API as `asset_hash`.
+- The *PAN DLP Previous Feedback* incident field now holds the feedback status of the fetched incident itself, as an enum value such as `PENDING_RESPONSE`, instead of the feedback given on an earlier incident with the same report and user. The conditions that check this field in the *DLP Incident Feedback Loop* and *DLP - Get User Feedback* playbooks no longer match.
+- The *PAN DLP Incident Region* incident field holds the region where the incident was created. `SG`, `FR` and `CH` replace the previous `AP`, `PAR` and `SUI` values.
+- The `tenantId`, `checksum`, `appId`, `scanDate`, `updatedAt`, `committedAt`, `resolutionStatus`, `direction`, `url`, `confidenceLevel`, policy, `fileSize`, `priority`, `incidentNotes`, `reasonForAction` and peripheral keys are no longer included in the incident raw JSON. `incidentDetails` contains only the severity header and the application name, so the file, device and content decoder details, and the username, URL, destination IP and firewall version headers, are no longer included.
+- `source` holds the control point in upper case, `createdAt` is in ISO 8601 format, `dataProfileId` is a string and `userId` is `N/A` when the user is unknown.
+
+If you use any of these attributes in a custom mapper, layout or playbook, update it. You can still view these attributes in the incident details in Strata Cloud Manager.
 
 ### Setup
 
@@ -118,17 +126,20 @@ Updates a DLP incident with user feedback.
 | incident_id | The ID of the incident to update.                                                                                                                                                                                         | Required |
 | feedback | The user feedback. Possible values are: PENDING_RESPONSE, CONFIRMED_SENSITIVE, CONFIRMED_FALSE_POSITIVE, EXCEPTION_REQUESTED, EXCEPTION_GRANTED, EXCEPTION_NOT_REQUESTED, OPERATIONAL_ERROR, SEND_NOTIFICATION_FAILURE, EXCEPTION_DENIED. | Required |
 | user_id | The ID of the user the feedback is collected from.                                                                                                                                                                        | Required |
-| region | The region where the incident originated.                                                                                                                                                                                 | Optional |
+| region | The region where the incident originated (the PAN DLP Incident Region incident field). | Optional |
 | report_id | The DLP report ID, needed only for granting exemptions.                                                                                                                                                                   | Optional |
-| dlp_channel | The DLP channel, needed only for granting exemptions.                                                                                                                                                                     | Optional |
+| dlp_channel | The DLP channel of the incident (the PAN DLP Channel incident field), for example ngfw. When not provided, the channel of the incident the command runs in is used. | Optional |
 | error_details | Error details if status is SEND_NOTIFICATION_FAILURE.                                                                                                                                                                     | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DLP.IncidentUpdate.success | boolean | Whether the update was successful. |
-| DLP.IncidentUpdate.exemption_duration | number | The exemption duration, only available for "EXCEPTION_GRANTED". |
+| IncidentUpdate.feedback | String | The feedback that was saved. Not available for "EXCEPTION_GRANTED". |
+| IncidentUpdate.success | boolean | Whether the update was successful. Not available for "EXCEPTION_GRANTED". |
+| Exemption.feedback | string | The feedback that was saved, only available for "EXCEPTION_GRANTED". |
+| Exemption.success | boolean | Whether the exemption was granted, only available for "EXCEPTION_GRANTED". |
+| Exemption.duration | string | The exemption duration, for example "30 minutes" or "2.0 hours", only available for "EXCEPTION_GRANTED". |
 
 ### pan-dlp-exemption-eligible
 
