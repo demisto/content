@@ -5963,11 +5963,11 @@
         }
     ],
     "skipped_tests": {
-        "Microsoft_365_Defender-Test": "Fails consistently in nightly, test instance credentials need to be fixed",
-        "EWS V2 Send Mail Test": "Fails consistently in nightly, test instance credentials need to be fixed",
-        "EWS V2 Send Mail Test 3": "Fails consistently in nightly, test instance credentials need to be fixed",
-        "Send Email To Recipients": "Fails consistently in nightly, test instance credentials need to be fixed",
-        "EWS search-mailbox test": "Fails consistently in nightly, test instance credentials need to be fixed",
+        "Microsoft_365_Defender-Test": "Fails consistently in nightly, test instance credentials need to be fixed - CIAC-18016",
+        "EWS V2 Send Mail Test": "Fails consistently in nightly, test instance credentials need to be fixed - CIAC-15571",
+        "EWS V2 Send Mail Test 3": "Fails consistently in nightly, test instance credentials need to be fixed - CIAC-15570",
+        "Send Email To Recipients": "Fails consistently in nightly, test instance credentials need to be fixed - CIAC-15573",
+        "EWS search-mailbox test": "Fails consistently in nightly, test instance credentials need to be fixed - CIAC-15568",
         "EWS V2 Send Mail Test 2": "Fails consistently in nightly - CIAC-15569",
         "Rasterize Test": "Flaky, fails intermittently in nightly - CIAC-15572",
         "Mail Sender (New) Test": "Gmail CI service-account key is invalid (invalid_grant: Invalid signature for token) - CIAC-14453",
