@@ -738,7 +738,9 @@ def ews_ops(params: SearchParams, instance: str, result: VendorResult) -> EmailO
         )
 
     def get_files(email: dict[str, Any]) -> list[dict[str, Any]]:
-        return run_command("ews-get-attachment", {"item-id": email["ObjectID"], "target-mailbox": primary_mailbox(email)}, instance)
+        return run_command(
+            "ews-get-attachment", {"item-id": email["ObjectID"], "target-mailbox": primary_mailbox(email)}, instance
+        )
 
     return EmailOps(search, delete, get_files)
 
