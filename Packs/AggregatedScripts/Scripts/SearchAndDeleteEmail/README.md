@@ -44,16 +44,16 @@ This script uses the following commands and scripts.
 | internet_message_id | One or more Internet Message IDs of the emails to search for or delete. When specified, it is preferred over subject and sender_address. A message ID that contains whitespace, quotes, backslashes, parentheses or inner angle brackets is rejected. |
 | object_id | The vendor specific ID of the email (for example, the ItemID in EWS). When specified, a single target_mailbox and a single brand must also be specified, and mailbox_scope must be "Specific". |
 | operation | The operation to perform. "Search Only" searches for the emails without deleting them. "Search &amp; Delete" also deletes the emails that were found. |
-| delete_type | The delete type to use when the operation is "Search &amp; Delete": "soft" (the email is moved to the deleted items / trash and can be recovered) or "hard" (the email is permanently deleted). Microsoft Graph Mail supports soft delete only. Default is soft. |
-| time_frame | How far back to search, for example "7 days" or "3 hours". Supported units: minutes, hours, days, weeks and months. EWS v2 honors only the date part. Default is 1 hour. |
+| delete_type | The delete type to use when the operation is "Search &amp; Delete": "soft" (the email is moved to the deleted items / trash and can be recovered) or "hard" (the email is permanently deleted). Microsoft Graph Mail supports soft delete only. |
+| time_frame | The time frame to search back in, for example "7 days" or "3 hours". Supported units: minutes, hours, days, weeks and months. EWS v2 honors only the date part. |
 | subject | One or more email subjects to search for. Ignored when internet_message_id is specified. |
 | sender_address | The sender address to search for. Can be used together with subject. Ignored when internet_message_id is specified. An address that contains whitespace, quotes, backslashes or parentheses is rejected. |
-| retrieve_files | Whether to retrieve the attachments of the emails before they are deleted. The files are added to the Attachments key of EmailData and returned as file entries. Default is false. |
+| retrieve_files | Whether to retrieve the attachments of the emails before they are deleted. The files are added to the Attachments key of EmailData and returned as file entries. |
 | target_mailbox | The mailbox(es) to search in. Required when mailbox_scope is "Specific". Ignored when mailbox_scope is "All". |
-| mailbox_scope | Whether to search specific mailboxes or all mailboxes. Microsoft Graph Mail does not support "All" (an error is returned for it, use Gmail or EWS on-prem instead). Default is Specific. |
+| mailbox_scope | Whether to search specific mailboxes or all mailboxes. Microsoft Graph Mail does not support "All" (an error is returned for it, use Gmail or EWS on-prem instead). |
 | brands | The brands to run the operation on. If empty, all enabled instances of the supported brands are used. The run fails if no enabled instance of the requested brands is found. |
-| verbose | Whether to include the list of executed commands in the human readable output and the instance name in the AdditionalFields of every email. Default is false. |
-| timeout | The overall time budget of the run, in seconds (a positive integer, at most 1800, since the whole search and delete runs synchronously within the script timeout). It is not a per-operation timeout. It is checked before each integration instance is run and before each email is processed. When it is exhausted, the integration instances that were not run yet are reported as failed, the remaining emails are not processed (a note is added) and the results collected so far are returned. Default is 1800. |
+| verbose | Whether to include the list of executed commands in the human readable output and the instance name in the AdditionalFields of every email. |
+| timeout | The overall time budget of the run, in seconds (a positive integer, at most 1800, since the whole search and delete runs synchronously within the script timeout). It is not a per-operation timeout. It is checked before each integration instance is run and before each email is processed. When it is exhausted, the integration instances that were not run yet are reported as failed, the remaining emails are not processed (a note is added) and the results collected so far are returned. |
 
 ## Outputs
 

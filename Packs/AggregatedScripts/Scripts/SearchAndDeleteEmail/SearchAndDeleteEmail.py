@@ -60,6 +60,7 @@ EMAIL_TIMEOUT_NOTE = (
 )
 MAX_ROUNDS = 10  # Max number of "search -> delete" rounds when the vendor returns capped result pages.
 GMAIL_PAGE_SIZE = 500
+GMAIL_MAX_PAGES = 50  # Max number of Gmail result pages followed per mailbox in one search round.
 GRAPH_MAIL_PAGE_SIZE = 50
 GRAPH_MAIL_MAX_PAGES = 64
 EWS_LIMIT_STEPS = (100, 500, 1000)
@@ -502,6 +503,7 @@ def gmail_search(params: SearchParams, instance: str) -> tuple[list[dict[str, An
     """Searches Gmail and follows every page token so that all matching emails are returned."""
     query = build_gmail_query(params)
     emails: list[dict[str, Any]] = []
+    saturated = False
     if params.object_id:
         results = object_id_lookup(
             "gmail-get-mail", {"user-id": params.target_mailboxes[0], "message-id": params.object_id}, instance
@@ -513,7 +515,10 @@ def gmail_search(params: SearchParams, instance: str) -> tuple[list[dict[str, An
     )
     for mailbox in mailboxes:
         page_token = ""
-        while True:  # Pagination: loop until Gmail does not return another page token.
+        for _ in range(GMAIL_MAX_PAGES):  # Pagination: loop until Gmail does not return another page token.
+            if params.deadline_passed:
+                demisto.debug(f"Gmail search: the timeout budget was exhausted, stopped paginating mailbox '{mailbox}'.")
+                break
             args: dict[str, Any] = {"query": query, "max-results": GMAIL_PAGE_SIZE, "page-token": page_token}
             if params.all_mailboxes:
                 args["show-only-mailboxes"] = "false"
@@ -528,7 +533,11 @@ def gmail_search(params: SearchParams, instance: str) -> tuple[list[dict[str, An
             page_token = find_in_results(results, "NextPageToken") or ""
             if not page_token:
                 break
-    return emails, False
+        else:
+            # The page cap was reached while Gmail still returned a page token.
+            saturated = True  # Deleting what was found and searching again will reveal the remaining emails.
+            demisto.debug(f"Gmail search: reached {GMAIL_MAX_PAGES} pages for mailbox '{mailbox}', more results may exist.")
+    return emails, saturated
 
 
 def gmail_ops(params: SearchParams, instance: str, result: VendorResult) -> EmailOps:
@@ -714,7 +723,7 @@ def ews_ops(params: SearchParams, instance: str, result: VendorResult) -> EmailO
                     if items:
                         email.update({k: v for k, v in ews_to_email(items[0], email["Mailbox"][0]).items() if v})
                 except Exception as exc:
-                    demisto.debug(f"Failed enriching EWS item {email['ObjectID']}: {exc}")
+                    demisto.debug(f"Failed enriching EWS item {email['ObjectID']}: {exc}\n{traceback.format_exc()}")
         return emails, saturated
 
     def delete(email: dict[str, Any]) -> None:
@@ -1101,7 +1110,7 @@ def main() -> None:  # pragma: no cover
         return_error(f"Invalid arguments: {exc}")
     except Exception as exc:
         demisto.debug(traceback.format_exc())
-        return_error(f"Failed to run {SCRIPT_NAME}: {exc}")
+        return_error(f"Failed to run {SCRIPT_NAME}: {exc}", error=exc)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

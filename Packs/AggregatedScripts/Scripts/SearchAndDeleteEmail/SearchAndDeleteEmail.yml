@@ -31,13 +31,14 @@ args:
   - Search Only
   - Search & Delete
 - name: delete_type
-  description: 'The delete type to use when the operation is "Search & Delete": "soft" (the email is moved to the deleted items / trash and can be recovered) or "hard" (the email is permanently deleted). Microsoft Graph Mail supports soft delete only. Default is soft.'
+  description: 'The delete type to use when the operation is "Search & Delete": "soft" (the email is moved to the deleted items / trash and can be recovered) or "hard" (the email is permanently deleted). Microsoft Graph Mail supports soft delete only.'
   auto: PREDEFINED
   predefined:
   - soft
   - hard
+  defaultValue: soft
 - name: time_frame
-  description: 'How far back to search, for example "7 days" or "3 hours". Supported units: minutes, hours, days, weeks and months. EWS v2 honors only the date part. Default is 1 hour.'
+  description: 'The time frame to search back in, for example "7 days" or "3 hours". Supported units: minutes, hours, days, weeks and months. EWS v2 honors only the date part.'
   defaultValue: 1 hour
 - name: subject
   description: One or more email subjects to search for. Ignored when internet_message_id is specified.
@@ -45,7 +46,7 @@ args:
 - name: sender_address
   description: The sender address to search for. Can be used together with subject. Ignored when internet_message_id is specified. An address that contains whitespace, quotes, backslashes or parentheses is rejected.
 - name: retrieve_files
-  description: Whether to retrieve the attachments of the emails before they are deleted. The files are added to the Attachments key of EmailData and returned as file entries. Default is false.
+  description: Whether to retrieve the attachments of the emails before they are deleted. The files are added to the Attachments key of EmailData and returned as file entries.
   auto: PREDEFINED
   predefined:
   - "true"
@@ -55,7 +56,7 @@ args:
   description: The mailbox(es) to search in. Required when mailbox_scope is "Specific". Ignored when mailbox_scope is "All".
   isArray: true
 - name: mailbox_scope
-  description: Whether to search specific mailboxes or all mailboxes. Microsoft Graph Mail does not support "All" (an error is returned for it, use Gmail or EWS on-prem instead). Default is Specific.
+  description: Whether to search specific mailboxes or all mailboxes. Microsoft Graph Mail does not support "All" (an error is returned for it, use Gmail or EWS on-prem instead).
   auto: PREDEFINED
   predefined:
   - Specific
@@ -70,14 +71,14 @@ args:
   - MicrosoftGraphMail
   - EWS v2
 - name: verbose
-  description: Whether to include the list of executed commands in the human readable output and the instance name in the AdditionalFields of every email. Default is false.
+  description: Whether to include the list of executed commands in the human readable output and the instance name in the AdditionalFields of every email.
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
   defaultValue: "false"
 - name: timeout
-  description: The overall time budget of the run, in seconds (a positive integer, at most 1800, since the whole search and delete runs synchronously within the script timeout). It is not a per-operation timeout. It is checked before each integration instance is run and before each email is processed. When it is exhausted, the integration instances that were not run yet are reported as failed, the remaining emails are not processed (a note is added) and the results collected so far are returned. Default is 1800.
+  description: The overall time budget of the run, in seconds (a positive integer, at most 1800, since the whole search and delete runs synchronously within the script timeout). It is not a per-operation timeout. It is checked before each integration instance is run and before each email is processed. When it is exhausted, the integration instances that were not run yet are reported as failed, the remaining emails are not processed (a note is added) and the results collected so far are returned.
   defaultValue: "1800"
 outputs:
 - contextPath: EmailData
