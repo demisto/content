@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The 'Indicators detection (Cortex Core - IOC)', 'Investigation & Response (Cortex Core - IR)', 'XQL Query Engine', and 'Cortex Platform - Core' integrations and their commands will be deprecated in mid-January 2027. Existing playbooks and automations that use these commands will continue to work. After the deprecation date, these integrations will no longer receive feature updates, enhancements, or bug fixes. Use the Cortex built-in commands instead. For the command-by-command mapping, see the documentation of each integration."
+    "breakingChangesNotes": "The **Indicators detection (Cortex Core - IOC)**, **Investigation & Response (Cortex Core - IR)**, **XQL Query Engine**, and **Cortex Platform - Core** integrations and their commands will be deprecated in mid-January 2027. Existing playbooks and automations that use these commands will continue to work. After the deprecation date, these integrations will no longer receive feature updates, enhancements, or bug fixes. Use the Cortex built-in commands instead. For the command-by-command mapping, see the documentation of each integration."
 }
