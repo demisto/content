@@ -3254,7 +3254,7 @@ def test_create_event_command_raises_on_invalid_args(args, expected_error, mock_
         create_event_command(mock_client, args)
 
 
-def test_client_create_event_sends_correct_url_and_body(requests_mock):
+def test_client_create_event_sends_correct_url_and_body(requests_mock, mocker):
     """
     Given:
         - A Client instance configured with a ServiceNow base URL.
@@ -3265,7 +3265,10 @@ def test_client_create_event_sends_correct_url_and_body(requests_mock):
         - The POST request is sent to /api/global/em/jsonv2.
         - The request body wraps the event in {"records": [event]}.
     """
-    base_url = "https://instance.service-now.com/api/now/v2/"
+    instance_url = "https://instance.service-now.com"
+    mocker.patch("demisto.params", return_value={"url": instance_url})
+
+    base_url = f"{instance_url}/api/now/v2/"
     event = {
         "source": "Cortex",
         "node": "web-server-01",
@@ -3275,7 +3278,7 @@ def test_client_create_event_sends_correct_url_and_body(requests_mock):
     }
     expected_response = "Default Bulk Endpoint:1 events were inserted"
     mock = requests_mock.post(
-        "https://instance.service-now.com/api/global/em/jsonv2",
+        f"{instance_url}/api/global/em/jsonv2",
         text=expected_response,
         status_code=201,
     )
