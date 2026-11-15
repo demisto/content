@@ -1758,7 +1758,7 @@ script:
       description: state of task.
       type: Unknown
   - arguments:
-    - description: The source of the event. Defaults to "Cortex".
+    - description: The source of the event.
       defaultValue: Cortex
       name: source
     - description: The node where the event occurred.

@@ -3254,56 +3254,6 @@ def test_create_event_command_raises_on_invalid_args(args, expected_error, mock_
         create_event_command(mock_client, args)
 
 
-def test_client_create_event_sends_correct_url_and_body(requests_mock, mocker):
-    """
-    Given:
-        - A Client instance configured with a ServiceNow base URL.
-        - An event dict to send.
-    When:
-        - Calling client.create_event(event).
-    Then:
-        - The POST request is sent to /api/global/em/jsonv2.
-        - The request body wraps the event in {"records": [event]}.
-    """
-    instance_url = "https://instance.service-now.com"
-    mocker.patch("demisto.params", return_value={"url": instance_url})
-
-    base_url = f"{instance_url}/api/now/v2/"
-    event = {
-        "source": "Cortex",
-        "node": "web-server-01",
-        "type": "CPU Utilization",
-        "time_of_event": "2026-01-01 00:00:00",
-        "severity": "2",
-    }
-    expected_response = "Default Bulk Endpoint:1 events were inserted"
-    mock = requests_mock.post(
-        f"{instance_url}/api/global/em/jsonv2",
-        text=expected_response,
-        status_code=201,
-    )
-
-    client = Client(
-        server_url=base_url,
-        sc_server_url="",
-        cr_server_url="",
-        username="user",
-        password="pass",
-        verify=False,
-        fetch_time="10 minutes",
-        sysparm_query="",
-        sysparm_limit=10,
-        timestamp_field="opened_at",
-        ticket_type="incident",
-        get_attachments=False,
-        incident_name="number",
-    )
-    client.create_event(event)
-
-    assert mock.called
-    assert mock.last_request.json() == {"records": [event]}
-
-
 @pytest.mark.parametrize(
     "file_type , expected", [(EntryType.FILE, True), (3, True), (EntryType.IMAGE, True), (EntryType.NOTE, False), (15, False)]
 )

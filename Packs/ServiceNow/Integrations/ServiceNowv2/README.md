@@ -2739,6 +2739,12 @@ Creates an event in ServiceNow Event Management. Requires the `evt_mgmt_integrat
 | message_key | The unique key used to deduplicate events. | Optional |
 | resolution_state | The resolution state of the event. Possible values are: New, Resolved (case-insensitive). | Optional |
 
+#### Command Example
+
+```
+!servicenow-create-event node="web-prod-01" type="disk_full" time_of_event="2026-01-01 10:00:00" severity="high" description="Disk usage exceeded 90%."
+```
+
 #### Context Output
 
 There is no context output for this command.
