@@ -9,9 +9,9 @@ alter
     get_device_hostname     = device -> hostname,
     get_device_os           = device -> os.name,
     get_device_type         = device -> type,
-    // Extract container fields
-    get_container_name      = container -> name,
-    get_container_uid       = container -> uid,
+    // Extract sandbox fields
+    get_sandbox_id          = coalesce(device -> container.uid,  unmapped -> sandbox_id,   container -> uid),
+    get_sandbox_name        = coalesce(device -> container.name, unmapped -> sandbox_name, container -> name),
     // Extract endpoint fields
     get_dst_domain          = dst_endpoint -> domain,
     get_dst_port            = to_integer(dst_endpoint -> port),
@@ -108,9 +108,9 @@ alter
     // --- Source application ---
     xdm.source.application.name    = get_product_name,
     xdm.source.application.version = get_product_version,
-    // --- Target resource (container) ---
-    xdm.target.resource.name      = get_container_name,
-    xdm.target.resource.id        = get_container_uid,
+    // --- Target resource (sandbox) ---
+    xdm.target.resource.name      = get_sandbox_name,
+    xdm.target.resource.id        = get_sandbox_id,
     xdm.target.resource.type      = get_fw_rule_type,
     xdm.target.resource.value     = get_policy_hash,
     // --- Target network ---
