@@ -1,0 +1,42 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "ThreatMon Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "threatmonstatus",
+    "closeForm": false,
+    "content": true,
+    "description": "The status of the alarm in ThreatMon.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_threatmonstatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "ThreatMon Status",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "selectValues": [
+        "",
+        "Open",
+        "In Progress",
+        "Resolved",
+        "Ignore"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

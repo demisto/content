@@ -1,8 +1,8 @@
 {
     "name": "ThreatMon Threat Feed",
-    "description": "Fetches Indicators of Compromise (IOCs) such as IPs, domains, URLs and file hashes from the ThreatMon IOC platform and ingests them into Cortex as indicators.",
+    "description": "Ingests every ThreatMon Indicator of Compromise (IP addresses, domains, URLs, file hashes, C2 servers and cryptocurrency addresses) from the ThreatMon TAXII 2.1 server as Cortex indicators, completely and incrementally, with tags, TLP and first and last seen dates.",
     "support": "community",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.1",
     "author": "ThreatMon",
     "url": "https://www.threatmon.io",
     "email": "support@threatmonit.io",
@@ -10,10 +10,14 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Threat Intelligence"
+        "Threat Intelligence",
+        "Feed",
+        "TIM"
     ],
     "useCases": [
-        "Threat Intelligence Management"
+        "Threat Intelligence Management",
+        "Malware",
+        "Phishing"
     ],
     "dependencies": {
         "Cryptocurrency": {
@@ -26,7 +30,10 @@
         "IOC",
         "Feed",
         "Threat Intelligence",
-        "Indicators"
+        "Indicators",
+        "TAXII",
+        "STIX",
+        "C2"
     ],
     "created": "2026-07-22T10:30:00Z",
     "githubUser": [
