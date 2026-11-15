@@ -1,0 +1,322 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "type": "custom",
+                "hidden": false,
+                "showEmptyFields": false,
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-tm-details",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "threatmonalarmcode",
+                                "height": 53,
+                                "id": "2f8eca62-3ee3-5888-ab1c-6407c14472e9",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "threatmonstatus",
+                                "height": 53,
+                                "id": "cd390934-44a7-562f-8f27-bac3be877453",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 53,
+                                "id": "898a169f-2650-53ee-b971-1868e8d1e93e",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "threatmoncategory",
+                                "height": 53,
+                                "id": "cee5b5f8-a7aa-526a-8d5e-c9a5c799840c",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "threatmonsubcategory",
+                                "height": 53,
+                                "id": "ae2d1b44-4d4b-55e6-b399-f98d69fb3279",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "threatmonalarmtype",
+                                "height": 53,
+                                "id": "18b9167d-c2e6-59c6-86ac-49d22962c138",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "threatmonsource",
+                                "height": 53,
+                                "id": "e2cc2471-c690-5ee3-9525-7680d6779602",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "occurred",
+                                "height": 53,
+                                "id": "a5e8646c-35c3-5b0c-8239-586df4841a4c",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "threatmonlastupdate",
+                                "height": 53,
+                                "id": "eafbc6ab-5f98-582f-b3b5-4edb51089700",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "ThreatMon Alarm",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-tm-description",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 53,
+                                "id": "75da4ddc-9240-577d-bd43-3f507e41bb0b",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Description",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-tm-findings",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "threatmonfindings",
+                                "height": 53,
+                                "id": "e09bfbf3-5736-5d3d-9603-233c72d5b7ef",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "threatmonfindingids",
+                                "height": 53,
+                                "id": "a6c1bc7f-ac41-5b05-a234-38c480b9b3aa",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Findings",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-tm-mitigation",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "threatmonmitigation",
+                                "height": 53,
+                                "id": "eeb477c4-7a2a-5aba-a10f-2d1dd6e712f4",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Mitigation",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-tm-case",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 53,
+                                "id": "299c7536-a57d-52e5-a74b-53bf6f1072b9",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 53,
+                                "id": "d2a1965f-a767-5d14-b4b9-e7e90a654924",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotMirrorDirection",
+                                "height": 53,
+                                "id": "e0248b25-9a42-5017-abd6-0de4987e51c7",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 53,
+                                "id": "b5b3127e-1fb2-5d77-aaf9-c87b7cb430f3",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 53,
+                                "id": "df92a094-b081-5afe-9608-47425131e587",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-tm-notes",
+                        "maxW": 3,
+                        "minH": 1,
+                        "name": "Notes",
+                        "type": "notes",
+                        "w": 1,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-tm-indicators",
+                        "maxW": 3,
+                        "minH": 1,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "type": "indicators",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    }
+                ]
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "ThreatMon Alert Layout",
+    "name": "ThreatMon Alert Layout",
+    "description": "The layout of ThreatMon Alert incidents.",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "marketplaces": [
+        "xsoar"
+    ],
+    "system": false
+}
