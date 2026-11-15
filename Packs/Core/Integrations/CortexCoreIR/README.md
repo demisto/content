@@ -1,17 +1,12 @@
 # Deprecation Notice
 
-As part of our ongoing commitment to platform performance, reliability, and standardization, the four integrations and commands within the "Core" pack listed below will be officially deprecated in mid-January 2027:
-
-- Indicators detection (Cortex Core - IOC)
-- Investigation & Response (Cortex Core - IR)
-- XQL Query Engine
-- Cortex Platform - Core
+As part of our ongoing commitment to platform performance, reliability, and standardization, the **Investigation & Response (Cortex Core - IR)** integration and its commands within the "Core" pack will be officially deprecated in mid-January 2027.
 
 ## What this means for you
 
-- **Existing custom playbooks:** Automations and playbooks currently using commands from these integrations will continue to function as expected. No existing workflows will abruptly break upon deprecation. We recommend migrating them to the native Cortex built-in commands, which offer higher execution performance and unified platform syntax.
+- **Existing custom playbooks:** Automations and playbooks currently using commands from this integration will continue to function as expected. No existing workflows will abruptly break upon deprecation. We recommend migrating them to the native Cortex built-in commands, which offer higher execution performance and unified platform syntax.
 - **Out-of-the-box Cortex playbooks:** All out-of-the-box playbooks shipped with the platform will be updated by Palo Alto Networks to use built-in commands natively. No action is required on your part for uncustomized, standard playbooks.
-- **Maintenance and support:** Following the deprecation date, these integrations will no longer receive feature updates, enhancements, or bug fixes.
+- **Maintenance and support:** Following the deprecation date, this integration will no longer receive feature updates, enhancements, or bug fixes.
 
 For detailed command-by-command replacement mappings and usage examples, please refer to the [Cortex Built-In Commands Guide](https://cortex-docs.paloaltonetworks.com/cortex-commands-guide).
 
