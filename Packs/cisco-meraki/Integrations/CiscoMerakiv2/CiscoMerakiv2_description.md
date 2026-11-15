@@ -1,7 +1,5 @@
 ## Cisco Meraki v2
 
-See the vendor's documentation for more details [here](https://developer.cisco.com/meraki/api-v1/introduction/).
-
 ### Base URL
 
 Use the URL of your Meraki dashboard cluster:
