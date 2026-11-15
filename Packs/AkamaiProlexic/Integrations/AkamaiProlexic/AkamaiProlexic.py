@@ -618,3 +618,4 @@ def main() -> None:  # pragma: no cover
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()
+# collect-tests investigation
