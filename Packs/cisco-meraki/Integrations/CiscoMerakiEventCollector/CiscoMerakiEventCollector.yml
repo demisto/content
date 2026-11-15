@@ -143,7 +143,6 @@ script:
   isfetchevents: true
   script: ""
 marketplaces:
-  - marketplacev2
   - platform
 supportedModules:
   - xsiam

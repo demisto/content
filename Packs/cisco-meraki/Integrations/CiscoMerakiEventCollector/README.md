@@ -1,6 +1,6 @@
-Collects configuration changes, network events, API requests and appliance security events from Cisco Meraki into Cortex XSIAM.
+Collects configuration changes, network events, API requests and appliance security events from Cisco Meraki into Cortex.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+This integration is supported on the Cortex platform only.
 
 ## Configure Cisco Meraki Event Collector in Cortex
 
