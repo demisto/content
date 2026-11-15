@@ -3186,7 +3186,7 @@ _EXPECTED_REQUIRED = {
         "additional_info_string_passthrough",
     ],
 )
-def test_create_event_command_sends_correct_payload(args, expected_event, mock_client, mocker):
+def test_create_event_command_sends_correct_payload(args, expected_event, mock_client):
     """
     Given:
         - Case 1: Individual field arguments with all required fields and optional ones.
