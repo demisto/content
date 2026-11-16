@@ -16,6 +16,7 @@ This integration was integrated and tested with the ThreatMon TAXII 2.1 server.
 | Look-back Window (minutes) | The number of minutes before the previous crawl started to re-read on each crawl, so indicators published late are not missed. Re-read indicators are de-duplicated. Default: 180. | False |
 | Maximum pages per fetch | The maximum number of TAXII pages (500 indicators each) read in a single fetch run. If more data is available, the next run continues from the same position. Default: 300. | False |
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+| Set Reputation by ThreatMon Severity | When selected, the reputation is set by the ThreatMon severity of each indicator (Critical and High - Bad, Medium and Low - Suspicious) instead of Indicator Reputation. Indicators without a severity get Indicator Reputation. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
 | Traffic Light Protocol Color | The TLP designation to apply to indicators. If not set, the TLP marking published by ThreatMon is used. | False |
 | Feed Fetch Interval | Recommended: 60 minutes. | False |
@@ -49,10 +50,18 @@ Unsupported observables are skipped and reported in the integration log.
 | **Indicator field** | **STIX field** |
 | --- | --- |
 | tags | `labels`, merged with the `ThreatMon` tag and the **Tags** parameter |
-| description | Collection, labels, indicator types, confidence and validity |
+| description | Collection, reporting sources, severity, score, confidence level, status, categories, labels, indicator types, confidence, ISP, country, resolved IP addresses and dates |
 | stixid | `id` |
 | firstseenbysource | `created` |
-| lastseenbysource | `modified` |
+| lastseenbysource | `x_threatmon_last_seen` (the time ThreatMon last saw the IOC), or `modified` |
+| threatmonscore (ThreatMon Score) | `x_threatmon_score`, the ThreatMon risk score from 0 to 100 |
+| threatmonstatus (ThreatMon Status) | `x_threatmon_status`: Active or Inactive |
+| sourceoriginalseverity | `x_threatmon_severity`: Critical, High, Medium or Low |
+| confidence | `x_threatmon_confidence_level`, for example Validated, Strong or Weak |
+| reportedby | `x_threatmon_source`, the sources that reported the IOC |
+| category | `x_threatmon_categories` |
+| geocountry | `x_threatmon_geo_location` (IP, IPv6 and URL indicators) |
+| asowner | `x_threatmon_isp` (IP and URL indicators) |
 | trafficlightprotocol | The **Traffic Light Protocol Color** parameter, or the TLP marking of the object |
 
 ## Commands
@@ -88,11 +97,11 @@ There is no context output for this command.
 
 >### Indicators from ThreatMon (IP Address Indicators)
 >
->|First Seen By Source|Score|Tags|Type|Value|
->|---|---|---|---|---|
->| 2026-11-04T16:19:50.559859Z | 3 | Malware, BianLian, Bianlian, ThreatMon | IP | 104.200.72.105 |
->| 2026-11-04T16:19:50.559859Z | 3 | Malware, BianLian, Bianlian, ThreatMon | IP | 51.195.115.244 |
->| 2026-11-04T16:19:50.559859Z | 3 | Malware, BianLian, Bianlian, ThreatMon | IP | 38.242.151.91 |
+>|Value|Type|Score|ThreatMon Score|Severity|Confidence|Status|Reported By|Category|Tags|First Seen By Source|Last Seen By Source|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 164.132.115.9 | IP | 3 | 100 | Critical | Validated | Active | ThreatMon ThreatActor | Botnet/Malware | Turla, Malware, Wraith, Waterbug, Group 88, Snake, Venomous Bear, ThreatMon | 2026-11-16T08:11:31.841115Z | 2026-11-16T07:00:08.126653Z |
+>| 85.8.181.218 | IP | 3 | 100 | Critical | Validated | Active | ThreatMon ThreatActor | Botnet/Malware | Turla, Malware, Wraith, Waterbug, Group 88, Snake, Venomous Bear, ThreatMon | 2026-11-16T08:11:31.841115Z | 2026-11-16T07:00:08.267197Z |
+>| 193.142.58.127 | IP | 3 | 100 | Critical | Validated | Active | ThreatMon ThreatActor | Botnet/Malware | Turla, Malware, Wraith, Waterbug, Group 88, Snake, Venomous Bear, ThreatMon | 2026-11-16T08:11:31.841115Z | 2026-11-16T07:00:08.292154Z |
 
 ### threatmon-get-fetch-state
 

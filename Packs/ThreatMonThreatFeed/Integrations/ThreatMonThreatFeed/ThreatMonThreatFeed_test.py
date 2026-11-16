@@ -233,6 +233,144 @@ def test_calculate_verdict(reputation, expected):
     assert feed.calculate_verdict(reputation) == expected
 
 
+# The ThreatMon IOC details, as published by the TAXII server (live sample, 2026-11-16).
+THREATMON_DETAILS = {
+    "x_threatmon_categories": ["Botnet/Malware"],
+    "x_threatmon_confidence_level": "validated",
+    "x_threatmon_geo_location": "JP",
+    "x_threatmon_isp": "Eons Data Communications Limited",
+    "x_threatmon_last_seen": "2026-11-16T05:12:08.715618+00:00",
+    "x_threatmon_resolved_ips": ["104.18.21.135", "2606:4700::6812:1487"],
+    "x_threatmon_score": 100,
+    "x_threatmon_severity": "critical",
+    "x_threatmon_source": ["ThreatMon ThreatActor", "ThreatFox"],
+    "x_threatmon_status": "active",
+}
+
+
+def test_parse_stix_indicator_maps_threatmon_details_to_fields():
+    """
+    Given: An IP indicator with the ThreatMon IOC details.
+    When: Parsing it.
+    Then: The details are set in the ThreatMon and the standard indicator fields, and in the description.
+    """
+    obj = {**stix("ipv4-addr:value = '23.128.228.6'", NOW), **THREATMON_DETAILS}
+    fields = feed.parse_stix_indicator(obj, "IP Address Indicators", ["ThreatMon"], None, 3)[0][0]["fields"]
+
+    assert fields["threatmonscore"] == 100
+    assert fields["threatmonstatus"] == "Active"
+    assert fields["sourceoriginalseverity"] == "Critical"
+    assert fields["confidence"] == "Validated"
+    assert fields["reportedby"] == ["ThreatMon ThreatActor", "ThreatFox"]
+    assert fields["category"] == "Botnet/Malware"
+    assert fields["geocountry"] == "JP"
+    assert fields["asowner"] == "Eons Data Communications Limited"
+    assert fields["lastseenbysource"] == "2026-11-16T05:12:08.715618Z"
+    assert fields["firstseenbysource"] == obj["created"]
+    for line in (
+        "Reported By: ThreatMon ThreatActor, ThreatFox",
+        "Severity: Critical",
+        "API Score: 100",
+        "Confidence Level: Validated",
+        "Status: Active",
+        "Categories: Botnet/Malware",
+        "ISP: Eons Data Communications Limited",
+        "Country: JP",
+        "Resolved IPs: 104.18.21.135, 2606:4700::6812:1487",
+        "Last Seen: 2026-11-16T05:12:08.715618Z",
+        f"Created: {obj['created']}",
+    ):
+        assert line in fields["description"]
+
+
+def test_parse_stix_indicator_sets_geo_and_isp_only_for_supported_types():
+    """
+    Given: Domain and file indicators with a country and an ISP.
+    When: Parsing them.
+    Then: Geo Country and AS Owner, which do not exist for these indicator types, are not set.
+    """
+    for expr in ("domain-name:value = 'evil.com'", f"file:hashes.'SHA-256' = '{'ab' * 32}'"):
+        fields = feed.parse_stix_indicator({**stix(expr, NOW), **THREATMON_DETAILS}, "c", [], None, 3)[0][0]["fields"]
+        assert "geocountry" not in fields
+        assert "asowner" not in fields
+        assert fields["threatmonscore"] == 100
+    url_fields = feed.parse_stix_indicator({**stix("url:value = 'http://x/'", NOW), **THREATMON_DETAILS}, "c", [], None, 3)
+    assert url_fields[0][0]["fields"]["geocountry"] == "JP"
+
+
+def test_parse_stix_indicator_without_threatmon_details_keeps_previous_fields():
+    """
+    Given: An indicator without the ThreatMon IOC details (as published before 2026-11-16).
+    When: Parsing it.
+    Then: Only the fields of version 1.1 are set.
+    """
+    obj = stix("ipv4-addr:value = '1.2.3.4'", NOW)
+    fields = feed.parse_stix_indicator(obj, "c", ["ThreatMon"], None, 3)[0][0]["fields"]
+    assert set(fields) == {"tags", "description", "stixid", "firstseenbysource", "lastseenbysource", "trafficlightprotocol"}
+    assert fields["lastseenbysource"] == obj["modified"]
+
+
+@pytest.mark.parametrize(
+    "properties, expected",
+    [
+        ({"x_threatmon_score": "38"}, {"score": 38}),
+        ({"x_threatmon_score": 0}, {"score": 0}),
+        ({"x_threatmon_score": True}, {}),
+        ({"x_threatmon_score": "n/a"}, {}),
+        ({"x_threatmon_severity": "  "}, {}),
+        ({"x_threatmon_severity": 5}, {}),
+        ({"x_threatmon_status": None}, {}),
+        ({"x_threatmon_source": "URLhaus"}, {"sources": ["URLhaus"]}),
+        ({"x_threatmon_source": ["", None, " ThreatFox "]}, {"sources": ["ThreatFox"]}),
+        ({"x_threatmon_resolved_ips": []}, {}),
+        ({"x_threatmon_last_seen": "not a date"}, {}),
+        ({"x_threatmon_last_seen": "2025-09-09T06:33:22Z"}, {"last_seen": "2025-09-09T06:33:22.000000Z"}),
+    ],
+)
+def test_threatmon_details_skips_missing_and_malformed_values(properties, expected):
+    assert feed.threatmon_details(properties) == expected
+
+
+@pytest.mark.parametrize(
+    "severity, use_severity, expected",
+    [
+        ("critical", True, 3),
+        ("High", True, 3),
+        ("medium", True, 2),
+        ("low", True, 2),
+        ("unknown", True, 1),
+        (None, True, 1),
+        ("critical", False, 1),
+    ],
+)
+def test_reputation_by_threatmon_severity(severity, use_severity, expected):
+    """The default score (1 here) is kept unless the severity reputation is selected and the severity is known."""
+    obj = stix("ipv4-addr:value = '1.2.3.4'", NOW)
+    if severity:
+        obj["x_threatmon_severity"] = severity
+    assert feed.parse_stix_indicator(obj, "c", [], None, 1, use_severity)[0][0]["score"] == expected
+
+
+def test_fetch_uses_severity_reputation_parameter(context, created, mocker):
+    server = FakeTaxiiServer()
+    server.add(ALL, {**stix("domain-name:value = 'a.com'", NOW), "x_threatmon_severity": "low"})
+    run_fetch(server, {**BASE_PARAMS, "collections": "All Threat Indicators", "severity_reputation": "true"}, mocker)
+    assert [i["score"] for i in created] == [2]
+
+
+def test_fetch_resends_ioc_when_threatmon_details_change(context, created, mocker):
+    """
+    Given: An IOC that ThreatMon publishes again with the same created time but a new status.
+    When: Both rows are read by the same crawl.
+    Then: The IOC is sent twice, so Cortex gets the new status. An unchanged row is still de-duplicated.
+    """
+    server = FakeTaxiiServer()
+    active = {**stix("domain-name:value = 'a.com'", NOW, uid="indicator--a"), **THREATMON_DETAILS}
+    server.add(ALL, active, dict(active), {**active, "x_threatmon_status": "inactive"})
+    run_fetch(server, {**BASE_PARAMS, "collections": "All Threat Indicators"}, mocker)
+    assert [i["fields"]["threatmonstatus"] for i in created] == ["Active", "Inactive"]
+
+
 def test_resolve_collections_default_is_all_collections():
     assert [cid for _, cid in feed.resolve_collections({})] == list(feed.COLLECTIONS.values())
 
@@ -481,6 +619,8 @@ def test_dedup_key_is_compact_and_distinguishes_republication():
     other = {**ind, "fields": {"firstseenbysource": "2026-11-04T00:00:00Z"}}
     assert len(feed.dedup_key(ind)) == feed.SeenCache.KEY_LENGTH
     assert feed.dedup_key(ind) != feed.dedup_key(other)
+    for name, value in (("threatmonscore", 50), ("sourceoriginalseverity", "Low"), ("threatmonstatus", "Inactive")):
+        assert feed.dedup_key(ind) != feed.dedup_key({**ind, "fields": {**ind["fields"], name: value}})
 
 
 def test_no_collection_is_starved_by_the_page_budget(context, created, mocker):
@@ -558,6 +698,39 @@ def test_get_indicators_command(context):
     assert "1.1.1.3" not in result.readable_output
     assert len(result.raw_response) == 3
     assert "ctx" not in context  # does not touch the fetch state
+
+
+def test_get_indicators_command_shows_threatmon_details(context):
+    server = FakeTaxiiServer(page_size=10)
+    server.add(IPS, {**stix("ipv4-addr:value = '23.128.228.6'", NOW), **THREATMON_DETAILS})
+
+    params = {"severity_reputation": "true", "feedReputation": "Suspicious"}
+    result = feed.get_indicators_command(server, params, {"collection": "IP Address Indicators"})
+
+    header = result.readable_output.splitlines()[1]
+    for column in ("ThreatMon Score", "Severity", "Confidence", "Status", "Reported By", "Category", "Last Seen By Source"):
+        assert column in header
+    assert "| 23.128.228.6 | IP | 3 | 100 | Critical | Validated | Active | ThreatMon ThreatActor, ThreatFox |" in (
+        result.readable_output
+    )
+
+
+def test_get_indicators_command_follows_empty_pages(mocker):
+    """The server can return empty pages with "more" set; the sample follows them, up to SAMPLE_MAX_PAGES."""
+    server = FakeTaxiiServer()
+    empty = ({"objects": [], "more": True, "next": "c"}, NOW)
+    objects = [stix("ipv4-addr:value = '1.1.1.1'", NOW), stix("ipv4-addr:value = '1.1.1.2'", NOW)]
+    full = ({"objects": objects, "more": True, "next": "d"}, NOW)
+    pages = mocker.patch.object(server, "get_objects_page", side_effect=[empty, empty, full])
+
+    result = feed.get_indicators_command(server, {}, {"limit": "2", "collection": "URL Indicators"})
+
+    assert "1.1.1.2" in result.readable_output
+    assert [c.args[2] for c in pages.call_args_list] == [None, "c", "c"]
+
+    pages = mocker.patch.object(server, "get_objects_page", return_value=empty)
+    assert "No indicators" in feed.get_indicators_command(server, {}, {}).readable_output
+    assert pages.call_count == feed.SAMPLE_MAX_PAGES
 
 
 def test_get_indicators_command_empty():
