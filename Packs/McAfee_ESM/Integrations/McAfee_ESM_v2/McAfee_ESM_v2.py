@@ -41,6 +41,12 @@ SESSION_TTL_SECONDS = 10 * 60
 # Status codes returned by ESM when the cached session is no longer accepted.
 UNAUTHORIZED_STATUS_CODES = (401, 403)
 
+# The "ESM date format" parameter values. An ESM that uses a day-first date format (e.g. DD-MM-YYYY) reads the
+# customStart / customEnd query times with the day and month swapped, so the integration swaps them before sending.
+DATE_FORMAT_MONTH_FIRST = "MM/DD/YYYY"
+DATE_FORMAT_DAY_FIRST = "DD/MM/YYYY"
+ESM_DAY_FIRST_QUERY_FORMAT = "%Y-%d-%mT%H:%M:%SZ"
+
 
 def parse_version(version: str) -> Version:
     """Parses the ESM version string configured in the "Version" parameter.
@@ -112,7 +118,8 @@ class McAfeeESMClient(BaseClient):
         self.args = demisto.args()
         self.__user_name = params.get("credentials", {}).get("identifier", "")
         self.__password = params.get("credentials", {}).get("password", "")
-        self.difference = int(params.get("timezone", 0))
+        self.difference = parse_timezone_offset(params.get("timezone"))
+        self.day_first = is_day_first_date_format(params.get("dateFormat"))
         self.version = params.get("version", "11.6.0")
         validate_version(self.version)
         super().__init__(
@@ -507,7 +514,7 @@ class McAfeeESMClient(BaseClient):
         start_time = start_time if start_time else self.args.get("customStart")
         end_time = end_time if end_time else self.args.get("customEnd")
 
-        since, start_time, end_time = set_query_times(since, start_time, end_time, self.difference)
+        since, start_time, end_time = set_query_times(since, start_time, end_time, self.difference, self.day_first)
         params = {"triggeredTimeRange": since}
         if since == "CUSTOM":
             params["customStart"] = start_time
@@ -948,7 +955,7 @@ def expected_errors(error: DemistoException) -> bool:
     return str(error) in expected_error
 
 
-def time_format(current_time: str, difference: int = 0) -> str:
+def time_format(current_time: str, difference: float = 0) -> str:
     """
 
     :param current_time: the current time in the current format
@@ -979,7 +986,7 @@ def time_format(current_time: str, difference: int = 0) -> str:
 
 
 def convert_time_format(
-    current_time: str, difference: int = 0, to_demisto: bool = True, mcafee_format: str = "%Y/%m/%d %H:%M:%S"
+    current_time: str, difference: float = 0, to_demisto: bool = True, mcafee_format: str = "%Y/%m/%d %H:%M:%S"
 ) -> str:
     """
 
@@ -1001,7 +1008,7 @@ def convert_time_format(
 
 
 def set_query_times(
-    since: str = None, start_time: str = None, end_time: str = None, difference: int = 0
+    since: str = None, start_time: str = None, end_time: str = None, difference: float = 0, day_first: bool = False
 ) -> tuple[str | None, str | None, str | None]:
     """
     checks all time args
@@ -1009,6 +1016,7 @@ def set_query_times(
     :param start_time: start_time from args
     :param end_time: end_time from args
     :param difference: the difference (e.g. time zone)
+    :param day_first: True if the ESM uses a day-first date format and reads the custom times with day and month swapped
     :return: the args in the machine time and after validation
     """
     if not since:
@@ -1025,10 +1033,55 @@ def set_query_times(
 
         if start_time and end_time and start_time > end_time:
             raise ValueError("Invalid set times.")
+        if day_first:
+            start_time = to_day_first_query_time(start_time)
+            end_time = to_day_first_query_time(end_time)
     return since, start_time, end_time
 
 
-def list_times_set(list_to_set: list, indexes: list, difference: int = 0) -> list:
+def to_day_first_query_time(query_time: str | None) -> str | None:
+    """
+    An ESM with a day-first date format reads a custom query time such as 2026-11-10T09:00:00Z as October 11.
+    Swapping the day and month makes it read the intended date.
+
+    :param query_time: the query time in the demisto format, e.g. 2026-11-10T09:00:00Z
+    :return: the query time with the day and month swapped, e.g. 2026-10-11T09:00:00Z
+    """
+    if not query_time:
+        return query_time
+    return datetime.strptime(query_time, McAfeeESMClient.demisto_format).strftime(ESM_DAY_FIRST_QUERY_FORMAT)
+
+
+def is_day_first_date_format(date_format: str | None) -> bool:
+    """
+    :param date_format: the "ESM date format" instance parameter
+    :return: True if the ESM uses a day-first date format
+    """
+    if date_format in (None, "", DATE_FORMAT_MONTH_FIRST):
+        return False
+    if date_format == DATE_FORMAT_DAY_FIRST:
+        return True
+    raise DemistoException(
+        f"Invalid ESM date format '{date_format}'. Possible values: {DATE_FORMAT_MONTH_FIRST}, {DATE_FORMAT_DAY_FIRST}."
+    )
+
+
+def parse_timezone_offset(timezone_offset: str | int | float | None) -> float:
+    """
+    :param timezone_offset: the "McAfee ESM Timezone in hours" instance parameter, e.g. 3, -5 or 5.5 (for +05:30)
+    :return: the offset in hours
+    """
+    if timezone_offset in (None, ""):
+        return 0
+    try:
+        return float(timezone_offset)  # type: ignore[arg-type]
+    except ValueError:
+        raise DemistoException(
+            f"Invalid McAfee ESM Timezone in hours '{timezone_offset}'. Enter the offset in hours, e.g. 3, -5 or 5.5."
+        )
+
+
+def list_times_set(list_to_set: list, indexes: list, difference: float = 0) -> list:
     """
 
     :param list_to_set: the raw list
@@ -1042,7 +1095,7 @@ def list_times_set(list_to_set: list, indexes: list, difference: int = 0) -> lis
     return list_to_set
 
 
-def dict_times_set(dict_to_set: dict, difference: int = 0) -> dict:
+def dict_times_set(dict_to_set: dict, difference: float = 0) -> dict:
     """
 
     :param dict_to_set: the raw dict
@@ -1075,7 +1128,7 @@ def time_fields(field_list: list[dict]) -> list:
     return indexes_list
 
 
-def table_times_set(table_to_set: dict, difference: int = 0) -> dict:
+def table_times_set(table_to_set: dict, difference: float = 0) -> dict:
     """
 
     :param table_to_set: the raw event/ alarm
