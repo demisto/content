@@ -438,6 +438,35 @@ def is_gov_account(connector_id: str, account_id: str = "") -> bool:
         return False
 
 
+def validate_command_is_allowed(
+    command: str, allowed_commands: set[str] | frozenset[str], cloud_type: str, is_all_commands_allowed: bool
+) -> None:
+    """
+    Validate that the given command may run for the current user before any cloud API call is made.
+
+    Users with full permissions may run every command. Users with the partial (CSPM remediation) permission set
+    may only run the commands in ``allowed_commands``. The ``test-module`` command is always allowed.
+
+    Args:
+        command (str): The command being executed (e.g. ``"aws-s3-bucket-versioning-put"``).
+        allowed_commands (set[str] | frozenset[str]): The commands allowed with the partial permission set.
+        cloud_type (str): The cloud provider type (AWS, GCP, AZURE), used for the error message.
+        is_all_commands_allowed (bool): True if the user is granted full permissions (all commands allowed),
+            False if the user is granted only the partial permission set.
+
+    Raises:
+        DemistoException: If the command is not allowed with the partial permission set.
+    """
+    if is_all_commands_allowed or command == "test-module" or command in allowed_commands:
+        return
+
+    demisto.debug(f"[COOC API] The {command=} is not allowed with the partial {cloud_type} permission set.")
+    raise DemistoException(
+        f"The command '{command}' is not allowed with the partial (CSPM remediation) {cloud_type} permission set "
+        f"granted to this connector. To run this command, grant the connector full permissions."
+    )
+
+
 def get_timeout(timeout: int | str | None) -> tuple[int, int]:
     """
     Parse the ``timeout`` integration parameter into ``(read_timeout, connect_timeout)``.

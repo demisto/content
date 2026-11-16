@@ -22697,3 +22697,14 @@ def test_yml_output_prefixes_match_py_handler(yml_spec: dict[str, dict[str, list
         "The following YML output contextPaths are NOT covered by any output "
         "prefix declared in their command's handler in AWS.py:\n" + "\n".join(uncovered)
     )
+
+
+def test_partial_permissions_allowed_commands_are_registered():
+    """
+    Given: The set of commands allowed with the partial (CSPM remediation) permission set.
+    When: Comparing it to the registered commands.
+    Then: Every allowed command is registered in COMMANDS_MAPPING.
+    """
+    from AWS import COMMANDS_MAPPING, PARTIAL_PERMISSIONS_ALLOWED_COMMANDS
+
+    assert COMMANDS_MAPPING.keys() >= PARTIAL_PERMISSIONS_ALLOWED_COMMANDS
