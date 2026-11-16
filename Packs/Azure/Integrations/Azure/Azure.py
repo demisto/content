@@ -14787,7 +14787,7 @@ def main():  # pragma: no cover
             "azure-log-analytics-table-run": log_analytics_table_run_command,
             "azure-storage-fileshare-create": storage_fileshare_create_command,
             "azure-storage-fileshare-delete": storage_fileshare_delete_command,
-            "azure-storage-fileshare-list": storage_fileshare_list_command,
+            "azure-storage-fileshares-list": storage_fileshare_list_command,
             "azure-storage-fileshare-content-list": storage_fileshare_content_list_command,
             "azure-storage-fileshare-directory-create": storage_fileshare_directory_create_command,
             "azure-storage-fileshare-directory-delete": storage_fileshare_directory_delete_command,

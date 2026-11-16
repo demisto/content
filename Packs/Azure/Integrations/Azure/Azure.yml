@@ -2171,7 +2171,7 @@ script:
       required: true
       description: The name of the file share to delete.
 
-  - name: azure-storage-fileshare-list
+  - name: azure-storage-fileshares-list
     description: "Lists Azure file shares under the specified storage account via the Microsoft.Storage resource provider. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/read."
     arguments:
     - name: subscription_id
@@ -2189,7 +2189,7 @@ script:
       defaultValue: '50'
       description: The maximum number of shares to retrieve per page.
     - name: next_token
-      description: The nextLink URI returned by a previous run of this command (Azure.Storage.FileSharesNextToken), used to retrieve the next page of results.
+      description: The nextLink URI returned by a previous run of this command in Azure.Storage.FileSharesNextToken. Use this URI to retrieve the next page of results.
     outputs:
     - contextPath: Azure.Storage.FileShares.id
       description: The fully qualified resource ID for the file share.
@@ -2207,7 +2207,7 @@ script:
       description: The access tier for the share (TransactionOptimized, Hot, Cool, or Premium).
       type: String
     - contextPath: Azure.Storage.FileShares.properties.lastModifiedTime
-      description: The date and time the share was last modified in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time the share was last modified in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Azure.Storage.FileShares.properties.shareQuota
       description: The provisioned size of the share, in gibibytes.
@@ -2225,13 +2225,13 @@ script:
       description: The lease status of the share.
       type: String
     - contextPath: Azure.Storage.FileShares.properties.deleted
-      description: Indicates whether the share was deleted.
+      description: Whether the share was deleted.
       type: Boolean
     - contextPath: Azure.Storage.FileShares.properties.version
       description: The version of the share.
       type: String
-    - contextPath: Azure.Storage.FileShares.properties.fileSharePaidBursting.paidBurstingEnabled
-      description: The File Share Paid Bursting properties.
+    - contextPath: Azure.Storage.FileShares.properties.fileSharePaidBursting
+      description: The paid bursting settings of the file share.
       type: Unknown
     - contextPath: Azure.Storage.FileSharesNextToken
       description: The URI to fetch the next page of file shares. Run the same command with the next_token argument to get the next page.
@@ -2251,14 +2251,14 @@ script:
       required: true
       description: The name of the file share.
     - name: directory_path
-      description: The path to the directory whose content to list. If not provided, the share root is listed.
+      description: The path to the directory whose content to list. If you do not provide this argument, the command lists the share root.
     - name: limit
       defaultValue: '50'
       description: The maximum number of entries to retrieve.
     - name: prefix
-      description: The prefix used to filter entries. Only entries whose names begin with this prefix are returned.
+      description: The prefix used to filter entries. The command returns only entries whose names begin with this prefix.
     - name: next_token
-      description: A string value that identifies the portion of the list to be returned with the next list operation. The operation returns a marker value within the response body if the list returned wasn't complete. You can then use the marker value in a subsequent call to request the next set of list items.
+      description: The string value that identifies the portion of the list to return with the next list operation. The operation returns a marker value in the response body if the returned list is not complete. In a subsequent call, use the Azure.Storage.FileShares.ContentNextToken value to request the next set of list items.
     outputs:
     - contextPath: Azure.Storage.FileShares.name
       description: The share name.
