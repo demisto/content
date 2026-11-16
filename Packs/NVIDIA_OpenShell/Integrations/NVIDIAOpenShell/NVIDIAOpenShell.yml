@@ -629,7 +629,7 @@ script:
       description: The action that was performed.
       type: String
     execution: true
-  dockerimage: demisto/openshell:1.0.0.0
+  dockerimage: demisto/openshell:0.1.7.14648826
   isfetch: false
   runonce: false
   script: ''
