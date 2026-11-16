@@ -2,7 +2,7 @@
     "name": "Varonis Data Security Platform",
     "description": "Streamline alerts, events and related forensic information from Varonis Data Security Platform",
     "support": "partner",
-    "currentVersion": "1.0.12",
+    "currentVersion": "1.0.13",
     "author": "Varonis",
     "url": "https://www.varonis.com/support",
     "email": "",
@@ -35,6 +35,8 @@
     ],
     "supportedModules": [
         "agentix",
-        "xsiam"
+        "xsiam",
+        "cloud",
+        "cloud_runtime_security"
     ]
 }

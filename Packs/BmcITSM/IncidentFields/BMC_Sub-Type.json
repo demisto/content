@@ -42,5 +42,9 @@
             "type": "shortText",
             "name": "Bmc Sub-Type"
         }
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }
