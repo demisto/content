@@ -13,6 +13,8 @@ from boto3 import Session
 from xml.sax.saxutils import escape
 import re
 import copy
+import shlex
+import subprocess
 
 
 DEFAULT_MAX_RETRIES: int = 5
@@ -22,6 +24,8 @@ DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv("EGRESSPROXY_CA_PATH") or "/etc/ce
 DEFAULT_PROXYDOME = os.getenv("CRTX_HTTP_PROXY") or "10.181.0.100:11117"
 TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
 DEFAULT_REGION = "us-east-1"
+AWS_CLI_COMMAND = "aws-cli"
+AWS_CLI_TIMEOUT_SECONDS = 300
 MAX_FILTERS = 50
 MAX_TAGS = 50
 MAX_FILTER_VALUES = 200
@@ -11299,6 +11303,125 @@ class NetworkFirewall:
         )
 
 
+def build_cli_environment(credentials: dict, params: dict, region: str) -> dict[str, str]:
+    """
+    Build the environment variables for the AWS CLI subprocess.
+
+    On the Cortex Platform path, the CTS short-lived credentials are used. The command runs on
+    engine0, which has direct internet access, so no ProxyDome configuration is injected.
+    On the marketplace path, the configured access keys are used (optionally via STS AssumeRole).
+
+    Args:
+        credentials (dict): Platform-supplied CTS credentials. Empty on the marketplace path.
+        params (dict): Integration configuration parameters.
+        region (str): The AWS region to run the command against.
+
+    Returns:
+        dict[str, str]: A copy of the current environment with the AWS credential variables set.
+    """
+    if credentials:
+        access_key_id = credentials.get("key", "")
+        secret_access_key = credentials.get("access_token", "")
+        session_token = credentials.get("session_token", "")
+    else:
+        creds_param = params.get("credentials") or {}
+        access_key_id = creds_param.get("identifier", "")
+        secret_access_key = creds_param.get("password", "")
+        session_token = ""
+        if not (access_key_id and secret_access_key):
+            raise DemistoException(
+                "AWS credentials are not configured. Provide an Access Key and Secret Key "
+                "on the integration instance, or run the integration through a Cortex Cloud connector."
+            )
+        if params.get("role_arn"):
+            tmp_creds = _assume_role_credentials(params, access_key_id, secret_access_key, region)
+            access_key_id = tmp_creds["AccessKeyId"]
+            secret_access_key = tmp_creds["SecretAccessKey"]
+            session_token = tmp_creds["SessionToken"]
+
+    env = os.environ.copy()
+    env.pop("AWS_PROFILE", None)
+    env.update({"AWS_ACCESS_KEY_ID": access_key_id, "AWS_SECRET_ACCESS_KEY": secret_access_key, "AWS_DEFAULT_REGION": region})
+    env["AWS_PAGER"] = ""
+    if session_token:
+        env["AWS_SESSION_TOKEN"] = session_token
+    else:
+        env.pop("AWS_SESSION_TOKEN", None)
+    return env
+
+
+def run_aws_cli(tokens: list[str], env: dict[str, str]) -> subprocess.CompletedProcess:
+    """
+    Run the AWS CLI binary with the given tokens. No shell is invoked.
+
+    Args:
+        tokens (list[str]): The CLI tokens without the leading ``aws`` token.
+        env (dict[str, str]): The environment variables for the subprocess.
+
+    Returns:
+        subprocess.CompletedProcess: The completed process with captured stdout and stderr.
+    """
+    try:
+        return subprocess.run(["aws", *tokens], capture_output=True, text=True, env=env, timeout=AWS_CLI_TIMEOUT_SECONDS)
+    except FileNotFoundError as e:
+        raise DemistoException("The 'aws' CLI binary was not found. Ensure 'awscli' is installed in the Docker image.") from e
+    except subprocess.TimeoutExpired as e:
+        raise DemistoException(f"The AWS CLI command timed out after {AWS_CLI_TIMEOUT_SECONDS} seconds.") from e
+
+
+def execute_cli_command(credentials: dict, params: dict, args: Dict[str, Any]) -> CommandResults:
+    """
+    Execute an AWS CLI command against the specified account and region.
+
+    Args:
+        credentials (dict): Platform-supplied CTS credentials. Empty on the marketplace path.
+        params (dict): Integration configuration parameters.
+        args (Dict[str, Any]): Command arguments including cli_command, account_id, and region.
+
+    Returns:
+        CommandResults: The JSON response of the AWS CLI command and a readable summary.
+    """
+    cli_command: str = args.get("cli_command") or ""
+    tokens = shlex.split(cli_command.strip())
+    if tokens and tokens[0] == "aws":
+        tokens = tokens[1:]
+    if not tokens:
+        raise ValueError("The cli_command argument must contain an AWS CLI command, e.g. 'aws s3api list-buckets'.")
+    if "--output" not in tokens:
+        tokens += ["--output", "json"]
+
+    account_id = args.get("account_id")
+    region: str = args.get("region") or params.get("region") or DEFAULT_REGION
+    env = build_cli_environment(credentials, params, region)
+
+    demisto.debug(f"[AWS CLI] Running 'aws {' '.join(tokens[:2])}' on {account_id=}, {region=}")
+    result = run_aws_cli(tokens, env)
+
+    if result.returncode != 0:
+        error_details = "\n".join(filter(None, [result.stderr.strip(), result.stdout.strip()]))
+        raise DemistoException(f"AWS CLI command failed with exit code {result.returncode}.\n{error_details}")
+
+    stdout = result.stdout.strip()
+    try:
+        response: Any = json.loads(stdout) if stdout else {}
+    except json.JSONDecodeError:
+        # A non-JSON output format was explicitly requested (e.g. --output text).
+        return CommandResults(readable_output=f"### AWS CLI Result\n```\n{stdout}\n```", raw_response=stdout)
+
+    outputs = remove_empty_elements({"Command": cli_command, "AccountId": account_id, "Region": region, "Output": response})
+    readable_output = (
+        tableToMarkdown("AWS CLI Result", response, headerTransform=pascalToSpace, removeNull=True)
+        if response
+        else "The AWS CLI command completed successfully with no output."
+    )
+    return CommandResults(
+        outputs_prefix="AWS.CLI",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
@@ -11536,6 +11659,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-resource-untag": NetworkFirewall.untag_resource_command,
     "aws-network-firewall-logging-configuration-describe": NetworkFirewall.describe_logging_configuration_command,
     "aws-network-firewall-logging-configuration-update": NetworkFirewall.update_logging_configuration_command,
+    "aws-cli": execute_cli_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -12059,6 +12183,12 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
     if not get_connector_id() and (regional := params.get("sts_regional_endpoint")):
         demisto.debug(f"Setting AWS_STS_REGIONAL_ENDPOINTS={regional}")
         os.environ["AWS_STS_REGIONAL_ENDPOINTS"] = regional.lower()
+
+    # aws-cli runs the aws binary directly (engine0) - no boto3 service client is needed.
+    if command == AWS_CLI_COMMAND:
+        cli_account_id: str = args.get("account_id", "")
+        cli_credentials = get_cloud_credentials(CloudTypes.AWS.value, cli_account_id) if get_connector_id() else {}
+        return execute_cli_command(cli_credentials, params, args)
 
     role_name = (params.get("access_role_name") or "").removeprefix("role/")
     accounts = argToList(params.get("accounts_to_access"))
