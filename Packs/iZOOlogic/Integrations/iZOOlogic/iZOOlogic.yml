@@ -48,19 +48,6 @@ configuration:
   section: Collect
   hidden:
   - xsoar
-  supportedModules:
-  - xsiam
-- name: eventFetchInterval
-  display: Events Fetch Interval
-  defaultvalue: '1'
-  type: 19
-  required: false
-  advanced: true
-  section: Collect
-  hidden:
-  - xsoar
-  supportedModules:
-  - xsiam
 - name: events_types_filter
   display: Fetch incident types
   required: true
@@ -91,8 +78,6 @@ configuration:
   section: Collect
   hidden:
   - xsoar
-  supportedModules:
-  - xsiam
 description: Fetches and manages incidents from iZOOlogic, enabling automated ingestion, incident creation, and advanced filtering for brand protection and threat management.
 script:
   commands:
