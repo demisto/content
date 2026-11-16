@@ -965,3 +965,40 @@ def test_fetch_incidents_employee_credentials_login_url(requests_mock, client, d
         assert raw_alert["alert_data"]["domain"] == "example.com"
         if duplicate_alerts:
             assert raw_alert["attachments"]["content"]["designated_url"] == "corp.example.com"
+
+
+@pytest.mark.parametrize(
+    "related_assets, expected_login_url",
+    [
+        ([{"id": "keyword/Example/example asset", "name": "example asset", "type": "keyword"}], ""),
+        (
+            [
+                {"id": "keyword/Example/example asset", "name": "example asset", "type": "keyword"},
+                {"id": "subdomain/Example/login.example.com", "name": "login.example.com", "type": "subdomain"},
+            ],
+            "login.example.com",
+        ),
+        ([{"id": "url/Example/https://example.com/login", "name": "https://example.com/login", "type": "url"}], "https://example.com/login"),
+        ([{"id": "/Example/corp.example.com", "name": "corp.example.com"}], "corp.example.com"),
+        ([{"id": "/Example/", "name": "", "type": ""}], ""),
+    ],
+)
+def test_add_login_url_fields_asset_types(related_assets, expected_login_url):
+    """
+    Given:
+     - An employee credentials alert whose related assets have different types.
+    When:
+     - add_login_url_fields is called.
+    Then:
+     - login_url is the first asset that can be a login address. Keyword assets are skipped.
+     - related_asset_name and related_asset_id always hold the first asset, whatever its type.
+    """
+    from Cyberint import add_login_url_fields
+
+    alert = {"type": "compromised_employee_credentials", "related_assets": related_assets, "alert_data": {"domain": "example.com"}}
+    add_login_url_fields(alert)
+
+    assert alert["login_url"] == expected_login_url
+    assert alert["related_asset_name"] == related_assets[0]["name"]
+    assert alert["related_asset_id"] == related_assets[0]["id"]
+    assert alert["alert_data"].get("designated_url", "") == expected_login_url

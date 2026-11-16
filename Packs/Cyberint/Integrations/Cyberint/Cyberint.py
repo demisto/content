@@ -15,6 +15,7 @@ SEVERITIES = {"low": 1, "medium": 2, "high": 3, "very_high": 4}
 CSV_FIELDS_TO_EXTRACT = ["Username", "Password"]
 LOGIN_URL_KEY = "designated_url"
 EMPLOYEE_CREDENTIALS_ALERT_TYPE = "compromised_employee_credentials"
+LOGIN_URL_ASSET_TYPES = {"url", "subdomain", "domain", "ip"}
 
 MIRROR_DIRECTION_MAPPING = {
     "Incoming": "In",
@@ -866,11 +867,34 @@ def get_first_related_asset(alert: dict[str, Any]) -> dict[str, Any]:
     return first_asset if isinstance(first_asset, dict) else {}
 
 
+def get_login_asset_name(alert: dict[str, Any]) -> str:
+    """
+    Return the name of the first related asset that can be a login address (URL, subdomain, domain or IP).
+    Assets of other types, such as keywords, are skipped. Assets without a type are accepted.
+
+    Args:
+        alert (dict): Cyberint alert.
+
+    Returns:
+        str: The asset name, or an empty string if no such asset exists.
+    """
+    related_assets = alert.get("related_assets")
+    if not isinstance(related_assets, list):
+        return ""
+    for asset in related_assets:
+        if not isinstance(asset, dict) or not asset.get("name"):
+            continue
+        asset_type = asset.get("type")
+        if not asset_type or asset_type in LOGIN_URL_ASSET_TYPES:
+            return str(asset["name"])
+    return ""
+
+
 def get_alert_login_url(alert: dict[str, Any]) -> str:
     """
     Return the login URL of a credentials alert.
     Customer credentials alerts carry it in alert_data.designated_url.
-    Employee credentials alerts don't, so the name of the first related asset is used instead.
+    Employee credentials alerts don't, so the name of the first login-type related asset is used instead.
 
     Args:
         alert (dict): Cyberint alert.
@@ -882,7 +906,7 @@ def get_alert_login_url(alert: dict[str, Any]) -> str:
     designated_url = alert_data.get(LOGIN_URL_KEY) if isinstance(alert_data, dict) else None
     if designated_url:
         return str(designated_url)
-    return str(get_first_related_asset(alert).get("name") or "")
+    return get_login_asset_name(alert)
 
 
 def add_login_url_to_employee_credentials(alert: dict[str, Any], login_url: str) -> None:
@@ -1002,7 +1026,8 @@ def fetch_incidents(
                 current_attachments = dict_safe_get(alert, path, default_return_value=[])
                 attachment_list = current_attachments if isinstance(current_attachments, list) else [current_attachments]
                 # Retrieve alert Incident attachments files - Attachments, CSV, Screenshot, and Analysis report.
-                current_incident_attachments = get_alert_attachments(client, attachment_list, attachment_type, alert_id)  # type: ignore
+                current_incident_attachments = get_alert_attachments(
+                    client, attachment_list, attachment_type, alert_id)  # type: ignore
 
                 incident_attachments.extend(current_incident_attachments)
                 for tmp_attachment in attachment_list:
