@@ -596,6 +596,87 @@ def test_fetch_incidents_with_full_body(
     assert result_incidents == expected_incident_full_body
 
 
+@pytest.mark.parametrize(
+    "subject",
+    [
+        "Café com açúcar por 3,50€",
+        "Configuração de segurança atualizada",
+        "It\u2019s a test subject",  # right single quotation mark
+    ],
+)
+def test_parse_email_as_incident_keeps_non_ascii_characters_in_raw_json(mocker, subject):
+    """
+    Given -
+        A fetched email whose subject and body contain non-ASCII characters (accents, '€', curly quotes).
+
+    When -
+        Parsing the email as an incident.
+
+    Then -
+        The rawJSON string keeps the original characters instead of escaping them to \\uXXXX sequences,
+        so XSIAM shows the subject as is (XSUP-80831).
+    """
+    client = self_deployed_client()
+    mocker.patch.object(client, "_get_email_attachments", return_value=[])
+    email = {
+        "id": "dummy_id",
+        "subject": subject,
+        "receivedDateTime": "2020-01-01T00:00:00Z",
+        "bodyPreview": subject,
+        "body": ({"contentType": "html", "content": f"<p>{subject}</p>"}, {"contentType": "text", "content": subject}),
+    }
+
+    incident = client._parse_email_as_incident(email)
+
+    assert subject in incident["rawJSON"]
+    assert "\\u" not in incident["rawJSON"]
+    assert json.loads(incident["rawJSON"])["Subject"] == subject
+
+
+def test_serialize_raw_json_falls_back_to_escaped_json_and_logs_on_invalid_utf8(mocker):
+    """
+    Given -
+        A parsed email whose subject holds a lone surrogate (half of a broken emoji), which is not valid UTF-8.
+
+    When -
+        Serializing the email to rawJSON.
+
+    Then -
+        An info log line names the email ID, and rawJSON falls back to ASCII-escaped JSON that is valid UTF-8
+        and still decodes back to the original subject.
+    """
+    info_log = mocker.patch.object(demisto, "info")
+    parsed_email = {"ID": "dummy_id", "Subject": "broken emoji \ud83d here"}
+
+    raw_json = GraphMailUtils.serialize_raw_json(parsed_email)
+
+    raw_json.encode("utf-8")  # must not raise
+    assert "\\ud83d" in raw_json
+    assert json.loads(raw_json)["Subject"] == parsed_email["Subject"]
+    info_log.assert_called_once()
+    assert "dummy_id" in info_log.call_args[0][0]
+
+
+def test_serialize_raw_json_keeps_non_ascii_without_logging(mocker):
+    """
+    Given -
+        A parsed email with valid non-ASCII characters.
+
+    When -
+        Serializing the email to rawJSON.
+
+    Then -
+        The characters are kept as is and nothing is logged.
+    """
+    info_log = mocker.patch.object(demisto, "info")
+    parsed_email = {"ID": "dummy_id", "Subject": "Café 3,50€"}
+
+    raw_json = GraphMailUtils.serialize_raw_json(parsed_email)
+
+    assert "Café 3,50€" in raw_json
+    info_log.assert_not_called()
+
+
 def test_parse_email_as_label():
     assert GraphMailUtils.parse_email_as_labels({"ID": "dummy_id"}) == [{"type": "Email/ID", "value": "dummy_id"}]
     assert GraphMailUtils.parse_email_as_labels({"To": ["dummy@recipient.com"]}) == [
