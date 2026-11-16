@@ -30,7 +30,8 @@ def extract_hyperlinks_from_xlsx(file_path: str) -> Set:
     for sheet in wb:
         for row in sheet.iter_rows():
             for cell in row:
-                if cell.hyperlink:
+                # Internal links (to a cell or sheet) have no target, only a location.
+                if cell.hyperlink and cell.hyperlink.target:
                     urls.add(cell.hyperlink.target)
 
     return urls
