@@ -44,5 +44,9 @@
             "type": "singleSelect",
             "name": "Bmc Impact"
         }
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }

@@ -1,5 +1,6 @@
 category: Utilities
 provider: Open Source
+deprecated: true
 commonfields:
   id: Github Maltrail Feed
   version: -1
@@ -105,8 +106,8 @@ configuration:
   - WHITE
   required: false
   type: 15
-description: Fetches Indicators from Github Repo https://github.com/stamparm/maltrail
-display: Github Maltrail Feed
+description: Deprecated. Use the GitHub Feed integration instead.
+display: Github Maltrail Feed (Deprecated)
 name: Github Maltrail Feed
 script:
   commands:

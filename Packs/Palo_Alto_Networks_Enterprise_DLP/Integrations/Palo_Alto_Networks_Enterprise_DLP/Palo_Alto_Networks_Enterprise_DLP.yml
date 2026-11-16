@@ -342,20 +342,29 @@ script:
       required: true
       description: The ID of the user the feedback is collected from.
     - name: region
-      description: The region where the incident originated.
+      description: The region where the incident originated (the PAN DLP Incident Region incident field).
     - name: report_id
       description: The DLP report ID, needed only for granting exemptions.
     - name: dlp_channel
-      description: The DLP channel, needed only for granting exemptions.
+      description: The DLP channel of the incident (the PAN DLP Channel incident field), for example ngfw. When not provided, the channel of the incident the command runs in is used.
     - name: error_details
       description: Error details if status is SEND_NOTIFICATION_FAILURE.
     outputs:
-    - contextPath: DLP.IncidentUpdate.success
-      description: Whether the update was successful.
+    - contextPath: IncidentUpdate.feedback
+      description: The feedback that was saved. Not available for "EXCEPTION_GRANTED".
+      type: string
+    - contextPath: IncidentUpdate.success
+      description: Whether the update was successful. Not available for "EXCEPTION_GRANTED".
       type: boolean
-    - contextPath: DLP.IncidentUpdate.exemption_duration
-      description: The exemption duration, only available for "EXCEPTION_GRANTED".
-      type: number
+    - contextPath: Exemption.feedback
+      description: The feedback that was saved, only available for "EXCEPTION_GRANTED".
+      type: string
+    - contextPath: Exemption.success
+      description: Whether the exemption was granted, only available for "EXCEPTION_GRANTED".
+      type: boolean
+    - contextPath: Exemption.duration
+      description: The exemption duration, for example "30 minutes" or "2.0 hours", only available for "EXCEPTION_GRANTED".
+      type: string
     description: Updates a DLP incident with user feedback.
   - name: pan-dlp-exemption-eligible
     arguments:
