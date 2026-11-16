@@ -289,7 +289,7 @@ def test_fetch_incidents_attachment_without_name_and_content_type(mocker):
     Then
     - All three emails become incidents (the attachment gets a default name) and last run advances
     """
-    import MailListener_POP3
+    from MailListener_POP3 import fetch_incidents
 
     poison_part = "Content-Disposition: attachment\r\nContent-Transfer-Encoding: base64\r\n\r\naGVsbG8=\r\n"
     mails = [
@@ -297,13 +297,13 @@ def test_fetch_incidents_attachment_without_name_and_content_type(mocker):
         _build_mail(2, 2, "poison", poison_part),
         _build_mail(3, 3, "normal-2"),
     ]
-    mocker.patch.object(MailListener_POP3, "get_user_emails", return_value=mails)
-    mocker.patch.object(MailListener_POP3, "fileResult", return_value={"Type": 1, "FileID": "file-id"})
+    mocker.patch("MailListener_POP3.get_user_emails", return_value=mails)
+    mocker.patch("MailListener_POP3.fileResult", return_value={"Type": 1, "FileID": "file-id"})
     mocker.patch.object(demisto, "getLastRun", return_value={"time": "2026-10-18T00:00:00Z"})
     set_last_run = mocker.patch.object(demisto, "setLastRun")
     incidents_mock = mocker.patch.object(demisto, "incidents")
 
-    MailListener_POP3.fetch_incidents()
+    fetch_incidents()
 
     incidents = incidents_mock.call_args[0][0]
     assert [inc["name"] for inc in incidents] == ["normal-1", "poison", "normal-2"]
@@ -320,24 +320,23 @@ def test_fetch_incidents_skips_failing_email(mocker):
     Then
     - The failing email is skipped, the other emails become incidents and last run advances
     """
-    import MailListener_POP3
+    from MailListener_POP3 import fetch_incidents, mail_to_incident as original_mail_to_incident
 
     mails = [_build_mail(1, 1, "normal-1"), _build_mail(2, 2, "broken"), _build_mail(3, 3, "normal-2")]
-    original_mail_to_incident = MailListener_POP3.mail_to_incident
 
     def mail_to_incident(msg):
         if msg["subject"] == "broken":
             raise Exception("unexpected parsing error")
         return original_mail_to_incident(msg)
 
-    mocker.patch.object(MailListener_POP3, "get_user_emails", return_value=mails)
-    mocker.patch.object(MailListener_POP3, "mail_to_incident", side_effect=mail_to_incident)
+    mocker.patch("MailListener_POP3.get_user_emails", return_value=mails)
+    mocker.patch("MailListener_POP3.mail_to_incident", side_effect=mail_to_incident)
     mocker.patch.object(demisto, "getLastRun", return_value={"time": "2026-10-18T00:00:00Z"})
     set_last_run = mocker.patch.object(demisto, "setLastRun")
     incidents_mock = mocker.patch.object(demisto, "incidents")
     error_mock = mocker.patch.object(demisto, "error")
 
-    MailListener_POP3.fetch_incidents()
+    fetch_incidents()
 
     assert [inc["name"] for inc in incidents_mock.call_args[0][0]] == ["normal-1", "normal-2"]
     set_last_run.assert_called_once_with({"time": "2026-10-18T09:03:01Z"})

@@ -1,6 +1,7 @@
 import base64
 import poplib
 import quopri
+import traceback
 from email.parser import Parser
 from email.header import decode_header
 from email.utils import parsedate_to_datetime
@@ -387,6 +388,7 @@ def fetch_incidents():
                     msg.get("index"), msg.get("subject"), msg.get("date"), e
                 )
             )
+            demisto.debug(traceback.format_exc())
             continue
 
         temp_date = datetime.strptime(incident["occurred"], DATE_FORMAT)
