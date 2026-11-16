@@ -1026,7 +1026,11 @@ def list_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
 
 def get_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
     """Command to get a specific web ACL"""
-    kwargs = {"Name": args.get("name", ""), "Scope": SCOPE_MAP[args.get("scope") or DEFAULT_SCOPE], "Id": args.get("web_acl_id", "")}
+    kwargs = {
+        "Name": args.get("name", ""),
+        "Scope": SCOPE_MAP[args.get("scope") or DEFAULT_SCOPE],
+        "Id": args.get("web_acl_id", ""),
+    }
 
     response = client.get_web_acl(**kwargs)
     response = convert_dict_values_bytes_to_str(response)
@@ -1086,7 +1090,11 @@ def create_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
 
 def update_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
     """Command to update a specific web ACL"""
-    kwargs = {"Name": args.get("name", ""), "Scope": SCOPE_MAP[args.get("scope") or DEFAULT_SCOPE], "Id": args.get("web_acl_id", "")}
+    kwargs = {
+        "Name": args.get("name", ""),
+        "Scope": SCOPE_MAP[args.get("scope") or DEFAULT_SCOPE],
+        "Id": args.get("web_acl_id", ""),
+    }
 
     get_response = client.get_web_acl(**kwargs)
     get_response = convert_dict_values_bytes_to_str(get_response)
@@ -1146,7 +1154,11 @@ def update_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
 
 def delete_web_acl_command(client: "WAFV2Client", args: dict) -> CommandResults:
     """Command to delete a specific web ACL"""
-    kwargs = {"Name": args.get("name", ""), "Scope": SCOPE_MAP[args.get("scope") or DEFAULT_SCOPE], "Id": args.get("web_acl_id", "")}
+    kwargs = {
+        "Name": args.get("name", ""),
+        "Scope": SCOPE_MAP[args.get("scope") or DEFAULT_SCOPE],
+        "Id": args.get("web_acl_id", ""),
+    }
 
     get_response = client.get_web_acl(**kwargs)
 

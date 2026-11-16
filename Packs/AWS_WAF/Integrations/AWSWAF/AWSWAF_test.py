@@ -802,7 +802,7 @@ def test_get_web_acl_command(mocker):
     from AWSWAF import get_web_acl_command
 
     client = MockedBoto3Client()
-    args = {"name": "test-acl", "scope": "Regional", "id": "acl-id"}
+    args = {"name": "test-acl", "scope": "Regional", "web_acl_id": "acl-id"}
     get_mock = mocker.patch.object(client, "get_web_acl")
     get_web_acl_command(client=client, args=args)
     get_mock.assert_called_with(Name="test-acl", Scope="REGIONAL", Id="acl-id")
@@ -866,7 +866,7 @@ def test_update_web_acl_command(mocker):
     from AWSWAF import update_web_acl_command
 
     client = MockedBoto3Client()
-    args = {"name": "test-acl", "scope": "Regional", "id": "acl-id", "default_action": "Block"}
+    args = {"name": "test-acl", "scope": "Regional", "web_acl_id": "acl-id", "default_action": "Block"}
     get_response = util_load_json("get_web_acl_response")
     mocker.patch.object(client, "get_web_acl", return_value=get_response)
     update_mock = mocker.patch.object(client, "update_web_acl")
@@ -880,7 +880,7 @@ def test_update_web_acl_keeps_existing_when_no_override(mocker):
     from AWSWAF import update_web_acl_command
 
     client = MockedBoto3Client()
-    args = {"name": "test-acl", "scope": "Regional", "id": "acl-id"}
+    args = {"name": "test-acl", "scope": "Regional", "web_acl_id": "acl-id"}
     get_response = util_load_json("get_web_acl_response")
     mocker.patch.object(client, "get_web_acl", return_value=get_response)
     update_mock = mocker.patch.object(client, "update_web_acl")
@@ -894,7 +894,7 @@ def test_delete_web_acl_command(mocker):
     from AWSWAF import delete_web_acl_command
 
     client = MockedBoto3Client()
-    args = {"name": "test-acl", "scope": "Regional", "id": "acl-id"}
+    args = {"name": "test-acl", "scope": "Regional", "web_acl_id": "acl-id"}
     get_response = util_load_json("get_web_acl_response")
     mocker.patch.object(client, "get_web_acl", return_value=get_response)
     delete_mock = mocker.patch.object(client, "delete_web_acl")
