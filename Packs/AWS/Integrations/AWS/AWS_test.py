@@ -9,6 +9,7 @@ from CommonServerPython import CommandResults, DemistoException
 import ast
 import os
 import re
+import subprocess
 
 QUICK_ACTION_SUFFIX = "-quick-action"
 _INTEGRATION_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -22697,3 +22698,208 @@ def test_yml_output_prefixes_match_py_handler(yml_spec: dict[str, dict[str, list
         "The following YML output contextPaths are NOT covered by any output "
         "prefix declared in their command's handler in AWS.py:\n" + "\n".join(uncovered)
     )
+
+
+# ---------------------------------------------------------------------------
+# aws-cli
+# ---------------------------------------------------------------------------
+
+CLI_PLATFORM_CREDENTIALS = {"key": "ASIAKEY", "access_token": "SECRET", "session_token": "SESSION"}
+
+
+def _completed_process(returncode: int = 0, stdout: str = "", stderr: str = "") -> subprocess.CompletedProcess:
+    return subprocess.CompletedProcess(args=["aws"], returncode=returncode, stdout=stdout, stderr=stderr)
+
+
+def test_execute_cli_command_success_platform(mocker):
+    """
+    Given: CTS platform credentials and a CLI command that returns a JSON response.
+    When: execute_cli_command is called.
+    Then: The aws binary runs without a shell, with the leading 'aws' stripped, '--output json' appended,
+          CTS credentials and region in the environment, no ProxyDome proxy, and the JSON response in AWS.CLI.Output.
+    """
+    from AWS import execute_cli_command
+
+    response = {"Buckets": [{"Name": "bucket-1"}]}
+    mock_run = mocker.patch("AWS.subprocess.run", return_value=_completed_process(stdout=json.dumps(response)))
+    mocker.patch.dict(os.environ, {"HTTPS_PROXY": ""}, clear=False)
+
+    args = {"cli_command": "aws s3api list-buckets", "account_id": "123456789012", "region": "eu-west-1"}
+    result = execute_cli_command(CLI_PLATFORM_CREDENTIALS, {}, args)
+
+    cmd = mock_run.call_args[0][0]
+    env = mock_run.call_args[1]["env"]
+    assert cmd == ["aws", "s3api", "list-buckets", "--output", "json"]
+    assert "shell" not in mock_run.call_args[1]
+    assert env["AWS_ACCESS_KEY_ID"] == "ASIAKEY"
+    assert env["AWS_SECRET_ACCESS_KEY"] == "SECRET"
+    assert env["AWS_SESSION_TOKEN"] == "SESSION"
+    assert env["AWS_DEFAULT_REGION"] == "eu-west-1"
+    assert not env.get("HTTPS_PROXY")
+    assert result.outputs_prefix == "AWS.CLI"
+    assert result.outputs == {
+        "Command": "aws s3api list-buckets",
+        "AccountId": "123456789012",
+        "Region": "eu-west-1",
+        "Output": response,
+    }
+    assert "AWS CLI Result" in result.readable_output
+
+
+def test_execute_cli_command_empty_output(mocker):
+    """
+    Given: A CLI command that succeeds with no output (e.g. a tagging operation).
+    When: execute_cli_command is called.
+    Then: A success message is returned and the user-provided --output flag is not duplicated.
+    """
+    from AWS import execute_cli_command
+
+    mock_run = mocker.patch("AWS.subprocess.run", return_value=_completed_process(stdout=""))
+
+    args = {"cli_command": "s3api put-bucket-tagging --bucket b --output json", "account_id": "123456789012"}
+    result = execute_cli_command(CLI_PLATFORM_CREDENTIALS, {}, args)
+
+    assert mock_run.call_args[0][0].count("--output") == 1
+    assert result.readable_output == "The AWS CLI command completed successfully with no output."
+    assert "Output" not in result.outputs
+
+
+def test_execute_cli_command_failure_raises_with_exit_code(mocker):
+    """
+    Given: A CLI command that fails with a non-zero exit code.
+    When: execute_cli_command is called.
+    Then: A DemistoException containing the exit code and the AWS error details is raised, and the command runs once.
+    """
+    from AWS import execute_cli_command
+
+    stderr = "An error occurred (AccessDenied) when calling the ListBuckets operation: Access Denied"
+    mock_run = mocker.patch("AWS.subprocess.run", return_value=_completed_process(returncode=254, stderr=stderr))
+
+    with pytest.raises(DemistoException, match="exit code 254") as e:
+        execute_cli_command(CLI_PLATFORM_CREDENTIALS, {}, {"cli_command": "aws s3api list-buckets", "account_id": "1"})
+
+    assert "AccessDenied" in str(e.value)
+    mock_run.assert_called_once()
+
+
+def test_execute_cli_command_text_output(mocker):
+    """
+    Given: A CLI command with an explicit non-JSON output format.
+    When: execute_cli_command is called.
+    Then: The raw text is returned as readable output without context outputs.
+    """
+    from AWS import execute_cli_command
+
+    mocker.patch("AWS.subprocess.run", return_value=_completed_process(stdout="bucket-1\tbucket-2"))
+
+    result = execute_cli_command(CLI_PLATFORM_CREDENTIALS, {}, {"cli_command": "aws s3 ls --output text", "account_id": "1"})
+
+    assert "bucket-1" in result.readable_output
+    assert result.outputs is None
+
+
+@pytest.mark.parametrize("cli_command", ["", "aws", "   "])
+def test_execute_cli_command_empty_command_raises(cli_command):
+    """
+    Given: An empty cli_command, or one that contains only the 'aws' token.
+    When: execute_cli_command is called.
+    Then: A ValueError is raised.
+    """
+    from AWS import execute_cli_command
+
+    with pytest.raises(ValueError, match="cli_command"):
+        execute_cli_command(CLI_PLATFORM_CREDENTIALS, {}, {"cli_command": cli_command})
+
+
+@pytest.mark.parametrize(
+    "side_effect, match",
+    [
+        (FileNotFoundError(), "binary was not found"),
+        (subprocess.TimeoutExpired(cmd="aws", timeout=300), "timed out"),
+    ],
+)
+def test_run_aws_cli_errors(mocker, side_effect, match):
+    """
+    Given: The aws binary is missing, or the command exceeds the timeout.
+    When: run_aws_cli is called.
+    Then: A DemistoException with a clear message is raised.
+    """
+    from AWS import run_aws_cli
+
+    mocker.patch("AWS.subprocess.run", side_effect=side_effect)
+
+    with pytest.raises(DemistoException, match=match):
+        run_aws_cli(["s3api", "list-buckets"], {})
+
+
+def test_build_cli_environment_marketplace_access_keys(mocker):
+    """
+    Given: No CTS credentials and access keys configured on the integration instance.
+    When: build_cli_environment is called.
+    Then: The configured access keys are used and no session token is set.
+    """
+    from AWS import build_cli_environment
+
+    mocker.patch.dict(os.environ, {"AWS_SESSION_TOKEN": "stale"}, clear=False)
+    params = {"credentials": {"identifier": "AKIA", "password": "SECRET"}}
+
+    env = build_cli_environment({}, params, "us-east-1")
+
+    assert env["AWS_ACCESS_KEY_ID"] == "AKIA"
+    assert env["AWS_SECRET_ACCESS_KEY"] == "SECRET"
+    assert "AWS_SESSION_TOKEN" not in env
+
+
+def test_build_cli_environment_marketplace_assume_role(mocker):
+    """
+    Given: No CTS credentials and a role ARN configured on the integration instance.
+    When: build_cli_environment is called.
+    Then: The temporary STS AssumeRole credentials are used.
+    """
+    from AWS import build_cli_environment
+
+    mocker.patch(
+        "AWS._assume_role_credentials",
+        return_value={"AccessKeyId": "ASIATMP", "SecretAccessKey": "TMPSECRET", "SessionToken": "TMPTOKEN"},
+    )
+    params = {"credentials": {"identifier": "AKIA", "password": "SECRET"}, "role_arn": "arn:aws:iam::1:role/r"}
+
+    env = build_cli_environment({}, params, "us-east-1")
+
+    assert env["AWS_ACCESS_KEY_ID"] == "ASIATMP"
+    assert env["AWS_SESSION_TOKEN"] == "TMPTOKEN"
+
+
+def test_build_cli_environment_missing_credentials():
+    """
+    Given: No CTS credentials and no access keys configured.
+    When: build_cli_environment is called.
+    Then: A DemistoException is raised.
+    """
+    from AWS import build_cli_environment
+
+    with pytest.raises(DemistoException, match="AWS credentials are not configured"):
+        build_cli_environment({}, {}, "us-east-1")
+
+
+def test_execute_aws_command_routes_aws_cli(mocker):
+    """
+    Given: The aws-cli command on the Cortex Platform path.
+    When: execute_aws_command is called.
+    Then: CTS credentials are fetched for the given account and execute_cli_command runs without a boto3 client.
+    """
+    from AWS import execute_aws_command
+
+    mocker.patch("AWS.get_connector_id", return_value="connector-1")
+    mock_get_creds = mocker.patch("AWS.get_cloud_credentials", return_value=CLI_PLATFORM_CREDENTIALS)
+    mock_service_client = mocker.patch("AWS.get_service_client")
+    mock_result = CommandResults(readable_output="ok")
+    mock_execute = mocker.patch("AWS.execute_cli_command", return_value=mock_result)
+
+    args = {"cli_command": "aws s3api list-buckets", "account_id": "123456789012", "region": "us-east-1"}
+    result = execute_aws_command("aws-cli", args, {})
+
+    assert result == mock_result
+    mock_get_creds.assert_called_once_with("AWS", "123456789012")
+    mock_execute.assert_called_once_with(CLI_PLATFORM_CREDENTIALS, {}, args)
+    mock_service_client.assert_not_called()
