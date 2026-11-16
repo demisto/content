@@ -281,6 +281,18 @@
                         "accessor": "name",
                         "transformers": []
                     }
+                },
+                "Cyberint Login URL": {
+                    "simple": "login_url"
+                },
+                "Cyberint Domain": {
+                    "simple": "alert_data.domain"
+                },
+                "Cyberint Related Asset Name": {
+                    "simple": "related_asset_name"
+                },
+                "Cyberint Related Asset ID": {
+                    "simple": "related_asset_id"
                 }
             }
         },
@@ -571,6 +583,18 @@
                 },
                 "Cyberint Alert URL": {
                     "simple": "alert_data.url"
+                },
+                "Cyberint Login URL": {
+                    "simple": "login_url"
+                },
+                "Cyberint Domain": {
+                    "simple": "alert_data.domain"
+                },
+                "Cyberint Related Asset Name": {
+                    "simple": "related_asset_name"
+                },
+                "Cyberint Related Asset ID": {
+                    "simple": "related_asset_id"
                 }
             }
         }
