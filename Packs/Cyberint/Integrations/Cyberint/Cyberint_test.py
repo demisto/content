@@ -978,7 +978,10 @@ def test_fetch_incidents_employee_credentials_login_url(requests_mock, client, d
             ],
             "login.example.com",
         ),
-        ([{"id": "url/Example/https://example.com/login", "name": "https://example.com/login", "type": "url"}], "https://example.com/login"),
+        (
+            [{"id": "url/Example/https://example.com/login", "name": "https://example.com/login", "type": "url"}],
+            "https://example.com/login",
+        ),
         ([{"id": "/Example/corp.example.com", "name": "corp.example.com"}], "corp.example.com"),
         ([{"id": "/Example/", "name": "", "type": ""}], ""),
         (
@@ -1003,7 +1006,11 @@ def test_add_login_url_fields_asset_types(related_assets, expected_login_url):
     """
     from Cyberint import add_login_url_fields
 
-    alert = {"type": "compromised_employee_credentials", "related_assets": related_assets, "alert_data": {"domain": "example.com"}}
+    alert = {
+        "type": "compromised_employee_credentials",
+        "related_assets": related_assets,
+        "alert_data": {"domain": "example.com"},
+    }
     add_login_url_fields(alert)
 
     assert alert["login_url"] == expected_login_url
@@ -1022,7 +1029,13 @@ GROUP = {"id": 1, "name": "Example Group"}
     [
         ([{"id": "company/Example/Example", "name": "Example", "type": "company"}], ""),
         ([{"id": "product/Example/Example App", "name": "Example App", "type": "product"}], "Example App"),
-        ([KEYWORD_ASSET, {"id": "Employee Login Interface/Example/Portal", "name": "Portal", "type": "Employee Login Interface"}], "Portal"),
+        (
+            [
+                KEYWORD_ASSET,
+                {"id": "Employee Login Interface/Example/Portal", "name": "Portal", "type": "Employee Login Interface"},
+            ],
+            "Portal",
+        ),
     ],
 )
 def test_add_login_url_fields_skips_keyword_and_company(related_assets, expected_login_url):
@@ -1147,7 +1160,11 @@ def test_fetch_incidents_asset_groups(requests_mock, client, fetch_asset_groups)
     requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-10/attachments/19879773", text="Username,Password\r\nuser1,*****")
     related_assets_mock = requests_mock.get(
         f"{BASE_URL}/api/v1/alerts/ARG-10/related-assets",
-        json={"related_assets": [{"id": "/Example/corp.example.com", "name": "corp.example.com", "type": "domain", "asset_groups": [GROUP]}]},
+        json={
+            "related_assets": [
+                {"id": "/Example/corp.example.com", "name": "corp.example.com", "type": "domain", "asset_groups": [GROUP]}
+            ]
+        },
     )
 
     _, incidents = fetch_incidents(
