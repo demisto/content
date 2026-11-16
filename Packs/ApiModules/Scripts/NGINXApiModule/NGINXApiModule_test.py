@@ -1133,6 +1133,106 @@ def test_create_nginx_server_conf_two_server_blocks_and_ports(tmp_path: Path, mo
     assert f"proxy_pass http://localhost:{serverport}/;" in conf
 
 
+def test_create_nginx_server_conf_never_forwards_empty_host(tmp_path: Path, mocker):
+    """
+    Given:  a default params dict.
+    When:   create_nginx_server_conf renders the nginx server config.
+    Then:   an http-level `map` falls back to `localhost` when the client's $host is
+            empty (e.g. health checks sending no Host header), and BOTH tiers forward
+            that mapped value instead of the raw $host - so Tier 2 never receives an
+            empty `Host:` over HTTP/1.1 and never answers 400 (XSUP-80151).
+    """
+    mocker.patch.object(demisto, "callingContext", return_value={"context": {}})
+    conf_file = str(tmp_path / "nginx-test-server.conf")
+    module.create_nginx_server_conf(conf_file, 12345, params={})
+    with open(conf_file) as f:
+        conf = f.read()
+
+    assert "map $host $upstream_host_header {" in conf
+    assert '""      localhost;' in conf
+    assert "default $host;" in conf
+    # The map must be at http level, i.e. before the first server block.
+    assert conf.index("map $host $upstream_host_header") < conf.index("server {")
+    assert conf.count("proxy_set_header Host $upstream_host_header;") == 2
+    assert "proxy_set_header Host $host;" not in conf
+
+
+def test_create_nginx_server_conf_never_caches_client_errors(tmp_path: Path, mocker):
+    """
+    Given:  a default params dict.
+    When:   create_nginx_server_conf renders the nginx server config.
+    Then:   400/401/403 get a "0s" validity that is declared BEFORE the `any`
+            catch-all, so a single bad request cannot poison the cache for every
+            client of that URI (the cache key does not include the Host header).
+    """
+    mocker.patch.object(demisto, "callingContext", return_value={"context": {}})
+    conf_file = str(tmp_path / "nginx-test-server.conf")
+    module.create_nginx_server_conf(conf_file, 12345, params={})
+    with open(conf_file) as f:
+        conf = f.read()
+
+    assert "proxy_cache_valid 400 401 403 0s;" in conf
+    assert conf.index("proxy_cache_valid 400 401 403 0s;") < conf.index("proxy_cache_valid any ")
+
+
+def test_nginx_log_process_tolerates_non_utf8_bytes(tmp_path: Path, mocker: MockerFixture):
+    """
+    Given:  nginx access and error logs containing bytes that are not valid UTF-8
+            (0xb3 / 0x80, e.g. from client-supplied URIs or user agents).
+    When:   nginx_log_process rolls and dumps the logs.
+    Then:   no UnicodeDecodeError is raised, the undecodable bytes are replaced,
+            the valid content is still logged, and the rolled `.old` files are removed.
+    """
+    access_log = tmp_path / "access.log"
+    error_log = tmp_path / "error.log"
+    access_log.write_bytes(b'request_uri="/\xb3bad" response_status=200\n')
+    error_log.write_bytes(b"error line \x80 here\n")
+    mocker.patch.object(module, "NGINX_SERVER_ACCESS_LOG", str(access_log))
+    mocker.patch.object(module, "NGINX_SERVER_ERROR_LOG", str(error_log))
+    mocker.patch.object(module.gevent, "sleep")
+    debug_mock = mocker.patch.object(demisto, "debug")
+    error_mock = mocker.patch.object(demisto, "error")
+    nginx_process = mocker.MagicMock()
+
+    module.nginx_log_process(nginx_process)
+
+    nginx_process.send_signal.assert_called_once()
+    access_dump = debug_mock.call_args[0][0]
+    assert "response_status=200" in access_dump
+    assert "\ufffd" in access_dump
+    error_dump = error_mock.call_args[0][0]
+    assert "error line" in error_dump
+    assert "\ufffd" in error_dump
+    assert not Path(f"{access_log}.old").exists()
+    assert not Path(f"{error_log}.old").exists()
+
+
+def test_nginx_log_monitor_loop_survives_iteration_failure(mocker: MockerFixture):
+    """
+    Given:  nginx_log_process raises on its first iteration.
+    When:   nginx_log_monitor_loop runs.
+    Then:   the error is logged and the loop keeps running, so the next iteration
+            is still executed (the monitor greenlet is not killed permanently).
+    """
+
+    class StopLoop(Exception):
+        pass
+
+    # 3rd sleep breaks out of the endless loop after two iterations.
+    mocker.patch.object(module.gevent, "sleep", side_effect=[None, None, StopLoop()])
+    log_process_mock = mocker.patch.object(
+        module, "nginx_log_process", side_effect=[UnicodeDecodeError("utf-8", b"\xb3", 0, 1, "invalid start byte"), None]
+    )
+    error_mock = mocker.patch.object(demisto, "error")
+
+    with pytest.raises(StopLoop):
+        module.nginx_log_monitor_loop(mocker.MagicMock())
+
+    assert log_process_mock.call_count == 2
+    error_mock.assert_called_once()
+    assert "nginx log monitor iteration failed" in error_mock.call_args[0][0]
+
+
 def test_create_nginx_server_conf_rejects_invalid_param(tmp_path: Path, mocker, monkeypatch):
     """
     Given:  a params dict with an unparseable value for cache_404_ttl.

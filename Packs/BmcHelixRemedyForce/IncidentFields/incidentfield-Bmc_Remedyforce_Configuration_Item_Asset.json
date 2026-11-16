@@ -2,9 +2,9 @@
  "id": "incident_bmcremedyforceconfigurationitemasset",
  "version": -1,
  "modified": "2020-07-17T09:48:32.931184963+05:30",
- "name": "Bmc Remedyforce Configuration Item \/ Asset",
+ "name": "Bmc Remedyforce Configuration Item / Asset",
  "ownerOnly": false,
- "description": "The Configuration Item \/ Asset related to the BMC Remedyforce Incident.",
+ "description": "The Configuration Item / Asset related to the BMC Remedyforce Incident.",
  "cliName": "bmcremedyforceconfigurationitemasset",
  "type": "shortText",
  "closeForm": false,
@@ -28,5 +28,9 @@
  "caseInsensitive": true,
  "sla": 0,
  "threshold": 72,
- "fromVersion": "5.0.0"
+ "fromVersion": "5.0.0",
+ "supportedModules": [
+  "agentix",
+  "xsiam"
+ ]
 }
