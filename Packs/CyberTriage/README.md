@@ -6,8 +6,8 @@ Cyber Triage is an automated investigation platform that imports data from exist
 
 This pack provides the **CyberTriage** integration, which allows you to:
 
-- Initiate remote forensic triage collections on Windows endpoints directly from Cortex XSOAR.
-- That data is sent back into Cyber Triage, which will then analyze it using malware analysis, threat intelligence, and other heuristics to identify the relevant artifacts.
+- Initiate remote forensic triage collections on Windows endpoints directly from Cortex.
+- Send collected data back to Cyber Triage for automated analysis using malware scanning, threat intelligence, and heuristics to identify relevant artifacts.
 
 ## Use Cases
 

@@ -2,7 +2,7 @@
     "name": "Cyber Triage",
     "description": "Endpoint triage investigation via agentless collector for detecting data exfiltration, remote access, lateral movement, and compromise indicators.",
     "support": "partner",
-    "currentVersion": "4.0.0",
+    "currentVersion": "2.0.0",
     "author": "Sleuth Kit Labs",
     "url": "https://www.cybertriage.com/",
     "email": "support@sleuthkitlabs.com",
@@ -34,7 +34,9 @@
         "Malware Analysis",
         "SIEM",
         "DFIR",
-        "Incident Response"
+        "Incident Response",
+        "Cyber Triage",
+        "Sleuth Kit Labs"
     ],
     "marketplaces": [
         "xsoar",

@@ -1,6 +1,6 @@
 ## Cyber Triage Integration
 
-Deploy the Cyber Triage Collector from XSOAR to a Windows endpoint to gather data for a SOC investigation.  Cyber Triage automates the analysis of endpoint data to make sure you can quickly focus on the relevant data.
+Deploy the Cyber Triage Collector from Cortex to a Windows endpoint to gather data for a SOC investigation.  Cyber Triage automates the analysis of endpoint data to make sure you can quickly focus on the relevant data.
 
 This integration was integrated and tested with Cyber Triage v4.0.
 
@@ -14,7 +14,7 @@ Download: [https://www.cybertriage.com/download-eval/](https://www.cybertriage.c
 - The public API enabled in Cyber Triage: Options → Team Settings → *Enable the public API*.
 - A Windows administrative account with privileges on target endpoints.
 
-## Configure Cyber Triage in Cortex XSOAR
+## Configure Cyber Triage in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -78,4 +78,4 @@ Initiates a Cyber Triage forensic collection on a Windows endpoint. The collecti
 
 #### Human Readable Output
 
-A collection has been scheduled for ct-win10-01
+> A collection has been scheduled for ct-win10-01

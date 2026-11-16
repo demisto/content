@@ -17,7 +17,7 @@ configuration:
   defaultvalue: "9443"
   type: 0
   required: true
-  additionalinfo: REST API port of the Cyber Triage server. Default is 9443.
+  additionalinfo: The REST API port of the Cyber Triage server.
 - displaypassword: API Authentication Token
   name: api_auth_token
   type: 9
@@ -62,7 +62,7 @@ script:
       predefined:
       - "yes"
       - "no"
-      description: Send MD5 hashes to an external malware analysis service. If not set, the Cyber Triage server's default applies.
+      description: Whether to send MD5 hashes to an external malware analysis service. If not set, the Cyber Triage server's default applies.
     - name: send_content
       auto: PREDEFINED
       predefined:
