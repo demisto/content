@@ -629,7 +629,7 @@ tasks:
       id: e2f3a4b5-0014-4e5f-9a0b-1c2d3e4f7014
       version: -1
       name: Email outdated notification?
-      description: Send an outdated-client email only when at least one recipient is configured. The outdated channels have already been reported to the War Room.
+      description: Sends an outdated-client email only when at least one recipient is configured. The outdated channels have already been reported to the War Room.
       type: condition
       iscommand: false
       brand: ""
