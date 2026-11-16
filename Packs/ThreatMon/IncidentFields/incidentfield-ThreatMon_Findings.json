@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "ThreatMon Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "threatmonfindings",
+    "closeForm": false,
+    "content": true,
+    "description": "The findings of the alarm.",
+    "editForm": false,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_threatmonfindings",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "ThreatMon Findings",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

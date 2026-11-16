@@ -1,0 +1,73 @@
+{
+    "description": "Maps ThreatMon alarms to ThreatMon Alert incidents.",
+    "feed": false,
+    "id": "ThreatMon - Incoming Mapper",
+    "name": "ThreatMon - Incoming Mapper",
+    "type": "mapping-incoming",
+    "mapping": {
+        "ThreatMon Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "dbotMirrorId": {
+                    "simple": "mirror_id"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "ThreatMon Alarm Code": {
+                    "simple": "alarmCode"
+                },
+                "ThreatMon Status": {
+                    "simple": "status"
+                },
+                "ThreatMon Alarm Type": {
+                    "simple": "alarmType"
+                },
+                "ThreatMon Category": {
+                    "simple": "category"
+                },
+                "ThreatMon Subcategory": {
+                    "simple": "subCategory"
+                },
+                "ThreatMon Source": {
+                    "simple": "source"
+                },
+                "ThreatMon Last Update": {
+                    "simple": "lastUpdateDate"
+                },
+                "ThreatMon Finding IDs": {
+                    "simple": "findingIds"
+                },
+                "ThreatMon Findings": {
+                    "simple": "findings"
+                },
+                "ThreatMon Mitigation": {
+                    "simple": "mitigation"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "dbotMirrorId": {
+                    "simple": "mirror_id"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                }
+            }
+        }
+    },
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

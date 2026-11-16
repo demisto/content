@@ -1,0 +1,23 @@
+{
+    "description": "Maps ThreatMon Alert incidents to ThreatMon alarm fields for outgoing mirroring.",
+    "feed": false,
+    "id": "ThreatMon - Outgoing Mapper",
+    "name": "ThreatMon - Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "mapping": {
+        "ThreatMon Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "status": {
+                    "simple": "threatmonstatus"
+                }
+            }
+        }
+    },
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}
