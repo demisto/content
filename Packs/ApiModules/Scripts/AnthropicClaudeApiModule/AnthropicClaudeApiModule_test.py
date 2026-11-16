@@ -21,6 +21,7 @@ from AnthropicClaudeApiModule import (
     ApiPaths,
     ComplianceClient,
     Config,
+    UcpIds,
     _delete_command,
     add_time_to_events,
     chat_file_delete_command,
@@ -47,7 +48,9 @@ from AnthropicClaudeApiModule import (
     project_document_delete_command,
     resolve_org_uuid,
     module_test_llm,
+    run_anthropic_claude_integration,
     send_message_command,
+    ucp_test_targets,
 )
 
 
@@ -304,6 +307,45 @@ def test_fetch_events_first_run(mocker):
     assert kwargs["created_at_gte"] is not None
     assert kwargs["after_id"] is None
     assert next_run["newest_created_at"] == "2026-06-11T07:00:02Z"
+
+
+def test_fetch_events_first_run_honors_first_fetch(mocker):
+    """First run with a configured first_fetch (migration cutover) starts from that time, not 1 minute."""
+    client = build_compliance_client()
+    response = {"data": [], "has_more": False, "last_id": None}
+    get_mock = mocker.patch.object(client, "get_activities", return_value=response)
+
+    fetch_events_with_pagination(
+        client, last_run={}, max_events=50000, activity_types=None, first_fetch="2026-06-01T00:00:00Z"
+    )
+
+    _, kwargs = get_mock.call_args
+    assert kwargs["created_at_gte"] == "2026-06-01T00:00:00Z"
+
+
+def test_fetch_events_first_fetch_ignored_once_cursor_exists(mocker):
+    """first_fetch only seeds an empty cursor; a stored cursor always wins (no re-ingestion)."""
+    client = build_compliance_client()
+    get_mock = mocker.patch.object(client, "get_activities", return_value={"data": [], "has_more": False})
+
+    last_run = {"newest_created_at": "2026-06-11T07:00:04Z", "last_fetched_ids": []}
+    fetch_events_with_pagination(client, last_run, max_events=50000, activity_types=None, first_fetch="2026-01-01T00:00:00Z")
+
+    _, kwargs = get_mock.call_args
+    assert kwargs["created_at_gt"] == "2026-06-11T07:00:04Z"
+    assert kwargs["created_at_gte"] is None
+
+
+def test_fetch_events_command_passes_first_fetch_param(mocker):
+    client = build_compliance_client()
+    mocker.patch("AnthropicClaudeApiModule.demisto.getLastRun", return_value={})
+    mocker.patch("AnthropicClaudeApiModule.demisto.setLastRun")
+    fetch_mock = mocker.patch("AnthropicClaudeApiModule.fetch_events_with_pagination", return_value=([], {}))
+
+    fetch_events_command(client, params={"first_fetch": "3 days", "max_events_per_fetch": None, "activity_types": None})
+
+    assert fetch_mock.call_args.args[4] == "3 days"
+    assert fetch_mock.call_args.args[2] == Config.DEFAULT_MAX_EVENTS_PER_FETCH
 
 
 def test_fetch_events_subsequent_run(mocker):
@@ -839,3 +881,157 @@ def test_module_test_llm_other_error_raises(mocker):
     mocker.patch.object(client, "get_messages", side_effect=DemistoException("500 Server Error"))
     with pytest.raises(DemistoException):
         module_test_llm(client, params={"max_tokens": "1024"})
+
+
+def test_module_test_llm_handles_none_max_tokens(mocker):
+    """ConnectUs delivers unfilled fields as None; max_tokens must fall back to 1024, not crash."""
+    client = build_llm_client()
+    get_mock = mocker.patch.object(client, "get_messages", return_value={})
+    assert module_test_llm(client, params={"max_tokens": None}) == "ok"
+    assert get_mock.call_args.kwargs["completion_params"]["max_tokens"] == 1024
+
+
+# ── UCP (ConnectUs) path ──────────────────────────────────────────────────────
+
+COMPLIANCE_PROFILE = {
+    "capability": UcpIds.AUTOMATION_CAPABILITY,
+    "sub_capabilities": [UcpIds.COMPLIANCE_SUB_CAPABILITY],
+    "method_unique_id": "compliance-mid",
+    "type": "api_key",
+}
+MODEL_PROFILE = {
+    "capability": UcpIds.AUTOMATION_CAPABILITY,
+    "sub_capabilities": [UcpIds.MODEL_SUB_CAPABILITY],
+    "method_unique_id": "model-mid",
+    "type": "api_key",
+}
+LOG_COLLECTION_PROFILE = {
+    "capability": UcpIds.LOG_COLLECTION_CAPABILITY,
+    "sub_capabilities": [],
+    "method_unique_id": "collection-mid",
+    "type": "api_key",
+}
+
+
+def mock_ucp(mocker, profiles: list[dict], command: str = "test-module", params: dict | None = None):
+    """Puts the module on the UCP path with the given connection profiles."""
+    mocker.patch("AnthropicClaudeApiModule.demisto.unifiedConnectorMetadata", return_value={"connectionProfiles": profiles})
+    mocker.patch("AnthropicClaudeApiModule.should_use_ucp_auth", return_value=True)
+    mocker.patch("AnthropicClaudeApiModule.demisto.command", return_value=command)
+    mocker.patch("AnthropicClaudeApiModule.demisto.params", return_value=params or {})
+    mocker.patch("AnthropicClaudeApiModule.demisto.args", return_value={})
+
+
+def test_ucp_ids_match_connector_manifest():
+    """Guards the un-validated binding to the claude connector's capabilities.yaml ids."""
+    assert UcpIds.AUTOMATION_CAPABILITY == "automation-and-remediation"
+    assert UcpIds.COMPLIANCE_SUB_CAPABILITY == "automation-and-remediation_compliance"
+    assert UcpIds.MODEL_SUB_CAPABILITY == "automation-and-remediation_model"
+    assert UcpIds.LOG_COLLECTION_CAPABILITY == "log-collection"
+
+
+def test_clients_skip_legacy_header_on_ucp_path(mocker):
+    """Guard site 1: no legacy x-api-key header (None) is built when UCP brokers the credential."""
+    mock_ucp(mocker, [COMPLIANCE_PROFILE, MODEL_PROFILE])
+    compliance = ComplianceClient(url=BASE_URL, api_key=None, proxy=False, verify=False)
+    llm = AnthropicClient(url=BASE_URL, api_key=None, model="claude-3-haiku-20240307", proxy=False, verify=False)
+    assert "x-api-key" not in compliance.headers
+    assert "x-api-key" not in llm.headers
+    assert llm.headers["anthropic-version"]
+
+
+def test_anthropic_client_apply_ucp_api_key_writes_x_api_key():
+    client = build_llm_client()
+    ctx = _make_ctx()
+    client._apply_ucp_api_key({"type": "api_key", "api_key": {"key": "sk-ant-model"}}, ctx)
+    assert ctx.headers["x-api-key"] == "sk-ant-model"
+    assert "Authorization" not in ctx.headers
+
+
+def test_anthropic_client_apply_ucp_api_key_raises_on_empty(mocker):
+    mocker.patch("AnthropicClaudeApiModule.demisto.error")
+    with pytest.raises(UcpException):
+        build_llm_client()._apply_ucp_api_key({"type": "api_key"}, _make_ctx())
+
+
+def test_anthropic_client_pins_model_profile():
+    assert build_llm_client()._resolve_ucp_capability() == (UcpIds.AUTOMATION_CAPABILITY, UcpIds.MODEL_SUB_CAPABILITY)
+
+
+@pytest.mark.parametrize(
+    "command, profiles, expected",
+    [
+        ("claude-list-chats", [COMPLIANCE_PROFILE, MODEL_PROFILE], (UcpIds.AUTOMATION_CAPABILITY, UcpIds.COMPLIANCE_SUB_CAPABILITY)),
+        ("claude-chat-file-delete", [COMPLIANCE_PROFILE], (UcpIds.AUTOMATION_CAPABILITY, UcpIds.COMPLIANCE_SUB_CAPABILITY)),
+        ("fetch-events", [LOG_COLLECTION_PROFILE, COMPLIANCE_PROFILE], (UcpIds.LOG_COLLECTION_CAPABILITY, None)),
+        # Only Log Collection selected: commands/test-module still use the Compliance key, never the model key.
+        ("test-module", [LOG_COLLECTION_PROFILE, MODEL_PROFILE], (UcpIds.LOG_COLLECTION_CAPABILITY, None)),
+    ],
+)
+def test_compliance_client_resolves_compliance_profile(mocker, command, profiles, expected):
+    mock_ucp(mocker, profiles, command=command)
+    client = ComplianceClient(url=BASE_URL, api_key=None, proxy=False, verify=False)
+    assert client._resolve_ucp_capability() == expected
+
+
+@pytest.mark.parametrize(
+    "profiles, expected",
+    [
+        ([COMPLIANCE_PROFILE, MODEL_PROFILE], (True, True)),
+        ([MODEL_PROFILE], (True, False)),
+        ([LOG_COLLECTION_PROFILE], (False, True)),
+        ([], (False, False)),
+    ],
+)
+def test_ucp_test_targets(mocker, profiles, expected):
+    mocker.patch("AnthropicClaudeApiModule.demisto.unifiedConnectorMetadata", return_value={"connectionProfiles": profiles})
+    assert ucp_test_targets() == expected
+
+
+def test_test_module_on_ucp_tests_only_selected_keys(mocker):
+    """Guard site 3: test-module runs under UCP although no key is in params, and tests only selected profiles."""
+    mock_ucp(mocker, [COMPLIANCE_PROFILE], params={"apikey": None, "compliance_apikey": None, "max_tokens": None})
+    llm_test = mocker.patch("AnthropicClaudeApiModule.module_test_llm", return_value="ok")
+    compliance_test = mocker.patch("AnthropicClaudeApiModule.module_test_compliance", return_value="ok")
+    results = mocker.patch("AnthropicClaudeApiModule.return_results")
+
+    run_anthropic_claude_integration()
+
+    compliance_test.assert_called_once()
+    llm_test.assert_not_called()
+    results.assert_called_once_with("ok")
+
+
+@pytest.mark.parametrize(
+    "command, target",
+    [
+        ("fetch-events", "fetch_events_command"),
+        ("claude-list-roles", "list_roles_command"),
+        ("claude-list-chats", "list_chats_command"),
+        ("claude-send-message", "send_message_command"),
+    ],
+)
+def test_commands_skip_legacy_key_checks_on_ucp(mocker, command, target):
+    """Guard site 2: no 'key not configured' error under UCP, for every command family."""
+    mock_ucp(mocker, [COMPLIANCE_PROFILE, MODEL_PROFILE, LOG_COLLECTION_PROFILE], command=command)
+    handler = mocker.patch(f"AnthropicClaudeApiModule.{target}", return_value=(CommandResults(readable_output="x"), {}))
+    mocker.patch("AnthropicClaudeApiModule.return_results")
+    error = mocker.patch("AnthropicClaudeApiModule.return_error")
+
+    run_anthropic_claude_integration()
+
+    error.assert_not_called()
+    handler.assert_called_once()
+
+
+def test_legacy_path_still_requires_keys(mocker):
+    """Outside UCP the fail-fast key checks are unchanged."""
+    mocker.patch("AnthropicClaudeApiModule.should_use_ucp_auth", return_value=False)
+    mocker.patch("AnthropicClaudeApiModule.demisto.command", return_value="claude-list-chats")
+    mocker.patch("AnthropicClaudeApiModule.demisto.params", return_value={})
+    mocker.patch("AnthropicClaudeApiModule.demisto.args", return_value={})
+    error = mocker.patch("AnthropicClaudeApiModule.return_error")
+
+    run_anthropic_claude_integration()
+
+    assert "Compliance Access Key" in error.call_args.args[0]

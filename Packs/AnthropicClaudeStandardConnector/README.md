@@ -1,14 +1,15 @@
+
 # Anthropic Claude (Standard Connector)
 
 ## What does this pack do?
 
-Satellite pack of the Anthropic Claude integration used for the Standard
-Connector deployment. It ships a narrow integration exposing only the two
-irreversible Compliance API delete commands
-(`claude-chat-file-delete`, `claude-project-document-delete`), sharing all
-its code with the parent Anthropic Claude pack via the
-`AnthropicClaudeApiModule`.
+This pack contains the integration behind the XSOAR handler of the Claude connector. The integration provides:
 
-This pack is configured automatically as part of the Anthropic Claude
-Standard Connector. Do **not** configure the integration directly — set it up
-from the connector page instead.
+- **Automation and Remediation.** All Anthropic Claude commands:
+  - Compliance actions: the directory, chat and project read commands, and the irreversible chat file and project document delete commands. These use the Compliance Access Key.
+  - Claude model commands: send a message, check email headers and bodies, and create SOC email templates. These use the Messages API key.
+- **Log Collection.** The Compliance API Activity Feed, collected into the *anthropic_claude_raw* dataset.
+
+The integration shares all of its code with the Anthropic Claude pack through the `AnthropicClaudeApiModule`.
+
+This pack is configured automatically as part of the Claude connector. Do **not** configure the integration directly. Set it up from the connector page instead.
