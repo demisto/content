@@ -293,6 +293,9 @@
                 },
                 "Cyberint Related Asset ID": {
                     "simple": "related_asset_id"
+                },
+                "Cyberint Asset Groups": {
+                    "simple": "asset_groups"
                 }
             }
         },
@@ -595,6 +598,9 @@
                 },
                 "Cyberint Related Asset ID": {
                     "simple": "related_asset_id"
+                },
+                "Cyberint Asset Groups": {
+                    "simple": "asset_groups"
                 }
             }
         }

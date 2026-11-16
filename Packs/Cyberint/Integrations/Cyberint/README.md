@@ -20,6 +20,7 @@ Cyberint provides intelligence-driven digital risk protection. This integration 
 | Incident type |  | False |
 | Close Mirrored XSOAR Incident | When selected, closing the Cyberint alert is mirrored in Cortex XSOAR. Cortex XSOAR only parameter. | False |
 | Close Mirrored Cyberint Alert | When selected, closing the Cortex XSOAR incident is mirrored in Cyberint. | False |
+| Fetch Asset Groups | When selected, each fetched alert is enriched with the asset groups of its related assets. This makes one extra API request per alert. | False |
 | Fetch Types | Types to fetch. If none is chosen, all types will be returned. | False |
 | Fetch Limit | Max number of alerts per fetch. Defaults to the minimum 10, max is 100. | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |

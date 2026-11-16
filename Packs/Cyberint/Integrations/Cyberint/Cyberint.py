@@ -16,7 +16,7 @@ CSV_FIELDS_TO_EXTRACT = ["Username", "Password"]
 LOGIN_URL_KEY = "designated_url"
 EMPLOYEE_CREDENTIALS_ALERT_TYPE = "compromised_employee_credentials"
 LOGIN_INTERFACE_ASSET_TYPE = "employee login interface"
-LOGIN_URL_ASSET_TYPES = {"url", "subdomain", "domain", "ip"}
+NON_LOGIN_ASSET_TYPES = {"keyword", "company"}
 
 MIRROR_DIRECTION_MAPPING = {
     "Incoming": "In",
@@ -226,6 +226,22 @@ class Client(BaseClient):
 
         url_suffix = f"api/v1/alerts/{alert_ref_id}"
         return self._http_request(method="GET", cookies=self._cookies, url_suffix=url_suffix)
+
+    def get_alert_related_assets(self, alert_ref_id: str) -> Response:
+        """
+        Retrieve the related assets of an alert, with the asset groups each asset belongs to.
+        404 (alert not found or not available) and 503 (asset groups temporarily unavailable) are returned, not raised.
+
+        Args:
+            alert_ref_id (str): Reference ID of the alert.
+
+        Returns:
+            Response: API response from Cyberint.
+        """
+        url_suffix = f"api/v1/alerts/{alert_ref_id}/related-assets"
+        return self._http_request(
+            method="GET", cookies=self._cookies, url_suffix=url_suffix, resp_type="response", ok_codes=(200, 404, 503)
+        )
 
     def get_analysis_report(self, alert_ref_id: str) -> Response:
         """
@@ -851,6 +867,78 @@ def migrate_closure_fields_if_needed(last_run: dict[str, Any]) -> None:
     last_run["closure_fields_migrated"] = True
 
 
+def merge_related_assets(alert_assets: Any, fetched_assets: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Merge the related assets of an alert with the ones returned by the related-assets endpoint, matching by ID.
+    Non-empty fetched values (including asset_groups) override the alert values. Fetched assets the alert lacks are appended.
+
+    Args:
+        alert_assets (Any): The alert related_assets value.
+        fetched_assets (list): Related assets returned by the related-assets endpoint.
+
+    Returns:
+        list: The merged related assets.
+    """
+    fetched_by_id = {str(asset.get("id")): asset for asset in fetched_assets if isinstance(asset, dict)}
+    merged = []
+    for asset in alert_assets if isinstance(alert_assets, list) else []:
+        if not isinstance(asset, dict):
+            continue
+        fetched = fetched_by_id.pop(str(asset.get("id")), {})
+        merged.append({**asset, **{key: value for key, value in fetched.items() if value not in (None, "")}})
+    merged.extend(fetched_by_id.values())
+    return merged
+
+
+def format_asset_groups(related_assets: Any) -> str:
+    """
+    Summarize the asset groups of related assets, e.g. "example.com (domain): Group A, Group B; ...".
+    Assets in no group are left out.
+
+    Args:
+        related_assets (Any): The alert related_assets value.
+
+    Returns:
+        str: The summary, or an empty string if no asset is in a group.
+    """
+    parts = []
+    for asset in related_assets if isinstance(related_assets, list) else []:
+        if not isinstance(asset, dict):
+            continue
+        groups = ", ".join(str(group.get("name")) for group in asset.get("asset_groups") or [] if isinstance(group, dict))
+        if groups:
+            parts.append(f"{asset.get('name')} ({asset.get('type')}): {groups}")
+    return "; ".join(parts)
+
+
+def enrich_alerts_with_asset_groups(client: Client, alerts: list[dict[str, Any]]) -> None:
+    """
+    Add asset_groups to the related assets of each alert, and a readable asset_groups summary to the alert.
+    The enrichment never fails the fetch: an alert answered with 404 or 503 is skipped,
+    and any other error stops the enrichment for the remaining alerts.
+
+    Args:
+        client (Client): Cyberint API client.
+        alerts (list): Alerts to enrich. Updated in place.
+    """
+    for alert in alerts:
+        alert_ref_id = alert.get("ref_id")
+        if not alert_ref_id:
+            continue
+        try:
+            response = client.get_alert_related_assets(alert_ref_id)
+            if response.status_code != 200:
+                demisto.debug(f"Related assets unavailable for alert {alert_ref_id} (HTTP {response.status_code}), skipping it.")
+                continue
+            fetched_assets = response.json().get("related_assets") or []
+        except Exception as error:
+            demisto.debug(f"Related assets request failed, skipping asset groups enrichment: {error}")
+            return
+        alert["related_assets"] = merge_related_assets(alert.get("related_assets"), fetched_assets)
+        if summary := format_asset_groups(alert["related_assets"]):
+            alert["asset_groups"] = summary
+
+
 def get_first_related_asset(alert: dict[str, Any]) -> dict[str, Any]:
     """
     Return the first related asset of an alert.
@@ -868,30 +956,42 @@ def get_first_related_asset(alert: dict[str, Any]) -> dict[str, Any]:
     return first_asset if isinstance(first_asset, dict) else {}
 
 
-def get_login_asset_name(alert: dict[str, Any]) -> str:
+def get_login_asset(alert: dict[str, Any]) -> dict[str, Any]:
     """
-    Return the name of the related asset that best represents the login address.
-    An "employee login interface" asset is preferred. Otherwise the first URL, subdomain, domain or IP asset,
-    or the first asset without a type, is used. Other asset types, such as keywords, are skipped.
+    Return the related asset that best represents the login address.
+    An "employee login interface" asset is preferred. Otherwise the first asset whose type is not
+    a keyword or company is used.
 
     Args:
         alert (dict): Cyberint alert.
 
     Returns:
-        str: The asset name, or an empty string if no such asset exists.
+        dict: The login asset, or an empty dict if no such asset exists.
     """
     related_assets = alert.get("related_assets")
     if not isinstance(related_assets, list):
-        return ""
+        return {}
     named_assets = [asset for asset in related_assets if isinstance(asset, dict) and asset.get("name")]
     for asset in named_assets:
-        if asset.get("type") == LOGIN_INTERFACE_ASSET_TYPE:
-            return str(asset["name"])
+        if str(asset.get("type") or "").lower() == LOGIN_INTERFACE_ASSET_TYPE:
+            return asset
     for asset in named_assets:
-        asset_type = asset.get("type")
-        if not asset_type or asset_type in LOGIN_URL_ASSET_TYPES:
-            return str(asset["name"])
-    return ""
+        if str(asset.get("type") or "").lower() not in NON_LOGIN_ASSET_TYPES:
+            return asset
+    return {}
+
+
+def get_login_asset_name(alert: dict[str, Any]) -> str:
+    """
+    Return the name of the login asset of an alert.
+
+    Args:
+        alert (dict): Cyberint alert.
+
+    Returns:
+        str: The asset name, or an empty string if the alert has no login asset.
+    """
+    return str(get_login_asset(alert).get("name") or "")
 
 
 def get_alert_login_url(alert: dict[str, Any]) -> str:
@@ -963,6 +1063,7 @@ def fetch_incidents(
     duplicate_alert: bool,
     mirror_direction: str | None,
     close_alert: bool,
+    fetch_asset_groups: bool = False,
 ) -> tuple[dict[str, int], list[dict]]:
     """
     Fetch incidents (alerts) each minute (by default).
@@ -979,6 +1080,7 @@ def fetch_incidents(
         duplicate_alert (bool): Whether to duplicate alerts.
         mirror_direction (str): Direction to mirror.
         close_alert (bool): Whether to close alerts.
+        fetch_asset_groups (bool): Whether to add the asset groups of the related assets.
     Returns:
         Tuple of next_run (seconds timestamp) and the incidents list
     """
@@ -1009,6 +1111,9 @@ def fetch_incidents(
         severities=fetch_severity,
         types=fetch_type,
     )
+
+    if fetch_asset_groups:
+        enrich_alerts_with_asset_groups(client, alerts.get("alerts", []))
 
     for alert_object in alerts.get("alerts", []):
         alert = dict(alert_object)
@@ -1136,6 +1241,7 @@ def main():
                 None if params.get("mirror_direction") == "None" else MIRROR_DIRECTION_MAPPING[params["mirror_direction"]]
             )
             close_alert = params.get("close_alert", False)
+            fetch_asset_groups = argToBoolean(params.get("fetch_asset_groups", False))
             next_run, incidents = fetch_incidents(
                 client,
                 last_run,
@@ -1148,6 +1254,7 @@ def main():
                 duplicate_alert,
                 mirror_direction,
                 close_alert,
+                fetch_asset_groups,
             )
             next_run["closure_fields_migrated"] = last_run.get("closure_fields_migrated", False)
             demisto.setLastRun(next_run)
