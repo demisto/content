@@ -2647,10 +2647,10 @@ Deletes Firewall Control rules that match the specified filters. Relevant for AP
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | A comma-separated list of firewall rule IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
-| account_ids | A comma-separated list of account IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
-| site_ids | A comma-separated list of site IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
-| group_ids | A comma-separated list of group IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
+| ids | A comma-separated list of firewall rule IDs to filter by. | Optional |
+| account_ids | A comma-separated list of account IDs to filter by. | Optional |
+| site_ids | A comma-separated list of site IDs to filter by. | Optional |
+| group_ids | A comma-separated list of group IDs to filter by. | Optional |
 | tenant | Whether to apply the request at the tenant (global) scope. Possible values are: true, false. | Optional |
 | query | Free-text search on name, tag, application, or protocol. | Optional |
 | scopes | A comma-separated list of scopes to filter firewall rules by. Possible values are: global, account, group, site. | Optional |

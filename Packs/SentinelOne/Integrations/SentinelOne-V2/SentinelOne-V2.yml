@@ -1033,16 +1033,16 @@ script:
       description: The product identifier.
       type: String
   - arguments:
-    - description: 'A comma-separated list of firewall rule IDs to filter by, for example: "225494730938493804,225494730938493915".'
+    - description: A comma-separated list of firewall rule IDs to filter by.
       isArray: true
       name: ids
-    - description: 'A comma-separated list of account IDs to filter by, for example: "225494730938493804,225494730938493915".'
+    - description: A comma-separated list of account IDs to filter by.
       isArray: true
       name: account_ids
-    - description: 'A comma-separated list of site IDs to filter by, for example: "225494730938493804,225494730938493915".'
+    - description: A comma-separated list of site IDs to filter by.
       isArray: true
       name: site_ids
-    - description: 'A comma-separated list of group IDs to filter by, for example: "225494730938493804,225494730938493915".'
+    - description: A comma-separated list of group IDs to filter by.
       isArray: true
       name: group_ids
     - auto: PREDEFINED
