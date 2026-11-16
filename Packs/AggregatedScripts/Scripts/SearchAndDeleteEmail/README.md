@@ -114,7 +114,7 @@ This script uses the following commands and scripts.
 
 ### Timeout
 
-The script runs once and synchronously: the integration instances are run one after the other, each running the search, the retrieval of the files and the deletion. `timeout` is the overall time budget of the run, in seconds (default and maximum 1800, since the run must finish within the 35 minutes script timeout). It is checked before each integration instance is run and before each email is processed. When it is exhausted, the integration instances that were not run yet are reported as failed, the remaining emails are not processed (in *Search & Delete* they are reported with `Success=false` and counted in `TotalFailed`, and a note is added) and the results collected so far are returned.
+The script runs once and synchronously: the integration instances are run one after the other, each running the search, the retrieval of the files and the deletion. `timeout` is the overall time budget of the run, in seconds (default and maximum 1800, since the run must finish within the 35-minute script timeout). It is checked before each integration instance is run and before each email is processed. When it is exhausted, the integration instances that were not run yet are reported as failed, the remaining emails are not processed (in *Search & Delete* they are reported with `Success=false` and counted in `TotalFailed`, and a note is added) and the results collected so far are returned.
 
 ### Output
 

@@ -172,7 +172,7 @@ dependson:
   - EWS v2|||ews-get-attachment
   - EWS v2|||ews-delete-items
 dockerimage: demisto/python3:3.12.14.13495286
-timeout: 35m0s
+timeout: 30m0s
 fromversion: 6.10.0
 marketplaces:
 - xsoar

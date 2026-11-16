@@ -65,6 +65,29 @@ class FakeCommands:
 
 
 START_EPOCH = 1_700_000_000.0
+BASE_ARGS = {"operation": OPERATION_SEARCH_AND_DELETE, "subject": "Invoice", "target_mailbox": "test@test"}
+ENTRY_ARGS = {
+    "operation": OPERATION_SEARCH_ONLY,
+    "subject": "Invoice",
+    "target_mailbox": "test@test",
+    "timeout": "1800",
+    "verbose": "true",
+}
+DELETE_ARGS = {**ENTRY_ARGS, "operation": OPERATION_SEARCH_AND_DELETE, "brands": "Gmail"}
+GMAIL_EWS_MODULES = {"Gmail": "Gmail", "EWS": "EWS v2"}
+EWS_ITEM = {"itemId": "i1", "mailbox": "test@test", "subject": "Invoice"}
+GRAPH_MAIL_ITEM = {
+    "ID": "AAMk-1",
+    "UserID": "test@test",
+    "Subject": "Undeliverable",
+    "From": {"Address": "test@test"},
+    "ReceivedTime": "2026-10-21T11:58:19Z",
+    "InternetMessageID": "<test@test>",
+}
+
+
+def vendor_result(vendor: str = "Gmail", brand: str = "Gmail", **kwargs: Any) -> module.VendorResult:
+    return module.VendorResult(vendor=vendor, brand=brand, instance=f"{brand}_instance", **kwargs)
 
 
 class Clock:
@@ -525,17 +548,31 @@ def test_delete_runs_a_single_search_without_verification(mocker):
     assert "Verified" not in get_email_data(params, [result])[0]["AdditionalFields"]
 
 
-def test_gmail_all_mailboxes_follows_page_tokens(mocker):
-    pages = iter(
+def test_gmail_all_mailboxes_does_not_reuse_per_mailbox_page_token(mocker):
+    """NextPageToken in all-mailboxes mode is a single mailbox's message token and must not be sent as an accounts token."""
+    fake = setup_demisto(
+        mocker,
+        {"Gmail": "Gmail"},
+        {"gmail-search-all-mailboxes": [entry({"Gmail": [GMAIL_ITEM], "GmailEmails": {"NextPageToken": "t2"}})]},
+    )
+    result = run_vendor(make_params(mailbox_scope=SCOPE_ALL, operation=OPERATION_SEARCH_ONLY), "gmail", "Gmail", "Gmail")
+    assert result.total_found == 1
+    assert [c.get("page-token") for c in fake.called("gmail-search-all-mailboxes")] == [None]
+    assert "The vendor capped the number of returned emails" in result.additional["Note"]
+
+
+def test_gmail_all_mailboxes_saturated_repeats_search_after_delete(mocker):
+    """When a mailbox in all-mailboxes mode returns NextPageToken, Search & Delete deletes and re-queries."""
+    rounds = iter(
         [
-            [entry({"Gmail": [GMAIL_ITEM], "PageToken": {"NextPageToken": "t2"}})],
+            [entry({"Gmail": [GMAIL_ITEM], "GmailEmails": {"NextPageToken": "t2"}})],
             [entry({"Gmail": [{**GMAIL_ITEM, "ID": "m2"}]})],
         ]
     )
-    fake = setup_demisto(mocker, {"Gmail": "Gmail"}, {"gmail-search-all-mailboxes": lambda args: next(pages)})
-    result = run_vendor(make_params(mailbox_scope=SCOPE_ALL, operation=OPERATION_SEARCH_ONLY), "gmail", "Gmail", "Gmail")
-    assert result.total_found == 2
-    assert [c.get("page-token") for c in fake.called("gmail-search-all-mailboxes")] == [None, "t2"]
+    fake = setup_demisto(mocker, {"Gmail": "Gmail"}, {"gmail-search-all-mailboxes": lambda args: next(rounds)})
+    result = run_vendor(make_params(mailbox_scope=SCOPE_ALL), "gmail", "Gmail", "Gmail")
+    assert (result.total_found, result.total_deleted) == (2, 2)
+    assert [c.get("page-token") for c in fake.called("gmail-search-all-mailboxes")] == [None, None]
 
 
 def gmail_split_entry() -> dict[str, Any]:
@@ -863,7 +900,6 @@ def test_same_internet_message_id_in_another_mailbox_is_still_processed():
 # ----------------------------------------------------------------------------------------------------------------------
 # Arguments: delete_type / timeout
 # ----------------------------------------------------------------------------------------------------------------------
-BASE_ARGS = {"operation": OPERATION_SEARCH_AND_DELETE, "subject": "Invoice", "target_mailbox": "test@test"}
 
 
 @pytest.mark.parametrize(
@@ -923,18 +959,6 @@ def test_parse_args_timeout_invalid(value):
 # ----------------------------------------------------------------------------------------------------------------------
 # Output: command results, readable output, EmailData context
 # ----------------------------------------------------------------------------------------------------------------------
-GRAPH_MAIL_ITEM = {
-    "ID": "AAMk-1",
-    "UserID": "test@test",
-    "Subject": "Undeliverable",
-    "From": {"Address": "test@test"},
-    "ReceivedTime": "2026-10-21T11:58:19Z",
-    "InternetMessageID": "<test@test>",
-}
-
-
-def vendor_result(vendor: str = "Gmail", brand: str = "Gmail", **kwargs: Any) -> module.VendorResult:
-    return module.VendorResult(vendor=vendor, brand=brand, instance=f"{brand}_instance", **kwargs)
 
 
 def found_email(object_id: str = "m1", **overrides: Any) -> dict[str, Any]:
@@ -1112,14 +1136,6 @@ def test_gmail_pagination_stops_when_the_deadline_passes(mocker):
 # ----------------------------------------------------------------------------------------------------------------------
 # The entry point: a single synchronous run that returns the final results
 # ----------------------------------------------------------------------------------------------------------------------
-ENTRY_ARGS = {
-    "operation": OPERATION_SEARCH_ONLY,
-    "subject": "Invoice",
-    "target_mailbox": "test@test",
-    "timeout": "1800",
-    "verbose": "true",
-}
-DELETE_ARGS = {**ENTRY_ARGS, "operation": OPERATION_SEARCH_AND_DELETE, "brands": "Gmail"}
 
 
 def test_entry_point_returns_the_final_results_in_a_single_run(mocker):
@@ -1213,8 +1229,6 @@ def test_entry_point_unexpected_failure_returns_the_failure_results(mocker):
 # ----------------------------------------------------------------------------------------------------------------------
 # Multi-vendor runs (Gmail + EWS)
 # ----------------------------------------------------------------------------------------------------------------------
-GMAIL_EWS_MODULES = {"Gmail": "Gmail", "EWS": "EWS v2"}
-EWS_ITEM = {"itemId": "i1", "mailbox": "test@test", "subject": "Invoice"}
 
 
 def test_multi_vendor_run_aggregates_gmail_and_ews(mocker):
@@ -1353,9 +1367,9 @@ def test_graph_mail_capped_note_and_hard_delete_note_are_both_kept(mocker):
     result = run_vendor(params, "msgraph_mail", "MicrosoftGraphMail", "GraphMail")
     assert result.total_deleted == 2
     note = result.additional["Note"]
-    assert note.startswith("Microsoft Graph Mail can not hard delete, emails were moved to 'Deleted Items'. ")
+    assert note.startswith("Microsoft Graph Mail does not support hard delete; matching emails are moved to 'Deleted Items'. ")
     assert "The vendor capped the number of returned emails" in note
-    assert note.count("can not hard delete") == 1
+    assert note.count("does not support hard delete") == 1
 
 
 def test_vendor_notes_lists_one_line_per_vendor_with_a_note():

@@ -1,29 +1,3 @@
-"""
-Search & Delete Email - a unified command over several mail integrations.
-
-Searches for emails (and optionally deletes them) using the supported mail integrations and normalizes the results of
-all vendors into the unified ``EmailData`` context path. See the README for the arguments and outputs.
-
-Execution
----------
-The script runs once, synchronously: it resolves the enabled instances of the requested vendors and, for each instance
-in turn, runs the "search -> (retrieve files) -> delete" flow, then returns all the results in a single entry. The
-``timeout`` argument is the overall time budget of the run: it is checked before each instance (and before each email),
-and whatever was not started in time is reported as failed instead.
-
-Supported vendors and their capabilities
-----------------------------------------
-+---------------------------+-------------------------+------------------+------------------------------------------+
-| Vendor (brand)            | Specific mailbox(es)    | All mailboxes    | Delete types                             |
-+---------------------------+-------------------------+------------------+------------------------------------------+
-| Gmail                     | Yes (gmail-search)      | Yes (gmail-      | Soft (move to trash), Hard (permanent)   |
-|                           |                         | search-all-      |                                          |
-|                           |                         | mailboxes)       |                                          |
-| Microsoft Graph Mail      | Yes (per mailbox)       | NO               | Soft only (moved to "Deleted Items")     |
-| EWS on-prem (EWS v2)      | Yes (email_addresses)   | Yes              | Soft, Hard                               |
-+---------------------------+-------------------------+------------------+------------------------------------------+
-"""
-
 import re
 import time
 import traceback
@@ -433,6 +407,7 @@ def process_email(params: SearchParams, result: VendorResult, email: dict[str, A
         try:
             collect_files(ops.get_files(email), email, result)
         except Exception as exc:  # a failing attachment must not block the deletion of the other emails
+            demisto.debug(f"Failed retrieving files of {email['ObjectID']}: {exc}\n{traceback.format_exc()}")
             result.errors.append(f"Failed retrieving files of {email['ObjectID']}: {exc}")
     if not params.delete:
         return
@@ -441,6 +416,7 @@ def process_email(params: SearchParams, result: VendorResult, email: dict[str, A
         email["Deleted"] = True
         result.total_deleted += 1
     except Exception as exc:
+        demisto.debug(f"Failed deleting {email['ObjectID']}: {exc}\n{traceback.format_exc()}")
         email["Deleted"] = False
         email["Reason"] = str(exc)
         result.total_failed += 1
@@ -501,21 +477,21 @@ def gmail_split_search(results: list[dict[str, Any]]) -> bool:
 
 def gmail_search(params: SearchParams, instance: str) -> tuple[list[dict[str, Any]], bool]:
     """Searches Gmail and follows every page token so that all matching emails are returned."""
-    query = build_gmail_query(params)
-    emails: list[dict[str, Any]] = []
-    saturated = False
     if params.object_id:
         results = object_id_lookup(
             "gmail-get-mail", {"user-id": params.target_mailboxes[0], "message-id": params.object_id}, instance
         )
         return [gmail_to_email(item) for item in context_values(results, "Gmail")], False
 
+    query = build_gmail_query(params)
+    emails: list[dict[str, Any]] = []
+    saturated = False
     command, mailboxes = (
         ("gmail-search-all-mailboxes", [""]) if params.all_mailboxes else ("gmail-search", params.target_mailboxes)
     )
     for mailbox in mailboxes:
         page_token = ""
-        for _ in range(GMAIL_MAX_PAGES):  # Pagination: loop until Gmail does not return another page token.
+        for _ in range(1 if params.all_mailboxes else GMAIL_MAX_PAGES):
             if params.deadline_passed:
                 demisto.debug(f"Gmail search: the timeout budget was exhausted, stopped paginating mailbox '{mailbox}'.")
                 break
@@ -528,15 +504,14 @@ def gmail_search(params: SearchParams, instance: str) -> tuple[list[dict[str, An
             if params.all_mailboxes and gmail_split_search(results):
                 raise VendorError(GMAIL_SPLIT_SEARCH_ERROR)
             emails.extend(gmail_to_email(item) for item in context_values(results, "Gmail"))
-            # NOTE: for "all mailboxes" the page token below belongs to the *accounts* list (more than 2500
-            # accounts), which is why it is followed here as well.
             page_token = find_in_results(results, "NextPageToken") or ""
             if not page_token:
                 break
         else:
-            # The page cap was reached while Gmail still returned a page token.
-            saturated = True  # Deleting what was found and searching again will reveal the remaining emails.
-            demisto.debug(f"Gmail search: reached {GMAIL_MAX_PAGES} pages for mailbox '{mailbox}', more results may exist.")
+            # The page cap was reached (or all-mailboxes returned a per-mailbox NextPageToken that cannot be paginated).
+            saturated = True
+            demisto.debug(f"Gmail search: pagination cap reached for mailbox '{mailbox}', more results may exist.")
+
     return emails, saturated
 
 
@@ -544,12 +519,14 @@ def gmail_ops(params: SearchParams, instance: str, result: VendorResult) -> Emai
     def delete(email: dict[str, Any]) -> None:
         run_command(
             "gmail-delete-mail",
-            {"user-id": email["Mailbox"][0], "message-id": email["ObjectID"], "permanent": str(params.hard_delete).lower()},
+            {"user-id": primary_mailbox(email), "message-id": email["ObjectID"], "permanent": str(params.hard_delete).lower()},
             instance,
         )
 
     def get_files(email: dict[str, Any]) -> list[dict[str, Any]]:
-        return run_command("gmail-get-attachments", {"user-id": email["Mailbox"][0], "message-id": email["ObjectID"]}, instance)
+        return run_command(
+            "gmail-get-attachments", {"user-id": primary_mailbox(email), "message-id": email["ObjectID"]}, instance
+        )
 
     return EmailOps(lambda: gmail_search(params, instance), delete, get_files)
 
@@ -603,7 +580,8 @@ def graph_mail_search(params: SearchParams, instance: str) -> tuple[list[dict[st
             emails.extend(graph_mail_to_email(item) for item in context_values(results, "MSGraphMail"))
             continue
         pages = 1
-        while True:
+        items: list[dict[str, Any]] = []
+        for _ in range(GRAPH_MAIL_MAX_PAGES.bit_length()):
             # Pagination: the command has no page cursor, so the number of pulled pages is doubled
             # until the amount of returned emails is lower than the requested amount.
             results = run_command(
@@ -633,14 +611,14 @@ def graph_mail_ops(params: SearchParams, instance: str, result: VendorResult) ->
             "Microsoft Graph Mail can not search all mailboxes, use Gmail or EWS on-prem or specify the mailboxes."
         )
     if params.delete and params.hard_delete:
-        add_note(result, "Microsoft Graph Mail can not hard delete, emails were moved to 'Deleted Items'.")
+        add_note(result, "Microsoft Graph Mail does not support hard delete; matching emails are moved to 'Deleted Items'.")
 
     def delete(email: dict[str, Any]) -> None:
-        run_command("msgraph-mail-delete-email", {"user_id": email["Mailbox"][0], "message_id": email["ObjectID"]}, instance)
+        run_command("msgraph-mail-delete-email", {"user_id": primary_mailbox(email), "message_id": email["ObjectID"]}, instance)
 
     def get_files(email: dict[str, Any]) -> list[dict[str, Any]]:
         return run_command(
-            "msgraph-mail-get-attachment", {"user_id": email["Mailbox"][0], "message_id": email["ObjectID"]}, instance
+            "msgraph-mail-get-attachment", {"user_id": primary_mailbox(email), "message_id": email["ObjectID"]}, instance
         )
 
     return EmailOps(lambda: graph_mail_search(params, instance), delete, get_files)
@@ -1109,7 +1087,7 @@ def main() -> None:  # pragma: no cover
     try:
         return_results(search_and_delete_email(args))
     except InvalidArgumentsError as exc:
-        return_error(f"Invalid arguments: {exc}")
+        return_error(f"Invalid arguments: {exc}", error=exc)
     except Exception as exc:
         demisto.debug(traceback.format_exc())
         return_error(f"Failed to run {SCRIPT_NAME}: {exc}", error=exc)
