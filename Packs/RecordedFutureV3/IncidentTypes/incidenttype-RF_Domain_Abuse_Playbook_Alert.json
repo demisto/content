@@ -15,7 +15,7 @@
 	"id": "RF Domain Abuse Playbook Alert",
 	"layout": "RF Domain Abuse Playbook Alert Layout",
 	"locked": false,
-	"name": "RF Domain Abuse Playbook Alert",
+	"name": "RF Domain Abuse",
 	"onChangeRepAlg": 1,
 	"readonly": false,
 	"reputationCalc": 1,

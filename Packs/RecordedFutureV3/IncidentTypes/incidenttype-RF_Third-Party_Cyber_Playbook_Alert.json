@@ -15,7 +15,7 @@
 	"id": "RF Third-Party Cyber Playbook Alert",
 	"layout": "RF Playbook Alert Generic Layout",
 	"locked": false,
-	"name": "RF Third-Party Cyber Playbook Alert",
+	"name": "RF Third-Party Cyber",
 	"onChangeRepAlg": 1,
 	"readonly": false,
 	"reputationCalc": 1,
