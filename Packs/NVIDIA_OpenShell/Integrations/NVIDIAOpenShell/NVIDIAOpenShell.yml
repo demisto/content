@@ -1,0 +1,641 @@
+name: NVIDIA OpenShell
+display: NVIDIA OpenShell
+category: Endpoint
+provider: Nadav Kanon
+sectionorder:
+- Connect
+commonfields:
+  id: NVIDIA OpenShell
+  version: -1
+configuration:
+- display: Gateway endpoint (host:port)
+  name: gateway_endpoint
+  type: 0
+  required: true
+  section: Connect
+  additionalinfo: The OpenShell gateway gRPC endpoint, for example openshell-gateway.example.com:17670. The gateway is usually private, so run this integration on an engine that can reach it.
+- name: ca_cert
+  type: 9
+  displaypassword: Gateway CA certificate
+  hiddenusername: true
+  required: false
+  section: Connect
+  additionalinfo: The PEM CA certificate that signed the gateway certificate (ca.crt). Leave empty to use the system trust store.
+- name: client_cert
+  type: 9
+  displaypassword: Client certificate
+  hiddenusername: true
+  required: false
+  section: Connect
+  additionalinfo: The PEM client certificate for mutual TLS (tls.crt).
+- name: client_key
+  type: 9
+  displaypassword: Client private key
+  hiddenusername: true
+  required: false
+  section: Connect
+  additionalinfo: The PEM private key of the client certificate (tls.key).
+- name: bearer_token
+  type: 9
+  displaypassword: OIDC bearer token
+  hiddenusername: true
+  required: false
+  section: Connect
+  additionalinfo: An OIDC access token, only for gateways configured for OIDC authentication. The token is not refreshed, so use a long-lived token and update this field before it expires.
+  advanced: true
+- display: Workspace
+  name: workspace
+  defaultvalue: default
+  type: 0
+  required: false
+  section: Connect
+  additionalinfo: The default OpenShell workspace for commands that do not specify one.
+- display: Plaintext gateway (no TLS)
+  name: plaintext
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+  additionalinfo: Whether to connect without TLS. Not secure. Use only for test gateways that do not use TLS.
+- display: Timeout (seconds)
+  name: timeout
+  defaultvalue: '30'
+  type: 0
+  required: false
+  section: Connect
+  advanced: true
+  additionalinfo: The number of seconds to wait for each gateway call.
+description: 'Respond to AI agent threats in NVIDIA OpenShell sandboxes: stop or suspend a sandbox, block its egress to a host, and detach its credentials.'
+script:
+  commands:
+  - name: openshell-gateway-info-get
+    description: Returns the OpenShell gateway version and information.
+    arguments: []
+    outputs:
+    - contextPath: OpenShell.Gateway.Endpoint
+      description: The gateway endpoint.
+      type: String
+    - contextPath: OpenShell.Gateway.Version
+      description: The gateway version.
+      type: String
+    - contextPath: OpenShell.Gateway.Info
+      description: The gateway information returned by the gateway.
+      type: Unknown
+  - name: openshell-sandbox-list
+    description: Lists sandboxes and their phase.
+    arguments:
+    - name: workspace
+      description: The OpenShell workspace. Defaults to the instance workspace.
+      required: false
+    - name: all_workspaces
+      description: Whether to list sandboxes across all workspaces.
+      required: false
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: label_selector
+      description: The Kubernetes-style label selector to filter sandboxes by, for example team=ml.
+      required: false
+    - name: limit
+      description: The maximum number of sandboxes to return.
+      required: false
+      defaultValue: '50'
+    outputs:
+    - contextPath: OpenShell.Sandbox.ID
+      description: The sandbox ID.
+      type: String
+    - contextPath: OpenShell.Sandbox.Name
+      description: The sandbox name.
+      type: String
+    - contextPath: OpenShell.Sandbox.Workspace
+      description: The sandbox workspace.
+      type: String
+    - contextPath: OpenShell.Sandbox.Phase
+      description: The sandbox phase, for example READY, STOPPED or SUSPENDED.
+      type: String
+    - contextPath: OpenShell.Sandbox.PolicyVersion
+      description: The active policy version.
+      type: Number
+    - contextPath: OpenShell.Sandbox.Labels
+      description: The sandbox labels.
+      type: Unknown
+  - name: openshell-sandbox-get
+    description: Returns a single sandbox.
+    arguments:
+    - name: name
+      description: The sandbox name.
+      required: true
+    - name: workspace
+      description: The OpenShell workspace. Defaults to the instance workspace.
+      required: false
+    outputs:
+    - contextPath: OpenShell.Sandbox.ID
+      description: The sandbox ID.
+      type: String
+    - contextPath: OpenShell.Sandbox.Name
+      description: The sandbox name.
+      type: String
+    - contextPath: OpenShell.Sandbox.Workspace
+      description: The sandbox workspace.
+      type: String
+    - contextPath: OpenShell.Sandbox.Phase
+      description: The sandbox phase, for example READY, STOPPED or SUSPENDED.
+      type: String
+    - contextPath: OpenShell.Sandbox.PolicyVersion
+      description: The active policy version.
+      type: Number
+    - contextPath: OpenShell.Sandbox.Labels
+      description: The sandbox labels.
+      type: Unknown
+  - name: openshell-sandbox-stop
+    description: Stops a sandbox. The agent stops running. Its identity and workspace are kept, so it can be started again after the investigation.
+    arguments:
+    - name: name
+      description: The sandbox name.
+      required: true
+    - name: workspace
+      description: The OpenShell workspace. Defaults to the instance workspace.
+      required: false
+    - name: wait
+      description: Whether to wait until the sandbox reports STOPPED.
+      required: false
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: timeout_seconds
+      description: The number of seconds to wait for the sandbox to stop.
+      required: false
+      defaultValue: '120'
+    outputs:
+    - contextPath: OpenShell.Sandbox.ID
+      description: The sandbox ID.
+      type: String
+    - contextPath: OpenShell.Sandbox.Name
+      description: The sandbox name.
+      type: String
+    - contextPath: OpenShell.Sandbox.Workspace
+      description: The sandbox workspace.
+      type: String
+    - contextPath: OpenShell.Sandbox.Phase
+      description: The sandbox phase, for example READY, STOPPED or SUSPENDED.
+      type: String
+    - contextPath: OpenShell.Sandbox.PolicyVersion
+      description: The active policy version.
+      type: Number
+    - contextPath: OpenShell.Sandbox.Labels
+      description: The sandbox labels.
+      type: Unknown
+    - contextPath: OpenShell.Sandbox.Action
+      description: The action that was requested.
+      type: String
+    execution: true
+  - name: openshell-sandbox-start
+    description: Starts a stopped sandbox.
+    arguments:
+    - name: name
+      description: The sandbox name.
+      required: true
+    - name: workspace
+      description: The OpenShell workspace. Defaults to the instance workspace.
+      required: false
+    outputs:
+    - contextPath: OpenShell.Sandbox.ID
+      description: The sandbox ID.
+      type: String
+    - contextPath: OpenShell.Sandbox.Name
+      description: The sandbox name.
+      type: String
+    - contextPath: OpenShell.Sandbox.Workspace
+      description: The sandbox workspace.
+      type: String
+    - contextPath: OpenShell.Sandbox.Phase
+      description: The sandbox phase, for example READY, STOPPED or SUSPENDED.
+      type: String
+    - contextPath: OpenShell.Sandbox.PolicyVersion
+      description: The active policy version.
+      type: Number
+    - contextPath: OpenShell.Sandbox.Labels
+      description: The sandbox labels.
+      type: Unknown
+    - contextPath: OpenShell.Sandbox.Action
+      description: The action that was requested.
+      type: String
+    execution: true
+  - name: openshell-sandbox-suspend
+    description: Suspends a sandbox and keeps its state. Requires a sandbox driver that supports suspend.
+    arguments:
+    - name: name
+      description: The sandbox name.
+      required: true
+    - name: workspace
+      description: The OpenShell workspace. Defaults to the instance workspace.
+      required: false
+    outputs:
+    - contextPath: OpenShell.Sandbox.ID
+      description: The sandbox ID.
+      type: String
+    - contextPath: OpenShell.Sandbox.Name
+      description: The sandbox name.
+      type: String
+    - contextPath: OpenShell.Sandbox.Workspace
+      description: The sandbox workspace.
+      type: String
+    - contextPath: OpenShell.Sandbox.Phase
+      description: The sandbox phase, for example READY, STOPPED or SUSPENDED.
+      type: String
+    - contextPath: OpenShell.Sandbox.PolicyVersion
+      description: The active policy version.
+      type: Number
+    - contextPath: OpenShell.Sandbox.Labels
+      description: The sandbox labels.
+      type: Unknown
+    - contextPath: OpenShell.Sandbox.Action
+      description: The action that was requested.
+      type: String
+    execution: true
+  - name: openshell-sandbox-resume
+    description: Resumes a suspended sandbox.
+    arguments:
+    - name: name
+      description: The sandbox name.
+      required: true
+    - name: workspace
+      description: The OpenShell workspace. Defaults to the instance workspace.
+      required: false
+    outputs:
+    - contextPath: OpenShell.Sandbox.ID
+      description: The sandbox ID.
+      type: String
+    - contextPath: OpenShell.Sandbox.Name
+      description: The sandbox name.
+      type: String
+    - contextPath: OpenShell.Sandbox.Workspace
+      description: The sandbox workspace.
+      type: String
+    - contextPath: OpenShell.Sandbox.Phase
+      description: The sandbox phase, for example READY, STOPPED or SUSPENDED.
+      type: String
+    - contextPath: OpenShell.Sandbox.PolicyVersion
+      description: The active policy version.
+      type: Number
+    - contextPath: OpenShell.Sandbox.Labels
+      description: The sandbox labels.
+      type: Unknown
+    - contextPath: OpenShell.Sandbox.Action
+      description: The action that was requested.
+      type: String
+    execution: true
+  - name: openshell-sandbox-delete
+    description: Deletes a sandbox. This action cannot be undone.
+    arguments:
+    - name: name
+      description: The sandbox name.
+      required: true
+    - name: workspace
+      description: The OpenShell workspace. Defaults to the instance workspace.
+      required: false
+    - name: confirm
+      description: Whether to confirm the action, which cannot be undone. Set to yes to run it.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'yes'
+      - 'no'
+    - name: allow_missing
+      description: Whether to succeed if the sandbox does not exist.
+      required: false
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: OpenShell.Sandbox.Name
+      description: The sandbox name.
+      type: String
+    - contextPath: OpenShell.Sandbox.ID
+      description: The sandbox ID.
+      type: String
+    - contextPath: OpenShell.Sandbox.Outcome
+      description: The deletion outcome.
+      type: String
+    - contextPath: OpenShell.Sandbox.Action
+      description: The action that was requested.
+      type: String
+    execution: true
+  - name: openshell-sandbox-logs
+    description: Returns recent sandbox log lines, such as network decisions, process and policy events.
+    arguments:
+    - name: name
+      description: The sandbox name.
+      required: true
+    - name: workspace
+      description: The OpenShell workspace. Defaults to the instance workspace.
+      required: false
+    - name: lines
+      description: The number of log lines to return.
+      required: false
+      defaultValue: '200'
+    - name: min_level
+      description: The minimum log level to return, for example WARN.
+      required: false
+    - name: sources
+      description: The comma-separated list of log sources to include.
+      required: false
+      isArray: true
+    outputs:
+    - contextPath: OpenShell.Log.Sandbox
+      description: The sandbox name.
+      type: String
+    - contextPath: OpenShell.Log.Time
+      description: The event time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: OpenShell.Log.Level
+      description: The log level.
+      type: String
+    - contextPath: OpenShell.Log.Source
+      description: The log source.
+      type: String
+    - contextPath: OpenShell.Log.Target
+      description: The log target.
+      type: String
+    - contextPath: OpenShell.Log.Message
+      description: The log message.
+      type: String
+  - name: openshell-policy-get
+    description: 'Returns the current network policy of a sandbox: rules, hosts, ports and allowed binaries.'
+    arguments:
+    - name: name
+      description: The sandbox name.
+      required: true
+    - name: workspace
+      description: The OpenShell workspace. Defaults to the instance workspace.
+      required: false
+    outputs:
+    - contextPath: OpenShell.Policy.Sandbox
+      description: The sandbox name.
+      type: String
+    - contextPath: OpenShell.Policy.Version
+      description: The policy version.
+      type: Number
+    - contextPath: OpenShell.Policy.PolicyHash
+      description: The policy hash.
+      type: String
+    - contextPath: OpenShell.Policy.NetworkRules.Rule
+      description: The network rule name.
+      type: String
+    - contextPath: OpenShell.Policy.NetworkRules.Host
+      description: The allowed host.
+      type: String
+    - contextPath: OpenShell.Policy.NetworkRules.Ports
+      description: The allowed ports.
+      type: Number
+    - contextPath: OpenShell.Policy.NetworkRules.Protocol
+      description: The protocol.
+      type: String
+    - contextPath: OpenShell.Policy.NetworkRules.Path
+      description: The allowed path.
+      type: String
+    - contextPath: OpenShell.Policy.NetworkRules.Binaries
+      description: The binaries allowed to use the rule.
+      type: String
+  - name: openshell-policy-history
+    description: Returns the policy revisions of a sandbox, newest first.
+    arguments:
+    - name: name
+      description: The sandbox name.
+      required: true
+    - name: workspace
+      description: The OpenShell workspace. Defaults to the instance workspace.
+      required: false
+    - name: limit
+      description: The maximum number of revisions to return.
+      required: false
+      defaultValue: '20'
+    outputs:
+    - contextPath: OpenShell.PolicyRevision.Sandbox
+      description: The sandbox name.
+      type: String
+    - contextPath: OpenShell.PolicyRevision.Version
+      description: The policy version.
+      type: Number
+    - contextPath: OpenShell.PolicyRevision.Status
+      description: The revision status.
+      type: String
+    - contextPath: OpenShell.PolicyRevision.Hash
+      description: The policy hash.
+      type: String
+    - contextPath: OpenShell.PolicyRevision.LoadError
+      description: The load error, if the revision failed to load.
+      type: String
+    - contextPath: OpenShell.PolicyRevision.Created
+      description: The time the revision was created in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: openshell-egress-block-host
+    description: Removes every exact allow entry for a host, on all ports and across all network rules, in one atomic policy update, so the agent can no longer reach that host. The sandbox keeps running. Wildcard entries that also cover the host (for example *.example.com) are not removed but are listed in the output.
+    arguments:
+    - name: name
+      description: The sandbox name.
+      required: true
+    - name: host
+      description: The destination host, for example files.example.com.
+      required: true
+    - name: workspace
+      description: The OpenShell workspace. Defaults to the instance workspace.
+      required: false
+    - name: reason
+      description: The reason for the change, recorded on the new policy revision.
+      required: false
+      defaultValue: Cortex response
+    outputs:
+    - contextPath: OpenShell.PolicyChange.Sandbox
+      description: The sandbox name.
+      type: String
+    - contextPath: OpenShell.PolicyChange.NewVersion
+      description: The new policy version.
+      type: Number
+    - contextPath: OpenShell.PolicyChange.PolicyHash
+      description: The hash of the new policy.
+      type: String
+    - contextPath: OpenShell.PolicyChange.Change
+      description: The summary of the change.
+      type: String
+    - contextPath: OpenShell.PolicyChange.Host
+      description: The blocked host.
+      type: String
+    - contextPath: OpenShell.PolicyChange.RemovedFromRules
+      description: The network rules the host was removed from.
+      type: String
+    - contextPath: OpenShell.PolicyChange.WildcardMatches.Rule
+      description: The network rule of a wildcard entry that still allows the host.
+      type: String
+    - contextPath: OpenShell.PolicyChange.WildcardMatches.Host
+      description: The wildcard entry that still allows the host.
+      type: String
+    execution: true
+  - name: openshell-policy-rule-remove
+    description: Removes a network rule from the sandbox policy. All destinations of the rule are denied.
+    arguments:
+    - name: name
+      description: The sandbox name.
+      required: true
+    - name: rule_name
+      description: The network rule name.
+      required: true
+    - name: workspace
+      description: The OpenShell workspace. Defaults to the instance workspace.
+      required: false
+    - name: reason
+      description: The reason for the change, recorded on the new policy revision.
+      required: false
+      defaultValue: Cortex response
+    outputs:
+    - contextPath: OpenShell.PolicyChange.Sandbox
+      description: The sandbox name.
+      type: String
+    - contextPath: OpenShell.PolicyChange.NewVersion
+      description: The new policy version.
+      type: Number
+    - contextPath: OpenShell.PolicyChange.PolicyHash
+      description: The hash of the new policy.
+      type: String
+    - contextPath: OpenShell.PolicyChange.Change
+      description: The summary of the change.
+      type: String
+    execution: true
+  - name: openshell-policy-endpoint-remove
+    description: Removes a single host and port from a network rule.
+    arguments:
+    - name: name
+      description: The sandbox name.
+      required: true
+    - name: rule_name
+      description: The network rule name.
+      required: true
+    - name: host
+      description: The host to remove.
+      required: true
+    - name: port
+      description: The port to remove. 0 removes the host on any port.
+      required: false
+      defaultValue: '0'
+    - name: workspace
+      description: The OpenShell workspace. Defaults to the instance workspace.
+      required: false
+    - name: reason
+      description: The reason for the change, recorded on the new policy revision.
+      required: false
+      defaultValue: Cortex response
+    outputs:
+    - contextPath: OpenShell.PolicyChange.Sandbox
+      description: The sandbox name.
+      type: String
+    - contextPath: OpenShell.PolicyChange.NewVersion
+      description: The new policy version.
+      type: Number
+    - contextPath: OpenShell.PolicyChange.PolicyHash
+      description: The hash of the new policy.
+      type: String
+    - contextPath: OpenShell.PolicyChange.Change
+      description: The summary of the change.
+      type: String
+    execution: true
+  - name: openshell-policy-binary-remove
+    description: Removes a binary, for example /usr/bin/curl, from a network rule so it can no longer use that rule.
+    arguments:
+    - name: name
+      description: The sandbox name.
+      required: true
+    - name: rule_name
+      description: The network rule name.
+      required: true
+    - name: binary_path
+      description: The binary path.
+      required: true
+    - name: workspace
+      description: The OpenShell workspace. Defaults to the instance workspace.
+      required: false
+    - name: reason
+      description: The reason for the change, recorded on the new policy revision.
+      required: false
+      defaultValue: Cortex response
+    outputs:
+    - contextPath: OpenShell.PolicyChange.Sandbox
+      description: The sandbox name.
+      type: String
+    - contextPath: OpenShell.PolicyChange.NewVersion
+      description: The new policy version.
+      type: Number
+    - contextPath: OpenShell.PolicyChange.PolicyHash
+      description: The hash of the new policy.
+      type: String
+    - contextPath: OpenShell.PolicyChange.Change
+      description: The summary of the change.
+      type: String
+    execution: true
+  - name: openshell-provider-list
+    description: Lists the credential providers attached to a sandbox.
+    arguments:
+    - name: name
+      description: The sandbox name.
+      required: true
+    - name: workspace
+      description: The OpenShell workspace. Defaults to the instance workspace.
+      required: false
+    outputs:
+    - contextPath: OpenShell.Provider.Sandbox
+      description: The sandbox name.
+      type: String
+    - contextPath: OpenShell.Provider.Name
+      description: The provider name.
+      type: String
+    - contextPath: OpenShell.Provider.Type
+      description: The provider type.
+      type: String
+    - contextPath: OpenShell.Provider.Workspace
+      description: The provider profile workspace.
+      type: String
+  - name: openshell-provider-detach
+    description: Detaches a credential provider from a sandbox, so the agent no longer receives those credentials. This action cannot be undone.
+    arguments:
+    - name: name
+      description: The sandbox name.
+      required: true
+    - name: provider
+      description: The provider name.
+      required: true
+    - name: workspace
+      description: The OpenShell workspace. Defaults to the instance workspace.
+      required: false
+    - name: confirm
+      description: Whether to confirm the action, which cannot be undone. Set to yes to run it.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'yes'
+      - 'no'
+    outputs:
+    - contextPath: OpenShell.Provider.Sandbox
+      description: The sandbox name.
+      type: String
+    - contextPath: OpenShell.Provider.Name
+      description: The provider name.
+      type: String
+    - contextPath: OpenShell.Provider.Action
+      description: The action that was performed.
+      type: String
+    execution: true
+  dockerimage: demisto/openshell:1.0.0.0
+  isfetch: false
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
+autoUpdateDockerImage: false
