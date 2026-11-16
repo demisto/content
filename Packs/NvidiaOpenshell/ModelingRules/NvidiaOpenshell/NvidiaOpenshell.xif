@@ -123,7 +123,7 @@ alter
     // --- Network ---
     xdm.network.rule              = get_fw_rule_name,
     xdm.network.http.domain       = get_http_hostname,
-    xdm.network.http.path         = get_http_path,
+    xdm.network.http.url          = if(get_http_hostname != null and get_http_hostname != "", concat(coalesce(get_http_scheme, "http"), "://", get_http_hostname, coalesce(get_http_path, "")), null),
     xdm.network.http.request.method = get_http_method_const,
     xdm.network.application_protocol = get_http_scheme,
     xdm.network.session_id        = get_mapping_id,
