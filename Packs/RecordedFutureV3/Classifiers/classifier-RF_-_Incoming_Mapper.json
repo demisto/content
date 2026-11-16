@@ -509,7 +509,7 @@
 				}
 			}
 		},
-		"RF Impersonation": {
+		"RF Social Media Impersonation": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"Alert Category": {

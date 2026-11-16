@@ -12,7 +12,7 @@
 		"geopolitics_facility": "RF Facility Risk Playbook Alert",
 		"identity_novel_exposures": "RF Identity Exposure",
 		"malicious_sites": "RF Malicious Sites",
-		"socmed_impersonation": "RF Impersonation",
+		"socmed_impersonation": "RF Social Media Impersonation",
 		"third_party_risk": "RF Third-Party Cyber Playbook Alert"
 	},
 	"name": "RF - Classifier",
