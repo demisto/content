@@ -2,6 +2,8 @@ from copy import copy
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
 from traceback import format_exc
+from typing import Any, TypeGuard
+import urllib.parse
 
 import demistomock as demisto  # noqa: F401
 import uvicorn
@@ -26,12 +28,77 @@ basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name="Authorization")
 
 
+MAX_URL_DECODE_ITERATIONS = 5
+DOT_SEGMENTS = {".", ".."}
+
+
 def is_json(jstr):
     try:
         json.loads(jstr)
     except ValueError:
         return False
     return True
+
+
+def fully_unquote(value: str) -> str:
+    """
+    Percent-decodes a value repeatedly, so multi-encoded sequences (e.g. '%252e') are revealed.
+
+    Args:
+        value (str): The value to decode.
+
+    Returns:
+        str: The decoded value.
+    """
+    for _ in range(MAX_URL_DECODE_ITERATIONS):
+        decoded_value = urllib.parse.unquote(value)
+        if decoded_value == value:
+            break
+        value = decoded_value
+    return value
+
+
+def is_safe_target(target: Any) -> TypeGuard[str]:
+    """
+    Validates that the client-supplied target is a clean absolute path that cannot escape the
+    allowlisted prefix once normalized by the HTTP client or the upstream server.
+
+    Args:
+        target (Any): The target path from the client request body.
+
+    Returns:
+        bool: True if the target is safe to match against the allowlist and forward, False otherwise.
+    """
+    if not isinstance(target, str) or not target.startswith("/") or target.startswith("//"):
+        return False
+
+    target_path = re.split(r"[?#]", target, maxsplit=1)[0]
+    decoded_path = fully_unquote(target_path)
+
+    if "\\" in decoded_path or any(ord(char) < 0x20 or ord(char) == 0x7F for char in decoded_path):
+        return False
+
+    return not any(segment in DOT_SEGMENTS for segment in decoded_path.split("/"))
+
+
+def is_url_within_api_path(url: str, api_path: str) -> bool:
+    """
+    Verifies that the final URL still points to the configured upstream scheme, host and base path.
+
+    Args:
+        url (str): The URL that is about to be requested.
+        api_path (str): The configured Target API Base Path.
+
+    Returns:
+        bool: True if the URL is within the configured API base path, False otherwise.
+    """
+    parsed_url = urllib.parse.urlsplit(url)
+    parsed_api_path = urllib.parse.urlsplit(api_path)
+    return (
+        parsed_url.scheme.lower() == parsed_api_path.scheme.lower()
+        and parsed_url.netloc.lower() == parsed_api_path.netloc.lower()
+        and parsed_url.path.startswith(parsed_api_path.path)
+    )
 
 
 class SimpleAPIProxyAccessFormatter(AccessFormatter):
@@ -171,12 +238,22 @@ async def handle_post(
     # Check if METHOD and TARGET from the POST body are allowed per the api_permissions defined as an integration input
 
     body_from_request = await request.json()
+    if not isinstance(body_from_request, dict):
+        return Response(status_code=400, content="Invalid request body.")
+
+    target = body_from_request.get("target")
     target_found = False
     allowed_methods = []
 
+    # Reject path traversal and malformed targets before the allowlist check, as the HTTP client
+    # normalizes dot-segments, which would otherwise allow escaping an allowlisted prefix.
+    if not is_safe_target(target):
+        demisto.debug(f"Rejected unsafe target: {target!r}")
+        return Response(status_code=400, content="Invalid target.")
+
     for item in API_PERMISSIONS.get("Permissions"):
         # Matches from beginning of the string, same as ^[Endpoint]*
-        if re.match(item.get("target"), body_from_request.get("target")):
+        if re.match(item.get("target"), target):
             target_found = True
             allowed_methods = item.get("allowed_methods")
             break
@@ -185,7 +262,7 @@ async def handle_post(
         # added to get the method from the client posted body
         method = body_from_request.get("method")
 
-        if method in allowed_methods:
+        if isinstance(method, str) and method in allowed_methods:
             data_for_post = body_from_request.get("body")
             parameters_for_get = body_from_request.get("parameters")
 
@@ -193,9 +270,13 @@ async def handle_post(
             if parameters_for_get:
                 parameters_for_get = dict(subString.split("=") for subString in parameters_for_get[1:].split("&"))
 
-            url = API_PATH + body_from_request.get("target")
+            url = API_PATH + target
 
             demisto.debug(f"Target URL: {url}")
+
+            if not is_url_within_api_path(url, API_PATH):
+                demisto.debug(f"Rejected target URL outside of the configured API base path: {url}")
+                return Response(status_code=400, content="Invalid target.")
 
             result = make_api_request(url, method, data_for_post, parameters_for_get)
 
