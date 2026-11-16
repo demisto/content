@@ -2661,18 +2661,18 @@ Deletes Firewall Control rules that match the specified filters. Relevant for AP
 | directions | A comma-separated list of directions to filter firewall rules by. Possible values are: any, inbound, outbound. | Optional |
 | actions | A comma-separated list of actions to filter firewall rules by. Possible values are: Allow, Block. | Optional |
 | statuses | A comma-separated list of statuses to filter firewall rules by. Possible values are: Enabled, Disabled. | Optional |
-| created_at_lt | Filter firewall rules created before this timestamp (e.g., 2018-02-27T04:49:26.257525Z). | Optional |
-| created_at_gt | Filter firewall rules created after this timestamp (e.g., 2018-02-27T04:49:26.257525Z). | Optional |
-| created_at_lte | Filter firewall rules created before or at this timestamp (e.g., 2018-02-27T04:49:26.257525Z). | Optional |
-| created_at_gte | Filter firewall rules created after or at this timestamp (e.g., 2018-02-27T04:49:26.257525Z). | Optional |
+| created_at_lt | Filter firewall rules created before this timestamp. Only ISO 8601 timestamps are supported (e.g., 2018-02-27T04:49:26.257525Z). | Optional |
+| created_at_gt | Filter firewall rules created after this timestamp. Only ISO 8601 timestamps are supported (e.g., 2018-02-27T04:49:26.257525Z). | Optional |
+| created_at_lte | Filter firewall rules created before or at this timestamp. Only ISO 8601 timestamps are supported (e.g., 2018-02-27T04:49:26.257525Z). | Optional |
+| created_at_gte | Filter firewall rules created after or at this timestamp. Only ISO 8601 timestamps are supported (e.g., 2018-02-27T04:49:26.257525Z). | Optional |
 | created_at_between | Filter firewall rules created within this range of epoch milliseconds (inclusive), for example: "1514978764288-1514978999999". | Optional |
 | location_ids | A comma-separated list of associated location IDs to filter by. | Optional |
 | tag_ids | A comma-separated list of associated tag IDs to filter by. | Optional |
-| name_contains | A comma-separated list of rule names to filter by. | Optional |
-| tag_name_contains | Free-text filter by the tag name (supports multiple comma-separated values). | Optional |
-| application_contains | Free-text filter by application (supports multiple comma-separated values). | Optional |
-| protocol_contains | Free-text filter by protocol (supports multiple comma-separated values). | Optional |
-| service_contains | Free-text filter by service (supports multiple comma-separated values). | Optional |
+| name_contains | Filter firewall rules whose name contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules. | Optional |
+| tag_name_contains | Filter firewall rules whose tag name contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules. | Optional |
+| application_contains | Filter firewall rules whose application contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules. | Optional |
+| protocol_contains | Filter firewall rules whose protocol contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules. | Optional |
+| service_contains | Filter firewall rules whose service contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules. | Optional |
 
 #### Context Output
 

@@ -1101,13 +1101,13 @@ script:
       predefined:
       - Enabled
       - Disabled
-    - description: 'Filter firewall rules created before this timestamp (e.g., 2018-02-27T04:49:26.257525Z).'
+    - description: 'Filter firewall rules created before this timestamp. Only ISO 8601 timestamps are supported (e.g., 2018-02-27T04:49:26.257525Z).'
       name: created_at_lt
-    - description: 'Filter firewall rules created after this timestamp (e.g., 2018-02-27T04:49:26.257525Z).'
+    - description: 'Filter firewall rules created after this timestamp. Only ISO 8601 timestamps are supported (e.g., 2018-02-27T04:49:26.257525Z).'
       name: created_at_gt
-    - description: 'Filter firewall rules created before or at this timestamp (e.g., 2018-02-27T04:49:26.257525Z).'
+    - description: 'Filter firewall rules created before or at this timestamp. Only ISO 8601 timestamps are supported (e.g., 2018-02-27T04:49:26.257525Z).'
       name: created_at_lte
-    - description: 'Filter firewall rules created after or at this timestamp (e.g., 2018-02-27T04:49:26.257525Z).'
+    - description: 'Filter firewall rules created after or at this timestamp. Only ISO 8601 timestamps are supported (e.g., 2018-02-27T04:49:26.257525Z).'
       name: created_at_gte
     - description: 'Filter firewall rules created within this range of epoch milliseconds (inclusive), for example: "1514978764288-1514978999999".'
       name: created_at_between
@@ -1117,19 +1117,19 @@ script:
     - description: A comma-separated list of associated tag IDs to filter by.
       isArray: true
       name: tag_ids
-    - description: A comma-separated list of rule names to filter by.
+    - description: 'Filter firewall rules whose name contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules.'
       isArray: true
       name: name_contains
-    - description: Free-text filter by the tag name (supports multiple comma-separated values).
+    - description: 'Filter firewall rules whose tag name contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules.'
       isArray: true
       name: tag_name_contains
-    - description: Free-text filter by application (supports multiple comma-separated values).
+    - description: 'Filter firewall rules whose application contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules.'
       isArray: true
       name: application_contains
-    - description: Free-text filter by protocol (supports multiple comma-separated values).
+    - description: 'Filter firewall rules whose protocol contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules.'
       isArray: true
       name: protocol_contains
-    - description: Free-text filter by service (supports multiple comma-separated values).
+    - description: 'Filter firewall rules whose service contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules.'
       isArray: true
       name: service_contains
     description: 'Deletes Firewall Control rules that match the specified filters. Relevant for API version 2.1. Warning: all filters are combined, and every rule in the selected scope that matches them is deleted. Broad filters (for example, tenant=true with only scopes=global, or statuses without ids) can delete many or all rules in the scope. To delete specific rules, use the ids argument.'
