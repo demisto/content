@@ -48,7 +48,6 @@ Start with the smallest action that stops the threat, and move up only if you ne
 | Type | Name | What it does |
 | --- | --- | --- |
 | Integration | **NVIDIA OpenShell** | 17 commands for sandbox lifecycle, network policy, credential providers and logs. |
-| Playbook | **NVIDIA OpenShell - Contain AI Agent Sandbox** | Collects the sandbox state and recent logs, asks an analyst to approve, stops the sandbox and verifies that it stopped. Falls back to a manual task if the stop fails. |
 
 <details>
 <summary><b>All 17 integration commands</b></summary>
@@ -74,22 +73,6 @@ Start with the smallest action that stops the threat, and move up only if you ne
 | Credentials | `openshell-provider-detach` | Detaches a credential provider. Needs `confirm=yes`. |
 
 </details>
-
-## Playbook: Contain AI Agent Sandbox
-
-![NVIDIA OpenShell - Contain AI Agent Sandbox playbook](doc_files/NVIDIA_OpenShell_-_Contain_AI_Agent_Sandbox.png)
-
-1. Checks that an NVIDIA OpenShell instance is enabled and that a sandbox name was provided.
-2. Gets the sandbox state and its last 50 log lines, so the analyst sees what the agent was doing.
-3. If `RequireApproval` is `true` (the default), asks the analyst whether to stop the sandbox.
-4. Stops the sandbox and waits up to 120 seconds for it to report STOPPED.
-5. Reads the sandbox state back, so the incident records the result.
-6. If there is no instance or sandbox name, or the stop fails, a manual task lists the fallback steps.
-
-| Input | Default | Description |
-| --- | --- | --- |
-| `SandboxName` | | The sandbox to contain. Map it from the alert field that holds the sandbox name. |
-| `RequireApproval` | `true` | Set to `false` to stop the sandbox without waiting for an analyst. |
 
 ## Try it in the war room
 
