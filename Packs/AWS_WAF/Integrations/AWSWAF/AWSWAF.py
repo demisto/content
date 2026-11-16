@@ -1502,6 +1502,10 @@ def main() -> None:  # pragma: no cover
     timeout = params.get("timeout") or 1
     retries = params.get("retries") or 5
 
+    args = demisto.args()
+    command = demisto.command()
+    demisto.debug(f"Command being called is {command}")
+
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id, aws_secret_access_key)
 
@@ -1517,8 +1521,6 @@ def main() -> None:  # pragma: no cover
             timeout=timeout,
             retries=retries,
         )
-        args = demisto.args()
-        command = demisto.command()
         client: WAFV2Client = aws_client.aws_session(service=SERVICE, region=args.get("region"))
         result = CommandResults()
 
