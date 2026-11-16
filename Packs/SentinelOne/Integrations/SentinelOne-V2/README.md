@@ -2570,10 +2570,74 @@ Creates a Firewall Control rule that allows or blocks network traffic on endpoin
 | SentinelOne.FirewallRule.Created.Tags | Unknown | The list of tag objects linked to this rule. |
 | SentinelOne.FirewallRule.Created.ProductId | String | The product identifier. |
 
+#### Command example
+
+```!sentinelone-create-firewall-rule name="Block-Outbound-Example" action=Block status=Enabled direction=outbound os_types=windows,linux protocol=any remote_host_type=addresses remote_host_values=1.1.1.1 site_ids=1111111111111111111 description="Example firewall rule"```
+
+#### Context Example
+
+```json
+{
+    "SentinelOne": {
+        "FirewallRule": {
+            "Created": {
+                "Action": "Block",
+                "Application": null,
+                "CreatedAt": "2024-01-01T00:00:00.000000Z",
+                "Creator": "Example User (user@example.com)",
+                "CreatorId": "2222222222222222222",
+                "Description": "Example firewall rule",
+                "Direction": "outbound",
+                "Editable": true,
+                "ID": "1234567890123456789",
+                "LocalHost": null,
+                "LocalPort": null,
+                "Location": null,
+                "Name": "Block-Outbound-Example",
+                "Order": 1,
+                "OsType": "windows",
+                "OsTypes": [
+                    "windows",
+                    "linux"
+                ],
+                "ProductId": null,
+                "Protocol": "any",
+                "RemoteHost": null,
+                "RemoteHosts": [
+                    {
+                        "type": "addresses",
+                        "values": [
+                            "1.1.1.1"
+                        ]
+                    }
+                ],
+                "RemotePort": null,
+                "RuleCategory": "firewall",
+                "Scope": "site",
+                "ScopeId": "1111111111111111111",
+                "Status": "Enabled",
+                "TagIds": null,
+                "TagNames": null,
+                "Tags": null,
+                "UpdatedAt": "2024-01-01T00:00:00.000000Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Sentinel One - Create Firewall Rule
+>
+>|Action|Created At|Creator|Creator Id|Description|Direction|Editable|ID|Name|Order|Os Type|Os Types|Protocol|Remote Hosts|Rule Category|Scope|Scope Id|Status|Updated At|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Block | 2024-01-01T00:00:00.000000Z | Example User (user@example.com) | 2222222222222222222 | Example firewall rule | outbound | true | 1234567890123456789 | Block-Outbound-Example | 1 | windows | windows,<br>linux | any | {'type': 'addresses', 'values': ['1.1.1.1']} | firewall | site | 1111111111111111111 | Enabled | 2024-01-01T00:00:00.000000Z |
+
 ### sentinelone-delete-firewall-rule
 
 ***
-Deletes Firewall Control rules that match the specified filters. Relevant for API version 2.1.
+Deletes Firewall Control rules that match the specified filters. Relevant for API version 2.1. Warning: all filters are combined, and every rule in the selected scope that matches them is deleted. Broad filters (for example, tenant=true with only scopes=global, or statuses without ids) can delete many or all rules in the scope. To delete specific rules, use the ids argument.
 
 #### Base Command
 
@@ -2587,11 +2651,11 @@ Deletes Firewall Control rules that match the specified filters. Relevant for AP
 | account_ids | A comma-separated list of account IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
 | site_ids | A comma-separated list of site IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
 | group_ids | A comma-separated list of group IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
-| tenant | Indicates a tenant (global) scope request. Possible values are: true, false. | Optional |
+| tenant | Whether to apply the request at the tenant (global) scope. Possible values are: true, false. | Optional |
 | query | Free-text search on name, tag, application, or protocol. | Optional |
 | scopes | A comma-separated list of scopes to filter firewall rules by. Possible values are: global, account, group, site. | Optional |
 | applications | A comma-separated list of applications to filter firewall rules by. | Optional |
-| name | Filter firewall rules by exact rule name. | Optional |
+| name | The exact rule name to filter firewall rules by. | Optional |
 | protocols | A comma-separated list of protocols to filter firewall rules by. | Optional |
 | os_types | A comma-separated list of OS types to filter firewall rules by. Possible values are: linux, windows, macos, windows_legacy. | Optional |
 | directions | A comma-separated list of directions to filter firewall rules by. Possible values are: any, inbound, outbound. | Optional |
@@ -2604,7 +2668,7 @@ Deletes Firewall Control rules that match the specified filters. Relevant for AP
 | created_at_between | Filter firewall rules created within this range of epoch milliseconds (inclusive), for example: "1514978764288-1514978999999". | Optional |
 | location_ids | A comma-separated list of associated location IDs to filter by. | Optional |
 | tag_ids | A comma-separated list of associated tag IDs to filter by. | Optional |
-| name_contains | Free-text filter by the rule name (supports multiple comma-separated values). | Optional |
+| name_contains | A comma-separated list of rule names to filter by. | Optional |
 | tag_name_contains | Free-text filter by the tag name (supports multiple comma-separated values). | Optional |
 | application_contains | Free-text filter by application (supports multiple comma-separated values). | Optional |
 | protocol_contains | Free-text filter by protocol (supports multiple comma-separated values). | Optional |
@@ -2615,3 +2679,25 @@ Deletes Firewall Control rules that match the specified filters. Relevant for AP
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SentinelOne.FirewallRule.Deleted.Affected | Number | The number of firewall rules successfully deleted. |
+
+#### Command example
+
+```!sentinelone-delete-firewall-rule ids=1234567890123456789,1234567890123456790 site_ids=1111111111111111111```
+
+#### Context Example
+
+```json
+{
+    "SentinelOne": {
+        "FirewallRule": {
+            "Deleted": {
+                "Affected": 2
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Sentinel One - Deleted 2 firewall rule(s).

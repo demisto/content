@@ -3127,14 +3127,22 @@ def test_create_firewall_rule_full_schema_and_validations(mocker, requests_mock)
         )
 
 
-def test_delete_firewall_rule(mocker, requests_mock):
+@pytest.mark.parametrize(
+    "affected, expected_readable_output",
+    [
+        (2, "Deleted 2 firewall rule(s)"),
+        (0, "No firewall rules matched"),
+    ],
+)
+def test_delete_firewall_rule(mocker, requests_mock, affected, expected_readable_output):
     """
     When:
         sentinelone-delete-firewall-rule command is called with filter parameters
     Returns:
-        Number of firewall rules successfully deleted as reported by the API, and raises DemistoException when no filter is given.
+        Number of firewall rules successfully deleted as reported by the API, a readable output reflecting that number,
+        and raises DemistoException when no filter is given.
     """
-    raw_response = {"data": {"affected": 2}}
+    raw_response = {"data": {"affected": affected}}
     requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/firewall-control", json=raw_response)
 
     mocker.patch.object(
@@ -3161,7 +3169,8 @@ def test_delete_firewall_rule(mocker, requests_mock):
     call = mock_return_results.call_args_list
     outputs = call[0].args[0].outputs
 
-    assert outputs["Affected"] == 2
+    assert outputs["Affected"] == affected
+    assert expected_readable_output in call[0].args[0].readable_output
     assert requests_mock.last_request.method == "DELETE"
     assert requests_mock.last_request.json() == {
         "filter": {

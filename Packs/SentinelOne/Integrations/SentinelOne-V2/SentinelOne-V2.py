@@ -4151,8 +4151,13 @@ def delete_firewall_rule_command(client: Client, args: dict) -> CommandResults:
     response = client.delete_firewall_rule_request(filter_data=filter_data)
     affected = response.get("affected", 0)
 
+    if affected:
+        readable_output = f"Sentinel One - Deleted {affected} firewall rule(s)."
+    else:
+        readable_output = "Sentinel One - No firewall rules matched the given filters. Nothing was deleted."
+
     return CommandResults(
-        readable_output="Sentinel One - Firewall Rules Deleted.",
+        readable_output=readable_output,
         outputs_prefix="SentinelOne.FirewallRule.Deleted",
         outputs={"Affected": affected},
         raw_response=response,

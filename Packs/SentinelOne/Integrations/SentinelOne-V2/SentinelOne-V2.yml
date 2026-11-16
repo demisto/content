@@ -1046,7 +1046,7 @@ script:
       isArray: true
       name: group_ids
     - auto: PREDEFINED
-      description: Indicates a tenant (global) scope request.
+      description: Whether to apply the request at the tenant (global) scope.
       name: tenant
       predefined:
       - 'true'
@@ -1065,7 +1065,7 @@ script:
     - description: A comma-separated list of applications to filter firewall rules by.
       isArray: true
       name: applications
-    - description: Filter firewall rules by exact rule name.
+    - description: The exact rule name to filter firewall rules by.
       name: name
     - description: A comma-separated list of protocols to filter firewall rules by.
       isArray: true
@@ -1117,7 +1117,7 @@ script:
     - description: A comma-separated list of associated tag IDs to filter by.
       isArray: true
       name: tag_ids
-    - description: Free-text filter by the rule name (supports multiple comma-separated values).
+    - description: A comma-separated list of rule names to filter by.
       isArray: true
       name: name_contains
     - description: Free-text filter by the tag name (supports multiple comma-separated values).
@@ -1132,7 +1132,7 @@ script:
     - description: Free-text filter by service (supports multiple comma-separated values).
       isArray: true
       name: service_contains
-    description: Deletes Firewall Control rules that match the specified filters. Relevant for API version 2.1.
+    description: 'Deletes Firewall Control rules that match the specified filters. Relevant for API version 2.1. Warning: all filters are combined, and every rule in the selected scope that matches them is deleted. Broad filters (for example, tenant=true with only scopes=global, or statuses without ids) can delete many or all rules in the scope. To delete specific rules, use the ids argument.'
     execution: true
     name: sentinelone-delete-firewall-rule
     outputs:
