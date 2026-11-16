@@ -125,3 +125,5 @@ cooc_command_examples.txt
 .idex/
 .worktree-context/
 
+# Beel folder
+.beel/

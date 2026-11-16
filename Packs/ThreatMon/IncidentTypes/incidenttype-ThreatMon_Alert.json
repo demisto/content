@@ -1,0 +1,39 @@
+{
+    "id": "ThreatMon Alert",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "ThreatMon Alert",
+    "prevName": "ThreatMon Alert",
+    "color": "#1E88E5",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "layout": "ThreatMon Alert Layout",
+    "playbookId": "",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "threatmonfindings": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            }
+        }
+    },
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}
