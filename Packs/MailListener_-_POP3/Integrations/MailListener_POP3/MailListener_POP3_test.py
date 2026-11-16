@@ -230,3 +230,115 @@ def test_parse_time_invalid(mocker, date_header):
 
     with pytest.raises(ValueError):
         parse_time(date_header)
+
+
+@pytest.mark.parametrize(
+    "headers, expected",
+    [
+        ({"content-disposition": "attachment"}, "attachment.txt"),
+        ({"content-disposition": "attachment", "content-type": "weird"}, "attachment.txt"),
+        ({"content-disposition": "attachment", "content-type": "application/pdf"}, "attachment.pdf"),
+        ({"content-disposition": 'attachment; filename="report.docx"'}, "report.docx"),
+        ({"content-description": "image.png"}, "image.png"),
+    ],
+)
+def test_get_attachment_name(headers, expected):
+    """
+    Given
+    - Attachment headers, including ones without a filename and without a (valid) Content-Type
+    When
+    - Running get_attachment_name
+    Then
+    - A name is returned and no exception is raised
+    """
+    from MailListener_POP3 import get_attachment_name
+
+    assert get_attachment_name(headers) == expected
+
+
+def _build_mail(index, minute, subject, attachment_part=None):
+    from email.parser import Parser
+
+    if attachment_part is None:
+        body = "Content-Type: text/plain\r\n\r\nhello\r\n"
+    else:
+        body = attachment_part
+    raw = (
+        f"Date: Sun, 18 Oct 2026 09:0{minute}:00 +0000\r\n"
+        "From: sender@example.test\r\n"
+        "To: inbox@example.test\r\n"
+        f"Subject: {subject}\r\n"
+        "MIME-Version: 1.0\r\n"
+        'Content-Type: multipart/mixed; boundary="x"\r\n'
+        "\r\n"
+        "--x\r\n"
+        f"{body}"
+        "--x--\r\n"
+    )
+    msg = Parser().parsestr(raw)
+    msg["index"] = index
+    return msg
+
+
+def test_fetch_incidents_attachment_without_name_and_content_type(mocker):
+    """
+    Given
+    - A mailbox with a normal email, an email whose attachment has no filename and no Content-Type, and another normal email
+    When
+    - Running fetch_incidents
+    Then
+    - All three emails become incidents (the attachment gets a default name) and last run advances
+    """
+    import MailListener_POP3
+
+    poison_part = "Content-Disposition: attachment\r\nContent-Transfer-Encoding: base64\r\n\r\naGVsbG8=\r\n"
+    mails = [
+        _build_mail(1, 1, "normal-1"),
+        _build_mail(2, 2, "poison", poison_part),
+        _build_mail(3, 3, "normal-2"),
+    ]
+    mocker.patch.object(MailListener_POP3, "get_user_emails", return_value=mails)
+    mocker.patch.object(MailListener_POP3, "fileResult", return_value={"Type": 1, "FileID": "file-id"})
+    mocker.patch.object(demisto, "getLastRun", return_value={"time": "2026-10-18T00:00:00Z"})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    incidents_mock = mocker.patch.object(demisto, "incidents")
+
+    MailListener_POP3.fetch_incidents()
+
+    incidents = incidents_mock.call_args[0][0]
+    assert [inc["name"] for inc in incidents] == ["normal-1", "poison", "normal-2"]
+    assert incidents[1]["attachment"] == [{"path": "file-id", "name": "attachment.txt"}]
+    set_last_run.assert_called_once_with({"time": "2026-10-18T09:03:01Z"})
+
+
+def test_fetch_incidents_skips_failing_email(mocker):
+    """
+    Given
+    - A mailbox where converting one email to an incident raises an exception
+    When
+    - Running fetch_incidents
+    Then
+    - The failing email is skipped, the other emails become incidents and last run advances
+    """
+    import MailListener_POP3
+
+    mails = [_build_mail(1, 1, "normal-1"), _build_mail(2, 2, "broken"), _build_mail(3, 3, "normal-2")]
+    original_mail_to_incident = MailListener_POP3.mail_to_incident
+
+    def mail_to_incident(msg):
+        if msg["subject"] == "broken":
+            raise Exception("unexpected parsing error")
+        return original_mail_to_incident(msg)
+
+    mocker.patch.object(MailListener_POP3, "get_user_emails", return_value=mails)
+    mocker.patch.object(MailListener_POP3, "mail_to_incident", side_effect=mail_to_incident)
+    mocker.patch.object(demisto, "getLastRun", return_value={"time": "2026-10-18T00:00:00Z"})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    incidents_mock = mocker.patch.object(demisto, "incidents")
+    error_mock = mocker.patch.object(demisto, "error")
+
+    MailListener_POP3.fetch_incidents()
+
+    assert [inc["name"] for inc in incidents_mock.call_args[0][0]] == ["normal-1", "normal-2"]
+    set_last_run.assert_called_once_with({"time": "2026-10-18T09:03:01Z"})
+    assert "broken" in error_mock.call_args[0][0]
