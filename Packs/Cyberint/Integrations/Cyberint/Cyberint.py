@@ -1241,7 +1241,7 @@ def main():
                 None if params.get("mirror_direction") == "None" else MIRROR_DIRECTION_MAPPING[params["mirror_direction"]]
             )
             close_alert = params.get("close_alert", False)
-            fetch_asset_groups = argToBoolean(params.get("fetch_asset_groups", False))
+            fetch_asset_groups = argToBoolean(params.get("fetch_asset_groups", True))
             next_run, incidents = fetch_incidents(
                 client,
                 last_run,

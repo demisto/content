@@ -121,7 +121,7 @@ configuration:
 - display: Fetch Asset Groups
   name: fetch_asset_groups
   type: 8
-  defaultvalue: 'false'
+  defaultvalue: 'true'
   required: false
   additionalinfo: When selected, each fetched alert is enriched with the asset groups of its related assets. This makes one extra API request per alert.
   section: Collect
