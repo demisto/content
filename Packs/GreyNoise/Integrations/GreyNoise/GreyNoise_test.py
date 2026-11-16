@@ -291,7 +291,7 @@ def test_query_command_current_ip_records(mocker):
     query_response = {
         "data": [
             {
-                "ip": "45.83.65.120",
+                "ip": "1.2.3.4",
                 "business_service_intelligence": {"found": None, "name": "", "trust_level": ""},
                 "internet_scanner_intelligence": {
                     "found": True,
@@ -320,12 +320,12 @@ def test_query_command_current_ip_records(mocker):
     response = GreyNoise.query_command(client, {"query": "last_seen:1d"})
 
     readable = response.readable_output
-    assert "45.83.65.120" in readable
+    assert "1.2.3.4" in readable
     assert "Ping Scanner" in readable
     assert "8.8.8.8" in readable
     assert "Total findings: 2" in readable
     ips = response.outputs["GreyNoise.IP(val.address && val.address == obj.address)"]
-    assert ips[0]["ip"] == "45.83.65.120"
+    assert ips[0]["ip"] == "1.2.3.4"
     assert ips[1]["ip"] == "8.8.8.8"
     assert "internet_scanner_intelligence" not in ips[1]
 
@@ -573,7 +573,7 @@ def test_similarity_command_is_deprecated(mocker):
     client = GreyNoise.Client(api_config)
     similar = mocker.patch.object(client, "similar")
 
-    response = GreyNoise.similarity_command(client, {"ip": "1.1.2.2", "minimum_score": "90", "maximum_results": "50"})
+    response = GreyNoise.similarity_command(client, {"ip": "5.6.7.8", "minimum_score": "90", "maximum_results": "50"})
 
     similar.assert_not_called()
     assert response.outputs["message"] == "The GreyNoise similarity functionality is deprecated and no longer supported."
@@ -627,7 +627,7 @@ def test_timeline_command_current_daily_response(mocker):
     )
     client = GreyNoise.Client(api_config)
     timeline_response = {
-        "metadata": {"ip": "1.1.2.2", "days": 30, "granularity": "1d"},
+        "metadata": {"ip": "5.6.7.8", "days": 30, "granularity": "1d"},
         "data": [
             {
                 "date": "2026-11-12T00:00:00Z",
@@ -653,17 +653,17 @@ def test_timeline_command_current_daily_response(mocker):
     }
     mocker.patch.object(client, "timelinedaily", return_value=timeline_response)
 
-    response = GreyNoise.timeline_command(client, {"ip": "1.1.2.2", "days": "30", "maximum_results": "1"})
+    response = GreyNoise.timeline_command(client, {"ip": "5.6.7.8", "days": "30", "maximum_results": "1"})
 
-    client.timelinedaily.assert_called_once_with("1.1.2.2", days=30)
-    assert response.outputs["metadata"]["ip"] == "1.1.2.2"
+    client.timelinedaily.assert_called_once_with("5.6.7.8", days=30)
+    assert response.outputs["metadata"]["ip"] == "5.6.7.8"
     assert len(response.outputs["data"]) == 2
     assert "2026-11-12" in response.readable_output
     assert "Ping Scanner" in response.readable_output
     assert "Cloudflare" in response.readable_output
     assert "2026-11-13" not in response.readable_output
     assert "Displaying 1 of 2 daily results." in response.readable_output
-    assert "https://viz.greynoise.io/ip/1.1.2.2?view=timeline" in response.readable_output
+    assert "https://viz.greynoise.io/ip/5.6.7.8?view=timeline" in response.readable_output
 
 
 @pytest.mark.parametrize("args, test_scenario, api_response, status_code, expected_output", cve_command_response_data)
@@ -760,7 +760,7 @@ def test_ip_reputation_command_real_null_found_response(mocker):
     mocker.patch.object(demisto, "command", return_value="ip")
     mocker.patch.object(client, "ip", return_value=copy.deepcopy(real_api_sample_null_found))
 
-    response = GreyNoise.ip_reputation_command(client, {"ip": "45.83.65.120"}, "B - Usually reliable")
+    response = GreyNoise.ip_reputation_command(client, {"ip": "1.2.3.4"}, "B - Usually reliable")
 
     assert len(response) == 1
     assert response[0].outputs["seen"] is True
@@ -787,9 +787,9 @@ def test_riot_command_real_null_found_response(mocker):
     client = GreyNoise.Client(api_config)
     mocker.patch.object(client, "ip", return_value=copy.deepcopy(real_api_sample_null_found))
 
-    response = GreyNoise.riot_command(client, {"ip": "45.83.65.120"}, "B - Usually reliable")
+    response = GreyNoise.riot_command(client, {"ip": "1.2.3.4"}, "B - Usually reliable")
 
-    assert response.outputs["ip"] == "45.83.65.120"
+    assert response.outputs["ip"] == "1.2.3.4"
     assert "riot" not in response.outputs
     assert response.outputs["business_service_status"] == GreyNoise.BUSINESS_SERVICE_LICENSE_MESSAGE
     assert GreyNoise.BUSINESS_SERVICE_LICENSE_MESSAGE in response.readable_output
@@ -813,9 +813,9 @@ def test_context_command_real_null_found_response(mocker):
     client = GreyNoise.Client(api_config)
     mocker.patch.object(client, "ip", return_value=copy.deepcopy(real_api_sample_null_found))
 
-    response = GreyNoise.context_command(client, {"ip": "45.83.65.120"}, "B - Usually reliable")
+    response = GreyNoise.context_command(client, {"ip": "1.2.3.4"}, "B - Usually reliable")
 
-    assert response.outputs["address"] == "45.83.65.120"
+    assert response.outputs["address"] == "1.2.3.4"
     assert response.outputs["found"] is True
     assert response.outputs["classification"] == "unknown"
     assert response.outputs["business_service_status"] == GreyNoise.BUSINESS_SERVICE_LICENSE_MESSAGE
@@ -847,10 +847,10 @@ def test_commands_real_business_service_response(mocker):
     mocker.patch.object(client, "ip", return_value=copy.deepcopy(real_api_sample_business_service))
     mocker.patch.object(client, "quick", return_value=[copy.deepcopy(real_api_sample_business_service)])
 
-    ip_results = GreyNoise.ip_reputation_command(client, {"ip": "1.1.2.2"}, "B - Usually reliable")
+    ip_results = GreyNoise.ip_reputation_command(client, {"ip": "5.6.7.8"}, "B - Usually reliable")
     assert len(ip_results) == 1
     ip_result = ip_results[0]
-    assert ip_result.outputs["address"] == "1.1.2.2"
+    assert ip_result.outputs["address"] == "5.6.7.8"
     assert ip_result.outputs["riot"] is True
     assert ip_result.outputs["name"] == "Cloudflare Public DNS"
     assert ip_result.outputs["category"] == "public_dns"
@@ -861,8 +861,8 @@ def test_commands_real_business_service_response(mocker):
     assert "No Mass-Internet Scanning Observed" in ip_result.readable_output
     assert ip_result.indicator.dbot_score.score == 1
 
-    riot_result = GreyNoise.riot_command(client, {"ip": "1.1.2.2"}, "B - Usually reliable")
-    assert riot_result.outputs["ip"] == "1.1.2.2"
+    riot_result = GreyNoise.riot_command(client, {"ip": "5.6.7.8"}, "B - Usually reliable")
+    assert riot_result.outputs["ip"] == "5.6.7.8"
     assert riot_result.outputs["riot"] is True
     assert riot_result.outputs["name"] == "Cloudflare Public DNS"
     assert riot_result.outputs["trust_level"] == "1 - Reasonably Ignore"
@@ -870,15 +870,81 @@ def test_commands_real_business_service_response(mocker):
     assert "Reputation: Good" in riot_result.readable_output
     assert riot_result.indicator.dbot_score.score == 1
 
-    context_result = GreyNoise.context_command(client, {"ip": "1.1.2.2"}, "B - Usually reliable")
-    assert context_result.outputs["address"] == "1.1.2.2"
+    context_result = GreyNoise.context_command(client, {"ip": "5.6.7.8"}, "B - Usually reliable")
+    assert context_result.outputs["address"] == "5.6.7.8"
     assert context_result.outputs["found"] is False
     assert context_result.outputs["seen"] is False
     assert "No Mass-Internet Scanning Observed" in context_result.readable_output
 
-    quick_result = GreyNoise.ip_quick_check_command(client, {"ip": "1.1.2.2"})
-    assert quick_result.outputs[0]["address"] == "1.1.2.2"
+    quick_result = GreyNoise.ip_quick_check_command(client, {"ip": "5.6.7.8"})
+    assert quick_result.outputs[0]["address"] == "5.6.7.8"
     assert quick_result.outputs[0]["business_service_intelligence"]["found"] is True
     assert quick_result.outputs[0]["business_service_intelligence"]["trust_level"] == "1"
     assert quick_result.outputs[0]["internet_scanner_intelligence"]["found"] is False
     assert "true | 1" in quick_result.readable_output
+
+
+@pytest.mark.parametrize(
+    "api_response",
+    [
+        {"ip": "1.2.3.4", "internet_scanner_intelligence": None, "business_service_intelligence": None},
+        {"ip": "1.2.3.4", "internet_scanner_intelligence": {"found": None}, "business_service_intelligence": None},
+        {"ip": "1.2.3.4", "internet_scanner_intelligence": {"found": True}, "business_service_intelligence": None},
+    ],
+)
+def test_context_command_null_scanner_intelligence(mocker, api_response):
+    """
+    greynoise-context must not fail when internet_scanner_intelligence, its found field,
+    or its classification is null or missing.
+    """
+    client = _greynoise_client()
+    mocker.patch.object(client, "ip", return_value=api_response)
+
+    response = GreyNoise.context_command(client, {"ip": "1.2.3.4"}, "B - Usually reliable")
+
+    assert response.outputs["address"] == "1.2.3.4"
+    assert response.indicator.dbot_score.score == 0
+
+
+def test_context_command_non_dict_response(mocker):
+    """
+    greynoise-context raises a clear error when the API returns something other than an object.
+    """
+    client = _greynoise_client()
+    mocker.patch.object(client, "ip", return_value="unexpected")
+
+    with pytest.raises(GreyNoise.DemistoException, match="Invalid response from GreyNoise"):
+        GreyNoise.context_command(client, {"ip": "1.2.3.4"}, "B - Usually reliable")
+
+
+@pytest.mark.parametrize("command", ["ip_reputation_command", "context_command"])
+def test_raw_response_is_not_modified(mocker, command):
+    """
+    raw_response must be the API response as returned, without the seen/address/ip fields
+    the command adds to its outputs.
+    """
+    client = _greynoise_client()
+    mocker.patch.object(demisto, "command", return_value="ip")
+    mocker.patch.object(client, "ip", return_value=copy.deepcopy(real_api_sample_null_found))
+
+    result = getattr(GreyNoise, command)(client, {"ip": "1.2.3.4"}, "B - Usually reliable")
+    if isinstance(result, list):
+        result = result[0]
+
+    assert result.raw_response == real_api_sample_null_found
+    assert "seen" not in result.raw_response["internet_scanner_intelligence"]
+    assert "address" not in result.raw_response["internet_scanner_intelligence"]
+
+
+def test_cve_command_missing_details(mocker):
+    """
+    The cve command still returns the CVE record when the response has no details section.
+    """
+    client = _greynoise_client()
+    mocker.patch.object(client, "cve", return_value={"id": "CVE-2024-12345", "details": None})
+
+    response = GreyNoise.cve_command(client, {"cve": "CVE-2024-12345"}, "B - Usually reliable")
+
+    assert len(response) == 1
+    assert response[0].outputs["id"] == "CVE-2024-12345"
+    assert "CVE: CVE-2024-12345 is found" in response[0].readable_output

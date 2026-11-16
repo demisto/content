@@ -502,7 +502,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
 
         scanner_intelligence = api_response.get("internet_scanner_intelligence")
         if isinstance(scanner_intelligence, dict):
-            response = scanner_intelligence
+            response = copy.deepcopy(scanner_intelligence)
             found = response.get("found", False)
             response["seen"] = False if found is None else found
             response["address"] = api_response.get("ip")
@@ -1189,9 +1189,14 @@ def context_command(client: Client, args: dict, reliability: str) -> CommandResu
         demisto.debug(f"Error in context_command: {e}")
         raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(e))
 
-    if "internet_scanner_intelligence" in api_response:
-        response = api_response.get("internet_scanner_intelligence", {})
-        response["seen"] = response.get("found", False)
+    if not isinstance(api_response, dict):
+        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(api_response))
+
+    scanner_intelligence = api_response.get("internet_scanner_intelligence")
+    if isinstance(scanner_intelligence, dict):
+        response = copy.deepcopy(scanner_intelligence)
+        found = response.get("found", False)
+        response["seen"] = False if found is None else found
         response["address"] = api_response.get("ip", "")
         response["ip"] = api_response.get("ip", "")
     else:
@@ -1199,11 +1204,11 @@ def context_command(client: Client, args: dict, reliability: str) -> CommandResu
 
     original_response = copy.deepcopy(api_response)
 
-    response = remove_empty_elements(response)
+    response = remove_empty_elements(response) or {}
 
     dbot_score_int, dbot_score_string = get_ip_reputation_score(response.get("classification"))
 
-    if response["found"]:
+    if response.get("found"):
         tmp_response = get_ip_context_data([response])
         human_readable = f"### IP: {ip} found with Reputation: {dbot_score_string}\n"
         headers = IP_CONTEXT_HEADERS
@@ -1226,7 +1231,7 @@ def context_command(client: Client, args: dict, reliability: str) -> CommandResu
             removeNull=False,
         )
 
-    if response["found"] and response["classification"] == "malicious":
+    if response.get("found") and response.get("classification") == "malicious":
         malicious_description = "This IP has been observed scanning the internet in a malicious manner."
     else:
         malicious_description = ""
@@ -1295,10 +1300,11 @@ def cve_command(client: Client, args: dict, reliability: str) -> List[CommandRes
         cve_raw_response = copy.deepcopy(response)
         response = remove_empty_elements(response)
         if isinstance(response, dict) and response.get("id"):
-            cvss = response["details"].get("cve_cvss_score", "")
-            description = response["details"].get("vulnerability_description", "")
-            vendor = response["details"].get("vendor", "")
-            product = response["details"].get("product", "")
+            details = response.get("details", {})
+            cvss = details.get("cve_cvss_score", "")
+            description = details.get("vulnerability_description", "")
+            vendor = details.get("vendor", "")
+            product = details.get("product", "")
             if "timeline" in response:
                 published = response["timeline"].get("cve_published_date", "").split("T")[0]
                 modified = response["timeline"].get("cve_last_updated_date", "").split("T")[0]
@@ -1308,7 +1314,7 @@ def cve_command(client: Client, args: dict, reliability: str) -> List[CommandRes
                 "CVSS": cvss,
                 "Vendor": vendor,
                 "Product": product,
-                "Published to NVD": response["details"].get("published_to_nist_nvd", False),
+                "Published to NVD": details.get("published_to_nist_nvd", False),
             }
             human_readable = f"### CVE: {cve_arg} is found\n"
             human_readable += tableToMarkdown(

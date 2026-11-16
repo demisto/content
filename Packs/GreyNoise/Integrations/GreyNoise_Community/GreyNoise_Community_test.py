@@ -138,10 +138,10 @@ def test_ip_reputation_command_real_null_found_response(mocker):
     dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(real_api_sample_null_found), 200)
     mocker.patch("requests.Session.get", return_value=dummy_response)
 
-    response = GreyNoise_Community.ip_reputation_command(client, {"ip": "45.83.65.120"}, "B - Usually reliable")
+    response = GreyNoise_Community.ip_reputation_command(client, {"ip": "1.2.3.4"}, "B - Usually reliable")
 
     assert len(response) == 1
-    assert response[0].outputs["address"] == "45.83.65.120"
+    assert response[0].outputs["address"] == "1.2.3.4"
     assert (
         response[0].outputs["business_service_intelligence"]["business_service_status"]
         == GreyNoise_Community.BUSINESS_SERVICE_LICENSE_MESSAGE
@@ -167,11 +167,11 @@ def test_ip_reputation_command_real_business_service_response(mocker):
     dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(real_api_sample_business_service), 200)
     mocker.patch("requests.Session.get", return_value=dummy_response)
 
-    response = GreyNoise_Community.ip_reputation_command(client, {"ip": "1.1.2.2"}, "B - Usually reliable")
+    response = GreyNoise_Community.ip_reputation_command(client, {"ip": "5.6.7.8"}, "B - Usually reliable")
 
     assert len(response) == 1
     result = response[0]
-    assert result.outputs["address"] == "1.1.2.2"
+    assert result.outputs["address"] == "5.6.7.8"
     assert result.outputs["business_service_intelligence"]["found"] is True
     assert result.outputs["business_service_intelligence"]["name"] == "Cloudflare Public DNS"
     assert result.outputs["business_service_intelligence"]["trust_level"] == "1"

@@ -998,7 +998,7 @@ script:
       type: String
     - contextPath: GreyNoise.IP.business_service_status
       description: Set when Business Service Intelligence is not included in the current license.
-      type: String
+      type: string
   - arguments:
     - default: true
       description: The IP address to query in GreyNoise Context Command.
