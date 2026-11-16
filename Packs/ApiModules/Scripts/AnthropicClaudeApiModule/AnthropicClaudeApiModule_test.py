@@ -336,6 +336,17 @@ def test_fetch_events_first_fetch_ignored_once_cursor_exists(mocker):
     assert kwargs["created_at_gte"] is None
 
 
+def test_fetch_events_invalid_first_fetch_names_the_parameter(mocker):
+    """An unparsable first_fetch fails before any request, with an error that names the parameter."""
+    client = build_compliance_client()
+    get_mock = mocker.patch.object(client, "get_activities")
+
+    with pytest.raises(ValueError, match="first_fetch"):
+        fetch_events_with_pagination(client, last_run={}, max_events=50000, activity_types=None, first_fetch="not a date")
+
+    get_mock.assert_not_called()
+
+
 def test_fetch_events_command_passes_first_fetch_param(mocker):
     client = build_compliance_client()
     mocker.patch("AnthropicClaudeApiModule.demisto.getLastRun", return_value={})
@@ -922,8 +933,9 @@ def mock_ucp(mocker, profiles: list[dict], command: str = "test-module", params:
     mocker.patch("AnthropicClaudeApiModule.demisto.args", return_value={})
 
 
-def test_ucp_ids_match_connector_manifest():
-    """Guards the un-validated binding to the claude connector's capabilities.yaml ids."""
+def test_ucp_ids_are_unchanged():
+    """Change detector for the UcpIds values. It does not read capabilities.yaml, so it cannot catch drift
+    from the connector manifest; it only makes an accidental edit of these strings fail loudly."""
     assert UcpIds.AUTOMATION_CAPABILITY == "automation-and-remediation"
     assert UcpIds.COMPLIANCE_SUB_CAPABILITY == "automation-and-remediation_compliance"
     assert UcpIds.MODEL_SUB_CAPABILITY == "automation-and-remediation_model"
@@ -954,8 +966,52 @@ def test_anthropic_client_apply_ucp_api_key_raises_on_empty(mocker):
         build_llm_client()._apply_ucp_api_key({"type": "api_key"}, _make_ctx())
 
 
-def test_anthropic_client_pins_model_profile():
+def test_anthropic_client_pins_model_profile(mocker):
+    mock_ucp(mocker, [COMPLIANCE_PROFILE, MODEL_PROFILE], command="claude-send-message")
     assert build_llm_client()._resolve_ucp_capability() == (UcpIds.AUTOMATION_CAPABILITY, UcpIds.MODEL_SUB_CAPABILITY)
+
+
+@pytest.mark.parametrize("profiles", [[COMPLIANCE_PROFILE], [COMPLIANCE_PROFILE, LOG_COLLECTION_PROFILE]])
+def test_anthropic_client_refuses_without_model_profile(mocker, profiles):
+    """No model profile: raise rather than let the CSP fallback send the Compliance key to /v1/messages."""
+    mock_ucp(mocker, profiles, command="claude-send-message")
+    with pytest.raises(DemistoException, match="Claude model commands are not enabled"):
+        build_llm_client()._resolve_ucp_capability()
+
+
+@pytest.mark.parametrize("command", ["claude-list-chats", "claude-chat-file-delete", "fetch-events", "test-module"])
+def test_compliance_client_refuses_with_only_model_profile(mocker, command):
+    """No compliance/log-collection profile: raise rather than let the CSP fallback send the Messages key."""
+    mock_ucp(mocker, [MODEL_PROFILE], command=command)
+    client = ComplianceClient(url=BASE_URL, api_key=None, proxy=False, verify=False)
+    with pytest.raises(DemistoException, match="Compliance actions are not enabled"):
+        client._resolve_ucp_capability()
+
+
+def test_model_command_without_model_profile_surfaces_clear_error(mocker, requests_mock):
+    """End to end: the guard fires before any request, and the user sees the connector-level message."""
+    mock_ucp(mocker, [COMPLIANCE_PROFILE], command="claude-send-message")
+    mocker.patch("AnthropicClaudeApiModule.demisto.args", return_value={"message": "hi"})
+    mocker.patch("AnthropicClaudeApiModule.get_chat_context", return_value=[{"role": "user", "content": "hi"}])
+    messages_call = requests_mock.post(f"{BASE_URL}v1/messages", json={})
+    error = mocker.patch("AnthropicClaudeApiModule.return_error")
+
+    run_anthropic_claude_integration()
+
+    assert "Claude model commands are not enabled" in error.call_args.args[0]
+    assert not messages_call.called
+
+
+def test_test_module_on_ucp_without_profiles_uses_connector_wording(mocker):
+    """UCP with no testable profile: the message points at connector capabilities, not legacy params."""
+    mock_ucp(mocker, [{"capability": "identity", "sub_capabilities": [], "method_unique_id": "x"}])
+    error = mocker.patch("AnthropicClaudeApiModule.return_error")
+
+    run_anthropic_claude_integration()
+
+    message = error.call_args.args[0]
+    assert "Claude connector" in message
+    assert "'API Key'" not in message
 
 
 @pytest.mark.parametrize(

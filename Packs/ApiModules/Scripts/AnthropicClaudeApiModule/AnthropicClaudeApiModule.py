@@ -213,7 +213,7 @@ def ucp_has_sub_capability(sub_capability: str) -> bool:
 
 def ucp_has_capability(capability: str) -> bool:
     """True when a configured connection profile serves the given capability."""
-    return any(profile.get("capability") == capability for profile in get_ucp_connection_profiles())
+    return capability in get_configured_ucp_capabilities()
 
 
 def apply_x_api_key(credentials: dict, ctx: "UcpRequestContext") -> None:
@@ -247,7 +247,17 @@ class AnthropicClient(BaseClient):
             self.headers["x-api-key"] = self.api_key  # type: ignore[assignment]
 
     def _resolve_ucp_capability(self) -> tuple[str, str | None]:
-        """Pins the Messages API key profile (model-commands sub-capability)."""
+        """Pins the Messages API key profile (model-commands sub-capability).
+
+        Raises instead of returning an absent sub-capability: ``get_ucp_method_unique_id`` would
+        otherwise fall back to any ``automation-and-remediation`` profile — the Compliance Access
+        Key — and send it to ``/v1/messages``.
+        """
+        if not ucp_has_sub_capability(UcpIds.MODEL_SUB_CAPABILITY):
+            raise DemistoException(
+                "Claude model commands are not enabled on this connector. Enable the 'Claude model commands' "
+                "option of Automation and Remediation and enter a Messages API Key."
+            )
         return UcpIds.AUTOMATION_CAPABILITY, UcpIds.MODEL_SUB_CAPABILITY
 
     def _apply_ucp_api_key(self, credentials: dict, ctx: "UcpRequestContext") -> None:
@@ -317,7 +327,9 @@ class ComplianceClient(BaseClient):
 
         ``fetch-events`` binds to Log Collection. Everything else (commands, test-module) binds to
         the compliance-actions sub-capability, falling back to Log Collection when only collection
-        is configured — never to the model-commands profile, which carries a different key.
+        is configured — never to the model-commands profile, which carries a different key. When
+        neither is configured it raises, because ``get_ucp_method_unique_id`` would otherwise fall
+        back to the model profile and send the Messages API key to the Compliance API.
         """
         if demisto.command() == "fetch-events" and ucp_has_capability(UcpIds.LOG_COLLECTION_CAPABILITY):
             return UcpIds.LOG_COLLECTION_CAPABILITY, None
@@ -325,7 +337,10 @@ class ComplianceClient(BaseClient):
             return UcpIds.AUTOMATION_CAPABILITY, UcpIds.COMPLIANCE_SUB_CAPABILITY
         if ucp_has_capability(UcpIds.LOG_COLLECTION_CAPABILITY):
             return UcpIds.LOG_COLLECTION_CAPABILITY, None
-        return UcpIds.AUTOMATION_CAPABILITY, UcpIds.COMPLIANCE_SUB_CAPABILITY
+        raise DemistoException(
+            "Compliance actions are not enabled on this connector. Enable the 'Compliance actions' option of "
+            "Automation and Remediation, or Log Collection, and enter a Compliance Access Key."
+        )
 
     def _apply_ucp_api_key(self, credentials: dict, ctx: "UcpRequestContext") -> None:
         """Anthropic rejects Bearer auth; write ``x-api-key`` (plus a JSON ``accept``) instead."""
@@ -1318,6 +1333,11 @@ def run_anthropic_claude_integration() -> None:
                     results.append(module_test_compliance(client=compliance_client))
                 except Exception as e:
                     raise DemistoException(f"Compliance Access Key validation failed: {e}") from e
+            if not results and use_ucp:
+                raise DemistoException(
+                    "No Claude credentials to test. Enable 'Compliance actions' or 'Claude model commands' under "
+                    "Automation and Remediation, or Log Collection, on the Claude connector."
+                )
             if not results:
                 raise DemistoException(
                     "No credentials configured. Set the 'API Key' for LLM commands and/or the "

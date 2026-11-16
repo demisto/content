@@ -17,7 +17,7 @@ configuration:
   section: Connect
   type: 0
 - display: ''
-  displaypassword: API Key
+  displaypassword: Messages API Key
   hiddenusername: true
   name: apikey
   required: false
@@ -118,12 +118,14 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  additionalinfo: Bypass TLS certificate validation. Not recommended for production use.
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
   section: Connect
   advanced: true
+  additionalinfo: Route requests through the system HTTPS proxy configured on the server.
 description: This integration is configured automatically as part of the Claude connector. Do not configure this integration directly — set it up from the connector page instead.
 script:
   commands:

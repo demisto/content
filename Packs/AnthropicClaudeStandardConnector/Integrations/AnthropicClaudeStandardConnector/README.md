@@ -7,7 +7,7 @@ It shares all of its code with the Anthropic Claude integration through the `Ant
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The Anthropic API base URL. Defaults to https://api.anthropic.com/. | False |
-| API Key | The Anthropic Messages API key used by the Claude model commands \(claude-send-message, claude-check-email-\*, claude-create-soc-email-template\). | False |
+| Messages API Key | The Anthropic Messages API key used by the Claude model commands \(claude-send-message, claude-check-email-\*, claude-create-soc-email-template\). | False |
 | Compliance Access Key | The Anthropic Compliance Access Key \(sk-ant-api01-...\) used for log collection and the compliance commands. The delete commands require the delete:compliance_user_data scope. | False |
 | Model | The model that will process the inputs and generate the response. | False |
 | Model (Optional - overrides selected choice) | The model that will process the inputs and generate the response. | False |
