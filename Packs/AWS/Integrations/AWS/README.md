@@ -7308,3 +7308,29 @@ Retrieves the tags associated with the specified resource. Tags are key:value pa
 | AWS.NetworkFirewall.Tags.Tags.Key | String | The part of the key:value pair that defines a tag. |
 | AWS.NetworkFirewall.Tags.Tags.Value | String | The part of the key:value pair that defines a tag. |
 | AWS.NetworkFirewall.Tags.TagsNextToken | String | The token to use when requesting the next set of items. |
+
+### aws-cli
+
+***
+Executes an AWS CLI command against the specified AWS account and region and returns the JSON response. The required IAM permissions depend on the executed CLI command.
+
+#### Base Command
+
+`aws-cli`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cli_command | The AWS CLI command to execute. For example: aws s3api list-buckets. | Required |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.CLI.Command | String | The AWS CLI command that was executed. |
+| AWS.CLI.AccountId | String | The AWS account ID the command was executed against. |
+| AWS.CLI.Region | String | The AWS region the command was executed in. |
+| AWS.CLI.Output | Unknown | The JSON response returned by the AWS CLI command. |

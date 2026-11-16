@@ -22798,6 +22798,49 @@ def test_execute_cli_command_text_output(mocker):
     assert result.outputs is None
 
 
+def test_execute_cli_command_quoted_and_shell_characters_are_literal(mocker):
+    """
+    Given: A CLI command containing a quoted value and shell metacharacters.
+    When: execute_cli_command is called.
+    Then: The quoted value is kept as one token and the metacharacters are passed to aws as literal text.
+    """
+    from AWS import execute_cli_command
+
+    mock_run = mocker.patch("AWS.subprocess.run", return_value=_completed_process(stdout="{}"))
+
+    args = {"cli_command": 'aws ec2 describe-instances --filters "Name=tag:Name,Values=my vm" ; rm -rf /', "account_id": "1"}
+    execute_cli_command(CLI_PLATFORM_CREDENTIALS, {}, args)
+
+    cmd = mock_run.call_args[0][0]
+    assert "Name=tag:Name,Values=my vm" in cmd
+    assert ";" in cmd
+    assert "shell" not in mock_run.call_args[1]
+
+
+@pytest.mark.parametrize(
+    "args_region, params_region, expected_region",
+    [
+        ("eu-west-1", "us-west-2", "eu-west-1"),
+        (None, "us-west-2", "us-west-2"),
+        (None, None, "us-east-1"),
+    ],
+)
+def test_execute_cli_command_region_resolution(mocker, args_region, params_region, expected_region):
+    """
+    Given: A region set in the arguments, only in the integration parameters, or in neither.
+    When: execute_cli_command is called.
+    Then: The region is taken from the arguments, then the parameters, then the default region.
+    """
+    from AWS import execute_cli_command
+
+    mock_run = mocker.patch("AWS.subprocess.run", return_value=_completed_process(stdout="{}"))
+
+    args = {"cli_command": "aws s3api list-buckets", "account_id": "1", "region": args_region}
+    execute_cli_command(CLI_PLATFORM_CREDENTIALS, {"region": params_region}, args)
+
+    assert mock_run.call_args[1]["env"]["AWS_DEFAULT_REGION"] == expected_region
+
+
 @pytest.mark.parametrize("cli_command", ["", "aws", "   "])
 def test_execute_cli_command_empty_command_raises(cli_command):
     """
