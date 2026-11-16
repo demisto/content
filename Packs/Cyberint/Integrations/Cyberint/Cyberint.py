@@ -15,6 +15,7 @@ SEVERITIES = {"low": 1, "medium": 2, "high": 3, "very_high": 4}
 CSV_FIELDS_TO_EXTRACT = ["Username", "Password"]
 LOGIN_URL_KEY = "designated_url"
 EMPLOYEE_CREDENTIALS_ALERT_TYPE = "compromised_employee_credentials"
+LOGIN_INTERFACE_ASSET_TYPE = "employee login interface"
 LOGIN_URL_ASSET_TYPES = {"url", "subdomain", "domain", "ip"}
 
 MIRROR_DIRECTION_MAPPING = {
@@ -869,8 +870,9 @@ def get_first_related_asset(alert: dict[str, Any]) -> dict[str, Any]:
 
 def get_login_asset_name(alert: dict[str, Any]) -> str:
     """
-    Return the name of the first related asset that can be a login address (URL, subdomain, domain or IP).
-    Assets of other types, such as keywords, are skipped. Assets without a type are accepted.
+    Return the name of the related asset that best represents the login address.
+    An "employee login interface" asset is preferred. Otherwise the first URL, subdomain, domain or IP asset,
+    or the first asset without a type, is used. Other asset types, such as keywords, are skipped.
 
     Args:
         alert (dict): Cyberint alert.
@@ -881,9 +883,11 @@ def get_login_asset_name(alert: dict[str, Any]) -> str:
     related_assets = alert.get("related_assets")
     if not isinstance(related_assets, list):
         return ""
-    for asset in related_assets:
-        if not isinstance(asset, dict) or not asset.get("name"):
-            continue
+    named_assets = [asset for asset in related_assets if isinstance(asset, dict) and asset.get("name")]
+    for asset in named_assets:
+        if asset.get("type") == LOGIN_INTERFACE_ASSET_TYPE:
+            return str(asset["name"])
+    for asset in named_assets:
         asset_type = asset.get("type")
         if not asset_type or asset_type in LOGIN_URL_ASSET_TYPES:
             return str(asset["name"])

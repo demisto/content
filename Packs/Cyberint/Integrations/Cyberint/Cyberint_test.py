@@ -981,6 +981,14 @@ def test_fetch_incidents_employee_credentials_login_url(requests_mock, client, d
         ([{"id": "url/Example/https://example.com/login", "name": "https://example.com/login", "type": "url"}], "https://example.com/login"),
         ([{"id": "/Example/corp.example.com", "name": "corp.example.com"}], "corp.example.com"),
         ([{"id": "/Example/", "name": "", "type": ""}], ""),
+        (
+            [
+                {"id": "keyword/Example/example asset", "name": "example asset", "type": "keyword"},
+                {"id": "domain/Example/example.com", "name": "example.com", "type": "domain"},
+                {"id": "employee login interface/Example/Login page", "name": "Login page", "type": "employee login interface"},
+            ],
+            "Login page",
+        ),
     ],
 )
 def test_add_login_url_fields_asset_types(related_assets, expected_login_url):
