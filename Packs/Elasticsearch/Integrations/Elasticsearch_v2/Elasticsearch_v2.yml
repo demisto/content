@@ -1296,7 +1296,7 @@ script:
       - cases
       - observability
       - securitySolution
-      description: The application that owns the cases: Stack Management, Observability, or Elastic Security..
+      description: The application that owns the cases - Stack Management, Observability, or Elastic Security..
     outputs:
     - contextPath: Elasticsearch.Kibana.CaseSettings.id
       description: The identifier of the case configuration.
