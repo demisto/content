@@ -13,6 +13,8 @@ STRFTIME = "%Y-%m-%d"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 SEVERITIES = {"low": 1, "medium": 2, "high": 3, "very_high": 4}
 CSV_FIELDS_TO_EXTRACT = ["Username", "Password"]
+LOGIN_URL_KEY = "designated_url"
+EMPLOYEE_CREDENTIALS_ALERT_TYPE = "compromised_employee_credentials"
 
 MIRROR_DIRECTION_MAPPING = {
     "Incoming": "In",
@@ -847,6 +849,80 @@ def migrate_closure_fields_if_needed(last_run: dict[str, Any]) -> None:
     last_run["closure_fields_migrated"] = True
 
 
+def get_first_related_asset(alert: dict[str, Any]) -> dict[str, Any]:
+    """
+    Return the first related asset of an alert.
+
+    Args:
+        alert (dict): Cyberint alert.
+
+    Returns:
+        dict: The first related asset, or an empty dict if the alert has none.
+    """
+    related_assets = alert.get("related_assets")
+    if not isinstance(related_assets, list) or not related_assets:
+        return {}
+    first_asset = related_assets[0]
+    return first_asset if isinstance(first_asset, dict) else {}
+
+
+def get_alert_login_url(alert: dict[str, Any]) -> str:
+    """
+    Return the login URL of a credentials alert.
+    Customer credentials alerts carry it in alert_data.designated_url.
+    Employee credentials alerts don't, so the name of the first related asset is used instead.
+
+    Args:
+        alert (dict): Cyberint alert.
+
+    Returns:
+        str: The login URL, or an empty string if none is available.
+    """
+    alert_data = alert.get("alert_data") or {}
+    designated_url = alert_data.get(LOGIN_URL_KEY) if isinstance(alert_data, dict) else None
+    if designated_url:
+        return str(designated_url)
+    return str(get_first_related_asset(alert).get("name") or "")
+
+
+def add_login_url_to_employee_credentials(alert: dict[str, Any], login_url: str) -> None:
+    """
+    Add designated_url to an employee credentials alert and to each of its exposed credentials,
+    so it has the same structure as a customer credentials alert.
+    Existing designated_url values are kept.
+
+    Args:
+        alert (dict): Cyberint alert. Updated in place.
+        login_url (str): The login URL to add.
+    """
+    alert_data = alert.get("alert_data")
+    if not login_url or alert.get("type") != EMPLOYEE_CREDENTIALS_ALERT_TYPE or not isinstance(alert_data, dict):
+        return
+    alert_data.setdefault(LOGIN_URL_KEY, login_url)
+    csv_content = dict_safe_get(alert_data, ["csv", "content"])
+    if not isinstance(csv_content, list):
+        return
+    for credential in csv_content:
+        if isinstance(credential, dict):
+            credential.setdefault(LOGIN_URL_KEY, login_url)
+
+
+def add_login_url_fields(alert: dict[str, Any]) -> None:
+    """
+    Add top-level keys used by the incoming mapper: login_url, related_asset_name and related_asset_id.
+    Missing values are set to an empty string.
+
+    Args:
+        alert (dict): Cyberint alert. Updated in place.
+    """
+    first_asset = get_first_related_asset(alert)
+    login_url = get_alert_login_url(alert)
+    alert["login_url"] = login_url
+    alert["related_asset_name"] = str(first_asset.get("name") or "")
+    alert["related_asset_id"] = str(first_asset.get("id") or "")
+    add_login_url_to_employee_credentials(alert, login_url)
+
+
 def fetch_incidents(
     client: Client,
     last_run: dict[str, int],
@@ -908,6 +984,7 @@ def fetch_incidents(
 
     for alert_object in alerts.get("alerts", []):
         alert = dict(alert_object)
+        add_login_url_fields(alert)
         #  Create the XS0AR incident.
         alert_created_time = datetime.strptime(alert.get("created_date"), "%Y-%m-%dT%H:%M:%S")  # type: ignore
 

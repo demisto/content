@@ -1,3 +1,4 @@
+import copy
 import json
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
@@ -854,3 +855,113 @@ def test_update_remote_system_cyberint_alert_already_closed(requests_mock, clien
 
     result = update_remote_system(client, args)
     assert result == "INT-125"
+
+
+def load_employee_credentials_alert() -> dict:
+    return json.loads(load_mock_response("employee_credentials_alert.json"))["alerts"][0]
+
+
+def test_add_login_url_fields_employee_credentials():
+    """
+    Given:
+     - A compromised employee credentials alert with a related asset and no designated_url.
+    When:
+     - add_login_url_fields is called.
+    Then:
+     - login_url, related_asset_name and related_asset_id hold the related asset values in full.
+     - designated_url is added to alert_data and to every exposed credential.
+     - alert_data.domain is unchanged.
+    """
+    from Cyberint import add_login_url_fields
+
+    alert = load_employee_credentials_alert()
+    add_login_url_fields(alert)
+
+    assert alert["login_url"] == "corp.example.com"
+    assert alert["related_asset_name"] == "corp.example.com"
+    assert alert["related_asset_id"] == "/Example/corp.example.com"
+    assert alert["alert_data"]["domain"] == "example.com"
+    assert alert["alert_data"]["designated_url"] == "corp.example.com"
+    assert all(row["designated_url"] == "corp.example.com" for row in alert["alert_data"]["csv"]["content"])
+
+
+def test_add_login_url_fields_customer_credentials_keeps_designated_url():
+    """
+    Given:
+     - A compromised customer credentials alert that already has alert_data.designated_url.
+    When:
+     - add_login_url_fields is called.
+    Then:
+     - login_url is the existing designated_url and alert_data is not changed.
+    """
+    from Cyberint import add_login_url_fields
+
+    alert = json.loads(load_mock_response("list_alerts.json"))["alerts"][0]
+    alert_data_before = copy.deepcopy(alert["alert_data"])
+    add_login_url_fields(alert)
+
+    assert alert["login_url"] == "https://www.barclaycardus.com/servicing/authenticate"
+    assert alert["related_asset_name"] == ""
+    assert alert["related_asset_id"] == ""
+    assert alert["alert_data"] == alert_data_before
+
+
+@pytest.mark.parametrize(
+    "related_assets, alert_data",
+    [
+        (None, None),
+        ([], {}),
+        ([None], {"domain": "example.com"}),
+        ([{"id": None, "name": None}], {"csv": {"content": None}}),
+    ],
+)
+def test_add_login_url_fields_missing_values(related_assets, alert_data):
+    """
+    Given:
+     - An employee credentials alert with missing, empty or null related assets and alert data.
+    When:
+     - add_login_url_fields is called.
+    Then:
+     - The new keys are empty strings and no error is raised.
+     - designated_url is not added.
+    """
+    from Cyberint import add_login_url_fields
+
+    alert = {"type": "compromised_employee_credentials", "related_assets": related_assets, "alert_data": alert_data}
+    add_login_url_fields(alert)
+
+    assert alert["login_url"] == ""
+    assert alert["related_asset_name"] == ""
+    assert alert["related_asset_id"] == ""
+    assert "designated_url" not in (alert["alert_data"] or {})
+
+
+@pytest.mark.parametrize("duplicate_alerts", [True, False])
+def test_fetch_incidents_employee_credentials_login_url(requests_mock, client, duplicate_alerts):
+    """
+    Given:
+     - The API returns a compromised employee credentials alert with a related asset.
+    When:
+     - fetch_incidents is called, with and without splitting the alert per credential.
+    Then:
+     - Every incident rawJSON holds login_url, related_asset_name, related_asset_id and alert_data.domain.
+     - In split mode, attachments.content.designated_url is set, like in customer credentials incidents.
+    """
+    from Cyberint import fetch_incidents
+
+    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=json.loads(load_mock_response("employee_credentials_alert.json")))
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-10/attachments/19879773", text="Username,Password\r\nuser1,*****")
+
+    _, incidents = fetch_incidents(
+        client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, duplicate_alerts, "Incoming And Outgoing", False
+    )
+
+    assert len(incidents) == (2 if duplicate_alerts else 1)
+    for incident in incidents:
+        raw_alert = json.loads(incident["rawJSON"])
+        assert raw_alert["login_url"] == "corp.example.com"
+        assert raw_alert["related_asset_name"] == "corp.example.com"
+        assert raw_alert["related_asset_id"] == "/Example/corp.example.com"
+        assert raw_alert["alert_data"]["domain"] == "example.com"
+        if duplicate_alerts:
+            assert raw_alert["attachments"]["content"]["designated_url"] == "corp.example.com"
