@@ -145,6 +145,9 @@ ignore=IF115
 [file:indicatorfield-Dataminr_Pulse_Vulnerable_Products.json]
 ignore=IF115
 
+[file:classifier-Dataminr_Pulse_-_Incoming_Mapper.json]
+ignore=GR103
+
 
 [known_words]
 pv
