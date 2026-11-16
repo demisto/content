@@ -238,7 +238,8 @@ def parse_date_to_epoch_ms(date_str: str | None) -> int:
 
 
 def build_description(incident: dict) -> str:
-    status_names = {0: "Active", 1: "Done", 2: "Archive"}
+    # Mirrors CommonServerPython IncidentStatus: PENDING=0, ACTIVE=1, DONE=2, ARCHIVE=3.
+    status_names = {0: "Pending", 1: "Active", 2: "Done", 3: "Archive"}
     severity_names = {0: "Unknown", 1: "Low", 2: "Medium", 3: "High", 4: "Critical"}
     lines: list[str] = []
 

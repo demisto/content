@@ -85,6 +85,27 @@ class TestBuildDescription:
         desc = build_description(MOCK_INCIDENTS[0])
         assert "Brand: Manual" in desc
 
+    @pytest.mark.parametrize(
+        "status_value,expected",
+        [(0, "Status: Pending"), (1, "Status: Active"), (2, "Status: Done"), (3, "Status: Archive")],
+    )
+    def test_status_matches_incidentstatus_enum(self, status_value, expected):
+        # CommonServerPython IncidentStatus: PENDING=0, ACTIVE=1, DONE=2, ARCHIVE=3.
+        desc = build_description({**MOCK_INCIDENTS[0], "status": status_value})
+        assert expected in desc
+
+    @pytest.mark.parametrize("status_value", [0, 1])
+    def test_open_statuses_are_not_treated_as_closed(self, status_value):
+        # sync_close_status_command resolves on "Done"/"Archive"; Pending and
+        # Active must never render as either, or live incidents get auto-resolved.
+        desc = build_description({**MOCK_INCIDENTS[0], "status": status_value})
+        assert extract_alert_field(desc, "Status") not in ("Done", "Archive")
+
+    @pytest.mark.parametrize("status_value", [2, 3])
+    def test_closed_statuses_are_treated_as_closed(self, status_value):
+        desc = build_description({**MOCK_INCIDENTS[0], "status": status_value})
+        assert extract_alert_field(desc, "Status") in ("Done", "Archive")
+
 
 class TestBuildRawContext:
     def test_returns_valid_json(self):
