@@ -2354,7 +2354,12 @@ def delete_custom_ioc(ids: str) -> dict:
     return http_request("DELETE", "/iocs/entities/indicators/v1", params=params)
 
 
-def _request_with_legacy_ioc_fallback(modern_url_suffix, legacy_url_suffix, params, status_code=None):
+def _request_with_legacy_ioc_fallback(
+    modern_url_suffix: str,
+    legacy_url_suffix: str,
+    params: dict[str, Any] | None,
+    status_code: int | list[int] | None = None,
+) -> dict[str, Any]:
     """
     Calls the modern IOC Management endpoint first and falls back to the legacy Custom IOC endpoint
     if an HTTP 403 Forbidden error is returned (e.g., when an API client only has legacy IOC scopes).
