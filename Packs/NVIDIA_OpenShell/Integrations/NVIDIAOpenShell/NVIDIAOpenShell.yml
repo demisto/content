@@ -477,6 +477,8 @@ script:
       description: The wildcard entry that still allows the host.
       type: String
     execution: true
+    compliantpolicies:
+    - User Hard Remediation
   - name: openshell-policy-rule-remove
     description: Removes a network rule from the sandbox policy. All destinations of the rule are denied.
     arguments:
@@ -544,6 +546,8 @@ script:
       description: The summary of the change.
       type: String
     execution: true
+    compliantpolicies:
+    - User Hard Remediation
   - name: openshell-policy-binary-remove
     description: Removes a binary, for example /usr/bin/curl, from a network rule so it can no longer use that rule.
     arguments:
