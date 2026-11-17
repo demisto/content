@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import sys
+import ipaddress
+import re
 from re import escape
 
 
@@ -8,6 +10,33 @@ FILTER_CONFIG_PATH = "/opt/WCG/config/filter.config"
 CMD_DEL_RULE_FORMAT = "sed -i '/^{0}={1} action=[A-Za-z]*$/d' {2}"
 CMD_TRITON_RELOAD_CONFIG = "/opt/WCG/bin/content_line -x"  # && /opt/WCG/WCGAdmin runds"
 ALLOWED_TYPES = ["dest_domain", "dest_ip", "dest_host", "url_regex"]
+HOSTNAME_REGEX = re.compile(r"[A-Za-z0-9_](?:[A-Za-z0-9_.-]{0,252})")
+FORBIDDEN_CHARS_REGEX = re.compile(r"['\"\x00-\x1f\x7f]")
+
+
+def validate_value(rule_type: str, value: str) -> str | None:
+    """Validates the rule value according to the rule type.
+
+    Returns an error message if the value is invalid, otherwise None.
+    """
+    if not value:
+        return "Value argument must not be empty."
+    if rule_type == "dest_ip":
+        try:
+            ipaddress.ip_address(value)
+        except ValueError:
+            return f"Value argument must be a valid IP address for type dest_ip. Invalid value: {value}"
+    elif rule_type in ("dest_domain", "dest_host"):
+        if not HOSTNAME_REGEX.fullmatch(value):
+            return f"Value argument must be a valid hostname or domain for type {rule_type}. Invalid value: {value}"
+    elif FORBIDDEN_CHARS_REGEX.search(value):
+        return f"Value argument must not contain quotes, newlines or control characters. Invalid value: {value!r}"
+    return None
+
+
+def escape_value(value: str) -> str:
+    """Escapes the value for the sed expression."""
+    return escape(value).replace("/", r"\/")
 
 
 def delete_rule(ruleType):
@@ -21,7 +50,11 @@ def delete_rule(ruleType):
             }
         )
     else:
-        valueFormat = escape(demisto.args()["value"])
+        value = demisto.args().get("value", "")
+        if validation_error := validate_value(ruleType, value):
+            demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": validation_error})
+            return
+        valueFormat = escape_value(value)
         if ruleType in ["dest_domain", "url_regex"]:
             valueFormat = r"\"" + valueFormat + r"\""
         # sed command that deletes the rule
