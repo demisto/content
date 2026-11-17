@@ -29,9 +29,9 @@ Cyberint provides intelligence-driven digital risk protection. This integration 
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-## Login URL of Credentials Alerts
+### Login URL of Credentials Alerts
 
-The **Cyberint Login URL** incident field holds *alert_data.designated_url* when the alert has it, as compromised customer credentials alerts do. Otherwise it holds the name of the alert's related **Employee Login Interface** asset or, if there is none, of the first related asset that is not a keyword or company. Compromised employee credentials alerts also get this value as *designated_url* on the alert data and on each exposed credential.
+The **Cyberint Login URL** incident field holds `alert_data.designated_url` when the alert has it, as compromised customer credentials alerts do. Otherwise, it holds the name of the alert's related **Employee Login Interface** asset or, if there is none, of the first related asset that is not a keyword or company. Compromised employee credentials alerts also get this value as `designated_url` on the alert data and on each exposed credential.
 
 The asset name is the name configured for the asset in Cyberint, not its nicknames. To get the login address in these fields, name the Employee Login Interface asset after the login host or URL (for example, `login.example.com`).
 

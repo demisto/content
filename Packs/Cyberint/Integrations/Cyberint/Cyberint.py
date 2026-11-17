@@ -2,6 +2,7 @@
 """IMPORTS"""
 
 import copy
+import traceback
 from collections.abc import Iterable
 from contextlib import closing
 
@@ -933,6 +934,7 @@ def enrich_alerts_with_asset_groups(client: Client, alerts: list[dict[str, Any]]
             fetched_assets = response.json().get("related_assets") or []
         except Exception as error:
             demisto.debug(f"Related assets request failed, skipping asset groups enrichment: {error}")
+            demisto.debug(traceback.format_exc())
             return
         alert["related_assets"] = merge_related_assets(alert.get("related_assets"), fetched_assets)
         if summary := format_asset_groups(alert["related_assets"]):
