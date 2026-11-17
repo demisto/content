@@ -604,7 +604,7 @@ script:
       description: The provider profile workspace.
       type: String
   - name: openshell-provider-detach
-    description: Detaches a credential provider from a sandbox, so the agent no longer receives those credentials. This action cannot be undone.
+    description: Detaches a credential provider from a sandbox, so the agent no longer receives those credentials. This integration cannot re-attach the provider; re-attach it in OpenShell if needed.
     arguments:
     - name: name
       description: The sandbox name.
@@ -616,7 +616,7 @@ script:
       description: The OpenShell workspace. Defaults to the instance workspace.
       required: false
     - name: confirm
-      description: Whether to confirm the action, which cannot be undone. Set to yes to run it.
+      description: Whether to confirm the action. This integration cannot re-attach the provider. Set to yes to run it.
       required: true
       auto: PREDEFINED
       predefined:
