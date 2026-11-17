@@ -1,0 +1,88 @@
+{
+    "illusive_illusive_raw": {
+      "cat": {
+          "type": "string",
+          "is_array": false
+      },
+      "cefDeviceProduct": {
+          "type": "string",
+          "is_array": false
+      },
+      "cefVersion": {
+          "type": "string",
+          "is_array": false
+      },
+      "dvc": {
+          "type": "string",
+          "is_array": false
+      },
+      "msg": {
+          "type": "string",
+          "is_array": false
+      },
+      "duser": {
+          "type": "string",
+          "is_array": false
+      },
+      "outcome": {
+          "type": "string",
+          "is_array": false
+      },
+      "cefname": {
+          "type": "string",
+          "is_array": false
+      },
+      "cefSeverity": {
+          "type": "string",
+          "is_array": false
+      },
+      "cefDeviceVersion": {
+          "type": "string",
+          "is_array": false
+      },
+      "cs1": {
+          "type": "string",
+          "is_array": false
+      },
+      "cs2": {
+          "type": "string",
+          "is_array": false
+      },
+      "cs3": {
+          "type": "string",
+          "is_array": false
+      },
+      "cs4": {
+          "type": "string",
+          "is_array": false
+      },
+      "cs5": {
+          "type": "string",
+          "is_array": false
+      },
+      "cn2": {
+          "type": "int",
+          "is_array": false
+      },
+      "destinationServiceName": {
+          "type": "string",
+          "is_array": false
+      },
+      "dhost": {
+          "type": "string",
+          "is_array": false
+      },
+      "shost": {
+          "type": "string",
+          "is_array": false
+      },
+      "sproc": {
+          "type": "string",
+          "is_array": false
+      },
+      "src": {
+          "type": "string",
+          "is_array": false
+      }
+    }
+  }

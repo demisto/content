@@ -1,0 +1,136 @@
+{
+    "mongodb_atlas_raw": {
+      "source_log_type": {
+        "type": "string",
+        "is_array": false
+      },
+      "acknowledgementComment": {
+        "type": "string",  
+        "is_array": false
+      },
+      "acknowledgingUsername": {
+        "type": "string",
+        "is_array": false
+      },
+      "alertConfigId": {
+        "type": "string",
+        "is_array": false
+      },
+      "eventTypeName": {
+        "type": "string",
+        "is_array": false
+      },
+      "groupId": {
+        "type": "string",
+        "is_array": false
+      },
+      "id": {
+        "type": "string",
+        "is_array": false
+      },
+      "links": {
+        "type": "string",
+        "is_array": false
+      },
+      "status": {
+        "type": "string",
+        "is_array": false
+      },
+      "_ENTRY_STATUS": {
+        "type": "string",
+        "is_array": false
+      },
+      "apiKeyId": {
+        "type": "string",
+        "is_array": false
+      },
+      "isGlobalAdmin": {
+        "type": "string",
+        "is_array": false
+      },
+      "publicKey": {
+        "type": "string",
+        "is_array": false
+      },
+      "remoteAddress": {
+        "type": "string",
+        "is_array": false
+      },
+      "targetPublicKey": {
+        "type": "string",
+        "is_array": false
+      },
+      "userId": {
+        "type": "string",
+        "is_array": false
+      },
+      "username": {
+        "type": "string",
+        "is_array": false
+      },
+      "targetUsername": {
+        "type": "string",
+        "is_array": false
+      },
+      "alertId": {
+        "type": "string",
+        "is_array": false
+      },
+      "collection": {
+        "type": "string",
+        "is_array": false
+      },
+      "database": {
+        "type": "string",
+        "is_array": false
+      },
+      "opType": {
+        "type": "string",
+        "is_array": false
+      },
+      "hostname": {
+        "type": "string",
+        "is_array": false
+      },
+      "port": {
+        "type": "string",
+        "is_array": false
+      },
+      "replicaSetName": {
+        "type": "string",
+        "is_array": false
+      },
+      "userAlias": {
+        "type": "string",
+        "is_array": false
+      },
+      "clusterName": {
+        "type": "string",
+        "is_array": false
+      },
+      "whitelistEntry": {
+        "type": "string",
+        "is_array": false
+      },
+      "applicationId": {
+        "type": "string",
+        "is_array": false
+      },
+      "applicationName": {
+        "type": "string",
+        "is_array": false
+      },
+      "linkToDetails": {
+        "type": "string",
+        "is_array": false
+      },
+      "diffs": {
+        "type": "string",
+        "is_array": false
+      },
+      "dbUserUsername": {
+        "type": "string",
+        "is_array": false
+      }                            
+    }
+}

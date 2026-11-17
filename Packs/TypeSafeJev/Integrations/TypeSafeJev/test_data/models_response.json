@@ -1,0 +1,9 @@
+{
+    "models": [
+        {
+            "name": "jev-latest",
+            "description": "Stable alias",
+            "release_date": "2026-09-15"
+        }
+    ]
+}

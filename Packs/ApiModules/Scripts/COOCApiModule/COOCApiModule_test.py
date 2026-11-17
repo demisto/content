@@ -91,6 +91,35 @@ def test_get_cloud_credentials_missing_account_id():
     assert "Missing AWS Account ID for AWS" in str(excinfo.value)
 
 
+def test_get_cloud_credentials_non_string_account_id(mocker):
+    """
+    Given: A valid cloud type and a non-string account_id (int).
+    When: The get_cloud_credentials function is called.
+    Then: The account_id is converted to a string and included as a string in the API request.
+    """
+
+    cloud_info = {"connectorID": "test-connector-id", "outpostID": "test-outpost-id"}
+    mock_context = {"CloudIntegrationInfo": cloud_info}
+
+    mocker.patch.object(demisto, "callingContext", {"context": mock_context})
+    mocker.patch.object(demisto, "debug")
+
+    credentials = {"access_token": "test-access-token", "expiration_time": 1672531200000}
+    api_response = {
+        "status": 200,
+        "data": json.dumps({"data": credentials}),
+    }
+    mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
+
+    non_string_account_id: Any = 123456789012
+    result = get_cloud_credentials(CloudTypes.AWS.value, account_id=non_string_account_id)
+
+    assert result == credentials
+    call_args = demisto._platformAPICall.call_args[1]
+    assert call_args["data"]["request_data"]["account_id"] == "123456789012"
+    assert isinstance(call_args["data"]["request_data"]["account_id"], str)
+
+
 def test_get_cloud_credentials_api_error(mocker):
     """
     Given: A valid cloud type but the API returns an error.

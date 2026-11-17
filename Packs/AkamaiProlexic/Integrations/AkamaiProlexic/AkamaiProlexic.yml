@@ -141,3 +141,4 @@ supportedModules:
 - xsiam
 tests:
 - No tests (auto formatted)
+excludefromtightlycoupled: true

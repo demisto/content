@@ -1,6 +1,8 @@
 ## Palo Alto Networks Device Security Content Pack
 
-This content pack enables Cortex XSOAR to integrate with Palo Alto Networks Device Security. It includes one integration and four automation scripts.
+This content pack enables Cortex XSOAR to integrate with Palo Alto Networks Device Security. It includes an integration, incident workflows, and a dynamic vulnerability history section.
+
+The vulnerability layout groups asset identification, vulnerability details, ticket and remediation data, site and network context, asset risk, and detection timestamps. The **Detection & Resolution History** section renders the **Reason History** field populated by the incoming mapper. The layout uses the exported custom field definitions alongside additional Device Security fields.
 
 ### Palo Alto Networks Device Security Integration
 

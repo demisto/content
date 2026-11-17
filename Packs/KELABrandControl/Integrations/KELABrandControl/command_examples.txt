@@ -1,0 +1,1 @@
+!kela-brandcontrol-incident-list workspace_id=<WORKSPACE_ID> types=look_alike_domain,phishing_website severities=high,critical start_date="7 days" sort_by=incidentDate sort_order=desc limit=10

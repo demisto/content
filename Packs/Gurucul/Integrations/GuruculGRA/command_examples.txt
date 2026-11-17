@@ -1,12 +1,16 @@
 !gra-fetch-users page=1 max=25
 !gra-fetch-accounts page=1 max=25
 !gra-fetch-active-resource-accounts resource_name="Linux"  page=1 max=25
+!gra-fetch-active-datasource-accounts datasource_name="Linux" page=1 max=25
 !gra-fetch-user-accounts employee_id="AB1234"  page=1 max=25
 !gra-fetch-resource-highrisk-accounts resource_name="Linux"  page=1 max=25
+!gra-fetch-datasource-highrisk-accounts datasource_name="Linux" page=1 max=25
 !gra-fetch-hpa  page=1 max=25
 !gra-fetch-resource-hpa resource_name="Linux"  page=1 max=25
+!gra-fetch-datasource-hpa datasource_name="Linux" page=1 max=25
 !gra-fetch-orphan-accounts  page=1 max=25
 !gra-fetch-resource-orphan-accounts resource_name="Linux"  page=1 max=25
+!gra-fetch-datasource-orphan-accounts datasource_name="Linux" page=1 max=25
 !gra-user-activities employee_id="AB1234"  page=1 max=25
 !gra-fetch-users-details employee_id="AB1234"
 !gra-highRisk-users  page=1 max=25
@@ -14,10 +18,22 @@
 !gra-user-anomalies employeeId="AB1234"  page=1 max=25
 !gra-case-action action=closeCase caseId=1 subOption="True Incident" caseComment=Done
 !gra-case-action action=modelReviewCase caseId=2 subOption="Tuning Required" caseComment=Done
-!gra-case-action action=riskManageCase caseId=3 subOption="Correct Detection" caseComment=Done riskAcceptDate=2021-05-12
+!gra-case-action action=riskManageCase caseId=3 subOption="Correct Detection" caseComment=Done riskAcceptDate=2026-03-15
 !gra-case-action-anomaly action=closeCaseAnomaly caseId=4 anomalyNames=anomalyNames subOption="True Incident" caseComment=Done
 !gra-case-action-anomaly action=modelReviewCaseAnomaly caseId=5 anomalyNames=anomalyName1,anomalyName2 subOption="Tuning Required" caseComment="This is Completed"
-!gra-case-action-anomaly action=riskAcceptCaseAnomaly caseId=6 anomalyNames=anomalyName subOption="Correct Detection" caseComment=Done riskAcceptDate=2021-05-12
+!gra-case-action-anomaly action=riskAcceptCaseAnomaly caseId=6 anomalyNames=anomalyName subOption="Correct Detection" caseComment=Done riskAcceptDate=2026-03-15
 !gra-investigate-anomaly-summary modelName=ModelName
 !gra-analytical-features-entity-value modelName=ModelName entityValue=EntityValue
+!gra-cases-anomaly caseId=10
 !gra-validate-api
+!gra-incidents status="OPEN" page=1 max=25
+!gra-incident-action action=closeIncident incidentId=5 subOption="True Incident" incidentComment="Closed from Cortex"
+!gra-incident-action-anomaly action=closeIncidentAnomaly incidentId=5 anomalyNames=AnomalyA subOption="True Incident" incidentComment=Done
+!gra-incidents-anomaly incidentId=10
+!gra-alerts status="OPEN" startDate="2026-01-01 00:00:00" endDate="2026-12-31 23:59:59" page=1 max=25
+!gra-alert-get id=101
+!gra-alert-action action=closeAlert alertId=101 alertComment="Closed" incidentType="Incident" subStatus="True Positive"
+!gra-alert-comment alertId=101 alertComment="Investigating"
+!gra-alert-assign alertId=101 assigneeType=GRA_USER assigneeName="GRA_USER_NAME" alertComment="Assigning via Cortex"
+!gra-alert-in-progress alertId=101 alertComment="Working this alert"
+!gra-alert-update-history alertId=101

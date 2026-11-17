@@ -45,11 +45,19 @@ class Client(BaseClient):
         proxy: bool = False,
         credential_set_name: str | None = None,
         credential_set_id: str | None = None,
+        credential_login: str | None = None,
         domain: str | None = None,
         affiliation_group: str | None = None,
         password_strength: str | None = None,
         detected_malware: str | None = None,
         girs: str | None = None,
+        password_length_gte: int | None = None,
+        password_lowercase_gte: int | None = None,
+        password_uppercase_gte: int | None = None,
+        password_numbers_gte: int | None = None,
+        password_punctuation_gte: int | None = None,
+        password_symbols_gte: int | None = None,
+        password_separators_gte: int | None = None,
         fetch_time: str | None = None,
     ):
         super().__init__(
@@ -62,11 +70,19 @@ class Client(BaseClient):
         )
         self.credential_set_name = credential_set_name
         self.credential_set_id = credential_set_id
+        self.credential_login = credential_login
         self.domain = domain
         self.affiliation_group = affiliation_group
         self.password_strength = password_strength
         self.detected_malware = detected_malware
         self.girs = girs
+        self.password_length_gte = password_length_gte
+        self.password_lowercase_gte = password_lowercase_gte
+        self.password_uppercase_gte = password_uppercase_gte
+        self.password_numbers_gte = password_numbers_gte
+        self.password_punctuation_gte = password_punctuation_gte
+        self.password_symbols_gte = password_symbols_gte
+        self.password_separators_gte = password_separators_gte
         self.fetch_time = fetch_time
 
     def fetch_credentials(self, from_ts: str, cursor: str, limit: int) -> tuple[list, str]:
@@ -88,6 +104,8 @@ class Client(BaseClient):
             params["credential_set_name"] = self.credential_set_name
         if self.credential_set_id:
             params["credential_set_id"] = self.credential_set_id
+        if self.credential_login:
+            params["credential_login"] = self.credential_login
         if self.domain:
             params["domain"] = self.domain
         if self.affiliation_group:
@@ -98,6 +116,20 @@ class Client(BaseClient):
             params["detected_malware"] = self.detected_malware
         if self.girs:
             params["girs"] = self.girs
+        if self.password_length_gte is not None:
+            params["password_length_gte"] = self.password_length_gte
+        if self.password_lowercase_gte is not None:
+            params["password_lowercase_gte"] = self.password_lowercase_gte
+        if self.password_uppercase_gte is not None:
+            params["password_uppercase_gte"] = self.password_uppercase_gte
+        if self.password_numbers_gte is not None:
+            params["password_numbers_gte"] = self.password_numbers_gte
+        if self.password_punctuation_gte is not None:
+            params["password_punctuation_gte"] = self.password_punctuation_gte
+        if self.password_symbols_gte is not None:
+            params["password_symbols_gte"] = self.password_symbols_gte
+        if self.password_separators_gte is not None:
+            params["password_separators_gte"] = self.password_separators_gte
 
         params["last_updated_from"] = from_ts
         if cursor:
@@ -395,11 +427,26 @@ def main():
     fetch_time = params.get("fetch_time")
     credential_set_name = params.get("credential_set_name")
     credential_set_id = params.get("credential_set_id")
+    credential_login = params.get("credential_login")
     domain = params.get("domain")
     affiliation_group = params.get("affiliation_group")
     password_strength = params.get("password_strength")
     detected_malware = params.get("detected_malware")
     girs = params.get("girs")
+
+    def _non_negative_param(name: str) -> int | None:
+        value = arg_to_number(params.get(name))
+        if value is not None and value < 0:
+            raise DemistoException(f'"{name}" must be greater than or equal to 0.')
+        return value
+
+    password_length_gte = _non_negative_param("password_length_gte")
+    password_lowercase_gte = _non_negative_param("password_lowercase_gte")
+    password_uppercase_gte = _non_negative_param("password_uppercase_gte")
+    password_numbers_gte = _non_negative_param("password_numbers_gte")
+    password_punctuation_gte = _non_negative_param("password_punctuation_gte")
+    password_symbols_gte = _non_negative_param("password_symbols_gte")
+    password_separators_gte = _non_negative_param("password_separators_gte")
     feed_tags = argToList(params.get("feedTags"))
     max_items = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_INCIDENTS
 
@@ -418,11 +465,19 @@ def main():
             proxy=proxy,
             credential_set_name=credential_set_name,
             credential_set_id=credential_set_id,
+            credential_login=credential_login,
             domain=domain,
             affiliation_group=affiliation_group,
             password_strength=password_strength,
             detected_malware=detected_malware,
             girs=girs,
+            password_length_gte=password_length_gte,
+            password_lowercase_gte=password_lowercase_gte,
+            password_uppercase_gte=password_uppercase_gte,
+            password_numbers_gte=password_numbers_gte,
+            password_punctuation_gte=password_punctuation_gte,
+            password_symbols_gte=password_symbols_gte,
+            password_separators_gte=password_separators_gte,
             fetch_time=fetch_time,
         )
 

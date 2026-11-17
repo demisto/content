@@ -1,6 +1,8 @@
 import itertools
 from collections import Counter
+from collections.abc import Callable
 from email.utils import parseaddr
+from typing import Any
 
 import dateutil
 import demistomock as demisto  # noqa: F401
@@ -19,6 +21,56 @@ from CommonServerUserPython import *
 
 no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=False)  # type: ignore[arg-type]
 utc = pytz.UTC
+
+
+def get_incident_link_creator() -> Callable[[Any], str]:
+    """Returns a function to build a markdown link to an incident details page.
+
+    The URL format depends on the platform:
+
+    - Unified Cortex platform (XSIAM v3 / XSOAR on platform): ``/issue-view/{id}``
+    - Cortex XSOAR 8.x (SaaS, non-platform): ``/Details/{id}``
+    - Cortex XSOAR 6.x (on-prem, legacy): ``#/Details/{id}``
+
+    This ensures the generated hyperlinks navigate directly to the incident/issue on
+    every supported platform.
+
+    :return: A function that takes an incident_id and returns a markdown-formatted link.
+    """
+    if is_platform():
+        template = "[{id}](/issue-view/{id})"
+    elif is_demisto_version_ge("8.4.0"):
+        template = "[{id}](/Details/{id})"
+    else:
+        template = "[{id}](#/Details/{id})"
+
+    def create_incident_link(incident_id: Any) -> str:
+        return template.format(id=incident_id)
+
+    return create_incident_link
+
+
+def get_indicator_link_creator() -> Callable[[Any], str]:
+    """Returns a function to build a markdown link to an indicator details page.
+
+    The URL format depends on the platform:
+
+    - Unified Cortex platform (XSIAM v3 / XSOAR on platform): ``/indicator/{id}``
+    - Cortex XSOAR 8.x (SaaS, non-platform): ``/indicator/{id}``
+    - Cortex XSOAR 6.x (on-prem, legacy): ``#/indicator/{id}``
+
+    :return: A function that takes an indicator_id and returns a markdown-formatted link.
+    """
+    if is_platform() or is_xsoar_saas():
+        template = "[{id}](/indicator/{id})"
+    else:
+        template = "[{id}](#/indicator/{id})"
+
+    def create_indicator_link(indicator_id: Any) -> str:
+        return template.format(id=indicator_id)
+
+    return create_indicator_link
+
 
 SELF_IN_CONTEXT = False
 EMAIL_BODY_FIELD = "emailbody"
@@ -746,7 +798,7 @@ def return_indicator_entry(incidents_df):
         demisto.debug("No indicators found with involved count > 1.")
         return_no_mututal_indicators_found_entry()
         return indicators_df
-    indicators_df["Id"] = indicators_df["id"].apply(lambda x: f"[{x}](#/indicator/{x})")
+    indicators_df["Id"] = indicators_df["id"].apply(get_indicator_link_creator())
     indicators_df = indicators_df.sort_values(["score", "Involved Incidents Count"], ascending=False)
     indicators_df["Reputation"] = indicators_df["score"].apply(scoreToReputation)
     indicators_df = indicators_df.rename({"value": "Value", "indicator_type": "Type"}, axis=1)
@@ -780,7 +832,7 @@ def get_reputation(id_, indicators_df):
 
 def return_involved_incidents_entry(incidents_df, indicators_df, fields_to_display):
     demisto.debug("Entering return_involved_incidents_entry.")
-    incidents_df["Id"] = incidents_df["id"].apply(lambda x: f"[{x}](#/Details/{x})")
+    incidents_df["Id"] = incidents_df["id"].apply(get_incident_link_creator())
     incidents_df = incidents_df.sort_values("created", ascending=False).reset_index(drop=True)
     incidents_df["created_dt"] = incidents_df["created"].apply(lambda x: dateutil.parser.parse(x))  # type: ignore
     incidents_df["Created"] = incidents_df["created_dt"].apply(lambda x: x.strftime("%B %d, %Y"))

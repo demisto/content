@@ -430,3 +430,62 @@ def test_enrich_incidents_missing_field(mocker):
     assert result["status"].tolist() == ["Active", "Closed"]
     assert result["type"].tolist() == ["Malware", "Phishing"]
     assert result["missing_field"].tolist() == ["", ""]
+
+
+@pytest.mark.parametrize(
+    "is_platform, version_ge, incident_id, expected_link",
+    [
+        (True, True, "43076", "[43076](/issue-view/43076)"),
+        (True, False, "43076", "[43076](/issue-view/43076)"),
+        (False, True, "43076", "[43076](/Details/43076)"),
+        (False, False, "43076", "[43076](#/Details/43076)"),
+    ],
+)
+def test_create_incident_link(mocker, is_platform, version_ge, incident_id, expected_link):
+    """
+    Given:
+        - An incident ID.
+        - Case 1: Unified Cortex platform (XSIAM v3 / XSOAR on platform) -> issue-view URL.
+        - Case 2: Unified Cortex platform takes precedence regardless of demisto version.
+        - Case 3: Cortex XSOAR 8.x (version >= 8.4.0) -> path-based URL.
+        - Case 4: Cortex XSOAR 6.x (version < 8.4.0) -> legacy hash-based URL.
+    When:
+        Calling the incident link creator.
+    Then:
+        - Ensure the correct link format is produced for each platform.
+    """
+    import DBotFindSimilarIncidentsByIndicators
+
+    mocker.patch.object(DBotFindSimilarIncidentsByIndicators, "is_platform", return_value=is_platform)
+    mocker.patch.object(DBotFindSimilarIncidentsByIndicators, "is_demisto_version_ge", return_value=version_ge)
+    link_creator = DBotFindSimilarIncidentsByIndicators.get_incident_link_creator()
+    assert link_creator(incident_id) == expected_link
+
+
+@pytest.mark.parametrize(
+    "is_platform, is_xsoar_saas, indicator_id, expected_link",
+    [
+        (True, True, "abc123", "[abc123](/indicator/abc123)"),
+        (True, False, "abc123", "[abc123](/indicator/abc123)"),
+        (False, True, "abc123", "[abc123](/indicator/abc123)"),
+        (False, False, "abc123", "[abc123](#/indicator/abc123)"),
+    ],
+)
+def test_create_indicator_link(mocker, is_platform, is_xsoar_saas, indicator_id, expected_link):
+    """
+    Given:
+        - An indicator ID.
+        - Case 1 & 2: Unified Cortex platform -> path-based URL.
+        - Case 3: Cortex XSOAR 8.x SaaS -> path-based URL.
+        - Case 4: Cortex XSOAR 6.x on-prem -> legacy hash-based URL.
+    When:
+        Calling the indicator link creator.
+    Then:
+        - Ensure the correct link format is produced for each platform.
+    """
+    import DBotFindSimilarIncidentsByIndicators
+
+    mocker.patch.object(DBotFindSimilarIncidentsByIndicators, "is_platform", return_value=is_platform)
+    mocker.patch.object(DBotFindSimilarIncidentsByIndicators, "is_xsoar_saas", return_value=is_xsoar_saas)
+    link_creator = DBotFindSimilarIncidentsByIndicators.get_indicator_link_creator()
+    assert link_creator(indicator_id) == expected_link

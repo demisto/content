@@ -37,7 +37,7 @@ alter
         xdm.source.identity.groups = arraycreate(_json -> generalCiscoLog.group),
         xdm.source.process.name = _json -> generalCiscoLog.process,
         xdm.source.process.command_line = _json -> generalCiscoLog.command,
-        xdm.source.sent_bytes = to_integer(_json -> generalCiscoLog.sent_bytes),
+        xdm.source.sent_bytes = coalesce(to_integer(_json -> generalCiscoLog.sent_bytes), to_integer(_json -> sentBytes)),
         xdm.source.application.name = _json -> generalCiscoLog.application,
         xdm.intermediate.ipv4 = if(is_ipv4(_json -> generalCiscoLog.global_ip), _json -> generalCiscoLog.global_ip, null),
         xdm.intermediate.ipv6 = if(is_ipv6(_json -> generalCiscoLog.global_ip), _json -> generalCiscoLog.global_ip, null),

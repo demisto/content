@@ -32,6 +32,7 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 | First fetch | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). | False |
 | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
 | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
+| Attach alert screenshots to incidents | Whether incoming mirroring downloads the alert screenshot and attaches it to the incident as a War Room file entry whenever the screenshot version changes. Screenshots are stored in your Cortex instance, so consider storage usage on high-volume tenants. The ***doppel-get-alert-screenshot*** command works regardless of this setting. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
@@ -334,6 +335,39 @@ Create an alert for the provided value to abuse box. Will fail if the alert valu
 >| Message |  
 >| --- |  
 >| Abuse alert created successfully |  
+
+### doppel-get-alert-screenshot
+
+***
+
+Fetch the alert's current screenshot from Doppel and attach it to the incident as a War Room file entry. The image is downloaded immediately after the URL is signed and stored durably in Cortex, so the signed URL's one-hour expiry does not matter. A file is attached only when the screenshot version changed since the last attachment; otherwise the command reports that the attached screenshot is already current.
+
+#### Base Command
+
+`doppel-get-alert-screenshot`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |  
+| --- | --- | --- |  
+| id | The Doppel alert ID to fetch the screenshot for. | Required |  
+| force | Whether to re-download and attach the screenshot even when the attached version is already current. Possible values are: true, false. Default is false. | Optional |  
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |  
+| --- | --- | --- |  
+| Doppel.AlertScreenshot.id | String | The Doppel alert ID. |  
+| Doppel.AlertScreenshot.version | String | The screenshot version identifier \(storage object name\) currently attached. |  
+| Doppel.AlertScreenshot.attached | Boolean | Whether this run attached a new screenshot file. |  
+
+#### Command example
+
+```!doppel-get-alert-screenshot id="TET-1234"```
+
+#### Human Readable Output
+
+>Attached screenshot version 8f3a2c1.png for alert TET-1234.
 
 ### doppel-get-alerts
 

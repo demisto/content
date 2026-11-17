@@ -299,7 +299,7 @@ script:
     - contextPath: iZOOlogic.Incident.detectedBy
       description: The entity that detected the incident.
       type: String
-  dockerimage: demisto/fastapi:0.125.0.10158186
+  dockerimage: demisto/fastapi:0.162.0.14169403
   isfetchevents: true
   isfetchevents:xsoar: false
   runonce: false

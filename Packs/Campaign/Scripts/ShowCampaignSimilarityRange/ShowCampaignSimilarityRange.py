@@ -41,14 +41,14 @@ def main():
             header = "Similarity Range" if len(similarity_range.split("-")) > 1 else "Similarity"
 
             html_readable_output = (
-                f"<div style='text-align:center; font-size:17px; padding: 15px;'>{header}"
-                f"</br> <div style='font-size:24px;'> {similarity_range} </div></div>"
+                f"<div style='text-align:center; font-size:17px; padding: 8px;'>{header}"
+                f"<div style='font-size:24px;'>{similarity_range}</div></div>"
             )
 
         else:
             html_readable_output = (
-                "<div style='text-align:center; font-size:17px; padding: 15px;'>Similarity"
-                "</br> <div style='font-size:20px;'> No incident similarities were found. </div></div>"
+                "<div style='text-align:center; font-size:17px; padding: 8px;'>Similarity"
+                "<div style='font-size:20px;'>No incident similarities were found.</div></div>"
             )
 
         return_results(CommandResults(content_format="html", raw_response=html_readable_output))

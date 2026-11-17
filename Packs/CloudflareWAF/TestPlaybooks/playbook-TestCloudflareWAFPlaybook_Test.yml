@@ -50,21 +50,27 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: beee4071-9062-4bde-86fb-dbe131026a66
+    taskid: f1b0a98e-cd11-4013-92ad-bbb59a741190
     type: regular
     task:
-      id: beee4071-9062-4bde-86fb-dbe131026a66
+      id: f1b0a98e-cd11-4013-92ad-bbb59a741190
       version: -1
-      name: cloudflare-waf-firewall-rule-create
+      name: cloudflare-waf-ruleset-create
       description: ''
-      script: CloudflareWAF|||cloudflare-waf-firewall-rule-create
+      script: CloudflareWAF|||cloudflare-waf-ruleset-create
       type: regular
       iscommand: true
       brand: ''
     nexttasks:
       '#none#':
       - '3'
-    scriptarguments: {}
+    scriptarguments:
+      name:
+        simple: Test custom ruleset
+      kind:
+        simple: custom
+      phase:
+        simple: http_request_firewall_custom
     separatecontext: false
     view: '{"position":{"x":50,"y":400}}'
     note: false
@@ -73,10 +79,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: ce3b1b94-85aa-4a87-a9b4-5a37b7e38d62
+    taskid: 9267bd1e-0e16-481d-b10f-5b6e18429fb6
     type: condition
     task:
-      id: ce3b1b94-85aa-4a87-a9b4-5a37b7e38d62
+      id: 9267bd1e-0e16-481d-b10f-5b6e18429fb6
       version: -1
       name: Verify Outputs
       type: condition
@@ -93,37 +99,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: CloudflareWAF.FirewallRule.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.FirewallRule.priority
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.FirewallRule.action
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.FirewallRule.products
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: CloudflareWAF.FirewallRule.paused
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.FirewallRule.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.FirewallRule.ref
+              simple: CloudflareWAF.Ruleset.id
             iscontext: true
     view: '{"position":{"x":50,"y":600}}'
     note: false
@@ -132,21 +108,25 @@ tasks:
     skipunavailable: false
   '4':
     id: 4
-    taskid: b802fb31-1571-4030-8872-98ebeb96c513
+    taskid: 4fda198b-ea38-4196-9683-78bf229f1800
     type: regular
     task:
-      id: b802fb31-1571-4030-8872-98ebeb96c513
+      id: 4fda198b-ea38-4196-9683-78bf229f1800
       version: -1
-      name: cloudflare-waf-firewall-rule-update
+      name: cloudflare-waf-ruleset-rule-create
       description: ''
-      script: CloudflareWAF|||cloudflare-waf-firewall-rule-update
+      script: CloudflareWAF|||cloudflare-waf-ruleset-rule-create
       type: regular
       iscommand: true
       brand: ''
     nexttasks:
       '#none#':
       - '5'
-    scriptarguments: {}
+    scriptarguments:
+      ruleset_id:
+        simple: ${CloudflareWAF.Ruleset.id}
+      rule:
+        simple: '{"action": "block", "expression": "(ip.src eq 192.0.2.1)", "description": "Block bad IP"}'
     separatecontext: false
     view: '{"position":{"x":50,"y":800}}'
     note: false
@@ -154,23 +134,34 @@ tasks:
     ignoreworker: false
     skipunavailable: false
   '5':
-    id: 5
-    taskid: 89c45fd3-fe79-45e6-9b72-6c0c6e33f054
-    type: regular
+    id: '5'
+    taskid: 5076c236-f62c-42d2-9c86-0d1add1a5b7b
+    type: condition
     task:
-      id: 89c45fd3-fe79-45e6-9b72-6c0c6e33f054
+      id: 5076c236-f62c-42d2-9c86-0d1add1a5b7b
       version: -1
-      name: cloudflare-waf-firewall-rule-delete
+      name: Verify Outputs
+      type: condition
+      iscommand: false
       description: ''
-      script: CloudflareWAF|||cloudflare-waf-firewall-rule-delete
-      type: regular
-      iscommand: true
       brand: ''
     nexttasks:
-      '#none#':
+      yes:
       - '6'
-    scriptarguments: {}
     separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CloudflareWAF.Ruleset.rules.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CloudflareWAF.Ruleset.rules.action
+            iscontext: true
     view: '{"position":{"x":50,"y":1000}}'
     note: false
     timertriggers: []
@@ -178,21 +169,27 @@ tasks:
     skipunavailable: false
   '6':
     id: 6
-    taskid: e0eadd37-df92-47c1-bfb8-9b94c40b8af9
+    taskid: 040094c4-76c1-4e25-9213-7f0515be0cec
     type: regular
     task:
-      id: e0eadd37-df92-47c1-bfb8-9b94c40b8af9
+      id: 040094c4-76c1-4e25-9213-7f0515be0cec
       version: -1
-      name: cloudflare-waf-firewall-rule-list
+      name: cloudflare-waf-ruleset-rule-update
       description: ''
-      script: CloudflareWAF|||cloudflare-waf-firewall-rule-list
+      script: CloudflareWAF|||cloudflare-waf-ruleset-rule-update
       type: regular
       iscommand: true
       brand: ''
     nexttasks:
       '#none#':
       - '7'
-    scriptarguments: {}
+    scriptarguments:
+      ruleset_id:
+        simple: ${CloudflareWAF.Ruleset.id}
+      rule_id:
+        simple: ${CloudflareWAF.Ruleset.rules.id}
+      rule:
+        simple: '{"action": "log", "expression": "(ip.src eq 192.0.2.1)", "description": "Log bad IP"}'
     separatecontext: false
     view: '{"position":{"x":50,"y":1200}}'
     note: false
@@ -200,103 +197,36 @@ tasks:
     ignoreworker: false
     skipunavailable: false
   '7':
-    id: '7'
-    taskid: a552bffe-4b2d-45f7-b22c-acbad3f7726f
-    type: condition
+    id: 7
+    taskid: 57f8dc48-b353-4cbe-a987-81e25755fca5
+    type: regular
     task:
-      id: a552bffe-4b2d-45f7-b22c-acbad3f7726f
+      id: 57f8dc48-b353-4cbe-a987-81e25755fca5
       version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
+      name: cloudflare-waf-ruleset-version-list
       description: ''
+      script: CloudflareWAF|||cloudflare-waf-ruleset-version-list
+      type: regular
+      iscommand: true
       brand: ''
     nexttasks:
-      yes:
+      '#none#':
       - '8'
+    scriptarguments:
+      ruleset_id:
+        simple: ${CloudflareWAF.Ruleset.id}
     separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.FirewallRule.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.FirewallRule.action
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: CloudflareWAF.FirewallRule.paused
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.FirewallRule.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.FirewallRule.Filter.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.FirewallRule.Filter.expression
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: CloudflareWAF.FirewallRule.Filter.paused
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.FirewallRule.Filter.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.FirewallRule.Filter.ref
-            iscontext: true
     view: '{"position":{"x":50,"y":1400}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
   '8':
-    id: 8
-    taskid: 6a307490-c4e9-4684-91ac-a9adeb0f0008
-    type: regular
-    task:
-      id: 6a307490-c4e9-4684-91ac-a9adeb0f0008
-      version: -1
-      name: cloudflare-waf-filter-create
-      description: ''
-      script: CloudflareWAF|||cloudflare-waf-filter-create
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '9'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position":{"x":50,"y":1600}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '9':
-    id: '9'
-    taskid: 18621d00-4483-4d17-8093-ac621dc11460
+    id: '8'
+    taskid: f8073163-9a26-4df5-b6a5-a1f061d31123
     type: condition
     task:
-      id: 18621d00-4483-4d17-8093-ac621dc11460
+      id: f8073163-9a26-4df5-b6a5-a1f061d31123
       version: -1
       name: Verify Outputs
       type: condition
@@ -305,7 +235,7 @@ tasks:
       brand: ''
     nexttasks:
       yes:
-      - '10'
+      - '9'
     separatecontext: false
     conditions:
     - label: yes
@@ -313,28 +243,35 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: CloudflareWAF.Filter.id
+              simple: CloudflareWAF.Ruleset.version
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.Filter.expression
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: CloudflareWAF.Filter.paused
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.Filter.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.Filter.ref
-            iscontext: true
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: 9
+    taskid: fc74c090-a714-4575-a45c-ee33c999b4c1
+    type: regular
+    task:
+      id: fc74c090-a714-4575-a45c-ee33c999b4c1
+      version: -1
+      name: cloudflare-waf-ruleset-rule-delete
+      description: ''
+      script: CloudflareWAF|||cloudflare-waf-ruleset-rule-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      ruleset_id:
+        simple: ${CloudflareWAF.Ruleset.id}
+      rule_id:
+        simple: ${CloudflareWAF.Ruleset.rules.id}
+    separatecontext: false
     view: '{"position":{"x":50,"y":1800}}'
     note: false
     timertriggers: []
@@ -342,118 +279,25 @@ tasks:
     skipunavailable: false
   '10':
     id: 10
-    taskid: eda8eed1-1bc0-4522-9552-a9ae5c4544e2
+    taskid: 5f220d88-7a9d-48b2-92c4-bf21450e45ce
     type: regular
     task:
-      id: eda8eed1-1bc0-4522-9552-a9ae5c4544e2
+      id: 5f220d88-7a9d-48b2-92c4-bf21450e45ce
       version: -1
-      name: cloudflare-waf-filter-update
+      name: cloudflare-waf-ruleset-delete
       description: ''
-      script: CloudflareWAF|||cloudflare-waf-filter-update
+      script: CloudflareWAF|||cloudflare-waf-ruleset-delete
       type: regular
       iscommand: true
       brand: ''
     nexttasks:
       '#none#':
-      - '11'
-    scriptarguments: {}
+      - '14'
+    scriptarguments:
+      ruleset_id:
+        simple: ${CloudflareWAF.Ruleset.id}
     separatecontext: false
     view: '{"position":{"x":50,"y":2000}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '11':
-    id: 11
-    taskid: e9ed037a-2738-4437-adcf-c7979287d763
-    type: regular
-    task:
-      id: e9ed037a-2738-4437-adcf-c7979287d763
-      version: -1
-      name: cloudflare-waf-filter-delete
-      description: ''
-      script: CloudflareWAF|||cloudflare-waf-filter-delete
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '12'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position":{"x":50,"y":2200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '12':
-    id: 12
-    taskid: 7ebf1f1c-3dd0-4b21-aa4a-da6bd91125c4
-    type: regular
-    task:
-      id: 7ebf1f1c-3dd0-4b21-aa4a-da6bd91125c4
-      version: -1
-      name: cloudflare-waf-filter-list
-      description: ''
-      script: CloudflareWAF|||cloudflare-waf-filter-list
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '13'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position":{"x":50,"y":2400}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '13':
-    id: '13'
-    taskid: 861f3914-d3d5-4f6a-8c06-58141d0402e9
-    type: condition
-    task:
-      id: 861f3914-d3d5-4f6a-8c06-58141d0402e9
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '14'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.Filter.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.Filter.expression
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.Filter.description
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: CloudflareWAF.Filter.paused
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CloudflareWAF.Filter.ref
-            iscontext: true
-    view: '{"position":{"x":50,"y":2600}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -476,7 +320,7 @@ tasks:
       - '15'
     scriptarguments: {}
     separatecontext: false
-    view: '{"position":{"x":50,"y":2800}}'
+    view: '{"position":{"x":50,"y":2200}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -585,7 +429,7 @@ tasks:
             value:
               simple: CloudflareWAF.Zone.name_servers
             iscontext: true
-    view: '{"position":{"x":50,"y":3000}}'
+    view: '{"position":{"x":50,"y":2400}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -608,7 +452,7 @@ tasks:
       - '17'
     scriptarguments: {}
     separatecontext: false
-    view: '{"position":{"x":50,"y":3200}}'
+    view: '{"position":{"x":50,"y":2600}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -672,7 +516,7 @@ tasks:
             value:
               simple: CloudflareWAF.IpList.modified_on
             iscontext: true
-    view: '{"position":{"x":50,"y":3400}}'
+    view: '{"position":{"x":50,"y":2800}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -695,7 +539,7 @@ tasks:
       - '19'
     scriptarguments: {}
     separatecontext: false
-    view: '{"position":{"x":50,"y":3600}}'
+    view: '{"position":{"x":50,"y":3000}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -718,7 +562,7 @@ tasks:
       - '20'
     scriptarguments: {}
     separatecontext: false
-    view: '{"position":{"x":50,"y":3800}}'
+    view: '{"position":{"x":50,"y":3200}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -772,7 +616,7 @@ tasks:
             value:
               simple: CloudflareWAF.IpList.num_referencing_filters
             iscontext: true
-    view: '{"position":{"x":50,"y":4000}}'
+    view: '{"position":{"x":50,"y":3400}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -795,7 +639,7 @@ tasks:
       - '22'
     scriptarguments: {}
     separatecontext: false
-    view: '{"position":{"x":50,"y":4200}}'
+    view: '{"position":{"x":50,"y":3600}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -818,7 +662,7 @@ tasks:
       - '23'
     scriptarguments: {}
     separatecontext: false
-    view: '{"position":{"x":50,"y":4400}}'
+    view: '{"position":{"x":50,"y":3800}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -841,7 +685,7 @@ tasks:
       - '24'
     scriptarguments: {}
     separatecontext: false
-    view: '{"position":{"x":50,"y":4600}}'
+    view: '{"position":{"x":50,"y":4000}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -864,7 +708,7 @@ tasks:
       - '25'
     scriptarguments: {}
     separatecontext: false
-    view: '{"position":{"x":50,"y":4800}}'
+    view: '{"position":{"x":50,"y":4200}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -898,7 +742,7 @@ tasks:
             value:
               simple: CloudflareWAF.IpListItem.list_id
             iscontext: true
-    view: '{"position":{"x":50,"y":5000}}'
+    view: '{"position":{"x":50,"y":4400}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -916,7 +760,7 @@ tasks:
       brand: ''
       description: ''
     separatecontext: false
-    view: '{"position":{"x":50,"y":5200}}'
+    view: '{"position":{"x":50,"y":4600}}'
     note: false
     timertriggers: []
     ignoreworker: false

@@ -1,0 +1,43 @@
+{
+    "result": {
+        "id": "entrypoint_ruleset_id_1",
+        "name": "default",
+        "kind": "root",
+        "phase": "http_request_firewall_managed",
+        "description": "Entry point ruleset for the http_request_firewall_managed phase",
+        "source": "firewall_managed",
+        "version": "5",
+        "last_updated": "2023-02-20T12:30:00Z",
+        "rules": [
+            {
+                "id": "entry_rule_id_1",
+                "action": "execute",
+                "action_parameters": {
+                    "id": "efb7b8c949ac4650a09736fc376e9aee",
+                    "version": "latest",
+                    "overrides": {
+                        "action": "block",
+                        "enabled": true
+                    }
+                },
+                "expression": "true",
+                "description": "Execute the Cloudflare Managed Ruleset",
+                "enabled": true,
+                "version": "5",
+                "ref": "entry_ref_1"
+            },
+            {
+                "id": "entry_rule_id_2",
+                "action": "block",
+                "expression": "(ip.src eq 192.0.2.1)",
+                "description": "Block bad IP",
+                "enabled": true,
+                "version": "5",
+                "ref": "entry_ref_2"
+            }
+        ]
+    },
+    "success": true,
+    "errors": [],
+    "messages": []
+}
