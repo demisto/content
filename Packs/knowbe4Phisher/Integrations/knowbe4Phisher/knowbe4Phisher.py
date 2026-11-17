@@ -679,7 +679,8 @@ def fetch_incidents(
         look_back=look_back,
         date_format=DATE_FORMAT,
     )
-    query = f'" reported_at:{{{start_fetch_time} TO {end_fetch_time}}}"'
+    # inclusive start: a message reported exactly at the previous window's end second would otherwise be excluded by both windows
+    query = f'" reported_at:[{start_fetch_time} TO {end_fetch_time}}}"'
     incidents = []
     # create request
     payload_init = FETCH_WITHOUT_EVENTS.format(limit, query)

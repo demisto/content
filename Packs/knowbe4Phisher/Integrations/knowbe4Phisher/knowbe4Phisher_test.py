@@ -235,13 +235,13 @@ def test_fetch_incidents_lookback_zero_no_overlap(mocker):
     - fetch_incidents is called with look_back=0
 
     Then:
-    - The GQL payload contains 'reported_at:{2024-01-01T10:30:00Z TO' (no window expansion)
+    - The GQL payload contains 'reported_at:[2024-01-01T10:30:00Z TO' (no window expansion)
     """
     last_run = {"time": "2024-01-01T10:30:00Z", "found_incident_ids": {}}
     spy = mocker.patch.object(client, "phisher_gql_request", return_value=_gql_response([]))
     phisher.fetch_incidents(client, last_run, "7 days", 50, look_back=0)
     call_arg = spy.call_args[0][0]
-    assert "reported_at:{2024-01-01T10:30:00Z TO" in call_arg
+    assert "reported_at:[2024-01-01T10:30:00Z TO" in call_arg
 
 
 @freeze_time("2024-01-01T11:00:00Z")
@@ -313,13 +313,13 @@ def test_fetch_incidents_query_uses_window(mocker):
     - fetch_incidents is called
 
     Then:
-    - GQL payload uses a closed window 'reported_at:{10:30:00Z TO 11:00:00Z}', not open-ended 'TO *'
+    - GQL payload uses a half-open window 'reported_at:[10:30:00Z TO 11:00:00Z}', not open-ended 'TO *'
     """
     last_run = {"time": "2024-01-01T10:30:00Z", "found_incident_ids": {}}
     spy = mocker.patch.object(client, "phisher_gql_request", return_value=_gql_response([]))
     phisher.fetch_incidents(client, last_run, "7 days", 50, look_back=0)
     call_arg = spy.call_args[0][0]
-    assert "reported_at:{2024-01-01T10:30:00Z TO 2024-01-01T11:00:00Z}" in call_arg
+    assert "reported_at:[2024-01-01T10:30:00Z TO 2024-01-01T11:00:00Z}" in call_arg
     assert "TO *" not in call_arg
 
 
@@ -590,3 +590,44 @@ def test_fetch_command_migrates_legacy_last_run_with_default_look_back(mocker):
     assert api.windows[0][1:].startswith("2024-01-01T10:00:00Z TO"), f"legacy last_fetch not used: {api.windows}"
     assert "time" in store["last_run"]
     assert "found_incident_ids" in store["last_run"]
+
+
+def test_fetch_incidents_includes_message_reported_on_previous_window_end(mocker):
+    """
+    Given:
+    - a message reported exactly at 10:47:30Z, searchable from 10:47:38Z
+    When:
+    - fetch runs at 10:47:30Z (window ends at that second) and again at 10:52:30Z with no lookback
+    Then:
+    - the second run emits it (window start is inclusive)
+    """
+    api = WindowedPhisherApi([(_late_msg("msg-edge", "2024-01-01T10:47:30Z"), "2024-01-01T10:47:38Z")])
+    mocker.patch.object(client, "phisher_gql_request", side_effect=api)
+    last_run = {"time": "2024-01-01T10:42:30Z", "found_incident_ids": {}}
+    with freeze_time("2024-01-01T10:47:30Z") as frozen:
+        run1, inc1 = phisher.fetch_incidents(client, last_run, "7 days", 50, look_back=0)
+        assert inc1 == []
+        frozen.move_to("2024-01-01T10:52:30Z")
+        _, inc2 = phisher.fetch_incidents(client, run1, "7 days", 50, look_back=0)
+    assert [incident["dbotMirrorId"] for incident in inc2] == ["msg-edge"], f"windows queried: {api.windows}"
+
+
+def test_fetch_incidents_does_not_reemit_message_at_cursor_second(mocker):
+    """
+    Given:
+    - a searchable message reported 10:40:00Z, emitted by the first fetch, which moves the cursor to 10:40:00Z
+    When:
+    - the next fetch starts inclusively at the cursor second, so the API returns that message again
+    Then:
+    - it is not emitted a second time
+    """
+    api = WindowedPhisherApi([(_late_msg("msg-cursor", "2024-01-01T10:40:00Z"), "2024-01-01T10:40:05Z")])
+    mocker.patch.object(client, "phisher_gql_request", side_effect=api)
+    last_run = {"time": "2024-01-01T10:35:00Z", "found_incident_ids": {}}
+    with freeze_time("2024-01-01T10:41:00Z") as frozen:
+        run1, inc1 = phisher.fetch_incidents(client, last_run, "7 days", 50, look_back=0)
+        assert [incident["dbotMirrorId"] for incident in inc1] == ["msg-cursor"]
+        frozen.move_to("2024-01-01T10:46:00Z")
+        _, inc2 = phisher.fetch_incidents(client, run1, "7 days", 50, look_back=0)
+    assert api.windows[1] == "[2024-01-01T10:40:00Z TO 2024-01-01T10:46:00Z}"
+    assert inc2 == []
