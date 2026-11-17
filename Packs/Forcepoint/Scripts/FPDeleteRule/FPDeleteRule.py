@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import sys
 import ipaddress
 import re
-from re import escape
 
 
 FILTER_CONFIG_PATH = "/opt/WCG/config/filter.config"
@@ -36,7 +35,7 @@ def validate_value(rule_type: str, value: str) -> str | None:
 
 def escape_value(value: str) -> str:
     """Escapes the value for the sed expression."""
-    return escape(value).replace("/", r"\/")
+    return re.escape(value).replace("/", r"\/")
 
 
 def delete_rule(ruleType):
@@ -52,8 +51,7 @@ def delete_rule(ruleType):
     else:
         value = demisto.args().get("value", "")
         if validation_error := validate_value(ruleType, value):
-            demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": validation_error})
-            return
+            return_error(validation_error)
         valueFormat = escape_value(value)
         if ruleType in ["dest_domain", "url_regex"]:
             valueFormat = r"\"" + valueFormat + r"\""

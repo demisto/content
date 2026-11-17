@@ -64,16 +64,17 @@ def test_delete_rule_invalid_value(mocker, rule_type, value):
     When:
         - Running delete_rule function.
     Then:
-        - An error entry is returned and the command is not executed.
+        - An error is returned and the command is not executed.
     """
     from FPDeleteRule import delete_rule
 
     mocker.patch.object(demisto, "args", return_value={"tritonsystem": "tritonsystem", "value": value})
     execute_mock = mocker.patch.object(demisto, "executeCommand")
-    results_mock = mocker.patch.object(demisto, "results")
-    delete_rule(rule_type)
+    return_error_mock = mocker.patch("FPDeleteRule.return_error", side_effect=SystemExit)
+    with pytest.raises(SystemExit):
+        delete_rule(rule_type)
     execute_mock.assert_not_called()
-    assert results_mock.call_args[0][0]["Type"] == entryTypes["error"]
+    return_error_mock.assert_called_once()
 
 
 @pytest.mark.parametrize(
