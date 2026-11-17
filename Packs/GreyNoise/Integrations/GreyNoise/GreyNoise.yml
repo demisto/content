@@ -288,7 +288,7 @@ script:
       description: Whether the IP is a common business service.
       type: boolean
     - contextPath: GreyNoise.IP.business_service_status
-      description: Set when Business Service Intelligence is not included in the current license.
+      description: The status set when Business Service Intelligence is not included in the current license.
       type: string
     - contextPath: GreyNoise.IP.last_updated
       description: When was the last time the business service information was updated.
@@ -453,7 +453,7 @@ script:
       description: Whether the IP is a common business service. Null means this data is not included in the current license.
       type: boolean
     - contextPath: GreyNoise.IP.business_service_intelligence.business_service_status
-      description: Set when Business Service Intelligence is not included in the current license.
+      description: The status set when Business Service Intelligence is not included in the current license.
       type: string
     - contextPath: GreyNoise.IP.internet_scanner_intelligence.classification
       description: If the IP has been observed, what is the GreyNoise classification.
@@ -997,7 +997,7 @@ script:
       description: The trust level of the IP if riot is "True".
       type: String
     - contextPath: GreyNoise.IP.business_service_status
-      description: Set when Business Service Intelligence is not included in the current license.
+      description: The status set when Business Service Intelligence is not included in the current license.
       type: string
   - arguments:
     - default: true
@@ -1020,7 +1020,7 @@ script:
       description: Whether the IP is in record with GreyNoise.
       type: boolean
     - contextPath: GreyNoise.IP.business_service_status
-      description: Set when Business Service Intelligence is not included in the current license.
+      description: The status set when Business Service Intelligence is not included in the current license.
       type: string
     - contextPath: GreyNoise.IP.tags
       description: A list of the tags the device has been assigned over the past 90 days.
@@ -1229,7 +1229,7 @@ script:
       defaultValue: '50'
     outputs:
     - contextPath: GreyNoise.Similar.message
-      description: States that GreyNoise similarity is deprecated and no longer supported.
+      description: The message stating that GreyNoise similarity is deprecated and no longer supported.
       type: string
     deprecated: true
   - name: greynoise-timeline
@@ -1238,7 +1238,7 @@ script:
     arguments:
     - name: ip
       default: true
-      description: IP address to retrieve the daily timeline for.
+      description: The IP address to retrieve the daily timeline for.
       required: true
     - name: days
       description: >-
@@ -1259,34 +1259,34 @@ script:
       description: The timeline bucket size. Daily results use 1d.
       type: string
     - contextPath: GreyNoise.Timeline.data
-      description: Daily internet scanner activity summaries.
+      description: The daily internet scanner activity summaries.
       type: array
     - contextPath: GreyNoise.Timeline.data.date
-      description: The date of the daily summary.
-      type: string
+      description: The date of the daily summary (e.g., 2024-01-15).
+      type: date
     - contextPath: GreyNoise.Timeline.data.classification
       description: The classification observed on that day.
       type: string
     - contextPath: GreyNoise.Timeline.data.tags
-      description: Tags observed on that day.
+      description: The tags observed on that day.
       type: array
     - contextPath: GreyNoise.Timeline.data.rdns
-      description: Reverse DNS values observed on that day.
+      description: The reverse DNS values observed on that day.
       type: array
     - contextPath: GreyNoise.Timeline.data.organizations
-      description: Organizations observed on that day.
+      description: The organizations observed on that day.
       type: array
     - contextPath: GreyNoise.Timeline.data.asns
-      description: ASNs observed on that day.
+      description: The ASNs observed on that day.
       type: array
     - contextPath: GreyNoise.Timeline.data.ports
-      description: Ports observed on that day.
+      description: The ports observed on that day.
       type: array
     - contextPath: GreyNoise.Timeline.data.web_paths
-      description: Web paths observed on that day.
+      description: The web paths observed on that day.
       type: array
     - contextPath: GreyNoise.Timeline.data.user_agents
-      description: User agents observed on that day.
+      description: The user agents observed on that day.
       type: array
   dockerimage: demisto/greynoise:1.0.0.14169403
   runonce: false

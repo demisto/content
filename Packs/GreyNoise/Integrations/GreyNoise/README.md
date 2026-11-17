@@ -111,7 +111,7 @@ Runs reputation on IPs.
 | GreyNoise.IP.description | string | Description of the business service. |
 | GreyNoise.IP.explanation | string | Explanation of why the IP is considered a business service. |
 | GreyNoise.IP.riot | boolean | Whether the IP is a common business service. |
-| GreyNoise.IP.business_service_status | string | Set when Business Service Intelligence is not included in the current license. |
+| GreyNoise.IP.business_service_status | string | The status set when Business Service Intelligence is not included in the current license. |
 | GreyNoise.IP.last_updated | date | When was the last time the business service information was updated. |
 | GreyNoise.IP.name | string | The name of the business service. |
 | GreyNoise.IP.reference | string | Reference link for the business service. |
@@ -168,7 +168,7 @@ Check whether a given IP address is "Internet background noise", or has been obs
 | GreyNoise.IP.address | string | The IP address of the scanning device IP. |
 | GreyNoise.IP.internet_scanner_intelligence.found | boolean | Whether the IP has been observed scanning the internet. |
 | GreyNoise.IP.business_service_intelligence.found | boolean | Whether the IP is a common business service. Null means this data is not included in the current license. |
-| GreyNoise.IP.business_service_intelligence.business_service_status | string | Set when Business Service Intelligence is not included in the current license. |
+| GreyNoise.IP.business_service_intelligence.business_service_status | string | The status set when Business Service Intelligence is not included in the current license. |
 | GreyNoise.IP.internet_scanner_intelligence.classification  | string | If the IP has been observed, what is the GreyNoise classification. |
 | GreyNoise.IP.business_service_intelligence.trust_level| string | If the IP is a business service, how trustworthy is the IP. |
 
@@ -521,7 +521,7 @@ Identifies IPs from known benign services and organizations that commonly cause 
 | GreyNoise.IP.name | String | The name of the IP if the riot is "True". |
 | GreyNoise.IP.reference | String | The reference of the IP if riot is "True". |
 | GreyNoise.IP.riot | String | Indicates if the IP is business service. |
-| GreyNoise.IP.business_service_status | String | Set when Business Service Intelligence is not included in the current license. |
+| GreyNoise.IP.business_service_status | String | The status set when Business Service Intelligence is not included in the current license. |
 | GreyNoise.IP.trust_level | String | The trust level of the IP if riot is "True". |
 
 #### Example Command
@@ -620,7 +620,7 @@ Identifies IPs that have been observed mass-scanning the internet.
 | GreyNoise.IP.raw_data.web.paths | array | Any HTTP paths the device has been observed crawling the Internet for. |
 | GreyNoise.IP.raw_data.web.useragents | array | Any HTTP user-agents the device has been observed using while crawling the Internet. |
 | GreyNoise.IP.seen | boolean | Whether the IP is in record with GreyNoise. |
-| GreyNoise.IP.business_service_status | string | Set when Business Service Intelligence is not included in the current license. |
+| GreyNoise.IP.business_service_status | string | The status set when Business Service Intelligence is not included in the current license. |
 | GreyNoise.IP.spoofable | boolean | Whether the ip is spoofable. |
 | GreyNoise.IP.tags.category | string | The category of the given tag. |
 | GreyNoise.IP.tags.created | date | The date the tag was added to the GreyNoise system. |
@@ -658,6 +658,20 @@ Deprecated. The GreyNoise similarity functionality is no longer supported.
 
 `greynoise-similarity`
 
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | IP address to find similar IPs to. | Required |
+| minimum_score | The minimum similarity score to match to.  Value between 80 and 100. Default value is 90. | Optional |
+| maximum_results | The maximum number of results to return. Default value is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GreyNoise.Similar.message | string | The message stating that GreyNoise similarity is deprecated and no longer supported. |
+
 #### Command Example
 
 ```!greynoise-similarity ip="1.1.1.1"```
@@ -690,16 +704,16 @@ Get timeline activity for an IP address.
 | GreyNoise.Timeline.metadata.ip | string | The IP address the daily timeline was requested for. |
 | GreyNoise.Timeline.metadata.days | number | The number of days of daily timeline data requested. |
 | GreyNoise.Timeline.metadata.granularity | string | The timeline bucket size. Daily results use 1d. |
-| GreyNoise.Timeline.data | array | Daily internet scanner activity summaries. |
-| GreyNoise.Timeline.data.date | string | The date of the daily summary. |
+| GreyNoise.Timeline.data | array | The daily internet scanner activity summaries. |
+| GreyNoise.Timeline.data.date | date | The date of the daily summary (e.g., 2024-01-15). |
 | GreyNoise.Timeline.data.classification | string | The classification observed on that day. |
-| GreyNoise.Timeline.data.tags | array | Tags observed on that day. |
-| GreyNoise.Timeline.data.rdns | array | Reverse DNS values observed on that day. |
-| GreyNoise.Timeline.data.organizations | array | Organizations observed on that day. |
-| GreyNoise.Timeline.data.asns | array | ASNs observed on that day. |
-| GreyNoise.Timeline.data.ports | array | Ports observed on that day. |
-| GreyNoise.Timeline.data.web_paths | array | Web paths observed on that day. |
-| GreyNoise.Timeline.data.user_agents | array | User agents observed on that day. |
+| GreyNoise.Timeline.data.tags | array | The tags observed on that day. |
+| GreyNoise.Timeline.data.rdns | array | The reverse DNS values observed on that day. |
+| GreyNoise.Timeline.data.organizations | array | The organizations observed on that day. |
+| GreyNoise.Timeline.data.asns | array | The ASNs observed on that day. |
+| GreyNoise.Timeline.data.ports | array | The ports observed on that day. |
+| GreyNoise.Timeline.data.web_paths | array | The web paths observed on that day. |
+| GreyNoise.Timeline.data.user_agents | array | The user agents observed on that day. |
 
 #### Command Example
 
