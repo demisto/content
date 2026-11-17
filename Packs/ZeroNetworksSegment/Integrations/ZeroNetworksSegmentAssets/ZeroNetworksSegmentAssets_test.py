@@ -97,6 +97,16 @@ def test_asset_search_command_no_match_on_404(requests_mock, client):
     assert "No asset was found" in results.readable_output
 
 
+def test_asset_search_command_missing_fqdn(client):
+    """
+    Given: No fqdn argument, which the platform should have enforced but did not.
+    When: Running the zero-networks-segment-asset-search command.
+    Then: A descriptive error is raised rather than a lookup for an empty FQDN.
+    """
+    with pytest.raises(DemistoException, match=re.escape("The 'fqdn' argument is required.")):
+        asset_search_command(client, {})
+
+
 @pytest.mark.parametrize(
     "quarantine, expected_message",
     [
@@ -133,6 +143,20 @@ def test_asset_quarantine_command_by_fqdn(requests_mock, client):
     assert quarantine_mock.last_request.json() == {"quarantine": True}
     assert results.outputs == {"ID": ASSET_ID, "FQDN": FQDN, "IsQuarantined": True}
     assert results.readable_output == f"Asset {FQDN} was successfully quarantined."
+
+
+def test_asset_quarantine_command_empty_response_body(requests_mock, client):
+    """
+    Given: The API answers the quarantine request with 200 and no body at all.
+    When: Running the quarantine command.
+    Then: The command succeeds rather than failing to parse the empty body as JSON.
+    """
+    requests_mock.put(f"{BASE_URL}/assets/{ASSET_ID}/actions/quarantine", status_code=200, content=b"")
+
+    results = asset_quarantine_command(client, {"asset_id": ASSET_ID}, quarantine=True)
+
+    assert results.outputs == {"ID": ASSET_ID, "IsQuarantined": True}
+    assert results.readable_output == f"Asset {ASSET_ID} was successfully quarantined."
 
 
 def test_asset_quarantine_command_unknown_fqdn(requests_mock, client):

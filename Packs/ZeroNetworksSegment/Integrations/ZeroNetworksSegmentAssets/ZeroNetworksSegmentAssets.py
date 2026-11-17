@@ -185,12 +185,17 @@ class Client(BaseClient):
         return self._http_request("GET", f"/assets/{asset_id}")
 
     def set_asset_quarantine(self, asset_id: str, quarantine: bool) -> None:
-        """Enable or disable quarantine for an asset. The API answers with an empty object."""
+        """
+        Enable or disable quarantine for an asset.
+
+        The API answers a success with either an empty object or no body at all, so the raw response
+        is requested and its body is never parsed.
+        """
         self._http_request(
             "PUT",
             f"/assets/{asset_id}/actions/quarantine",
             json_data={"quarantine": quarantine},
-            return_empty_response=True,
+            resp_type="response",
         )
 
 
@@ -280,7 +285,10 @@ def test_module(client: Client) -> str:
 
 def asset_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Search for an asset by FQDN and return its properties."""
-    fqdn = args.get("fqdn")
+    fqdn = args.get("fqdn", "")
+    if not fqdn:
+        raise DemistoException("The 'fqdn' argument is required.")
+
     asset_id = client.search_asset_id(fqdn)
 
     if not asset_id:
