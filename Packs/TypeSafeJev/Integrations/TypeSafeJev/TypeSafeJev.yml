@@ -189,14 +189,14 @@ script:
     - contextPath: TypeSafeJev.Model.release_date
       description: The model release date.
       type: Date
-  dockerimage: demisto/fastapi:0.141.1.13241299
+  dockerimage: demisto/fastapi:0.162.0.14169403
   runonce: false
   script: ''
   subtype: python3
   type: python
 fromversion: 6.10.0
 tests:
-- No tests (auto formatted)
+- TypeSafeJev_test
 marketplaces:
 - xsoar
 - marketplacev2

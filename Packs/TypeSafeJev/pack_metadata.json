@@ -25,6 +25,10 @@
         "DemistoRESTAPI": {
             "mandatory": true,
             "display_name": "Cortex REST API"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
         }
     },
     "marketplaces": [

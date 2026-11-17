@@ -1,7 +1,7 @@
 adopted: true
 contentitemexportablefields:
   contentitemfields: {}
-description: Daily Jev Marketplace assessment with recursive mandatory dependency planning, platform-catalog installation, verified versions, and deduplicated issues for evidenced breaking impact. Held, unresolved or failed updates get one deduplicated manual-review case each.
+description: Daily Jev Marketplace assessment with recursive mandatory dependency planning, supported ContentPackInstaller execution, verified versions, and deduplicated issues for evidenced breaking impact. Held, unresolved or failed updates get one deduplicated manual-review case each.
 id: silent-TypeSafe Jev - Marketplace Daily Assessment
 inputs:
 - description: Run without installing packs or creating, updating, or closing cases. Set to false only after reviewing the playbook behavior in your environment.
@@ -75,7 +75,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Runs in the native JavaScript runtime. No external AI service or Python worker.
+      description: Collects Marketplace inventory and enabled integration evidence with the Python automation.
       id: d1ea894c-0601-4186-88a0-f5644b3f4f05
       iscommand: false
       name: Collect installed packs and enabled integrations
@@ -116,7 +116,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Runs in the native JavaScript runtime. No external AI service or Python worker.
+      description: Builds bounded, evidence-bound Jev questions with the Python automation.
       id: 61945d73-a811-48d4-8399-2e1f0f9b8efb
       iscommand: false
       name: Prepare release evidence for Jev
@@ -157,7 +157,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Runs in the native JavaScript runtime. No external AI service or Python worker.
+      description: Routes confirmed affected releases to validation issues with the Python automation.
       id: e9f8f358-5e68-4b4b-8252-648974dba13f
       iscommand: false
       name: Create validation cases for affected breaking changes
@@ -360,7 +360,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Install reviewed missing mandatory dependencies before parent packs using the tenant platform catalog, submit cyclic groups together, and verify each exact target. A failed dependency blocks its parents.
+      description: Install reviewed exact-version packs using CommonScripts ContentPackInstaller, then verify each installed version. A failed dependency blocks its dependents.
       id: f818f2b3-bb27-4dcd-83d9-e5d6fa9d2496
       iscommand: false
       name: Install approved updates and verify versions
@@ -405,7 +405,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: 'One deduplicated review issue/case per held, unresolved or failed pack update (key: pack + target version). Auto-resolves stale review cases when the pack is installed or the target changes. Never installs or approves anything.'
+      description: 'Create or retain one deduplicated review issue per held or failed pack update (key: pack + target version). This step never installs or approves an update.'
       id: 7e649f6f-4ebd-413c-8c03-23c7c18b262e
       iscommand: false
       name: Create manual review cases for held or unresolved updates

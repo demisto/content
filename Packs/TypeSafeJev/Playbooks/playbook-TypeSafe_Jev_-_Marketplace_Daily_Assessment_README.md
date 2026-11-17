@@ -91,5 +91,5 @@ The workflow writes its data below `TypeSafeJevMarketplace`, including:
 - `ReviewPlan`: immutable evidence batches sent to Jev.
 - `Assessment`: validated release decisions and hold reasons.
 - `Installation`: installed, held, failed, and already-current packs.
-- `Review`: review cases created, retained, or resolved.
+- `Review`: review issues created or retained for held or failed updates.
 - `PackDetail`: read-only details returned by the `pack_detail` action.
