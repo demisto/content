@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 import urllib3
 import traceback
 from typing import Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 urllib3.disable_warnings()
 
@@ -13,6 +13,16 @@ SOCRADAR_API_ENDPOINT = "https://platform.socradar.com/api"
 SOCRADAR_SEVERITIES = ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
 MAX_INCIDENTS_TO_FETCH = 100000
 MAX_INCIDENTS_PER_PAGE = 100
+MAX_STORED_ALARM_IDS = 10000
+# Hourly safety check: re-queries alarms approved since the previous check so that
+# alarms which become available after the regular fetch window has moved on are not missed.
+APPROVED_CHECK_INTERVAL_MINUTES = 60
+APPROVED_CHECK_OVERLAP_MINUTES = 10
+APPROVED_CHECK_MAX_RANGE_DAYS = 29
+# Retry alarm searches on rate limiting and transient server errors (honours the Retry-After header).
+SEARCH_RETRIES = 3
+SEARCH_RETRY_STATUS_CODES = [429, 500, 502, 503, 504]
+SEARCH_RETRY_BACKOFF_FACTOR = 2
 
 
 STATUS_REASON_MAP = {
@@ -77,6 +87,8 @@ class Client(BaseClient):
         # caused a TypeError since search_incidents did not accept it.
         include_total_records: bool = True,
         include_company_id: bool = False,
+        approved_at_start: str | None = None,
+        approved_at_end: str | None = None,
     ) -> dict[str, Any]:
         """
         Search incidents from SOCRadar API
@@ -96,6 +108,8 @@ class Client(BaseClient):
             page: Page number for pagination
             include_total_records: Whether to request total record counts from the API
             include_company_id: Whether to request company_id in alarm data from the API
+            approved_at_start: Only return alarms approved at or after this time (ISO datetime, UTC)
+            approved_at_end: Only return alarms approved at or before this time (ISO datetime, UTC)
 
         API Response Structure:
         {
@@ -138,6 +152,10 @@ class Client(BaseClient):
             params["excluded_alarm_sub_types"] = excluded_alarm_sub_types
         if include_company_id:
             params["include_company_id"] = "true"
+        if approved_at_start:
+            params["approved_at_start"] = approved_at_start
+        if approved_at_end:
+            params["approved_at_end"] = approved_at_end
 
         url_suffix = f"/company/{self.company_id}/incidents/v4"
 
@@ -152,6 +170,9 @@ class Client(BaseClient):
                 headers=self._get_headers(),
                 timeout=60,
                 resp_type="json",
+                retries=SEARCH_RETRIES,
+                status_list_to_retry=SEARCH_RETRY_STATUS_CODES,
+                backoff_factor=SEARCH_RETRY_BACKOFF_FACTOR,
             )
 
             demisto.debug(f"[SOCRadar] Response type: {type(response)}")
@@ -627,6 +648,116 @@ def alarm_to_incident(
     return incident
 
 
+def parse_checkpoint(value: Any) -> datetime | None:
+    """Parse a UTC ISO datetime checkpoint stored in last_run, returning None when missing or invalid."""
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=UTC)
+
+
+def format_utc(value: datetime) -> str:
+    """Format a UTC datetime the way the SOCRadar API expects it."""
+    return value.astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def sort_alarm_ids_for_storage(alarm_ids: set[Any]) -> list[Any]:
+    """Keep the most recent alarm IDs (alarm IDs grow over time) within the storage cap."""
+
+    def sort_key(alarm_id: Any) -> int:
+        return int(alarm_id) if str(alarm_id).isdigit() else 0
+
+    return sorted(alarm_ids, key=sort_key, reverse=True)[:MAX_STORED_ALARM_IDS]
+
+
+def fetch_approved_alarms(
+    client: Client,
+    window_start: datetime,
+    window_end: datetime,
+    budget: int,
+    seen_alarm_ids: set[Any],
+    search_filters: dict[str, Any],
+    incident_options: dict[str, Any],
+) -> tuple[list[dict[str, Any]], bool]:
+    """
+    Fetch alarms approved within [window_start, window_end] that were not created as incidents yet.
+
+    Returns:
+        A tuple of (new incidents, completed). completed is False when the budget ran out
+        before all pages were processed, so the same window should be checked again.
+    """
+    incidents: list[dict[str, Any]] = []
+    page = 1
+    while True:
+        response = client.search_incidents(
+            **search_filters,
+            approved_at_start=format_utc(window_start),
+            approved_at_end=format_utc(window_end),
+            limit=MAX_INCIDENTS_PER_PAGE,
+            page=page,
+        )
+        alarms = response.get("data", [])
+        for alarm in alarms:
+            alarm_id = alarm.get("alarm_id")
+            if alarm_id in seen_alarm_ids:
+                continue
+            if len(incidents) >= budget:
+                return incidents, False
+            incidents.append(alarm_to_incident(alarm, **incident_options))
+            seen_alarm_ids.add(alarm_id)
+        if len(alarms) < MAX_INCIDENTS_PER_PAGE or page >= response.get("total_pages", 0):
+            return incidents, True
+        page += 1
+
+
+def run_hourly_approved_check(
+    client: Client,
+    last_run: dict[str, Any],
+    budget: int,
+    seen_alarm_ids: set[Any],
+    search_filters: dict[str, Any],
+    incident_options: dict[str, Any],
+) -> tuple[list[dict[str, Any]], str]:
+    """
+    Once per hour, pick up alarms that became available after the regular fetch window had moved on.
+
+    Returns:
+        A tuple of (new incidents, checkpoint to store for the next run).
+    """
+    # Uses its own UTC clock so the window is correct regardless of the engine's local timezone.
+    current_time = datetime.now(UTC)
+    last_check = parse_checkpoint(last_run.get("last_approved_check"))
+    if not last_check:
+        # First run (or upgrade from an older version): start tracking from now.
+        return [], format_utc(current_time)
+
+    stored_checkpoint = format_utc(last_check)
+    if current_time - last_check < timedelta(minutes=APPROVED_CHECK_INTERVAL_MINUTES) or budget <= 0:
+        return [], stored_checkpoint
+
+    window_start = max(
+        last_check - timedelta(minutes=APPROVED_CHECK_OVERLAP_MINUTES),
+        current_time - timedelta(days=APPROVED_CHECK_MAX_RANGE_DAYS),
+    )
+    demisto.debug(f"[SOCRadar] Hourly check window: {format_utc(window_start)} to {format_utc(current_time)}")
+    # Work on a copy so that a failed check does not mark unsent alarms as already fetched.
+    check_seen_alarm_ids = set(seen_alarm_ids)
+    try:
+        incidents, completed = fetch_approved_alarms(
+            client, window_start, current_time, budget, check_seen_alarm_ids, search_filters, incident_options
+        )
+    except Exception as e:
+        demisto.error(f"[SOCRadar] Hourly check failed, it will be retried on the next run: {str(e)}")
+        return [], stored_checkpoint
+
+    seen_alarm_ids.update(check_seen_alarm_ids)
+    demisto.debug(f"[SOCRadar] Hourly check created {len(incidents)} incidents (completed: {completed})")
+    return incidents, format_utc(current_time) if completed else stored_checkpoint
+
+
 # FIX: Added show_content parameter to fetch_incidents so it can be passed
 # through to alarm_to_incident from the YAML checkbox configuration.
 def fetch_incidents(
@@ -838,20 +969,53 @@ def fetch_incidents(
         demisto.debug(f"[SOCRadar] Excluded Alarm Main Types: {excluded_alarm_main_types}")
         demisto.debug("[SOCRadar] ====================================")
 
+        # The hourly check only runs once the regular fetch has caught up (max_results not reached).
+        hourly_check_budget = 0 if reached_max_results else max_results - total_incidents_created
+        hourly_incidents, last_approved_check = run_hourly_approved_check(
+            client=client,
+            last_run=last_run,
+            budget=hourly_check_budget,
+            seen_alarm_ids=last_alarm_ids,
+            search_filters={
+                "status": status,
+                "severities": severities,
+                "alarm_main_types": alarm_main_types,
+                "alarm_sub_types": alarm_sub_types,
+                "alarm_type_ids": alarm_type_ids,
+                "excluded_alarm_type_ids": excluded_alarm_type_ids,
+                "excluded_alarm_main_types": excluded_alarm_main_types,
+                "excluded_alarm_sub_types": excluded_alarm_sub_types,
+                "include_company_id": include_company_id,
+            },
+            incident_options={
+                "show_content": show_content,
+                "include_mitigation": include_mitigation,
+                "include_response": include_response,
+                "include_detection_and_analysis": include_detection_and_analysis,
+                "include_post_incident_analysis": include_post_incident_analysis,
+                "include_related_assets": include_related_assets,
+                "include_related_entities": include_related_entities,
+                "include_company_id": include_company_id,
+                "include_incident_link": include_incident_link,
+                "configured_company_id": configured_company_id,
+            },
+        )
+        all_incidents.extend(hourly_incidents)
+
         # FIX: Use a new variable name 'next_fetch_time' to avoid shadowing
         # the 'last_fetch_str' string from the top of the function.
         if reached_max_results:
             next_fetch_time = start_datetime
         else:
             next_fetch_time = current_time + timedelta(seconds=1)
-        combined = list(last_alarm_ids)[:10000]
         next_run = {
             "last_fetch": next_fetch_time.isoformat(),
             "start_date": start_date,
             "end_date": end_date,
             "next_run_incidents_to_skip": next_run_incidents_to_skip,
             "latest_page": current_page if next_run_incidents_to_skip else 1,
-            "last_alarm_ids": combined,
+            "last_alarm_ids": sort_alarm_ids_for_storage(last_alarm_ids),
+            "last_approved_check": last_approved_check,
         }
 
         demisto.debug(f"[SOCRadar] Returning {len(all_incidents)} incidents to XSOAR")
@@ -863,10 +1027,11 @@ def fetch_incidents(
         demisto.error(f"[SOCRadar] Traceback: {traceback.format_exc()}")
 
         return {
-            "last_alarm_ids": list(last_alarm_ids_backup)[:10000],
+            "last_alarm_ids": sort_alarm_ids_for_storage(last_alarm_ids_backup),
             "last_fetch": start_date,
             "start_date": start_date,
             "end_date": end_date,
+            "last_approved_check": last_run.get("last_approved_check"),
             "exception": str(e),
         }, []
 
