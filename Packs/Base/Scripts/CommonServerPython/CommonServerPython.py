@@ -11982,6 +11982,15 @@ class CortexPermissionError(CortexError):
     | DO NOT use for: failed authentication/credentials (CortexAuthError). |
     +======================================================================+
 
+    :type override_message: ``str``
+    :param override_message: Optional custom message that overrides the
+        auto-built one (for backward compatibility). Auto-generated if omitted.
+
+    :type missing_permissions: ``list``
+    :param missing_permissions: Names of the permissions the user is missing.
+        When provided, they are appended to the message (auto-built or
+        override) as ``... Missing permissions: A, B.`` and exposed in ``details``.
+
     :return: None
     :rtype: ``None``
     """
@@ -11989,6 +11998,28 @@ class CortexPermissionError(CortexError):
     error_code = CortexErrorCode.PERMISSION_ERROR
     retry_guidance = RetryGuidance.NOT_RETRYABLE
     _default_message = "Permission denied. You do not have the required permissions to perform this action."
+
+    def __init__(self, override_message=None, missing_permissions=None):
+        self.missing_permissions = [str(p) for p in (missing_permissions or [])]
+        details = {}  # type: dict
+        if self.missing_permissions:
+            details["missing_permissions"] = self.missing_permissions
+        super(CortexPermissionError, self).__init__(override_message, details=details)
+
+    def _missing_permissions_suffix(self):
+        if self.missing_permissions:
+            return " Missing permissions: {}.".format(', '.join(self.missing_permissions))
+        return ""
+
+    def _base_message(self):
+        return self._default_message + self._missing_permissions_suffix()
+
+    def build_message(self):
+        # Unlike the base class, the missing permissions are appended to a
+        # custom override message too, so the user always sees what is missing.
+        if self._custom_message:
+            return self._custom_message + self._missing_permissions_suffix()
+        return self.auto_message()
 
 
 class CortexExecutionError(CortexError):

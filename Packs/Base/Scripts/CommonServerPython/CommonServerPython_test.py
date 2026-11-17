@@ -2067,6 +2067,106 @@ def test_content_error_retry_guidance_exposed_in_details():
     assert 'retryable' not in execution.details
 
 
+def test_permission_error_lists_missing_permissions_in_message():
+    """
+    Given
+    - A CortexPermissionError raised with a list of missing permissions
+    When
+    - build_message and auto_message are called
+    Then
+    - Both messages list the missing permissions after the default message
+    """
+    from CommonServerPython import CortexPermissionError, RetryGuidance
+    # given
+    not_retryable = RetryGuidance.hint(RetryGuidance.NOT_RETRYABLE)
+    expected = ("Permission denied. You do not have the required permissions to perform this action. "
+                "Missing permissions: CSP, Tenant support entitlement. " + not_retryable)
+
+    # when
+    error = CortexPermissionError(missing_permissions=['CSP', 'Tenant support entitlement'])
+
+    # then
+    assert error.build_message() == expected
+    assert error.auto_message() == expected
+    assert str(error) == expected
+
+
+def test_permission_error_exposes_missing_permissions_in_details():
+    """
+    Given
+    - A list of missing permissions
+    When
+    - A CortexPermissionError is constructed with it
+    Then
+    - details carries missing_permissions alongside the not-retryable guidance
+    """
+    from CommonServerPython import CortexPermissionError, RetryGuidance
+    # when
+    error = CortexPermissionError(missing_permissions=['CSP'])
+
+    # then
+    assert error.missing_permissions == ['CSP']
+    assert error.details['missing_permissions'] == ['CSP']
+    assert error.details['retry_guidance'] == RetryGuidance.NOT_RETRYABLE
+    assert error.details['retryable'] is False
+
+
+def test_permission_error_without_missing_permissions_omits_key():
+    """
+    Given
+    - No missing permissions
+    When
+    - A CortexPermissionError is constructed
+    Then
+    - details has no missing_permissions key and the message is the plain default
+    """
+    from CommonServerPython import CortexPermissionError
+    # when
+    error = CortexPermissionError()
+
+    # then
+    assert error.missing_permissions == []
+    assert 'missing_permissions' not in error.details
+    assert 'Missing permissions' not in error.build_message()
+
+
+def test_permission_error_override_message_appends_missing_permissions():
+    """
+    Given
+    - A CortexPermissionError with both override_message and missing_permissions
+    When
+    - build_message and auto_message are called
+    Then
+    - build_message returns the override followed by the missing permissions,
+      and auto_message lists them as well
+    """
+    from CommonServerPython import CortexPermissionError
+    # when
+    error = CortexPermissionError(override_message='Custom denial.', missing_permissions=['CSP'])
+
+    # then
+    assert error.build_message() == 'Custom denial. Missing permissions: CSP.'
+    assert str(error) == 'Custom denial. Missing permissions: CSP.'
+    assert 'Missing permissions: CSP.' in error.auto_message()
+
+
+def test_permission_error_override_message_without_missing_permissions_is_verbatim():
+    """
+    Given
+    - A CortexPermissionError with override_message only
+    When
+    - build_message is called
+    Then
+    - The override message is returned verbatim (backward compatible)
+    """
+    from CommonServerPython import CortexPermissionError
+    # when
+    error = CortexPermissionError(override_message='Custom denial.')
+
+    # then
+    assert error.build_message() == 'Custom denial.'
+
+
 def test_content_error_api_auth_status_not_retryable():
     """
     Given
