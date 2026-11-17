@@ -3968,12 +3968,3 @@ tests:
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2
-
-
-supportedModules:
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam

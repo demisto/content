@@ -1726,10 +1726,3 @@ fromversion: 6.10.0
 contentitemexportablefields:
   contentitemfields: {}
 system: true
-supportedModules:
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam

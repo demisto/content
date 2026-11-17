@@ -1182,12 +1182,3 @@ tests:
 marketplaces:
 - marketplacev2
 fromversion: 6.6.0
-
-
-supportedModules:
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam
