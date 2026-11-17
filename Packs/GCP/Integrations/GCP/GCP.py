@@ -9314,7 +9314,14 @@ def main():  # pragma: no cover
 
         if command == "test-module" and (connector_id := get_connector_id()):
             demisto.debug(f"[GCP main] Running health check for connector ID: {connector_id}")
-            return_results(run_health_check_for_accounts(connector_id, CloudTypes.GCP.value, health_check))
+            return_results(
+                run_health_check_for_accounts(
+                    connector_id,
+                    CloudTypes.GCP.value,
+                    health_check,
+                    get_health_check_capability(is_all_commands_allowed),
+                )
+            )
 
         elif command in command_map:
             creds = get_credentials(args, params)

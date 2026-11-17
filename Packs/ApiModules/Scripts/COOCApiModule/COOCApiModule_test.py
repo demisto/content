@@ -243,6 +243,77 @@ def test_health_check_error_to_dict():
     assert connectivity_error_dict["classification"] == HealthStatus.ERROR
 
 
+def test_health_check_error_to_dict_capability():
+    """
+    Given: A HealthCheckError created with and without an explicit capability.
+    When: Calling to_dict().
+    Then: The dictionary contains the capability field, which defaults to AUTOMATION.
+    """
+    from COOCApiModule import Capability
+
+    default_error_dict = HealthCheckError(
+        account_id="test-account-id",
+        connector_id="test-connector-id",
+        message="Connection failed",
+        error_type=ErrorType.CONNECTIVITY_ERROR,
+    ).to_dict()
+
+    assert default_error_dict["capability"] == Capability.AUTOMATION
+
+    cspm_error_dict = HealthCheckError(
+        account_id="test-account-id",
+        connector_id="test-connector-id",
+        message="Missing permission",
+        error_type=ErrorType.PERMISSION_ERROR,
+        capability=Capability.CSPM,
+    ).to_dict()
+
+    assert cspm_error_dict["capability"] == Capability.CSPM
+
+
+@pytest.mark.parametrize("is_all_commands_allowed, expected_capability", [(True, "AUTOMATION"), (False, "CSPM")])
+def test_get_health_check_capability(is_all_commands_allowed, expected_capability):
+    """
+    Given: An account granted either full permissions or only the partial (CSPM remediation) permission set.
+    When: get_health_check_capability is called.
+    Then: It returns AUTOMATION for full permissions and CSPM for the partial permission set.
+    """
+    from COOCApiModule import get_health_check_capability
+
+    assert get_health_check_capability(is_all_commands_allowed) == expected_capability
+
+
+def test_health_check_error_stamps_capability():
+    """
+    Given: A HealthCheck created with the CSPM capability.
+    When: Single errors and lists of errors are added.
+    Then: Every added error is reported with the CSPM capability.
+    """
+    from COOCApiModule import Capability, HealthCheck
+
+    health_check = HealthCheck(connector_id="test-connector-id", capability=Capability.CSPM)
+    health_check.error(
+        HealthCheckError(
+            account_id="account-1",
+            connector_id="test-connector-id",
+            message="Error 1",
+            error_type=ErrorType.CONNECTIVITY_ERROR,
+        )
+    )
+    health_check.error(
+        [
+            HealthCheckError(
+                account_id="account-2",
+                connector_id="test-connector-id",
+                message="Error 2",
+                error_type=ErrorType.PERMISSION_ERROR,
+            )
+        ]
+    )
+
+    assert [error.to_dict()["capability"] for error in health_check.errors] == [Capability.CSPM, Capability.CSPM]
+
+
 def test_health_check_summarize_no_errors():
     """
     Given: A HealthCheck instance with no errors.
@@ -385,6 +456,36 @@ def test_run_health_check_credentials_failure(mocker):
     error_call_args = mock_health_check.error.call_args[0][0]
     assert isinstance(error_call_args, HealthCheckError)
     assert error_call_args.error_type == ErrorType.CONNECTIVITY_ERROR
+
+
+def test_run_health_check_reports_capability(mocker):
+    """
+    Given: A connector whose account is granted only the partial (CSPM remediation) permission set,
+           and a health check function that returns an error.
+    When: run_health_check_for_accounts is called with the CSPM capability.
+    Then: The returned error entry reports the CSPM capability.
+    """
+    from COOCApiModule import Capability, run_health_check_for_accounts
+
+    mocker.patch("COOCApiModule.get_accounts_by_connector_id", return_value=[{"account_id": "account-1"}])
+    mocker.patch("COOCApiModule.get_cloud_credentials", return_value={"access_token": "test-token"})
+    mocker.patch.object(demisto, "debug")
+    health_check_func = mocker.Mock(
+        return_value=HealthCheckError(
+            account_id="account-1",
+            connector_id="test-connector-id",
+            message="Connection failed",
+            error_type=ErrorType.CONNECTIVITY_ERROR,
+        )
+    )
+
+    result = run_health_check_for_accounts(
+        connector_id="test-connector-id", cloud_type="AWS", health_check_func=health_check_func, capability=Capability.CSPM
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.raw_response[0]["capability"] == Capability.CSPM
+    assert result.raw_response[0]["account_id"] == "account-1"
 
 
 def test_get_connector_id_success(mocker):

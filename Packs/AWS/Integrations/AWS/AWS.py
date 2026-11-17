@@ -12211,7 +12211,12 @@ def main():  # pragma: no cover
 
         if command == "test-module":
             results = (
-                run_health_check_for_accounts(connector_id, CloudTypes.AWS.value, health_check)
+                run_health_check_for_accounts(
+                    connector_id,
+                    CloudTypes.AWS.value,
+                    health_check,
+                    get_health_check_capability(is_all_commands_allowed),
+                )
                 if (connector_id := get_connector_id())
                 else test_module(params)
             )

@@ -39,12 +39,25 @@ class ErrorType(str):
     INTERNAL_ERROR = "Internal Error"
 
 
+class Capability(str):
+    AUTOMATION = "AUTOMATION"
+    CSPM = "CSPM"
+
+
 class HealthCheckError:
-    def __init__(self, account_id: str, connector_id: str, message: str, error_type: str):
+    def __init__(
+        self,
+        account_id: str,
+        connector_id: str,
+        message: str,
+        error_type: str,
+        capability: str = Capability.AUTOMATION,
+    ):
         self.account_id = account_id
         self.connector_id = connector_id
         self.message = message
         self.error_type = error_type
+        self.capability = capability
         # Determine classification based on error type
         self.classification = HealthStatus.WARNING if self.error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
 
@@ -55,26 +68,30 @@ class HealthCheckError:
             "message": self.message,
             "error": self.error_type,
             "classification": self.classification,
+            "capability": self.capability,
         }
 
 
 class HealthCheck:
     """Health check results container for cloud connector."""
 
-    def __init__(self, connector_id: str):
+    def __init__(self, connector_id: str, capability: str = Capability.AUTOMATION):
         self.errors: list[HealthCheckError] = []
         self.connector_id = connector_id
+        self.capability = capability
 
     def error(self, error: HealthCheckError | list[HealthCheckError]) -> None:
         """Adds a health check error or list of errors to the results.
 
+        Each added error is stamped with the capability of the health check (AUTOMATION or CSPM).
+
         Args:
             error (HealthCheckError | list[HealthCheckError]): The error(s) to add to the results.
         """
-        if isinstance(error, list):
-            self.errors.extend(error)
-        else:
-            self.errors.append(error)
+        errors = error if isinstance(error, list) else [error]
+        for health_check_error in errors:
+            health_check_error.capability = self.capability
+        self.errors.extend(errors)
 
     def summarize(self) -> CommandResults | str:
         """Summarizes the health check results by calculating severity based on error classifications.
@@ -252,8 +269,24 @@ def _check_account(
         )
 
 
+def get_health_check_capability(is_all_commands_allowed: bool) -> str:
+    """Returns the health check capability matching the permission set granted to the account.
+
+    Args:
+        is_all_commands_allowed (bool): True if the account is granted full permissions,
+            False if it is granted only the partial (CSPM remediation) permission set.
+
+    Returns:
+        str: ``Capability.AUTOMATION`` for full permissions, ``Capability.CSPM`` for the partial permission set.
+    """
+    return Capability.AUTOMATION if is_all_commands_allowed else Capability.CSPM
+
+
 def run_health_check_for_accounts(
-    connector_id: str, cloud_type: str, health_check_func: Callable[[dict, str, str], Any]
+    connector_id: str,
+    cloud_type: str,
+    health_check_func: Callable[[dict, str, str], Any],
+    capability: str = Capability.AUTOMATION,
 ) -> str | CommandResults:
     """Runs a health check function for each account associated with a connector sequentially.
 
@@ -263,6 +296,8 @@ def run_health_check_for_accounts(
         health_check_func (callable): Function that implements the health check.
                                         Should accept shared_creds, account_id and connector_id parameters
                                         and return a HealthCheckError or None.
+        capability (str): The capability of the account (``Capability.AUTOMATION`` or ``Capability.CSPM``),
+            reported on every health check error. Defaults to ``Capability.AUTOMATION``.
 
     Returns:
         str | CommandResults: Either "ok" string or CommandResults with appropriate EntryType
@@ -270,7 +305,7 @@ def run_health_check_for_accounts(
     Raises:
         DemistoException: If the account retrieval fails.
     """
-    health_check_result = HealthCheck(connector_id)
+    health_check_result = HealthCheck(connector_id, capability)
     try:
         accounts = get_accounts_by_connector_id(connector_id)
         if not accounts:

@@ -14071,7 +14071,14 @@ def main():  # pragma: no cover
                 if is_gov_account(connector_id):  # type: ignore
                     switch_to_gov_account()
                 demisto.debug(f"Running health check for connector ID: {connector_id}")
-                return return_results(run_health_check_for_accounts(connector_id, CloudTypes.AZURE.value, health_check))
+                return return_results(
+                    run_health_check_for_accounts(
+                        connector_id,
+                        CloudTypes.AZURE.value,
+                        health_check,
+                        get_health_check_capability(is_all_commands_allowed),
+                    )
+                )
 
             account_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
             if is_gov_account(connector_id, account_id):  # type: ignore
