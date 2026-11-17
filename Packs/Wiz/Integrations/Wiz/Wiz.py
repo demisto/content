@@ -14,7 +14,7 @@ MAX_NOTE_LENGTH = 1400  # Hard limit for issue note text length enforced by the 
 MAX_COMMENT_PAGES = 100
 WIZ = "wiz"
 
-WIZ_VERSION = "1.8.0"
+WIZ_VERSION = "1.9.0"
 INTEGRATION_GUID = "8864e131-72db-4928-1293-e292f0ed699f"
 NOT_DEFINED = "Not Defined"
 
