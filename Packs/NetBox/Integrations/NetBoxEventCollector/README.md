@@ -1,13 +1,16 @@
 This is the NetBox event collector integration for Cortex XSIAM.
 This integration was integrated and tested with version 3.0 and above of NetBox API.
 
+**Note:** NetBox v4.1 moved the object changes API endpoint from `/api/extras/object-changes/` to `/api/core/object-changes/`. Set the **NetBox Version** parameter according to the version of your NetBox server.
+
 ## Configure NetBox Event Collector in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Server URL (e.g., https://www.example.com) | True |
-| API Key | True |
-| First fetch time | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g., https://www.example.com) | | True |
+| API Key | | True |
+| NetBox Version | The version of the NetBox server. Possible values are: v4.1 and above, Below v4.1. Default is v4.1 and above. | False |
+| First fetch time | | False |
 | The maximum number of alerts per fetch | False |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
