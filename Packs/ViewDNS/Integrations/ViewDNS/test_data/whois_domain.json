@@ -1,0 +1,72 @@
+{
+    "query": {
+        "tool": "whois_PRO_v2",
+        "domain": "domain.com"
+    },
+    "response": {
+        "domainName": "DOMAIN.COM",
+        "registrarName": "Domain.com, LLC",
+        "registrarIANAID": "886",
+        "registryData": {
+            "createdDate": "1994-07-01T04:00:00",
+            "standardCreatedDate": "1994-07-01T04:00:00Z",
+            "updatedDate": "2024-01-22T21:36:01",
+            "standardUpdatedDate": "2024-01-22T21:36:01Z",
+            "expiresDate": "2031-01-07T13:34:24",
+            "standardExpiresDate": "2031-01-07T13:34:24Z",
+            "abuseEmail": "compliance@domain-inc.net",
+            "registrant": {
+                "name": "Domain Manager",
+                "organization": "Newfold Digital, Inc.",
+                "street1": "5335 Gate Parkway",
+                "city": "Jacksonville",
+                "state": "FL",
+                "postalCode": "32256",
+                "country": "US",
+                "telephone": "+1.9046806600",
+                "fax": "",
+                "email": "corpdomains@newfold.com",
+                "rawText": "Registrant Name: Domain Manager\nRegistrant Email: corpdomains@newfold.com"
+            },
+            "administrativeContact": {
+                "name": "REDACTED FOR PRIVACY",
+                "organization": "REDACTED FOR PRIVACY",
+                "street1": "REDACTED FOR PRIVACY",
+                "city": "REDACTED FOR PRIVACY",
+                "state": "REDACTED FOR PRIVACY",
+                "postalCode": "REDACTED FOR PRIVACY",
+                "country": "REDACTED FOR PRIVACY",
+                "telephone": "REDACTED FOR PRIVACY",
+                "fax": "REDACTED FOR PRIVACY",
+                "email": "REDACTED FOR PRIVACY",
+                "rawText": "Admin Name: REDACTED FOR PRIVACY\nAdmin Email: REDACTED FOR PRIVACY"
+            },
+            "technicalContact": {
+                "name": "REDACTED FOR PRIVACY",
+                "organization": "REDACTED FOR PRIVACY",
+                "street1": "REDACTED FOR PRIVACY",
+                "city": "REDACTED FOR PRIVACY",
+                "state": "REDACTED FOR PRIVACY",
+                "postalCode": "REDACTED FOR PRIVACY",
+                "country": "REDACTED FOR PRIVACY",
+                "telephone": "REDACTED FOR PRIVACY",
+                "fax": "REDACTED FOR PRIVACY",
+                "email": "REDACTED FOR PRIVACY",
+                "rawText": "Tech Name: REDACTED FOR PRIVACY\nTech Email: REDACTED FOR PRIVACY"
+            },
+            "nameServers": {
+                "rawText": "lee.ns.cloudflare.com\nsarah.ns.cloudflare.com",
+                "hostNames": [
+                    {
+                        "Address": "lee.ns.cloudflare.com"
+                    },
+                    {
+                        "Address": "sarah.ns.cloudflare.com"
+                    }
+                ]
+            },
+            "status": "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited\nclientTransferProhibited https://icann.org/epp#clientTransferProhibited\nclientUpdateProhibited https://icann.org/epp#clientUpdateProhibited",
+            "rawText": "Domain Name: DOMAIN.COM\nRegistry Domain ID: 608082_DOMAIN_COM-VRSN\nRegistrar WHOIS Server: whois.domain.com\nUpdated Date: 2024-01-22T21:36:01\nCreation Date: 1994-07-01T04:00:00\nRegistrant Organization: Newfold Digital, Inc. &amp; Co"
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "query": {
+        "tool": "dnsrecord_PRO",
+        "domain": "domain.com",
+        "recordtype": "CAA"
+    },
+    "response": {
+        "records": []
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "query": {
+        "tool": "reverseip_PRO",
+        "host": "192.0.2.1"
+    },
+    "response": {
+        "domain_count": "0"
+    }
+}

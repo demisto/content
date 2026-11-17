@@ -1,0 +1,65 @@
+{
+    "query": {
+        "tool": "whois_PRO_v2",
+        "domain": "unregistered-domain-example.com"
+    },
+    "response": {
+        "domainName": "",
+        "registrarName": "",
+        "registrarIANAID": "",
+        "registryData": {
+            "createdDate": "",
+            "standardCreatedDate": false,
+            "updatedDate": "",
+            "standardUpdatedDate": false,
+            "expiresDate": "",
+            "standardExpiresDate": false,
+            "abuseEmail": "",
+            "registrant": {
+                "name": "",
+                "organization": "",
+                "street1": "",
+                "city": "",
+                "state": "",
+                "postalCode": "",
+                "country": "",
+                "telephone": "",
+                "fax": "",
+                "email": "",
+                "rawText": ""
+            },
+            "administrativeContact": {
+                "name": "",
+                "organization": "",
+                "street1": "",
+                "city": "",
+                "state": "",
+                "postalCode": "",
+                "country": "",
+                "telephone": "",
+                "fax": "",
+                "email": "",
+                "rawText": ""
+            },
+            "technicalContact": {
+                "name": "",
+                "organization": "",
+                "street1": "",
+                "city": "",
+                "state": "",
+                "postalCode": "",
+                "country": "",
+                "telephone": "",
+                "fax": "",
+                "email": "",
+                "rawText": ""
+            },
+            "nameServers": {
+                "rawText": "",
+                "hostNames": []
+            },
+            "status": "",
+            "rawText": "No match for &quot;UNREGISTERED-DOMAIN-EXAMPLE.COM&quot;.\n&gt;&gt;&gt; Last update of whois database: 2026-11-17T00:15:23Z &lt;&lt;&lt;\n\nThe Registry database contains ONLY .COM, .NET, .EDU domains and\nRegistrars."
+        }
+    }
+}

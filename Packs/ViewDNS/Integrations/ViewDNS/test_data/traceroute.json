@@ -1,0 +1,34 @@
+{
+    "query": {
+        "tool": "traceroute_PRO",
+        "domain": "example.com"
+    },
+    "response": {
+        "hops": [
+            {
+                "number": "1",
+                "hostname": "obfuscated.internal.network.com",
+                "ip": "0.0.0.0",
+                "rtt": "0.000"
+            },
+            {
+                "number": "2",
+                "hostname": "obfuscated.internal.network.com",
+                "ip": "0.0.0.0",
+                "rtt": "1.000"
+            },
+            {
+                "number": "3",
+                "hostname": "air-mdsn-usshc.airstreamcomm.net",
+                "ip": "64.33.146.250",
+                "rtt": "3.513"
+            },
+            {
+                "number": "4",
+                "hostname": "93.184.215.14",
+                "ip": "93.184.215.14",
+                "rtt": "7.156"
+            }
+        ]
+    }
+}

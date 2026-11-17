@@ -1,0 +1,334 @@
+id: silent-ViewDNS - Domain Enrichment
+version: -1
+name: silent-ViewDNS - Domain Enrichment
+description: 'Enriches a domain with ViewDNS.info data: the WHOIS record, the historical IP addresses the domain was hosted on, and its current DNS records. The results are written to the context. The playbook consumes three ViewDNS API queries for every domain provided, and the WHOIS lookup requires a paid ViewDNS API key. A failed lookup does not stop the other lookups.'
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: b0082f45-4956-586d-ba7c-8c6e5c95f47b
+    type: start
+    task:
+      id: b0082f45-4956-586d-ba7c-8c6e5c95f47b
+      version: -1
+      name: ''
+      description: ''
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 890cac70-90b7-5929-a6b5-1c8ac0cc7462
+    type: condition
+    task:
+      id: 890cac70-90b7-5929-a6b5-1c8ac0cc7462
+      version: -1
+      name: Is there a domain to enrich?
+      description: Checks whether a domain was provided in the playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '6'
+      'yes':
+      - '2'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Domain
+            iscontext: true
+  '2':
+    id: '2'
+    taskid: 90df1e74-fed5-520e-843f-c9255436fb4f
+    type: title
+    task:
+      id: 90df1e74-fed5-520e-843f-c9255436fb4f
+      version: -1
+      name: Enrich domain
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+      - '4'
+      - '5'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 0bb43d68-2dd5-5baf-9ef1-8a1fd272113b
+    type: regular
+    task:
+      id: 0bb43d68-2dd5-5baf-9ef1-8a1fd272113b
+      version: -1
+      name: Get WHOIS record
+      description: Retrieves the WHOIS record of the domain. Requires a paid ViewDNS API key. Consumes one API query per domain.
+      type: regular
+      iscommand: true
+      brand: ViewDNS
+      script: ViewDNS|||viewdns-whois
+    nexttasks:
+      '#none#':
+      - '6'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      domain:
+        simple: ${inputs.Domain}
+    continueonerror: true
+  '4':
+    id: '4'
+    taskid: 3a8c82f4-d7c3-569a-a566-54867a15f555
+    type: regular
+    task:
+      id: 3a8c82f4-d7c3-569a-a566-54867a15f555
+      version: -1
+      name: Get IP history
+      description: Retrieves the IP addresses the domain was hosted on over time. Consumes one API query per domain.
+      type: regular
+      iscommand: true
+      brand: ViewDNS
+      script: ViewDNS|||viewdns-ip-history
+    nexttasks:
+      '#none#':
+      - '6'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      domain:
+        simple: ${inputs.Domain}
+      limit:
+        simple: ${inputs.IPHistoryLimit}
+    continueonerror: true
+  '5':
+    id: '5'
+    taskid: 4d53976a-39e5-5025-bb00-a3f998387416
+    type: regular
+    task:
+      id: 4d53976a-39e5-5025-bb00-a3f998387416
+      version: -1
+      name: Get DNS records
+      description: Retrieves the current DNS records of the domain. Consumes one API query per domain.
+      type: regular
+      iscommand: true
+      brand: ViewDNS
+      script: ViewDNS|||viewdns-dns-record
+    nexttasks:
+      '#none#':
+      - '6'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      domain:
+        simple: ${inputs.Domain}
+      record_type:
+        simple: ${inputs.DNSRecordType}
+    continueonerror: true
+  '6':
+    id: '6'
+    taskid: e5ae1660-fd43-5a66-8c28-ed58028b1497
+    type: title
+    task:
+      id: e5ae1660-fd43-5a66-8c28-ed58028b1497
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 1180,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value:
+    simple: ${Domain.Name}
+  required: false
+  description: The domain to enrich, for example example.com. IP history is only available for registered domains, not subdomains.
+  playbookInputQuery:
+- key: DNSRecordType
+  value:
+    simple: ANY
+  required: false
+  description: The type of DNS record to retrieve, for example A, MX, TXT, or ANY for all record types.
+  playbookInputQuery:
+- key: IPHistoryLimit
+  value:
+    simple: '50'
+  required: false
+  description: The maximum number of IP history records to return, starting from the most recent.
+  playbookInputQuery:
+outputs:
+- contextPath: ViewDNS.Whois
+  description: The WHOIS record of the domain.
+  type: unknown
+- contextPath: ViewDNS.Whois.DomainName
+  description: The domain name.
+  type: string
+- contextPath: ViewDNS.Whois.RegistrarName
+  description: The name of the registrar.
+  type: string
+- contextPath: ViewDNS.Whois.CreatedDate
+  description: The date the domain was registered.
+  type: date
+- contextPath: ViewDNS.Whois.ExpiresDate
+  description: The date the domain registration expires.
+  type: date
+- contextPath: ViewDNS.Whois.Registrant.Email
+  description: The email address of the registrant.
+  type: string
+- contextPath: ViewDNS.Whois.NameServers
+  description: The name servers of the domain.
+  type: string
+- contextPath: ViewDNS.IPHistory
+  description: The IP history of the domain.
+  type: unknown
+- contextPath: ViewDNS.IPHistory.Domain
+  description: The domain that was searched for.
+  type: string
+- contextPath: ViewDNS.IPHistory.RecordCount
+  description: The total number of historical records available for the domain.
+  type: number
+- contextPath: ViewDNS.IPHistory.Records.IP
+  description: An IP address the domain was hosted on.
+  type: string
+- contextPath: ViewDNS.IPHistory.Records.Owner
+  description: The owner of the IP address.
+  type: string
+- contextPath: ViewDNS.IPHistory.Records.LastSeen
+  description: The date the domain was last seen on the IP address.
+  type: date
+- contextPath: ViewDNS.DNSRecord
+  description: The DNS records of the domain.
+  type: unknown
+- contextPath: ViewDNS.DNSRecord.Records.Type
+  description: The type of the record.
+  type: string
+- contextPath: ViewDNS.DNSRecord.Records.Data
+  description: The data of the record.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
+issilent: true

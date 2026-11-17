@@ -1,0 +1,7 @@
+{
+    "success": false,
+    "error": {
+        "code": 400,
+        "message": "Invalid domain or IP specified."
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "query": {
+        "tool": "reversewhois_PRO",
+        "query": "nobody@nowhere.example"
+    },
+    "response": {
+        "result_count": "0",
+        "total_pages": "0",
+        "current_page": "1"
+    }
+}

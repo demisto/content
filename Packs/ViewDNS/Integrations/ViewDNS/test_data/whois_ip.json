@@ -1,0 +1,60 @@
+{
+    "query": {
+        "tool": "whois_PRO_v2",
+        "ip": "8.8.8.8"
+    },
+    "response": {
+        "ip": "8.8.8.8",
+        "registrarName": "ARIN",
+        "owner": "Google LLC (GOGL)",
+        "netname": "GOGL",
+        "netrange": "8.8.8.0 - 8.8.8.255",
+        "cidr": "8.8.8.0/24",
+        "as": "",
+        "country": "US",
+        "registryData": {
+            "createdDate": "2023-12-28",
+            "standardCreatedDate": "2023-12-28T00:00:00Z",
+            "updatedDate": "2023-12-28",
+            "standardUpdatedDate": "2023-12-28T00:00:00Z",
+            "abuseContact": {
+                "name": "Abuse",
+                "telephone": "+1-650-253-0000",
+                "email": "network-abuse@google.com",
+                "organization": null,
+                "street1": null,
+                "city": null,
+                "state": null,
+                "postalCode": null,
+                "country": null,
+                "fax": null
+            },
+            "administrativeContact": {
+                "name": "",
+                "organization": "",
+                "street1": "1600 Amphitheatre Parkway",
+                "city": "Mountain View",
+                "state": "CA",
+                "postalCode": "94043",
+                "country": "",
+                "telephone": "",
+                "fax": "US",
+                "email": ""
+            },
+            "technicalContact": {
+                "name": "Google LLC",
+                "telephone": "+1-650-253-0000",
+                "email": "arin-contact@google.com",
+                "organization": null,
+                "street1": null,
+                "city": null,
+                "state": null,
+                "postalCode": null,
+                "country": null,
+                "fax": null
+            },
+            "status": "",
+            "rawText": "NetRange:       8.8.8.0 - 8.8.8.255\nCIDR:           8.8.8.0/24\nNetName:        GOGL\nOrganization:   Google LLC (GOGL)\nRegDate:        2023-12-28\nUpdated:        2023-12-28\n"
+        }
+    }
+}

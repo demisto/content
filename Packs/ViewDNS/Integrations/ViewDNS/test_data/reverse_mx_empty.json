@@ -1,0 +1,11 @@
+{
+    "query": {
+        "tool": "reversemx_PRO",
+        "mailserver": "mx.unused.example"
+    },
+    "response": {
+        "domain_count": "0",
+        "total_pages": "0",
+        "current_page": "1"
+    }
+}

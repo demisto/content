@@ -1,0 +1,1063 @@
+category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: ViewDNS
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: https://api.viewdns.info
+  type: 0
+  required: true
+  section: Connect
+- displaypassword: API Key
+  name: credentials
+  type: 9
+  hiddenusername: true
+  required: true
+  section: Connect
+  additionalinfo: The API key of your ViewDNS.info account.
+- display: Enable reputation commands (consumes API credits on every indicator)
+  name: enable_reputation
+  type: 8
+  defaultvalue: 'false'
+  required: false
+  section: Collect
+  additionalinfo: When selected, the generic domain and ip reputation commands query ViewDNS, consuming two API queries for every indicator enriched. When cleared, these commands return a message and consume nothing.
+- display: Source Reliability
+  name: integrationReliability
+  type: 15
+  required: false
+  section: Collect
+  defaultvalue: C - Fairly reliable
+  additionalinfo: Reliability of the source providing the intelligence data.
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+description: Enrich and pivot on domains, IP addresses, and registrants with ViewDNS.info DNS, IP, and WHOIS intelligence, including reverse IP, reverse WHOIS, IP history, and DNS record lookups.
+display: ViewDNS
+name: ViewDNS
+script:
+  commands:
+  - name: viewdns-account-balance
+    description: Retrieves the query usage and remaining balance of the ViewDNS API key. This command does not consume API queries.
+    arguments: []
+    outputs:
+    - contextPath: ViewDNS.Account.Plan
+      description: The plan type of the API key (monthly or trial).
+      type: String
+    - contextPath: ViewDNS.Account.MonthlyLimit
+      description: The number of queries included in the plan per month. A value of 0 means the plan is unlimited.
+      type: Number
+    - contextPath: ViewDNS.Account.MonthlyUsage
+      description: The number of queries used in the current month.
+      type: Number
+    - contextPath: ViewDNS.Account.MonthlyRemaining
+      description: The number of plan queries remaining in the current month. Not returned for unlimited plans.
+      type: Number
+    - contextPath: ViewDNS.Account.PrepaidBalance
+      description: The number of prepaid queries remaining.
+      type: Number
+  - name: viewdns-reverse-ip
+    description: Finds the domains hosted on the same server as a given domain or IP address. Each call consumes one API query.
+    arguments:
+    - name: host
+      description: The domain or IP address to find co-hosted domains for.
+      required: true
+      default: true
+    - &id002
+      name: page
+      description: The page of API results to retrieve. Each page holds up to 10,000 results and each page retrieved consumes one API query.
+      defaultValue: '1'
+    - &id001
+      name: limit
+      description: The maximum number of results to return from the retrieved page.
+      defaultValue: '50'
+    outputs:
+    - contextPath: ViewDNS.ReverseIP.Host
+      description: The domain or IP address that was searched for.
+      type: String
+    - contextPath: ViewDNS.ReverseIP.DomainCount
+      description: The total number of domains hosted on the server.
+      type: Number
+    - contextPath: ViewDNS.ReverseIP.Page
+      description: The result page that was retrieved.
+      type: Number
+    - contextPath: ViewDNS.ReverseIP.Domains.Name
+      description: A domain hosted on the server.
+      type: String
+    - contextPath: ViewDNS.ReverseIP.Domains.LastResolved
+      description: The date the domain was last seen resolving to the server.
+      type: Date
+  - name: viewdns-reverse-whois
+    description: Finds the domains registered by a given person or organization, searching by registrant name or email address. Requires a paid ViewDNS API key. Each call consumes one API query.
+    arguments:
+    - name: query
+      description: The registrant name or email address to search for. Must be at least five characters long.
+      required: true
+      default: true
+    - name: page
+      description: The page of API results to retrieve. Each page holds up to 1,000 results and each page retrieved consumes one API query.
+      defaultValue: '1'
+    - *id001
+    outputs:
+    - contextPath: ViewDNS.ReverseWhois.Query
+      description: The registrant name or email address that was searched for.
+      type: String
+    - contextPath: ViewDNS.ReverseWhois.ResultCount
+      description: The total number of matching domains.
+      type: Number
+    - contextPath: ViewDNS.ReverseWhois.TotalPages
+      description: The total number of result pages available.
+      type: Number
+    - contextPath: ViewDNS.ReverseWhois.CurrentPage
+      description: The result page that was retrieved.
+      type: Number
+    - contextPath: ViewDNS.ReverseWhois.Matches.Domain
+      description: A domain that matches the search.
+      type: String
+    - contextPath: ViewDNS.ReverseWhois.Matches.CreatedDate
+      description: The date the domain was registered.
+      type: Date
+    - contextPath: ViewDNS.ReverseWhois.Matches.Registrar
+      description: The registrar of the domain.
+      type: String
+  - name: viewdns-ip-history
+    description: Retrieves the IP addresses a domain has been hosted on over time. Only registered domains are tracked, not subdomains. Each call consumes one API query.
+    arguments:
+    - name: domain
+      description: The domain to retrieve the IP history of, for example example.com.
+      required: true
+      default: true
+    - name: limit
+      description: The maximum number of records to return, starting from the most recent.
+      defaultValue: '50'
+    outputs:
+    - contextPath: ViewDNS.IPHistory.Domain
+      description: The domain that was searched for.
+      type: String
+    - contextPath: ViewDNS.IPHistory.RecordCount
+      description: The total number of historical records available for the domain.
+      type: Number
+    - contextPath: ViewDNS.IPHistory.Records.IP
+      description: An IP address the domain was hosted on.
+      type: String
+    - contextPath: ViewDNS.IPHistory.Records.Location
+      description: The location of the IP address.
+      type: String
+    - contextPath: ViewDNS.IPHistory.Records.Owner
+      description: The owner of the IP address.
+      type: String
+    - contextPath: ViewDNS.IPHistory.Records.LastSeen
+      description: The date the domain was last seen on the IP address.
+      type: Date
+  - name: viewdns-dns-record
+    description: Retrieves the DNS records of a domain or hostname. Each call consumes one API query.
+    arguments:
+    - name: domain
+      description: The domain or hostname to retrieve DNS records for.
+      required: true
+      default: true
+    - name: record_type
+      description: The type of DNS record to retrieve. Other valid DNS record types can also be entered.
+      defaultValue: ANY
+      auto: PREDEFINED
+      predefined:
+      - ANY
+      - A
+      - AAAA
+      - CAA
+      - CNAME
+      - DNSKEY
+      - DS
+      - MX
+      - NS
+      - PTR
+      - SOA
+      - SRV
+      - TXT
+    outputs:
+    - contextPath: ViewDNS.DNSRecord.Domain
+      description: The domain or hostname that was searched for.
+      type: String
+    - contextPath: ViewDNS.DNSRecord.RecordType
+      description: The record type that was requested.
+      type: String
+    - contextPath: ViewDNS.DNSRecord.Records.Name
+      description: The name of the record.
+      type: String
+    - contextPath: ViewDNS.DNSRecord.Records.TTL
+      description: The time to live of the record, in seconds.
+      type: Number
+    - contextPath: ViewDNS.DNSRecord.Records.Class
+      description: The class of the record.
+      type: String
+    - contextPath: ViewDNS.DNSRecord.Records.Type
+      description: The type of the record.
+      type: String
+    - contextPath: ViewDNS.DNSRecord.Records.Priority
+      description: The priority of the record (MX records only).
+      type: Number
+    - contextPath: ViewDNS.DNSRecord.Records.Data
+      description: The data of the record.
+      type: String
+  - name: viewdns-whois
+    description: Retrieves the WHOIS record of a domain or IP address. Requires a paid ViewDNS API key. Each call consumes one API query.
+    arguments:
+    - name: domain
+      description: The domain or IP address to retrieve the WHOIS record of.
+      required: true
+      default: true
+    outputs:
+    - contextPath: ViewDNS.Whois.DomainName
+      description: The domain name.
+      type: String
+    - contextPath: ViewDNS.Whois.RegistrarName
+      description: The name of the registrar.
+      type: String
+    - contextPath: ViewDNS.Whois.RegistrarIANAID
+      description: The IANA ID of the registrar.
+      type: String
+    - contextPath: ViewDNS.Whois.CreatedDate
+      description: The date the domain was registered.
+      type: Date
+    - contextPath: ViewDNS.Whois.UpdatedDate
+      description: The date the domain registration was last updated.
+      type: Date
+    - contextPath: ViewDNS.Whois.ExpiresDate
+      description: The date the domain registration expires.
+      type: Date
+    - contextPath: ViewDNS.Whois.AbuseEmail
+      description: The abuse contact email address.
+      type: String
+    - contextPath: ViewDNS.Whois.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: ViewDNS.Whois.Registrant.Organization
+      description: The organization of the registrant.
+      type: String
+    - contextPath: ViewDNS.Whois.Registrant.Street
+      description: The street address of the registrant.
+      type: String
+    - contextPath: ViewDNS.Whois.Registrant.City
+      description: The city of the registrant.
+      type: String
+    - contextPath: ViewDNS.Whois.Registrant.State
+      description: The state or province of the registrant.
+      type: String
+    - contextPath: ViewDNS.Whois.Registrant.PostalCode
+      description: The postal code of the registrant.
+      type: String
+    - contextPath: ViewDNS.Whois.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: ViewDNS.Whois.Registrant.Phone
+      description: The phone number of the registrant.
+      type: String
+    - contextPath: ViewDNS.Whois.Registrant.Fax
+      description: The fax number of the registrant.
+      type: String
+    - contextPath: ViewDNS.Whois.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: ViewDNS.Whois.Admin.Name
+      description: The name of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Admin.Organization
+      description: The organization of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Admin.Street
+      description: The street address of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Admin.City
+      description: The city of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Admin.State
+      description: The state or province of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Admin.PostalCode
+      description: The postal code of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Admin.Country
+      description: The country of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Admin.Phone
+      description: The phone number of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Admin.Fax
+      description: The fax number of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Admin.Email
+      description: The email address of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Tech.Name
+      description: The name of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Tech.Organization
+      description: The organization of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Tech.Street
+      description: The street address of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Tech.City
+      description: The city of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Tech.State
+      description: The state or province of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Tech.PostalCode
+      description: The postal code of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Tech.Country
+      description: The country of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Tech.Phone
+      description: The phone number of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Tech.Fax
+      description: The fax number of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Whois.Tech.Email
+      description: The email address of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Whois.NameServers
+      description: The name servers of the domain.
+      type: String
+    - contextPath: ViewDNS.Whois.Status
+      description: The EPP status codes of the domain.
+      type: String
+    - contextPath: ViewDNS.Whois.RawText
+      description: The raw WHOIS record.
+      type: String
+    - contextPath: ViewDNS.IPWhois.IP
+      description: The IP address.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Registry
+      description: The regional internet registry that holds the record.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Owner
+      description: The owner of the network.
+      type: String
+    - contextPath: ViewDNS.IPWhois.NetName
+      description: The name of the network.
+      type: String
+    - contextPath: ViewDNS.IPWhois.NetRange
+      description: The address range of the network.
+      type: String
+    - contextPath: ViewDNS.IPWhois.CIDR
+      description: The network in CIDR notation.
+      type: String
+    - contextPath: ViewDNS.IPWhois.ASN
+      description: The autonomous system number of the network, when available.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Country
+      description: The country of the network.
+      type: String
+    - contextPath: ViewDNS.IPWhois.CreatedDate
+      description: The date the network was registered.
+      type: Date
+    - contextPath: ViewDNS.IPWhois.UpdatedDate
+      description: The date the network registration was last updated.
+      type: Date
+    - contextPath: ViewDNS.IPWhois.Abuse.Name
+      description: The name of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Abuse.Organization
+      description: The organization of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Abuse.Street
+      description: The street address of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Abuse.City
+      description: The city of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Abuse.State
+      description: The state or province of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Abuse.PostalCode
+      description: The postal code of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Abuse.Country
+      description: The country of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Abuse.Phone
+      description: The phone number of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Abuse.Fax
+      description: The fax number of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Abuse.Email
+      description: The email address of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Admin.Name
+      description: The name of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Admin.Organization
+      description: The organization of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Admin.Street
+      description: The street address of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Admin.City
+      description: The city of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Admin.State
+      description: The state or province of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Admin.PostalCode
+      description: The postal code of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Admin.Country
+      description: The country of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Admin.Phone
+      description: The phone number of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Admin.Fax
+      description: The fax number of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Admin.Email
+      description: The email address of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Tech.Name
+      description: The name of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Tech.Organization
+      description: The organization of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Tech.Street
+      description: The street address of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Tech.City
+      description: The city of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Tech.State
+      description: The state or province of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Tech.PostalCode
+      description: The postal code of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Tech.Country
+      description: The country of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Tech.Phone
+      description: The phone number of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Tech.Fax
+      description: The fax number of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Tech.Email
+      description: The email address of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IPWhois.Status
+      description: The status of the network registration.
+      type: String
+    - contextPath: ViewDNS.IPWhois.RawText
+      description: The raw WHOIS record.
+      type: String
+  - name: viewdns-reverse-ns
+    description: Finds the domains that use a given name server. Each call consumes one API query.
+    arguments:
+    - name: nameserver
+      description: The name server to search for, for example ns1.example.com.
+      required: true
+      default: true
+    - *id002
+    - *id001
+    outputs:
+    - contextPath: ViewDNS.ReverseNS.Nameserver
+      description: The name server that was searched for.
+      type: String
+    - contextPath: ViewDNS.ReverseNS.DomainCount
+      description: The total number of domains that use the name server.
+      type: Number
+    - contextPath: ViewDNS.ReverseNS.TotalPages
+      description: The total number of result pages available.
+      type: Number
+    - contextPath: ViewDNS.ReverseNS.CurrentPage
+      description: The result page that was retrieved.
+      type: Number
+    - contextPath: ViewDNS.ReverseNS.Domains
+      description: The domains that use the name server.
+      type: String
+  - name: viewdns-reverse-mx
+    description: Finds the domains that use a given mail server. Each call consumes one API query.
+    arguments:
+    - name: mail_server
+      description: The mail server to search for, for example mail.example.com.
+      required: true
+      default: true
+    - *id002
+    - *id001
+    outputs:
+    - contextPath: ViewDNS.ReverseMX.MailServer
+      description: The mail server that was searched for.
+      type: String
+    - contextPath: ViewDNS.ReverseMX.DomainCount
+      description: The total number of domains that use the mail server.
+      type: Number
+    - contextPath: ViewDNS.ReverseMX.TotalPages
+      description: The total number of result pages available.
+      type: Number
+    - contextPath: ViewDNS.ReverseMX.CurrentPage
+      description: The result page that was retrieved.
+      type: Number
+    - contextPath: ViewDNS.ReverseMX.Domains
+      description: The domains that use the mail server.
+      type: String
+  - name: viewdns-port-scan
+    description: 'Checks whether a set of common ports is open on a host. Each call consumes one API query. Use with care: this command makes ViewDNS servers actively connect to the target, which can be noticed by the target''s owner.'
+    arguments:
+    - name: host
+      description: The domain or public IP address to scan.
+      required: true
+      default: true
+    outputs:
+    - contextPath: ViewDNS.PortScan.Host
+      description: The host that was scanned.
+      type: String
+    - contextPath: ViewDNS.PortScan.OpenPorts
+      description: The numbers of the ports found open.
+      type: Number
+    - contextPath: ViewDNS.PortScan.Ports.Number
+      description: The port number.
+      type: Number
+    - contextPath: ViewDNS.PortScan.Ports.Service
+      description: The service commonly run on the port.
+      type: String
+    - contextPath: ViewDNS.PortScan.Ports.Status
+      description: The status of the port (open or closed).
+      type: String
+  - name: viewdns-ping
+    description: 'Measures latency and packet loss to a host from multiple locations around the world. Each call consumes one API query. Use with care: this command makes ViewDNS servers actively connect to the target, which can be noticed by the target''s owner.'
+    arguments:
+    - name: host
+      description: The domain or public IP address to ping.
+      required: true
+      default: true
+    outputs:
+    - contextPath: ViewDNS.Ping.Host
+      description: The host that was pinged.
+      type: String
+    - contextPath: ViewDNS.Ping.Results.Region
+      description: The region the ping was sent from.
+      type: String
+    - contextPath: ViewDNS.Ping.Results.Location
+      description: The city and country the ping was sent from.
+      type: String
+    - contextPath: ViewDNS.Ping.Results.IPAddress
+      description: The IP address the host resolved to at this location.
+      type: String
+    - contextPath: ViewDNS.Ping.Results.MinRTT
+      description: The minimum round trip time, in milliseconds.
+      type: Number
+    - contextPath: ViewDNS.Ping.Results.MaxRTT
+      description: The maximum round trip time, in milliseconds.
+      type: Number
+    - contextPath: ViewDNS.Ping.Results.AvgRTT
+      description: The average round trip time, in milliseconds.
+      type: Number
+    - contextPath: ViewDNS.Ping.Results.PacketLoss
+      description: The percentage of packets lost.
+      type: String
+  - name: viewdns-traceroute
+    description: 'Traces the network path from a ViewDNS server to a host. Each call consumes one API query. Use with care: this command makes ViewDNS servers actively connect to the target, which can be noticed by the target''s owner.'
+    arguments:
+    - name: host
+      description: The domain or IP address to trace the route to.
+      required: true
+      default: true
+    outputs:
+    - contextPath: ViewDNS.Traceroute.Host
+      description: The host the route was traced to.
+      type: String
+    - contextPath: ViewDNS.Traceroute.Hops.Number
+      description: The position of the hop in the route.
+      type: Number
+    - contextPath: ViewDNS.Traceroute.Hops.Hostname
+      description: The hostname of the hop.
+      type: String
+    - contextPath: ViewDNS.Traceroute.Hops.IP
+      description: The IP address of the hop.
+      type: String
+    - contextPath: ViewDNS.Traceroute.Hops.RTT
+      description: The round trip time to the hop, in milliseconds.
+      type: Number
+  - name: domain
+    description: Enriches a domain with its WHOIS record and IP history. ViewDNS does not provide a verdict, so the DBot score is always 0 (Unknown). Runs only when reputation commands are enabled in the instance settings. Consumes two API queries per domain.
+    arguments:
+    - name: domain
+      description: A comma-separated list of domains to enrich.
+      required: true
+      default: true
+      isArray: true
+    outputs:
+    - &id003
+      contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - &id004
+      contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - &id005
+      contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - &id006
+      contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - &id007
+      contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Organization
+      description: The organization of the registrant.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The date the domain was registered.
+      type: Date
+    - contextPath: Domain.UpdatedDate
+      description: The date the domain registration was last updated.
+      type: Date
+    - contextPath: Domain.ExpirationDate
+      description: The date the domain registration expires.
+      type: Date
+    - contextPath: Domain.DomainStatus
+      description: The EPP status codes of the domain.
+      type: String
+    - contextPath: Domain.NameServers
+      description: The name servers of the domain.
+      type: String
+    - contextPath: Domain.Registrar.Name
+      description: The name of the registrar.
+      type: String
+    - contextPath: Domain.Registrar.AbuseEmail
+      description: The abuse contact email address of the registrar.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Phone
+      description: The phone number of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: The name of the administrative contact.
+      type: String
+    - contextPath: Domain.Admin.Email
+      description: The email address of the administrative contact.
+      type: String
+    - contextPath: Domain.Admin.Phone
+      description: The phone number of the administrative contact.
+      type: String
+    - contextPath: Domain.Admin.Country
+      description: The country of the administrative contact.
+      type: String
+    - contextPath: Domain.Tech.Name
+      description: The name of the technical contact.
+      type: String
+    - contextPath: Domain.Tech.Email
+      description: The email address of the technical contact.
+      type: String
+    - contextPath: Domain.Tech.Organization
+      description: The organization of the technical contact.
+      type: String
+    - contextPath: Domain.Tech.Country
+      description: The country of the technical contact.
+      type: String
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The date the domain was registered.
+      type: Date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date the domain registration was last updated.
+      type: Date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The date the domain registration expires.
+      type: Date
+    - contextPath: Domain.WHOIS.DomainStatus
+      description: The EPP status codes of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.NameServers
+      description: The name servers of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: The name of the registrar.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.AbuseEmail
+      description: The abuse contact email address of the registrar.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Phone
+      description: The phone number of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Name
+      description: The name of the administrative contact.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Email
+      description: The email address of the administrative contact.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Phone
+      description: The phone number of the administrative contact.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Country
+      description: The country of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.DomainName
+      description: The domain name.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.RegistrarName
+      description: The name of the registrar.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.RegistrarIANAID
+      description: The IANA ID of the registrar.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.CreatedDate
+      description: The date the domain was registered.
+      type: Date
+    - contextPath: ViewDNS.Domain.Whois.UpdatedDate
+      description: The date the domain registration was last updated.
+      type: Date
+    - contextPath: ViewDNS.Domain.Whois.ExpiresDate
+      description: The date the domain registration expires.
+      type: Date
+    - contextPath: ViewDNS.Domain.Whois.AbuseEmail
+      description: The abuse contact email address.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Registrant.Organization
+      description: The organization of the registrant.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Registrant.Street
+      description: The street address of the registrant.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Registrant.City
+      description: The city of the registrant.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Registrant.State
+      description: The state or province of the registrant.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Registrant.PostalCode
+      description: The postal code of the registrant.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Registrant.Phone
+      description: The phone number of the registrant.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Registrant.Fax
+      description: The fax number of the registrant.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Admin.Name
+      description: The name of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Admin.Organization
+      description: The organization of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Admin.Street
+      description: The street address of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Admin.City
+      description: The city of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Admin.State
+      description: The state or province of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Admin.PostalCode
+      description: The postal code of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Admin.Country
+      description: The country of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Admin.Phone
+      description: The phone number of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Admin.Fax
+      description: The fax number of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Admin.Email
+      description: The email address of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Tech.Name
+      description: The name of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Tech.Organization
+      description: The organization of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Tech.Street
+      description: The street address of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Tech.City
+      description: The city of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Tech.State
+      description: The state or province of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Tech.PostalCode
+      description: The postal code of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Tech.Country
+      description: The country of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Tech.Phone
+      description: The phone number of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Tech.Fax
+      description: The fax number of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Tech.Email
+      description: The email address of the technical contact.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.NameServers
+      description: The name servers of the domain.
+      type: String
+    - contextPath: ViewDNS.Domain.Whois.Status
+      description: The EPP status codes of the domain.
+      type: String
+    - contextPath: ViewDNS.Domain.IPHistoryCount
+      description: The total number of historical IP records available for the domain.
+      type: Number
+    - contextPath: ViewDNS.Domain.IPHistory.IP
+      description: An IP address the domain was hosted on.
+      type: String
+    - contextPath: ViewDNS.Domain.IPHistory.Location
+      description: The location of the IP address.
+      type: String
+    - contextPath: ViewDNS.Domain.IPHistory.Owner
+      description: The owner of the IP address.
+      type: String
+    - contextPath: ViewDNS.Domain.IPHistory.LastSeen
+      description: The date the domain was last seen on the IP address.
+      type: Date
+  - name: ip
+    description: Enriches an IP address with its WHOIS record and the domains hosted on it. ViewDNS does not provide a verdict, so the DBot score is always 0 (Unknown). Runs only when reputation commands are enabled in the instance settings. Consumes two API queries per IP address.
+    arguments:
+    - name: ip
+      description: A comma-separated list of IP addresses to enrich.
+      required: true
+      default: true
+      isArray: true
+    outputs:
+    - *id003
+    - *id004
+    - *id005
+    - *id006
+    - *id007
+    - contextPath: IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: IP.ASN
+      description: The autonomous system number of the IP address.
+      type: String
+    - contextPath: IP.ASOwner
+      description: The owner of the network the IP address belongs to.
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country of the network the IP address belongs to.
+      type: String
+    - contextPath: IP.Organization.Name
+      description: The organization that owns the network.
+      type: String
+    - contextPath: IP.UpdatedDate
+      description: The date the network registration was last updated.
+      type: Date
+    - contextPath: IP.Registrar.Abuse.Name
+      description: The name of the abuse contact.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Email
+      description: The email address of the abuse contact.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Phone
+      description: The phone number of the abuse contact.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Network
+      description: The network the abuse contact is responsible for.
+      type: String
+    - contextPath: ViewDNS.IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.IP
+      description: The IP address.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Registry
+      description: The regional internet registry that holds the record.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Owner
+      description: The owner of the network.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.NetName
+      description: The name of the network.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.NetRange
+      description: The address range of the network.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.CIDR
+      description: The network in CIDR notation.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.ASN
+      description: The autonomous system number of the network, when available.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Country
+      description: The country of the network.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.CreatedDate
+      description: The date the network was registered.
+      type: Date
+    - contextPath: ViewDNS.IP.Whois.UpdatedDate
+      description: The date the network registration was last updated.
+      type: Date
+    - contextPath: ViewDNS.IP.Whois.Abuse.Name
+      description: The name of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Abuse.Organization
+      description: The organization of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Abuse.Street
+      description: The street address of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Abuse.City
+      description: The city of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Abuse.State
+      description: The state or province of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Abuse.PostalCode
+      description: The postal code of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Abuse.Country
+      description: The country of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Abuse.Phone
+      description: The phone number of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Abuse.Fax
+      description: The fax number of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Abuse.Email
+      description: The email address of the abuse contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Admin.Name
+      description: The name of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Admin.Organization
+      description: The organization of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Admin.Street
+      description: The street address of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Admin.City
+      description: The city of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Admin.State
+      description: The state or province of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Admin.PostalCode
+      description: The postal code of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Admin.Country
+      description: The country of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Admin.Phone
+      description: The phone number of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Admin.Fax
+      description: The fax number of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Admin.Email
+      description: The email address of the administrative contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Tech.Name
+      description: The name of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Tech.Organization
+      description: The organization of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Tech.Street
+      description: The street address of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Tech.City
+      description: The city of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Tech.State
+      description: The state or province of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Tech.PostalCode
+      description: The postal code of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Tech.Country
+      description: The country of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Tech.Phone
+      description: The phone number of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Tech.Fax
+      description: The fax number of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Tech.Email
+      description: The email address of the technical contact.
+      type: String
+    - contextPath: ViewDNS.IP.Whois.Status
+      description: The status of the network registration.
+      type: String
+    - contextPath: ViewDNS.IP.HostedDomainCount
+      description: The total number of domains hosted on the IP address.
+      type: Number
+    - contextPath: ViewDNS.IP.HostedDomains.Name
+      description: A domain hosted on the IP address.
+      type: String
+    - contextPath: ViewDNS.IP.HostedDomains.LastResolved
+      description: The date the domain was last seen resolving to the IP address.
+      type: Date
+  dockerimage: demisto/python3:3.12.13.10116658
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- ViewDNS-Test

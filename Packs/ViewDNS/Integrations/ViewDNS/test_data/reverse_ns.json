@@ -1,0 +1,25 @@
+{
+    "query": {
+        "tool": "reversens_PRO",
+        "nameserver": "a.ns.facebook.com"
+    },
+    "response": {
+        "domain_count": "2217",
+        "total_pages": "1",
+        "current_page": "1",
+        "domains": [
+            {
+                "domain": "123riff.com"
+            },
+            {
+                "domain": "2cthefacebook.com"
+            },
+            {
+                "domain": "zuckerberg.com"
+            },
+            {
+                "domain": "zuckerberg.net"
+            }
+        ]
+    }
+}

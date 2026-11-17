@@ -1,0 +1,7 @@
+{
+    "success": false,
+    "error": {
+        "code": 429,
+        "message": "Query limit reached for the supplied API key."
+    }
+}

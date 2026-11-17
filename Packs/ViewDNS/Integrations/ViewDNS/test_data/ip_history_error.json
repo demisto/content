@@ -1,0 +1,9 @@
+{
+    "query": {
+        "tool": "iphistory_PRO",
+        "domain": "8.8.8.8"
+    },
+    "response": {
+        "error": "Please provide a domain name not an IP address."
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "query": {
+        "tool": "account_PRO",
+        "action": "balance"
+    },
+    "response": {
+        "error": "Invalid API Key Provided."
+    }
+}

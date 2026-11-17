@@ -1,0 +1,44 @@
+{
+    "query": {
+        "tool": "ping_PRO_v2",
+        "domain": "example.com"
+    },
+    "response": {
+        "detail": [
+            {
+                "region": "Asia",
+                "locations": [
+                    {
+                        "location": "Hong Kong, China",
+                        "ip_address": "23.215.0.138",
+                        "min_rtt": "207.854",
+                        "max_rtt": "208.289",
+                        "avg_rtt": "208.123",
+                        "packet_loss": "25%"
+                    },
+                    {
+                        "location": "Mumbai, India",
+                        "ip_address": "96.7.128.198",
+                        "min_rtt": "239.561",
+                        "max_rtt": "239.606",
+                        "avg_rtt": "239.581",
+                        "packet_loss": "0%"
+                    }
+                ]
+            },
+            {
+                "region": "South America",
+                "locations": [
+                    {
+                        "location": "S\u00e3o Paulo, Brazil",
+                        "ip_address": "96.7.128.198",
+                        "min_rtt": "176.050",
+                        "max_rtt": "176.093",
+                        "avg_rtt": "176.061",
+                        "packet_loss": "0%"
+                    }
+                ]
+            }
+        ]
+    }
+}

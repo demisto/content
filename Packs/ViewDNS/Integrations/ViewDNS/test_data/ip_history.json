@@ -1,0 +1,34 @@
+{
+    "query": {
+        "tool": "iphistory_PRO",
+        "domain": "domain.com"
+    },
+    "response": {
+        "records": [
+            {
+                "ip": "172.64.145.59",
+                "location": "Unknown",
+                "owner": "Cloudflare, Inc",
+                "lastseen": "2024-09-20"
+            },
+            {
+                "ip": "104.18.42.197",
+                "location": "Unknown",
+                "owner": "Cloudflare, Inc",
+                "lastseen": "2024-09-20"
+            },
+            {
+                "ip": "65.254.244.180",
+                "location": "United States",
+                "owner": "BIZLAND-SD",
+                "lastseen": "2015-12-15"
+            },
+            {
+                "ip": "66.150.120.145",
+                "location": "United States",
+                "owner": "INTERNAP-BLK",
+                "lastseen": "2012-06-03"
+            }
+        ]
+    }
+}

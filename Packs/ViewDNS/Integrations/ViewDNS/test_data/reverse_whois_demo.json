@@ -1,0 +1,23 @@
+{
+    "query": {
+        "tool": "reversewhois_PRO",
+        "query": "demonstration---tool-for-paid-users-only"
+    },
+    "response": {
+        "result_count": "2",
+        "total_pages": "1",
+        "current_page": "1",
+        "matches": [
+            {
+                "domain": "demo1.com",
+                "created_date": "2013-08-13",
+                "registrar": "DEMO REGISTRAR"
+            },
+            {
+                "domain": "demo2.com",
+                "created_date": "2013-08-13",
+                "registrar": "DEMO REGISTRAR"
+            }
+        ]
+    }
+}

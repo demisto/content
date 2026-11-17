@@ -1,0 +1,38 @@
+{
+    "name": "ViewDNS",
+    "description": "Enrich and pivot on domains, IP addresses, and registrants with ViewDNS.info DNS, IP, and WHOIS intelligence.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "ViewDNS.info",
+    "url": "https://viewdns.info/api/",
+    "email": "support@viewdns.info",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [
+        "Threat Intelligence Management",
+        "Phishing"
+    ],
+    "keywords": [
+        "ViewDNS",
+        "DNS",
+        "WHOIS",
+        "Reverse WHOIS",
+        "Reverse IP",
+        "IP History",
+        "Passive DNS",
+        "Domain",
+        "Enrichment"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam",
+        "exposure_management"
+    ]
+}

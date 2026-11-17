@@ -1,0 +1,16 @@
+{
+    "query": {
+        "tool": "reversemx_PRO",
+        "mailserver": "mail.google.com"
+    },
+    "response": {
+        "domain_count": "981",
+        "total_pages": "1",
+        "current_page": "1",
+        "domains": [
+            "090803.com",
+            "1sthealthcare.net",
+            "academyhill.org"
+        ]
+    }
+}
