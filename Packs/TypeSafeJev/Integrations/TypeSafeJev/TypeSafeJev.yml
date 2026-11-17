@@ -196,7 +196,7 @@ script:
   type: python
 fromversion: 6.10.0
 tests:
-- No tests (auto formatted)
+- TypeSafeJev_test
 marketplaces:
 - xsoar
 - marketplacev2

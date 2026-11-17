@@ -1,10 +1,33 @@
 import json
+import sys
 from pathlib import Path
+from types import ModuleType
 from unittest.mock import Mock
 
 import pytest
 
-from TypeSafeJev import (
+
+# The fastapi test image does not install demistomock. The shared XSOAR runtime
+# imports it at module load time, but these unit tests do not invoke demisto APIs.
+def _unavailable_metadata():
+    raise AttributeError("demistomock is unavailable outside Cortex")
+
+
+if "demistomock" not in sys.modules:
+    demisto_mock = ModuleType("demistomock")
+    demisto_mock.__dict__.update(
+        {
+            "params": dict,
+            "callingContext": {},
+            "debug": lambda *_args: None,
+            "error": lambda *_args: None,
+            "unifiedConnectorMetadata": _unavailable_metadata,
+            "_Demisto__do": lambda _command: [],
+        }
+    )
+    sys.modules["demistomock"] = demisto_mock
+
+from TypeSafeJev import (  # noqa: E402
     Client,
     choice_command,
     evaluate_command,
