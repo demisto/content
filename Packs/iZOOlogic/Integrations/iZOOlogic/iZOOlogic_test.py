@@ -1566,7 +1566,7 @@ class TestCreateIncidentCommand:
             "threat_type": "critical threat",
             "case_type": "executive monitoring",
             "comment": "Executive impersonation detected",
-            "executive_name": "Jane Smith",
+            "executive_name": "jane Test",
             "client_code": "CLIENT001",
         }
         result = create_incident_command(mock_client, args)
