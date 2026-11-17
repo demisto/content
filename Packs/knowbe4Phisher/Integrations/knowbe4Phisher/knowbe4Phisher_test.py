@@ -1,5 +1,9 @@
+import copy
 import json
+import re
+from datetime import datetime, timedelta, UTC
 
+import demistomock as demisto
 import knowbe4Phisher as phisher
 import pytest
 from CommonServerPython import CommandResults
@@ -444,3 +448,145 @@ def test_commands_no_results(mocker, function_to_test, function_to_mock, args, k
     mocker.patch.object(client, function_to_mock, return_value=command_results[key])
     result = function_to_test(client, args)
     assert result == expected_res
+
+
+# --- fetch-incidents-command multi-run tests ---
+
+command_client = phisher.Client(
+    base_url="https://eu.test.com/graphql",
+    verify=False,
+    proxy=False,
+    first_fetch_time="2024-01-01T00:00:00Z",
+    max_fetch=50,
+)
+
+WINDOW_PATTERN = re.compile(r"reported_at:([\[{])(\S+?) TO (\S+?)([\]}])")
+
+
+def _parse_utc(value: str) -> datetime:
+    return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
+
+
+def _late_msg(msg_id: str, reported_at: str) -> dict:
+    created_at = (_parse_utc(reported_at) + timedelta(seconds=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    created_event = {
+        "causer": "null",
+        "createdAt": created_at,
+        "eventType": "CREATED",
+        "id": f"evt-{msg_id}",
+        "triggerer": "null",
+    }
+    return {**MSG_A, "id": msg_id, "subject": f"Subject {msg_id}", "reportedAt": reported_at, "events": [created_event]}
+
+
+class WindowedPhisherApi:
+    """Fake PhishER search: honours the query's reported_at window and only returns a message once it is searchable."""
+
+    def __init__(self, messages: list[tuple[dict, str]]):
+        self.messages = [(node, _parse_utc(visible_from)) for node, visible_from in messages]
+        self.windows: list[str] = []
+
+    def __call__(self, payload: str) -> dict:
+        match = WINDOW_PATTERN.search(payload)
+        assert match, f"no reported_at window in payload: {payload}"
+        open_bracket, start, end, close_bracket = match.groups()
+        self.windows.append(f"{open_bracket}{start} TO {end}{close_bracket}")
+        start_at, end_at, now = _parse_utc(start), _parse_utc(end), datetime.now(UTC)
+
+        def in_window(reported_at: datetime) -> bool:
+            after_start = reported_at >= start_at if open_bracket == "[" else reported_at > start_at
+            before_end = reported_at <= end_at if close_bracket == "]" else reported_at < end_at
+            return after_start and before_end
+
+        nodes = [
+            copy.deepcopy(node)
+            for node, visible_from in self.messages
+            if visible_from <= now and in_window(_parse_utc(node["reportedAt"]))
+        ]
+        return _gql_response(sorted(nodes, key=lambda node: node["reportedAt"]))
+
+
+def run_fetch_command(mocker, params: dict, store: dict) -> list[dict]:
+    """Run fetch_incidents_command once, persisting lastRun through `store` the way XSOAR does (JSON round-trip)."""
+    emitted: list[dict] = []
+    mocker.patch.object(demisto, "params", return_value={**params})
+    mocker.patch.object(demisto, "getLastRun", return_value=json.loads(json.dumps(store.get("last_run", {}))))
+    mocker.patch.object(
+        demisto, "setLastRun", side_effect=lambda last_run: store.update(last_run=json.loads(json.dumps(last_run)))
+    )
+    mocker.patch.object(demisto, "incidents", side_effect=emitted.extend)
+    phisher.fetch_incidents_command(command_client)
+    return emitted
+
+
+@pytest.mark.parametrize("params", [{}, {"look_back": ""}, {"look_back": "0"}])
+def test_fetch_command_recovers_message_processed_after_previous_fetch(mocker, params):
+    """
+    Given:
+    - look_back is missing/empty/0 on the instance, 5-minute fetch interval
+    - a message reported 10:34:25Z that only becomes searchable at 10:34:58Z
+    When:
+    - fetch runs at 10:34:30Z (message not searchable yet) and again at 10:39:30Z
+    Then:
+    - the second run emits the message
+    """
+    api = WindowedPhisherApi([(_late_msg("msg-late", "2024-01-01T10:34:25Z"), "2024-01-01T10:34:58Z")])
+    mocker.patch.object(command_client, "phisher_gql_request", side_effect=api)
+    store = {"last_run": {"time": "2024-01-01T10:24:48Z", "found_incident_ids": {}}}
+    with freeze_time("2024-01-01T10:34:30Z") as frozen:
+        assert run_fetch_command(mocker, params, store) == []
+        frozen.move_to("2024-01-01T10:39:30Z")
+        emitted = run_fetch_command(mocker, params, store)
+    assert [incident["dbotMirrorId"] for incident in emitted] == ["msg-late"], f"windows queried: {api.windows}"
+
+
+@pytest.mark.parametrize("raw, expected", [(None, 15), ("", 15), ("0", 15), (0, 15), ("-5", 15), ("60", 60), (30, 30)])
+def test_resolve_look_back(raw, expected):
+    assert phisher.resolve_look_back(raw) == expected
+
+
+def test_resolve_look_back_rejects_non_numeric():
+    with pytest.raises(ValueError):
+        phisher.resolve_look_back("15 minutes")
+
+
+def test_fetch_command_look_back_60_recovers_late_indexed_message_once(mocker):
+    """
+    Given:
+    - look_back=60, 5-minute fetch interval
+    - a message reported 08:03:11Z that only becomes searchable at 08:21:12Z
+    When:
+    - fetch runs every 5 minutes from 08:02:30Z to 08:32:30Z (overlapping 60-minute windows)
+    Then:
+    - the message is emitted exactly once across all runs
+    """
+    api = WindowedPhisherApi([(_late_msg("msg-late", "2024-01-01T08:03:11Z"), "2024-01-01T08:21:12Z")])
+    mocker.patch.object(command_client, "phisher_gql_request", side_effect=api)
+    store = {"last_run": {"time": "2024-01-01T07:57:30Z", "found_incident_ids": {}}}
+    emitted: list[dict] = []
+    with freeze_time("2024-01-01T08:02:30Z") as frozen:
+        for minute in range(2, 33, 5):
+            frozen.move_to(f"2024-01-01T08:{minute:02d}:30Z")
+            emitted.extend(run_fetch_command(mocker, {"look_back": "60"}, store))
+    assert [incident["dbotMirrorId"] for incident in emitted] == ["msg-late"]
+
+
+def test_fetch_command_migrates_legacy_last_run_with_default_look_back(mocker):
+    """
+    Given:
+    - an instance still holding the pre-lookback lastRun shape {"last_fetch": ...} and no look_back param
+    - a searchable message reported 10:30:00Z
+    When:
+    - fetch runs at 11:00:00Z
+    Then:
+    - the message is emitted and lastRun is stored in the lookback shape
+    """
+    api = WindowedPhisherApi([(_late_msg("msg-legacy", "2024-01-01T10:30:00Z"), "2024-01-01T10:30:30Z")])
+    mocker.patch.object(command_client, "phisher_gql_request", side_effect=api)
+    store = {"last_run": {"last_fetch": "2024-01-01T10:00:00Z"}}
+    with freeze_time("2024-01-01T11:00:00Z"):
+        emitted = run_fetch_command(mocker, {}, store)
+    assert [incident["dbotMirrorId"] for incident in emitted] == ["msg-legacy"]
+    assert api.windows[0][1:].startswith("2024-01-01T10:00:00Z TO"), f"legacy last_fetch not used: {api.windows}"
+    assert "time" in store["last_run"]
+    assert "found_incident_ids" in store["last_run"]
