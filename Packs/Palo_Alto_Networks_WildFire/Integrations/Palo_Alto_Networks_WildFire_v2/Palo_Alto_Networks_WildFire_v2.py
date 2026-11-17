@@ -1534,10 +1534,13 @@ def wildfire_get_sample_command():
         try:
             result = wildfire_get_sample(element)
 
-            # Check if we got a 403 status code (benign sample)
+            # A 403 status code means WildFire does not allow downloading this sample
+            # (e.g. benign samples, including files with a malicious static verdict but a benign dynamic verdict).
             if result.status_code == 403:
                 demisto.results(
-                    "Benign samples are not available for download. For more info contact your WildFire representative."
+                    "Sample is not available for download. Benign samples (including files with a malicious static verdict "
+                    "that were found benign in dynamic analysis) are not available for download. "
+                    "For more info contact your WildFire representative."
                 )
             else:
                 # filename will be found under the Content-Disposition header in the format

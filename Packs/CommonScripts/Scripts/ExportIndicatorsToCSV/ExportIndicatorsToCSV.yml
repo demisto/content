@@ -18,7 +18,7 @@ dependson:
   must:
   - core-api-post
   - core-api-get
-dockerimage: demisto/python3:3.12.14.13053055
+dockerimage: demisto/python3:3.12.14.13495286
 enabled: true
 name: ExportIndicatorsToCSV
 runas: DBotWeakRole

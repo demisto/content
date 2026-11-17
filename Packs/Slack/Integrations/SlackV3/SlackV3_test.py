@@ -6208,3 +6208,29 @@ def test_create_script_notice_ui():
     assert quote_block["type"] == "rich_text_quote"
     text_element = quote_block["elements"][1]
     assert AssistantMessages.SCRIPT_AVAILABLE_NOTICE in text_element["text"]
+
+
+def test_slack_logger_logging_interface():
+    """
+    Given:
+        A SlackLogger instance passed to slack_sdk's SocketModeClient.
+    When:
+        slack_sdk calls the standard logging.Logger interface methods on it.
+    Then:
+        getEffectiveLevel and isEnabledFor behave like logging.Logger, gated by the configured level.
+    """
+    import logging
+
+    from SlackV3 import SlackLogger
+
+    slack_logger = SlackLogger()
+
+    slack_logger.set_logging_level(debug=False)
+    assert slack_logger.getEffectiveLevel() == logging.INFO
+    assert slack_logger.isEnabledFor(logging.INFO) is True
+    assert slack_logger.isEnabledFor(logging.ERROR) is True
+    assert slack_logger.isEnabledFor(logging.DEBUG) is False
+
+    slack_logger.set_logging_level(debug=True)
+    assert slack_logger.getEffectiveLevel() == logging.DEBUG
+    assert slack_logger.isEnabledFor(logging.DEBUG) is True

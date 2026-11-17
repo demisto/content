@@ -505,4 +505,3 @@ script:
 tests:
 - No tests
 fromversion: 8.15.0
-excludefromtightlycoupled: true

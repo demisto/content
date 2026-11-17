@@ -16,6 +16,7 @@ from ExtractHyperlinksFromOfficeFiles import extract_hyperlink_by_file_type
         ("test_data/e1.Xlsx", {"http://www.google.com", "http://www.yahoo.de/"}),
         ("test_data/e2.xlsx", set()),
         ("test_data/e3.xlsx", {"https://www.paloaltonetworks.com/"}),
+        ("test_data/e4.xlsx", {"https://www.paloaltonetworks.com/"}),
         ("test_data/p1.pptx", {"https://xsoar.pan.dev/", "https://www.paloaltonetworks.com/"}),
         ("test_data/p2.pptx", set()),
         ("test_data/p3.pptx", {"http://www.google.com"}),
@@ -30,9 +31,10 @@ def test_basescript_dummy(file_path, expected_output):
         4. excel file with hyperlinks on a picture and inside text cell.
         5. excel file with no hyperlinks.
         6. excel file with hyperlinks inside text cell.
-        7. power point file with hyperlinks on a picture and text.
-        8. power point file without hyperlinks.
-        9. power point file with hyperlinks inside grourped shapes.
+        7. excel file with an external hyperlink and an internal link to another sheet (no target).
+        8. power point file with hyperlinks on a picture and text.
+        9. power point file without hyperlinks.
+        10. power point file with hyperlinks inside grourped shapes.
     When:
         Extracting hyperlinks from file using ExtractHyperlinksFromOfficeFiles script.
     Then:
@@ -43,9 +45,10 @@ def test_basescript_dummy(file_path, expected_output):
         4. hyperlinks extracted from excel file
         5. no hyperlinks extracted from excel file
         6. hyperlinks extracted from excel file
-        7. hyperlinks extracted from power point file
-        8. no hyperlinks extracted from power point file
-        9. The grouped shapes are parsed correctly and the hyperlink is extracted.
+        7. only the external hyperlink is extracted and the internal link is ignored (no crash)
+        8. hyperlinks extracted from power point file
+        9. no hyperlinks extracted from power point file
+        10. The grouped shapes are parsed correctly and the hyperlink is extracted.
     """
     response = extract_hyperlink_by_file_type(file_name=file_path, file_path=file_path)
     assert set(response.raw_response) == expected_output

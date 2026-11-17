@@ -449,7 +449,7 @@ def fetch_incidents(
     page_from = max_results * incomplete_fetches or None
     if free_search_string:
         data = client.free_string_search_alerts(
-            f"{free_search_string} timeFrame:{time_frame}",  # noqa: E231
+            f'{free_search_string} timeFrame:"{time_frame}"',  # noqa: E231
             order_by="time",
             max_results=max_results,
             page_from=page_from,

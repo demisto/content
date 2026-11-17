@@ -1,0 +1,10 @@
+{
+    "value": [
+        {
+            "PartitionKey": "mock-partition",
+            "RowKey": "mock-row",
+            "Timestamp": "2021-08-16T15:03:57.5229430Z",
+            "Address": "New York"
+        }
+    ]
+}

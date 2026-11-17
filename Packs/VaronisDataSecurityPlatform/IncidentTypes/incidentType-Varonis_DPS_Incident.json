@@ -18,5 +18,9 @@
     "autorun": false,
     "disabled": false,
     "reputationCalc": 0,
-    "layout": "Varonis DSP Incident"
+    "layout": "Varonis DSP Incident",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }
