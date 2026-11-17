@@ -282,7 +282,7 @@ test_reject_issue_response = {
 }
 
 # Define the return values
-resolve_issues_return_values = [test_get_issues_response, test_reject_issue_response, {"data": {}}]
+resolve_issues_return_values = [test_get_issues_response, test_reject_issue_response]
 
 
 # Define a function that will serve as the side effect
@@ -2628,16 +2628,17 @@ def test_get_resources_error_mentions_new_params(capfd):
         assert "updated_at_after" in res
 
 
-def test_reject_issue_legacy_note_retry_truncates_long_comment():
+def test_reject_or_resolve_issue_truncates_long_resolution_note():
     from Wiz import reject_or_resolve_issue, MAX_NOTE_LENGTH
 
-    note_required = Exception("Wiz API error details: A note is required for rejection\n")
-    with patch("Wiz.checkAPIerrors", side_effect=[note_required, test_reject_issue_response]) as mock_check_api:
+    with patch("Wiz.checkAPIerrors", return_value=test_reject_issue_response) as mock_check_api:
         reject_or_resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "WONT_FIX", "x" * (MAX_NOTE_LENGTH + 100), "REJECTED")
 
-    sent_note = mock_check_api.call_args_list[1][0][1]["patch"]["note"]
-    assert len(sent_note) <= MAX_NOTE_LENGTH
-    assert sent_note.endswith("... [truncated]")
+    assert mock_check_api.call_count == 1
+    patch_sent = mock_check_api.call_args[0][1]["patch"]
+    assert len(patch_sent["resolutionNote"]) <= MAX_NOTE_LENGTH
+    assert patch_sent["resolutionNote"].endswith("... [truncated]")
+    assert "note" not in patch_sent
 
 
 @pytest.mark.parametrize(
@@ -2645,7 +2646,7 @@ def test_reject_issue_legacy_note_retry_truncates_long_comment():
     [
         pytest.param("REJECTED", Exception("update failed"), id="rejected_other_error"),
         pytest.param(
-            "RESOLVED", Exception("Wiz API error details: A note is required for rejection\n"), id="resolved_note_required"
+            "REJECTED", Exception("Wiz API error details: A note is required for rejection\n"), id="rejected_note_required"
         ),
     ],
 )
@@ -2657,54 +2658,18 @@ def test_reject_or_resolve_issue_raises_without_retry(status, error):
     assert mock_check_api.call_count == 1
 
 
-@pytest.mark.parametrize(
-    "call",
-    [
-        pytest.param(
-            lambda m: m.reject_or_resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "ISSUE_FIXED", "n", "RESOLVED"),
-            id="resolve",
-        ),
-        pytest.param(lambda m: m.reopen_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "n"), id="reopen"),
-    ],
-)
 @patch.object(demisto, "error")
-def test_status_update_succeeds_with_warning_when_note_fails(mock_error, call):
+def test_reopen_issue_succeeds_with_warning_when_note_fails(mock_error):
     import Wiz
 
     status_response = {"data": {"updateIssue": {"issue": {"id": "12345678-2222-3333-1111-ff5fa2ff7f78"}}}}
     denied = Exception("access denied: [write:all write:comments]")
     with patch("Wiz.checkAPIerrors", side_effect=[status_response, denied]):
-        response = call(Wiz)
+        response = Wiz.reopen_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "n")
 
     assert response["data"] == status_response["data"]
     assert "the note could not be added" in response["warning"]
     assert "write:comments" in response["warning"]
-
-
-@pytest.mark.parametrize(
-    "retry_result, expected_error",
-    [
-        pytest.param(test_reject_issue_response, None, id="legacy_note_accepted"),
-        pytest.param(Exception("Wiz API error: unknown field note"), "requires a note to reject", id="legacy_note_retired"),
-    ],
-)
-def test_reject_issue_retries_with_legacy_note_when_tenant_requires_it(retry_result, expected_error):
-    from Wiz import reject_issue, UPDATE_ISSUE_QUERY
-
-    note_required = Exception("Wiz API error details: A note is required for rejection\n")
-    with patch("Wiz.checkAPIerrors", side_effect=[note_required, retry_result]) as mock_check_api:
-        if expected_error:
-            with pytest.raises(Exception, match=expected_error):
-                reject_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "FALSE_POSITIVE", "rejecting_for_e2e")
-        else:
-            assert reject_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "FALSE_POSITIVE", "rejecting_for_e2e") == (
-                test_reject_issue_response
-            )
-
-    assert mock_check_api.call_count == 2
-    retry_query, retry_variables = mock_check_api.call_args_list[1][0]
-    assert retry_query == UPDATE_ISSUE_QUERY
-    assert retry_variables["patch"]["note"] == "rejecting_for_e2e"
 
 
 @pytest.mark.parametrize(
@@ -2716,23 +2681,17 @@ def test_reject_issue_retries_with_legacy_note_when_tenant_requires_it(retry_res
 )
 @patch("Wiz._get_issue", return_value={"data": {"issues": {"nodes": [{"type": "THREAT_DETECTION"}]}}})
 @patch("Wiz.checkAPIerrors", return_value=test_reject_issue_response)
-def test_reject_or_resolve_sends_status_then_comment(mock_check_api, _get_issue, fn_name, status, reason, note):
+def test_reject_or_resolve_sends_resolution_note_in_update(mock_check_api, _get_issue, fn_name, status, reason, note):
     import Wiz
 
-    getattr(Wiz, fn_name)("12345678-2222-3333-1111-ff5fa2ff7f78", reason, note)
-
-    variables = mock_check_api.call_args_list[-2][0][1]
-    assert variables == {
-        "issueId": "12345678-2222-3333-1111-ff5fa2ff7f78",
-        "patch": {"status": status, "resolutionReason": reason},
-    }
-    comment_query, comment_variables = mock_check_api.call_args_list[-1][0]
-    assert comment_query == Wiz.CREATE_COMMENT_QUERY
-    assert comment_variables["input"] == {
-        "subjectId": "12345678-2222-3333-1111-ff5fa2ff7f78",
-        "subjectType": "ISSUE",
-        "body": note,
-    }
+    assert getattr(Wiz, fn_name)("12345678-2222-3333-1111-ff5fa2ff7f78", reason, note) == test_reject_issue_response
+    mock_check_api.assert_called_once_with(
+        Wiz.UPDATE_ISSUE_QUERY,
+        {
+            "issueId": "12345678-2222-3333-1111-ff5fa2ff7f78",
+            "patch": {"status": status, "resolutionReason": reason, "resolutionNote": note},
+        },
+    )
 
 
 # ===== _build_new_note_entries tests =====
