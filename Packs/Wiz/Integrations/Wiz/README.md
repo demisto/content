@@ -3,11 +3,11 @@ This integration was integrated and tested with Wiz
 
 ## Prerequisites
 
-Notes are stored as Wiz Issue comments. The service account needs the following scopes:
+Notes are stored as Wiz Issue comments, except the reject and resolve notes, which are saved as the Issue resolution note and need no comment scope. The service account needs the following scopes:
 
 | Operation | Scope |
 | --- | --- |
-| `wiz-set-issue-note`, note arguments of `wiz-reject-issue` / `wiz-resolve-issue` / `wiz-reopen-issue`, outgoing note mirroring | `write:comments` |
+| `wiz-set-issue-note`, note argument of `wiz-reopen-issue`, outgoing note mirroring | `write:comments` |
 | `wiz-clear-issue-note` | `read:comments` + `write:comments` + `admin:comments` (to delete other authors' comments) |
 | Incoming note mirroring | `read:comments` |
 
