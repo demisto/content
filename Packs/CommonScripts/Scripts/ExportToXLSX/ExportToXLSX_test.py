@@ -125,6 +125,74 @@ def test_write_data(self):
     assert self.return_value.write.call_count == 4
 
 
+@pytest.mark.parametrize(
+    "item_value, expected",
+    [
+        (["a", "b"], "a, b"),
+        ([1, 2, 3], "1, 2, 3"),
+        (["a", 1, 2.5, True], "a, 1, 2.5, True"),
+        (["a", None], "a, "),
+        ([{"k": 1}], '{"k": 1}'),
+        ([[1, 2], "x"], "[1, 2], x"),
+        ([], ""),
+        (0, "0"),
+        (False, "False"),
+        ("text", "text"),
+        ({"k": "v"}, "{'k': 'v'}"),
+    ],
+)
+def test_format_cell_value(item_value, expected):
+    """
+    Given:
+        - Context values of various types, including lists with non-string elements.
+    When:
+        - Running format_cell_value.
+    Then:
+        - A string is returned without raising (previously ', '.join failed on non-str list items).
+    """
+    from ExportToXLSX import format_cell_value
+
+    assert format_cell_value(item_value) == expected
+
+
+@pytest.mark.parametrize(
+    "data, expected_cells",
+    [
+        ({"ports": [80, 443]}, {(1, 0): "80, 443"}),
+        ({"mixed": ["a", 1, None, {"k": 1}]}, {(1, 0): 'a, 1, , {"k": 1}'}),
+        ({"count": 0, "flag": False}, {(1, 0): "0", (1, 1): "False"}),
+        ({"empty": "", "none": None, "val": "x"}, {(1, 2): "x"}),
+    ],
+)
+@patch("xlsxwriter.Workbook.worksheet_class")
+def test_write_data_values(worksheet_class_mock, data, expected_cells):
+    """
+    Given:
+        - A dict with list values containing non-string items, falsy values (0/False), and empty values.
+    When:
+        - Running write_data.
+    Then:
+        - No exception is raised.
+        - Non-string list items are stringified, 0/False are written, and None/'' cells are left empty.
+        - Each header and each non-empty cell is written exactly once.
+    """
+    import xlsxwriter
+    from ExportToXLSX import write_data
+
+    workbook = xlsxwriter.Workbook()
+    format_arg = xlsxwriter.format.Format()
+    write_data("", data, None, workbook, format_arg, format_arg)
+
+    write_calls = worksheet_class_mock.return_value.write.call_args_list
+    written_cells = {
+        (call.args[0], call.args[1]): call.args[2]
+        for call in write_calls
+        if call.args[0] > 0  # skip header row
+    }
+    assert written_cells == expected_cells
+    assert len(write_calls) == len(data) + len(expected_cells)
+
+
 ARGS_MAIN = [
     ({"data": DATA_INPUT_SINGLE_DICT, "file_name": "file_name", "sheet_name": "sheet_name", "headers": "headers_name"}),
     ({"data": DATA_INPUT_SINGLE_DICT, "file_name": "file_name", "sheet_name": "sheet_name"}),

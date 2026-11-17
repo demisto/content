@@ -4995,11 +4995,33 @@ Creates a shared access signature (SAS) token for a container.
 ### azure-rg-list-operations
 
 ***
-Gets all Azure Resource Graph operations permissions and descriptions. Required permission: Microsoft.ResourceGraph/operations/read.
+Gets all Azure Resource Graph operations permissions and descriptions. Deprecated. Use the azure-rg-operations-list command instead. Required permission: Microsoft.ResourceGraph/operations/read.
 
 #### Base Command
 
 `azure-rg-list-operations`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ResourceGraph.Operations.Name | String | The name of the Azure Resource Graph operation. |
+| Azure.ResourceGraph.Operations.Display | Unknown | The display information of the Azure Resource Graph operation, including provider, resource, operation, and description. |
+
+### azure-rg-operations-list
+
+***
+Gets all Azure Resource Graph operations permissions and descriptions. Required permission: Microsoft.ResourceGraph/operations/read.
+
+#### Base Command
+
+`azure-rg-operations-list`
 
 #### Input
 
@@ -5633,3 +5655,305 @@ Updates the configuration of a PostgreSQL Flexible Server. Required permissions:
 #### Context Output
 
 There is no context output for this command.
+
+### azure-sqldb-servers-list
+
+***
+Lists all SQL servers, optionally filtered by resource group. Required permissions: Microsoft.Sql/servers/read.
+
+#### Base Command
+
+`azure-sqldb-servers-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.Servers | Unknown | A list of SQL servers. |
+| Azure.SqlDB.Servers.id | String | The server resource ID. |
+| Azure.SqlDB.Servers.name | String | The server name. |
+| Azure.SqlDB.Servers.location | String | The server location. |
+| Azure.SqlDB.Servers.kind | String | The kind of server. |
+| Azure.SqlDB.Servers.type | String | The server resource type. |
+| Azure.SqlDB.Servers.properties.administratorLogin | String | The username of the server administrator. |
+| Azure.SqlDB.Servers.properties.version | String | The server version. |
+| Azure.SqlDB.Servers.properties.state | String | The server state. |
+| Azure.SqlDB.Servers.properties.fullyQualifiedDomainName | String | The fully qualified domain name of the server. |
+| Azure.SqlDB.Servers.properties.publicNetworkAccess | String | Whether public endpoint access is enabled. |
+| Azure.SqlDB.ServersNextToken | String | The URL to the next page of SQL servers. Pass this value as next_token to retrieve the next page. |
+
+### azure-sqldb-databases-list
+
+***
+Lists all databases for a SQL server. Required permissions: Microsoft.Sql/servers/read, Microsoft.Sql/servers/databases/read.
+
+#### Base Command
+
+`azure-sqldb-databases-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the SQL server. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.Databases | Unknown | A list of SQL databases. |
+| Azure.SqlDB.Databases.id | String | The database resource ID. |
+| Azure.SqlDB.Databases.name | String | The database name. |
+| Azure.SqlDB.Databases.location | String | The database location. |
+| Azure.SqlDB.Databases.kind | String | The kind of database. |
+| Azure.SqlDB.Databases.type | String | The database resource type. |
+| Azure.SqlDB.Databases.properties.status | String | The database status. |
+| Azure.SqlDB.Databases.managedBy | String | The resource that manages the database. |
+| Azure.SqlDB.Databases.properties.sku | Unknown | A dictionary of the database SKU details. |
+| Azure.SqlDB.Databases.properties.collation | String | The database collation. |
+| Azure.SqlDB.Databases.properties.maxSizeBytes | Number | The maximum size of the database in bytes. |
+| Azure.SqlDB.Databases.properties.zoneRedundant | Boolean | Whether the database is zone redundant. |
+| Azure.SqlDB.DatabasesNextToken | String | The URL to the next page of SQL databases. Pass this value as next_token to retrieve the next page. |
+
+### azure-sqldb-server-auditing-settings-list
+
+***
+Gets the auditing settings of a SQL database. Required permissions: Microsoft.Sql/servers/databases/read, Microsoft.Sql/servers/databases/auditingSettings/read.
+
+#### Base Command
+
+`azure-sqldb-server-auditing-settings-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the SQL server. | Required |
+| db_name | The name of the database. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.ServerAuditingSettings | Unknown | A list of database audit policies. |
+| Azure.SqlDB.ServerAuditingSettings.id | String | The audit policy resource ID. |
+| Azure.SqlDB.ServerAuditingSettings.name | String | The audit policy name. |
+| Azure.SqlDB.ServerAuditingSettings.type | String | The resource type. |
+| Azure.SqlDB.ServerAuditingSettings.properties.state | String | The policy state. Possible values are Enabled or Disabled. |
+| Azure.SqlDB.ServerAuditingSettings.properties.retentionDays | Number | The number of days to keep audit logs. |
+| Azure.SqlDB.ServerAuditingSettings.properties.isAzureMonitorTargetEnabled | Boolean | Whether audit events are sent to Azure Monitor. |
+| Azure.SqlDB.ServerAuditingSettings.properties.storageAccountSubscriptionId | String | The storage subscription ID. |
+| Azure.SqlDB.ServerAuditingSettings.properties.isManagedIdentityInUse | Boolean | Whether managed identity is used to access blob storage. |
+| Azure.SqlDB.ServerAuditingSettingsNextToken | String | The URL to the next page of database audit policies. Pass this value as next_token to retrieve the next page. |
+
+### azure-sqldb-audit-policy-create-update
+
+***
+Creates or fully replaces the auditing settings of a SQL database. Warning: this is a full replacement and not a partial update. The command removes or resets to its default any property that you do not provide as an argument (for example, audit_actions_groups, retention_days, or storage_endpoint). Required permissions: Microsoft.Sql/servers/databases/auditingSettings/read, Microsoft.Sql/servers/databases/auditingSettings/write.
+
+#### Base Command
+
+`azure-sqldb-audit-policy-create-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the SQL server. | Required |
+| db_name | The name of the database. | Required |
+| state | The state of the audit policy. When state is Enabled, it is mandatory to provide storage_endpoint, is_azure_monitor_target_enabled, or both. Possible values are: Enabled, Disabled. | Required |
+| audit_actions_groups | A comma-separated list of actions and groups to audit. See https://docs.microsoft.com/en-us/sql/relational-databases/security/auditing/sql-server-audit-action-groups-and-actions for possible values. | Optional |
+| is_azure_monitor_target_enabled | Whether audit events are sent to Azure Monitor. Possible values are: true, false. | Optional |
+| is_storage_secondary_key_in_use | Whether the storage account access key value is the storage secondary key. Possible values are: true, false. | Optional |
+| queue_delay_ms | The time in milliseconds that can elapse before audit actions are forced to be processed. The default minimum value is 1000 (1 second). | Optional |
+| retention_days | The number of days to keep the policy in the audit logs. | Optional |
+| storage_account_access_key | The identifier key of the auditing storage account. | Optional |
+| storage_account_subscription_id | The storage subscription ID. | Optional |
+| storage_endpoint | The storage endpoint. Required when state is Enabled and is_azure_monitor_target_enabled is not set. | Optional |
+| is_managed_identity_in_use | Whether managed identity is used to access blob storage. Possible values are: true, false. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.ServerAuditingSettings.id | String | The audit policy resource ID. |
+| Azure.SqlDB.ServerAuditingSettings.name | String | The audit policy name. |
+| Azure.SqlDB.ServerAuditingSettings.type | String | The resource type. |
+| Azure.SqlDB.ServerAuditingSettings.properties.state | String | The policy state. Possible values are Enabled or Disabled. |
+| Azure.SqlDB.ServerAuditingSettings.properties.retentionDays | Number | The number of days to keep audit logs. |
+| Azure.SqlDB.ServerAuditingSettings.properties.isAzureMonitorTargetEnabled | Boolean | Whether audit events are sent to Azure Monitor. |
+| Azure.SqlDB.ServerAuditingSettings.properties.storageAccountSubscriptionId | String | The storage subscription ID. |
+| Azure.SqlDB.ServerAuditingSettings.properties.auditActionsAndGroups | Unknown | A list of the audit actions and groups. |
+| Azure.SqlDB.ServerAuditingSettings.properties.isStorageSecondaryKeyInUse | Boolean | Whether the storage account access key is the secondary key. |
+| Azure.SqlDB.ServerAuditingSettings.properties.queueDelayMs | String | The time in milliseconds before audit actions are forced to be processed. |
+| Azure.SqlDB.ServerAuditingSettings.properties.storageEndpoint | String | The storage endpoint. |
+| Azure.SqlDB.ServerAuditingSettings.properties.isManagedIdentityInUse | Boolean | Whether managed identity is used to access blob storage. |
+
+### azure-sqldb-security-alert-policy-create
+
+***
+Creates a database's security alert policy. Required permissions: Microsoft.Sql/servers/databases/securityAlertPolicies/write.
+
+#### Base Command
+
+`azure-sqldb-security-alert-policy-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the SQL server. | Required |
+| db_name | The name of the database. | Required |
+| state | The state of the threat detection policy. Possible values are: Enabled, Disabled. | Required |
+| disabled_alerts | A comma-separated list of disabled alerts. Possible values: None, Sql_Injection, Sql_Injection_Vulnerability, Access_Anomaly, Data_Exfiltration, Unsafe_Action. | Optional |
+| email_account_admins | Whether the alert is sent to the account administrators. Possible values are: true, false. | Optional |
+| email_addresses | A comma-separated list of email addresses to which the alert is sent. | Optional |
+| retention_days | The number of days to keep the policy in the audit logs. | Optional |
+| storage_account_access_key | The identifier key of the threat detection audit storage account. | Optional |
+| storage_endpoint | The blob storage endpoint for Threat Detection audit logs. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.SecurityAlertPolicies.id | String | The threat policy resource ID. |
+| Azure.SqlDB.SecurityAlertPolicies.name | String | The threat policy name. |
+| Azure.SqlDB.SecurityAlertPolicies.type | String | The resource type. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.state | String | The threat policy state. Possible values are Enabled or Disabled. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.retentionDays | Number | The number of days to keep Threat Detection audit logs. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.storageEndpoint | String | The Threat Detection audit storage account endpoint. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.emailAccountAdmins | Boolean | Whether account administrators are emailed on alert. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.emailAddresses | String | The list of email addresses to which the alert is sent. |
+| Azure.SqlDB.SecurityAlertPolicies.properties.disabledAlerts | String | The list of disabled alerts, or an empty string if none are disabled. |
+
+### azure-sqldb-firewall-rules-list
+
+***
+Retrieves a list of firewall rules or a specific firewall rule for a SQL server. Required permissions: Microsoft.Sql/servers/firewallRules/read.
+
+#### Base Command
+
+`azure-sqldb-firewall-rules-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the SQL server. | Required |
+| firewall_rule_name | The name of the firewall rule. If not provided, all firewall rules for the server are returned. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets. Not applicable when firewall_rule_name is provided. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.FirewallRules | Unknown | A list of SQL server firewall rules. |
+| Azure.SqlDB.FirewallRules.id | String | The firewall rule resource ID. |
+| Azure.SqlDB.FirewallRules.name | String | The firewall rule name. |
+| Azure.SqlDB.FirewallRules.type | String | The resource type. |
+| Azure.SqlDB.FirewallRules.properties.startIpAddress | String | The start IP address of the firewall rule. |
+| Azure.SqlDB.FirewallRules.properties.endIpAddress | String | The end IP address of the firewall rule. |
+| Azure.SqlDB.FirewallRulesNextToken | String | The URL to the next page of firewall rules. Pass this value as next_token to retrieve the next page. |
+
+### azure-sqldb-firewall-rule-create-update
+
+***
+Creates or updates a firewall rule for a SQL server. Required permissions: Microsoft.Sql/servers/firewallRules/write.
+
+#### Base Command
+
+`azure-sqldb-firewall-rule-create-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the SQL server. | Required |
+| firewall_rule_name | The name of the firewall rule. | Required |
+| start_ip_address | The start IP address of the firewall rule. The address must be in IPv4 format. Use 0.0.0.0 for all Azure-internal IP addresses. | Required |
+| end_ip_address | The end IP address of the firewall rule. The address must be in IPv4 format and greater than or equal to start_ip_address. Use 0.0.0.0 for all Azure-internal IP addresses. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.FirewallRules.id | String | The firewall rule resource ID. |
+| Azure.SqlDB.FirewallRules.name | String | The firewall rule name. |
+| Azure.SqlDB.FirewallRules.type | String | The resource type. |
+| Azure.SqlDB.FirewallRules.properties.startIpAddress | String | The start IP address of the firewall rule. |
+| Azure.SqlDB.FirewallRules.properties.endIpAddress | String | The end IP address of the firewall rule. |
+
+### azure-sqldb-firewall-rule-delete
+
+***
+Deletes a firewall rule from a SQL server. Required permissions: Microsoft.Sql/servers/firewallRules/delete.
+
+#### Base Command
+
+`azure-sqldb-firewall-rule-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the SQL server. | Required |
+| firewall_rule_name | The name of the firewall rule to delete. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-sqldb-firewall-rule-replace
+
+***
+Replaces all firewall rules on a SQL server. Required permissions: Microsoft.Sql/servers/firewallRules/write.
+
+#### Base Command
+
+`azure-sqldb-firewall-rule-replace`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the SQL server. | Required |
+| firewall_rule_name | The name of the firewall rule. Required unless entry_id is provided. | Optional |
+| start_ip_address | The start IP address of the firewall rule. The address must be in IPv4 format. Use 0.0.0.0 for all Azure-internal IP addresses. Required unless you provide entry_id. | Optional |
+| end_ip_address | The end IP address of the firewall rule. The address must be in IPv4 format and greater than or equal to start_ip_address. Use 0.0.0.0 for all Azure-internal IP addresses. Required unless you provide entry_id. | Optional |
+| entry_id | The entry ID of a file containing the full request JSON in FirewallRuleList format. If provided, firewall_rule_name, start_ip_address, and end_ip_address must not be set. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.SqlDB.FirewallRules.id | String | The firewall rule resource ID. |
+| Azure.SqlDB.FirewallRules.name | String | The firewall rule name. |
+| Azure.SqlDB.FirewallRules.type | String | The resource type. |
+| Azure.SqlDB.FirewallRules.properties.startIpAddress | String | The start IP address of the firewall rule. |
+| Azure.SqlDB.FirewallRules.properties.endIpAddress | String | The end IP address of the firewall rule. |

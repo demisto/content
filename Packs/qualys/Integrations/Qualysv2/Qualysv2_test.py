@@ -3985,8 +3985,9 @@ def test_fetch_and_send_vulnerabilities_streamed_send_failure_closes_response(mo
     When:
         - Calling fetch_and_send_vulnerabilities_streamed.
     Then:
-        - Both full batches reach the send, the send error propagates, and the streamed response is closed.
+        - Both full batches reach the send, the stage is kept with a counted failure, and the response is closed.
     """
+    mocker.patch("Qualysv2.demisto.error")
     raw_response = Mock()
     mocker.patch.object(client, "get_vulnerabilities", return_value=raw_response)
     mocker.patch("Qualysv2.iter_vulnerabilities_result", return_value=iter([{"QID": str(i)} for i in range(4)]))
@@ -4000,11 +4001,62 @@ def test_fetch_and_send_vulnerabilities_streamed_send_failure_closes_response(mo
 
     mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam_with_retry", side_effect=send)
 
-    with pytest.raises(Qualysv2.XSIAMSendError, match="send failed"):
-        Qualysv2.fetch_and_send_vulnerabilities_streamed(client, {"since_datetime": "2024-10-03"})
+    last_run = {"stage": "vulnerabilities", "since_datetime": "2024-10-03"}
+    next_run = Qualysv2.fetch_and_send_vulnerabilities_streamed(client, last_run)
 
     assert sent_batches == [[{"QID": "0"}, {"QID": "1"}], [{"QID": "2"}, {"QID": "3"}]]
+    assert next_run["stage"] == "vulnerabilities"
+    assert next_run["consecutive_failures"] == 1
     raw_response.close.assert_called_once()
+
+
+def test_fetch_and_send_vulnerabilities_streamed_connection_broken_keeps_stage(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A vulnerabilities stream whose connection drops after the first record (urllib3 ProtocolError).
+    When:
+        - Calling fetch_and_send_vulnerabilities_streamed.
+    Then:
+        - The stage and since_datetime are kept, the failure is counted, the next run is triggered immediately,
+          and the streamed response is closed.
+    """
+    mock_error = mocker.patch("Qualysv2.demisto.error")
+    raw_response = Mock()
+    mocker.patch.object(client, "get_vulnerabilities", return_value=raw_response)
+
+    def broken_stream(_raw_response):
+        yield {"QID": "0"}
+        raise Qualysv2.ProtocolError("Connection broken: IncompleteRead(8518 bytes read)")
+
+    mocker.patch("Qualysv2.iter_vulnerabilities_result", side_effect=broken_stream)
+    last_run = {"stage": "vulnerabilities", "since_datetime": "2024-10-03", "snapshot_id": "1", "consecutive_failures": 1}
+
+    next_run = Qualysv2.fetch_and_send_vulnerabilities_streamed(client, last_run)
+
+    assert next_run["stage"] == "vulnerabilities"
+    assert next_run["since_datetime"] == "2024-10-03"
+    assert next_run["consecutive_failures"] == 2
+    assert next_run["nextTrigger"] == Qualysv2.ASSETS_NEXT_TRIGGER
+    raw_response.close.assert_called_once()
+    mock_error.assert_called_once()
+
+
+def test_fetch_and_send_vulnerabilities_streamed_connection_broken_raises_at_threshold(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A vulnerabilities stream whose connection drops, with one failure left before the threshold.
+    When:
+        - Calling fetch_and_send_vulnerabilities_streamed.
+    Then:
+        - The fetch raises so the repeated failure is visible.
+    """
+    mocker.patch("Qualysv2.demisto.error")
+    mocker.patch.object(client, "get_vulnerabilities", return_value=Mock())
+    mocker.patch("Qualysv2.iter_vulnerabilities_result", side_effect=Qualysv2.ProtocolError("Connection broken"))
+    last_run = {"stage": "vulnerabilities", "consecutive_failures": Qualysv2.ASSETS_MAX_CONSECUTIVE_FAILURES - 1}
+
+    with pytest.raises(DemistoException, match="times in a row without progress"):
+        Qualysv2.fetch_and_send_vulnerabilities_streamed(client, last_run)
 
 
 @pytest.mark.parametrize(
