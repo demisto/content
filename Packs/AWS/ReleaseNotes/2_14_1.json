@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "AWS-N1: The ***aws-s3-bucket-versioning-put*** output path was changed."
+}
