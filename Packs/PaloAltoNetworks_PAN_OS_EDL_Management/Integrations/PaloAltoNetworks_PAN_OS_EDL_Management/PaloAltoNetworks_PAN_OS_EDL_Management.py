@@ -1,3 +1,4 @@
+import shlex
 import shutil
 import subprocess
 import tempfile
@@ -108,12 +109,12 @@ def ssh_execute(command: str):
 def scp_execute(file_name: str, file_path: str):
     if SCP_EXTRA_PARAMS:
         param_list = ['scp', '-o', 'StrictHostKeyChecking=no',
-                      '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [file_name,  # type: ignore
-                                                                         f'{USERNAME}@{HOSTNAME}:\'{file_path}\'']
+                      '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + ['--', file_name,  # type: ignore
+                                                                         f'{USERNAME}@{HOSTNAME}:{shlex.quote(file_path)}']
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     else:
-        param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, file_name,
-                      f'{USERNAME}@{HOSTNAME}:\'{file_path}\'']
+        param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, '--', file_name,
+                      f'{USERNAME}@{HOSTNAME}:{shlex.quote(file_path)}']
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     if result.returncode != 0:
@@ -171,7 +172,7 @@ def parse_items(items: str) -> List[str]:
 
 
 def edl_get_external_file(file_path: str, retries: int = 1) -> str:
-    command = f'cat \'{file_path}\''
+    command = f'cat -- {shlex.quote(file_path)}'
     while retries > 0:
         result = ssh_execute(command)
         # counting newlines as in some edge cases the external web server returns the file content intermittently
@@ -210,7 +211,7 @@ def edl_get_external_file_command(args: dict):
 
 
 def edl_search_external_file(file_path: str, search_string: str):
-    return ssh_execute(f'grep \'{search_string}\' \'{file_path}\'')
+    return ssh_execute(f'grep -- {shlex.quote(search_string)} {shlex.quote(file_path)}')
 
 
 def edl_search_external_file_command(args: dict):
@@ -253,7 +254,7 @@ def edl_update_external_file(file_path: str, list_name: str, verbose: bool):
         raise DemistoException('External file was not updated successfully.')
     else:
         if verbose:
-            external_file_items = ssh_execute(f'cat \'{file_path}\'')
+            external_file_items = ssh_execute(f'cat -- {shlex.quote(file_path)}')
             if external_file_items:
                 md = tableToMarkdown('Updated File Data:', external_file_items, headers=['Data'])
             else:
@@ -422,7 +423,7 @@ def edl_update_from_external_file_command(args: dict):
 
 
 def edl_delete_external_file(file_path: str) -> str:
-    ssh_execute(f'rm -f \'{file_path}\'')
+    ssh_execute(f'rm -f -- {shlex.quote(file_path)}')
     return 'File deleted successfully'
 
 
@@ -616,7 +617,7 @@ def edl_get_external_file_metadata_command(args: dict):
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
 
-    result = ssh_execute(f'stat \'{file_path}\'')
+    result = ssh_execute(f'stat -- {shlex.quote(file_path)}')
 
     file_size = int(result.split("Size: ", 1)[1].split(" ", 1)[0])
     file_name = file_path.split("/")[-1]
@@ -625,7 +626,7 @@ def edl_get_external_file_metadata_command(args: dict):
     last_modified_parts = result.split("Change: ", 1)[1].split(" ", 2)[0:2]
     last_modified = ' '.join(last_modified_parts)
 
-    number_of_lines = int(ssh_execute(f'wc -l < \'{file_path}\'')) + 1
+    number_of_lines = int(ssh_execute(f'wc -l < {shlex.quote(file_path)}')) + 1
 
     metadata_outputs = {
         'FileName': file_name,
