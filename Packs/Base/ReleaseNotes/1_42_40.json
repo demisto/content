@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The ***CommandResults*** class signature was changed. Custom scripts that pass positional arguments must be updated."
+}
