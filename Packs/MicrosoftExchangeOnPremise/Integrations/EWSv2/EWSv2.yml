@@ -145,7 +145,7 @@ configuration:
   type: 8
   advanced: true
   required: false
-description: Exchange Web Services and Office 365 (mail).
+description: Exchange Web Services and Office 365 (mail). 
 display: EWS v2
 name: EWS v2
 script:
