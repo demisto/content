@@ -642,10 +642,11 @@ def test_serialize_raw_json_falls_back_to_escaped_json_and_logs_on_invalid_utf8(
         Serializing the email to rawJSON.
 
     Then -
-        An info log line names the email ID, and rawJSON falls back to ASCII-escaped JSON that is valid UTF-8
-        and still decodes back to the original subject.
+        An info log line names the email ID, the traceback is logged at debug level, and rawJSON falls back
+        to ASCII-escaped JSON that is valid UTF-8 and still decodes back to the original subject.
     """
     info_log = mocker.patch.object(demisto, "info")
+    debug_log = mocker.patch.object(demisto, "debug")
     parsed_email = {"ID": "dummy_id", "Subject": "broken emoji \ud83d here"}
 
     raw_json = GraphMailUtils.serialize_raw_json(parsed_email)
@@ -655,6 +656,7 @@ def test_serialize_raw_json_falls_back_to_escaped_json_and_logs_on_invalid_utf8(
     assert json.loads(raw_json)["Subject"] == parsed_email["Subject"]
     info_log.assert_called_once()
     assert "dummy_id" in info_log.call_args[0][0]
+    assert any("UnicodeEncodeError" in str(call.args[0]) for call in debug_log.call_args_list)
 
 
 def test_serialize_raw_json_keeps_non_ascii_without_logging(mocker):

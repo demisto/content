@@ -1175,6 +1175,7 @@ class GraphMailUtils:
         try:
             raw_json.encode("utf-8")
         except UnicodeEncodeError as error:
+            demisto.debug(traceback.format_exc())
             demisto.info(
                 f"Email {parsed_email.get('ID')} contains text that is not valid UTF-8 ({error}). "
                 "Using ASCII-escaped rawJSON for this email."
