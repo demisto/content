@@ -7465,39 +7465,6 @@ class ElasticBeanstalk:
     ]
 
     @staticmethod
-    def _build_create_environment_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Validates the environment source arguments and builds the kwargs for the CreateEnvironment API call.
-
-        Args:
-            args (Dict[str, Any]): Command arguments.
-
-        Returns:
-            Dict[str, Any]: The CreateEnvironment kwargs without empty values.
-
-        Raises:
-            ValueError: If none or more than one of template_name, solution_stack_name and platform_arn is provided.
-        """
-        provided = [name for name in ("template_name", "solution_stack_name", "platform_arn") if args.get(name)]
-        if len(provided) != 1:
-            raise ValueError(
-                "You must provide exactly one of the following arguments: 'template_name', 'solution_stack_name' or "
-                f"'platform_arn'. Provided: {provided or 'none'}."
-            )
-        kwargs: Dict[str, Any] = {
-            "ApplicationName": args.get("application_name"),
-            "EnvironmentName": args.get("environment_name"),
-            "CNAMEPrefix": args.get("cname_prefix"),
-            "Description": args.get("description"),
-            "TemplateName": args.get("template_name"),
-            "SolutionStackName": args.get("solution_stack_name"),
-            "PlatformArn": args.get("platform_arn"),
-            "Tags": parse_tag_field(args.get("tags")),
-        }
-        remove_nulls_from_dictionary(kwargs)
-        return kwargs
-
-    @staticmethod
     def _build_describe_environments_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
         """
         Builds the kwargs for the DescribeEnvironments API call, including pagination.
@@ -7551,48 +7518,6 @@ class ElasticBeanstalk:
             headerTransform=pascalToSpace,
             removeNull=True,
             metadata=metadata,
-        )
-
-    @staticmethod
-    def create_environment_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
-        """
-        Starts launching an AWS Elastic Beanstalk environment for the specified application.
-        The creation is asynchronous: the command returns immediately while the environment is still launching.
-
-        Args:
-            client (BotoClient): The boto3 client for Elastic Beanstalk service.
-            args (Dict[str, Any]): Command arguments including application name, environment name, CNAME prefix
-                and exactly one of template name, solution stack name or platform ARN.
-
-        Returns:
-            CommandResults: The description of the created environment.
-        """
-        kwargs = ElasticBeanstalk._build_create_environment_kwargs(args)
-        print_debug_logs(
-            client,
-            f"Creating Elastic Beanstalk environment with kwargs keys: {list(kwargs.keys())} "
-            f"and {kwargs.get('ApplicationName')=}, {kwargs.get('EnvironmentName')=}",
-        )
-        response = client.create_environment(**kwargs)
-
-        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-
-        environment = serialize_response_with_datetime_encoding(response)
-        environment.pop("ResponseMetadata", None)
-        readable_output = ElasticBeanstalk._format_environments_hr("AWS Elastic Beanstalk Environment Created", [environment])
-        status_note = f" (Status: {environment['Status']})" if environment.get("Status") else ""
-        readable_output += (
-            f"\nEnvironment creation was initiated and is in progress{status_note}. "
-            "Use aws-elasticbeanstalk-environments-describe to track its status."
-        )
-
-        return CommandResults(
-            outputs_prefix="AWS.ElasticBeanstalk.Environments",
-            outputs_key_field="EnvironmentId",
-            outputs=environment,
-            readable_output=readable_output,
-            raw_response=environment,
         )
 
     @staticmethod
@@ -11725,7 +11650,6 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-resource-untag": NetworkFirewall.untag_resource_command,
     "aws-network-firewall-logging-configuration-describe": NetworkFirewall.describe_logging_configuration_command,
     "aws-network-firewall-logging-configuration-update": NetworkFirewall.update_logging_configuration_command,
-    "aws-elasticbeanstalk-environment-create": ElasticBeanstalk.create_environment_command,
     "aws-elasticbeanstalk-environments-describe": ElasticBeanstalk.describe_environments_command,
 }
 
@@ -11936,7 +11860,6 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:UntagResource",
     "network-firewall:DescribeLoggingConfiguration",
     "network-firewall:UpdateLoggingConfiguration",
-    "elasticbeanstalk:CreateEnvironment",
     "elasticbeanstalk:DescribeEnvironments",
 ]
 
