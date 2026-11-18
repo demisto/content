@@ -145,7 +145,7 @@ Create **/fluent-bit/etc/upstream.conf** listing the aggregators. Traffic is bal
   | `[INPUT]`   | `tls.key_file`  | **<path_to_aggregator_private_key>**   |
   | `[INPUT]`   | `Shared_Key`    | **<forward_shared_key>**               |
   | `[INPUT]`   | `Self_Hostname` | **<aggregator_hostname>**              |
-  | `[OUTPUT]`  | all parameters  | Same as the `http` output in **HTTP out to XSIAM** above |
+  | `[OUTPUT]`  | all parameters  | Same as the `http` output in **HTTP out to Cortex XSIAM** above |
 
 Notes:
 
