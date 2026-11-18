@@ -379,7 +379,7 @@ List files shared with a specific third-party domain.
 ### reco-change-alert-status
 
 ***
-Update the status of a Reco alert. The `ALERT_STATUS_NEW`, `ALERT_STATUS_IN_PROGRESS`, and `ALERT_STATUS_CLOSED` statuses on threat alerts use the Reco External API.
+Update the status of a Reco alert. The `ALERT_STATUS_NEW`, `ALERT_STATUS_IN_PROGRESS`, and `ALERT_STATUS_CLOSED` statuses on threat alerts use the Reco External API, falling back to the previous endpoint for posture issues and for tokens without the alert write permission.
 
 #### Base Command
 

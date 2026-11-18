@@ -750,16 +750,31 @@ def test_change_alert_status(requests_mock, reco_client: RecoClient) -> None:
     assert len(requests_mock.request_history) == 1  # the internal endpoint was not called
 
 
-def test_change_alert_status_falls_back_to_internal_for_posture_ids(requests_mock, reco_client: RecoClient) -> None:
-    """The External API answers 404 for posture issue IDs; the internal endpoint still handles them."""
+@pytest.mark.parametrize("external_status_code", [403, 404])
+def test_change_alert_status_falls_back_to_internal(capfd, requests_mock, reco_client: RecoClient, external_status_code) -> None:
+    """404: posture issue IDs. 403: a token with PERM_POSTURES_UPDATE but not PERM_ALERTS_WRITE, which the
+    internal endpoint still accepts."""
     alert_id = str(uuid.uuid1())
-    requests_mock.post(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/{alert_id}/status", status_code=404, json={})
+    requests_mock.post(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/{alert_id}/status", status_code=external_status_code, json={}
+    )
     internal = requests_mock.put(
         f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{alert_id}/status/ALERT_STATUS_CLOSED", json={}
     )
 
     assert reco_client.change_alert_status(alert_id=alert_id, status="ALERT_STATUS_CLOSED") == {}
     assert internal.called
+
+
+def test_change_alert_status_surfaces_the_error_when_both_endpoints_refuse(capfd, requests_mock, reco_client: RecoClient) -> None:
+    alert_id = str(uuid.uuid1())
+    requests_mock.post(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/{alert_id}/status", status_code=403, json={})
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{alert_id}/status/ALERT_STATUS_CLOSED", status_code=403, json={}
+    )
+
+    with capfd.disabled(), pytest.raises(Exception):
+        reco_client.change_alert_status(alert_id=alert_id, status="ALERT_STATUS_CLOSED")
 
 
 def test_change_alert_status_does_not_swallow_other_external_errors(capfd, requests_mock, reco_client: RecoClient) -> None:

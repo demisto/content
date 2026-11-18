@@ -87,6 +87,9 @@ ALERT_STATUSES: list[str] = ["NEW", "IN_PROGRESS", "CLOSED"]
 # Caps for the on-demand alert commands.
 # Statuses the External API accepts on a threat alert (POST /external-api/alerts/{id}/status).
 THREAT_ALERT_STATUSES: list[str] = [f"{ALERT_STATUS_PREFIX}{name}" for name in ALERT_STATUSES]
+# HTTP codes on which change_alert_status retries on the internal endpoint: 404 (not a threat alert) and
+# 403 (the External API needs PERM_ALERTS_WRITE; the internal one also accepts PERM_POSTURES_UPDATE).
+EXTERNAL_STATUS_FALLBACK_CODES = (403, 404)
 
 # Entity types the External API accepts on labels/add and labels/remove.
 ENTITY_LABEL_TYPES: list[str] = ["account", "app", "identity", "posture", "saas-to-saas", "ip-address", "ai-agent", "device"]
@@ -434,17 +437,22 @@ class RecoClient(BaseClient):
         """Change an alert's status.
 
         Threat-alert statuses (new / in progress / closed) go through the External API, which also
-        records the change in the audit log and emits the webhook event. Posture statuses, and
-        posture issue IDs (which the External API answers with 404), still need the internal endpoint.
+        records the change in the audit log and emits the webhook event. The previous internal
+        endpoint is kept as a fallback for what the External API cannot do: posture statuses, posture
+        issue IDs (404), and tokens that hold PERM_POSTURES_UPDATE but not PERM_ALERTS_WRITE (403),
+        both of which the internal endpoint accepts.
         """
         try:
             if status in THREAT_ALERT_STATUSES:
                 try:
                     return self._external_api_post(f"alerts/{alert_id}/status", {"status": status})
                 except DemistoException as exc:
-                    if getattr(exc.res, "status_code", None) != 404:
+                    if getattr(exc.res, "status_code", None) not in EXTERNAL_STATUS_FALLBACK_CODES:
                         raise
-                    demisto.debug(f"Alert {alert_id} is not a threat alert (404); falling back to the internal status endpoint")
+                    demisto.debug(
+                        f"External status update for {alert_id} returned {exc.res.status_code}; "  # type: ignore[union-attr]
+                        "falling back to the internal status endpoint"
+                    )
             return self._http_request(
                 method="PUT",
                 url_suffix=f"/policy-subsystem/alert-inbox/{alert_id}/status/{status}",
