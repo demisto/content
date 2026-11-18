@@ -586,7 +586,7 @@ class Client(BaseClient):
             feeds: List that the additional STIX objects are appended to.
         """
         for start in range(0, len(ta_names), TA_SEARCH_CHUNK_SIZE):
-            chunk = ta_names[start: start + TA_SEARCH_CHUNK_SIZE]
+            chunk = ta_names[start : start + TA_SEARCH_CHUNK_SIZE]
             try:
                 ta_res_data = self.call_api(_TA_SEARCH_API_PATHS, params={"values": chunk})
             except Exception as e:
