@@ -69,4 +69,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Identity Analytics - Alert Handling](../doc_files/Identity_Analytics_-_Alert_Handling.png)
+![Identity Analytics - Alert Handling](../doc_files/Identity_Analytics_-_Alert_Handling_8_16.png)

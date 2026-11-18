@@ -70,4 +70,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Large Upload Alert](../doc_files/Large_Upload_Alert.png)
+![Large Upload Alert](../doc_files/Large_Upload_Alert_8_16.png)

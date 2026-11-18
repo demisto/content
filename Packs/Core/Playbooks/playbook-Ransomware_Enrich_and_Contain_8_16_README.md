@@ -59,4 +59,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Ransomware Enrich and Contain](../doc_files/Ransomware_Enrich_and_Contain.png)
+![Ransomware Enrich and Contain](../doc_files/Ransomware_Enrich_and_Contain_8_16.png)

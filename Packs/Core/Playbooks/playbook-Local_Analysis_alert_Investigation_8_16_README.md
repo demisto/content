@@ -113,4 +113,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Local Analysis alert Investigation](../doc_files/Local_Analysis_alert_Investigation.png)
+![Local Analysis alert Investigation](../doc_files/Local_Analysis_alert_Investigation_8_16.png)

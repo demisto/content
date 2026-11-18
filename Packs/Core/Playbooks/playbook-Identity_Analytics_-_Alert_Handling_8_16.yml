@@ -1719,8 +1719,9 @@ outputs: []
 tests:
 - Test Playbook - Identity Analytics - Alert Handling
 marketplaces:
+- marketplacev2
 - platform
-fromversion: 6.10.0
+fromversion: 8.16.0
 contentitemexportablefields:
   contentitemfields: {}
 system: true

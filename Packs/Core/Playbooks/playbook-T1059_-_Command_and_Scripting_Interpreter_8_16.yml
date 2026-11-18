@@ -1700,10 +1700,11 @@ outputSections:
 outputs: []
 tests:
 - T1059 - Command and Scripting Interpreter - Test
-fromversion: 6.6.0
+fromversion: 8.16.0
 contentitemexportablefields:
   contentitemfields: {}
 marketplaces:
+- marketplacev2
 - platform
 
 supportedModules:

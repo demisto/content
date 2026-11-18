@@ -1142,9 +1142,8 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-marketplaces:
-- platform
-fromversion: 6.6.0
+marketplaces: ["marketplacev2", "platform"]
+fromversion: 8.16.0
 
 
 supportedModules:

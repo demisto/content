@@ -1179,6 +1179,15 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-marketplaces:
-- marketplacev2
+marketplaces: ["marketplacev2", "platform"]
 fromversion: 6.6.0
+toversion: 8.15.0
+
+
+supportedModules:
+- agentix
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr
+- xsiam
