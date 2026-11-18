@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "improve-slack-message-flow"
+  CURRENT_BRANCH_NAME: "flow-checking-connectivity"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "improve-slack-message-flow"
+    ref: "flow-checking-connectivity"
     project: "${CI_PROJECT_NAMESPACE}/infra"
