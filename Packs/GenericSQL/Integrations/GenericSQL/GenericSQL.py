@@ -7,6 +7,7 @@ from urllib.parse import parse_qsl
 import dateparser
 import demistomock as demisto
 import oracledb
+import psycopg
 import pymysql
 import sqlalchemy
 from CommonServerPython import *
@@ -39,6 +40,7 @@ pymysql.install_as_MySQLdb()
 GLOBAL_CACHE_ATTR = "_generic_sql_engine_cache"
 GLOBAL_ENGINE_CACHE_ATTR = "_generic_sql_engines"
 DEFAULT_POOL_TTL = 600
+NO_ROWS_ERROR_MESSAGE = "This result object does not return rows. It has been closed automatically."
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
@@ -118,9 +120,7 @@ class Client:
         if dialect == MY_SQL:
             module = "mysql"
         elif dialect == POSTGRES_SQL:
-            # Pin the driver explicitly: SQLAlchemy 2.1 changed the default PostgreSQL driver
-            # from psycopg2 to psycopg (v3), which is not installed in the Docker image.
-            module = "postgresql+psycopg2"
+            module = "postgresql+psycopg"
         elif dialect == ORACLE:
             module = "oracle+oracledb"
         elif dialect == TRINO:
@@ -180,9 +180,14 @@ class Client:
         module = self._convert_dialect_to_module(self.dialect)
         db_url = self._generate_db_url(module)
 
+        if self.dialect == POSTGRES_SQL:
+            # psycopg 3 binds parameters on the server by default, which rejects bind variables in
+            # SET/DDL statements and in multi-statement queries. ClientCursor binds them client side, like psycopg2.
+            ssl_connection["cursor_factory"] = psycopg.ClientCursor
+
         if self.ssl_connect:
             if self.dialect == POSTGRES_SQL:
-                ssl_connection = {"sslmode": "require"}
+                ssl_connection["sslmode"] = "require"
             elif self.dialect == TRINO:
                 ssl_connection = {"http_scheme": "https"}
             else:
@@ -222,6 +227,9 @@ class Client:
         if type(bind_vars) is dict:
             sql_query = text(sql_query)  # type: ignore[assignment]
 
+        if self.dialect == POSTGRES_SQL:
+            return self._execute_and_fetch_last_result_set(sql_query, bind_vars, fetch_limit)
+
         result = self.connection.execute(sql_query, bind_vars)  # type: ignore[call-overload]
 
         # for MSSQL autocommit is True, so no need to commit again here
@@ -241,6 +249,47 @@ class Client:
                 headers = list(result.keys())
             else:
                 headers = list(results[0].keys() or "")
+        return results, headers
+
+    def _execute_and_fetch_last_result_set(self, sql_query: Any, bind_vars: dict, fetch_limit: int) -> tuple[list[dict], list]:
+        """
+        Executes the query on the DBAPI cursor and returns the rows of its last result set.
+        psycopg 3 returns the first result set of a multi-statement query (e.g. "SET ...; SELECT ..."),
+        while psycopg2 returned the last one. Advancing with nextset() keeps the psycopg2 behavior.
+        :param sql_query: the SQL query (a TextClause when bind variables are used)
+        :param bind_vars: the bind variables dict
+        :param fetch_limit: the maximum number of rows to fetch, 0 for all
+        :return: results of the last statement, table headers
+        """
+        statement = text(sql_query) if isinstance(sql_query, str) else sql_query
+        compiled_statement = statement.compile(dialect=self.connection.dialect)
+        parameters = compiled_statement.construct_params(bind_vars or {})
+
+        # The DBAPI cursor bypasses SQLAlchemy's autobegin, so begin explicitly to make commit() take effect.
+        if not self.connection.in_transaction():
+            self.connection.begin()
+        cursor = self.connection.connection.cursor()
+        try:
+            try:
+                cursor.execute(compiled_statement.string, parameters)
+            except psycopg.Error as error:
+                # Wrap like SQLAlchemy does (e.g. ProgrammingError with the SQL), to keep error messages unchanged.
+                raise sqlalchemy.exc.DBAPIError.instance(
+                    compiled_statement.string, parameters, error, psycopg.Error, dialect=self.connection.dialect
+                ) from error
+            while cursor.nextset():
+                pass
+            if cursor.description is None:
+                self.connection.commit()
+                raise sqlalchemy.exc.ResourceClosedError(NO_ROWS_ERROR_MESSAGE)
+            column_names = [column[0] for column in cursor.description]
+            rows = cursor.fetchmany(fetch_limit) if fetch_limit else cursor.fetchall()
+        finally:
+            cursor.close()
+
+        self.connection.commit()
+        results = [dict(zip(column_names, row)) for row in rows]
+        headers = list(results[0].keys()) if results else []
         return results, headers
 
     def create_api_metrics(self, status_type: str) -> None:
@@ -474,7 +523,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
     except Exception as err:
         # In case there is no query executed and only an action e.g - insert, delete, update
         # the result will raise an exception when we try to read the data from it
-        if str(err) == "This result object does not return rows. It has been closed automatically.":
+        if str(err) == NO_ROWS_ERROR_MESSAGE:
             human_readable = "Command executed"
             return human_readable, {}, []
         client.create_api_metrics(status_type="general_error")
