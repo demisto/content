@@ -1954,6 +1954,9 @@ script:
     - contextPath: CrowdStrike.IOC.DeviceCount
       description: The number of devices the IOC ran on.
       type: number
+    - contextPath: CrowdStrike.IOC.DeviceCountTruncated
+      description: Whether the device count is a lower bound because counting stopped after the maximum number of result pages was reached. When true, the actual number of devices may be higher.
+      type: boolean
   - arguments:
     - auto: PREDEFINED
       description: The IOC type.
@@ -2028,7 +2031,7 @@ script:
       type: Date
   - arguments:
     - auto: PREDEFINED
-      description: 'The type of indicator. Applies to all the provided values.'
+      description: 'The type of indicator.'
       name: type
       predefined:
       - domain
@@ -2038,10 +2041,9 @@ script:
       - sha1
       - sha256
       required: true
-    - description: A comma-separated list of string representations of indicators. All values must be of the type given in the type argument.
+    - description: The string representation of the indicator.
       name: value
       required: true
-      isArray: true
     deprecated: true
     description: Returns a list of device IDs an indicator ran on.
     name: cs-device-ran-on
@@ -2080,6 +2082,9 @@ script:
     - contextPath: CrowdStrike.DeviceID
       description: Device IDs an indicator ran on.
       type: string
+    - contextPath: CrowdStrike.DeviceIOC.Truncated
+      description: Whether the list of device IDs was truncated because the maximum number of result pages was reached. When true, the indicator may have run on more devices than returned.
+      type: boolean
   - arguments:
     - description: The query used to filter the results.
       name: fetch_query

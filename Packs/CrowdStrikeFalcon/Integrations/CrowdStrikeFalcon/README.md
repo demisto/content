@@ -1742,6 +1742,7 @@ If no devices have observed an indicator, the command returns a *DeviceCount* of
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. |
 | CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). |
 | CrowdStrike.IOC.DeviceCount | number | The number of devices the IOC ran on. |
+| CrowdStrike.IOC.DeviceCountTruncated | boolean | Whether the device count is a lower bound because counting stopped after the maximum number of result pages was reached. When true, the actual number of devices may be higher. |
 
 #### Command Example
 
@@ -1909,6 +1910,7 @@ When more than one value is provided, a separate result is returned for each val
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CrowdStrike.DeviceID | string | Device IDs an indicator ran on. |
+| CrowdStrike.DeviceIOC.Truncated | boolean | Whether the list of device IDs was truncated because the maximum number of result pages was reached. When true, the indicator may have run on more devices than returned. |
 
 #### Command Example
 

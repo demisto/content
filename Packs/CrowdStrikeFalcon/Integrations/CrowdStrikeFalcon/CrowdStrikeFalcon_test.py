@@ -63,6 +63,27 @@ def get_access_token(requests_mock, mocker):
     requests_mock.post(f"{SERVER_URL}/oauth2/token", json={"access_token": "token"}, status_code=200)
 
 
+@pytest.fixture(autouse=True)
+def reset_ioc_route_mode():
+    """Resets the per-execution IOC route cache so every test starts like a fresh execution."""
+    import CrowdStrikeFalcon
+
+    CrowdStrikeFalcon.IOC_ROUTE_MODE = None
+
+
+def count_requests_to_path(requests_mock, url_path: str) -> int:
+    """Returns how many requests were sent to the given URL path (query string ignored)."""
+    return sum(1 for request in requests_mock.request_history if request.path == url_path.lower())
+
+
+def assert_no_forced_token_refresh(get_token_spy) -> None:
+    """Asserts that get_token was never called with new_token=True."""
+    assert not any(call.kwargs.get("new_token") for call in get_token_spy.call_args_list)
+
+
+FORBIDDEN_RESPONSE = {"errors": [{"code": 403, "message": "access denied, scope not permitted"}]}
+
+
 IOCS_JSON_LIST = [
     {
         "type": "ipv4",
@@ -2488,14 +2509,26 @@ def test_get_indicator_device_id(mocker, requests_mock):
     assert res.outputs["DeviceIOC"]["Type"] == "sha256"
     assert res.outputs["DeviceIOC"]["Value"] == "example_sha"
     assert res.outputs["DeviceIOC"]["DeviceID"] == res.outputs["DeviceID"]
+    assert res.outputs["DeviceIOC"]["Truncated"] is False
+    assert "**Warning:**" not in res.readable_output
 
 
 def test_get_indicator_device_id_legacy_fallback_on_403(mocker, requests_mock):
+    """
+    Given
+     - An API client with legacy-only IOC scopes (the modern devices route returns 403)
+    When
+     - Running cs-falcon-device-ran-on
+    Then
+     - The modern route is called exactly once (no token refresh + retry on 403) and the legacy route serves the result
+    """
+    import CrowdStrikeFalcon
     from CrowdStrikeFalcon import get_indicator_device_id
 
+    get_token_spy = mocker.spy(CrowdStrikeFalcon, "get_token")
     requests_mock.get(
         "https://4.4.4.4/iocs/queries/indicators/devices/v1",
-        json={"errors": [{"code": 403, "message": "access denied, scope not permitted"}]},
+        json=FORBIDDEN_RESPONSE,
         status_code=403,
         reason="Forbidden",
     )
@@ -2511,6 +2544,11 @@ def test_get_indicator_device_id_legacy_fallback_on_403(mocker, requests_mock):
     assert res.outputs["DeviceIOC"]["Type"] == "sha256"
     assert res.outputs["DeviceIOC"]["Value"] == "example_sha"
     assert res.outputs["DeviceIOC"]["DeviceID"] == res.outputs["DeviceID"]
+    assert count_requests_to_path(requests_mock, "/iocs/queries/indicators/devices/v1") == 1
+    assert count_requests_to_path(requests_mock, "/indicators/queries/devices/v1") == 1
+    assert count_requests_to_path(requests_mock, "/oauth2/token") <= 1  # at most the initial token, never a refresh
+    assert_no_forced_token_refresh(get_token_spy)
+    assert CrowdStrikeFalcon.IOC_ROUTE_MODE == "legacy"
 
 
 DEVICES_QUERY_URL = f"{SERVER_URL}/iocs/queries/indicators/devices/v1"
@@ -2572,6 +2610,7 @@ def test_get_indicator_device_id_stops_at_safety_cap(mocker, requests_mock):
      - Running cs-falcon-device-ran-on
     Then
      - Paging stops after MAX_IOC_DEVICE_PAGES requests
+     - The result is flagged as truncated in both the readable output and the DeviceIOC output
     """
     import CrowdStrikeFalcon
 
@@ -2579,9 +2618,14 @@ def test_get_indicator_device_id_stops_at_safety_cap(mocker, requests_mock):
     requests_mock.get(DEVICES_QUERY_URL, json={"resources": ["d1"], "meta": {"pagination": {"offset": "loop"}}})
     mocker.patch.object(demisto, "args", return_value={"type": "sha256", "value": "example_sha"})
 
-    CrowdStrikeFalcon.get_indicator_device_id()
+    res = CrowdStrikeFalcon.get_indicator_device_id()
 
     assert requests_mock.call_count == 3
+    assert res.readable_output.startswith(
+        "**Warning:** Results truncated after 3 pages (3 device IDs returned); the actual number of devices may be higher."
+    )
+    assert res.outputs["DeviceIOC"]["Truncated"] is True
+    assert res.outputs["DeviceID"] == ["d1", "d1", "d1"]
 
 
 def test_get_indicator_device_id_legacy_fallback_on_403_with_pagination(mocker, requests_mock):
@@ -2591,13 +2635,15 @@ def test_get_indicator_device_id_legacy_fallback_on_403_with_pagination(mocker, 
     When
      - Running cs-falcon-device-ran-on
     Then
-     - Every page request falls back to the legacy route and all device IDs are returned
+     - The modern route is probed only once, the legacy route serves every page, and all device IDs are returned
     """
+    import CrowdStrikeFalcon
     from CrowdStrikeFalcon import get_indicator_device_id
 
+    get_token_spy = mocker.spy(CrowdStrikeFalcon, "get_token")
     requests_mock.get(
         DEVICES_QUERY_URL,
-        json={"errors": [{"code": 403, "message": "access denied, scope not permitted"}]},
+        json=FORBIDDEN_RESPONSE,
         status_code=403,
         reason="Forbidden",
     )
@@ -2608,6 +2654,11 @@ def test_get_indicator_device_id_legacy_fallback_on_403_with_pagination(mocker, 
     res = get_indicator_device_id()
 
     assert res.outputs["DeviceID"] == ["d1", "d2", "d3"]
+    assert res.outputs["DeviceIOC"]["Truncated"] is False
+    assert count_requests_to_path(requests_mock, "/iocs/queries/indicators/devices/v1") == 1
+    assert count_requests_to_path(requests_mock, "/indicators/queries/devices/v1") == 2
+    assert count_requests_to_path(requests_mock, "/oauth2/token") <= 1
+    assert_no_forced_token_refresh(get_token_spy)
 
 
 def test_get_indicator_device_id_multiple_values(mocker, requests_mock):
@@ -2629,9 +2680,103 @@ def test_get_indicator_device_id_multiple_values(mocker, requests_mock):
 
     assert isinstance(results, list)
     assert len(results) == 2
-    assert results[0].outputs["DeviceIOC"] == {"Type": "sha256", "Value": "sha_a", "ID": "sha256:sha_a", "DeviceID": ["a1", "a2"]}
-    assert results[1].outputs["DeviceIOC"] == {"Type": "sha256", "Value": "sha_b", "ID": "sha256:sha_b", "DeviceID": ["b1"]}
+    assert results[0].outputs["DeviceIOC"] == {
+        "Type": "sha256",
+        "Value": "sha_a",
+        "ID": "sha256:sha_a",
+        "DeviceID": ["a1", "a2"],
+        "Truncated": False,
+    }
+    assert results[1].outputs["DeviceIOC"] == {
+        "Type": "sha256",
+        "Value": "sha_b",
+        "ID": "sha256:sha_b",
+        "DeviceID": ["b1"],
+        "Truncated": False,
+    }
     assert requests_mock.call_count == 2
+
+
+def test_get_indicator_device_id_legacy_only_client_probes_modern_once(mocker, requests_mock):
+    """
+    Given
+     - An API client with legacy-only IOC scopes, and two values to look up
+    When
+     - Running cs-falcon-device-ran-on with both values
+    Then
+     - The modern route is probed only once per execution, every lookup is served by the legacy route,
+       and no forced token refresh happens
+    """
+    import CrowdStrikeFalcon
+    from CrowdStrikeFalcon import get_indicator_device_id
+
+    get_token_spy = mocker.spy(CrowdStrikeFalcon, "get_token")
+    requests_mock.get(DEVICES_QUERY_URL, json=FORBIDDEN_RESPONSE, status_code=403, reason="Forbidden")
+    requests_mock.get(f"{LEGACY_DEVICES_QUERY_URL}?type=sha256&value=sha_a", json={"resources": ["a1"]})
+    requests_mock.get(f"{LEGACY_DEVICES_QUERY_URL}?type=sha256&value=sha_b", json={"resources": ["b1"]})
+    mocker.patch.object(demisto, "args", return_value={"type": "sha256", "value": "sha_a,sha_b"})
+
+    results = get_indicator_device_id()
+
+    assert [result.outputs["DeviceID"] for result in results] == [["a1"], ["b1"]]
+    assert count_requests_to_path(requests_mock, "/iocs/queries/indicators/devices/v1") == 1
+    assert count_requests_to_path(requests_mock, "/indicators/queries/devices/v1") == 2
+    assert_no_forced_token_refresh(get_token_spy)
+
+
+def test_ioc_fallback_modern_401_still_refreshes_token(mocker, requests_mock):
+    """
+    Given
+     - The modern devices route returns 401 once (expired token) and then succeeds
+    When
+     - Running cs-falcon-device-ran-on
+    Then
+     - A new token is requested and the modern request is retried, the legacy route is not used
+    """
+    import CrowdStrikeFalcon
+    from CrowdStrikeFalcon import get_indicator_device_id
+
+    get_token_spy = mocker.spy(CrowdStrikeFalcon, "get_token")
+    requests_mock.get(
+        DEVICES_QUERY_URL,
+        [
+            {"json": {"errors": [{"code": 401, "message": "access denied, invalid bearer token"}]}, "status_code": 401},
+            {"json": {"resources": ["d1"]}, "status_code": 200},
+        ],
+    )
+    legacy_mock = requests_mock.get(LEGACY_DEVICES_QUERY_URL, json={"resources": ["legacy"]})
+    mocker.patch.object(demisto, "args", return_value={"type": "sha256", "value": "example_sha"})
+
+    res = get_indicator_device_id()
+
+    assert res.outputs["DeviceID"] == ["d1"]
+    assert count_requests_to_path(requests_mock, "/iocs/queries/indicators/devices/v1") == 2
+    assert any(call.kwargs.get("new_token") for call in get_token_spy.call_args_list)
+    assert not legacy_mock.called
+    assert CrowdStrikeFalcon.IOC_ROUTE_MODE == "modern"
+
+
+def test_http_request_forbidden_without_token_refresh(mocker):
+    """
+    Given
+     - A request that returns HTTP 403
+    When
+     - Calling http_request with refresh_token_on_forbidden=False
+    Then
+     - The error is raised right away after a single request, without requesting a new token
+    """
+    import CrowdStrikeFalcon
+
+    get_token_mock = mocker.patch.object(CrowdStrikeFalcon, "get_token", return_value="token")
+    forbidden_response = mocker.Mock(status_code=403, reason="Forbidden", content=b"")
+    forbidden_response.json.return_value = FORBIDDEN_RESPONSE
+    generic_request_mock = mocker.patch.object(CrowdStrikeFalcon, "generic_http_request", return_value=forbidden_response)
+
+    with pytest.raises(DemistoException, match="code: 403"):
+        CrowdStrikeFalcon.http_request("GET", "/iocs/queries/indicators/devices/v1", refresh_token_on_forbidden=False)
+
+    assert generic_request_mock.call_count == 1
+    assert all(not call.kwargs.get("new_token") for call in get_token_mock.call_args_list)
 
 
 def test_get_indicator_device_id_mixed_not_found_and_found(mocker, requests_mock):
@@ -3564,9 +3709,10 @@ def test_get_ioc_device_count_command_exists(requests_mock):
     assert result["HumanReadable"] == "Indicator of Compromise **md5:testmd5** device count: **1**"
     assert result["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["ID"] == "md5:testmd5"
     assert result["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["DeviceCount"] == 1
+    assert result["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["DeviceCountTruncated"] is False
 
 
-def test_get_ioc_device_count_command_legacy_fallback_on_403(requests_mock):
+def test_get_ioc_device_count_command_legacy_fallback_on_403(mocker, requests_mock):
     """
     Test cs-falcon-device-count-ioc falls back to legacy /indicators/... route when modern /iocs/... returns 403
 
@@ -3576,12 +3722,15 @@ def test_get_ioc_device_count_command_legacy_fallback_on_403(requests_mock):
      - The user runs cs-falcon-device-count-ioc
     Then
      - The command falls back to /indicators/aggregates/devices-count/v1 and returns the expected result
+     - The modern route is called exactly once and no forced token refresh happens
     """
+    import CrowdStrikeFalcon
     from CrowdStrikeFalcon import get_ioc_device_count_command
 
+    get_token_spy = mocker.spy(CrowdStrikeFalcon, "get_token")
     requests_mock.get(
         f"{SERVER_URL}/iocs/aggregates/indicators/device-count/v1",
-        json={"errors": [{"code": 403, "message": "access denied, scope not permitted"}]},
+        json=FORBIDDEN_RESPONSE,
         status_code=403,
         reason="Forbidden",
     )
@@ -3594,6 +3743,36 @@ def test_get_ioc_device_count_command_legacy_fallback_on_403(requests_mock):
     assert result["HumanReadable"] == "Indicator of Compromise **md5:testmd5** device count: **2**"
     assert result["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["ID"] == "md5:testmd5"
     assert result["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["DeviceCount"] == 2
+    assert count_requests_to_path(requests_mock, "/iocs/aggregates/indicators/device-count/v1") == 1
+    assert count_requests_to_path(requests_mock, "/oauth2/token") <= 1
+    assert_no_forced_token_refresh(get_token_spy)
+
+
+def test_get_ioc_device_count_command_legacy_404_after_modern_403(requests_mock):
+    """
+    Given
+     - The modern device-count route returns 403 and the legacy route returns 404 (no device observed the IOC)
+    When
+     - Running cs-falcon-device-count-ioc
+    Then
+     - The legacy 404 is still treated as "no results" (DeviceCount 0), not turned into an access-denied error
+    """
+    from CrowdStrikeFalcon import get_ioc_device_count_command
+
+    requests_mock.get(
+        f"{SERVER_URL}/iocs/aggregates/indicators/device-count/v1",
+        json=FORBIDDEN_RESPONSE,
+        status_code=403,
+        reason="Forbidden",
+    )
+    requests_mock.get(
+        f"{SERVER_URL}/indicators/aggregates/devices-count/v1",
+        json={"resources": [], "errors": [{"code": 404, "message": "Resource Not Found"}]},
+        status_code=404,
+    )
+    res = get_ioc_device_count_command(ioc_type="md5", value="testmd5")
+    assert res.outputs == {"ID": "md5:testmd5", "Type": "md5", "Value": "testmd5", "DeviceCount": 0}
+    assert res.readable_output == "No results found for md5 - testmd5"
 
 
 def test_get_ioc_device_count_command_rate_limit_exceeded(requests_mock):
@@ -3633,6 +3812,34 @@ def test_get_ioc_device_count_command_rate_limit_exceeded(requests_mock):
     res = get_ioc_device_count_command(ioc_type="md5", value="testmd5")
 
     assert "device count: **6**" in res["HumanReadable"]
+    assert res["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["DeviceCountTruncated"] is False
+
+
+def test_get_ioc_device_count_command_limit_exceeded_truncated(mocker, requests_mock):
+    """
+    Given
+     - limit_exceeded is set, and the devices query keeps returning pages with an offset beyond the page cap
+    When
+     - Running cs-falcon-device-count-ioc
+    Then
+     - The readable output marks the count as a lower bound and DeviceCountTruncated is True
+    """
+    import CrowdStrikeFalcon
+
+    mocker.patch.object(CrowdStrikeFalcon, "MAX_IOC_DEVICE_PAGES", 2)
+    requests_mock.get(
+        f"{SERVER_URL}/iocs/aggregates/indicators/device-count/v1",
+        json={"resources": [{"type": "md5", "value": "testmd5", "limit_exceeded": True, "device_count": 100}]},
+    )
+    requests_mock.get(DEVICES_QUERY_URL, json={"resources": ["d1"], "meta": {"pagination": {"offset": "more"}}})
+
+    res = CrowdStrikeFalcon.get_ioc_device_count_command(ioc_type="md5", value="testmd5")
+
+    assert "≥ 2" in res["HumanReadable"]
+    assert "(truncated: reached the maximum of 2 pages)" in res["HumanReadable"]
+    context = res["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]
+    assert context["DeviceCount"] == 2
+    assert context["DeviceCountTruncated"] is True
 
 
 def test_get_ioc_device_count_command_limit_exceeded_stops_on_empty_page(requests_mock):
@@ -3812,15 +4019,18 @@ def test_get_proccesses_ran_on_command_exists(requests_mock):
     assert expected_proc_result == actual_proc_result
 
 
-def test_get_proccesses_ran_on_command_legacy_fallback_on_403(requests_mock):
+def test_get_proccesses_ran_on_command_legacy_fallback_on_403(mocker, requests_mock):
     """
-    Test cs-falcon-processes-ran-on falls back to legacy /indicators/... route when modern /iocs/... returns 403
+    Test cs-falcon-processes-ran-on falls back to legacy /indicators/... route when modern /iocs/... returns 403,
+    calling the modern route exactly once and without a forced token refresh.
     """
+    import CrowdStrikeFalcon
     from CrowdStrikeFalcon import get_proccesses_ran_on_command
 
+    get_token_spy = mocker.spy(CrowdStrikeFalcon, "get_token")
     requests_mock.get(
         f"{SERVER_URL}/iocs/queries/indicators/processes/v1",
-        json={"errors": [{"code": 403, "message": "access denied, scope not permitted"}]},
+        json=FORBIDDEN_RESPONSE,
         status_code=403,
         reason="Forbidden",
     )
@@ -3835,6 +4045,113 @@ def test_get_proccesses_ran_on_command_legacy_fallback_on_403(requests_mock):
         "DeviceID": "123",
         "ID": ["pid:fake:process"],
     }
+    assert count_requests_to_path(requests_mock, "/iocs/queries/indicators/processes/v1") == 1
+    assert count_requests_to_path(requests_mock, "/oauth2/token") <= 1
+    assert_no_forced_token_refresh(get_token_spy)
+
+
+def _run_ioc_command(command_name: str, mocker):
+    """Runs one of the IOC lookup commands that use the legacy-route fallback."""
+    import CrowdStrikeFalcon
+
+    if command_name == "device-ran-on":
+        mocker.patch.object(demisto, "args", return_value={"type": "sha256", "value": "example_sha"})
+        return CrowdStrikeFalcon.get_indicator_device_id()
+    if command_name == "device-count":
+        return CrowdStrikeFalcon.get_ioc_device_count_command(ioc_type="sha256", value="example_sha")
+    return CrowdStrikeFalcon.get_proccesses_ran_on_command(ioc_type="sha256", value="example_sha", device_id="123")
+
+
+IOC_COMMAND_ROUTES = [
+    ("device-ran-on", "/iocs/queries/indicators/devices/v1", "/indicators/queries/devices/v1"),
+    ("device-count", "/iocs/aggregates/indicators/device-count/v1", "/indicators/aggregates/devices-count/v1"),
+    ("processes-ran-on", "/iocs/queries/indicators/processes/v1", "/indicators/queries/processes/v1"),
+]
+
+
+@pytest.mark.parametrize("command_name, modern_route, legacy_route", IOC_COMMAND_ROUTES)
+def test_ioc_fallback_both_routes_forbidden_clear_error(mocker, requests_mock, command_name, modern_route, legacy_route):
+    """
+    Given
+     - An API client with neither the modern nor the legacy IOC scope (both routes return 403)
+    When
+     - Running an IOC lookup command
+    Then
+     - A clear error is raised that names both routes and the required 'IOC Manager - Read' (iocs:read) scope
+    """
+    requests_mock.get(f"{SERVER_URL}{modern_route}", json=FORBIDDEN_RESPONSE, status_code=403, reason="Forbidden")
+    requests_mock.get(f"{SERVER_URL}{legacy_route}", json=FORBIDDEN_RESPONSE, status_code=403, reason="Forbidden")
+
+    with pytest.raises(DemistoException) as excinfo:
+        _run_ioc_command(command_name, mocker)
+
+    message = str(excinfo.value)
+    assert message.startswith("Access denied to the CrowdStrike IOC endpoints.")
+    assert "'IOC Manager - Read' (iocs:read)" in message
+    assert f"The modern route {modern_route} returned HTTP 403" in message
+    assert f"legacy fallback route {legacy_route} also failed" in message
+    assert isinstance(excinfo.value.__cause__, DemistoException)
+    assert count_requests_to_path(requests_mock, modern_route) == 1
+
+
+@pytest.mark.parametrize(
+    "command_name, modern_route, legacy_route, legacy_status",
+    [
+        ("processes-ran-on", "/iocs/queries/indicators/processes/v1", "/indicators/queries/processes/v1", 404),
+        ("processes-ran-on", "/iocs/queries/indicators/processes/v1", "/indicators/queries/processes/v1", 410),
+        ("device-ran-on", "/iocs/queries/indicators/devices/v1", "/indicators/queries/devices/v1", 410),
+    ],
+)
+def test_ioc_fallback_legacy_route_gone_clear_error(
+    mocker, requests_mock, command_name, modern_route, legacy_route, legacy_status
+):
+    """
+    Given
+     - The modern route returns 403 and the (retired) legacy route raises an error (404 / 410)
+    When
+     - Running an IOC lookup command
+    Then
+     - The same clear access-denied error is raised, mentioning the legacy status code
+    """
+    requests_mock.get(f"{SERVER_URL}{modern_route}", json=FORBIDDEN_RESPONSE, status_code=403, reason="Forbidden")
+    requests_mock.get(
+        f"{SERVER_URL}{legacy_route}",
+        json={"errors": [{"code": legacy_status, "message": "route retired"}]},
+        status_code=legacy_status,
+        reason="Gone",
+    )
+
+    with pytest.raises(DemistoException) as excinfo:
+        _run_ioc_command(command_name, mocker)
+
+    message = str(excinfo.value)
+    assert "'IOC Manager - Read' (iocs:read)" in message
+    assert f"code: {legacy_status}" in message
+    assert modern_route in message
+    assert legacy_route in message
+
+
+def test_ioc_fallback_cached_legacy_mode_clear_error(mocker, requests_mock):
+    """
+    Given
+     - The modern route already returned 403 earlier in this execution (IOC_ROUTE_MODE == "legacy")
+    When
+     - The legacy route fails
+    Then
+     - The modern route is not called again and the error says the 403 happened earlier in this execution
+    """
+    import CrowdStrikeFalcon
+
+    CrowdStrikeFalcon.IOC_ROUTE_MODE = "legacy"
+    modern_mock = requests_mock.get(f"{SERVER_URL}/iocs/queries/indicators/processes/v1", json={"resources": []})
+    requests_mock.get(
+        f"{SERVER_URL}/indicators/queries/processes/v1", json=FORBIDDEN_RESPONSE, status_code=403, reason="Forbidden"
+    )
+
+    with pytest.raises(DemistoException, match="returned HTTP 403 earlier in this execution"):
+        _run_ioc_command("processes-ran-on", mocker)
+
+    assert not modern_mock.called
 
 
 def test_get_proccesses_ran_on_command_not_exists(requests_mock):
