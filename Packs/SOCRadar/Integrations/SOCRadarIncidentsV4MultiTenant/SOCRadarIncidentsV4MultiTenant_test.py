@@ -1176,3 +1176,27 @@ def test_search_incidents_retries_on_rate_limit(mock_client, mocker):
     kwargs = mock_http.call_args.kwargs
     assert kwargs["retries"] == 3
     assert 429 in kwargs["status_list_to_retry"]
+
+
+def test_fetch_approved_alarms_stops_at_page_limit(mocker):
+    """
+    Given: The API keeps returning full pages of already fetched alarms for every creation window.
+    When: fetch_approved_alarms pages through two creation windows.
+    Then: Paging stops at MAX_APPROVED_CHECK_PAGES per creation window and the check is reported as completed.
+    """
+    import SOCRadarIncidentsV4MultiTenant
+
+    mocker.patch.object(SOCRadarIncidentsV4MultiTenant, "MAX_APPROVED_CHECK_PAGES", 3)
+    page_alarms = [{"alarm_id": alarm_id} for alarm_id in range(SOCRadarIncidentsV4MultiTenant.MAX_INCIDENTS_PER_PAGE)]
+    client = mocker.Mock()
+    client.search_incidents.return_value = {"data": page_alarms, "total_pages": 1000}
+    now = datetime.now(UTC)
+    creation_windows = [("2024-01-15", "2024-01-15"), ("2024-01-14", "2024-01-14")]
+
+    incidents, completed = SOCRadarIncidentsV4MultiTenant.fetch_approved_alarms(
+        client, now - timedelta(hours=1), now, creation_windows, 10, {alarm["alarm_id"] for alarm in page_alarms}, {}, False
+    )
+
+    assert incidents == []
+    assert completed is True
+    assert client.search_incidents.call_count == 6

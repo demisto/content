@@ -14,6 +14,7 @@ SOCRADAR_SEVERITIES = ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
 MAX_INCIDENTS_TO_FETCH = 100000
 MAX_INCIDENTS_PER_PAGE = 100
 MAX_STORED_ALARM_IDS = 10000
+MAX_APPROVED_CHECK_PAGES = 100
 # Hourly safety check: re-queries alarms approved since the previous check so that
 # alarms which become available after the regular fetch window has moved on are not missed.
 APPROVED_CHECK_INTERVAL_MINUTES = 60
@@ -690,8 +691,7 @@ def fetch_approved_alarms(
         before all pages were processed, so the same window should be checked again.
     """
     incidents: list[dict[str, Any]] = []
-    page = 1
-    while True:
+    for page in range(1, MAX_APPROVED_CHECK_PAGES + 1):
         response = client.search_incidents(
             **search_filters,
             approved_at_start=format_utc(window_start),
@@ -710,7 +710,8 @@ def fetch_approved_alarms(
             seen_alarm_ids.add(alarm_id)
         if len(alarms) < MAX_INCIDENTS_PER_PAGE or page >= response.get("total_pages", 0):
             return incidents, True
-        page += 1
+    demisto.info(f"[SOCRadar] Hourly check stopped after {MAX_APPROVED_CHECK_PAGES} pages")
+    return incidents, True
 
 
 def run_hourly_approved_check(
@@ -751,6 +752,7 @@ def run_hourly_approved_check(
         )
     except Exception as e:
         demisto.error(f"[SOCRadar] Hourly check failed, it will be retried on the next run: {str(e)}")
+        demisto.debug(f"[SOCRadar] Traceback: {traceback.format_exc()}")
         return [], stored_checkpoint
 
     seen_alarm_ids.update(check_seen_alarm_ids)

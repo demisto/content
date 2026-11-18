@@ -14,6 +14,7 @@ SOCRADAR_SEVERITIES = ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
 MAX_INCIDENTS_TO_FETCH = 100000
 MAX_INCIDENTS_PER_PAGE = 100
 MAX_STORED_ALARM_IDS = 10000
+MAX_APPROVED_CHECK_PAGES = 100
 # Safety checks that pick up alarms which become available after the regular fetch window has moved on.
 # The multi-tenant API applies approval filters inside a creation-date window of at most two days,
 # so two tiers are used: a frequent check over recent alarms and a less frequent check over older ones.
@@ -663,8 +664,7 @@ def fetch_approved_alarms(
     """
     incidents: list[dict[str, Any]] = []
     for creation_start, creation_end in creation_windows:
-        page = 1
-        while True:
+        for page in range(1, MAX_APPROVED_CHECK_PAGES + 1):
             response = client.search_incidents(
                 **search_filters,
                 start_date=creation_start,
@@ -685,7 +685,8 @@ def fetch_approved_alarms(
                 seen_alarm_ids.add(alarm_id)
             if len(alarms) < MAX_INCIDENTS_PER_PAGE or page >= response.get("total_pages", 0):
                 break
-            page += 1
+        else:
+            demisto.info(f"[SOCRadar-MT] Check stopped after {MAX_APPROVED_CHECK_PAGES} pages for {creation_start}")
     return incidents, True
 
 
@@ -736,6 +737,7 @@ def run_approved_check_tier(
         )
     except Exception as e:
         demisto.error(f"[SOCRadar-MT] {tier['name']} check failed, it will be retried on the next run: {str(e)}")
+        demisto.debug(f"[SOCRadar-MT] Traceback: {traceback.format_exc()}")
         return [], stored_checkpoint
 
     seen_alarm_ids.update(check_seen_alarm_ids)
