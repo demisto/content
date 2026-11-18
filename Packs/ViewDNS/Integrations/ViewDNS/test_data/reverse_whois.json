@@ -1,0 +1,33 @@
+{
+    "query": {
+        "tool": "reversewhois_PRO",
+        "query": "domain@example.com"
+    },
+    "response": {
+        "result_count": "4",
+        "total_pages": "1",
+        "current_page": "1",
+        "matches": [
+            {
+                "domain": "atheismfacts.org",
+                "created_date": "2012-08-03",
+                "registrar": "NAME.COM, LLC"
+            },
+            {
+                "domain": "chibrary.com",
+                "created_date": "2011-11-13",
+                "registrar": "NAME.COM, INC."
+            },
+            {
+                "domain": "push.cx",
+                "created_date": "2003-04-24",
+                "registrar": "NAME.COM LLC"
+            },
+            {
+                "domain": "thermite.biz",
+                "created_date": "2016-02-29",
+                "registrar": "GODADDY.COM, INC."
+            }
+        ]
+    }
+}

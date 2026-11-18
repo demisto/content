@@ -1,0 +1,35 @@
+{
+    "query": {
+        "tool": "portscan_PRO",
+        "host": "example.com"
+    },
+    "response": {
+        "port": [
+            {
+                "number": "21",
+                "service": "FTP",
+                "status": "closed"
+            },
+            {
+                "number": "22",
+                "service": "SSH",
+                "status": "closed"
+            },
+            {
+                "number": "80",
+                "service": "HTTP",
+                "status": "open"
+            },
+            {
+                "number": "443",
+                "service": "HTTPS",
+                "status": "open"
+            },
+            {
+                "number": "3389",
+                "service": "Remote Desktop",
+                "status": "closed"
+            }
+        ]
+    }
+}

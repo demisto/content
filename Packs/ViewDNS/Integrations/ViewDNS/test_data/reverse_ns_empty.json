@@ -1,0 +1,11 @@
+{
+    "query": {
+        "tool": "reversens_PRO",
+        "nameserver": "ns1.unused.example"
+    },
+    "response": {
+        "domain_count": "0",
+        "total_pages": "0",
+        "current_page": "1"
+    }
+}

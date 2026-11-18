@@ -1,0 +1,9 @@
+{
+    "query": {
+        "tool": "iphistory_PRO",
+        "domain": "unknown-domain.example"
+    },
+    "response": {
+        "error": "Unfortunately we do not have any records for this hostname. Please select a different hostname and try again. Note: Our system only tracks top level domains and not subdomains."
+    }
+}

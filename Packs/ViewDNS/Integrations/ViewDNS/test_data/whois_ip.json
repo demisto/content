@@ -1,0 +1,60 @@
+{
+    "query": {
+        "tool": "whois_PRO_v2",
+        "ip": "198.51.100.1"
+    },
+    "response": {
+        "ip": "198.51.100.1",
+        "registrarName": "ARIN",
+        "owner": "Example Networks LLC (EXNET)",
+        "netname": "EXNET",
+        "netrange": "198.51.100.0 - 198.51.100.255",
+        "cidr": "198.51.100.0/24",
+        "as": "",
+        "country": "US",
+        "registryData": {
+            "createdDate": "2023-12-28",
+            "standardCreatedDate": "2023-12-28T00:00:00Z",
+            "updatedDate": "2023-12-28",
+            "standardUpdatedDate": "2023-12-28T00:00:00Z",
+            "abuseContact": {
+                "name": "Abuse",
+                "telephone": "+1-555-555-0100",
+                "email": "abuse@example.net",
+                "organization": null,
+                "street1": null,
+                "city": null,
+                "state": null,
+                "postalCode": null,
+                "country": null,
+                "fax": null
+            },
+            "administrativeContact": {
+                "name": "",
+                "organization": "",
+                "street1": "456 Example Avenue",
+                "city": "Anytown",
+                "state": "CA",
+                "postalCode": "00000",
+                "country": "",
+                "telephone": "",
+                "fax": "US",
+                "email": ""
+            },
+            "technicalContact": {
+                "name": "Example Networks LLC",
+                "telephone": "+1-555-555-0100",
+                "email": "noc@example.net",
+                "organization": null,
+                "street1": null,
+                "city": null,
+                "state": null,
+                "postalCode": null,
+                "country": null,
+                "fax": null
+            },
+            "status": "",
+            "rawText": "NetRange:       198.51.100.0 - 198.51.100.255\nCIDR:           198.51.100.0/24\nNetName:        EXNET\nOrganization:   Example Networks LLC (EXNET)\nRegDate:        2023-12-28\nUpdated:        2023-12-28\n"
+        }
+    }
+}

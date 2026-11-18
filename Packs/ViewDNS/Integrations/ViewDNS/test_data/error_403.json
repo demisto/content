@@ -1,0 +1,7 @@
+{
+    "success": false,
+    "error": {
+        "code": 403,
+        "message": "Access to the WHOIS tool via the ViewDNS.info API is restricted to paid API keys only"
+    }
+}

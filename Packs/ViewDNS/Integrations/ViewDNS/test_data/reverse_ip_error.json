@@ -1,0 +1,9 @@
+{
+    "query": {
+        "tool": "reverseip_PRO",
+        "host": "nonexistent.example"
+    },
+    "response": {
+        "error": "Sorry we could not find the IP address for the domain you specified.  Please try entering the IP address directly."
+    }
+}
