@@ -1925,7 +1925,7 @@ script:
     name: cs-falcon-delete-custom-ioc
   - arguments:
     - auto: PREDEFINED
-      description: The IOC type.
+      description: The IOC type. Applies to all the provided values.
       name: type
       predefined:
       - sha256
@@ -1935,9 +1935,10 @@ script:
       - ipv4
       - ipv6
       required: true
-    - description: The string representation of the indicator.
+    - description: A comma-separated list of string representations of indicators. All values must be of the type given in the type argument.
       name: value
       required: true
+      isArray: true
     description: The number of hosts that observed the provided IOC.
     name: cs-falcon-device-count-ioc
     outputs:
@@ -1953,6 +1954,9 @@ script:
     - contextPath: CrowdStrike.IOC.DeviceCount
       description: The number of devices the IOC ran on.
       type: number
+    - contextPath: CrowdStrike.IOC.DeviceCountTruncated
+      description: Whether the device count is a lower bound because counting stopped after the maximum number of result pages was reached. When true, the actual number of devices may be higher.
+      type: boolean
   - arguments:
     - auto: PREDEFINED
       description: The IOC type.
@@ -2058,7 +2062,7 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      description: The type of indicator.
+      description: The type of indicator. Applies to all the provided values.
       name: type
       predefined:
       - domain
@@ -2068,15 +2072,19 @@ script:
       - sha1
       - sha256
       required: true
-    - description: The string representation of the indicator.
+    - description: A comma-separated list of string representations of indicators. All values must be of the type given in the type argument.
       name: value
       required: true
+      isArray: true
     description: Returns a list of device IDs an indicator ran on.
     name: cs-falcon-device-ran-on
     outputs:
     - contextPath: CrowdStrike.DeviceID
       description: Device IDs an indicator ran on.
       type: string
+    - contextPath: CrowdStrike.DeviceIOC.Truncated
+      description: Whether the list of device IDs was truncated because the maximum number of result pages was reached. When true, the indicator may have run on more devices than returned.
+      type: boolean
   - arguments:
     - description: The query used to filter the results.
       name: fetch_query
