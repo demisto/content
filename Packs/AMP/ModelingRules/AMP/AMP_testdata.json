@@ -1,0 +1,79 @@
+{
+  "data": [
+    {
+      "dataset": "cisco_secure_endpoint_raw",
+      "event_data": {
+        "computer": "{\"connector_guid\":\"a1bd2999-f6a1-478d-9h79-24be542faa55\",\"hostname\":\"Demo_AMP\",\"external_ip\":\"8.8.8.8\",\"active\":true,\"network_addresses\":[{\"ip\":\"10.0.0.2\",\"mac\":\"23:44:bb:a6:75:e7\"}],\"links\":{\"computer\":\"https://api.eu.amp.cisco.com/v1/computers/a1bd2999-f6a1-478d-9h79-24be542faa55\",\"trajectory\":\"https://api.eu.amp.cisco.com/v1/computers/a1bd2999-f6a1-478d-9h79-24be542faa55/trajectory\",\"group\":\"https://api.eu.amp.cisco.com/v1/groups/50e7667c-491c-49ad-8774-ad258f2cbf44\"}}",
+        "connector_guid": "55a84f57-e661-4d7a-bfbb-7a6405a460d4",
+        "detection": "Win.Trojan.Upatre.tht.VRT",
+        "detection_id": "789101112",
+        "event_type": "Threat Detected",
+        "file": "{\"disposition\":\"Malicious\",\"file_name\":\"Fax.exe\",\"file_path\":\"C:\\\\Users\\\\Administrator\\\\Documents\\\\Fax\\\\Fax.exe\",\"identity\":{\"sha256\":\"fa1789236d05d88dd10365660defd6ddc8a09fcddb3691812379438874390ddc\",\"sha1\":\"f9b02ad8d25157eebdb284631ff646316dc606d5\",\"md5\":\"b2e15a06b0cca8a926c94f8a8eae3d88\"},\"parent\":{\"process_id\":3164,\"disposition\":\"Clean\",\"file_name\":\"explorer.exe\",\"identity\":{\"sha256\":\"9e1ec8b43a88e68767fd8fed2f38e7984357b3f4186d0f907e62f8b6c9ff56ad\",\"sha1\":\"cea0890d4b99bae3f635a16dae71f69d137027b9\",\"md5\":\"8b88ebbb05a0e56b7dcc708498c02b3e\"}}}",
+        "id": 123456,
+        "severity": "Medium",
+        "tactics": "[\"TA0002\",\"TA0011\",\"TA0042\"]",
+        "techniques": "[\"T1105\",\"T1204\",\"T1204.003\",\"T1569\"]"
+      },
+      "expected_values": {
+        "_time": null,
+        "xdm.alert.description": null,
+        "xdm.alert.mitre_tactics": [
+          "TA0002",
+          "TA0011",
+          "TA0042"
+        ],
+        "xdm.alert.mitre_techniques": [
+          "T1105",
+          "T1204",
+          "T1204.003",
+          "T1569"
+        ],
+        "xdm.alert.name": "Win.Trojan.Upatre.tht.VRT",
+        "xdm.alert.original_threat_id": "789101112",
+        "xdm.alert.original_threat_name": "Win.Trojan.Upatre.tht.VRT",
+        "xdm.alert.risks": null,
+        "xdm.alert.severity": "Medium",
+        "xdm.event.description": "Fax.exe - Malicious",
+        "xdm.event.id": "123456",
+        "xdm.event.outcome": null,
+        "xdm.event.outcome_reason": null,
+        "xdm.event.type": "Threat Detected",
+        "xdm.intermediate.ipv4": "8.8.8.8",
+        "xdm.intermediate.ipv6": null,
+        "xdm.network.http.url": null,
+        "xdm.network.ip_protocol": null,
+        "xdm.source.agent.identifier": "55a84f57-e661-4d7a-bfbb-7a6405a460d4",
+        "xdm.source.host.hostname": "Demo_AMP",
+        "xdm.source.host.ipv4_addresses": [
+          "10.0.0.2"
+        ],
+        "xdm.source.host.ipv6_addresses": null,
+        "xdm.source.host.mac_addresses": [
+          "23:44:bb:a6:75:e7"
+        ],
+        "xdm.source.ipv4": "10.0.0.2",
+        "xdm.source.ipv6": null,
+        "xdm.source.process.command_line": null,
+        "xdm.source.process.executable.filename": "explorer.exe",
+        "xdm.source.process.executable.md5": "8b88ebbb05a0e56b7dcc708498c02b3e",
+        "xdm.source.process.executable.sha256": "9e1ec8b43a88e68767fd8fed2f38e7984357b3f4186d0f907e62f8b6c9ff56ad",
+        "xdm.source.process.pid": 3164,
+        "xdm.source.user.username": null,
+        "xdm.target.file.filename": "Fax.exe",
+        "xdm.target.file.md5": "b2e15a06b0cca8a926c94f8a8eae3d88",
+        "xdm.target.file.path": "C:\\Users\\Administrator\\Documents\\Fax\\Fax.exe",
+        "xdm.target.file.sha256": "fa1789236d05d88dd10365660defd6ddc8a09fcddb3691812379438874390ddc",
+        "xdm.target.ipv4": null,
+        "xdm.target.ipv6": null,
+        "xdm.target.port": null,
+        "xdm.target.url": null
+      },
+      "product": "secure_endpoint",
+      "tenant_timezone": "UTC",
+      "test_data_event_id": "d99ea4cb-222b-4700-bf4a-5473ff15bd3b",
+      "vendor": "cisco"
+    }
+  ],
+  "ignored_validations": []
+}
+
