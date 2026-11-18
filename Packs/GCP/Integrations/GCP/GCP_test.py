@@ -16181,13 +16181,34 @@ def test_cloud_run_permission_error_reports_declared_permission(mocker, command_
     assert error_entries[0]["name"] == permission
 
 
-def test_partial_permissions_allowed_commands_have_requirements():
+def test_cspm_remediation_allowed_permissions_are_used_by_commands():
     """
-    Given: The set of commands allowed with the partial (CSPM remediation) permission set.
+    Given: The set of permissions granted by the CSPM Remediation permission set.
     When: Comparing it to the commands permission requirements.
-    Then: Every allowed command (excluding quick actions, which reuse a base command) is listed in COMMAND_REQUIREMENTS.
+    Then: Every allowed permission is required by at least one command in COMMAND_REQUIREMENTS.
     """
-    from GCP import COMMAND_REQUIREMENTS, PARTIAL_PERMISSIONS_ALLOWED_COMMANDS
+    from GCP import COMMAND_REQUIREMENTS, CSPM_REMEDIATION_ALLOWED_PERMISSIONS
 
-    base_commands = {command for command in PARTIAL_PERMISSIONS_ALLOWED_COMMANDS if not command.endswith("-quick-action")}
-    assert base_commands <= COMMAND_REQUIREMENTS.keys()
+    required_permissions = {permission for _, permissions in COMMAND_REQUIREMENTS.values() for permission in permissions}
+    assert required_permissions >= CSPM_REMEDIATION_ALLOWED_PERMISSIONS
+
+
+@pytest.mark.parametrize(
+    "command, is_allowed",
+    [
+        ("gcp-storage-bucket-metadata-update", True),
+        ("gcp-storage-bucket-policy-delete-remove-allusers-access-quick-action", True),
+        ("gcp-compute-firewall-patch", False),
+        ("gcp-compute-firewall-delete", False),
+        ("gcp-compute-firewall-insert", False),
+    ],
+)
+def test_cspm_remediation_command_permissions_validation(command, is_allowed):
+    """
+    Given: A command and the CSPM Remediation permission set.
+    When: Validating the command's required permissions against the allowed permissions.
+    Then: Only commands whose required permissions are all allowed pass the validation.
+    """
+    from GCP import COMMAND_REQUIREMENTS, CSPM_REMEDIATION_ALLOWED_PERMISSIONS
+
+    assert (set(COMMAND_REQUIREMENTS[command][1]) <= CSPM_REMEDIATION_ALLOWED_PERMISSIONS) == is_allowed

@@ -15432,13 +15432,36 @@ def test_list_subscriptions_request_error(mocker, client):
     assert call_kwargs["subscription_id"] is None
 
 
-def test_partial_permissions_allowed_commands_are_declared_in_yml():
+def test_cspm_remediation_allowed_permissions_are_mapped_to_commands():
     """
-    Given: The set of commands allowed with the partial (CSPM remediation) permission set.
-    When: Comparing it to the commands declared in the integration YML.
-    Then: Every allowed command is declared in the YML.
+    Given: The permissions granted by, and the commands always allowed with, the CSPM Remediation permission set.
+    When: Comparing them to PERMISSIONS_TO_COMMANDS and the commands declared in the integration YML.
+    Then: Every allowed permission is mapped to commands, and every always-allowed command is declared in the YML.
     """
-    from Azure import PARTIAL_PERMISSIONS_ALLOWED_COMMANDS
+    from Azure import CSPM_REMEDIATION_ALLOWED_PERMISSIONS, CSPM_REMEDIATION_ALWAYS_ALLOWED_COMMANDS, PERMISSIONS_TO_COMMANDS
 
     yml_commands = {command["name"] for command in yaml.safe_load(YML_PATH.read_text())["script"]["commands"]}
-    assert yml_commands >= PARTIAL_PERMISSIONS_ALLOWED_COMMANDS
+    assert PERMISSIONS_TO_COMMANDS.keys() >= CSPM_REMEDIATION_ALLOWED_PERMISSIONS
+    assert yml_commands >= CSPM_REMEDIATION_ALWAYS_ALLOWED_COMMANDS
+
+
+@pytest.mark.parametrize(
+    "command, is_allowed",
+    [
+        ("azure-vn-security-rule-delete", True),
+        ("azure-nsg-security-rule-delete-quick-action", True),
+        ("azure-storage-account-update", False),
+        ("azure-storage-container-delete", False),
+        ("azure-disk-update", False),
+    ],
+)
+def test_cspm_remediation_command_permissions_validation(command, is_allowed):
+    """
+    Given: A command and the CSPM Remediation permission set.
+    When: Validating the command's required permissions against the allowed permissions.
+    Then: Only commands whose required permissions are all allowed pass the validation.
+    """
+    from Azure import CSPM_REMEDIATION_ALLOWED_PERMISSIONS, PERMISSIONS_TO_COMMANDS
+
+    command_permissions = {permission for permission, commands in PERMISSIONS_TO_COMMANDS.items() if command in commands}
+    assert (bool(command_permissions) and command_permissions <= CSPM_REMEDIATION_ALLOWED_PERMISSIONS) == is_allowed

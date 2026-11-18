@@ -265,18 +265,18 @@ def test_health_check_error_to_dict_capability():
         connector_id="test-connector-id",
         message="Missing permission",
         error_type=ErrorType.PERMISSION_ERROR,
-        capability=Capability.CSPM,
+        capability=Capability.CSPM_REMEDIATION,
     ).to_dict()
 
-    assert cspm_error_dict["capability"] == Capability.CSPM
+    assert cspm_error_dict["capability"] == Capability.CSPM_REMEDIATION
 
 
-@pytest.mark.parametrize("is_all_commands_allowed, expected_capability", [(True, "AUTOMATION"), (False, "CSPM")])
+@pytest.mark.parametrize("is_all_commands_allowed, expected_capability", [(True, "AUTOMATION"), (False, "CSPM_remediation")])
 def test_get_health_check_capability(is_all_commands_allowed, expected_capability):
     """
-    Given: An account granted either full permissions or only the partial (CSPM remediation) permission set.
+    Given: An account granted either full permissions or only the CSPM Remediation permission set.
     When: get_health_check_capability is called.
-    Then: It returns AUTOMATION for full permissions and CSPM for the partial permission set.
+    Then: It returns AUTOMATION for full permissions and CSPM for the CSPM Remediation permission set.
     """
     from COOCApiModule import get_health_check_capability
 
@@ -285,13 +285,13 @@ def test_get_health_check_capability(is_all_commands_allowed, expected_capabilit
 
 def test_health_check_error_stamps_capability():
     """
-    Given: A HealthCheck created with the CSPM capability.
+    Given: A HealthCheck created with the CSPM_remediation capability.
     When: Single errors and lists of errors are added.
-    Then: Every added error is reported with the CSPM capability.
+    Then: Every added error is reported with the CSPM_remediation capability.
     """
     from COOCApiModule import Capability, HealthCheck
 
-    health_check = HealthCheck(connector_id="test-connector-id", capability=Capability.CSPM)
+    health_check = HealthCheck(connector_id="test-connector-id", capability=Capability.CSPM_REMEDIATION)
     health_check.error(
         HealthCheckError(
             account_id="account-1",
@@ -311,7 +311,10 @@ def test_health_check_error_stamps_capability():
         ]
     )
 
-    assert [error.to_dict()["capability"] for error in health_check.errors] == [Capability.CSPM, Capability.CSPM]
+    assert [error.to_dict()["capability"] for error in health_check.errors] == [
+        Capability.CSPM_REMEDIATION,
+        Capability.CSPM_REMEDIATION,
+    ]
 
 
 def test_health_check_summarize_no_errors():
@@ -460,10 +463,10 @@ def test_run_health_check_credentials_failure(mocker):
 
 def test_run_health_check_reports_capability(mocker):
     """
-    Given: A connector whose account is granted only the partial (CSPM remediation) permission set,
+    Given: A connector whose account is granted only the CSPM Remediation permission set,
            and a health check function that returns an error.
-    When: run_health_check_for_accounts is called with the CSPM capability.
-    Then: The returned error entry reports the CSPM capability.
+    When: run_health_check_for_accounts is called with the CSPM_remediation capability.
+    Then: The returned error entry reports the CSPM_remediation capability.
     """
     from COOCApiModule import Capability, run_health_check_for_accounts
 
@@ -480,11 +483,14 @@ def test_run_health_check_reports_capability(mocker):
     )
 
     result = run_health_check_for_accounts(
-        connector_id="test-connector-id", cloud_type="AWS", health_check_func=health_check_func, capability=Capability.CSPM
+        connector_id="test-connector-id",
+        cloud_type="AWS",
+        health_check_func=health_check_func,
+        capability=Capability.CSPM_REMEDIATION,
     )
 
     assert isinstance(result, CommandResults)
-    assert result.raw_response[0]["capability"] == Capability.CSPM
+    assert result.raw_response[0]["capability"] == Capability.CSPM_REMEDIATION
     assert result.raw_response[0]["account_id"] == "account-1"
 
 
@@ -1317,38 +1323,62 @@ def test_get_timeout_negative_raises(bad_timeout):
         get_timeout(bad_timeout)
 
 
-@pytest.mark.parametrize("command", ["test-module", "aws-s3-bucket-versioning-put"])
-def test_validate_command_is_allowed_partial_user_allowed_command(command):
+ALLOWED_PERMISSIONS = frozenset({"iam:GetAccountPasswordPolicy", "iam:UpdateAccountPasswordPolicy", "s3:PutBucketVersioning"})
+
+
+@pytest.mark.parametrize(
+    "command, command_permissions",
+    [
+        ("test-module", []),
+        ("aws-s3-bucket-versioning-put", ["s3:PutBucketVersioning"]),
+        ("aws-iam-account-password-policy-update", ["iam:GetAccountPasswordPolicy", "iam:UpdateAccountPasswordPolicy"]),
+        ("azure-auth-start", []),
+    ],
+)
+def test_validate_command_is_allowed_cspm_remediation_user_allowed_command(command, command_permissions):
     """
-    Given: A user with the partial permission set, and a command that is test-module or in the allowed commands set.
+    Given: A user with the CSPM Remediation permission set, and a command that is test-module, always allowed,
+           or whose required permissions are all in the allowed permissions set.
     When: validate_command_is_allowed is called with is_all_commands_allowed=False.
     Then: No exception is raised.
     """
     from COOCApiModule import validate_command_is_allowed
 
-    validate_command_is_allowed(command, frozenset({"aws-s3-bucket-versioning-put"}), CloudTypes.AWS.value, False)
+    validate_command_is_allowed(
+        command, command_permissions, ALLOWED_PERMISSIONS, CloudTypes.AWS.value, False, frozenset({"azure-auth-start"})
+    )
 
 
-def test_validate_command_is_allowed_partial_user_disallowed_command():
+@pytest.mark.parametrize(
+    "command, command_permissions",
+    [
+        ("aws-s3-bucket-delete", ["s3:DeleteBucket"]),
+        ("aws-iam-account-password-policy-update", ["iam:GetAccountPasswordPolicy", "iam:DeleteAccountPasswordPolicy"]),
+        ("aws-unknown-command", []),
+    ],
+)
+def test_validate_command_is_allowed_cspm_remediation_user_disallowed_command(command, command_permissions):
     """
-    Given: A user with the partial permission set, and a command that is not in the allowed commands set.
+    Given: A user with the CSPM Remediation permission set, and a command with a required permission that is not
+           in the allowed permissions set, or with no known required permissions.
     When: validate_command_is_allowed is called with is_all_commands_allowed=False.
     Then: A DemistoException with an informative message is raised.
     """
     from COOCApiModule import validate_command_is_allowed
 
-    with pytest.raises(DemistoException, match="The command 'aws-s3-bucket-delete' is not allowed with the partial"):
-        validate_command_is_allowed(
-            "aws-s3-bucket-delete", frozenset({"aws-s3-bucket-versioning-put"}), CloudTypes.AWS.value, False
-        )
+    with pytest.raises(
+        DemistoException,
+        match=f"The '{command}' command cannot be used while the CSPM Remediation AWS checkbox is selected.",
+    ):
+        validate_command_is_allowed(command, command_permissions, ALLOWED_PERMISSIONS, CloudTypes.AWS.value, False)
 
 
 def test_validate_command_is_allowed_full_user_any_command():
     """
-    Given: A user with full permissions, and a command that is not in the allowed commands set.
+    Given: A user with full permissions, and a command whose permissions are not in the allowed permissions set.
     When: validate_command_is_allowed is called with is_all_commands_allowed=True.
     Then: No exception is raised.
     """
     from COOCApiModule import validate_command_is_allowed
 
-    validate_command_is_allowed("aws-s3-bucket-delete", frozenset(), CloudTypes.AWS.value, True)
+    validate_command_is_allowed("aws-s3-bucket-delete", ["s3:DeleteBucket"], frozenset(), CloudTypes.AWS.value, True)

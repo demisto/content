@@ -11538,89 +11538,363 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-logging-configuration-update": NetworkFirewall.update_logging_configuration_command,
 }
 
-# Commands allowed for users granted only the partial (CSPM remediation) permission set.
-# Each group corresponds to a permission listed in the CSPM remediation permissions policy.
-PARTIAL_PERMISSIONS_ALLOWED_COMMANDS: frozenset[str] = frozenset(
+# Command requirements mapping: (AWS_Service_Enum, [Required_Permissions])
+COMMAND_REQUIREMENTS: dict[str, tuple[AWSServices, list[str]]] = {
+    # Billing
+    "aws-billing-cost-usage-list": (AWSServices.CostExplorer, ["ce:GetCostAndUsage"]),
+    "aws-billing-forecast-list": (AWSServices.CostExplorer, ["ce:GetCostForecast"]),
+    "aws-billing-budgets-list": (AWSServices.BUDGETS, ["budgets:DescribeBudgets"]),
+    "aws-billing-budget-notification-list": (AWSServices.BUDGETS, ["budgets:DescribeNotificationsForBudget"]),
+    # S3
+    "aws-s3-public-access-block-update": (AWSServices.S3, ["s3:PutBucketPublicAccessBlock"]),
+    "aws-s3-public-access-block-quick-action": (AWSServices.S3, ["s3:PutBucketPublicAccessBlock"]),
+    "aws-s3-public-access-block-get": (AWSServices.S3, ["s3:GetBucketPublicAccessBlock"]),
+    "aws-s3-bucket-delete": (AWSServices.S3, ["s3:DeleteBucket"]),
+    "aws-s3-bucket-objects-list": (AWSServices.S3, ["s3:ListBucket"]),
+    "aws-s3-bucket-objects-list-v2": (AWSServices.S3, ["s3:ListBucket"]),
+    "aws-s3-bucket-versioning-put": (AWSServices.S3, ["s3:PutBucketVersioning"]),
+    "aws-s3-bucket-versioning-enable-quick-action": (AWSServices.S3, ["s3:PutBucketVersioning"]),
+    "aws-s3-bucket-logging-put": (AWSServices.S3, ["s3:PutBucketLogging"]),
+    "aws-s3-bucket-enable-bucket-access-logging-quick-action": (AWSServices.S3, ["s3:PutBucketLogging"]),
+    "aws-s3-bucket-acl-put": (AWSServices.S3, ["s3:PutBucketAcl"]),
+    "aws-s3-bucket-acl-set-to-private-quick-action": (AWSServices.S3, ["s3:PutBucketAcl"]),
+    "aws-s3-bucket-acl-get": (AWSServices.S3, ["s3:GetBucketAcl"]),
+    "aws-s3-bucket-policy-put": (AWSServices.S3, ["s3:PutBucketPolicy"]),
+    "aws-s3-bucket-policy-put-quick-action": (AWSServices.S3, ["s3:PutBucketPolicy"]),
+    "aws-s3-bucket-policy-get": (AWSServices.S3, ["s3:GetBucketPolicy"]),
+    "aws-s3-bucket-policy-delete": (AWSServices.S3, ["s3:DeleteBucketPolicy"]),
+    "aws-s3-bucket-website-delete": (AWSServices.S3, ["s3:DeleteBucketWebsite"]),
+    "aws-s3-bucket-website-disable-hosting-quick-action": (AWSServices.S3, ["s3:DeleteBucketWebsite"]),
+    "aws-s3-bucket-website-get": (AWSServices.S3, ["s3:GetBucketWebsite"]),
+    "aws-s3-bucket-ownership-controls-put": (AWSServices.S3, ["s3:PutBucketOwnershipControls"]),
+    "aws-s3-bucket-ownership-controls-put-quick-action": (AWSServices.S3, ["s3:PutBucketOwnershipControls"]),
+    "aws-s3-bucket-encryption-get": (AWSServices.S3, ["s3:GetEncryptionConfiguration"]),
+    "aws-s3-file-upload": (AWSServices.S3, ["s3:PutObject"]),
+    "aws-s3-file-download": (AWSServices.S3, ["s3:GetObject"]),
+    "aws-s3-bucket-create": (AWSServices.S3, ["s3:CreateBucket"]),
+    "aws-s3-buckets-list": (AWSServices.S3, ["s3:ListAllMyBuckets"]),
+    # IAM
+    "aws-iam-account-password-policy-get": (AWSServices.IAM, ["iam:GetAccountPasswordPolicy"]),
+    "aws-iam-account-password-policy-update": (
+        AWSServices.IAM,
+        [
+            "iam:GetAccountPasswordPolicy",
+            "iam:UpdateAccountPasswordPolicy",
+        ],
+    ),
+    "aws-iam-role-policy-put": (AWSServices.IAM, ["iam:PutRolePolicy"]),
+    "aws-iam-login-profile-delete": (AWSServices.IAM, ["iam:DeleteLoginProfile"]),
+    "aws-iam-user-policy-put": (AWSServices.IAM, ["iam:PutUserPolicy"]),
+    "aws-iam-role-from-instance-profile-remove": (AWSServices.IAM, ["iam:RemoveRoleFromInstanceProfile"]),
+    "aws-iam-access-key-update": (AWSServices.IAM, ["iam:UpdateAccessKey"]),
+    # EC2
+    "aws-ec2-instance-metadata-options-modify": (AWSServices.EC2, ["ec2:ModifyInstanceMetadataOptions"]),
+    "aws-ec2-enable-imdsv2-quick-action": (AWSServices.EC2, ["ec2:ModifyInstanceMetadataOptions"]),
+    "aws-ec2-instance-attribute-modify": (AWSServices.EC2, ["ec2:ModifyInstanceAttribute"]),
+    "aws-ec2-instance-attribute-modify-quick-action": (AWSServices.EC2, ["ec2:ModifyInstanceAttribute"]),
+    "aws-ec2-snapshot-attribute-modify": (AWSServices.EC2, ["ec2:ModifySnapshotAttribute"]),
+    "aws-ec2-snapshot-permission-modify": (AWSServices.EC2, ["ec2:ModifySnapshotAttribute"]),
+    "aws-ec2-set-snapshot-to-private-quick-action": (AWSServices.EC2, ["ec2:ModifySnapshotAttribute"]),
+    "aws-ec2-image-attribute-modify": (AWSServices.EC2, ["ec2:ModifyImageAttribute"]),
+    "aws-ec2-image-attribute-set-ami-to-private-quick-action": (AWSServices.EC2, ["ec2:ModifyImageAttribute"]),
+    "aws-ec2-security-group-ingress-revoke": (AWSServices.EC2, ["ec2:RevokeSecurityGroupIngress"]),
+    "aws-ec2-security-group-ingress-authorize": (AWSServices.EC2, ["ec2:AuthorizeSecurityGroupIngress"]),
+    "aws-ec2-security-group-egress-revoke": (AWSServices.EC2, ["ec2:RevokeSecurityGroupEgress"]),
+    "aws-ec2-security-group-egress-authorize": (AWSServices.EC2, ["ec2:AuthorizeSecurityGroupEgress"]),
+    "aws-ec2-security-group-create": (AWSServices.EC2, ["ec2:CreateSecurityGroup"]),
+    "aws-ec2-security-group-delete": (AWSServices.EC2, ["ec2:DeleteSecurityGroup"]),
+    "aws-ec2-security-groups-describe": (AWSServices.EC2, ["ec2:DescribeSecurityGroups"]),
+    "aws-ec2-snapshot-create": (AWSServices.EC2, ["ec2:CreateSnapshot"]),
+    "aws-ec2-snapshots-describe": (AWSServices.EC2, ["ec2:DescribeSnapshots"]),
+    "aws-ec2-snapshot-delete": (AWSServices.EC2, ["ec2:DeleteSnapshot"]),
+    "aws-ec2-snapshot-copy": (AWSServices.EC2, ["ec2:CopySnapshot"]),
+    "aws-ec2-snapshot-completed-waiter": (AWSServices.EC2, ["ec2:DescribeSnapshots"]),
+    "aws-ec2-subnet-attribute-modify": (AWSServices.EC2, ["ec2:ModifySubnetAttribute"]),
+    "aws-ec2-subnets-describe": (AWSServices.EC2, ["ec2:DescribeSubnets"]),
+    "aws-ec2-subnet-delete": (AWSServices.EC2, ["ec2:DeleteSubnet"]),
+    "aws-ec2-vpcs-describe": (AWSServices.EC2, ["ec2:DescribeVpcs"]),
+    "aws-ec2-vpc-delete": (AWSServices.EC2, ["ec2:DeleteVpc"]),
+    "aws-ec2-vpc-endpoint-create": (AWSServices.EC2, ["ec2:CreateVpcEndpoint"]),
+    "aws-ec2-ipam-resource-discoveries-describe": (AWSServices.EC2, ["ec2:DescribeIpamResourceDiscoveries"]),
+    "aws-ec2-ipam-resource-discovery-associations-describe": (
+        AWSServices.EC2,
+        ["ec2:DescribeIpamResourceDiscoveryAssociations"],
+    ),
+    "aws-ec2-ipam-discovered-public-addresses-get": (AWSServices.EC2, ["ec2:GetIpamDiscoveredPublicAddresses"]),
+    "aws-ec2-latest-ami-get": (AWSServices.EC2, ["ec2:DescribeImages"]),
+    "aws-ec2-images-describe": (AWSServices.EC2, ["ec2:DescribeImages"]),
+    "aws-ec2-image-create": (AWSServices.EC2, ["ec2:CreateImage"]),
+    "aws-ec2-image-deregister": (AWSServices.EC2, ["ec2:DeregisterImage"]),
+    "aws-ec2-image-copy": (AWSServices.EC2, ["ec2:CopyImage"]),
+    "aws-ec2-image-available-waiter": (AWSServices.EC2, ["ec2:DescribeImages"]),
+    "aws-ec2-network-acl-create": (AWSServices.EC2, ["ec2:CreateNetworkAcl"]),
+    "aws-ec2-network-acl-entry-create": (AWSServices.EC2, ["ec2:CreateNetworkAclEntry"]),
+    "aws-ec2-instances-describe": (AWSServices.EC2, ["ec2:DescribeInstances"]),
+    "aws-ec2-instances-start": (AWSServices.EC2, ["ec2:StartInstances"]),
+    "aws-ec2-instances-stop": (AWSServices.EC2, ["ec2:StopInstances"]),
+    "aws-ec2-instances-terminate": (AWSServices.EC2, ["ec2:TerminateInstances"]),
+    "aws-ec2-instances-run": (
+        AWSServices.EC2,
+        [
+            "ec2:RunInstances",
+            "iam:PassRole",
+        ],
+    ),
+    "aws-ec2-instances-monitor": (AWSServices.EC2, ["ec2:MonitorInstances"]),
+    "aws-ec2-instances-unmonitor": (AWSServices.EC2, ["ec2:UnmonitorInstances"]),
+    "aws-ec2-instances-reboot": (AWSServices.EC2, ["ec2:RebootInstances"]),
+    "aws-ec2-instance-running-waiter": (AWSServices.EC2, ["ec2:DescribeInstances"]),
+    "aws-ec2-instance-status-ok-waiter": (AWSServices.EC2, ["ec2:DescribeInstanceStatus"]),
+    "aws-ec2-instance-stopped-waiter": (AWSServices.EC2, ["ec2:DescribeInstances"]),
+    "aws-ec2-instance-terminated-waiter": (AWSServices.EC2, ["ec2:DescribeInstances"]),
+    "aws-ec2-iam-instance-profile-associations-describe": (AWSServices.EC2, ["ec2:DescribeIamInstanceProfileAssociations"]),
+    "aws-ec2-password-data-get": (AWSServices.EC2, ["ec2:GetPasswordData"]),
+    "aws-ec2-reserved-instances-describe": (AWSServices.EC2, ["ec2:DescribeReservedInstances"]),
+    "aws-ec2-tags-create": (AWSServices.EC2, ["ec2:CreateTags"]),
+    "aws-ec2-regions-describe": (AWSServices.EC2, ["ec2:DescribeRegions"]),
+    "aws-ec2-network-interface-attribute-modify": (AWSServices.EC2, ["ec2:ModifyNetworkInterfaceAttribute"]),
+    "aws-ec2-addresses-describe": (AWSServices.EC2, ["ec2:DescribeAddresses"]),
+    "aws-ec2-address-allocate": (AWSServices.EC2, ["ec2:AllocateAddress"]),
+    "aws-ec2-address-associate": (AWSServices.EC2, ["ec2:AssociateAddress"]),
+    "aws-ec2-address-disassociate": (AWSServices.EC2, ["ec2:DisassociateAddress"]),
+    "aws-ec2-address-release": (AWSServices.EC2, ["ec2:ReleaseAddress"]),
+    "aws-ec2-volumes-describe": (AWSServices.EC2, ["ec2:DescribeVolumes"]),
+    "aws-ec2-volume-modify": (AWSServices.EC2, ["ec2:ModifyVolume"]),
+    "aws-ec2-volume-create": (AWSServices.EC2, ["ec2:CreateVolume"]),
+    "aws-ec2-volume-attach": (AWSServices.EC2, ["ec2:AttachVolume"]),
+    "aws-ec2-volume-detach": (AWSServices.EC2, ["ec2:DetachVolume"]),
+    "aws-ec2-volume-delete": (AWSServices.EC2, ["ec2:DeleteVolume"]),
+    "aws-ec2-launch-templates-describe": (AWSServices.EC2, ["ec2:DescribeLaunchTemplates"]),
+    "aws-ec2-launch-template-create": (AWSServices.EC2, ["ec2:CreateLaunchTemplate"]),
+    "aws-ec2-launch-template-delete": (AWSServices.EC2, ["ec2:DeleteLaunchTemplate"]),
+    "aws-ec2-fleet-create": (AWSServices.EC2, ["ec2:CreateFleet"]),
+    "aws-ec2-fleet-delete": (AWSServices.EC2, ["ec2:DeleteFleets"]),
+    "aws-ec2-fleets-describe": (AWSServices.EC2, ["ec2:DescribeFleets"]),
+    "aws-ec2-fleet-instances-describe": (AWSServices.EC2, ["ec2:DescribeFleetInstances"]),
+    "aws-ec2-fleet-modify": (AWSServices.EC2, ["ec2:ModifyFleet"]),
+    "aws-ec2-internet-gateway-describe": (AWSServices.EC2, ["ec2:DescribeInternetGateways"]),
+    "aws-ec2-internet-gateway-detach": (AWSServices.EC2, ["ec2:DetachInternetGateway"]),
+    "aws-ec2-internet-gateway-delete": (AWSServices.EC2, ["ec2:DeleteInternetGateway"]),
+    "aws-ec2-key-pairs-describe": (AWSServices.EC2, ["ec2:DescribeKeyPairs"]),
+    "aws-ec2-hosts-allocate": (AWSServices.EC2, ["ec2:AllocateHosts"]),
+    "aws-ec2-hosts-release": (AWSServices.EC2, ["ec2:ReleaseHosts"]),
+    "aws-ec2-traffic-mirror-session-create": (AWSServices.EC2, ["ec2:CreateTrafficMirrorSession"]),
+    # EKS
+    "aws-eks-clusters-list": (AWSServices.EKS, ["eks:ListClusters"]),
+    "aws-eks-cluster-describe": (AWSServices.EKS, ["eks:DescribeCluster"]),
+    "aws-eks-access-entry-create": (
+        AWSServices.EKS,
+        [
+            "eks:CreateAccessEntry",
+            "eks:TagResource",
+        ],
+    ),
+    "aws-eks-access-entry-update": (AWSServices.EKS, ["eks:UpdateAccessEntry"]),
+    "aws-eks-access-policy-associate": (AWSServices.EKS, ["eks:AssociateAccessPolicy"]),
+    "aws-eks-cluster-config-update": (AWSServices.EKS, ["eks:UpdateClusterConfig"]),
+    "aws-eks-enable-control-plane-logging-quick-action": (AWSServices.EKS, ["eks:UpdateClusterConfig"]),
+    "aws-eks-disable-public-access-quick-action": (AWSServices.EKS, ["eks:UpdateClusterConfig"]),
+    # RDS
+    "aws-rds-db-cluster-modify": (AWSServices.RDS, ["rds:ModifyDBCluster"]),
+    "aws-rds-db-cluster-enable-iam-auth-quick-action": (AWSServices.RDS, ["rds:ModifyDBCluster"]),
+    "aws-rds-db-cluster-enable-deletion-protection-quick-action": (AWSServices.RDS, ["rds:ModifyDBCluster"]),
+    "aws-rds-db-cluster-snapshot-attribute-modify": (AWSServices.RDS, ["rds:ModifyDBClusterSnapshotAttribute"]),
+    "aws-rds-db-cluster-snapshot-set-to-private-quick-action": (AWSServices.RDS, ["rds:ModifyDBClusterSnapshotAttribute"]),
+    "aws-rds-db-instance-modify": (AWSServices.RDS, ["rds:ModifyDBInstance"]),
+    "aws-rds-db-instance-modify-publicly-accessible-quick-action": (AWSServices.RDS, ["rds:ModifyDBInstance"]),
+    "aws-rds-db-instance-modify-copy-tags-on-rds-snapshot-quick-action": (AWSServices.RDS, ["rds:ModifyDBInstance"]),
+    "aws-rds-db-instance-modify-enable-automatic-backup-quick-action": (AWSServices.RDS, ["rds:ModifyDBInstance"]),
+    "aws-rds-db-instance-enable-iam-auth-quick-action": (AWSServices.RDS, ["rds:ModifyDBInstance"]),
+    "aws-rds-db-instance-enable-deletion-protection-quick-action": (AWSServices.RDS, ["rds:ModifyDBInstance"]),
+    "aws-rds-db-instance-enable-auto-upgrade-quick-action": (AWSServices.RDS, ["rds:ModifyDBInstance"]),
+    "aws-rds-db-instance-enable-multi-az-quick-action": (AWSServices.RDS, ["rds:ModifyDBInstance"]),
+    "aws-rds-db-snapshot-attribute-modify": (AWSServices.RDS, ["rds:ModifyDBSnapshotAttribute"]),
+    "aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action": (AWSServices.RDS, ["rds:ModifyDBSnapshotAttribute"]),
+    "aws-rds-event-subscription-modify": (AWSServices.RDS, ["rds:ModifyEventSubscription"]),
+    "aws-rds-event-subscription-modify-quick-action": (AWSServices.RDS, ["rds:ModifyEventSubscription"]),
+    "aws-rds-db-instances-describe": (AWSServices.RDS, ["rds:DescribeDBInstances"]),
+    # Redshift
+    "aws-redshift-cluster-modify": (AWSServices.Redshift, ["redshift:ModifyCluster"]),
+    # CloudTrail
+    "aws-cloudtrail-logging-start": (AWSServices.CloudTrail, ["cloudtrail:StartLogging"]),
+    "aws-cloudtrail-logging-start-enable-logging-quick-action": (AWSServices.CloudTrail, ["cloudtrail:StartLogging"]),
+    "aws-cloudtrail-trail-update": (AWSServices.CloudTrail, ["cloudtrail:UpdateTrail"]),
+    "aws-cloudtrail-trail-enable-log-validation-quick-action": (AWSServices.CloudTrail, ["cloudtrail:UpdateTrail"]),
+    "aws-cloudtrail-trails-describe": (AWSServices.CloudTrail, ["cloudtrail:DescribeTrails"]),
+    # ACM
+    "aws-acm-certificate-options-update": (AWSServices.ACM, ["acm:UpdateCertificateOptions"]),
+    # ECS
+    "aws-ecs-cluster-settings-update": (AWSServices.ECS, ["ecs:UpdateClusterSettings"]),
+    # KMS
+    "aws-kms-key-rotation-enable": (AWSServices.KMS, ["kms:EnableKeyRotation"]),
+    # ELB
+    "aws-elb-load-balancer-attributes-modify": (AWSServices.ELB, ["elasticloadbalancing:ModifyLoadBalancerAttributes"]),
+    # Lambda
+    "aws-lambda-function-configuration-get": (AWSServices.LAMBDA, ["lambda:GetFunctionConfiguration"]),
+    "aws-lambda-function-configuration-update": (AWSServices.LAMBDA, ["lambda:UpdateFunctionConfiguration"]),
+    "aws-lambda-function-url-config-get": (AWSServices.LAMBDA, ["lambda:GetFunctionUrlConfig"]),
+    "aws-lambda-function-url-config-update": (AWSServices.LAMBDA, ["lambda:UpdateFunctionUrlConfig"]),
+    "aws-lambda-function-url-config-delete": (AWSServices.LAMBDA, ["lambda:DeleteFunctionUrlConfig"]),
+    "aws-lambda-policy-get": (AWSServices.LAMBDA, ["lambda:GetPolicy"]),
+    "aws-lambda-invoke": (AWSServices.LAMBDA, ["lambda:InvokeFunction"]),
+    "aws-lambda-function-get": (AWSServices.LAMBDA, ["lambda:GetFunction"]),
+    "aws-lambda-functions-list": (AWSServices.LAMBDA, ["lambda:ListFunctions"]),
+    "aws-lambda-aliases-list": (AWSServices.LAMBDA, ["lambda:ListAliases"]),
+    "aws-lambda-account-settings-get": (AWSServices.LAMBDA, ["lambda:GetAccountSettings"]),
+    "aws-lambda-function-versions-list": (AWSServices.LAMBDA, ["lambda:ListVersionsByFunction"]),
+    "aws-lambda-function-create": (
+        AWSServices.LAMBDA,
+        [
+            "lambda:CreateFunction",
+            "iam:PassRole",
+        ],
+    ),
+    "aws-lambda-function-delete": (AWSServices.LAMBDA, ["lambda:DeleteFunction"]),
+    "aws-lambda-layer-version-list": (AWSServices.LAMBDA, ["lambda:ListLayerVersions"]),
+    "aws-lambda-layer-version-delete": (AWSServices.LAMBDA, ["lambda:DeleteLayerVersion"]),
+    "aws-lambda-layer-version-publish": (AWSServices.LAMBDA, ["lambda:PublishLayerVersion"]),
+    # SSM
+    "aws-ssm-association-versions-list": (AWSServices.SSM, ["ssm:ListAssociationVersions"]),
+    "aws-ssm-association-get": (AWSServices.SSM, ["ssm:DescribeAssociation"]),
+    "aws-ssm-associations-list": (AWSServices.SSM, ["ssm:ListAssociations"]),
+    "aws-ssm-inventory-list": (AWSServices.SSM, ["ssm:GetInventory"]),
+    "aws-ssm-inventory-entries-list": (AWSServices.SSM, ["ssm:ListInventoryEntries"]),
+    "aws-ssm-command-run": (
+        AWSServices.SSM,
+        [
+            "ssm:SendCommand",
+            "ssm:ListCommands",
+        ],
+    ),
+    "aws-ssm-tag-add": (AWSServices.SSM, ["ssm:AddTagsToResource"]),
+    "aws-ssm-tag-remove": (AWSServices.SSM, ["ssm:RemoveTagsFromResource"]),
+    "aws-ssm-tags-list": (AWSServices.SSM, ["ssm:ListTagsForResource"]),
+    "aws-ssm-documents-list": (AWSServices.SSM, ["ssm:ListDocuments"]),
+    "aws-ssm-document-describe": (AWSServices.SSM, ["ssm:DescribeDocument"]),
+    "aws-ssm-automation-executions-list": (AWSServices.SSM, ["ssm:DescribeAutomationExecutions"]),
+    "aws-ssm-automation-execution-run": (
+        AWSServices.SSM,
+        [
+            "ssm:StartAutomationExecution",
+            "ssm:GetAutomationExecution",
+        ],
+    ),
+    "aws-ssm-automation-execution-cancel": (
+        AWSServices.SSM,
+        [
+            "ssm:GetAutomationExecution",
+            "ssm:StopAutomationExecution",
+        ],
+    ),
+    "aws-ssm-commands-list": (AWSServices.SSM, ["ssm:ListCommands"]),
+    "aws-ssm-command-cancel": (
+        AWSServices.SSM,
+        [
+            "ssm:ListCommands",
+            "ssm:CancelCommand",
+        ],
+    ),
+    # CloudWatch Logs
+    "aws-logs-log-group-create": (AWSServices.CloudWatchLogs, ["logs:CreateLogGroup"]),
+    "aws-logs-log-stream-create": (AWSServices.CloudWatchLogs, ["logs:CreateLogStream"]),
+    "aws-logs-log-group-delete": (AWSServices.CloudWatchLogs, ["logs:DeleteLogGroup"]),
+    "aws-logs-log-stream-delete": (AWSServices.CloudWatchLogs, ["logs:DeleteLogStream"]),
+    "aws-logs-log-events-filter": (AWSServices.CloudWatchLogs, ["logs:FilterLogEvents"]),
+    "aws-logs-log-groups-describe": (AWSServices.CloudWatchLogs, ["logs:DescribeLogGroups"]),
+    "aws-logs-log-streams-describe": (AWSServices.CloudWatchLogs, ["logs:DescribeLogStreams"]),
+    "aws-logs-retention-policy-put": (AWSServices.CloudWatchLogs, ["logs:PutRetentionPolicy"]),
+    "aws-logs-retention-policy-delete": (AWSServices.CloudWatchLogs, ["logs:DeleteRetentionPolicy"]),
+    "aws-logs-log-event-put": (AWSServices.CloudWatchLogs, ["logs:PutLogEvents"]),
+    "aws-logs-metric-filter-put": (AWSServices.CloudWatchLogs, ["logs:PutMetricFilter"]),
+    "aws-logs-metric-filter-delete": (AWSServices.CloudWatchLogs, ["logs:DeleteMetricFilter"]),
+    "aws-logs-metric-filters-describe": (AWSServices.CloudWatchLogs, ["logs:DescribeMetricFilters"]),
+    # Network Firewall
+    "aws-network-firewall-firewall-describe": (AWSServices.NetworkFirewall, ["network-firewall:DescribeFirewall"]),
+    "aws-network-firewall-firewalls-list": (AWSServices.NetworkFirewall, ["network-firewall:ListFirewalls"]),
+    "aws-network-firewall-firewall-create": (AWSServices.NetworkFirewall, ["network-firewall:CreateFirewall"]),
+    "aws-network-firewall-firewall-delete": (AWSServices.NetworkFirewall, ["network-firewall:DeleteFirewall"]),
+    "aws-network-firewall-firewall-delete-protection-update": (
+        AWSServices.NetworkFirewall,
+        ["network-firewall:UpdateFirewallDeleteProtection"],
+    ),
+    "aws-network-firewall-firewall-description-update": (
+        AWSServices.NetworkFirewall,
+        ["network-firewall:UpdateFirewallDescription"],
+    ),
+    "aws-network-firewall-firewall-policy-describe": (AWSServices.NetworkFirewall, ["network-firewall:DescribeFirewallPolicy"]),
+    "aws-network-firewall-firewall-policies-list": (AWSServices.NetworkFirewall, ["network-firewall:ListFirewallPolicies"]),
+    "aws-network-firewall-firewall-policy-create": (AWSServices.NetworkFirewall, ["network-firewall:CreateFirewallPolicy"]),
+    "aws-network-firewall-firewall-policy-associate": (
+        AWSServices.NetworkFirewall,
+        ["network-firewall:AssociateFirewallPolicy"],
+    ),
+    "aws-network-firewall-firewall-policy-delete": (AWSServices.NetworkFirewall, ["network-firewall:DeleteFirewallPolicy"]),
+    "aws-network-firewall-firewall-policy-update": (AWSServices.NetworkFirewall, ["network-firewall:UpdateFirewallPolicy"]),
+    "aws-network-firewall-firewall-policy-change-protection-update": (
+        AWSServices.NetworkFirewall,
+        ["network-firewall:UpdateFirewallPolicyChangeProtection"],
+    ),
+    "aws-network-firewall-subnet-change-protection-update": (
+        AWSServices.NetworkFirewall,
+        ["network-firewall:UpdateSubnetChangeProtection"],
+    ),
+    "aws-network-firewall-subnets-associate": (AWSServices.NetworkFirewall, ["network-firewall:AssociateSubnets"]),
+    "aws-network-firewall-subnets-disassociate": (AWSServices.NetworkFirewall, ["network-firewall:DisassociateSubnets"]),
+    "aws-network-firewall-rule-group-create": (AWSServices.NetworkFirewall, ["network-firewall:CreateRuleGroup"]),
+    "aws-network-firewall-rule-group-delete": (AWSServices.NetworkFirewall, ["network-firewall:DeleteRuleGroup"]),
+    "aws-network-firewall-rule-group-describe": (AWSServices.NetworkFirewall, ["network-firewall:DescribeRuleGroup"]),
+    "aws-network-firewall-rule-groups-list": (AWSServices.NetworkFirewall, ["network-firewall:ListRuleGroups"]),
+    "aws-network-firewall-rule-group-update": (AWSServices.NetworkFirewall, ["network-firewall:UpdateRuleGroup"]),
+    "aws-network-firewall-resource-policy-delete": (AWSServices.NetworkFirewall, ["network-firewall:DeleteResourcePolicy"]),
+    "aws-network-firewall-resource-policy-put": (AWSServices.NetworkFirewall, ["network-firewall:PutResourcePolicy"]),
+    "aws-network-firewall-resource-policy-describe": (
+        AWSServices.NetworkFirewall,
+        ["network-firewall:DescribeResourcePolicy"],
+    ),
+    "aws-network-firewall-tags-for-resource-list": (AWSServices.NetworkFirewall, ["network-firewall:ListTagsForResource"]),
+    "aws-network-firewall-resource-tag": (AWSServices.NetworkFirewall, ["network-firewall:TagResource"]),
+    "aws-network-firewall-resource-untag": (AWSServices.NetworkFirewall, ["network-firewall:UntagResource"]),
+    "aws-network-firewall-logging-configuration-describe": (
+        AWSServices.NetworkFirewall,
+        ["network-firewall:DescribeLoggingConfiguration"],
+    ),
+    "aws-network-firewall-logging-configuration-update": (
+        AWSServices.NetworkFirewall,
+        ["network-firewall:UpdateLoggingConfiguration"],
+    ),
+}
+
+# Permissions granted by the CSPM Remediation permission set (the CSPM Remediation permissions policy).
+# A user granted only this permission set may run a command only if all of its required permissions are listed here.
+CSPM_REMEDIATION_ALLOWED_PERMISSIONS: frozenset[str] = frozenset(
     {
-        # s3:PutBucketPublicAccessBlock
-        "aws-s3-public-access-block-update",
-        "aws-s3-public-access-block-quick-action",
-        # s3:PutBucketVersioning
-        "aws-s3-bucket-versioning-put",
-        "aws-s3-bucket-versioning-enable-quick-action",
-        # s3:PutBucketAcl
-        "aws-s3-bucket-acl-put",
-        "aws-s3-bucket-acl-set-to-private-quick-action",
-        # s3:PutBucketLogging
-        "aws-s3-bucket-logging-put",
-        "aws-s3-bucket-enable-bucket-access-logging-quick-action",
-        # s3:PutBucketPolicy
-        "aws-s3-bucket-policy-put",
-        "aws-s3-bucket-policy-put-quick-action",
-        # rds:ModifyDBInstance
-        "aws-rds-db-instance-modify",
-        "aws-rds-db-instance-modify-publicly-accessible-quick-action",
-        "aws-rds-db-instance-modify-copy-tags-on-rds-snapshot-quick-action",
-        "aws-rds-db-instance-modify-enable-automatic-backup-quick-action",
-        "aws-rds-db-instance-enable-iam-auth-quick-action",
-        "aws-rds-db-instance-enable-deletion-protection-quick-action",
-        "aws-rds-db-instance-enable-auto-upgrade-quick-action",
-        "aws-rds-db-instance-enable-multi-az-quick-action",
-        # rds:ModifyDBCluster
-        "aws-rds-db-cluster-modify",
-        "aws-rds-db-cluster-enable-iam-auth-quick-action",
-        "aws-rds-db-cluster-enable-deletion-protection-quick-action",
-        # rds:ModifyDBSnapshotAttribute
-        "aws-rds-db-snapshot-attribute-modify",
-        "aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action",
-        # rds:ModifyDBClusterSnapshotAttribute
-        "aws-rds-db-cluster-snapshot-attribute-modify",
-        "aws-rds-db-cluster-snapshot-set-to-private-quick-action",
-        # rds:ModifyEventSubscription
-        "aws-rds-event-subscription-modify",
-        "aws-rds-event-subscription-modify-quick-action",
-        # eks:UpdateClusterConfig
-        "aws-eks-cluster-config-update",
-        "aws-eks-enable-control-plane-logging-quick-action",
-        "aws-eks-disable-public-access-quick-action",
-        # kms:EnableKeyRotation
-        "aws-kms-key-rotation-enable",
-        # cloudtrail:StartLogging
-        "aws-cloudtrail-logging-start",
-        "aws-cloudtrail-logging-start-enable-logging-quick-action",
-        # cloudtrail:UpdateTrail
-        "aws-cloudtrail-trail-update",
-        "aws-cloudtrail-trail-enable-log-validation-quick-action",
-        # iam:UpdateAccountPasswordPolicy
-        "aws-iam-account-password-policy-update",
-        # ec2:RevokeSecurityGroupIngress
-        "aws-ec2-security-group-ingress-revoke",
-        # ec2:RevokeSecurityGroupEgress
-        "aws-ec2-security-group-egress-revoke",
-        # ec2:ModifyInstanceMetadataOptions
-        "aws-ec2-instance-metadata-options-modify",
-        "aws-ec2-enable-imdsv2-quick-action",
-        # ec2:ModifySubnetAttribute
-        "aws-ec2-subnet-attribute-modify",
-        # ec2:ModifyImageAttribute
-        "aws-ec2-image-attribute-modify",
-        "aws-ec2-image-attribute-set-ami-to-private-quick-action",
-        # ec2:ModifySnapshotAttribute
-        "aws-ec2-snapshot-attribute-modify",
-        "aws-ec2-snapshot-permission-modify",
-        "aws-ec2-set-snapshot-to-private-quick-action",
-        # redshift:ModifyCluster
-        "aws-redshift-cluster-modify",
-        # elasticloadbalancing:ModifyLoadBalancerAttributes
-        "aws-elb-load-balancer-attributes-modify",
-        # ecs:UpdateClusterSettings
-        "aws-ecs-cluster-settings-update",
-        # acm:UpdateCertificateOptions
-        "aws-acm-certificate-options-update",
-        # lambda:UpdateFunctionConfiguration
-        "aws-lambda-function-configuration-update",
-        # lambda:UpdateFunctionUrlConfig
-        "aws-lambda-function-url-config-update",
+        "s3:PutBucketPublicAccessBlock",
+        "s3:PutBucketVersioning",
+        "rds:ModifyDBInstance",
+        "rds:ModifyDBCluster",
+        "eks:UpdateClusterConfig",
+        "kms:EnableKeyRotation",
+        "cloudtrail:StartLogging",
+        "iam:UpdateAccountPasswordPolicy",
+        "s3:PutBucketAcl",
+        "s3:PutBucketLogging",
+        "ec2:RevokeSecurityGroupIngress",
+        "ec2:RevokeSecurityGroupEgress",
+        "ec2:ModifyInstanceMetadataOptions",
+        "ec2:ModifySubnetAttribute",
+        "ec2:ModifyImageAttribute",
+        "ec2:ModifySnapshotAttribute",
+        "rds:ModifyDBSnapshotAttribute",
+        "rds:ModifyDBClusterSnapshotAttribute",
+        "rds:ModifyEventSubscription",
+        "redshift:ModifyCluster",
+        "cloudtrail:UpdateTrail",
+        "elasticloadbalancing:ModifyLoadBalancerAttributes",
+        "ecs:UpdateClusterSettings",
+        "acm:UpdateCertificateOptions",
+        "lambda:UpdateFunctionConfiguration",
+        "lambda:UpdateFunctionUrlConfig",
+        "s3:PutBucketPolicy",
     }
 )
 
@@ -12205,9 +12479,15 @@ def main():  # pragma: no cover
     handle_proxy()
 
     try:
-        # TODO: Determine the user type (full vs. partial permissions) once the mechanism is defined.
+        # TODO: Determine the user type (full vs. CSPM Remediation permissions) once the mechanism is defined.
         is_all_commands_allowed = True
-        validate_command_is_allowed(command, PARTIAL_PERMISSIONS_ALLOWED_COMMANDS, CloudTypes.AWS.value, is_all_commands_allowed)
+        validate_command_is_allowed(
+            command,
+            COMMAND_REQUIREMENTS.get(command, (None, []))[1],
+            CSPM_REMEDIATION_ALLOWED_PERMISSIONS,
+            CloudTypes.AWS.value,
+            is_all_commands_allowed,
+        )
 
         if command == "test-module":
             results = (

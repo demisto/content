@@ -340,9 +340,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         [
             "compute.firewalls.update",
             "compute.firewalls.get",
-            "compute.firewalls.list",
             "compute.networks.updatePolicy",
-            "compute.networks.list",
         ],
     ),
     "gcp-compute-firewall-insert": (
@@ -427,7 +425,6 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
             "compute.subnetworks.setPrivateIpGoogleAccess",
             "compute.subnetworks.update",
             "compute.subnetworks.get",
-            "compute.subnetworks.list",
         ],
     ),
     "gcp-compute-instance-service-account-set": (
@@ -454,7 +451,10 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-instance-insert": (GCPServices.COMPUTE, ["compute.instances.create"]),
     "gcp-compute-instance-delete": (GCPServices.COMPUTE, ["compute.instances.delete"]),
     "gcp-compute-instance-reset": (GCPServices.COMPUTE, ["compute.instances.reset"]),
-    "gcp-compute-instance-metadata-set": (GCPServices.COMPUTE, ["compute.instances.setMetadata"]),
+    "gcp-compute-instance-metadata-set": (
+        GCPServices.COMPUTE,
+        ["compute.instances.setMetadata", "compute.instances.get", "iam.serviceAccounts.actAs"],
+    ),
     "gcp-compute-instance-machine-type-set": (GCPServices.COMPUTE, ["compute.instances.setMachineType"]),
     "gcp-compute-instances-aggregated-list": (GCPServices.COMPUTE, ["compute.instances.list"]),
     "gcp-compute-instances-list": (GCPServices.COMPUTE, ["compute.instances.list"]),
@@ -593,7 +593,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-gke-operation-cancel": (GCPServices.CONTAINER, ["container.operations.update"]),
     "gcp-gke-cluster-security-update": (
         GCPServices.CONTAINER,
-        ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
+        ["container.clusters.update"],
     ),
     "gcp-bq-dataset-policy-remove": (
         GCPServices.BIGQUERY,
@@ -669,6 +669,47 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         GCPServices.LOGGING,
         ["logging.logEntries.list"],
     ),
+    # Quick Actions (reuse the base command handler, so they require the same permissions)
+    "gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action": (
+        GCPServices.COMPUTE,
+        ["compute.firewalls.update", "compute.firewalls.get", "compute.networks.updatePolicy"],
+    ),
+    "gcp-storage-bucket-policy-delete-remove-allusers-access-quick-action": (
+        GCPServices.STORAGE,
+        ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"],
+    ),
+    "gcp-storage-bucket-policy-delete-remove-AllAuthenticatedUser-access-quick-action": (
+        GCPServices.STORAGE,
+        ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"],
+    ),
+    "gcp-storage-bucket-policy-delete-make-gcp-bucket-private-quick-action": (
+        GCPServices.STORAGE,
+        ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"],
+    ),
+    "gcp-compute-subnet-update-enable-gcp-subnet-flow-logs-quick-action": (
+        GCPServices.COMPUTE,
+        ["compute.subnetworks.update", "compute.subnetworks.get"],
+    ),
+    "gcp-compute-enable-private-ip-access-on-subnet-quick-action": (
+        GCPServices.COMPUTE,
+        ["compute.subnetworks.setPrivateIpGoogleAccess"],
+    ),
+    "gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action": (
+        GCPServices.CONTAINER,
+        ["container.clusters.update"],
+    ),
+    "gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action": (
+        GCPServices.CONTAINER,
+        ["container.clusters.update"],
+    ),
+    "gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action": (
+        GCPServices.STORAGE,
+        ["storage.buckets.update"],
+    ),
+    "gcp-storage-bucket-metadata-update-set-GCP-bucket-access-to-uniform-quick-action": (
+        GCPServices.STORAGE,
+        ["storage.buckets.update"],
+    ),
     # The following commands are currently unsupported:
     # "gcp-compute-instance-metadata-add": (
     #     GCPServices.COMPUTE,
@@ -688,35 +729,19 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     # ),
 }
 
-# Commands allowed for users granted only the partial (CSPM remediation) permission set.
-# Each group corresponds to a permission listed in the CSPM remediation permissions policy.
-PARTIAL_PERMISSIONS_ALLOWED_COMMANDS: frozenset[str] = frozenset(
+# Permissions granted by the CSPM Remediation permission set (the CSPM Remediation permissions policy).
+# A user granted only this permission set may run a command only if all of its required permissions are listed here.
+CSPM_REMEDIATION_ALLOWED_PERMISSIONS: frozenset[str] = frozenset(
     {
-        # storage.buckets.getIamPolicy, storage.buckets.setIamPolicy
-        "gcp-storage-bucket-policy-delete",
-        "gcp-storage-bucket-policy-delete-remove-allusers-access-quick-action",
-        "gcp-storage-bucket-policy-delete-remove-AllAuthenticatedUser-access-quick-action",
-        "gcp-storage-bucket-policy-delete-make-gcp-bucket-private-quick-action",
-        # storage.buckets.update
-        "gcp-storage-bucket-metadata-update",
-        "gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action",
-        "gcp-storage-bucket-metadata-update-set-GCP-bucket-access-to-uniform-quick-action",
-        "gcp-storage-bucket-public-access-block",
-        # compute.firewalls.update, compute.networks.updatePolicy
-        "gcp-compute-firewall-patch",
-        "gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action",
-        # compute.subnetworks.update, compute.subnetworks.setPrivateIpGoogleAccess
-        "gcp-compute-subnet-update",
-        "gcp-compute-subnet-update-enable-gcp-subnet-flow-logs-quick-action",
-        "gcp-compute-enable-private-ip-access-on-subnet-quick-action",
-        # container.clusters.update
-        "gcp-container-cluster-security-update",
-        "gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action",
-        "gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action",
-        "gcp-gke-cluster-security-update",
-        "gcp-gke-cluster-legacy-abac-auth-set",
-        # compute.instances.setMetadata
-        "gcp-compute-instance-metadata-set",
+        "storage.buckets.getIamPolicy",
+        "storage.buckets.setIamPolicy",
+        "storage.buckets.update",
+        "compute.firewalls.update",
+        "compute.networks.updatePolicy",
+        "compute.subnetworks.update",
+        "compute.subnetworks.setPrivateIpGoogleAccess",
+        "container.clusters.update",
+        "compute.instances.setMetadata",
     }
 )
 
@@ -9122,9 +9147,15 @@ def main():  # pragma: no cover
     params = demisto.params()
 
     try:
-        # TODO: Determine the user type (full vs. partial permissions) once the mechanism is defined.
+        # TODO: Determine the user type (full vs. CSPM Remediation permissions) once the mechanism is defined.
         is_all_commands_allowed = True
-        validate_command_is_allowed(command, PARTIAL_PERMISSIONS_ALLOWED_COMMANDS, CloudTypes.GCP.value, is_all_commands_allowed)
+        validate_command_is_allowed(
+            command,
+            COMMAND_REQUIREMENTS.get(command, (None, []))[1],
+            CSPM_REMEDIATION_ALLOWED_PERMISSIONS,
+            CloudTypes.GCP.value,
+            is_all_commands_allowed,
+        )
 
         # Handlers take (creds, args), except polling handlers (see POLLING_COMMANDS) which take (args, creds).
         command_map: dict[str, Callable[[Any, Any], Any]] = {

@@ -41,7 +41,7 @@ class ErrorType(str):
 
 class Capability(str):
     AUTOMATION = "AUTOMATION"
-    CSPM = "CSPM"
+    CSPM_REMEDIATION = "CSPM_remediation"
 
 
 class HealthCheckError:
@@ -83,7 +83,7 @@ class HealthCheck:
     def error(self, error: HealthCheckError | list[HealthCheckError]) -> None:
         """Adds a health check error or list of errors to the results.
 
-        Each added error is stamped with the capability of the health check (AUTOMATION or CSPM).
+        Each added error is stamped with the capability of the health check (AUTOMATION or CSPM_remediation).
 
         Args:
             error (HealthCheckError | list[HealthCheckError]): The error(s) to add to the results.
@@ -274,12 +274,13 @@ def get_health_check_capability(is_all_commands_allowed: bool) -> str:
 
     Args:
         is_all_commands_allowed (bool): True if the account is granted full permissions,
-            False if it is granted only the partial (CSPM remediation) permission set.
+            False if it is granted only the CSPM Remediation permission set.
 
     Returns:
-        str: ``Capability.AUTOMATION`` for full permissions, ``Capability.CSPM`` for the partial permission set.
+        str: ``Capability.AUTOMATION`` for full permissions,
+            ``Capability.CSPM_REMEDIATION`` for the CSPM Remediation permission set.
     """
-    return Capability.AUTOMATION if is_all_commands_allowed else Capability.CSPM
+    return Capability.AUTOMATION if is_all_commands_allowed else Capability.CSPM_REMEDIATION
 
 
 def run_health_check_for_accounts(
@@ -296,7 +297,7 @@ def run_health_check_for_accounts(
         health_check_func (callable): Function that implements the health check.
                                         Should accept shared_creds, account_id and connector_id parameters
                                         and return a HealthCheckError or None.
-        capability (str): The capability of the account (``Capability.AUTOMATION`` or ``Capability.CSPM``),
+        capability (str): The capability of the account (``Capability.AUTOMATION`` or ``Capability.CSPM_REMEDIATION``),
             reported on every health check error. Defaults to ``Capability.AUTOMATION``.
 
     Returns:
@@ -474,31 +475,48 @@ def is_gov_account(connector_id: str, account_id: str = "") -> bool:
 
 
 def validate_command_is_allowed(
-    command: str, allowed_commands: set[str] | frozenset[str], cloud_type: str, is_all_commands_allowed: bool
+    command: str,
+    command_permissions: list[str],
+    allowed_permissions: set[str] | frozenset[str],
+    cloud_type: str,
+    is_all_commands_allowed: bool,
+    always_allowed_commands: set[str] | frozenset[str] = frozenset(),
 ) -> None:
     """
     Validate that the given command may run for the current user before any cloud API call is made.
 
-    Users with full permissions may run every command. Users with the partial (CSPM remediation) permission set
-    may only run the commands in ``allowed_commands``. The ``test-module`` command is always allowed.
+    Users with full permissions may run every command. Users with the CSPM Remediation permission set
+    may only run commands whose required permissions are all in ``allowed_permissions``.
+    Commands with no known required permissions are not allowed with the CSPM Remediation permission set.
+    The ``test-module`` command and the commands in ``always_allowed_commands`` are always allowed.
 
     Args:
         command (str): The command being executed (e.g. ``"aws-s3-bucket-versioning-put"``).
-        allowed_commands (set[str] | frozenset[str]): The commands allowed with the partial permission set.
+        command_permissions (list[str]): The cloud permissions required by the command.
+        allowed_permissions (set[str] | frozenset[str]): The permissions granted by the CSPM Remediation permission set.
         cloud_type (str): The cloud provider type (AWS, GCP, AZURE), used for the error message.
         is_all_commands_allowed (bool): True if the user is granted full permissions (all commands allowed),
-            False if the user is granted only the partial permission set.
+            False if the user is granted only the CSPM Remediation permission set.
+        always_allowed_commands (set[str] | frozenset[str]): Commands that require no cloud resource permissions
+            and are allowed with the CSPM Remediation permission set (e.g. authentication commands).
 
     Raises:
-        DemistoException: If the command is not allowed with the partial permission set.
+        DemistoException: If the command is not allowed with the CSPM Remediation permission set.
     """
-    if is_all_commands_allowed or command == "test-module" or command in allowed_commands:
+    if is_all_commands_allowed or command == "test-module" or command in always_allowed_commands:
         return
 
-    demisto.debug(f"[COOC API] The {command=} is not allowed with the partial {cloud_type} permission set.")
+    missing_permissions = set(command_permissions) - set(allowed_permissions)
+    if command_permissions and not missing_permissions:
+        return
+
+    demisto.debug(
+        f"[COOC API] The {command=} is not allowed with the CSPM {cloud_type} permission set. "
+        f"{command_permissions=}, missing_permissions={sorted(missing_permissions)}"
+    )
     raise DemistoException(
-        f"The command '{command}' is not allowed with the partial (CSPM remediation) {cloud_type} permission set "
-        f"granted to this connector. To run this command, grant the connector full permissions."
+        f"The '{command}' command cannot be used while the CSPM Remediation {cloud_type} checkbox is selected. "
+        f"To use this command, select the Automation checkbox and reapply the permissions template."
     )
 
 

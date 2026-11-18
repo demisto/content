@@ -22699,12 +22699,34 @@ def test_yml_output_prefixes_match_py_handler(yml_spec: dict[str, dict[str, list
     )
 
 
-def test_partial_permissions_allowed_commands_are_registered():
+def test_cspm_remediation_allowed_permissions_are_used_by_commands():
     """
-    Given: The set of commands allowed with the partial (CSPM remediation) permission set.
-    When: Comparing it to the registered commands.
-    Then: Every allowed command is registered in COMMANDS_MAPPING.
+    Given: The set of permissions granted by the CSPM Remediation permission set.
+    When: Comparing it to the commands permission requirements.
+    Then: Every allowed permission is required by at least one command in COMMAND_REQUIREMENTS.
     """
-    from AWS import COMMANDS_MAPPING, PARTIAL_PERMISSIONS_ALLOWED_COMMANDS
+    from AWS import COMMAND_REQUIREMENTS, CSPM_REMEDIATION_ALLOWED_PERMISSIONS
 
-    assert COMMANDS_MAPPING.keys() >= PARTIAL_PERMISSIONS_ALLOWED_COMMANDS
+    required_permissions = {permission for _, permissions in COMMAND_REQUIREMENTS.values() for permission in permissions}
+    assert required_permissions >= CSPM_REMEDIATION_ALLOWED_PERMISSIONS
+
+
+@pytest.mark.parametrize(
+    "command, is_allowed",
+    [
+        ("aws-s3-bucket-versioning-put", True),
+        ("aws-s3-public-access-block-quick-action", True),
+        ("aws-iam-account-password-policy-update", False),
+        ("aws-s3-bucket-delete", False),
+        ("aws-ec2-instances-run", False),
+    ],
+)
+def test_cspm_remediation_command_permissions_validation(command, is_allowed):
+    """
+    Given: A command and the CSPM Remediation permission set.
+    When: Validating the command's required permissions against the allowed permissions.
+    Then: Only commands whose required permissions are all allowed pass the validation.
+    """
+    from AWS import COMMAND_REQUIREMENTS, CSPM_REMEDIATION_ALLOWED_PERMISSIONS
+
+    assert (set(COMMAND_REQUIREMENTS[command][1]) <= CSPM_REMEDIATION_ALLOWED_PERMISSIONS) == is_allowed
