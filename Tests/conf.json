@@ -5963,6 +5963,7 @@
         }
     ],
     "skipped_tests": {
+        "MailListener-POP3 - Test": "No instance - test-module fails, the POP3 server of the test instance does not resolve.",
         "EWS V2 Send Mail Test 2": "Fails consistently in nightly - CIAC-15569",
         "Rasterize Test": "Flaky, fails intermittently in nightly - CIAC-15572",
         "Mail Sender (New) Test": "Gmail CI service-account key is invalid (invalid_grant: Invalid signature for token) - CIAC-14453",
