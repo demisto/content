@@ -5361,6 +5361,18 @@ def test_build_cs_falcon_filter(filter_args, custom_filter, output_filter):
             ),
         ),
         ({"wait_for_result": True, "ids": "123456"}, [], {"resources": [{"status": "pending"}]}, "Retrieving scan results:"),
+        ({"wait_for_result": True, "ids": "123456"}, [], {"resources": [{"id": "123456"}]}, "Retrieving scan results:"),
+        (
+            {"wait_for_result": True, "ids": "123456"},
+            [],
+            {"resources": [{"id": "123456", "status": "completed"}]},
+            (
+                "### CrowdStrike Falcon ODS Scans\n"
+                "|ID|Status|Severity|File Count|Description|Hosts/Host groups|End time|Start time|Run by|\n"
+                "|---|---|---|---|---|---|---|---|---|\n"
+                "| 123456 | completed |  |  |  |  |  |  |  |\n"
+            ),
+        ),
     ),
 )
 def test_cs_falcon_ODS_query_scans_command(mocker, command_args, query_result, entites_result, readable_output):
@@ -5949,6 +5961,98 @@ def test_cs_falcon_ods_create_scan_command_no_polling(mocker):
     assert result.readable_output == "Successfully created scan with ID: random_id"
     assert result.outputs == {"id": "random_id"}
     assert result.outputs_prefix == "CrowdStrike.ODSScan"
+
+
+def test_cs_falcon_ods_create_scan_command_polls_until_status_is_set(mocker):
+    """
+    Test cs_falcon_ods_create_scan_command end to end with polling, when the scan has no status yet.
+
+    Given
+        - A newly created ODS scan whose first GET response has no "status" key.
+
+    When
+        - The user runs "cs-falcon-ods-create-scan" with polling=true, then the scheduled
+          "cs-falcon-ods-query-scan" re-poll runs and the scan is completed.
+
+    Then
+        - The first run schedules a re-poll of "cs-falcon-ods-query-scan" with the scan id, without creating another scan.
+        - The re-poll returns the final ODS Scans table once the status is "completed".
+    """
+    from CrowdStrikeFalcon import cs_falcon_ODS_query_scans_command, cs_falcon_ods_create_scan_command
+
+    scan_id = "11111111111111111111111111111111"
+    new_scan_resource = {
+        "id": scan_id,
+        "cid": "test_cid",
+        "profile_id": "test_profile_id",
+        "hosts": ["test_host_id"],
+        "scan_inclusions": ["**"],
+        "initiated_from": "cloud_adhoc",
+        "cpu_priority": 3,
+        "pause_duration": 2,
+        "max_duration": 2,
+        "quarantine": True,
+        "preemption_priority": 1,
+        "cloud_ml_level_detection": 2,
+        "cloud_ml_level_prevention": 2,
+        "sensor_ml_level_detection": 2,
+        "sensor_ml_level_prevention": 2,
+        "policy_setting": [1, 2],
+        "mac_policy_setting": [1, 2],
+        "filecount": {"malicious": 0, "quarantined": 0, "scanned": 0, "skipped": 0, "traversed": 0},
+        "targeted_host_count": 1,
+        "completed_host_count": 0,
+        "started_host_count": 0,
+        "missing_host_count": 0,
+        "targeted_platforms": ["Windows"],
+        "rollup_version": 1,
+        "created_by": "test_user",
+        "created_on": "2026-01-01T00:00:00Z",
+        "last_updated": "2026-01-01T00:00:00Z",
+    }
+    get_responses = [
+        {"meta": {"writes": {"resources_affected": 1}}, "resources": [new_scan_resource]},
+        {"meta": {}, "resources": [new_scan_resource | {"status": "completed"}]},
+    ]
+
+    def mock_http_request(method, url, **kwargs):
+        if method == "POST":
+            return {"resources": [new_scan_resource]}
+        return get_responses.pop(0)
+
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+    http_request_mock = mocker.patch("CrowdStrikeFalcon.http_request", side_effect=mock_http_request)
+
+    result = cs_falcon_ods_create_scan_command(
+        {
+            "cpu_priority": "Medium",
+            "hosts": "test_host_id",
+            "interval_in_seconds": "60",
+            "max_duration": "2",
+            "pause_duration": "2",
+            "polling": "true",
+            "scan_inclusions": "**",
+            "timeout_in_seconds": "10800",
+        }
+    )
+
+    assert result.readable_output == "Retrieving scan results:"
+    assert result.scheduled_command._command == "cs-falcon-ods-query-scan"
+    next_run_args = result.scheduled_command._args
+    assert next_run_args["ids"] == scan_id
+    assert next_run_args["wait_for_result"] is True
+    assert http_request_mock.call_args_list[0].args == ("POST", "/ods/entities/scans/v1")
+    assert http_request_mock.call_args_list[1].args == ("GET", f"/ods/entities/scans/v1?ids={scan_id}")
+
+    # The scheduled re-poll runs the query command only, so no second scan is created.
+    final_result = cs_falcon_ODS_query_scans_command(next_run_args)
+
+    assert final_result.scheduled_command is None
+    assert final_result.outputs_prefix == "CrowdStrike.ODSScan"
+    assert final_result.outputs[0]["status"] == "completed"
+    assert final_result.readable_output.startswith("### CrowdStrike Falcon ODS Scans")
+    assert f"| {scan_id} | completed |" in final_result.readable_output
+    assert [call.args[0] for call in http_request_mock.call_args_list] == ["POST", "GET", "GET"]
 
 
 def test_cs_falcon_ods_create_scheduled_scan_command(mocker):
