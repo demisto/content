@@ -16,7 +16,7 @@ This integration was integrated and tested with version 0.1.6 of NVIDIA OpenShel
 
 ## Safety
 
-- `openshell-sandbox-delete` and `openshell-provider-detach` cannot be undone and require `confirm=yes`.
+- `openshell-sandbox-delete` cannot be undone, and this integration cannot re-attach a provider after `openshell-provider-detach`. Both require `confirm=yes`.
 - Policy changes are recorded as new policy revisions on the gateway. Use `openshell-policy-history` to review them.
 - `openshell-egress-block-host` applies all removals in one policy update, so it either fully succeeds or changes nothing. It does not remove wildcard entries (for example `*.example.com`), because that would block other hosts too; it lists them so you can remove them with `openshell-policy-endpoint-remove` or stop the sandbox.
 
@@ -474,7 +474,7 @@ Lists the credential providers attached to a sandbox.
 ### openshell-provider-detach
 
 ***
-Detaches a credential provider from a sandbox, so the agent no longer receives those credentials. This action cannot be undone.
+Detaches a credential provider from a sandbox, so the agent no longer receives those credentials. This integration cannot re-attach the provider; re-attach it in OpenShell if needed.
 
 #### Base Command
 
@@ -487,7 +487,7 @@ Detaches a credential provider from a sandbox, so the agent no longer receives t
 | name | The sandbox name. | Required |
 | provider | The provider name. | Required |
 | workspace | The OpenShell workspace. Defaults to the instance workspace. | Optional |
-| confirm | Whether to confirm the action, which cannot be undone. Set to yes to run it. Possible values are: yes, no. | Required |
+| confirm | Whether to confirm the action. This integration cannot re-attach the provider. Set to yes to run it. Possible values are: yes, no. | Required |
 
 #### Context Output
 

@@ -92,7 +92,7 @@ def workspace_scope(workspace: str) -> datamodel_pb2.WorkspaceSelector:
 
 def require_confirm(args: dict, action: str) -> None:
     if str(args.get("confirm", "")).lower() != "yes":
-        raise DemistoException(f"{action} is irreversible. Run the command again with confirm=yes.")
+        raise DemistoException(f"{action} needs confirmation. Run the command again with confirm=yes.")
 
 
 def policy_rows(policy: Any) -> list[dict]:

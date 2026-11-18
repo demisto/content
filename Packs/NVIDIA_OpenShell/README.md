@@ -12,13 +12,13 @@
 
 [NVIDIA OpenShell](https://github.com/NVIDIA/OpenShell) runs autonomous AI agents inside sandboxes. Each sandbox has a network policy (which hosts, ports and binaries the agent may use) and credential providers (which secrets the agent receives).
 
-When an agent misbehaves, for example it is prompt-injected, exfiltrates data or calls an unexpected host, the fastest control point is the sandbox itself. This pack gives Cortex that control point. A playbook or an analyst can stop the agent, take away one destination, or detach its credentials through the OpenShell gateway, and every policy change is recorded as a new revision with the reason.
+When an agent misbehaves, for example it is prompt-injected, exfiltrates data or calls an unexpected host, the fastest control point is the sandbox itself. This pack gives Cortex that control point. Cortex can stop the agent, take away one destination, or detach its credentials through the OpenShell gateway, and every policy change creates a new policy revision.
 
 | | |
 | --- | --- |
-| **Contain in seconds** | Stop or suspend a sandbox from a playbook, with or without analyst approval. |
+| **Contain in seconds** | Stop or suspend a sandbox with one command. |
 | **Contain precisely** | Remove a single host, endpoint or binary while the agent keeps running. |
-| **Contain safely** | Egress changes are applied in one atomic policy update and recorded with a reason. Destructive actions need `confirm=yes`. |
+| **Contain safely** | Egress changes are applied in one atomic policy update. Destructive actions need `confirm=yes`. |
 | **Investigate first** | Pull recent network and policy decisions, the active policy and its history into the war room. |
 
 ## How it connects
@@ -37,11 +37,11 @@ Start with the smallest action that stops the threat, and move up only if you ne
 | :---: | --- | --- | :---: | :---: |
 | 1 | Investigate | `openshell-sandbox-logs`, `openshell-policy-get`, `openshell-policy-history`, `openshell-provider-list` | Yes | n/a |
 | 2 | Narrow | `openshell-egress-block-host`, `openshell-policy-endpoint-remove`, `openshell-policy-binary-remove` | Yes | Yes <sup>1</sup> |
-| 3 | Cut | `openshell-policy-rule-remove`, `openshell-provider-detach` | Yes | Rule: yes <sup>1</sup><br/>Provider: **no** |
+| 3 | Cut | `openshell-policy-rule-remove`, `openshell-provider-detach` | Yes | Rule: yes <sup>1</sup><br/>Provider: in OpenShell only |
 | 4 | Pause | `openshell-sandbox-stop`, `openshell-sandbox-suspend` | No | Yes, with `start` / `resume` |
 | 5 | Remove | `openshell-sandbox-delete` | No | **No** |
 
-<sup>1</sup> Policy changes create a new revision. Restore access by adding the entry back in OpenShell. `openshell-policy-history` shows what changed and why.
+<sup>1</sup> Policy changes create a new revision. Restore access by adding the entry back in OpenShell. `openshell-policy-history` lists each revision.
 
 ## What's in the pack
 
@@ -89,14 +89,14 @@ If the agent keeps misbehaving, stop it. Its identity and workspace are kept for
 ```
 
 > [!NOTE]
-> `openshell-egress-block-host` removes exact entries only. If a wildcard entry such as `*.example.com` still allows the host, the command lists it under `OpenShell.EgressBlock.WildcardMatches`. Remove that rule with `openshell-policy-rule-remove`, or stop the sandbox.
+> `openshell-egress-block-host` removes exact entries only. If a wildcard entry such as `*.example.com` still allows the host, the command lists it under `OpenShell.PolicyChange.WildcardMatches`. Remove that entry with `openshell-policy-endpoint-remove`, or stop the sandbox.
 
 ## Before you start
 
 | Requirement | Details |
 | --- | --- |
 | OpenShell gateway | Version 0.1.6 or later. |
-| Cortex engine | An engine that can reach the gateway host and port. The gateway is usually private, so the integration cannot run without an engine. |
+| Cortex engine | An engine that can reach the gateway host and port. When the gateway is private, which is typical, the integration must run on an engine. |
 | Credentials | Mutual TLS files (`ca.crt`, `tls.crt`, `tls.key`) from the OpenShell CLI configuration, usually `~/.config/openshell/gateways/<gateway>/mtls/`, **or** an OIDC bearer token. |
 
 <details>
@@ -114,7 +114,7 @@ Paste the access token in **OIDC bearer token**. The integration does not refres
 </details>
 
 > [!WARNING]
-> `openshell-sandbox-delete` and `openshell-provider-detach` cannot be undone. Both require `confirm=yes`. Prefer `openshell-sandbox-stop` during an investigation, so the sandbox can be examined and started again.
+> `openshell-sandbox-delete` cannot be undone, and this integration cannot re-attach a provider after `openshell-provider-detach`. Both commands require `confirm=yes`. Prefer `openshell-sandbox-stop` during an investigation, so the sandbox can be examined and started again.
 
 ## Known limitations
 
