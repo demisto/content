@@ -13,7 +13,7 @@ Helps make your environment ready for testing purpose for your playbooks or auto
 | Password |  | False |
 | User ID for Read-Only |  | False |
 | Password |  | False |
-| Authentication Method | Some of the browsers such as Chrome may not support Digest-sha256. | False |
+| Authentication Method | Some of the browsers such as Chrome may not support Digest-sha256. When set, the User ID for Read/Write and its password are required. | False |
 | Public Read Access | Authentication is not requiured for read access | False |
 | MIME Types for file extensions | "mime-type  extension \[extension\]\*" for each line, wild-card file extensions are supported. | False |
 | Merge with Default MIME Types | Set true to merge the specified types with the default settings, false to replace them | False |
