@@ -7,3 +7,4 @@ schema: ''
 tags: Qualys
 supportedModules:
 - xsiam
+# rules investigation
