@@ -15,7 +15,7 @@ args:
   - pack_detail
   - close_review
   required: true
-- description: Core REST API integration instance name. Required for actions that access tenant APIs.
+- description: The Core REST API integration instance name. Required for actions that access tenant APIs.
   name: core_instance
 - defaultValue: jev-1.13.0
   description: Expected TypeSafe Jev model alias for prepared and validated review batches.
@@ -33,7 +33,7 @@ args:
 - description: Release review plan returned by the prepare_ai action.
   name: review_plan
 - isArray: true
-  description: Jev response or responses to validate and apply.
+  description: A list of JSON-serialized Jev response objects, one per analysis batch. A single response can also be passed as a JSON string.
   name: analysis_response
 - description: Serialized release evidence batch supplied to the analysis sub-playbook.
   name: batch_json
@@ -49,7 +49,7 @@ args:
   name: case_id
 - description: 'close_review: resolution comment for issue and case. Optional; default "Marketplace Guard: <pack> updated to <target_version>, verified".'
   name: comment
-comment: Jev-reviewed platform Marketplace updates with recursive mandatory dependency installation and verified results.
+comment: Reviews Cortex Marketplace updates with Jev and installs eligible updates after dependency checks and verified results.
 commonfields:
   id: TypeSafeJevMarketplaceAssessment
   version: -1
@@ -94,43 +94,85 @@ outputs:
   type: Unknown
 - contextPath: TypeSafeJevMarketplace.PackDetail.pack_id
   description: Pack ID.
-  type: Unknown
+  type: String
 - contextPath: TypeSafeJevMarketplace.PackDetail.pack_name
   description: Pack display name.
-  type: Unknown
+  type: String
+- contextPath: TypeSafeJevMarketplace.PackDetail.installed
+  description: Whether the pack is installed.
+  type: Boolean
 - contextPath: TypeSafeJevMarketplace.PackDetail.installed_version
   description: Currently installed version (null if not installed).
-  type: Unknown
+  type: String
 - contextPath: TypeSafeJevMarketplace.PackDetail.latest_version
   description: Latest version available in Marketplace.
-  type: Unknown
+  type: String
 - contextPath: TypeSafeJevMarketplace.PackDetail.target_version
   description: Version under review (input target_version or latest).
-  type: Unknown
+  type: String
 - contextPath: TypeSafeJevMarketplace.PackDetail.update_available
   description: True if Marketplace has a newer version than installed.
-  type: Unknown
+  type: Boolean
 - contextPath: TypeSafeJevMarketplace.PackDetail.target_in_marketplace
   description: True if target version exists in the Marketplace changelog.
-  type: Unknown
+  type: Boolean
 - contextPath: TypeSafeJevMarketplace.PackDetail.releases
   description: 'Versions after installed up to target: version, released, breaking, breaking_notes, release_notes, github_url.'
   type: Unknown
 - contextPath: TypeSafeJevMarketplace.PackDetail.marketplace_url
   description: Marketplace page link.
-  type: Unknown
+  type: String
 - contextPath: TypeSafeJevMarketplace.PackDetail.dependencies
   description: 'Declared Marketplace dependencies: pack_id, mandatory, required_min_version.'
   type: Unknown
 - contextPath: TypeSafeJevMarketplace.PackDetail.gaps
   description: Data that could not be retrieved.
   type: Unknown
+- contextPath: TypeSafeJevMarketplace.CloseReview
+  description: Verified closure result for a Marketplace review issue and its linked case.
+  type: Unknown
+- contextPath: TypeSafeJevMarketplace.CloseReview.dry_run
+  description: Whether the action returned a preview without changing tenant state.
+  type: Boolean
+- contextPath: TypeSafeJevMarketplace.CloseReview.would_resolve
+  description: Whether the verified issue and case would be resolved when dry_run is false.
+  type: Boolean
+- contextPath: TypeSafeJevMarketplace.CloseReview.pack
+  description: Pack ID whose review was closed.
+  type: String
+- contextPath: TypeSafeJevMarketplace.CloseReview.target_version
+  description: Verified installed target version.
+  type: String
+- contextPath: TypeSafeJevMarketplace.CloseReview.installed_version
+  description: Installed version verified before closing the review.
+  type: String
+- contextPath: TypeSafeJevMarketplace.CloseReview.issue_id
+  description: Resolved Marketplace review issue ID.
+  type: String
+- contextPath: TypeSafeJevMarketplace.CloseReview.case_id
+  description: Resolved case ID linked to the review issue.
+  type: String
+- contextPath: TypeSafeJevMarketplace.CloseReview.issue_comment
+  description: Resolution comment applied to the issue and case.
+  type: String
+- contextPath: TypeSafeJevMarketplace.CloseReview.issue_status
+  description: Verified issue status after resolution.
+  type: String
+- contextPath: TypeSafeJevMarketplace.CloseReview.case_status
+  description: Verified case status after resolution.
+  type: String
+- contextPath: TypeSafeJevMarketplace.CloseReview.list_updated
+  description: Whether the review ledger was updated.
+  type: Boolean
+- contextPath: TypeSafeJevMarketplace.CloseReview.completed_at
+  description: Completion time of the verified closure.
+  type: Date
 runas: DBotWeakRole
 runonce: false
 script: ''
 fromversion: 6.10.0
 tests:
-- TypeSafeJevMarketplaceAssessment_test
+- No tests
 marketplaces:
 - marketplacev2
 - platform

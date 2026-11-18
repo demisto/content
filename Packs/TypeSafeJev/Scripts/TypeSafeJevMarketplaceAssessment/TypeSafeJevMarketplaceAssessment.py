@@ -13,8 +13,8 @@ from urllib.parse import quote
 try:
     import demistomock as demisto
 except ModuleNotFoundError:
-    # Some XSIAM runtime images provide Demisto through CommonServerPython only.
-    demisto = None
+    # Cortex automation runtimes inject `demisto`; demistomock is a local test shim.
+    pass
 
 from CommonServerPython import *  # noqa: F401,F403
 
@@ -1488,7 +1488,7 @@ def pack_detail(pack_id, target_version, instance):
     }
 
 
-def close_review(args, instance):
+def close_review(args, instance, dry_run=True):
     """Resolve a review issue only after verifying that the exact target is installed."""
     pack_id, target = str(args.get("pack") or "").strip(), str(args.get("target_version") or "").strip()
     if not pack_id or not target:
@@ -1543,6 +1543,21 @@ def close_review(args, instance):
         raise ValueError("No case is linked to the review issue; no changes made")
     if case_ids and case_id not in case_ids:
         raise ValueError("case_id is not linked to the review issue; no changes made")
+    if dry_run:
+        return {
+            "dry_run": True,
+            "would_resolve": True,
+            "pack": pack_id,
+            "target_version": target,
+            "installed_version": installed["currentVersion"],
+            "issue_id": issue_id,
+            "case_id": case_id,
+            "issue_comment": comment,
+            "issue_status": issue.get("status.progress") or issue.get("status"),
+            "case_status": "would_resolve",
+            "list_updated": False,
+            "completed_at": now_iso(),
+        }
     try:
         core(
             "post",
@@ -1613,6 +1628,7 @@ def close_review(args, instance):
     }
     _save_ledger(state, instance)
     return {
+        "dry_run": False,
         "pack": pack_id,
         "target_version": target,
         "installed_version": installed["currentVersion"],
@@ -1673,10 +1689,9 @@ def main(args):
             pack_detail(str(args.get("pack") or "").strip(), str(args.get("target_version") or "").strip() or None, instance),
         )
     elif action == "close_review":
-        key, value = CONTEXT + ".CloseReview", close_review(args, instance)
+        key, value = CONTEXT + ".CloseReview", close_review(args, instance, dry_run)
     else:
         raise ValueError(f"Unsupported action: {action}")
-    demisto.setContext(key, value)
     return_results(CommandResults(readable_output=json.dumps(value, indent=2), outputs_prefix=key, outputs=value))
 
 
@@ -1685,4 +1700,4 @@ if __name__ in ("__builtin__", "__main__"):
         main(demisto.args())
     except Exception as exc:  # noqa: BLE001 - surface safe, actionable automation errors
         demisto.error(traceback.format_exc())
-        return_error(str(exc))
+        return_error(f"Failed to execute TypeSafeJevMarketplaceAssessment: {exc}", error=exc)

@@ -701,6 +701,30 @@ def test_close_review_requires_matching_installed_target(monkeypatch):
         marketplace.close_review({"pack": "", "target_version": "2.0.0"}, "Core")
 
 
+def test_close_review_dry_run_does_not_change_issue_case_or_ledger(monkeypatch):
+    calls = []
+
+    def fake_core(method, uri, *_args, **_kwargs):
+        calls.append((method, uri))
+        if method == "get" and uri == "/contentpacks/metadata/installed":
+            return [{"id": "ExamplePack", "currentVersion": "2.0.0"}]
+        if method == "get" and uri == "/lists":
+            return [{"name": "TypeSafeJevMarketplaceGuardReviewV1", "data": '{"review:ExamplePack:2.0.0":{"issue_id":"123"}}'}]
+        if method == "post" and uri == "/public_api/v1/issue/search":
+            return {"reply": {"DATA": [{"id": 123, "status": "New", "case_ids": [456]}]}}
+        raise AssertionError((method, uri))
+
+    monkeypatch.setattr(marketplace, "core", fake_core)
+    result = marketplace.close_review({"pack": "ExamplePack", "target_version": "2.0.0"}, "Core", dry_run=True)
+
+    assert result["would_resolve"] is True
+    assert result["dry_run"] is True
+    assert result["list_updated"] is False
+    assert result["issue_id"] == "123"
+    assert result["case_id"] == "456"
+    assert all("update_incident" not in uri and uri != "/lists/save" for _, uri in calls)
+
+
 def test_review_issue_helpers_resolve_and_reconcile(monkeypatch):
     assert marketplace._issue_is_open({"status": "New"})
     assert not marketplace._issue_is_open({"status.progress": "Resolved"})

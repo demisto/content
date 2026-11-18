@@ -12,8 +12,9 @@ potentially breaking updates to manual review. The playbook starts in dry-run
 mode and does not change packs or cases unless `DryRun` is explicitly set to
 `false`. For approved releases it delegates installation to the maintained
 `CommonScripts` `ContentPackInstaller` automation and verifies the installed
-version. Existing XSOAR content update notifications remain useful for basic
-release awareness; this playbook adds tenant-specific impact review and guarded
+version. Existing Cortex XSOAR content update notifications remain useful for
+basic release awareness. The Marketplace assessment playbook is currently
+supported on Cortex XSIAM and adds tenant-specific impact review and guarded
 installation.
 
 The integration exposes five commands:
