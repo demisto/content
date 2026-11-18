@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 71da9d48-e54d-4f61-8d7d-016007f2c0b8
+    taskid: 30b3badd-aed0-458c-8a54-75afc1139c75
     type: start
     task:
-      id: 71da9d48-e54d-4f61-8d7d-016007f2c0b8
+      id: 30b3badd-aed0-458c-8a54-75afc1139c75
       version: -1
       name: ""
       type: start
@@ -37,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 02289427-2dee-45dd-8399-6af5d1365d41
+    taskid: 009a0d37-1612-4202-8bbf-cf04464f51fd
     type: condition
     task:
-      id: 02289427-2dee-45dd-8399-6af5d1365d41
+      id: 009a0d37-1612-4202-8bbf-cf04464f51fd
       version: -1
       name: Is Google Threat Intelligence - Agentic integration enabled?
       description: Checks whether the Google Threat Intelligence - Agentic integration is enabled.
@@ -99,10 +99,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 46d2ae95-1e6b-469b-8f6b-fdd2a05d6fc4
+    taskid: c6d9a305-31f9-47ed-8062-09db3e6fa931
     type: regular
     task:
-      id: 46d2ae95-1e6b-469b-8f6b-fdd2a05d6fc4
+      id: c6d9a305-31f9-47ed-8062-09db3e6fa931
       version: -1
       name: Retrieve the Flows
       description: Retrieves the GTI Agentic Flows that are accessible to the configured API key.
@@ -134,10 +134,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 50331c5e-65ad-4200-8151-5774f9e640ce
+    taskid: edd87213-d910-4162-8dcb-fbab8b5a1155
     type: regular
     task:
-      id: 50331c5e-65ad-4200-8151-5774f9e640ce
+      id: edd87213-d910-4162-8dcb-fbab8b5a1155
       version: -1
       name: Store the selected Flow ID
       description: Stores the ID of the GTI Agentic Flow that the analyst selected.
@@ -172,8 +172,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 1440
+          "x": 520,
+          "y": 1270
         }
       }
     note: false
@@ -185,10 +185,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: b29440e6-f279-4875-8073-4a26a92cf566
+    taskid: 010b33b5-367a-4eaf-8e7f-1fa581870b47
     type: regular
     task:
-      id: b29440e6-f279-4875-8073-4a26a92cf566
+      id: 010b33b5-367a-4eaf-8e7f-1fa581870b47
       version: -1
       name: Store the provided Flow ID
       description: Stores the ID of the GTI Agentic Flow that the playbook inputs include.
@@ -203,7 +203,10 @@ tasks:
       key:
         simple: GTIAgenticFlowID
       value:
-        simple: ${inputs.FlowID}
+        complex:
+          root: inputs.FlowID
+          transformers:
+          - operator: trim
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -222,10 +225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 0b960f00-e7f4-42b1-8887-14b1d052649e
+    taskid: a03072fd-556e-4066-8112-8775989ed612
     type: regular
     task:
-      id: 0b960f00-e7f4-42b1-8887-14b1d052649e
+      id: a03072fd-556e-4066-8112-8775989ed612
       version: -1
       name: Execute the Flow
       description: Triggers an immediate run of the GTI Agentic Flow.
@@ -245,7 +248,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1620
+          "y": 1900
         }
       }
     note: false
@@ -257,10 +260,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: cb843e8d-8c21-4a40-80a6-3c27054c6412
+    taskid: d866fca5-6c04-47ef-8293-bd31189f6ecc
     type: regular
     task:
-      id: cb843e8d-8c21-4a40-80a6-3c27054c6412
+      id: d866fca5-6c04-47ef-8293-bd31189f6ecc
       version: -1
       name: Store the Flow Execution ID
       description: Stores the ID of the Flow Execution that the run of the Flow created.
@@ -296,7 +299,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1800
+          "y": 2070
         }
       }
     note: false
@@ -308,10 +311,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 64139e97-eca3-4915-86f8-6390064273c2
+    taskid: 8e5681dd-e796-4ed5-86cd-d5b674fa71e3
     type: playbook
     task:
-      id: 64139e97-eca3-4915-86f8-6390064273c2
+      id: 8e5681dd-e796-4ed5-86cd-d5b674fa71e3
       version: -1
       name: GenericPolling
       description: Polls the status of the Flow Execution until it reaches a terminal status or the timeout is reached.
@@ -326,13 +329,35 @@ tasks:
       Ids:
         simple: ${GTIAgenticFlowExecutionID}
       Interval:
-        simple: ${inputs.PollingInterval}
+        complex:
+          root: inputs.PollingInterval
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: "true"
+              defaultValue:
+                value:
+                  simple: "1"
       PollingCommandArgName:
         simple: execution_id
       PollingCommandName:
         simple: gti-agentic-flow-execution-get
       Timeout:
-        simple: ${inputs.PollingTimeout}
+        complex:
+          root: inputs.PollingTimeout
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: "true"
+              defaultValue:
+                value:
+                  simple: "60"
       dt:
         simple: GoogleThreatIntelligenceAgentic.FlowExecution(val.status !== 'EXECUTION_STATUS_COMPLETED' && val.status !== 'EXECUTION_STATUS_FAILED' && val.status !== 'EXECUTION_STATUS_CANCELLED').id
     separatecontext: true
@@ -346,7 +371,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1980
+          "y": 2250
         }
       }
     note: false
@@ -358,10 +383,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 333e0f85-0208-430e-80a8-71cbc10dda9a
+    taskid: dda45f7f-34f2-4891-839c-5b998041544e
     type: regular
     task:
-      id: 333e0f85-0208-430e-80a8-71cbc10dda9a
+      id: dda45f7f-34f2-4891-839c-5b998041544e
       version: -1
       name: Retrieve the Flow Execution result
       description: Retrieves the status, the duration, the output of every step and the response of the agent of the Flow Execution.
@@ -381,7 +406,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2160
+          "y": 2410
         }
       }
     note: false
@@ -393,21 +418,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: aeee5842-9873-460a-821e-58ba73c89b6e
+    taskid: 0eecc423-49e8-46df-8bc6-ef98898a1439
     type: condition
     task:
-      id: aeee5842-9873-460a-821e-58ba73c89b6e
+      id: 0eecc423-49e8-46df-8bc6-ef98898a1439
       version: -1
-      name: Did the Flow Execution reach a terminal status?
-      description: Checks whether the Flow Execution is completed, failed or cancelled.
+      name: Is the Flow Execution still in progress?
+      description: Checks whether the Flow Execution is still pending or running after the polling timeout.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
-      "yes":
       - "13"
+      "yes":
+      - "11"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -431,7 +456,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: EXECUTION_STATUS_COMPLETED
+              simple: EXECUTION_STATUS_PENDING
         - operator: isEqualString
           left:
             value:
@@ -451,33 +476,13 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: EXECUTION_STATUS_FAILED
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: GoogleThreatIntelligenceAgentic.FlowExecution
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: GoogleThreatIntelligenceAgentic.FlowExecution.id
-                      iscontext: true
-                    right:
-                      value:
-                        simple: GTIAgenticFlowExecutionID
-                      iscontext: true
-                accessor: status
-            iscontext: true
-          right:
-            value:
-              simple: EXECUTION_STATUS_CANCELLED
+              simple: EXECUTION_STATUS_RUNNING
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 2330
+          "y": 2580
         }
       }
     note: false
@@ -489,10 +494,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 4b298ee5-78bb-4fe0-8142-a7666464dedc
+    taskid: 54c5a7b4-7244-47bd-8e7e-8fe8e6e72b0c
     type: regular
     task:
-      id: 4b298ee5-78bb-4fe0-8142-a7666464dedc
+      id: 54c5a7b4-7244-47bd-8e7e-8fe8e6e72b0c
       version: -1
       name: Cancel the Flow Execution
       description: Cancels the Flow Execution that did not complete within the polling timeout.
@@ -512,7 +517,7 @@ tasks:
       {
         "position": {
           "x": 670,
-          "y": 2500
+          "y": 2750
         }
       }
     note: false
@@ -524,10 +529,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: f9c4695b-043a-4146-8411-6c938c8134d5
+    taskid: fc809927-a97f-4e60-86a5-114648044760
     type: regular
     task:
-      id: f9c4695b-043a-4146-8411-6c938c8134d5
+      id: fc809927-a97f-4e60-86a5-114648044760
       version: -1
       name: Warn about the timeout
       description: Reports that the Flow Execution was cancelled after the polling timeout.
@@ -540,7 +545,7 @@ tasks:
       - "13"
     scriptarguments:
       message:
-        simple: The GTI Agentic Flow Execution ${GTIAgenticFlowExecutionID} did not reach a terminal status within ${inputs.PollingTimeout} minutes and was cancelled.
+        simple: The GTI Agentic Flow Execution ${GTIAgenticFlowExecutionID} did not reach a terminal status within the polling timeout and was cancelled.
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -548,7 +553,7 @@ tasks:
       {
         "position": {
           "x": 670,
-          "y": 2660
+          "y": 2910
         }
       }
     note: false
@@ -560,10 +565,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: e3aa9f2b-7c5a-4b61-8713-7d4fe5f51365
+    taskid: c496cf45-e123-414b-8ce2-7c7e3286ff66
     type: condition
     task:
-      id: e3aa9f2b-7c5a-4b61-8713-7d4fe5f51365
+      id: c496cf45-e123-414b-8ce2-7c7e3286ff66
       version: -1
       name: Should the related objects be retrieved?
       description: Checks whether the related objects of the Flow Execution should be retrieved.
@@ -582,7 +587,10 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.RetrieveRelatedObjects
+              complex:
+                root: inputs.RetrieveRelatedObjects
+                transformers:
+                - operator: trim
             iscontext: true
           right:
             value:
@@ -593,7 +601,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2850
+          "y": 3090
         }
       }
     note: false
@@ -605,10 +613,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 7f204c3f-23a9-40d2-8597-5090adf09474
+    taskid: 2be1c1a4-041d-4cd6-8f44-95252e026fc4
     type: regular
     task:
-      id: 7f204c3f-23a9-40d2-8597-5090adf09474
+      id: 2be1c1a4-041d-4cd6-8f44-95252e026fc4
       version: -1
       name: Retrieve the related objects
       description: Retrieves the objects that are related to the Flow Execution.
@@ -623,14 +631,25 @@ tasks:
       execution_id:
         simple: ${GTIAgenticFlowExecutionID}
       relationship:
-        simple: ${inputs.Relationship}
+        complex:
+          root: inputs.Relationship
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: "true"
+              defaultValue:
+                value:
+                  simple: "Flow Snapshot"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 3100
+          "y": 3320
         }
       }
     note: false
@@ -642,10 +661,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 2862f3b5-2788-44d7-80ac-0855e238def9
+    taskid: 636ca5fe-3e45-485c-8280-d81b3d9e9335
     type: title
     task:
-      id: 2862f3b5-2788-44d7-80ac-0855e238def9
+      id: 636ca5fe-3e45-485c-8280-d81b3d9e9335
       version: -1
       name: Done
       type: title
@@ -657,8 +676,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -220,
-          "y": 3280
+          "x": -270,
+          "y": 3500
         }
       }
     note: false
@@ -670,10 +689,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: f7a2da9f-ab1c-46ec-822a-dc28ba3da965
+    taskid: 8027d1be-9c22-4895-80f7-f31fe08e757d
     type: condition
     task:
-      id: f7a2da9f-ab1c-46ec-822a-dc28ba3da965
+      id: 8027d1be-9c22-4895-80f7-f31fe08e757d
       version: -1
       name: Is the Flow ID provided?
       description: Checks whether the playbook inputs include the ID of the GTI Agentic Flow to execute.
@@ -692,7 +711,10 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.FlowID
+              complex:
+                root: inputs.FlowID
+                transformers:
+                - operator: trim
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -711,10 +733,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: b6f0e75d-5223-4d7a-84c7-5941cce29cd0
+    taskid: a147aa57-1a83-41c8-8b09-30d971e0fe61
     type: collection
     task:
-      id: b6f0e75d-5223-4d7a-84c7-5941cce29cd0
+      id: a147aa57-1a83-41c8-8b09-30d971e0fe61
       version: -1
       name: Select the Flow
       description: Asks the analyst which of the retrieved GTI Agentic Flows to execute, or the full name of the Flow to execute when it is not listed.
@@ -798,10 +820,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: b67caf2c-2dae-4197-8594-906239880544
+    taskid: d41537fa-ea66-4349-8304-d57394cdef80
     type: regular
     task:
-      id: b67caf2c-2dae-4197-8594-906239880544
+      id: d41537fa-ea66-4349-8304-d57394cdef80
       version: -1
       name: Clear previous inputs
       description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
@@ -835,10 +857,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: b084d068-49f9-4aa6-882a-ef6662c581a1
+    taskid: 3b167403-919f-44d1-8eca-8f6d9b45fd34
     type: regular
     task:
-      id: b084d068-49f9-4aa6-882a-ef6662c581a1
+      id: 3b167403-919f-44d1-8eca-8f6d9b45fd34
       version: -1
       name: Retrieve the Flow by name
       description: Retrieves the GTI Agentic Flows whose name matches the name that the analyst provided.
@@ -848,19 +870,22 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "27"
     scriptarguments:
       limit:
         simple: "40"
       name:
-        simple: ${Select the Flow.Answers.1}
+        complex:
+          root: Select the Flow.Answers.1
+          transformers:
+          - operator: trim
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1270
+          "x": 230,
+          "y": 1400
         }
       }
     note: false
@@ -872,10 +897,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: b952d46c-003d-4164-8a2b-d60210ca38fe
+    taskid: 25118bfd-e6f2-4812-8aac-ad08112362de
     type: condition
     task:
-      id: b952d46c-003d-4164-8a2b-d60210ca38fe
+      id: 25118bfd-e6f2-4812-8aac-ad08112362de
       version: -1
       name: Is the Flow selected?
       description: Checks whether the analyst selected a Flow from the retrieved GTI Agentic Flows or provided the full name of the Flow to execute.
@@ -903,7 +928,10 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Select the Flow.Answers.1
+              complex:
+                root: Select the Flow.Answers.1
+                transformers:
+                - operator: trim
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -922,10 +950,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 9dccf14b-a2e7-4d73-8946-ff68443ce183
+    taskid: 89f26db4-da65-490e-8271-196e56386981
     type: regular
     task:
-      id: 9dccf14b-a2e7-4d73-8946-ff68443ce183
+      id: 89f26db4-da65-490e-8271-196e56386981
       version: -1
       name: Store the Flow ID of the provided name
       description: Stores the ID of the GTI Agentic Flow whose name exactly matches the name that the analyst provided.
@@ -950,7 +978,10 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: Select the Flow.Answers.1
+                  complex:
+                    root: Select the Flow.Answers.1
+                    transformers:
+                    - operator: trim
                 iscontext: true
           accessor: id
           transformers:
@@ -961,7 +992,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1440
+          "y": 1730
         }
       }
     note: false
@@ -973,10 +1004,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 2fe600ca-4cf8-4f02-88df-0dbf1bc45e4b
+    taskid: fec7e1fa-07d3-44c6-8d37-f6846ca467e8
     type: regular
     task:
-      id: 2fe600ca-4cf8-4f02-88df-0dbf1bc45e4b
+      id: fec7e1fa-07d3-44c6-8d37-f6846ca467e8
       version: -1
       name: Integration is not enabled
       description: Reports that the Google Threat Intelligence - Agentic integration is not enabled.
@@ -995,7 +1026,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -220,
+          "x": -270,
           "y": 570
         }
       }
@@ -1008,10 +1039,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 66a12bdc-b565-40b3-8267-c3d5452e3acb
+    taskid: 4081a30b-1a32-409d-8edd-b29be5d60c83
     type: regular
     task:
-      id: 66a12bdc-b565-40b3-8267-c3d5452e3acb
+      id: 4081a30b-1a32-409d-8edd-b29be5d60c83
       version: -1
       name: Retrieve the Flow details
       description: Retrieves the details of the GTI Agentic Flow to execute.
@@ -1043,10 +1074,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 7b9210a7-5622-4494-80aa-0413e0ce8442
+    taskid: ed17fe48-4bd0-40b4-8949-a67ad6206c84
     type: regular
     task:
-      id: 7b9210a7-5622-4494-80aa-0413e0ce8442
+      id: ed17fe48-4bd0-40b4-8949-a67ad6206c84
       version: -1
       name: No Flow selected
       description: Reports that the analyst did not select or provide a GTI Agentic Flow to execute.
@@ -1065,8 +1096,99 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 10,
+          "x": -50,
           "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: eb9303b3-0be8-4a2c-875d-5ad2133ea389
+    type: condition
+    task:
+      id: eb9303b3-0be8-4a2c-875d-5ad2133ea389
+      version: -1
+      name: Is the Flow found?
+      description: Checks whether a GTI Agentic Flow whose name exactly matches the name that the analyst provided was found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GoogleThreatIntelligenceAgentic.Flow
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GoogleThreatIntelligenceAgentic.Flow.name
+                      iscontext: true
+                    right:
+                      value:
+                        complex:
+                          root: Select the Flow.Answers.1
+                          transformers:
+                          - operator: trim
+                      iscontext: true
+                accessor: id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: faefa715-1baa-456f-8427-3e45441158fe
+    type: regular
+    task:
+      id: faefa715-1baa-456f-8427-3e45441158fe
+      version: -1
+      name: No Flow found
+      description: Reports that no GTI Agentic Flow matches the name that the analyst provided.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      message:
+        simple: No GTI Agentic Flow was found with the provided name. Exiting the playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 1730
         }
       }
     note: false
@@ -1079,23 +1201,25 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "10_11_#default#": 0.54,
-      "10_13_yes": 0.52,
-      "13_14_yes": 0.64,
-      "13_15_#default#": 0.14,
+      "10_11_yes": 0.52,
+      "10_13_#default#": 0.49,
+      "13_14_yes": 0.65,
+      "13_15_#default#": 0.11,
       "18_3_#default#": 0.45,
       "18_5_yes": 0.51,
       "1_18_yes": 0.57,
       "1_24_#default#": 0.15,
-      "22_21_Name provided": 0.5,
+      "22_21_Name provided": 0.61,
       "22_26_#default#": 0.5,
-      "22_4_yes": 0.25
+      "22_4_yes": 0.63,
+      "27_23_yes": 0.51,
+      "27_28_#default#": 0.53
     },
     "paper": {
       "dimensions": {
-        "height": 3385,
-        "width": 1270,
-        "x": -220,
+        "height": 3605,
+        "width": 1320,
+        "x": -270,
         "y": -40
       }
     }

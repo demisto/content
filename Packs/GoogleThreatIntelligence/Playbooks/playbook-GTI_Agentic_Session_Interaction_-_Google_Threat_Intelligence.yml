@@ -1,15 +1,15 @@
 id: GTI Agentic Session Interaction - Google Threat Intelligence
 version: -1
 name: GTI Agentic Session Interaction - Google Threat Intelligence
-description: This playbook interacts with the Google Threat Intelligence agent through a GTI Agentic Session. It asks the analyst for the message when it is not provided, posts the message to the provided session, or asks the analyst whether to continue an existing session or to create a new one, and displays the answer of the agent. It then asks the analyst whether to continue the conversation and, if so, asks for the next message after every answer, until the analyst ends the conversation. Finally, it retrieves the complete conversation of the session and optionally shares the session. The playbook supports up to 100 follow-up messages after the first message.
+description: This playbook interacts with the Google Threat Intelligence agent through a GTI Agentic Session. It asks the analyst for the message when it is not provided, posts the message to the provided session, or asks the analyst whether to continue an existing session or to create a new one, and displays the answer of the agent. It then asks the analyst whether to send a follow-up message and, if so, asks for the next message after every answer, until the analyst declines or submits an empty message. Finally, it retrieves the complete conversation of the session and optionally shares the session. The playbook supports up to 100 follow-up messages after the first message.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2708fa23-29e7-43cd-8325-9d8bda68294f
+    taskid: 1a69a1d8-c5b2-457b-8df5-54d85eb14469
     type: start
     task:
-      id: 2708fa23-29e7-43cd-8325-9d8bda68294f
+      id: 1a69a1d8-c5b2-457b-8df5-54d85eb14469
       version: -1
       name: ""
       type: start
@@ -37,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e4528cea-a840-4be9-8a41-8f57353b01e7
+    taskid: ff01404d-c971-4444-8e36-5cadd6460838
     type: regular
     task:
-      id: e4528cea-a840-4be9-8a41-8f57353b01e7
+      id: ff01404d-c971-4444-8e36-5cadd6460838
       version: -1
       name: Clear previous inputs
       description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
@@ -74,10 +74,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3b2e459a-9be8-4e7b-8cad-eee566a03405
+    taskid: 4dcc9d50-a900-4397-85b5-8dc7ac245dca
     type: condition
     task:
-      id: 3b2e459a-9be8-4e7b-8cad-eee566a03405
+      id: 4dcc9d50-a900-4397-85b5-8dc7ac245dca
       version: -1
       name: Is Google Threat Intelligence - Agentic integration enabled?
       description: Checks whether the Google Threat Intelligence - Agentic integration is enabled.
@@ -136,10 +136,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 82f48123-dc14-4df5-8a79-65a4b9cc2500
+    taskid: 4d6bde22-d242-4afc-8347-23c409aaa477
     type: regular
     task:
-      id: 82f48123-dc14-4df5-8a79-65a4b9cc2500
+      id: 4d6bde22-d242-4afc-8347-23c409aaa477
       version: -1
       name: Integration is not enabled
       description: Reports that the Google Threat Intelligence - Agentic integration is not enabled.
@@ -171,10 +171,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 1cffd15c-7d10-4999-8b5b-3a629f0fa5ba
+    taskid: 724e7e2a-0884-4513-82d8-dd42315352c3
     type: condition
     task:
-      id: 1cffd15c-7d10-4999-8b5b-3a629f0fa5ba
+      id: 724e7e2a-0884-4513-82d8-dd42315352c3
       version: -1
       name: Is the Session ID provided?
       description: Checks whether the playbook inputs include the ID of an existing GTI Agentic Session to continue.
@@ -193,7 +193,10 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.SessionID
+              complex:
+                root: inputs.SessionID
+                transformers:
+                - operator: trim
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -212,10 +215,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: eaa80401-8245-4a9b-8c44-55e0628c9a18
+    taskid: ba5a22c5-8e84-4d30-8b06-4c0fcf054b20
     type: regular
     task:
-      id: eaa80401-8245-4a9b-8c44-55e0628c9a18
+      id: ba5a22c5-8e84-4d30-8b06-4c0fcf054b20
       version: -1
       name: Create the session
       description: Creates a new GTI Agentic Session by sending the message to the Google Threat Intelligence agent.
@@ -240,6 +243,7 @@ tasks:
                 value:
                   simple: Provide the Message.Answers.1
                 iscontext: true
+          - operator: trim
       message:
         simple: ${GTIAgenticSessionMessage}
     separatecontext: false
@@ -260,10 +264,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: cf728b16-9e46-4a2f-8bca-64971cc80f15
+    taskid: 2b7539fb-da0d-4a25-8eb0-cf40574a9f97
     type: regular
     task:
-      id: cf728b16-9e46-4a2f-8bca-64971cc80f15
+      id: 2b7539fb-da0d-4a25-8eb0-cf40574a9f97
       version: -1
       name: Store the provided Session ID
       description: Stores the ID of the GTI Agentic Session that the playbook inputs include.
@@ -278,7 +282,10 @@ tasks:
       key:
         simple: GTIAgenticSessionID
       value:
-        simple: ${inputs.SessionID}
+        complex:
+          root: inputs.SessionID
+          transformers:
+          - operator: trim
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -297,10 +304,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 75ac5a78-5789-49a7-89b6-c5869170326b
+    taskid: 803b7cd0-70c3-4d5e-88e3-0c7e91bbe66f
     type: regular
     task:
-      id: 75ac5a78-5789-49a7-89b6-c5869170326b
+      id: 803b7cd0-70c3-4d5e-88e3-0c7e91bbe66f
       version: -1
       name: Store the created Session ID
       description: Stores the ID of the GTI Agentic Session that the playbook created.
@@ -338,10 +345,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 086ff0c6-0f7f-4de5-825f-cf1cdfb2a688
+    taskid: 044f7ea5-1fe9-4eee-800f-c5ba30eb0b3f
     type: regular
     task:
-      id: 086ff0c6-0f7f-4de5-825f-cf1cdfb2a688
+      id: 044f7ea5-1fe9-4eee-800f-c5ba30eb0b3f
       version: -1
       name: Post the message
       description: Sends the message to the Google Threat Intelligence agent in the existing GTI Agentic Session.
@@ -366,6 +373,7 @@ tasks:
                 value:
                   simple: Provide the Message.Answers.1
                 iscontext: true
+          - operator: trim
       message:
         simple: ${GTIAgenticSessionMessage}
       session_id:
@@ -388,10 +396,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 3c21d177-fba7-44cf-83da-c593bccf0cea
+    taskid: 6030387d-42b3-4a9c-8ef7-ff4f42c96bc1
     type: regular
     task:
-      id: 3c21d177-fba7-44cf-83da-c593bccf0cea
+      id: 6030387d-42b3-4a9c-8ef7-ff4f42c96bc1
       version: -1
       name: Display the answer
       description: Displays the latest answer of the Google Threat Intelligence agent in the War Room, rendered as markdown.
@@ -436,18 +444,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: f73f999c-880d-4d36-8024-c0d7da35794b
+    taskid: 56b5709a-2c70-4562-8bf3-6b87cbfd9ee3
     type: condition
     task:
-      id: f73f999c-880d-4d36-8024-c0d7da35794b
+      id: 56b5709a-2c70-4562-8bf3-6b87cbfd9ee3
       version: -1
-      name: Do you want to continue the conversation?
-      description: Asks the analyst whether to continue the conversation with the Google Threat Intelligence agent.
+      name: Do you want to send a follow-up message?
+      description: Asks the analyst whether to send a follow-up message to the Google Threat Intelligence agent, or to end the conversation.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
+      "No":
       - "13"
       "Yes":
       - "12"
@@ -467,7 +475,7 @@ tasks:
       to:
       subject:
       body:
-        simple: Do you want to continue the conversation with the Google Threat Intelligence agent in the GTI Agentic Session ${GTIAgenticSessionID}?
+        simple: Do you want to send a follow-up message to the Google Threat Intelligence agent in the GTI Agentic Session ${GTIAgenticSessionID}? Select No to end the conversation.
       methods: []
       format: ""
       bcc:
@@ -480,16 +488,17 @@ tasks:
         completeaftersla: false
       replyOptions:
       - "Yes"
+      - "No"
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 7f08e9dc-5c3a-4473-8c8f-8991c15648e4
+    taskid: 754845cf-9572-4e6f-8b74-332ae664e069
     type: playbook
     task:
-      id: 7f08e9dc-5c3a-4473-8c8f-8991c15648e4
+      id: 754845cf-9572-4e6f-8b74-332ae664e069
       version: -1
       name: GTI Agentic Session Conversation Turn - Google Threat Intelligence
       description: Performs the turns of the conversation with the Google Threat Intelligence agent until the analyst ends the conversation, up to 100 follow-up messages.
@@ -535,10 +544,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 4bbbfb59-ee6c-4267-81bc-9796ca2d9d33
+    taskid: 48fe2627-7486-4e33-87bd-b96f2c0d5f8d
     type: regular
     task:
-      id: 4bbbfb59-ee6c-4267-81bc-9796ca2d9d33
+      id: 48fe2627-7486-4e33-87bd-b96f2c0d5f8d
       version: -1
       name: Retrieve the final session
       description: Retrieves the details of the GTI Agentic Session, along with its complete conversation.
@@ -570,18 +579,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: ac2a32f2-fb53-48dc-816f-ab561cbed0f1
+    taskid: 2d0a71bd-2131-401f-8afa-0caef8d47c82
     type: condition
     task:
-      id: ac2a32f2-fb53-48dc-816f-ab561cbed0f1
+      id: 2d0a71bd-2131-401f-8afa-0caef8d47c82
       version: -1
       name: Do you want to share the session?
-      description: Asks the analyst whether the GTI Agentic Session should be shared.
+      description: Asks the analyst whether to retrieve a share token of the GTI Agentic Session.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
+      "No":
       - "17"
       "Yes":
       - "16"
@@ -614,16 +623,17 @@ tasks:
         completeaftersla: false
       replyOptions:
       - "Yes"
+      - "No"
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: b8495976-207f-46c5-891e-fd5ad1b9dc20
+    taskid: 29adde3e-a082-430e-8c3f-b38e0f6b654b
     type: regular
     task:
-      id: b8495976-207f-46c5-891e-fd5ad1b9dc20
+      id: 29adde3e-a082-430e-8c3f-b38e0f6b654b
       version: -1
       name: Share the session
       description: Retrieves a share token of the GTI Agentic Session and displays it in the War Room. The share token is also stored in the incident context, hence it is visible to everyone with access to the incident.
@@ -655,10 +665,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 7bbb463e-a6fb-4733-89c9-d7466f5f6658
+    taskid: 82c1e237-c51f-482d-8c3f-72766f7cf959
     type: title
     task:
-      id: 7bbb463e-a6fb-4733-89c9-d7466f5f6658
+      id: 82c1e237-c51f-482d-8c3f-72766f7cf959
       version: -1
       name: Done
       type: title
@@ -683,10 +693,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 265f86fc-46bd-4d29-8796-f8652d206562
+    taskid: 670fde29-a9f5-498c-836d-8f6d70271f79
     type: condition
     task:
-      id: 265f86fc-46bd-4d29-8796-f8652d206562
+      id: 670fde29-a9f5-498c-836d-8f6d70271f79
       version: -1
       name: Do you want to continue an existing session?
       description: Asks the analyst whether to continue an existing GTI Agentic Session or to create a new one.
@@ -734,10 +744,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 6f8782b1-1d3a-4110-8a58-250a09a40a23
+    taskid: 0167ba30-67b4-4237-8e9d-e261671a097e
     type: regular
     task:
-      id: 6f8782b1-1d3a-4110-8a58-250a09a40a23
+      id: 0167ba30-67b4-4237-8e9d-e261671a097e
       version: -1
       name: Retrieve the sessions
       description: Retrieves the GTI Agentic Sessions of the user that owns the configured API key.
@@ -769,10 +779,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 2c3dd0a2-e693-4479-82eb-dcbdf1335c06
+    taskid: 9ab32ef3-2d84-4bd2-816e-47d954f392cb
     type: collection
     task:
-      id: 2c3dd0a2-e693-4479-82eb-dcbdf1335c06
+      id: 9ab32ef3-2d84-4bd2-816e-47d954f392cb
       version: -1
       name: Select the Session
       description: Asks the analyst which of the retrieved GTI Agentic Sessions to continue, or the ID of the session to continue when it is not listed.
@@ -861,10 +871,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: b65668d9-055e-4f58-8fd5-e87f67631329
+    taskid: f0022a0e-ac2c-4daa-8824-cac02c9d0631
     type: condition
     task:
-      id: b65668d9-055e-4f58-8fd5-e87f67631329
+      id: f0022a0e-ac2c-4daa-8824-cac02c9d0631
       version: -1
       name: Is the session selected?
       description: Checks whether the analyst selected a session from the retrieved GTI Agentic Sessions or provided the ID of the session to continue.
@@ -888,7 +898,10 @@ tasks:
         - operator: isNotEmpty
           left:
             value:
-              simple: Select the Session.Answers.1
+              complex:
+                root: Select the Session.Answers.1
+                transformers:
+                - operator: trim
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -907,10 +920,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 5fa07927-cc04-478c-874b-1ebdaccb65e1
+    taskid: 14f3452f-625c-403a-83ab-805e15507980
     type: regular
     task:
-      id: 5fa07927-cc04-478c-874b-1ebdaccb65e1
+      id: 14f3452f-625c-403a-83ab-805e15507980
       version: -1
       name: Store the selected Session ID
       description: Stores the ID of the GTI Agentic Session that the analyst selected, or the ID that the analyst provided when no session is selected.
@@ -962,10 +975,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 18d46f03-930b-4d44-81c9-0502d7df53d6
+    taskid: 70ffea52-750f-4f90-870f-2f33b7764b44
     type: regular
     task:
-      id: 18d46f03-930b-4d44-81c9-0502d7df53d6
+      id: 70ffea52-750f-4f90-870f-2f33b7764b44
       version: -1
       name: No session selected
       description: Reports that the analyst did not select or provide a valid GTI Agentic Session to continue.
@@ -997,10 +1010,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: c1dada17-f86f-4b71-8ce6-f845b4d79318
+    taskid: c8210051-c786-4819-8506-63e2c8c497b8
     type: condition
     task:
-      id: c1dada17-f86f-4b71-8ce6-f845b4d79318
+      id: c8210051-c786-4819-8506-63e2c8c497b8
       version: -1
       name: Is the message provided?
       description: Checks whether the playbook inputs include the message to send to the Google Threat Intelligence agent.
@@ -1019,7 +1032,10 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.Message
+              complex:
+                root: inputs.Message
+                transformers:
+                - operator: trim
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1038,10 +1054,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 797d8986-a850-4f5e-800b-f6f93fdbbee3
+    taskid: d1d38762-f42a-47a9-8c61-70ad1719cb24
     type: collection
     task:
-      id: 797d8986-a850-4f5e-800b-f6f93fdbbee3
+      id: d1d38762-f42a-47a9-8c61-70ad1719cb24
       version: -1
       name: Provide the Message
       description: Asks the analyst for the message to send to the Google Threat Intelligence agent, and for the entry IDs of the files to attach to it.
@@ -1121,10 +1137,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: fdf34653-2e9d-461e-8236-a9f08e83225b
+    taskid: 7cf1b49f-0656-4417-80d8-110e29203f17
     type: regular
     task:
-      id: fdf34653-2e9d-461e-8236-a9f08e83225b
+      id: 7cf1b49f-0656-4417-80d8-110e29203f17
       version: -1
       name: Store the message
       description: Stores the message to send to the Google Threat Intelligence agent, from the playbook inputs or from the answer of the analyst.
@@ -1151,6 +1167,7 @@ tasks:
                 value:
                   simple: Provide the Message.Answers.0
                 iscontext: true
+          - operator: trim
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1169,10 +1186,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 0e87c336-f26c-418a-848f-5562781495e7
+    taskid: e9ad3387-9fac-4777-857b-4d489acb0d70
     type: regular
     task:
-      id: 0e87c336-f26c-418a-848f-5562781495e7
+      id: e9ad3387-9fac-4777-857b-4d489acb0d70
       version: -1
       name: Validate the Session ID
       description: Retrieves the GTI Agentic Session that the analyst selected or provided, to verify that it exists before the message is sent to it.
@@ -1206,9 +1223,9 @@ view: |-
   {
     "linkLabelsPosition": {
       "11_12_Yes": 0.45,
-      "11_13_#default#": 0.53,
+      "11_13_No": 0.53,
       "15_16_Yes": 0.61,
-      "15_17_#default#": 0.1,
+      "15_17_No": 0.1,
       "18_19_Select Existing Session": 0.5,
       "18_5_Create New Session": 0.49,
       "21_22_yes": 0.6,

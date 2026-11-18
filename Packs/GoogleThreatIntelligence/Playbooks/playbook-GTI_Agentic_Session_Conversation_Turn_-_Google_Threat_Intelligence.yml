@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ef3abc7a-bebd-4715-8ae5-cd40772b08c1
+    taskid: b1550e4e-1841-4a8e-8fd9-87eb5ed1d893
     type: start
     task:
-      id: ef3abc7a-bebd-4715-8ae5-cd40772b08c1
+      id: b1550e4e-1841-4a8e-8fd9-87eb5ed1d893
       version: -1
       name: ""
       type: start
@@ -37,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 635a6134-8edc-45c0-8063-e90b0d1154fc
+    taskid: 3338a327-e086-4dde-8015-98706e5573e9
     type: regular
     task:
-      id: 635a6134-8edc-45c0-8063-e90b0d1154fc
+      id: 3338a327-e086-4dde-8015-98706e5573e9
       version: -1
       name: End the conversation
       description: Marks the conversation with the Google Threat Intelligence agent as ended, which stops the loop of the parent playbook.
@@ -74,10 +74,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: eba21cc4-9db4-467e-8828-7d9e0ff251b7
+    taskid: d73d814d-218a-4c7f-87d4-2c0b8108ea89
     type: regular
     task:
-      id: eba21cc4-9db4-467e-8828-7d9e0ff251b7
+      id: d73d814d-218a-4c7f-87d4-2c0b8108ea89
       version: -1
       name: Clear the previous answer
       description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
@@ -109,13 +109,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: c2230c0d-ced3-47b4-87f0-66b95e4746ac
+    taskid: 30eefe21-1a7b-408b-8701-ca6353684bfa
     type: collection
     task:
-      id: c2230c0d-ced3-47b4-87f0-66b95e4746ac
+      id: 30eefe21-1a7b-408b-8701-ca6353684bfa
       version: -1
       name: Ask the analyst for the next message
-      description: Asks the analyst for the next message to send to the Google Threat Intelligence agent. The conversation ends when the analyst does not provide a message within 30 minutes.
+      description: Asks the analyst for the next message to send to the Google Threat Intelligence agent. The task waits until the analyst replies, and the conversation ends when the analyst provides an empty or blank message.
       type: collection
       iscommand: false
       brand: ""
@@ -123,11 +123,6 @@ tasks:
       '#none#':
       - "5"
     separatecontext: false
-    sla:
-      minutes: 30
-      hours: 0
-      days: 0
-      weeks: 0
     continueonerrortype: ""
     view: |-
       {
@@ -152,7 +147,7 @@ tasks:
         retriesinterval: 360
         completeafterreplies: 1
         completeafterv2: true
-        completeaftersla: true
+        completeaftersla: false
       replyOptions:
       - "Yes"
       - "No"
@@ -161,7 +156,18 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Provide the next message to send to the Google Threat Intelligence agent, or leave it empty to end the conversation.
+          complex:
+            root: inputs.SessionID
+            transformers:
+            - operator: trim
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'Provide the next message to send to the Google Threat Intelligence agent in the GTI Agentic Session '
+                suffix:
+                  value:
+                    simple: ', or leave it empty to end the conversation.'
         required: false
         gridcolumns: []
         defaultrows: []
@@ -173,7 +179,7 @@ tasks:
         tooltip: The message to send to the Google Threat Intelligence agent in the GTI Agentic Session.
         readonly: false
       title: Continue the Conversation
-      description: Continue the conversation with the Google Threat Intelligence agent in the GTI Agentic Session ${inputs.SessionID}.
+      description: Continue the conversation with the Google Threat Intelligence agent in the GTI Agentic Session.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -183,10 +189,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 0db57c88-83f9-45d8-8ea0-ab42746f4d42
+    taskid: 7c4d9afa-5806-48b6-8506-16dd880396a4
     type: condition
     task:
-      id: 0db57c88-83f9-45d8-8ea0-ab42746f4d42
+      id: 7c4d9afa-5806-48b6-8506-16dd880396a4
       version: -1
       name: Did the analyst provide the next message?
       description: Checks whether the analyst provided the next message to send to the Google Threat Intelligence agent.
@@ -205,7 +211,10 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Continue the Conversation.Answers.0
+              complex:
+                root: Continue the Conversation.Answers.0
+                transformers:
+                - operator: trim
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -224,10 +233,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: f029d609-9b21-45a5-8622-c0248a3bfb16
+    taskid: 1d2dc101-ffa6-4a00-8b4a-ea87cc3211de
     type: regular
     task:
-      id: f029d609-9b21-45a5-8622-c0248a3bfb16
+      id: 1d2dc101-ffa6-4a00-8b4a-ea87cc3211de
       version: -1
       name: Post the message
       description: Sends the message of the analyst to the Google Threat Intelligence agent in the GTI Agentic Session.
@@ -240,9 +249,15 @@ tasks:
       - "9"
     scriptarguments:
       message:
-        simple: ${Continue the Conversation.Answers.0}
+        complex:
+          root: Continue the Conversation.Answers.0
+          transformers:
+          - operator: trim
       session_id:
-        simple: ${inputs.SessionID}
+        complex:
+          root: inputs.SessionID
+          transformers:
+          - operator: trim
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -261,10 +276,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 8c16920f-dfdf-4c11-8e19-00ab778157dd
+    taskid: 6cc37494-1659-4384-8b05-01a0ca0a4eb4
     type: title
     task:
-      id: 8c16920f-dfdf-4c11-8e19-00ab778157dd
+      id: 6cc37494-1659-4384-8b05-01a0ca0a4eb4
       version: -1
       name: Done
       type: title
@@ -289,10 +304,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 8f954aa3-576f-42b4-8fd7-3a9311cb44ab
+    taskid: 5e00ddcb-21bf-4e2a-82fe-a724fb8a1e52
     type: regular
     task:
-      id: 8f954aa3-576f-42b4-8fd7-3a9311cb44ab
+      id: 5e00ddcb-21bf-4e2a-82fe-a724fb8a1e52
       version: -1
       name: Display the answer
       description: Displays the latest answer of the Google Threat Intelligence agent in the War Room, rendered as markdown.
