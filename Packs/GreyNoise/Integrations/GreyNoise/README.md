@@ -506,23 +506,23 @@ Identifies IPs from known benign services and organizations that commonly cause 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator that was tested. |
-| DBotScore.Reliability | String | The reliability of the data. |
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Reliability | string | The reliability of the data. |
 | DBotScore.Score | Number | The actual score. |
-| DBotScore.Type | String | The indicator type. |
-| DBotScore.Vendor | String | The vendor used to calculate the score. |
-| GreyNoise.IP.category | String | The category of the IP if riot is "True". |
-| GreyNoise.IP.classification | String | The classification of the IP if riot is "True". |
-| GreyNoise.IP.description | String | The description of the IP if riot is "True". |
-| GreyNoise.IP.explanation | String | The explanation of the IP if riot is "True". |
-| GreyNoise.IP.found | String | Indicates if the IP is business service. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| GreyNoise.IP.category | string | The category of the IP if riot is "True". |
+| GreyNoise.IP.classification | string | The classification of the IP if riot is "True". |
+| GreyNoise.IP.description | string | The description of the IP if riot is "True". |
+| GreyNoise.IP.explanation | string | The explanation of the IP if riot is "True". |
+| GreyNoise.IP.found | string | Indicates if the IP is business service. |
 | GreyNoise.IP.last_updated | Date | When was the last time the business service information was updated. |
-| GreyNoise.IP.ip | String | The IP to query. |
-| GreyNoise.IP.name | String | The name of the IP if the riot is "True". |
-| GreyNoise.IP.reference | String | The reference of the IP if riot is "True". |
-| GreyNoise.IP.riot | String | Indicates if the IP is business service. |
-| GreyNoise.IP.business_service_status | String | The status set when Business Service Intelligence is not included in the current license. |
-| GreyNoise.IP.trust_level | String | The trust level of the IP if riot is "True". |
+| GreyNoise.IP.ip | string | The IP to query. |
+| GreyNoise.IP.name | string | The name of the IP if the riot is "True". |
+| GreyNoise.IP.reference | string | The reference of the IP if riot is "True". |
+| GreyNoise.IP.riot | string | Indicates if the IP is business service. |
+| GreyNoise.IP.business_service_status | string | The status set when Business Service Intelligence is not included in the current license. |
+| GreyNoise.IP.trust_level | string | The trust level of the IP if riot is "True". |
 
 #### Example Command
 
@@ -670,6 +670,7 @@ Deprecated. The GreyNoise similarity functionality is no longer supported.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| GreyNoise.Similar.ip      | string | The IP address of the scanning device IP. |
 | GreyNoise.Similar.message | string | The message stating that GreyNoise similarity is deprecated and no longer supported. |
 
 #### Command Example

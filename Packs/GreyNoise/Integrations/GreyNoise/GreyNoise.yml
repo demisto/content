@@ -1228,6 +1228,9 @@ script:
       description: The maximum number of results to return. Default value is 50.
       defaultValue: '50'
     outputs:
+    - contextPath: GreyNoise.Similar.ip_address
+      description: Similar IP address.
+      type: string
     - contextPath: GreyNoise.Similar.message
       description: The message stating that GreyNoise similarity is deprecated and no longer supported.
       type: string
