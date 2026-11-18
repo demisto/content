@@ -25,6 +25,8 @@ Integration for fetching Alerts and Audit Logs from the KOI API.
 # Constants and helpers
 # =================================
 INTEGRATION_NAME = "KOI"
+# Keep in step with pack_metadata.json currentVersion: KOI reads it to tell this pack's traffic and version apart.
+USER_AGENT = "Koi-Cortex-XSIAM/1.3.0"
 
 
 class ApiPaths:
@@ -74,7 +76,6 @@ class Config:
     MAX_PAGE_SIZE = 500
     # Kept below the API's 30 requests/minute per route, so one fetch cycle never trips the limit.
     MAX_PAGES_PER_FETCH = 20
-    FETCH_PAGE_SIZE = 250
     DEFAULT_PAGE = 1
     DEFAULT_LIMIT = 50
     MAX_LIMIT = 1000
@@ -98,14 +99,17 @@ class Config:
 class LogType(Enum):
     """Enum to hold all configuration for different log types."""
 
-    ALERTS = ("alerts", "Alerts", ApiPaths.ALERTS, "alerts")
-    AUDIT = ("audit", "Audit", ApiPaths.AUDIT_LOGS, "items")
+    # Alerts stay at 250: at 500 the KOI database switches to a plan that joins the whole backlog
+    # before paging, which turns a catch-up page from milliseconds into tens of seconds.
+    ALERTS = ("alerts", "Alerts", ApiPaths.ALERTS, "alerts", 250)
+    AUDIT = ("audit", "Audit", ApiPaths.AUDIT_LOGS, "items", 500)
 
-    def __init__(self, type_string: str, title: str, api_endpoint: str, response_key: str):
+    def __init__(self, type_string: str, title: str, api_endpoint: str, response_key: str, page_size: int):
         self.type_string = type_string
         self.title = title
         self.api_endpoint = api_endpoint
         self.response_key = response_key
+        self.page_size = page_size
 
 
 LEGACY_LAST_RUN_KEY_PREFIXES = ("last_fetch_", "previous_ids_", "page_", "page_size_", "window_end_")
@@ -586,6 +590,7 @@ class Client(ContentClient):
             verify=verify,
             proxy=proxy,
             auth_handler=auth_handler,
+            headers={"User-Agent": USER_AGENT},
             client_name="KOI",
             timeout=60,
             retry_policy=retry_policy,
@@ -597,12 +602,12 @@ class Client(ContentClient):
         cursor: str | None = None,
         created_at_gte: str | None = None,
         created_at_lte: str | None = None,
-        page_size: int = Config.FETCH_PAGE_SIZE,
+        page_size: int | None = None,
         audit_types: list[str] | None = None,
     ) -> EventsPage:
         """Fetch the events after `cursor` (or from `created_at_gte` when there is no cursor), oldest first."""
         params: dict[str, Any] = {
-            "page_size": min(page_size, Config.MAX_PAGE_SIZE),
+            "page_size": min(page_size or log_type.page_size, Config.MAX_PAGE_SIZE),
             "sort_direction": Config.SORT_DIRECTION,
             "include_total": "false",
         }
@@ -1066,7 +1071,7 @@ def fetch_events_with_pagination(
     events: list[dict] = []
     cursor: str | None = None
     for _ in range(Config.MAX_PAGES_PER_FETCH):
-        page_size = min(Config.FETCH_PAGE_SIZE, max_events - len(events))
+        page_size = min(log_type.page_size, max_events - len(events))
         page = client.get_events_page(
             log_type=log_type,
             cursor=cursor,
@@ -1187,7 +1192,7 @@ def _fetch_single_log_type(
     fetched = 0
     try:
         for _ in range(Config.MAX_PAGES_PER_FETCH):
-            page_size = min(Config.FETCH_PAGE_SIZE, max_events - fetched)
+            page_size = min(log_type.page_size, max_events - fetched)
             if page_size <= 0:
                 break
             page = client.get_events_page(

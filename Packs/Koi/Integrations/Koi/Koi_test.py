@@ -423,7 +423,7 @@ class TestGetEventsPage:
 
         params = http.call_args.kwargs["params"]
         assert params == {
-            "page_size": Config.FETCH_PAGE_SIZE,
+            "page_size": LogType.ALERTS.page_size,
             "sort_direction": "asc",
             "include_total": "false",
             "cursor": "c0",
@@ -442,14 +442,30 @@ class TestGetEventsPage:
         params = http.call_args.kwargs["params"]
         assert params["created_at_gte"] == "2024-01-01T00:00:00Z"
         assert params["types"] == "policies,devices"
+        assert params["page_size"] == 500
         assert "cursor" not in params
         assert page.events == [{"id": "u"}]
+
+    def test_alerts_page_stays_at_250(self, mock_client, mocker):
+        http = mocker.patch.object(mock_client, "_http_request", return_value={"alerts": [], "next_cursor": None})
+
+        mock_client.get_events_page(LogType.ALERTS, created_at_gte="2024-01-01T00:00:00Z")
+
+        assert http.call_args.kwargs["params"]["page_size"] == 250
+
+
+class TestUserAgent:
+    def test_client_identifies_itself_with_the_pack_version(self):
+        client = Client(base_url="https://api.example.koi.security", api_key="key", verify=True, proxy=False)
+
+        pack_version = json.loads((Path(__file__).parent.parent.parent / "pack_metadata.json").read_text())["currentVersion"]
+        assert client._headers["User-Agent"] == f"Koi-Cortex-XSIAM/{pack_version}"
 
 
 class TestFetchEventsCommand:
     def test_streams_every_event_once_across_cycles_even_when_one_timestamp_spans_pages(self, fetch_env):
         client, api, sent, state = fetch_env
-        api.events_by_endpoint[ApiPaths.ALERTS] = make_alerts(Config.FETCH_PAGE_SIZE + 7)
+        api.events_by_endpoint[ApiPaths.ALERTS] = make_alerts(LogType.ALERTS.page_size + 7)
         api.events_by_endpoint[ApiPaths.AUDIT_LOGS] = make_audit(3)
 
         fetch_events_command(client)
@@ -481,13 +497,13 @@ class TestFetchEventsCommand:
         client, api, sent, state = fetch_env
         mocker_params = {"event_types_to_fetch": "Alerts", "max_fetch": "5000"}
         demisto.params.return_value = mocker_params
-        api.events_by_endpoint[ApiPaths.ALERTS] = make_alerts(Config.FETCH_PAGE_SIZE * 2 + 1)
+        api.events_by_endpoint[ApiPaths.ALERTS] = make_alerts(LogType.ALERTS.page_size * 2 + 1)
         api.fail_on_call = 2
 
         with pytest.raises(DemistoException, match="Progress up to the last ingested page is saved"):
             fetch_events_command(client)
 
-        assert len(sent) == Config.FETCH_PAGE_SIZE
+        assert len(sent) == LogType.ALERTS.page_size
         assert state["last_run"]["cursor_alerts"]
         api.fail_on_call = None
         fetch_events_command(client)
@@ -579,14 +595,14 @@ class TestLegacyLastRunMigration:
 
 class TestFetchEventsWithPagination:
     def test_collects_pages_by_cursor_up_to_max_events(self, mock_client, mocker):
-        api = FakeKoiEventsApi({ApiPaths.ALERTS: make_alerts(Config.FETCH_PAGE_SIZE + 5)})
+        api = FakeKoiEventsApi({ApiPaths.ALERTS: make_alerts(LogType.ALERTS.page_size + 5)})
         mocker.patch.object(mock_client, "_http_request", side_effect=api)
 
         events = fetch_events_with_pagination(
-            mock_client, LogType.ALERTS, created_after="2024-01-01T00:00:00Z", max_events=Config.FETCH_PAGE_SIZE + 2
+            mock_client, LogType.ALERTS, created_after="2024-01-01T00:00:00Z", max_events=LogType.ALERTS.page_size + 2
         )
 
-        assert len(events) == Config.FETCH_PAGE_SIZE + 2
+        assert len(events) == LogType.ALERTS.page_size + 2
         assert len({e["id"] for e in events}) == len(events)
         assert api.calls[1]["cursor"]
 
