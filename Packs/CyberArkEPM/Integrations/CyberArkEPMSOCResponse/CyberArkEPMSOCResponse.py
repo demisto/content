@@ -236,6 +236,7 @@ class Client(BaseClient):
             )
             demisto.debug("[Adoption] Event reported.")
         except Exception as error:
+            demisto.debug(traceback.format_exc())
             demisto.debug(f"[Adoption] Failed to report event (ignored): {error}")
 
     def http_request(
