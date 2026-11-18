@@ -1,6 +1,7 @@
 {
     "id": "CYFIRMA - Domain IP Vulnerabilities",
-    "version": 8,
+    "version": -1,
+    "fromVersion": "6.0.0",
     "cacheVersn": 0,
     "sequenceNumber": 16404085,
     "primaryTerm": 3,
@@ -38,7 +39,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "bb39b629-02e3-4ca8-852f-6c0c5e4d21fb",
+    "layout": "CYFIRMA - AttackSurface Layout",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",

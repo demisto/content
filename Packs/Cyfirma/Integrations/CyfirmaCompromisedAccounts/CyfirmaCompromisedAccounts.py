@@ -5,7 +5,6 @@ Fetches customer-account, compromised-employee and public-account leak as incide
 
 import json
 import uuid
-from datetime import datetime, UTC
 from typing import Any
 
 import dateparser
@@ -22,8 +21,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_MAX_FETCH = 100
-DEFAULT_FIRST_FETCH = "90 days"
-DATEPARSER_SETTINGS = {"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True}
+DEFAULT_FIRST_FETCH = "60 days"
 
 _BASE_PREFIX_PATH = "/api/ex/v3/da"
 _TEST_PATH = "/foo/ping"
@@ -50,7 +48,7 @@ _SKIP_FIELDS = frozenset(
 )
 
 
-def _kv_fields(data: dict, skip: frozenset | set = frozenset()) -> list[dict[str, Any]]:
+def kv_fields(data: dict, skip: frozenset | set = frozenset()) -> list[dict[str, Any]]:
     """Convert a dict into the XSOAR grid format.
 
     Args:
@@ -63,16 +61,9 @@ def _kv_fields(data: dict, skip: frozenset | set = frozenset()) -> list[dict[str
     return [{"fields": key.capitalize(), "values": value} for key, value in data.items() if key not in skip]
 
 
-def _parse_date(value: str | None):
-    """Parse a date string or relative expression (e.g. '90 days') as a UTC-aware datetime.
-
-    Args:
-        value: Date string, relative time expression, or None.
-
-    Returns:
-        A timezone-aware ``datetime``, or None if the value is empty or unparsable.
-    """
-    return dateparser.parse(value, settings=DATEPARSER_SETTINGS) if value else None
+def parse_date(value: str | None):
+    """Parse a date string into a timezone-aware datetime object."""
+    return dateparser.parse(value) if value else None
 
 
 class Client(BaseClient):
@@ -104,7 +95,7 @@ class Client(BaseClient):
             return response.json()
         return {}
 
-    def _populate_custom_fields(self, data: dict) -> dict:
+    def populate_custom_fields(self, data: dict) -> dict:
         """Build the compromised-account grid custom field for an alert.
 
         Args:
@@ -119,13 +110,13 @@ class Client(BaseClient):
                 {"fields": "Subcategory", "values": data.get("subCategoryLabel", "")},
                 {"fields": "Category", "values": data.get("categoryLabel", "")},
             ]
-            + _kv_fields(data, _SKIP_FIELDS)
+            + kv_fields(data, _SKIP_FIELDS)
             # "or {}" protects against an explicit null in the API response
-            + _kv_fields(data.get("compromisedDetails") or {})
+            + kv_fields(data.get("compromisedDetails") or {})
         )
         return {"cyfirmacompromisedaccountdetails": rows}
 
-    def _build_incident_json(self, event: dict) -> dict[str, Any]:
+    def build_incident_json(self, event: dict) -> dict[str, Any]:
         """Convert an alert into an XSOAR incident dict.
 
         Args:
@@ -135,7 +126,7 @@ class Client(BaseClient):
             The incident dict. Severity is always critical (compromised credentials).
         """
 
-        occurred_date = _parse_date(event.get("lastModifiedDate") or event.get("createdDate"))
+        occurred_date = parse_date(event.get("lastModifiedDate") or event.get("createdDate"))
 
         return {
             "type": event.get("categoryLabel", ""),
@@ -148,7 +139,7 @@ class Client(BaseClient):
             "dbotMirrorId": event.get("uid", ""),
             "sourceBrand": "CYFIRMA",
             "labels": [],
-            "CustomFields": self._populate_custom_fields(data=event),
+            "CustomFields": self.populate_custom_fields(data=event),
         }
 
     def get_incidents(self, params: dict) -> list:
@@ -168,7 +159,7 @@ class Client(BaseClient):
 
             while True:
                 response = self.call_api(end_point=api_path, params=request_params)
-                incidents.extend(self._build_incident_json(event) for event in response.get("data", []))
+                incidents.extend(self.build_incident_json(event) for event in response.get("data", []))
                 if response.get("metaData", {}).get("isLast", True):
                     break
                 request_params["page"] += 1
@@ -220,22 +211,22 @@ def fetch_incidents(client: Client, first_fetch: str, max_fetch: int) -> None:
     params = demisto.params()
     last_run = demisto.getLastRun() or {}
 
-    start_fetch = _parse_date(last_run.get("last_fetch") or first_fetch)
-    if start_fetch is None:
+    after = parse_date(last_run.get("last_fetch") or first_fetch)
+    if after is None:
         raise DemistoException(f"Invalid 'First fetch' value: {first_fetch!r}")
 
-    fetch_started = datetime.now(UTC)
+    next_run_from = datetime.now()
 
     request_params = {
         "page": 0,
         "size": max_fetch,
-        "after": int(start_fetch.timestamp() * 1000),
+        "after": int(after.timestamp() * 1000),
         "includeThirdParty": argToBoolean(params.get("includeThirdPartyCompromisedAccounts", False)),
     }
     incidents = client.get_incidents(params=request_params)
 
     demisto.incidents(incidents)
-    demisto.setLastRun({"last_fetch": fetch_started.strftime(DATE_FORMAT)})
+    demisto.setLastRun({"last_fetch": next_run_from.strftime(DATE_FORMAT)})
 
 
 def main() -> None:

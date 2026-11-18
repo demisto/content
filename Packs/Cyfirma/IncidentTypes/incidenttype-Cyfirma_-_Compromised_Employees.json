@@ -1,6 +1,7 @@
 {
     "id": "CYFIRMA - Compromised Employees",
-    "version": 4,
+    "version": -1,
+    "fromVersion": "6.0.0",
     "cacheVersn": 0,
     "sequenceNumber": 16404191,
     "primaryTerm": 3,
@@ -38,7 +39,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "07dac5b0-5476-43e7-80d5-fc83c3324281",
+    "layout": "CYFIRMA - Compromised Accounts Layout",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",

@@ -1,6 +1,6 @@
 name: Cyfirma Compromised Accounts
 display: CYFIRMA Compromised Accounts
-description: CYFIRMA API's provides External Threat Landscape Management insights.
+description: CYFIRMA is an AI-powered Preemptive External Threat Landscape Management platform that enables organizations to predict, identify, and prevent cyber threats by gaining visibility into external exposure and adversary intent. By transforming threat intelligence into predictive insights and actionable risk intelligence, CYFIRMA helps organizations reduce cyber risk, protect critical digital assets, and move from reactive defence to proactive threat prevention.
 category: Data Enrichment & Threat Intelligence
 provider: CYFIRMA
 sectionorder:
@@ -72,7 +72,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.15.14069087
+  dockerimage: demisto/python3:3.12.13.8428455
 fromversion: 6.10.0
 marketplaces:
 - xsoar

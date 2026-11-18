@@ -1,5 +1,8 @@
 import json
 
+import demistomock as demisto
+from CommonServerPython import *
+
 
 def main():
     try:
@@ -26,7 +29,7 @@ def main():
 
         if vulnerabilities:
             cves = sorted({
-                v.get("cve") for v in vulnerabilities
+                str(v.get("cve")) for v in vulnerabilities
                 if isinstance(v, dict) and v.get("cve")
             })
             result["CVEs"] = cves

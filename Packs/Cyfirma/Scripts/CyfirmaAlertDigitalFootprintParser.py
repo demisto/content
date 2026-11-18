@@ -1,5 +1,8 @@
 import json
 
+import demistomock as demisto
+from CommonServerPython import *
+
 
 def grid_to_dict(rows):
     out = {}

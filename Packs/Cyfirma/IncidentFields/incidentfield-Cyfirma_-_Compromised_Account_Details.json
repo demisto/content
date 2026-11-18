@@ -1,6 +1,7 @@
 {
     "id": "incident_cyfirmacompromisedaccountdetails",
-    "version": 1,
+    "version": -1,
+    "fromVersion": "6.0.0",
     "cacheVersn": 0,
     "modified": "2026-10-23T11:37:47.112264352Z",
     "sizeInBytes": 0,
@@ -20,7 +21,7 @@
     "ownerOnly": false,
     "placeholder": "",
     "template": "",
-    "description": "CYFIRMA - compromisedaccounts",
+    "description": "CYFIRMA - Compromised Account Details",
     "cliName": "cyfirmacompromisedaccountdetails",
     "type": "grid",
     "orgType": "",

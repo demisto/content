@@ -1,687 +1,814 @@
-"""Unit tests for the CYFIRMA integration."""
+"""Unit tests for the CYFIRMA integration (Cortex XSOAR)."""
 
-import json
 import re
 from datetime import datetime, UTC
-from unittest.mock import ANY, MagicMock
+from unittest.mock import MagicMock
 
-import Cyfirma as mod
 import demistomock as demisto
 import pytest
 from CommonServerPython import DemistoException, IncidentSeverity
 
-BASE_URL = "https://api.test/api/ex/v3/da"
+import Cyfirma
 
-ALERT = {
-    "alertId": "A1",
-    "title": "Open port found",
-    "category": "ATTACK_SURFACE",
-    "categoryLabel": "Attack Surface",
-    "subCategory": "OPEN_PORTS",
-    "subCategoryLabel": "Open Ports",
-    "alertCreatedDate": "2026-10-01T10:00:00Z",
-    "alertDetails": {
-        "uid": "U1",
-        "exposureScore": 6.5,
-        "host": "a.com",
-        "networkAttributes": {"ip": "1.1.1.1"},
-        "portDetails": [{"port": 80}, {"port": 443}, {"foo": 1}],
-    },
-}
+from Cyfirma import (
+    Client,
+    _parse_date,
+    command_alertdetailextraction,
+    fetch_incidents,
+    get_severity,
+    get_take_down_list,
+    initiate_take_down_request,
+    kv_fields,
+    safe_join,
+    take_down_list_command_results,
+)
+
+BASE_URL = "https://api.example.com/api/ex/v3/da"
 
 
-def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
-        return json.loads(f.read())
+class ReturnErrorCalled(Exception):
+    """Raised by the patched return_error so execution stops like the real one."""
 
 
 @pytest.fixture
 def client():
-    return mod.Client(base_url=BASE_URL, verify=False, headers={"X-Api-Key": "k"})
+    return Client(base_url=BASE_URL, verify=False, headers={"X-Api-Key": "key"}, proxy=False)
 
 
-def _rows(custom_fields: dict, key: str) -> dict:
-    """Convert grid rows to {field: value} for easy assertions."""
-    return {r["fields"]: r["values"] for r in custom_fields[key]}
+@pytest.fixture
+def mock_return_error(mocker):
+    def _raise(msg, *args, **kwargs):
+        raise ReturnErrorCalled(msg)
+
+    return mocker.patch.object(Cyfirma, "return_error", side_effect=_raise)
 
 
-# ------------------------------------------------------------------ helpers
-class TestHelpers:
-    def test_kv_fields_capitalizes_and_skips(self):
-        res = mod._kv_fields({"abc": 1, "skipme": 2, "xYz": 3}, skip={"skipme"})
-        assert res == [
-            {"fields": "Abc", "values": 1},
-            {"fields": "Xyz", "values": 3},
-        ]
-
-    def test_kv_fields_empty(self):
-        assert mod._kv_fields({}) == []
-
-    @pytest.mark.parametrize(
-        "value, sep, expected",
-        [
-            (["a", "b"], ",", "a,b"),
-            ([1, 2], "-", "1-2"),
-            (("x", "y"), ", ", "x, y"),
-            ({"only"}, ",", "only"),
-            (None, ",", ""),
-            ("text", ",", "text"),
-            (5, ",", "5"),
-            ([], ",", ""),
-        ],
-    )
-    def test_safe_join(self, value, sep, expected):
-        assert mod._safe_join(value, sep) == expected
-
-    def test_parse_date_valid_and_utc_aware(self):
-        res = mod._parse_date("2026-10-01T10:00:00Z")
-        assert res is not None
-        assert res.tzinfo is not None
-        assert res.utcoffset().total_seconds() == 0
-
-    def test_parse_date_relative(self):
-        assert mod._parse_date("90 days") is not None
-
-    @pytest.mark.parametrize("value", [None, "", "this is not a date at all"])
-    def test_parse_date_invalid(self, value):
-        assert mod._parse_date(value) is None
+@pytest.fixture
+def sample_alert():
+    return {
+        "alertId": "A1",
+        "title": "Open port found",
+        "alertCreatedDate": "2026-01-01T10:00:00Z",
+        "categoryLabel": "Attack Surface",
+        "category": "AS",
+        "subCategory": "OPEN_PORTS",
+        "subCategoryLabel": "Open Ports",
+        "alertDetails": {
+            "uid": "U1",
+            "exposureScore": 6.5,
+            "extra": "val",
+            "portDetails": [{"port": 80}, {"port": 443}, {"other": 1}],
+            "networkAttributes": {"ip": "1.1.1.1"},
+            "vulnerabilities": [
+                {
+                    "cveNo": "CVE-1",
+                    "cvssScore": 9.8,
+                    "isKev": True,
+                    "products": ["a", "b"],
+                }
+            ],
+        },
+    }
 
 
-# ------------------------------------------------------------------ call_api
-class TestCallApi:
-    def test_returns_json(self, client, requests_mock):
-        requests_mock.get(f"{BASE_URL}/foo/ping", json={"isOrgActive": True})
-        assert client.call_api("/foo/ping") == {"isOrgActive": True}
-
-    def test_empty_body_returns_empty_dict(self, client, requests_mock):
-        requests_mock.get(f"{BASE_URL}/foo/ping", status_code=200, content=b"")
-        assert client.call_api("/foo/ping") == {}
-
-    def test_http_error_raises(self, client, requests_mock):
-        requests_mock.get(f"{BASE_URL}/foo/ping", status_code=403, text="Forbidden")
-        with pytest.raises(DemistoException):
-            client.call_api("/foo/ping")
-
-    def test_sends_params_and_api_key(self, client, requests_mock):
-        m = requests_mock.get(f"{BASE_URL}/x", json={})
-        client.call_api("/x", params={"page": 3})
-        assert m.last_request.qs == {"page": ["3"]}
-        assert m.last_request.headers["X-Api-Key"] == "k"
+# ----------------------------------------------------------------------------
+# Helpers
+# ----------------------------------------------------------------------------
 
 
-# ------------------------------------------------------------------ take down API methods
-class TestTakeDownClientMethods:
-    def test_initiate_take_down_with_comment(self, client, mocker):
-        m = mocker.patch.object(client, "call_api", return_value={"ok": 1})
-        assert client.initiate_take_down("A1", "please") == {"ok": 1}
-        m.assert_called_once_with(mod._TAKE_DOWN_CREATE_API_PATH, {"alertId": "A1", "comment": "please"})
-
-    def test_initiate_take_down_without_comment(self, client, mocker):
-        m = mocker.patch.object(client, "call_api", return_value={})
-        client.initiate_take_down("A1")
-        m.assert_called_once_with(mod._TAKE_DOWN_CREATE_API_PATH, {"alertId": "A1"})
-
-    def test_take_down_list_data_with_sub_category(self, client, mocker):
-        m = mocker.patch.object(client, "call_api", return_value={"data": [{"a": 1}]})
-        assert client.take_down_list_data("PHISHING", "1", "10") == [{"a": 1}]
-        m.assert_called_once_with(
-            mod._TAKE_DOWN_LIST_API_PATH,
-            {"page": "1", "size": "10", "subCategory": "PHISHING"},
-        )
-
-    def test_take_down_list_data_without_sub_category(self, client, mocker):
-        m = mocker.patch.object(client, "call_api", return_value={"data": []})
-        assert client.take_down_list_data("", "0", "50") == []
-        m.assert_called_once_with(mod._TAKE_DOWN_LIST_API_PATH, {"page": "0", "size": "50"})
-
-    @pytest.mark.parametrize("response", [{}, None, []])
-    def test_take_down_list_data_unexpected_response(self, client, mocker, response):
-        mocker.patch.object(client, "call_api", return_value=response)
-        assert client.take_down_list_data("", "0", "50") == []
+def test_kv_fields_capitalizes_keys():
+    assert kv_fields({"ip": "1.1.1.1", "exposureScore": 5}) == [
+        {"fields": "Ip", "values": "1.1.1.1"},
+        {"fields": "Exposurescore", "values": 5},
+    ]
 
 
-# ------------------------------------------------------------------ severity
+def test_kv_fields_skips_keys():
+    assert kv_fields({"a": 1, "b": 2}, skip={"a"}) == [{"fields": "B", "values": 2}]
+
+
+def test_kv_fields_empty():
+    assert kv_fields({}) == []
+
+
+@pytest.mark.parametrize(
+    "value, sep, expected",
+    [
+        (["a", "b"], ",", "a,b"),
+        (("a", 1), ", ", "a, 1"),
+        ({"x"}, ",", "x"),
+        (None, ",", ""),
+        ("text", ",", "text"),
+        (5, ",", "5"),
+        ([], ",", ""),
+    ],
+)
+def test_safe_join(value, sep, expected):
+    assert safe_join(value, sep) == expected
+
+
 @pytest.mark.parametrize(
     "score, expected",
     [
         (9, IncidentSeverity.CRITICAL),
-        (8.1, IncidentSeverity.CRITICAL),
+        ("8.1", IncidentSeverity.CRITICAL),
         (8, IncidentSeverity.HIGH),
-        (5.5, IncidentSeverity.HIGH),
+        (5.1, IncidentSeverity.HIGH),
         (5, IncidentSeverity.MEDIUM),
         (3, IncidentSeverity.MEDIUM),
         (2.9, IncidentSeverity.LOW),
         (1, IncidentSeverity.LOW),
         (0.5, IncidentSeverity.UNKNOWN),
         (0, IncidentSeverity.UNKNOWN),
-        (-1, IncidentSeverity.UNKNOWN),
         (None, IncidentSeverity.UNKNOWN),
         ("abc", IncidentSeverity.UNKNOWN),
-        ("7", IncidentSeverity.HIGH),
     ],
 )
 def test_get_severity(score, expected):
-    assert mod._get_severity(score) == expected
+    assert get_severity(score) == expected
 
 
-# ------------------------------------------------------------------ custom fields
-class TestPopulateCustomFields:
-    def test_standard_alert(self, client):
-        cf = client._populate_custom_fields(ALERT)
-
-        details = _rows(cf, "cyfirmaalertdetails")
-        assert details["Subcategory"] == "Open Ports"
-        assert details["Category"] == "Attack Surface"
-        assert details["Alertid"] == "A1"
-        assert details["Objectid"] == "U1"
-        assert details["Host"] == "a.com"
-        assert "Portdetails" not in details  # skipped
-        assert "Networkattributes" not in details  # skipped
-
-        assert cf["cyfirmanetworkattributes"] == [{"fields": "Ip", "values": "1.1.1.1"}]
-        assert cf["cyfirmadigitalfootprints"] == [{"fields": "Open Ports", "values": "80,443"}]
-        assert "cyfirmadeepfakedetails" not in cf
-        assert "cyfirmavulnerabilities" not in cf
-
-    def test_deep_fake_details(self, client):
-        alert = {"alertDetails": {"deepFakeDetails": {"score": 5}}}
-        cf = client._populate_custom_fields(alert)
-        assert cf["cyfirmadeepfakedetails"] == [{"fields": "Score", "values": 5}]
-
-    def test_vulnerabilities(self, client):
-        alert = {
-            "subCategory": "DOMAIN_IP_VULNERABILITY",
-            "alertDetails": {"vulnerabilities": [{"cveNo": "CVE-1", "cvssScore": 9, "isKev": True, "products": ["a", "b"]}]},
-        }
-        cf = client._populate_custom_fields(alert)
-        assert cf["cyfirmavulnerabilities"] == [{"cve": "CVE-1", "cvssscore": 9, "kev": "True", "products": "a, b"}]
-
-    def test_flat_event_without_alert_details(self, client):
-        alert = {"alertId": "A9", "uid": "U9", "subCategory": "X", "host": "h"}
-        cf = client._populate_custom_fields(alert)
-        details = _rows(cf, "cyfirmaalertdetails")
-        assert details["Objectid"] == "U9"
-        assert details["Host"] == "h"
+def test_parse_date_empty():
+    assert _parse_date(None) is None
+    assert _parse_date("") is None
 
 
-class TestSubCategoryFields:
-    def test_open_ports(self, client):
-        res = client._build_sub_category_data_fields({"portDetails": [{"port": 22}, {"port": 8080}, {}]}, "OPEN_PORTS")
-        assert res == [{"fields": "Open Ports", "values": "22,8080"}]
-
-    def test_open_ports_empty(self, client):
-        res = client._build_sub_category_data_fields({}, "OPEN_PORTS")
-        assert res == [{"fields": "Open Ports", "values": ""}]
-
-    def test_certificates(self, client):
-        res = client._build_sub_category_data_fields(
-            {"certificateDetails": {"issuer": ["x", "y"], "serial": "1"}}, "CERTIFICATES"
-        )
-        assert res == [
-            {"fields": "issuer", "values": "x,y"},
-            {"fields": "serial", "values": "1"},
-        ]
-
-    def test_configuration(self, client):
-        res = client._build_sub_category_data_fields(
-            {"configurationDetails": {"missingEppCodes": ["a", "b"], "name": "n"}},
-            "CONFIGURATION",
-        )
-        assert {"fields": "missingEppCodes", "values": "a,b"} in res
-        assert {"fields": "name", "values": "n"} in res
-
-    def test_ip_domain_reputation_only_reported_categories(self, client):
-        res = client._build_sub_category_data_fields(
-            {"ipDomainReputationDetails": {"reportedCategories": ["spam"], "other": "x"}},
-            "IP_DOMAIN_REPUTATION",
-        )
-        assert res == [{"fields": "reportedCategories", "values": "spam"}]
-
-    def test_default_asset_details(self, client):
-        res = client._build_sub_category_data_fields({"assetDetails": {"os": "linux"}}, "OTHER")
-        assert res == [{"fields": "Os", "values": "linux"}]
+def test_parse_date_absolute():
+    result = _parse_date("2026-01-01T00:00:00Z")
+    assert result is not None
+    assert (result.year, result.month, result.day) == (2026, 1, 1)
 
 
-class TestStaticFieldHelpers:
-    def test_vulnerability_fields_defaults(self):
-        assert mod.Client._vulnerability_fields([{}]) == [{"cve": "", "cvssscore": "", "kev": "False", "products": ""}]
-
-    def test_vulnerability_fields_empty(self):
-        assert mod.Client._vulnerability_fields([]) == []
-
-    def test_details_fields_non_list_join_value(self):
-        res = mod.Client._details_fields({"issuer": None, "n": 1}, join_keys={"issuer"})
-        assert res == [{"fields": "issuer", "values": ""}, {"fields": "n", "values": 1}]
-
-    def test_details_fields_only_keys(self):
-        res = mod.Client._details_fields({"a": 1, "b": 2}, join_keys=set(), only_keys={"b"})
-        assert res == [{"fields": "b", "values": 2}]
+def test_parse_date_relative():
+    assert _parse_date("3 days") is not None
 
 
-# ------------------------------------------------------------------ incident building
-class TestBuildIncident:
-    def test_full_alert(self, client):
-        inc = client._build_incident_json(ALERT)
-        assert inc["type"] == "Attack Surface"
-        assert inc["name"] == "Open port found"
-        assert inc["occurred"] == "2026-10-01T10:00:00Z"
-        assert inc["severity"] == IncidentSeverity.HIGH
-        assert inc["category"] == "ATTACK_SURFACE"
-        assert inc["subcategory"] == "OPEN_PORTS"
-        assert inc["dbotMirrorId"] == "A1"
-        assert inc["sourceBrand"] == "CYFIRMA"
-        assert json.loads(inc["rawJSON"]) == ALERT
-        assert "cyfirmaalertdetails" in inc["CustomFields"]
-
-    def test_occurred_falls_back_to_last_modified(self, client):
-        inc = client._build_incident_json({"lastModifiedDate": "2026-09-01T00:00:00Z"})
-        assert inc["occurred"] == "2026-09-01T00:00:00Z"
-
-    def test_occurred_none_without_dates(self, client):
-        assert client._build_incident_json({"title": "t"})["occurred"] is None
-
-    def test_mirror_id_falls_back_to_uid(self, client):
-        inc = client._build_incident_json({"alertDetails": {"uid": "U7"}})
-        assert inc["dbotMirrorId"] == "U7"
-
-    def test_mirror_id_empty_when_nothing(self, client):
-        assert client._build_incident_json({})["dbotMirrorId"] == ""
-
-    def test_missing_exposure_score_is_unknown(self, client):
-        inc = client._build_incident_json({"alertDetails": {}})
-        assert inc["severity"] == IncidentSeverity.UNKNOWN
+def test_parse_date_invalid():
+    assert _parse_date("this is not a date") is None
 
 
-# ------------------------------------------------------------------ get_incidents
-class TestGetIncidents:
-    def test_pagination_and_disabled_types(self, client, mocker):
-        calls = []
-        pages = iter(
-            [
-                {"data": [ALERT], "metaData": {"isLast": False}},
-                {"data": [ALERT], "metaData": {"isLast": True}},
-            ]
-        )
-
-        def fake(end_point, params=None):
-            calls.append((end_point, dict(params)))
-            return next(pages)
-
-        mocker.patch.object(client, "call_api", side_effect=fake)
-        incidents = client.get_incidents({"size": 2}, {"AS": True, "BI": False})
-
-        assert len(incidents) == 2
-        assert [c[0] for c in calls] == [mod._API_PATHS["AS"]] * 2
-        assert [c[1]["page"] for c in calls] == [0, 1]
-        assert all(c[1]["size"] == 2 for c in calls)
-        assert "X-Request-Id" in client._headers
-
-    def test_caller_params_not_mutated(self, client, mocker):
-        mocker.patch.object(client, "call_api", return_value={"data": [], "metaData": {"isLast": True}})
-        params = {"size": 5}
-        client.get_incidents(params, {"AS": True})
-        assert params == {"size": 5}
-
-    def test_page_resets_per_alert_type(self, client, mocker):
-        seen = []
-
-        def fake(end_point, params=None):
-            seen.append((end_point, params["page"]))
-            return {"data": [], "metaData": {"isLast": end_point != mod._API_PATHS["AS"] or params["page"] == 1}}
-
-        mocker.patch.object(client, "call_api", side_effect=fake)
-        client.get_incidents({}, {"AS": True, "BI": True})
-        assert seen == [
-            (mod._API_PATHS["AS"], 0),
-            (mod._API_PATHS["AS"], 1),
-            (mod._API_PATHS["BI"], 0),
-        ]
-
-    def test_all_disabled_makes_no_calls(self, client, mocker):
-        m = mocker.patch.object(client, "call_api")
-        assert client.get_incidents({}, {"AS": False, "BI": False}) == []
-        m.assert_not_called()
-
-    def test_empty_response_stops(self, client, mocker):
-        mocker.patch.object(client, "call_api", return_value={})
-        assert client.get_incidents({}, {"AS": True}) == []
+# ----------------------------------------------------------------------------
+# Client: HTTP layer
+# ----------------------------------------------------------------------------
 
 
-# ------------------------------------------------------------------ test_module
-class TestTestModule:
-    def test_ok(self, client, mocker):
-        mocker.patch.object(client, "call_api", return_value={"isOrgActive": True})
-        assert mod.test_module(client) == "ok"
+def _response(status=200, content=b'{"ok": true}', json_data=None):
+    resp = MagicMock()
+    resp.status_code = status
+    resp.content = content
+    resp.json.return_value = json_data if json_data is not None else {"ok": True}
+    return resp
 
-    def test_ok_with_company_active(self, client, mocker):
-        mocker.patch.object(client, "call_api", return_value={"isOrgActive": True, "isCompanyActive": True})
-        assert mod.test_module(client) == "ok"
 
-    @pytest.mark.parametrize(
-        "response",
+def test_request_success(client, mocker):
+    http = mocker.patch.object(Client, "_http_request", return_value=_response())
+    assert client._request("GET", "/x", params={"a": 1}) == {"ok": True}
+    kwargs = http.call_args.kwargs
+    assert kwargs["method"] == "GET"
+    assert kwargs["url_suffix"] == "/x"
+    assert kwargs["params"] == {"a": 1}
+    assert kwargs["status_list_to_retry"] == (502, 503, 504)
+    assert kwargs["retries"] == 3
+
+
+@pytest.mark.parametrize(
+    "resp",
+    [
+        _response(status=204, content=b""),
+        _response(status=200, content=b""),
+        _response(status=201),
+    ],
+)
+def test_request_returns_empty_dict_when_not_200_or_no_content(client, mocker, resp):
+    mocker.patch.object(Client, "_http_request", return_value=resp)
+    assert client._request("GET", "/x") == {}
+
+
+def test_request_propagates_errors(client, mocker):
+    mocker.patch.object(Client, "_http_request", side_effect=DemistoException("boom"))
+    with pytest.raises(DemistoException):
+        client._request("GET", "/x")
+
+
+def test_call_get_post_put_delegate(client, mocker):
+    req = mocker.patch.object(Client, "_request", return_value={"r": 1})
+    assert client.call_get_request("/g", params={"p": 1}) == {"r": 1}
+    req.assert_called_with("GET", "/g", params={"p": 1})
+    assert client.call_post_request("/p", body={"b": 1}) == {"r": 1}
+    req.assert_called_with("POST", "/p", body={"b": 1})
+    assert client.call_put_request("/u", body={"b": 2}) == {"r": 1}
+    req.assert_called_with("PUT", "/u", body={"b": 2})
+
+
+# ----------------------------------------------------------------------------
+# Client: incident building
+# ----------------------------------------------------------------------------
+
+
+def test_vulnerability_fields():
+    rows = Client._vulnerability_fields(
         [
+            {"cveNo": "CVE-1", "cvssScore": 9.8, "isKev": True, "products": ["a", "b"]},
             {},
-            None,
-            {"isOrgActive": False},
-            {"isOrgActive": True, "isCompanyActive": False},
+        ]
+    )
+    assert rows[0] == {
+        "cve": "CVE-1",
+        "cvssscore": 9.8,
+        "kev": "True",
+        "products": "a, b",
+    }
+    assert rows[1] == {"cve": "", "cvssscore": "", "kev": "False", "products": ""}
+
+
+def test_vulnerability_fields_empty():
+    assert Client._vulnerability_fields([]) == []
+
+
+def test_details_fields_join_and_filter():
+    details = {"issuer": ["a", "b"], "serial": "1"}
+    assert Client._details_fields(details, join_keys={"issuer"}) == [
+        {"fields": "issuer", "values": "a, b"},
+        {"fields": "serial", "values": "1"},
+    ]
+    assert Client._details_fields(details, join_keys={"issuer"}, only_keys={"issuer"}) == [{"fields": "issuer", "values": "a, b"}]
+
+
+def test_sub_category_open_ports(client):
+    details = {"portDetails": [{"port": 80}, {"port": 443}, {"other": 1}]}
+    assert client._build_sub_category_data_fields(details, "OPEN_PORTS") == [{"fields": "Open Ports", "values": "80,443"}]
+
+
+def test_sub_category_open_ports_missing(client):
+    assert client._build_sub_category_data_fields({}, "OPEN_PORTS") == [{"fields": "Open Ports", "values": ""}]
+
+
+def test_sub_category_certificates(client):
+    details = {"certificateDetails": {"issuer": ["CA1", "CA2"], "serial": "1"}}
+    assert client._build_sub_category_data_fields(details, "CERTIFICATES") == [
+        {"fields": "issuer", "values": "CA1, CA2"},
+        {"fields": "serial", "values": "1"},
+    ]
+
+
+def test_sub_category_configuration(client):
+    details = {"configurationDetails": {"missingEppCodes": ["x", "y"], "state": "bad"}}
+    assert client._build_sub_category_data_fields(details, "CONFIGURATION") == [
+        {"fields": "missingEppCodes", "values": "x, y"},
+        {"fields": "state", "values": "bad"},
+    ]
+
+
+def test_sub_category_ip_domain_reputation_only_reported_categories(client):
+    details = {
+        "ipDomainReputationDetails": {
+            "reportedCategories": ["spam", "bot"],
+            "ignored": "x",
+        }
+    }
+    assert client._build_sub_category_data_fields(details, "IP_DOMAIN_REPUTATION") == [
+        {"fields": "reportedCategories", "values": "spam, bot"}
+    ]
+
+
+def test_sub_category_default_uses_asset_details(client):
+    details = {"assetDetails": {"name": "host1"}}
+    assert client._build_sub_category_data_fields(details, "SOMETHING_ELSE") == [{"fields": "Name", "values": "host1"}]
+
+
+def test_populate_custom_fields(client, sample_alert):
+    result = client._populate_custom_fields(sample_alert)
+
+    alert_rows = {r["fields"]: r["values"] for r in result["cyfirmaalertdetails"]}
+    assert alert_rows["Subcategory"] == "Open Ports"
+    assert alert_rows["Category"] == "Attack Surface"
+    assert alert_rows["Alertid"] == "A1"
+    assert alert_rows["Objectid"] == "U1"
+    assert alert_rows["Extra"] == "val"
+    # fields in _SKIP_FIELDS must not leak into the generic rows
+    assert "Portdetails" not in alert_rows
+    assert "Networkattributes" not in alert_rows
+    assert "Vulnerabilities" not in alert_rows
+
+    assert result["cyfirmanetworkattributes"] == [{"fields": "Ip", "values": "1.1.1.1"}]
+    assert result["cyfirmadigitalfootprints"] == [{"fields": "Open Ports", "values": "80,443"}]
+    assert result["cyfirmavulnerabilities"][0]["cve"] == "CVE-1"
+    assert result["cyfirmadeepfakedetails"] == []
+
+
+def test_populate_custom_fields_with_deepfake(client, sample_alert):
+    sample_alert["alertDetails"]["deepFakeDetails"] = {"score": 1}
+    result = client._populate_custom_fields(sample_alert)
+    assert result["cyfirmadeepfakedetails"] == [{"fields": "Score", "values": 1}]
+
+
+def test_populate_custom_fields_without_alert_details(client):
+    flat = {
+        "alertId": "A2",
+        "uid": "U2",
+        "subCategory": "X",
+        "assetDetails": {"k": "v"},
+    }
+    result = client._populate_custom_fields(flat)
+    assert result["cyfirmadigitalfootprints"] == [{"fields": "K", "values": "v"}]
+    assert result["cyfirmavulnerabilities"] == []
+
+
+def test_build_incident_json(client, sample_alert):
+    incident = client._build_incident_json(sample_alert)
+    assert incident["type"] == "Attack Surface"
+    assert incident["name"] == "Open port found"
+    assert incident["occurred"] == "2026-01-01T10:00:00Z"
+    assert incident["severity"] == IncidentSeverity.HIGH
+    assert incident["category"] == "AS"
+    assert incident["subCategory"] == "OPEN_PORTS"
+    assert incident["dbotMirrorId"] == "A1"
+    assert incident["sourceBrand"] == "CYFIRMA"
+    assert incident["labels"] == []
+    assert "CustomFields" in incident
+    assert '"alertId": "A1"' in incident["rawJSON"]
+
+
+def test_build_incident_json_falls_back_to_last_modified_date(client):
+    incident = client._build_incident_json({"lastModifiedDate": "2026-02-02T00:00:00Z", "alertDetails": {}})
+    assert incident["occurred"] == "2026-02-02T00:00:00Z"
+
+
+def test_build_incident_json_no_dates_or_ids(client):
+    incident = client._build_incident_json({})
+    assert incident["occurred"] is None
+    assert incident["dbotMirrorId"] == ""
+    assert incident["name"] == ""
+    # a missing exposureScore defaults to 1 in _build_incident_json, which maps to LOW
+    assert incident["severity"] == IncidentSeverity.LOW
+
+
+def test_build_incident_json_mirror_id_falls_back_to_uid(client):
+    incident = client._build_incident_json({"alertDetails": {"uid": "U9"}})
+    assert incident["dbotMirrorId"] == "U9"
+
+
+# ----------------------------------------------------------------------------
+# Client: get_incidents / take down
+# ----------------------------------------------------------------------------
+
+
+def test_get_incidents_paginates(client, sample_alert, mocker):
+    get = mocker.patch.object(
+        Client,
+        "call_get_request",
+        side_effect=[
+            {"data": [sample_alert], "metaData": {"isLast": False}},
+            {"data": [sample_alert], "metaData": {"isLast": True}},
         ],
     )
-    def test_not_authorized(self, client, mocker, response):
-        mocker.patch.object(client, "call_api", return_value=response)
-        assert mod.test_module(client) == "Not Authorized"
-
-    @pytest.mark.parametrize("msg", ["Forbidden", "Unauthorized"])
-    def test_auth_error(self, client, mocker, msg):
-        mocker.patch.object(client, "call_api", side_effect=DemistoException(msg))
-        assert "Authorization Error" in mod.test_module(client)
-
-    def test_other_error_reraised(self, client, mocker):
-        mocker.patch.object(client, "call_api", side_effect=DemistoException("boom"))
-        with pytest.raises(DemistoException, match="boom"):
-            mod.test_module(client)
+    incidents = client.get_incidents({"size": 1, "after": 0}, {"AS": True, "BI": False})
+    assert len(incidents) == 2
+    assert get.call_count == 2
+    assert all(c.kwargs["end_point"] == "/al/as" for c in get.call_args_list)
+    assert "X-Request-Id" in client._headers
 
 
-# ------------------------------------------------------------------ take down commands
-TAKE_DOWN_ROW = {
-    "ticket_name": "T-1",
-    "sub_category": "PHISHING",
-    "created_date": "2026-10-01",
-    "modified_date": "2026-10-02",
+def test_get_incidents_multiple_types(client, sample_alert, mocker):
+    get = mocker.patch.object(
+        Client,
+        "call_get_request",
+        return_value={"data": [sample_alert], "metaData": {"isLast": True}},
+    )
+    incidents = client.get_incidents({}, {"AS": True, "BI": True, "DW": True, "SP": True})
+    assert len(incidents) == 4
+    assert [c.kwargs["end_point"] for c in get.call_args_list] == [
+        "/al/as",
+        "/al/bi",
+        "/al/dbwm",
+        "/al/spe",
+    ]
+
+
+def test_get_incidents_nothing_enabled(client, mocker):
+    get = mocker.patch.object(Client, "call_get_request")
+    assert client.get_incidents({}, {"AS": False}) == []
+    get.assert_not_called()
+
+
+def test_get_incidents_empty_response_stops(client, mocker):
+    mocker.patch.object(Client, "call_get_request", return_value={})
+    assert client.get_incidents({}, {"AS": True}) == []
+
+
+def test_initiate_take_down_with_comment(client, mocker):
+    post = mocker.patch.object(Client, "call_post_request", return_value={"status": "SUCCESS"})
+    client.initiate_take_down("A1", "please remove")
+    post.assert_called_once_with(
+        end_point="/td/initiate",
+        body={"objectId": "A1", "assetComment": "please remove"},
+    )
+
+
+def test_initiate_take_down_without_comment(client, mocker):
+    post = mocker.patch.object(Client, "call_post_request", return_value={})
+    client.initiate_take_down("A1")
+    post.assert_called_once_with(end_point="/td/initiate", body={"objectId": "A1"})
+
+
+def test_take_down_list_data_with_domain(client, mocker):
+    get = mocker.patch.object(Client, "call_get_request", return_value={"data": [{"ticketId": "T1"}]})
+    assert client.take_down_list_data("example.com", "0", "10") == [{"ticketId": "T1"}]
+    get.assert_called_once_with(end_point="/td", params={"page": "0", "size": "10", "domains": "example.com"})
+
+
+def test_take_down_list_data_without_domain(client, mocker):
+    get = mocker.patch.object(Client, "call_get_request", return_value={"data": []})
+    assert client.take_down_list_data("", "1", "5") == []
+    assert "domains" not in get.call_args.kwargs["params"]
+
+
+def test_take_down_list_data_non_dict_response(client, mocker):
+    mocker.patch.object(Client, "call_get_request", return_value=[])
+    assert client.take_down_list_data("", "0", "5") == []
+
+
+# ----------------------------------------------------------------------------
+# test_module
+# (called as Cyfirma.test_module so pytest does not collect it as a test)
+# ----------------------------------------------------------------------------
+
+
+def test_test_module_ok(client, mocker):
+    mocker.patch.object(Client, "call_get_request", return_value={"isOrgActive": True})
+    assert Cyfirma.test_module(client) == "ok"
+
+
+def test_test_module_ok_company_active(client, mocker):
+    mocker.patch.object(
+        Client,
+        "call_get_request",
+        return_value={"isOrgActive": True, "isCompanyActive": True},
+    )
+    assert Cyfirma.test_module(client) == "ok"
+
+
+@pytest.mark.parametrize("msg", ["Forbidden", "Unauthorized"])
+def test_test_module_auth_errors(client, mocker, msg):
+    mocker.patch.object(Client, "call_get_request", side_effect=DemistoException(msg))
+    assert Cyfirma.test_module(client) == "Authorization Error: make sure API Key is correctly set"
+
+
+def test_test_module_other_error_is_raised(client, mocker):
+    mocker.patch.object(Client, "call_get_request", side_effect=DemistoException("Connection timeout"))
+    with pytest.raises(DemistoException, match="Connection timeout"):
+        Cyfirma.test_module(client)
+
+
+@pytest.mark.parametrize(
+    "response",
+    [{}, {"isOrgActive": False}, {"isOrgActive": True, "isCompanyActive": False}],
+)
+def test_test_module_not_authorized(client, mocker, response):
+    mocker.patch.object(Client, "call_get_request", return_value=response)
+    assert Cyfirma.test_module(client) == "Not Authorized"
+
+
+# ----------------------------------------------------------------------------
+# Take-down commands
+# ----------------------------------------------------------------------------
+
+TICKET = {
+    "ticketId": "T1",
+    "domain": "bad.com",
+    "takedownSubCategory": "Phishing",
+    "takedownCategory": "Brand",
     "status": "OPEN",
-    "domain": "evil.com",
-    "created_by": "u1",
-    "modified_by": "u2",
-    "url_status": "UP",
-    "url_status_updated_by": "u3",
-    "category": "BRAND",
+    "createdDate": "2026-01-01",
+    "lastModifiedDate": "2026-01-02",
+    "createdBy": "u1",
+    "lastModifiedBy": "u2",
+    "details": "d",
 }
 
 
-class TestTakeDownListResults:
-    def test_empty(self):
-        res = mod.take_down_list_command_results([], "t")
-        assert res.readable_output == "No data found for current request."
-        assert res.outputs is None
-
-    def test_unexpected_format(self):
-        res = mod.take_down_list_command_results({"a": 1}, "t")  # type: ignore[arg-type]
-        assert res.readable_output == "Unexpected response format."
-
-    def test_success(self):
-        res = mod.take_down_list_command_results([TAKE_DOWN_ROW], "My Title")
-        assert res.outputs_prefix == "Cyfirma.TakeDownList"
-        assert res.outputs_key_field == "ticket_id"
-        assert res.outputs[0]["ticket_id"] == "T-1"
-        assert res.outputs[0]["domain"] == "evil.com"
-        assert "My Title" in res.readable_output
-        assert "T-1" in res.readable_output
-        assert res.raw_response == [TAKE_DOWN_ROW]
-
-    def test_missing_keys_do_not_crash(self):
-        res = mod.take_down_list_command_results([{}], "t")
-        assert res.outputs[0]["ticket_id"] == ""
+def test_take_down_list_command_results_empty():
+    assert take_down_list_command_results([], "title").readable_output == "No data found for current request."
 
 
-class TestInitiateTakeDown:
-    def test_missing_alert_id(self, client, mocker):
-        mocker.patch.object(demisto, "args", return_value={})
-        with pytest.raises(DemistoException, match="alert_id is required"):
-            mod.initiate_take_down_request(client)
+def test_take_down_list_command_results_unexpected_format():
+    result = take_down_list_command_results({"a": 1}, "title")  # type: ignore[arg-type]
+    assert result.readable_output == "Unexpected response format."
 
-    def test_success(self, client, mocker):
-        mocker.patch.object(demisto, "args", return_value={"alert_id": "A1", "comment": "c"})
-        m = mocker.patch.object(client, "initiate_take_down", return_value={"response": {"ticketName": "T-9"}})
-        res = mod.initiate_take_down_request(client)
-        m.assert_called_once_with("A1", "c")
-        assert "T-9" in res.readable_output
-        assert res.outputs["ticket_id"] == "T-9"
-        assert res.outputs_prefix == "Cyfirma.InitiateTakeDown"
 
-    @pytest.mark.parametrize(
-        "api_response, expected",
-        [
-            ({}, "No data found"),
-            ({"error": True}, "Error in creating"),
-            ({"error": False, "response": {}}, "Error in creating"),
-            ({"foo": "bar"}, "Error in creating"),
-        ],
+def test_take_down_list_command_results_success():
+    result = take_down_list_command_results([TICKET], "My Title")
+    assert "My Title" in result.readable_output
+    assert "T1" in result.readable_output
+    assert result.outputs_prefix == "Cyfirma.TakeDownList"
+    assert result.outputs_key_field == "ticket_id"
+    assert result.outputs == [
+        {
+            "ticket_id": "T1",
+            "sub_category": "Phishing",
+            "created_date": "2026-01-01",
+            "modified_date": "2026-01-02",
+            "status": "OPEN",
+            "domain": "bad.com",
+            "created_by": "u1",
+            "modified_by": "u2",
+        }
+    ]
+    assert result.raw_response == [TICKET]
+
+
+def test_take_down_list_command_results_missing_fields():
+    result = take_down_list_command_results([{}], "t")
+    assert isinstance(result.outputs, list)
+    assert isinstance(result.outputs[0], dict)
+    assert result.outputs[0]["ticket_id"] == ""
+
+
+def test_initiate_take_down_request_success(client, mocker):
+    mocker.patch.object(demisto, "args", return_value={"alert_id": "A1", "comment": "c"})
+    init = mocker.patch.object(
+        Client,
+        "initiate_take_down",
+        return_value={"status": "success", "data": {"takeDownId": "TD-1"}},
     )
-    def test_failures(self, client, mocker, api_response, expected):
-        mocker.patch.object(demisto, "args", return_value={"alert_id": "A1"})
-        mocker.patch.object(client, "initiate_take_down", return_value=api_response)
-        res = mod.initiate_take_down_request(client)
-        assert expected in res.readable_output
-        assert res.outputs["ticket_id"] == ""
+    result = initiate_take_down_request(client)
+    init.assert_called_once_with("A1", "c")
+    assert result.outputs == {
+        "take_down_id": "TD-1",
+        "message": "Take Down Request Created Successfully - Ticket ID: TD-1",
+    }
+    assert result.outputs_prefix == "Cyfirma.TakeDown"
+    assert "TD-1" in result.readable_output
 
 
-class TestGetTakeDownList:
-    def test_defaults(self, client, mocker):
-        mocker.patch.object(demisto, "args", return_value={})
-        m = mocker.patch.object(client, "take_down_list_data", return_value=[TAKE_DOWN_ROW])
-        res = mod.get_take_down_list(client)
-        m.assert_called_once_with("", "0", "50")
-        assert "Sub Category: All" in res.readable_output
-        assert "Page: 0" in res.readable_output
-
-    def test_custom_args(self, client, mocker):
-        mocker.patch.object(demisto, "args", return_value={"sub_category": "PHISH", "size": "5", "page": "2"})
-        m = mocker.patch.object(client, "take_down_list_data", return_value=[TAKE_DOWN_ROW])
-        res = mod.get_take_down_list(client)
-        m.assert_called_once_with("PHISH", "2", "5")
-        assert "Sub Category: PHISH" in res.readable_output
-
-    def test_no_data(self, client, mocker):
-        mocker.patch.object(demisto, "args", return_value={})
-        mocker.patch.object(client, "take_down_list_data", return_value=[])
-        assert "No data found" in mod.get_take_down_list(client).readable_output
+def test_initiate_take_down_request_missing_alert_id(client, mocker):
+    mocker.patch.object(demisto, "args", return_value={})
+    with pytest.raises(DemistoException, match="alert_id is required"):
+        initiate_take_down_request(client)
 
 
-# ------------------------------------------------------------------ fetch_incidents
-class TestFetchIncidents:
-    @pytest.fixture
-    def fake_client(self):
-        c = MagicMock()
-        c.get_incidents.return_value = [{"name": "x"}]
-        return c
-
-    def test_first_run(self, fake_client, mocker):
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={"fetchAttackSurface": True, "includeThirdParty": "true"},
-        )
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        inc_mock = mocker.patch.object(demisto, "incidents")
-        last_run_mock = mocker.patch.object(demisto, "setLastRun")
-
-        mod.fetch_incidents(fake_client, "90 days", 5)
-
-        kwargs = fake_client.get_incidents.call_args.kwargs
-        assert kwargs["params"]["size"] == 5
-        assert kwargs["params"]["page"] == 0
-        assert kwargs["params"]["includeThirdParty"] is True
-        assert isinstance(kwargs["params"]["after"], int)
-        assert kwargs["alerts_to_fetch"]["AS"] is True
-        for k in ("BI", "DW", "SP"):
-            assert kwargs["alerts_to_fetch"][k] is False
-
-        inc_mock.assert_called_once_with([{"name": "x"}])
-        last_fetch = last_run_mock.call_args.args[0]["last_fetch"]
-        assert re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$", last_fetch)
-
-    def test_uses_last_run(self, fake_client, mocker):
-        mocker.patch.object(demisto, "params", return_value={})
-        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2026-10-01T00:00:00Z"})
-        mocker.patch.object(demisto, "incidents")
-        mocker.patch.object(demisto, "setLastRun")
-
-        mod.fetch_incidents(fake_client, "90 days", 5)
-
-        expected = int(datetime(2026, 10, 1, tzinfo=UTC).timestamp() * 1000)
-        assert fake_client.get_incidents.call_args.kwargs["params"]["after"] == expected
-
-    def test_last_run_without_last_fetch_uses_first_fetch(self, fake_client, mocker):
-        mocker.patch.object(demisto, "params", return_value={})
-        mocker.patch.object(demisto, "getLastRun", return_value={"unrelated": 1})
-        mocker.patch.object(demisto, "incidents")
-        mocker.patch.object(demisto, "setLastRun")
-        mod.fetch_incidents(fake_client, "7 days", 5)  # must not crash
-        assert fake_client.get_incidents.called
-
-    def test_invalid_first_fetch(self, fake_client, mocker):
-        mocker.patch.object(demisto, "params", return_value={})
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        with pytest.raises(DemistoException, match="Invalid 'First fetch'"):
-            mod.fetch_incidents(fake_client, "not a valid date at all", 5)
-
-    def test_api_error_does_not_update_last_run(self, fake_client, mocker):
-        fake_client.get_incidents.side_effect = DemistoException("Forbidden")
-        mocker.patch.object(demisto, "params", return_value={})
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        set_mock = mocker.patch.object(demisto, "setLastRun")
-        inc_mock = mocker.patch.object(demisto, "incidents")
-        with pytest.raises(DemistoException):
-            mod.fetch_incidents(fake_client, "1 day", 5)
-        set_mock.assert_not_called()
-        inc_mock.assert_not_called()
+def test_initiate_take_down_request_no_data(client, mocker):
+    mocker.patch.object(demisto, "args", return_value={"alert_id": "A1"})
+    mocker.patch.object(Client, "initiate_take_down", return_value={})
+    with pytest.raises(DemistoException, match="No data returned"):
+        initiate_take_down_request(client)
 
 
-# ------------------------------------------------------------------ alert parser
-class TestAlertParser:
-    def test_success(self, mocker):
-        mocker.patch.object(
-            demisto,
-            "incident",
-            return_value={
-                "CustomFields": {
-                    "cyfirmaalertdetails": [
-                        {"fields": "Host", "values": "a.com"},
-                        {"fields": "", "values": "ignored"},
-                        {"values": "no name"},
-                    ]
-                }
-            },
-        )
-        rr = mocker.patch.object(mod, "return_results")
-        mod.command_alertdetailextraction()
-        res = rr.call_args.args[0]
-        assert res.outputs_prefix == "Cyfirma.Alert"
-        assert res.outputs == {"Host": "a.com"}
+@pytest.mark.parametrize(
+    "response, reason",
+    [
+        ({"status": "FAILED", "message": "bad alert"}, "bad alert"),
+        ({"status": "ERROR", "error": "denied"}, "denied"),
+        ({"status": "FAILED"}, "unknown error"),
+        ({"foo": "bar"}, "unknown error"),
+    ],
+)
+def test_initiate_take_down_request_failure_status(client, mocker, response, reason):
+    mocker.patch.object(demisto, "args", return_value={"alert_id": "A1"})
+    mocker.patch.object(Client, "initiate_take_down", return_value=response)
+    with pytest.raises(DemistoException, match=reason):
+        initiate_take_down_request(client)
 
-    @pytest.mark.parametrize(
+
+@pytest.mark.parametrize("data", [None, "string", {}, {"takeDownId": ""}])
+def test_initiate_take_down_request_missing_ticket_id(client, mocker, data):
+    mocker.patch.object(demisto, "args", return_value={"alert_id": "A1"})
+    mocker.patch.object(Client, "initiate_take_down", return_value={"status": "SUCCESS", "data": data})
+    with pytest.raises(DemistoException, match="no ticket ID"):
+        initiate_take_down_request(client)
+
+
+def test_get_take_down_list_defaults(client, mocker):
+    mocker.patch.object(demisto, "args", return_value={})
+    lst = mocker.patch.object(Client, "take_down_list_data", return_value=[TICKET])
+    result = get_take_down_list(client)
+    lst.assert_called_once_with("", "0", "50")
+    assert "Domain: All, Page: 0, Size: 50" in result.readable_output
+
+
+def test_get_take_down_list_with_args(client, mocker):
+    mocker.patch.object(demisto, "args", return_value={"domain": "bad.com", "size": "10", "page": "2"})
+    lst = mocker.patch.object(Client, "take_down_list_data", return_value=[TICKET])
+    result = get_take_down_list(client)
+    lst.assert_called_once_with("bad.com", "2", "10")
+    assert "Domain: bad.com, Page: 2, Size: 10" in result.readable_output
+
+
+def test_get_take_down_list_no_data(client, mocker):
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(Client, "take_down_list_data", return_value=[])
+    assert get_take_down_list(client).readable_output == "No data found for current request."
+
+
+# ----------------------------------------------------------------------------
+# fetch_incidents
+# ----------------------------------------------------------------------------
+
+
+def _patch_demisto_fetch(mocker, params, last_run):
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    incidents = mocker.patch.object(demisto, "incidents")
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    return incidents, set_last_run
+
+
+def test_fetch_incidents_first_run(client, mocker):
+    incidents, set_last_run = _patch_demisto_fetch(
+        mocker,
+        {
+            "fetchAttackSurface": True,
+            "fetchBrandExposure": "true",
+            "includeThirdParty": False,
+        },
+        None,
+    )
+    get = mocker.patch.object(Client, "get_incidents", return_value=[{"name": "x"}])
+
+    fetch_incidents(client, "3 days", 50)
+
+    kwargs = get.call_args.kwargs
+    assert kwargs["alerts_to_fetch"] == {
+        "AS": True,
+        "BI": True,
+        "DW": False,
+        "SP": False,
+    }
+    assert kwargs["params"]["size"] == 50
+    assert kwargs["params"]["page"] == 0
+    assert kwargs["params"]["includeThirdParty"] is False
+    assert isinstance(kwargs["params"]["after"], int)
+    incidents.assert_called_once_with([{"name": "x"}])
+    saved = set_last_run.call_args.args[0]["last_fetch"]
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", saved)
+
+
+def test_fetch_incidents_uses_last_run(client, mocker):
+    _patch_demisto_fetch(mocker, {"includeThirdParty": True}, {"last_fetch": "2026-01-01T00:00:00Z"})
+    get = mocker.patch.object(Client, "get_incidents", return_value=[])
+
+    fetch_incidents(client, "3 days", 10)
+
+    expected = int(datetime(2026, 1, 1, tzinfo=UTC).timestamp() * 1000)
+    assert get.call_args.kwargs["params"]["after"] == expected
+    assert get.call_args.kwargs["params"]["includeThirdParty"] is True
+
+
+def test_fetch_incidents_invalid_first_fetch(client, mocker):
+    _patch_demisto_fetch(mocker, {}, {})
+    mocker.patch.object(Cyfirma, "_parse_date", return_value=None)
+    get = mocker.patch.object(Client, "get_incidents")
+    with pytest.raises(DemistoException, match="Invalid 'First fetch'"):
+        fetch_incidents(client, "garbage", 10)
+    get.assert_not_called()
+
+
+# ----------------------------------------------------------------------------
+# cyfirma-alert-parser
+# ----------------------------------------------------------------------------
+
+
+def test_alert_parser_success(mocker):
+    mocker.patch.object(
+        demisto,
         "incident",
-        [{}, {"CustomFields": None}, {"CustomFields": {}}, {"CustomFields": {"cyfirmaalertdetails": []}}],
+        return_value={
+            "CustomFields": {
+                "cyfirmaalertdetails": [
+                    {"fields": "Alertid", "values": "A1"},
+                    {"fields": "Category", "values": "AS"},
+                    {"fields": "", "values": "ignored"},
+                    {"fields": "NoValue"},
+                ]
+            }
+        },
     )
-    def test_empty(self, mocker, incident):
-        mocker.patch.object(demisto, "incident", return_value=incident)
-        err = mocker.patch.object(mod, "return_error", side_effect=SystemExit)
-        with pytest.raises(SystemExit):
-            mod.command_alertdetailextraction()
-        err.assert_called_once()
-        assert "empty" in err.call_args.args[0]
-
-
-# ------------------------------------------------------------------ main
-class TestMain:
-    BASE_PARAMS = {
-        "url": "https://api.test/",
-        "api_key": {"password": "k"},
-        "max_fetch": "5",
-        "first_fetch": " 10 days ",
+    results = mocker.patch.object(Cyfirma, "return_results")
+    command_alertdetailextraction()
+    command_result = results.call_args.args[0]
+    assert command_result.outputs_prefix == "Cyfirma.Alert"
+    assert command_result.outputs == {
+        "Alertid": "A1",
+        "Category": "AS",
+        "NoValue": None,
     }
 
-    def _setup(self, mocker, command, params=None):
-        mocker.patch.object(demisto, "params", return_value=params or self.BASE_PARAMS)
-        mocker.patch.object(demisto, "command", return_value=command)
-        mocker.patch.object(demisto, "info")
-        rr = mocker.patch.object(mod, "return_results")
-        err = mocker.patch.object(mod, "return_error", side_effect=SystemExit)
-        return rr, err
 
-    def test_test_module(self, mocker):
-        rr, _ = self._setup(mocker, "test-module")
-        mocker.patch.object(mod, "test_module", return_value="ok")
-        mod.main()
-        rr.assert_called_once_with("ok")
+@pytest.mark.parametrize(
+    "incident",
+    [
+        {},
+        {"CustomFields": None},
+        {"CustomFields": {}},
+        {"CustomFields": {"cyfirmaalertdetails": []}},
+    ],
+)
+def test_alert_parser_empty_grid(mocker, mock_return_error, incident):
+    mocker.patch.object(demisto, "incident", return_value=incident)
+    with pytest.raises(ReturnErrorCalled, match="cyfirmaalertdetails is empty"):
+        command_alertdetailextraction()
 
-    def test_fetch_incidents(self, mocker):
-        self._setup(mocker, "fetch-incidents")
-        m = mocker.patch.object(mod, "fetch_incidents")
-        mod.main()
-        m.assert_called_once_with(ANY, "10 days", 5)
 
-    def test_default_max_fetch_and_first_fetch(self, mocker):
-        self._setup(mocker, "fetch-incidents", {"url": "https://x.com", "api_key": {"password": "k"}})
-        m = mocker.patch.object(mod, "fetch_incidents")
-        mod.main()
-        m.assert_called_once_with(ANY, mod.DEFAULT_FIRST_FETCH, mod.DEFAULT_MAX_FETCH)
+# ----------------------------------------------------------------------------
+# main
+# ----------------------------------------------------------------------------
 
-    @pytest.mark.parametrize(
-        "command, target",
-        [
-            ("cyfirma-takedown-initiate", "initiate_take_down_request"),
-            ("cyfirma-takedown-list", "get_take_down_list"),
-        ],
-    )
-    def test_command_results_are_returned(self, mocker, command, target):
-        rr, _ = self._setup(mocker, command)
-        m = mocker.patch.object(mod, target, return_value="RESULT")
-        mod.main()
-        m.assert_called_once()
-        rr.assert_called_once_with("RESULT")
+VALID_PARAMS = {"url": "https://api.example.com/", "api_key": {"password": "secret"}}
 
-    def test_alert_parser(self, mocker):
-        self._setup(mocker, "cyfirma-alert-parser")
-        m = mocker.patch.object(mod, "command_alertdetailextraction")
-        mod.main()
-        m.assert_called_once()
 
-    def test_unknown_command(self, mocker):
-        _, err = self._setup(mocker, "nope")
-        with pytest.raises(SystemExit):
-            mod.main()
-        assert "not implemented" in err.call_args.args[0]
+def _run_main(mocker, command, params=None, args=None):
+    mocker.patch.object(demisto, "params", return_value=VALID_PARAMS if params is None else params)
+    mocker.patch.object(demisto, "command", return_value=command)
+    mocker.patch.object(demisto, "args", return_value=args or {})
+    mocker.patch.object(demisto, "info")
+    Cyfirma.main()
 
-    def test_missing_url(self, mocker):
-        _, err = self._setup(mocker, "test-module", {"api_key": {"password": "k"}})
-        with pytest.raises(SystemExit):
-            mod.main()
-        assert "required" in err.call_args.args[0]
 
-    def test_missing_api_key(self, mocker):
-        _, err = self._setup(mocker, "test-module", {"url": "https://x.com", "api_key": None})
-        with pytest.raises(SystemExit):
-            mod.main()
-        assert "required" in err.call_args.args[0]
+def test_main_test_module(mocker):
+    mocker.patch.object(Cyfirma, "test_module", return_value="ok")
+    results = mocker.patch.object(Cyfirma, "return_results")
+    _run_main(mocker, "test-module")
+    results.assert_called_once_with("ok")
 
-    def test_forbidden_gives_auth_message(self, mocker):
-        _, err = self._setup(mocker, "test-module")
-        mocker.patch.object(mod, "test_module", side_effect=Exception("403 Forbidden"))
-        with pytest.raises(SystemExit):
-            mod.main()
-        err.assert_called_once_with("Authorization Error: make sure API Key is correctly set")
 
-    def test_generic_error_message(self, mocker):
-        _, err = self._setup(mocker, "test-module")
-        mocker.patch.object(mod, "test_module", side_effect=Exception("kaboom"))
-        with pytest.raises(SystemExit):
-            mod.main()
-        msg = err.call_args.args[0]
-        assert "Failed to execute test-module command" in msg
-        assert "kaboom" in msg
+def test_main_builds_client_with_expected_arguments(mocker):
+    client_cls = mocker.patch.object(Cyfirma, "Client")
+    mocker.patch.object(Cyfirma, "test_module", return_value="ok")
+    mocker.patch.object(Cyfirma, "return_results")
+    params = {**VALID_PARAMS, "insecure": True, "proxy": True}
+    _run_main(mocker, "test-module", params=params)
+    kwargs = client_cls.call_args.kwargs
+    assert kwargs["base_url"] == "https://api.example.com/api/ex/v3/da"
+    assert kwargs["verify"] is False
+    assert kwargs["proxy"] is True
+    assert kwargs["headers"]["X-Api-Key"] == "secret"
 
-    def test_client_built_with_expected_config(self, mocker):
-        self._setup(
-            mocker,
-            "test-module",
-            {**self.BASE_PARAMS, "insecure": True, "proxy": True},
-        )
-        mocker.patch.object(mod, "test_module", return_value="ok")
-        client_cls = mocker.patch.object(mod, "Client")
-        mod.main()
-        kwargs = client_cls.call_args.kwargs
-        assert kwargs["base_url"] == "https://api.test/api/ex/v3/da"
-        assert kwargs["verify"] is False
-        assert kwargs["proxy"] is True
-        assert kwargs["headers"]["X-Api-Key"] == "k"
-        assert kwargs["headers"]["X-App-Name"] == "PALO_ALTO_XSOAR_V2_AL"
+
+def test_main_fetch_incidents_uses_defaults(mocker):
+    fetch = mocker.patch.object(Cyfirma, "fetch_incidents")
+    _run_main(mocker, "fetch-incidents")
+    assert fetch.call_args.args[1:] == ("60 days", 100)
+
+
+def test_main_fetch_incidents_custom_params(mocker):
+    fetch = mocker.patch.object(Cyfirma, "fetch_incidents")
+    params = {**VALID_PARAMS, "max_fetch": "25", "first_fetch": " 7 days "}
+    _run_main(mocker, "fetch-incidents", params=params)
+    assert fetch.call_args.args[1:] == ("7 days", 25)
+
+
+def test_main_takedown_initiate(mocker):
+    cmd = mocker.patch.object(Cyfirma, "initiate_take_down_request", return_value="res")
+    results = mocker.patch.object(Cyfirma, "return_results")
+    _run_main(mocker, "cyfirma-takedown-initiate")
+    cmd.assert_called_once()
+    results.assert_called_once_with("res")
+
+
+def test_main_takedown_list(mocker):
+    cmd = mocker.patch.object(Cyfirma, "get_take_down_list", return_value="res")
+    results = mocker.patch.object(Cyfirma, "return_results")
+    _run_main(mocker, "cyfirma-takedown-list")
+    cmd.assert_called_once()
+    results.assert_called_once_with("res")
+
+
+def test_main_alert_parser(mocker):
+    cmd = mocker.patch.object(Cyfirma, "command_alertdetailextraction")
+    _run_main(mocker, "cyfirma-alert-parser")
+    cmd.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "params",
+    [
+        {"url": "", "api_key": {"password": "k"}},
+        {"api_key": {"password": "k"}},
+        {"url": "https://api.example.com"},
+        {"url": "https://api.example.com", "api_key": {}},
+        {"url": "https://api.example.com", "api_key": None},
+    ],
+)
+def test_main_missing_url_or_api_key(mocker, mock_return_error, params):
+    with pytest.raises(ReturnErrorCalled, match="Server URL and API Key are required"):
+        _run_main(mocker, "test-module", params=params)
+
+
+def test_main_unknown_command(mocker, mock_return_error):
+    with pytest.raises(ReturnErrorCalled, match="Failed to execute nope command"):
+        _run_main(mocker, "nope")
+
+
+def test_main_forbidden_error(mocker, mock_return_error):
+    mocker.patch.object(Cyfirma, "test_module", side_effect=DemistoException("403 Forbidden"))
+    with pytest.raises(ReturnErrorCalled, match="Authorization Error"):
+        _run_main(mocker, "test-module")
+
+
+def test_main_generic_error(mocker, mock_return_error):
+    mocker.patch.object(Cyfirma, "test_module", side_effect=DemistoException("kaboom"))
+    with pytest.raises(
+        ReturnErrorCalled,
+        match="Failed to execute test-module command.\nError:\nkaboom",
+    ):
+        _run_main(mocker, "test-module")

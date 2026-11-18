@@ -1,6 +1,9 @@
 import json
 import re
 
+import demistomock as demisto
+from CommonServerPython import *
+
 
 def clean(val):
     # [www.example.com](https://www.example.com) -> www.example.com
@@ -64,10 +67,10 @@ def main():
         if isinstance(data, dict):
             data = [data]
 
-        text = '\n\n'.join(alert_to_text(a) for a in data)
+        text = '\n\n'.join(alert_to_text(a) for a in (data or []))
 
         return_results(CommandResults(
-            outputs_prefix='Cyfirma.Alert.Jira',
+            outputs_prefix='Cyfirma.Alert.Txt',
             outputs={'Description': text},
             readable_output=text))
 

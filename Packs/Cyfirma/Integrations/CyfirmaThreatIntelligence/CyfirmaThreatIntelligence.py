@@ -47,20 +47,20 @@ _IOC_SEARCH_API_PATHS = "/stix/2.1/indicators/search"
 _MALWARE_SEARCH_API_PATHS = "/stix/2.1/malware/search"
 _VUL_SEARCH_API_PATHS = "/stix/2.1/vulnerabilities/search"
 
-_VUL_EXTENSION_ID = "extension-definition--1f9c5b3e-8a2d-4e7b-9c6a-d1f5e3b2a470"
-_INDICATOR_EXTENSION_ID = "extension-definition--4e9c7b2d-8a3f-4c1e-9d6b-5f2a8e7c1b40"
-_TA_EXTENSION_ID = "extension-definition--a7f3e9d1-2c8b-4b6e-9f5a-1c2d8e7b3a40"
-_MALWARE_EXTENSION_ID = "extension-definition--c1a5b0c2-3b6f-4f92-8e7a-9d5e2c4a1b73"
+VUL_EXTENSION_ID = "extension-definition--1f9c5b3e-8a2d-4e7b-9c6a-d1f5e3b2a470"
+INDICATOR_EXTENSION_ID = "extension-definition--4e9c7b2d-8a3f-4c1e-9d6b-5f2a8e7c1b40"
+TA_EXTENSION_ID = "extension-definition--a7f3e9d1-2c8b-4b6e-9f5a-1c2d8e7b3a40"
+MALWARE_EXTENSION_ID = "extension-definition--c1a5b0c2-3b6f-4f92-8e7a-9d5e2c4a1b73"
 
 _EXTENSION_IDS = {
-    LABEL_INDICATOR: _INDICATOR_EXTENSION_ID,
-    LABEL_VULNERABILITY: _VUL_EXTENSION_ID,
-    LABEL_THREAT_ACTOR: _TA_EXTENSION_ID,
-    LABEL_MALWARE: _MALWARE_EXTENSION_ID,
+    LABEL_INDICATOR: INDICATOR_EXTENSION_ID,
+    LABEL_VULNERABILITY: VUL_EXTENSION_ID,
+    LABEL_THREAT_ACTOR: TA_EXTENSION_ID,
+    LABEL_MALWARE: MALWARE_EXTENSION_ID,
 }
 
 _OUTPUT_PREFIXES = {
-    LABEL_INDICATOR: "CYFIRMA.Indicators",
+    LABEL_INDICATOR: "CYFIRMA.Indicator",
     LABEL_VULNERABILITY: "CYFIRMA.Vulnerability",
     LABEL_THREAT_ACTOR: "CYFIRMA.ThreatActor",
     LABEL_MALWARE: "CYFIRMA.Malware",
@@ -90,11 +90,10 @@ _CVSS_VERSION_METRICS_3 = [
     "scope",
 ]
 
-# Older XSOAR content versions may not define FeedIndicatorType.Location.
-# (The original referenced FeedIndicatorType.Location directly in _SDO_TYPES, which could fail at import.)
+
 _LOCATION_TYPE = getattr(FeedIndicatorType, "Location", "Location")
 
-_TI_SCORES = {
+TI_SCORES = {
     ThreatIntel.ObjectsNames.CAMPAIGN: ThreatIntel.ObjectsScore.CAMPAIGN,
     ThreatIntel.ObjectsNames.ATTACK_PATTERN: ThreatIntel.ObjectsScore.ATTACK_PATTERN,
     ThreatIntel.ObjectsNames.REPORT: ThreatIntel.ObjectsScore.REPORT,
@@ -106,7 +105,7 @@ _TI_SCORES = {
 }
 
 # STIX domain objects (SDO) -> XSOAR indicator type. Keys are the *lowercase STIX* type names.
-_SDO_TYPES = {
+SDO_TYPES = {
     "vulnerability": FeedIndicatorType.CVE,
     "threat-actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
@@ -182,11 +181,25 @@ _MALWARE_COLUMNS = [
     ("Target Countries", "target_countries"),
 ]
 
+_TYPE_COMMANDS = {
+    "cyfirma-ip-get": "ip",
+    "cyfirma-domain-get": "domain",
+    "cyfirma-url-get": "url",
+    "cyfirma-file-get": "file",
+}
+
+_SEARCH_COMMANDS = {
+    "cyfirma-ioc-search-get": LABEL_INDICATOR,
+    "cyfirma-threat-actor-search-get": LABEL_THREAT_ACTOR,
+    "cyfirma-malware-search-get": LABEL_MALWARE,
+    "cyfirma-vulnerability-search-get": LABEL_VULNERABILITY,
+}
+
 
 """ HELPERS """
 
 
-def _as_list(value: Any) -> list:
+def as_list(value: Any) -> list:
     """Normalize a value to a list.
 
     Args:
@@ -313,7 +326,7 @@ def location_value(obj: dict) -> str:
 
 def get_ti_ext_id(data_type: str) -> str:
     """Return the STIX extension-definition ID for a data type (defaults to the indicator one)."""
-    return _EXTENSION_IDS.get(data_type, _INDICATOR_EXTENSION_ID)
+    return _EXTENSION_IDS.get(data_type, INDICATOR_EXTENSION_ID)
 
 
 def _parse_days(value: Any, default: int = DEFAULT_FIRST_FETCH_DAYS) -> int:
@@ -333,7 +346,7 @@ def _parse_days(value: Any, default: int = DEFAULT_FIRST_FETCH_DAYS) -> int:
 class Client(BaseClient):
     """HTTP client for the CYFIRMA threat-intelligence API."""
 
-    def _identify_feed_type(self, obj: dict) -> tuple[str, str]:
+    def identify_feed_type(self, obj: dict) -> tuple[str, str]:
         """Determine the XSOAR indicator value and type for a STIX object.
 
         Args:
@@ -355,8 +368,8 @@ class Client(BaseClient):
         if obj_type == "location":
             return location_value(obj), _LOCATION_TYPE
 
-        if obj_type in _SDO_TYPES:
-            return str(obj.get("name") or ""), _SDO_TYPES[obj_type]
+        if obj_type in SDO_TYPES:
+            return str(obj.get("name") or ""), SDO_TYPES[obj_type]
 
         if obj_type in _OBSERVABLE_TYPES:  # bare STIX cyber observable
             return (
@@ -392,7 +405,7 @@ class Client(BaseClient):
             return response.json()
         return {}
 
-    def _build_relationships(self, feed_rel_obj: dict, feed_objs: dict) -> dict:
+    def build_relationships(self, feed_rel_obj: dict, feed_objs: dict) -> dict:
         """Convert a STIX relationship object into an XSOAR relationship.
 
         Both entities are resolved with the same logic used to create the indicators
@@ -413,8 +426,8 @@ class Client(BaseClient):
         if not source_obj or not target_obj:
             return {}
 
-        source_value, source_type = self._identify_feed_type(source_obj)
-        target_value, target_type = self._identify_feed_type(target_obj)
+        source_value, source_type = self.identify_feed_type(source_obj)
+        target_value, target_type = self.identify_feed_type(target_obj)
         if not (source_value and source_type and target_value and target_type):
             return {}
 
@@ -434,7 +447,7 @@ class Client(BaseClient):
             entity_b_type=target_type,
         ).to_indicator()
 
-    def _convert_threat_intel_obj(self, obj: dict, tlp_color: str, feed_reputation: str, feed_tags: list) -> dict:
+    def convert_threat_intel_obj(self, obj: dict, tlp_color: str, feed_reputation: str, feed_tags: list) -> dict:
         """Convert a STIX object into an XSOAR indicator dict.
 
         Args:
@@ -446,7 +459,7 @@ class Client(BaseClient):
         Returns:
             The indicator dict, or an empty dict if the object type is unsupported.
         """
-        value, ti_type = self._identify_feed_type(obj)
+        value, ti_type = self.identify_feed_type(obj)
         if not (value and ti_type):
             return {}
 
@@ -455,7 +468,7 @@ class Client(BaseClient):
         score, verdict = confidence_to_score(confidence)
         extensions = obj.get("extensions") or {}
 
-        tags = list(dict.fromkeys([*(feed_tags or []), *[str(x) for x in _as_list(obj.get("labels"))]]))
+        tags = list(dict.fromkeys([*(feed_tags or []), *[str(x) for x in as_list(obj.get("labels"))]]))
 
         fields: dict[str, Any] = {
             "firstseenbysource": obj.get("created", ""),
@@ -467,7 +480,7 @@ class Client(BaseClient):
             "tags": tags,
             "labels": [],
             "trafficlightprotocol": tlp_color or "",
-            "aliases": _as_list(obj.get("aliases")),
+            "aliases": as_list(obj.get("aliases")),
         }
         if feed_reputation not in (None, ""):
             fields["reputation"] = feed_reputation
@@ -476,13 +489,13 @@ class Client(BaseClient):
             "value": value,
             "type": ti_type,
             "rawJSON": obj,
-            "score": _TI_SCORES.get(ti_type, score),
+            "score": TI_SCORES.get(ti_type, score),
             "service": INTEGRATION_NAME,
             "fields": fields,
         }
 
         if obj_type == "indicator":
-            ext: dict[str, Any] = extensions.get(_INDICATOR_EXTENSION_ID) or {}
+            ext: dict[str, Any] = extensions.get(INDICATOR_EXTENSION_ID) or {}
 
             fields.update(parse_pattern(obj.get("pattern") or "")[2])
             fields["geocountry"] = ext.get("country", "")
@@ -492,7 +505,7 @@ class Client(BaseClient):
                 fields["blocked"] = True
 
         elif obj_type == "vulnerability":
-            ext = extensions.get(_VUL_EXTENSION_ID) or {}
+            ext = extensions.get(VUL_EXTENSION_ID) or {}
             cvss_version = str(ext.get("cvss_version") or "")
 
             fields.update(
@@ -524,7 +537,7 @@ class Client(BaseClient):
                     metrics.append(
                         {
                             "metrics": label,
-                            "value": ", ".join(str(v) for v in _as_list(ext[key])),
+                            "value": ", ".join(str(v) for v in as_list(ext[key])),
                         }
                     )
             fields["cvsstable"] = metrics
@@ -544,7 +557,7 @@ class Client(BaseClient):
 
         return ti_obj
 
-    def _fetch_all_pages(self, params: dict, path: str, feeds: list) -> None:
+    def fetch_all_pages(self, params: dict, path: str, feeds: list) -> None:
         """Page through an endpoint (starting at page 0) until an empty page is returned.
 
         Args:
@@ -561,7 +574,7 @@ class Client(BaseClient):
             feeds.extend(objects)
             request_params["page"] += 1
 
-    def _fetch_threat_actors_data(self, ta_names: list, feeds: list) -> None:
+    def fetch_threat_actors_data(self, ta_names: list, feeds: list) -> None:
         """Enrich the feed with objects related to the given threat actors.
 
         Names are searched in chunks; a failing chunk is logged and skipped. Threat-actor
@@ -615,12 +628,12 @@ class Client(BaseClient):
         vul_suffix = _TAILORED_PATHS if fetch_tailored_vulnerabilities else _ALL_PATHS
 
         raw_ti_feeds: list = []
-        self._fetch_all_pages(params, f"{_IOC_API_PATHS}{ioc_suffix}", raw_ti_feeds)
-        self._fetch_all_pages(params, f"{_VUL_API_PATHS}{vul_suffix}", raw_ti_feeds)
+        self.fetch_all_pages(params, f"{_IOC_API_PATHS}{ioc_suffix}", raw_ti_feeds)
+        self.fetch_all_pages(params, f"{_VUL_API_PATHS}{vul_suffix}", raw_ti_feeds)
 
         # dict preserves order and gives O(1) de-duplication
         ta_names = list(dict.fromkeys(f["name"] for f in raw_ti_feeds if f.get("type") == "threat-actor" and f.get("name")))
-        self._fetch_threat_actors_data(ta_names=ta_names, feeds=raw_ti_feeds)
+        self.fetch_threat_actors_data(ta_names=ta_names, feeds=raw_ti_feeds)
 
         indicators: list = []
         raw_rels: list = []
@@ -634,7 +647,7 @@ class Client(BaseClient):
             if obj_id in raw_feed_ids:
                 continue
             raw_feed_ids[obj_id] = f_obj
-            ti_obj = self._convert_threat_intel_obj(
+            ti_obj = self.convert_threat_intel_obj(
                 obj=f_obj,
                 tlp_color=tlp_color,
                 feed_reputation=feed_reputation,
@@ -643,7 +656,7 @@ class Client(BaseClient):
             if ti_obj:
                 indicators.append(ti_obj)
 
-        relationships = (self._build_relationships(rel, raw_feed_ids) for rel in raw_rels)
+        relationships = (self.build_relationships(rel, raw_feed_ids) for rel in raw_rels)
         indicators.extend(rel for rel in relationships if rel)
         return indicators
 
@@ -735,6 +748,7 @@ def _indicator_row_output(ti_data: dict, ext: dict, score: int, confidence: int)
     vendors = ext.get("security_vendors", {})
     country = ext.get("country", "")
     threat_actor = first_of(ext, "threat_actors", "threat_actor", default="")
+    action = first_of(ext, "recommended_action", "recommended_actions", default="MONITOR")
 
     row = {
         "Value": value,
@@ -742,19 +756,21 @@ def _indicator_row_output(ti_data: dict, ext: dict, score: int, confidence: int)
         "Score": score,
         "Country": country,
         "Threat Actor": threat_actor,
-        "Action": first_of(ext, "recommended_actions", "recommended_action"),
-        "Role": ext.get("roles"),
+        "Action": action,
+        "Role": ext.get("roles", ""),
         "Confidence": confidence,
         "Description": ti_data.get("description"),
         "vendors": vendors,
     }
+
     output = {
         "value": value,
         "type": value_type,
         "score": score,
-        "country": country,
         "threat_actor": threat_actor,
         "vendors": vendors,
+        "action": action,
+        "role": ext.get("roles", ""),
     }
     return row, output
 
@@ -958,19 +974,6 @@ def main() -> None:
 
     demisto.info(f"Command being called is {command}")
 
-    type_commands = {
-        "cyfirma-ip-get": "ip",
-        "cyfirma-domain-get": "domain",
-        "cyfirma-url-get": "url",
-        "cyfirma-file-get": "file",
-    }
-    search_commands = {
-        "cyfirma-ioc-search-get": LABEL_INDICATOR,
-        "cyfirma-threat-actor-search-get": LABEL_THREAT_ACTOR,
-        "cyfirma-malware-search-get": LABEL_MALWARE,
-        "cyfirma-vulnerability-search-get": LABEL_VULNERABILITY,
-    }
-
     try:
         client = Client(
             base_url=urljoin(api_url, _BASE_PREFIX_PATH),
@@ -999,10 +1002,10 @@ def main() -> None:
                 fetch_tailored_indicators=fetch_tailored_indicators,
                 fetch_tailored_vulnerabilities=fetch_tailored_vulnerabilities,
             )
-        elif command in type_commands:
-            return_results(fetch_feeds_by_type(client, type_commands[command]))
-        elif command in search_commands:
-            return_results(feed_search(client, search_commands[command], demisto.args()))
+        elif command in _TYPE_COMMANDS:
+            return_results(fetch_feeds_by_type(client, _TYPE_COMMANDS[command]))
+        elif command in _SEARCH_COMMANDS:
+            return_results(feed_search(client, _SEARCH_COMMANDS[command], demisto.args()))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 

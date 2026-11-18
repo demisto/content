@@ -1,6 +1,7 @@
 {
     "id": "incident_cyfirmanetworkattributes",
-    "version": 3,
+    "version": -1,
+    "fromVersion": "6.0.0",
     "cacheVersn": 0,
     "modified": "2026-10-23T15:05:52.278494097Z",
     "sizeInBytes": 0,

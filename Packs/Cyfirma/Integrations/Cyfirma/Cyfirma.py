@@ -6,7 +6,6 @@ Social/Public Exposure) as incidents and exposes take-down and alert-parsing com
 
 import json
 import uuid
-from datetime import datetime, UTC
 from typing import Any
 
 import dateparser
@@ -23,14 +22,17 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_MAX_FETCH = 100
-DEFAULT_FIRST_FETCH = "90 days"
-DATEPARSER_SETTINGS = {"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True}
+DEFAULT_FIRST_FETCH = "60 days"
+
 
 _BASE_PREFIX_PATH = "/api/ex/v3/da"
-_TEST_PATH = "/foo/ping"
+TEST_PATH = "/foo/ping"
 
-_TAKE_DOWN_LIST_API_PATH = "/td/list"
-_TAKE_DOWN_CREATE_API_PATH = "/td/create"
+TAKE_DOWN_LIST_API_PATH = "/td"
+TAKE_DOWN_INITIATE_API_PATH = "/td/initiate"
+
+INCIDENT_SEARCH_PATH = "/al/search"
+INCIDENT_STATUS_CHANGE_PATH = "/al/update/status"
 
 _API_PATHS = {
     "AS": "/al/as",
@@ -68,11 +70,13 @@ _SKIP_FIELDS = frozenset(
     }
 )
 
+_RETRY_STATUSES = (502, 503, 504)
+_MAX_RETRIES = 3
 
 """ HELPERS """
 
 
-def _kv_fields(data: dict, skip: frozenset | set = frozenset()) -> list[dict]:
+def kv_fields(data: dict, skip: frozenset | set = frozenset()) -> list[dict]:
     """Convert a dict into the XSOAR grid format.
 
     Args:
@@ -85,7 +89,7 @@ def _kv_fields(data: dict, skip: frozenset | set = frozenset()) -> list[dict]:
     return [{"fields": key.capitalize(), "values": value} for key, value in data.items() if key not in skip]
 
 
-def _safe_join(value: Any, sep: str = ",") -> str:
+def safe_join(value: Any, sep: str = ",") -> str:
     """Join an iterable into a string without failing on non-string or missing values.
 
     Args:
@@ -100,7 +104,7 @@ def _safe_join(value: Any, sep: str = ",") -> str:
     return "" if value is None else str(value)
 
 
-def _get_severity(risk_score) -> int:
+def get_severity(risk_score) -> int:
     """Map a CYFIRMA exposure score to an XSOAR incident severity.
 
     Args:
@@ -125,45 +129,59 @@ def _get_severity(risk_score) -> int:
 
 
 def _parse_date(value: str | None):
-    """Parse a date string or relative expression (e.g. '90 days') as a UTC-aware datetime.
-
-    Args:
-        value: Date string, relative time expression, or None.
-
-    Returns:
-        A timezone-aware ``datetime``, or None if the value is empty or unparsable.
-    """
-    return dateparser.parse(value, settings=DATEPARSER_SETTINGS) if value else None
+    """Parse a date string into a timezone-aware datetime object."""
+    return dateparser.parse(value) if value else None
 
 
 class Client(BaseClient):
     """HTTP client for the CYFIRMA API."""
 
-    def call_api(self, end_point: str, params: dict | None = None) -> dict:
-        """Perform a GET request with retries on transient gateway errors.
+    def _request(
+        self,
+        method: str,
+        end_point: str,
+        params: dict | None = None,
+        body: dict | None = None,
+    ) -> dict:
+        """Perform an HTTP request with retries on transient gateway errors.
 
         Args:
+            method: HTTP method (GET, POST, PUT).
             end_point: URL suffix appended to the client's base URL.
             params: Optional query-string parameters.
+            body: Optional JSON request body.
 
         Returns:
-            The decoded JSON body, or an empty dict if the response has no content.
+            The decoded JSON body, or an empty dict if the response is not a 200 or has no content.
 
         Raises:
             DemistoException: On HTTP errors (after retrying 502/503/504 up to 3 times).
         """
         response = self._http_request(
+            method=method,
             url_suffix=end_point,
             params=params,
+            json_data=body,
             resp_type="response",
-            method="GET",
-            retries=3,
-            status_list_to_retry=(502, 503, 504),
+            retries=_MAX_RETRIES,
+            status_list_to_retry=_RETRY_STATUSES,
             raise_on_status=True,
         )
         if response.status_code == 200 and response.content:
             return response.json()
         return {}
+
+    def call_get_request(self, end_point: str, params: dict | None = None) -> dict:
+        """GET request; see ``_request``."""
+        return self._request("GET", end_point, params=params)
+
+    def call_post_request(self, end_point: str, body: dict | None = None) -> dict:
+        """POST request; see ``_request``."""
+        return self._request("POST", end_point, body=body)
+
+    def call_put_request(self, end_point: str, body: dict | None = None) -> dict:
+        """PUT request; see ``_request``."""
+        return self._request("PUT", end_point, body=body)
 
     # ---- incident building ----
     def _populate_custom_fields(self, data: dict) -> dict:
@@ -183,7 +201,7 @@ class Client(BaseClient):
             {"fields": "Subcategory", "values": data.get("subCategoryLabel", "")},
             {"fields": "Category", "values": data.get("categoryLabel", "")},
         ]
-        generic = _kv_fields(event_details, _SKIP_FIELDS)
+        generic = kv_fields(event_details, _SKIP_FIELDS)
         sub_category = data.get("subCategory", "")
         result = {
             "cyfirmaalertdetails": base
@@ -192,16 +210,18 @@ class Client(BaseClient):
                 {"fields": "Objectid", "values": event_details.get("uid", "")},
             ]
             + generic,
-            "cyfirmanetworkattributes": _kv_fields(event_details.get("networkAttributes", {})),
+            "cyfirmanetworkattributes": kv_fields(event_details.get("networkAttributes", {})),
             "cyfirmadigitalfootprints": self._build_sub_category_data_fields(event_details, sub_category),
         }
 
-        deep_fake_details = event_details.get("deepFakeDetails")
-        if deep_fake_details:
-            result["cyfirmadeepfakedetails"] = _kv_fields(deep_fake_details)
+        result["cyfirmavulnerabilities"] = self._vulnerability_fields(event_details.get("vulnerabilities", []))
 
-        if sub_category == "DOMAIN_IP_VULNERABILITY":
-            result["cyfirmavulnerabilities"] = self._vulnerability_fields(event_details.get("vulnerabilities", []))
+        deep_fake_details = event_details.get("deepFakeDetails", {})
+        if deep_fake_details:
+            result["cyfirmadeepfakedetails"] = kv_fields(deep_fake_details)
+        else:
+            result["cyfirmadeepfakedetails"] = []
+
         return result
 
     def _build_sub_category_data_fields(self, alert_details: dict, sub_category: str) -> list:
@@ -235,7 +255,7 @@ class Client(BaseClient):
                 only_keys={"reportedCategories"},
             )
 
-        return _kv_fields(alert_details.get("assetDetails", {}))
+        return kv_fields(alert_details.get("assetDetails", {}))
 
     @staticmethod
     def _vulnerability_fields(vulnerabilities: list) -> list:
@@ -252,7 +272,7 @@ class Client(BaseClient):
                 "cve": v.get("cveNo", ""),
                 "cvssscore": v.get("cvssScore", ""),
                 "kev": str(v.get("isKev", False)),
-                "products": _safe_join(v.get("products", []), ", "),
+                "products": safe_join(v.get("products", []), ", "),
             }
             for v in vulnerabilities
         ]
@@ -274,7 +294,7 @@ class Client(BaseClient):
             if only_keys is not None and key not in only_keys:
                 continue
             if key in join_keys:
-                value = _safe_join(value)
+                value = safe_join(value, ", ")
             result.append({"fields": key, "values": value})
         return result
 
@@ -294,10 +314,10 @@ class Client(BaseClient):
             "type": event.get("categoryLabel", ""),
             "name": event.get("title", ""),
             "occurred": occurred_date.strftime(DATE_FORMAT) if occurred_date else None,
-            "severity": _get_severity(alert_details.get("exposureScore", 0)),
+            "severity": get_severity(alert_details.get("exposureScore", 1)),
             "rawJSON": json.dumps(event),
             "category": event.get("category", ""),
-            "subcategory": event.get("subCategory", ""),
+            "subCategory": event.get("subCategory", ""),
             "dbotMirrorId": str(event.get("alertId") or alert_details.get("uid") or ""),
             "sourceBrand": "CYFIRMA",
             "labels": [],
@@ -323,7 +343,7 @@ class Client(BaseClient):
             self._headers["X-Request-Id"] = str(uuid.uuid4())  # type: ignore[index]
 
             while True:
-                response = self.call_api(end_point=end_point, params=request_params)
+                response = self.call_get_request(end_point=end_point, params=request_params)
                 incidents.extend(self._build_incident_json(event) for event in response.get("data", []))
                 if response.get("metaData", {}).get("isLast", True):
                     break
@@ -341,12 +361,12 @@ class Client(BaseClient):
         Returns:
             The raw API response (expected to contain a ``response`` or ``error`` key).
         """
-        params = {"alertId": alert_id}
+        params = {"objectId": alert_id}
         if comment:
-            params["comment"] = comment
-        return self.call_api(_TAKE_DOWN_CREATE_API_PATH, params)
+            params["assetComment"] = comment
+        return self.call_post_request(end_point=TAKE_DOWN_INITIATE_API_PATH, body=params)
 
-    def take_down_list_data(self, sub_category: str, page: str, size: str) -> list:
+    def take_down_list_data(self, domain: str, page: str, size: str) -> list:
         """Retrieve a page of existing take-down tickets.
 
         Args:
@@ -358,9 +378,9 @@ class Client(BaseClient):
             A list of take-down ticket dicts (empty if none were returned).
         """
         params = {"page": page, "size": size}
-        if sub_category:
-            params["subCategory"] = sub_category
-        res = self.call_api(_TAKE_DOWN_LIST_API_PATH, params)
+        if domain:
+            params["domains"] = domain
+        res = self.call_get_request(end_point=TAKE_DOWN_LIST_API_PATH, params=params)
         return res.get("data", []) if isinstance(res, dict) else []
 
 
@@ -377,7 +397,7 @@ def test_module(client: Client) -> str:
         DemistoException: For errors other than authorization failures.
     """
     try:
-        res = client.call_api(_TEST_PATH)
+        res = client.call_get_request(end_point=TEST_PATH)
     except DemistoException as e:
         if "Forbidden" in str(e) or "Unauthorized" in str(e):
             return "Authorization Error: make sure API Key is correctly set"
@@ -410,29 +430,28 @@ def take_down_list_command_results(data: list, title: str) -> CommandResults:
     for da in data:
         table_data.append(
             {
-                "Ticket Id": da.get("ticket_name", ""),
-                "URL Status Updated By": da.get("url_status_updated_by", ""),
-                "URL Status": da.get("url_status", ""),
+                "Ticket Id": da.get("ticketId", ""),
                 "Domain": da.get("domain", ""),
-                "Sub Category": da.get("sub_category", ""),
-                "Category": da.get("category", ""),
+                "Sub Category": da.get("takedownSubCategory", ""),
+                "Category": da.get("takedownCategory", ""),
                 "Status": da.get("status", ""),
-                "Created Date": da.get("created_date", ""),
-                "Modified Date": da.get("modified_date", ""),
-                "Created By": da.get("created_by", ""),
-                "Modified By": da.get("modified_by", ""),
+                "Created Date": da.get("createdDate", ""),
+                "Modified Date": da.get("lastModifiedDate", ""),
+                "Created By": da.get("createdBy", ""),
+                "Modified By": da.get("lastModifiedBy", ""),
+                "Details": da.get("details", ""),
             }
         )
         outputs.append(
             {
-                "ticket_id": da.get("ticket_name", ""),
-                "sub_category": da.get("sub_category", ""),
-                "created_date": da.get("created_date", ""),
-                "modified_date": da.get("modified_date", ""),
+                "ticket_id": da.get("ticketId", ""),
+                "sub_category": da.get("takedownSubCategory", ""),
+                "created_date": da.get("createdDate", ""),
+                "modified_date": da.get("lastModifiedDate", ""),
                 "status": da.get("status", ""),
                 "domain": da.get("domain", ""),
-                "created_by": da.get("created_by", ""),
-                "modified_by": da.get("modified_by", ""),
+                "created_by": da.get("createdBy", ""),
+                "modified_by": da.get("lastModifiedBy", ""),
             }
         )
 
@@ -468,22 +487,25 @@ def initiate_take_down_request(client: Client) -> CommandResults:
 
     data = client.initiate_take_down(alert_id, args.get("comment", ""))
 
-    ticket_id = ""
     if not data:
-        msg = "No data found for current request."
-    elif data.get("error"):
-        msg = "Error in creating take down request."
-    elif not data.get("response"):
-        msg = "Error in creating take down request."
-    else:
-        ticket_id = data["response"].get("ticketName", "")
-        msg = f"Take Down Request Created Successfully - Ticket ID: {ticket_id}"
+        raise DemistoException("No data returned for the take down request.")
+
+    if str(data.get("status", "")).upper() != "SUCCESS":
+        reason = data.get("message") or data.get("error") or "unknown error"
+        raise DemistoException(f"Error in creating take down request: {reason}")
+
+    details = data.get("data")
+    take_down_id = details.get("takeDownId", "") if isinstance(details, dict) else ""
+    if not take_down_id:
+        raise DemistoException(f"Take down request succeeded but no ticket ID was returned: {data}")
+
+    msg = f"Take Down Request Created Successfully - Ticket ID: {take_down_id}"
 
     return CommandResults(
         readable_output=msg,
-        outputs_prefix="Cyfirma.InitiateTakeDown",
-        outputs_key_field="ticket_id",
-        outputs={"ticket_id": ticket_id, "message": msg},
+        outputs_prefix="Cyfirma.TakeDown",
+        outputs_key_field="take_down_id",
+        outputs={"take_down_id": take_down_id, "message": msg},
         raw_response=data,
     )
 
@@ -492,7 +514,7 @@ def get_take_down_list(client: Client) -> CommandResults:
     """Command ``cyfirma-takedown-list``: list take-down tickets.
 
     Command args:
-        sub_category (optional): Filter by sub-category; defaults to all.
+        domain (optional): Filter by domain; defaults to all.
         size (optional): Page size; defaults to "50".
         page (optional): Zero-based page number; defaults to "0".
 
@@ -503,14 +525,14 @@ def get_take_down_list(client: Client) -> CommandResults:
         CommandResults built by ``take_down_list_command_results``.
     """
     args = demisto.args()
-    sub_category = args.get("sub_category", "")
+    domain = args.get("domain", "")
     size = args.get("size", "50")
     page = args.get("page", "0")
 
-    res_data = client.take_down_list_data(sub_category, page, size)
+    res_data = client.take_down_list_data(domain, page, size)
     return take_down_list_command_results(
         res_data,
-        f"CYFIRMA Take Down List - Sub Category: {sub_category or 'All'}, Page: {page}, Size: {size}",
+        f"CYFIRMA Take Down List - Domain: {domain or 'All'}, Page: {page}, Size: {size}",
     )
 
 
@@ -537,24 +559,22 @@ def fetch_incidents(client: Client, first_fetch: str, max_fetch: int) -> None:
         for alert_type in alert_types
     }
 
-    start_fetch = _parse_date(last_run.get("last_fetch") or first_fetch)
-    if start_fetch is None:
+    after = _parse_date(last_run.get("last_fetch") or first_fetch)
+    if after is None:
         raise DemistoException(f"Invalid 'First fetch' value: {first_fetch!r}")
 
-    # Capture BEFORE calling the API so alerts created mid-fetch aren't skipped.
-    # Original used naive local datetime.now() but labeled it as UTC ('Z').
-    fetch_started = datetime.now(UTC)
+    next_run_from = datetime.now()
 
     request_params = {
         "page": 0,
         "size": max_fetch,
-        "after": int(start_fetch.timestamp() * 1000),
+        "after": int(after.timestamp() * 1000),
         "includeThirdParty": argToBoolean(params.get("includeThirdParty", False)),
     }
     incidents = client.get_incidents(params=request_params, alerts_to_fetch=alerts_to_fetch)
 
     demisto.incidents(incidents)
-    demisto.setLastRun({"last_fetch": fetch_started.strftime(DATE_FORMAT)})
+    demisto.setLastRun({"last_fetch": next_run_from.strftime(DATE_FORMAT)})
 
 
 def command_alertdetailextraction() -> None:

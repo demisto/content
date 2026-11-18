@@ -1,6 +1,7 @@
 {
     "id": "incident_cyfirmadigitalfootprints",
-    "version": 3,
+    "version": -1,
+    "fromVersion": "6.0.0",
     "cacheVersn": 0,
     "modified": "2026-10-23T15:05:52.278493767Z",
     "sizeInBytes": 0,

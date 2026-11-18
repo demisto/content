@@ -1,6 +1,7 @@
 {
     "id": "incident_cyfirmaalertdetails",
-    "version": 4,
+    "version": -1,
+    "fromVersion": "6.0.0",
     "cacheVersn": 0,
     "modified": "2026-10-23T15:05:52.278493277Z",
     "sizeInBytes": 0,

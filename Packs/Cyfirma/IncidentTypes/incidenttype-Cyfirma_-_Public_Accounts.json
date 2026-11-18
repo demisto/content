@@ -1,6 +1,7 @@
 {
     "id": "CYFIRMA - Public Accounts",
-    "version": 3,
+    "version": -1,
+    "fromVersion": "6.0.0",
     "cacheVersn": 0,
     "sequenceNumber": 16404288,
     "primaryTerm": 3,
@@ -38,7 +39,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "a96d9c6b-163c-4d67-8132-4c49e5027de6",
+    "layout": "CYFIRMA - Compromised Accounts Layout",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
