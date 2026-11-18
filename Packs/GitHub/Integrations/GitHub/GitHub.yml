@@ -7571,6 +7571,36 @@ script:
       required: true
     description: Deletes a GitHub Actions artifact.
     name: github-delete-actions-artifact
+  - name: get-file-content
+    hidden: true
+    description: Retrieves a file from GitHub by its URL and returns it in a generic unified format under the FileContent context key. When the URL points to a folder, returns a list with one item per supported file directly in the folder (non-recursive). Supported formats are .md, .json, .jsonl, .csv and .docx, up to 5 MB. Text files are returned inline, binary files are base64-encoded and the Type is suffixed with ';base64'.
+    arguments:
+    - description: 'A GitHub file or folder URL. Supported formats are https://github.com/<owner>/<repo>/blob/<ref>/<path>, https://github.com/<owner>/<repo>/tree/<ref>/<path> and https://raw.githubusercontent.com/<owner>/<repo>/<ref>/<path>. Max file size: 5 MB.'
+      name: url
+      prettyname: The GitHub file URL
+      required: true
+    outputs:
+    - contextPath: FileContent.Id
+      description: The unique identifier (blob SHA) of the file.
+      type: String
+    - contextPath: FileContent.Title
+      description: The title of the file.
+      type: String
+    - contextPath: FileContent.Type
+      description: The MIME type of the returned content. For binary files (e.g. .docx) the type is suffixed with ';base64' to indicate the 'Content' field is base64-encoded.
+      type: String
+    - contextPath: FileContent.Name
+      description: The name of the file.
+      type: String
+    - contextPath: FileContent.Content
+      description: The file content. Text files are inline; binary files are base64-encoded - decode using the ';base64' suffix on Type.
+      type: String
+    - contextPath: FileContent.Url
+      description: The original URL used to retrieve the file.
+      type: String
+    - contextPath: FileContent.FileUrl
+      description: The direct GitHub link to the file.
+      type: String
   dockerimage: demisto/auth-utils:1.0.0.11671917
   isfetch: true
   runonce: false
