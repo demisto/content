@@ -46,15 +46,15 @@ def main():
             incident_owners = get_incident_owners(incident_ids)
 
             html_readable_output = (
-                f"<div style='font-size:17px; text-align:center; padding: 50px;'> Incident Owners"
-                f"</br> <div style='font-size:32px;'> {len(incident_owners)} </div> "
-                f"<div style='font-size:17px;'> {', '.join(incident_owners)} </div></div>"
+                f"<div style='font-size:17px; text-align:center; padding: 8px;'>Incident Owners"
+                f"<div style='font-size:24px;'>{len(incident_owners)}</div>"
+                f"<div style='font-size:14px; word-break:break-word;'>{', '.join(incident_owners)}</div></div>"
             )
 
         else:
             html_readable_output = (
-                "<div style='font-size:17px; text-align:center; padding: 50px;'> Incident Owners"
-                "</br> <div style='font-size:17px;'> No incident owners. </div></div>"
+                "<div style='font-size:17px; text-align:center; padding: 8px;'>Incident Owners"
+                "<div>No incident owners.</div></div>"
             )
 
         return_results(CommandResults(content_format="html", raw_response=html_readable_output))

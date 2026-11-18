@@ -12,6 +12,7 @@ from CortexAssistantApiModule import (
     AssistantActionIds,
     AssistantMessages,
     AssistantMessagingHandler,
+    IGNORED_MESSAGE_IDS,
 )
 
 
@@ -28,6 +29,7 @@ class MockMessagingHandler(AssistantMessagingHandler):
         self.sent_messages = []
         self.updated_messages = []
         self.deleted_messages = []
+        self.posted_responses = []
 
     async def send_message_async(self, channel_id: str, message: str, thread_id: str = "",
                                   blocks: list | None = None, attachments: list | None = None,
@@ -67,11 +69,12 @@ class MockMessagingHandler(AssistantMessagingHandler):
         return [{"type": "actions"}]
 
     def create_feedback_ui(self, message_id: str) -> dict:
-        return {"type": "actions"}
+        return {"type": "feedback", "message_id": message_id}
 
     def post_agent_response(self, channel_id: str, thread_id: str, blocks: list,
-                                  attachments: list, agent_name: str = "") -> dict | None:
+                                  attachments: list, agent_name: str = "", fallback_text: str = "") -> dict | None:
         self.last_posted_blocks = blocks
+        self.posted_responses.append({"blocks": blocks, "attachments": attachments})
         return {"ts": "1234567890.123456"}
 
     def update_existing_message(self, channel_id: str, thread_id: str, message_id: str,
@@ -868,15 +871,44 @@ def test_backend_response_includes_error_code(mocker):
     assert result.error_type == BackendErrorType.UNKNOWN
 
 
-@pytest.mark.asyncio
-async def test_sensitive_action_approval_decision_indicator_before_feedback(mocker: MockerFixture):
+def test_send_agent_response_approval_final_has_no_feedback(mocker: MockerFixture):
     """
     Given:
-    	A successful sensitive action approval with blocks containing content, actions, and feedback.
+        An approval (sensitive action) message that is also is_final=True.
+    When:
+        Sending agent response.
+    Then:
+        No feedback (like/dislike) buttons are attached to the approval message.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    handler = MockMessagingHandler()
+    assistant = {"conv1": {"status": AssistantStatus.AWAITING_BACKEND_RESPONSE.value}}
+
+    handler.send_agent_response(
+        channel_id="channel123",
+        thread_id="thread123",
+        messages=[
+            {"content": "Delete all the things?", "response_type": AssistantMessageType.APPROVAL.value,
+             "is_final": True, "message_id": "appr-1"},
+        ],
+        assistant_context=assistant,
+        assistant_id_key="conv1",
+    )
+
+    assert _feedback_message_ids(handler) == []
+
+
+@pytest.mark.asyncio
+async def test_sensitive_action_approval_appends_decision_indicator(mocker: MockerFixture):
+    """
+    Given:
+    	A successful sensitive action approval whose original message blocks are content → actions.
     When:
     	The approval action is handled.
     Then:
-    	The decision indicator is inserted before the feedback block, not appended at the end.
+    	The approve/reject actions block is removed and the decision indicator is appended at the end.
+    	Approval messages have no feedback buttons.
     """
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "agentixCommands", return_value={"success": True})
@@ -890,13 +922,12 @@ async def test_sensitive_action_approval_decision_indicator_before_feedback(mock
         }
     }
 
-    # Simulate original message blocks: content → actions (approval) → feedback
+    # Simulate original message blocks: content → actions (approve/reject)
     message = {
         "ts": "msg_ts",
         "blocks": [
             {"type": "section", "text": {"type": "mrkdwn", "text": "Sensitive action details"}},
             {"type": "actions", "elements": [{"type": "button", "text": {"type": "plain_text", "text": "Proceed"}}]},
-            {"type": "actions", "elements": [{"type": "button", "text": {"type": "plain_text", "text": "Good response"}}]},
         ],
     }
 
@@ -913,14 +944,333 @@ async def test_sensitive_action_approval_decision_indicator_before_feedback(mock
         locked_user="U123",
     )
 
-    # Verify the update_message was called with correct block order
+    # Verify the update_message was called with the actions block removed and the
+    # decision indicator appended: [content, decision_indicator]
     updated = handler.updated_messages[0]
     blocks = updated["blocks"]
 
-    # After removing the approval actions block:
-    # [content, decision_indicator, feedback_actions]
-    assert len(blocks) == 3
+    assert len(blocks) == 2
     assert blocks[0]["type"] == "section"  # content
-    assert blocks[1]["type"] == "context"  # decision indicator
+    assert blocks[1]["type"] == "context"  # decision indicator (appended last)
     assert blocks[1]["elements"][0]["text"] == AssistantMessages.DECISION_APPROVED
-    assert blocks[2]["type"] == "actions"  # feedback buttons (last)
+    # No actions/feedback blocks remain
+    assert all(block["type"] != "actions" for block in blocks)
+
+
+# ============================================================================
+# Test ignored message_id filtering and feedback button placement
+# ============================================================================
+
+
+def test_send_agent_response_no_feedback_on_intermediate_batch(mocker: MockerFixture):
+    """
+    Given:
+        A batch of intermediate "thinking" model messages (all is_final=False) followed by a
+        step message - i.e. the response is not complete yet.
+    When:
+        Sending agent response.
+    Then:
+        No feedback buttons are attached to any message, because feedback is only shown once the
+        response is complete.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    handler = MockMessagingHandler()
+    assistant = {"conv1": {"status": AssistantStatus.AWAITING_BACKEND_RESPONSE.value}}
+
+    result = handler.send_agent_response(
+        channel_id="C0BU9JDMTC5",
+        thread_id="1789559349.493479",
+        messages=[
+            {"content": "First thinking step", "response_type": AssistantMessageType.MODEL.value,
+             "is_final": False, "message_id": "lc_run--1"},
+            {"content": "Second thinking step", "response_type": AssistantMessageType.MODEL.value,
+             "is_final": False, "message_id": "lc_run--2"},
+            {"content": "Plan updated (3 steps)", "response_type": AssistantMessageType.STEP.value,
+             "is_final": False, "message_id": "plan_updated"},
+        ],
+        assistant_context=assistant,
+        assistant_id_key="conv1",
+    )
+
+    assert _feedback_message_ids(handler) == []
+    # Response not complete - conversation lock is kept
+    assert "conv1" in result
+
+
+def _feedback_message_ids(handler: MockMessagingHandler) -> list:
+    """Collect the message_ids of all feedback blocks that were posted."""
+    ids = []
+    for posted in handler.posted_responses:
+        for block in posted["blocks"]:
+            if block.get("type") == "feedback":
+                ids.append(block["message_id"])
+    return ids
+
+
+def test_send_agent_response_ignores_configured_message_ids(mocker: MockerFixture):
+    """
+    Given:
+        Step messages whose message_id is in IGNORED_MESSAGE_IDS (agent_selected, artifact_created).
+    When:
+        Sending agent response.
+    Then:
+        Those messages are dropped and never posted to the platform.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    handler = MockMessagingHandler()
+
+    handler.send_agent_response(
+        channel_id="channel123",
+        thread_id="thread123",
+        messages=[
+            {"content": "agent selected", "response_type": AssistantMessageType.STEP.value,
+             "is_final": False, "message_id": "agent_selected"},
+            {"content": "Created artifact CortexListIssues", "response_type": AssistantMessageType.STEP.value,
+             "is_final": False, "message_id": "artifact_created"},
+        ],
+        assistant_context={},
+        assistant_id_key="conv1",
+    )
+
+    assert handler.posted_responses == []
+
+
+def test_send_agent_response_ignored_messages_still_mark_completion(mocker: MockerFixture):
+    """
+    Given:
+        A model message followed by an ignored step message that carries is_final=True.
+    When:
+        Sending agent response.
+    Then:
+        The ignored message is not posted, but completion is still derived from it and the lock is released.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    handler = MockMessagingHandler()
+    assistant = {"conv1": {"status": "awaiting_backend_response"}}
+
+    result = handler.send_agent_response(
+        channel_id="channel123",
+        thread_id="thread123",
+        messages=[
+            {"content": "The answer", "response_type": AssistantMessageType.MODEL.value,
+             "is_final": False, "message_id": "lc_run--abc"},
+            {"content": "agent selected", "response_type": AssistantMessageType.STEP.value,
+             "is_final": True, "message_id": "agent_selected"},
+        ],
+        assistant_context=assistant,
+        assistant_id_key="conv1",
+    )
+
+    posted_ids = _feedback_message_ids(handler)
+    assert posted_ids == ["lc_run--abc"]
+    assert "conv1" not in result
+
+
+def test_send_agent_response_feedback_only_on_last_nonempty_model(mocker: MockerFixture):
+    """
+    Given:
+        Multiple model messages where the last one has empty content but is_final=True.
+    When:
+        Sending agent response.
+    Then:
+        Feedback buttons are attached only to the last non-empty model message, and the empty
+        final message is not posted.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    handler = MockMessagingHandler()
+    assistant = {"conv1": {"status": "awaiting_backend_response"}}
+
+    result = handler.send_agent_response(
+        channel_id="channel123",
+        thread_id="thread123",
+        messages=[
+            {"content": "First model msg", "response_type": AssistantMessageType.MODEL.value,
+             "is_final": False, "message_id": "lc_run--1"},
+            {"content": "Final answer with the table", "response_type": AssistantMessageType.MODEL.value,
+             "is_final": False, "message_id": "lc_run--2"},
+            {"content": "", "response_type": AssistantMessageType.MODEL.value,
+             "is_final": True, "message_id": "model"},
+        ],
+        assistant_context=assistant,
+        assistant_id_key="conv1",
+    )
+
+    posted_ids = _feedback_message_ids(handler)
+    assert posted_ids == ["lc_run--2"]
+    # Empty final message must not be posted (only two model messages sent)
+    assert len(handler.posted_responses) == 2
+    assert "conv1" not in result
+
+
+def test_get_feedback_message_id_no_model_messages():
+    """
+    Given:
+        Only step-type messages.
+    When:
+        Determining the feedback message id.
+    Then:
+        Returns an empty string since no model message qualifies.
+    """
+    handler = MockMessagingHandler()
+    messages = [
+        {"content": "step 1", "response_type": AssistantMessageType.STEP.value, "message_id": "s1"},
+        {"content": "step 2", "response_type": AssistantMessageType.STEP.value, "message_id": "s2"},
+    ]
+    assert handler._get_feedback_message_id(messages) == ""
+
+
+def test_send_agent_response_ignores_echoed_user_message(mocker: MockerFixture):
+    """
+    Given:
+        A response whose first message is the user's own message echoed back by the backend,
+        identified by the source-chat context marker prefix, followed by real model responses
+        and an empty final message.
+    When:
+        Sending agent response.
+    Then:
+        The echoed user message is not posted, the real answer is, feedback goes on the last
+        non-empty model message, and the lock is released.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    handler = MockMessagingHandler()
+    assistant = {"conv1": {"status": AssistantStatus.RESPONDING_WITH_PLAN.value}}
+
+    echoed_user_content = (
+        "--- Source chat context ---\n"
+        "The following chat session metadata is automatically attached.\n"
+        "This chat was initiated from Slack.\n"
+        "channel_id: C0BU9JDMTC5\n"
+        "thread_id: 1789027287.010439\n"
+        "--- End of source chat context ---\n\n Create War Room Entry"
+    )
+
+    result = handler.send_agent_response(
+        channel_id="C0BU9JDMTC5",
+        thread_id="1789027287.010439",
+        messages=[
+            {"content": echoed_user_content, "response_type": AssistantMessageType.MODEL.value,
+             "is_final": False, "message_id": "a6eb4e1f-257b-41a6-903a-16b5356beb13"},
+            {"content": "Searching the knowledge base.", "response_type": AssistantMessageType.MODEL.value,
+             "is_final": False, "message_id": "lc_run--1"},
+            {"content": "Which Case ID would you like to link?", "response_type": AssistantMessageType.MODEL.value,
+             "is_final": False, "message_id": "lc_run--final"},
+            {"content": "", "response_type": AssistantMessageType.MODEL.value,
+             "is_final": True, "message_id": "model"},
+        ],
+        assistant_context=assistant,
+        assistant_id_key="conv1",
+    )
+
+    # Only the two real model messages are posted (echo + empty final are dropped)
+    assert len(handler.posted_responses) == 2
+    assert _feedback_message_ids(handler) == ["lc_run--final"]
+    assert "conv1" not in result
+
+
+def test_is_echoed_user_message_detects_marker():
+    """
+    Given:
+        Messages with and without the source-chat context marker prefix.
+    When:
+        Checking whether they are echoed user messages.
+    Then:
+        Only the one starting with the marker is detected as an echo.
+    """
+    handler = MockMessagingHandler()
+    assert handler._is_echoed_user_message(
+        {"content": "--- Source chat context ---\nfoo\nCreate War Room Entry"}
+    ) is True
+    assert handler._is_echoed_user_message(
+        {
+            "content": (
+                "--- Previous chat context ---\n"
+                "**Test User**: Create War Room Entry in issue 5 with the details\n"
+                "--- End of context ---\n\n**Current message**:"
+            )
+        }
+    ) is True
+    assert handler._is_echoed_user_message({"content": "A normal model answer"}) is False
+    assert handler._is_echoed_user_message({"content": ""}) is False
+
+
+def test_send_agent_response_empty_final_message_releases_lock(mocker: MockerFixture):
+    """
+    Given:
+        A sequence of model messages ending with an empty message that has is_final=True
+        (the backend's completion signal).
+    When:
+        Sending agent response.
+    Then:
+        The lock is released even though the empty final message is never posted, and feedback
+        buttons are attached only to the last non-empty model message.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    handler = MockMessagingHandler()
+    assistant = {"conv1": {"status": AssistantStatus.RESPONDING_WITH_PLAN.value}}
+
+    result = handler.send_agent_response(
+        channel_id="C0BU9JDMTC5",
+        thread_id="1788962266.139879",
+        messages=[
+            {"content": "Intermediate step", "response_type": AssistantMessageType.MODEL.value,
+             "is_final": False, "message_id": "lc_run--1"},
+            {"content": "Final answer with the table", "response_type": AssistantMessageType.MODEL.value,
+             "is_final": False, "message_id": "lc_run--final"},
+            {"content": "", "response_type": AssistantMessageType.MODEL.value,
+             "is_final": True, "message_id": "model"},
+        ],
+        assistant_context=assistant,
+        assistant_id_key="conv1",
+    )
+
+    assert "conv1" not in result
+    assert _feedback_message_ids(handler) == ["lc_run--final"]
+
+
+def test_send_agent_response_approval_final_keeps_lock(mocker: MockerFixture):
+    """
+    Given:
+        An approval message that is also marked is_final=True.
+    When:
+        Sending agent response.
+    Then:
+        The lock is kept and status is set to awaiting sensitive action approval.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    handler = MockMessagingHandler()
+    assistant = {"conv1": {"status": AssistantStatus.AWAITING_BACKEND_RESPONSE.value}}
+
+    result = handler.send_agent_response(
+        channel_id="channel123",
+        thread_id="thread123",
+        messages=[
+            {"content": "Approve?", "response_type": AssistantMessageType.APPROVAL.value,
+             "is_final": True, "message_id": "appr-1"},
+        ],
+        assistant_context=assistant,
+        assistant_id_key="conv1",
+    )
+
+    assert "conv1" in result
+    assert result["conv1"]["status"] == AssistantStatus.AWAITING_SENSITIVE_ACTION_APPROVAL.value
+
+
+def test_ignored_message_ids_contains_expected_values():
+    """
+    Given:
+        The IGNORED_MESSAGE_IDS constant.
+    When:
+        Inspecting its contents.
+    Then:
+        It contains the known internal step notification ids.
+    """
+    assert "agent_selected" in IGNORED_MESSAGE_IDS
+    assert "artifact_created" in IGNORED_MESSAGE_IDS
+    assert "action_execute_failed" in IGNORED_MESSAGE_IDS

@@ -3,9 +3,9 @@
     "version": -1,
     "name": "Vega Assets",
     "ownerOnly": false,
-    "description": "Assets (IPs, instance IDs, IAM roles) involved in this incident.",
+    "description": "Typed assets involved in this incident.",
     "cliName": "vegaassets",
-    "type": "shortText",
+    "type": "grid",
     "closeForm": false,
     "editForm": false,
     "required": false,
@@ -26,5 +26,35 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "openEnded": false,
+    "columns": [
+        {
+            "key": "type",
+            "displayName": "Type",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 200,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        },
+        {
+            "key": "value",
+            "displayName": "Value",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 300,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {}
+    ]
 }

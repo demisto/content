@@ -1,8 +1,19 @@
 Palo Alto Networks Enterprise DLP discovers and protects company data across every data channel and repository. Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.
 This integration was integrated and tested with version 2.0 of Palo Alto Networks Enterprise DLP.
 
-**Note**:  
-This integration currently supports fetching DLP incidents from "NGFW" and "Prisma Access" channels only.
+**Note**:
+Incidents are fetched from every control point the tenant can see. Use the *DLP Channels* parameter to narrow the fetch to specific control points.
+
+**Note**:
+Starting from version 2.4.0, incidents are fetched from the Enterprise DLP v4 incident inventory API (`/v4/api/incidents`). This API returns a summary of each incident, so fetched incidents contain fewer attributes than the previous incident notifications API returned:
+
+- The *PAN DLP Tenant ID* and *File SHA256* incident fields are no longer populated. The file SHA-256 is still available from the Enterprise DLP incident details API as `asset_hash`.
+- The *PAN DLP Previous Feedback* incident field now holds the feedback status of the fetched incident itself, as an enum value such as `PENDING_RESPONSE`, instead of the feedback given on an earlier incident with the same report and user. The conditions that check this field in the *DLP Incident Feedback Loop* and *DLP - Get User Feedback* playbooks no longer match.
+- The *PAN DLP Incident Region* incident field holds the region where the incident was created. `SG`, `FR` and `CH` replace the previous `AP`, `PAR` and `SUI` values.
+- The `tenantId`, `checksum`, `appId`, `scanDate`, `updatedAt`, `committedAt`, `resolutionStatus`, `direction`, `url`, `confidenceLevel`, policy, `fileSize`, `priority`, `incidentNotes`, `reasonForAction` and peripheral keys are no longer included in the incident raw JSON. `incidentDetails` contains only the severity header and the application name, so the file, device and content decoder details, and the username, URL, destination IP and firewall version headers, are no longer included.
+- `source` holds the control point in upper case, `createdAt` is in ISO 8601 format, `dataProfileId` is a string and `userId` is `N/A` when the user is unknown.
+
+If you use any of these attributes in a custom mapper, layout or playbook, update it. You can still view these attributes in the incident details in Strata Cloud Manager.
 
 ### Setup
 
@@ -24,7 +35,20 @@ Make sure the toggle at the bottom is switched on.
 | Maximum number of incidents per fetch | Default value is 50. | False |
 | First fetch timestamp | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default value is 60 minutes. | False |
 | Fetch Lookback Window (minutes) | The number of minutes to look back during each fetch to capture late-indexed incidents. Default value is 0. | False |
-| DLP Regions | Possible values: `US` (United States), `EU` (European Union), `AP` (Asia-Pacific), `UK` (United Kingdom), `CA` (Canada), `AU` (Australia), `IN` (India), `JP` (Japan), `BR` (Brazil), `PAR` (Paris), `SUI` (Switzerland). | False |
+| DLP Regions | The regions to fetch incidents from. When empty, incidents are fetched from every region the tenant can see. Possible values: `US` (United States), `EU` (European Union), `SG` (Singapore), `UK` (United Kingdom), `CA` (Canada), `AU` (Australia), `IN` (India), `JP` (Japan), `BR` (Brazil), `FR` (France), `CH` (Switzerland), `SA` (Saudi Arabia). | False |
+| DLP Channels | The control points to fetch incidents from. Possible values: `NGFW`, `PRISMA_ACCESS`, `PRISMA_ACCESS_BROWSER`, `ENDPOINT_DLP`, `SAAS_API`, `EMAIL_DLP`. When empty, incidents are fetched from every channel. | False |
+| DLP Severities | The severities to fetch. Possible values: `Critical`, `High`, `Medium`, `Low`, `Informational`. The severity is stored as a number, so the selected value is translated before the query is sent - `Critical` becomes `5` and `Informational` becomes `1`. When empty, incidents of every severity are fetched. | False |
+| DLP Incident Statuses | The incident statuses to fetch. Possible values: `New`, `open`, `under_investigation`, `closed`. When empty, incidents of every status are fetched. | False |
+| DLP Priorities | The priorities to fetch. Possible values: `P1`, `P2`, `P3`, `P4`, `P5`. When empty, incidents of every priority are fetched. | False |
+| DLP Data Profile IDs | A comma-separated list of data profile IDs to fetch incidents for. These are numeric IDs, not profile names - a profile name matches nothing. When empty, incidents for every data profile are fetched. | False |
+| DLP Data Pattern IDs | A comma-separated list of data pattern IDs to fetch incidents for. These are numeric IDs, not pattern names - a pattern name matches nothing. When empty, incidents for every data pattern are fetched. | False |
+| DLP Incident Tags | A comma-separated list of incident tags to fetch. When empty, incidents are fetched regardless of their tags. | False |
+| DLP Report IDs | A comma-separated list of report IDs to fetch incidents for. When empty, incidents are fetched regardless of their report ID. | False |
+| DLP URL Domains | A comma-separated list of URL domains to fetch incidents for, for example "drive.google.com". When empty, incidents are fetched regardless of their URL. | False |
+| DLP Assets | A comma-separated list of asset names to fetch incidents for, for example a file name. When empty, incidents are fetched regardless of their asset name. | False |
+| DLP Actions | The actions taken on the incident to fetch. Possible values: `alert`, `block`, `allow`. When empty, incidents are fetched regardless of the action taken. | False |
+| DLP Policy Types | The policy types to fetch. Possible values: `Data in Motion`, `Data at Rest`, `Peripheral Control`. When empty, incidents of every policy type are fetched. | False |
+| DLP Sub Policy Types | A comma-separated list of sub policy types to fetch. When empty, incidents are fetched regardless of their sub policy type. | False |
 | Data profiles to allow exemption | A comma-separated list of data profile names to request an exemption. Use "\*" to allow everything. | False |
 | Bot Message | The message to send to the user to ask for feedback. | False |
 
@@ -102,17 +126,20 @@ Updates a DLP incident with user feedback.
 | incident_id | The ID of the incident to update.                                                                                                                                                                                         | Required |
 | feedback | The user feedback. Possible values are: PENDING_RESPONSE, CONFIRMED_SENSITIVE, CONFIRMED_FALSE_POSITIVE, EXCEPTION_REQUESTED, EXCEPTION_GRANTED, EXCEPTION_NOT_REQUESTED, OPERATIONAL_ERROR, SEND_NOTIFICATION_FAILURE, EXCEPTION_DENIED. | Required |
 | user_id | The ID of the user the feedback is collected from.                                                                                                                                                                        | Required |
-| region | The region where the incident originated.                                                                                                                                                                                 | Optional |
+| region | The region where the incident originated (the PAN DLP Incident Region incident field). | Optional |
 | report_id | The DLP report ID, needed only for granting exemptions.                                                                                                                                                                   | Optional |
-| dlp_channel | The DLP channel, needed only for granting exemptions.                                                                                                                                                                     | Optional |
+| dlp_channel | The DLP channel of the incident (the PAN DLP Channel incident field), for example ngfw. When not provided, the channel of the incident the command runs in is used. | Optional |
 | error_details | Error details if status is SEND_NOTIFICATION_FAILURE.                                                                                                                                                                     | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DLP.IncidentUpdate.success | boolean | Whether the update was successful. |
-| DLP.IncidentUpdate.exemption_duration | number | The exemption duration, only available for "EXCEPTION_GRANTED". |
+| IncidentUpdate.feedback | String | The feedback that was saved. Not available for "EXCEPTION_GRANTED". |
+| IncidentUpdate.success | boolean | Whether the update was successful. Not available for "EXCEPTION_GRANTED". |
+| Exemption.feedback | string | The feedback that was saved, only available for "EXCEPTION_GRANTED". |
+| Exemption.success | boolean | Whether the exemption was granted, only available for "EXCEPTION_GRANTED". |
+| Exemption.duration | string | The exemption duration, for example "30 minutes" or "2.0 hours", only available for "EXCEPTION_GRANTED". |
 
 ### pan-dlp-exemption-eligible
 
@@ -181,12 +208,13 @@ There is no context output for this command.
 
 In case specific DLP incidents are not appearing on the Cortex tenant, verify the following:
 
-1. **DLP Regions Configuration**
+1. **Incident Filter Configuration**
+   - Every configured *DLP* filter parameter narrows the fetch, and the filters are combined with AND. An incident is fetched only if it matches all of them.
+   - Leave a filter empty to stop it narrowing the fetch. Clearing every filter fetches all incidents the tenant can see.
+   - Check the Strata Cloud Manager incident details to confirm the values the incidents actually carry, and make sure each configured filter includes them.
+   - The free-text filters are matched exactly and are case-sensitive. *DLP Data Profile IDs* and *DLP Data Pattern IDs* take numeric IDs - a profile or pattern name matches nothing.
+
+2. **DLP Regions Configuration**
    - Check the Strata Cloud Manager to confirm which regions generated the incidents.
    - **Note**: The *DLP Regions* dropdown menu shows all currently-supported regions.
    - Ensure all regions where incidents originated are selected from the dropdown menu.
-
-2. **Strata Cloud Manager (SCM) Channel Support**
-   - Verify the channel in SCM console under the incident details.
-   - **Note**: Only incidents from the "NGFW" and "Prisma Access" SCM channels are supported.
-   - Incidents from other channels, such as Endpoint DLP, will not be fetched by this integration.

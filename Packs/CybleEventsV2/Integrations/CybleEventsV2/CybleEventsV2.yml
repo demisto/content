@@ -275,7 +275,7 @@ script:
     description: Updates alert status/severity on Cyble Vision when mirrored incidents change in Cortex (outgoing mirroring).
     arguments: []
 
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.13495286
   isfetch: true
   runonce: false
   script: '-'

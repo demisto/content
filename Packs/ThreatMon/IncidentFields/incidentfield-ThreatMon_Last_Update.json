@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "ThreatMon Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "threatmonlastupdate",
+    "closeForm": false,
+    "content": true,
+    "description": "The time the alarm was last changed in ThreatMon.",
+    "editForm": false,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_threatmonlastupdate",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "ThreatMon Last Update",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "date",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

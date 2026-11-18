@@ -317,9 +317,11 @@ alter
     xdm.target.identity.identifier = uid,
     xdm.target.process.name = comm,
     xdm.target.process.parent_id = if(event_name_clean = "SYSCALL", null, ppid),
+    xdm.target.file.path = parsed_fields -> exe,
     xdm.target.process.executable.path = parsed_fields -> exe,
     xdm.target.process.pid = to_integer(pid),
-    xdm.target.process.command_line = if(event_name_clean = "SYSCALL", null, comm);
+    xdm.target.process.command_line = if(event_name_clean = "SYSCALL", null, comm),
+    xdm.source.process.name = if(event_name_clean = "SYSCALL", null, xdm.source.process.name);
 
 // Virtualization Story general field mapping
 [RULE: vmware_vcenter_common_fields]

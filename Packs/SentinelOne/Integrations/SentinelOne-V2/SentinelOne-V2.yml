@@ -198,7 +198,7 @@ script:
     - defaultValue: "10"
       description: The maximum number of agents to return.
       name: limit
-    - description: Query params field=value pairs delimited by comma (e.g., activeThreats=3,gatewayIp=1.2.3.4). Query params are OR'd.
+    - description: Query params field=value pairs delimited by comma (e.g., activeThreats=3,gatewayIp=1.2.3.4). Query params are AND'd.
       name: params
     - description: A comma-separated list of additionals fields to display.
       name: columns
@@ -376,6 +376,335 @@ script:
       description: 'A comma-separated list of modes by which to filter (path exclusions only), for example: "suppress".'
       type: string
   - arguments:
+    - description: 'A comma-separated list of exclusion IDs to filter by, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: ids
+    - description: 'A comma-separated list of Account IDs to filter by, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: account_ids
+    - description: 'A comma-separated list of Site IDs to filter by, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: site_ids
+    - auto: PREDEFINED
+      description: A comma-separated list of OS types to filter by.
+      isArray: true
+      name: os_types
+      predefined:
+      - windows
+      - windows_legacy
+      - macos
+      - linux
+    - auto: PREDEFINED
+      description: A comma-separated list of exclusion mode types to filter by.
+      isArray: true
+      name: mode_type
+      predefined:
+      - suppression
+      - agent_interoperability
+      - binary_vault
+      - endpoint
+      - all
+    - description: The free-text filter by exclusion value.
+      name: value_contains
+    - description: The free-text filter by exclusion name.
+      name: exclusion_name_contains
+    - defaultValue: "false"
+      description: Whether to return exclusions from children scope levels.
+      name: include_children
+    - defaultValue: "false"
+      description: Whether to return exclusions from parent scope levels.
+      name: include_parents
+    - description: Whether to filter for tenant scope only.
+      name: tenant
+    - defaultValue: "10"
+      description: The maximum number of items to return (1-1000).
+      name: limit
+    - description: The cursor position returned by the last request, used to paginate beyond 1000 items.
+      name: cursor
+    description: Lists all unified exclusions that match the specified input filter. Uses the v2.1 unified-exclusions endpoint.
+    name: sentinelone-get-unified-exclusions
+    outputs:
+    - contextPath: SentinelOne.UnifiedExclusions.ID
+      description: The exclusion item ID.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Name
+      description: The exclusion item name.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Type
+      description: The exclusion type.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Value
+      description: The value of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.OsType
+      description: The operating system type of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ModeType
+      description: The exclusion mode type.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Description
+      description: The description of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Source
+      description: The source of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.CreatedAt
+      description: The timestamp when the exclusion item was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.UnifiedExclusions.UpdatedAt
+      description: The timestamp when the exclusion item was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.UnifiedExclusions.UserName
+      description: The username of the user who created the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ThreatType
+      description: The threat type associated with the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Engines
+      description: The engines associated with the exclusion item.
+      type: string
+  - arguments:
+    - description: The name of the exclusion item.
+      name: exclusion_name
+      required: true
+    - auto: PREDEFINED
+      description: The operating system type.
+      name: os_type
+      predefined:
+      - windows
+      - windows_legacy
+      - macos
+      - linux
+      required: true
+    - auto: PREDEFINED
+      description: The exclusion mode type.
+      name: mode_type
+      predefined:
+      - suppression
+      - agent_interoperability
+      - binary_vault
+      - all
+      required: true
+    - auto: PREDEFINED
+      description: The exclusion type that determines how the value is interpreted.
+      name: exclusion_type
+      predefined:
+      - file_type
+      - path
+      - white_hash
+      - certificate
+      - browser
+      required: true
+    - description: The exclusion value, for example a file path or hash.
+      name: value
+    - auto: PREDEFINED
+      description: The scope level for the exclusion.
+      name: scope_level
+      predefined:
+      - group
+      - site
+      - account
+      - tenant
+      required: true
+    - description: The ID of the scope (group, site, or account). Not required when scope_level is tenant.
+      name: scope_level_id
+    - auto: PREDEFINED
+      description: The reason for creating the exclusion.
+      name: reason
+      predefined:
+      - performance_issue
+      - false_positive
+      - other
+      required: true
+    - description: The description of the exclusion item.
+      name: description
+    - description: The threat type associated with the exclusion, for example "EDR".
+      name: threat_type
+      required: true
+    - description: The engine associated with the exclusion, for example "suppress".
+      name: engines
+    - auto: PREDEFINED
+      description: The path exclusion type. Applies to path exclusions only.
+      name: path_exclusion_type
+      predefined:
+      - file
+      - folder
+      - subfolder
+    - description: The SHA-256 value associated with the exclusion.
+      name: sha256_value
+    - description: Whether the exclusion applies to child processes.
+      name: child_process
+    - description: 'The interaction between the exclusion and the Agent processes. Example: disable_in_process_monitor, disable_all_monitors, or identity_only.'
+      name: interaction_level
+    description: Creates a new unified exclusion using a type and value (e.g. path, hash, certificate). Uses the v2.1 unified-exclusions endpoint.
+    name: sentinelone-create-unified-exclusion
+    outputs:
+    - contextPath: SentinelOne.UnifiedExclusions.ID
+      description: The created exclusion item ID.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Name
+      description: The exclusion item name.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Type
+      description: The exclusion type (e.g. path, white_hash).
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Value
+      description: The exclusion value.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ModeType
+      description: The exclusion mode type (e.g. suppression).
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.OsType
+      description: The operating system type of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Description
+      description: The description of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ThreatType
+      description: The threat type associated with the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Engines
+      description: The engine associated with the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.PathExclusionType
+      description: The path exclusion type (e.g. file, folder).
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Sha256Value
+      description: The SHA-256 value associated with the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Source
+      description: The source of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ScopeName
+      description: The scope name of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ScopePath
+      description: The full scope path of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.CreatedAt
+      description: The timestamp when the exclusion item was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.UnifiedExclusions.UpdatedAt
+      description: The timestamp when the exclusion item was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.UnifiedExclusions.UserName
+      description: The username of the user who created the exclusion item.
+      type: string
+  - arguments:
+    - description: 'A comma-separated list of unified exclusion IDs to delete, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: ids
+      required: true
+    - auto: PREDEFINED
+      description: A comma-separated list of exclusion types corresponding to each ID (must match the order of ids).
+      isArray: true
+      name: exclusion_types
+      predefined:
+      - browser
+      - certificate
+      - commandline
+      - container_native
+      - file_type
+      - idr
+      - path
+      - white_hash
+      required: true
+    description: Deletes unified exclusion items by their IDs and types. Uses the v2.1 unified-exclusions endpoint.
+    execution: true
+    name: sentinelone-delete-unified-exclusions
+    outputs:
+    - contextPath: SentinelOne.UnifiedExclusions.Deleted.Affected
+      description: The number of exclusion items successfully deleted.
+      type: number
+  - arguments:
+    - description: The alert ID to retrieve raw indicators for.
+      name: alert_id
+      required: true
+    description: Retrieves a UAM alert enriched with raw SDL event indicators using the v2.1 unifiedalerts GraphQL endpoint.
+    name: sentinelone-get-alert-with-raw-indicators
+    outputs:
+    - contextPath: SentinelOne.AlertWithRawIndicators.ID
+      description: The alert ID.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Name
+      description: The alert name.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Severity
+      description: The alert severity.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Classification
+      description: The alert classification.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Description
+      description: The alert description.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Status
+      description: The alert status.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.AnalystVerdict
+      description: The analyst verdict for the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.ConfidenceLevel
+      description: The confidence level of the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.PrimaryIndicatorType
+      description: The primary indicator type of the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Result
+      description: The mitigation result of the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.StorylineId
+      description: The storyline ID associated with the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.AttackSurfaces
+      description: The attack surfaces of the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.CreatedAt
+      description: The timestamp when the alert was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.AlertWithRawIndicators.DetectedAt
+      description: The timestamp when the alert was detected, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.AlertWithRawIndicators.FirstSeenAt
+      description: The timestamp when the alert was first seen, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.AlertWithRawIndicators.LastSeenAt
+      description: The timestamp when the alert was last seen, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.AlertWithRawIndicators.UpdatedAt
+      description: The timestamp when the alert was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: date
+    - contextPath: SentinelOne.AlertWithRawIndicators.ExternalId
+      description: The external ID of the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Indicators
+      description: List of structured indicators associated with the alert.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.RawIndicators
+      description: List of raw SDL telemetry events that triggered the alert indicators.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.RawData
+      description: Full OCSF-formatted raw data object for the alert.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.EventSearchParams
+      description: Pre-built Power Query search parameters for Deep Visibility investigation.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.Asset
+      description: Asset information for the endpoint associated with the alert.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.DetectionSource
+      description: Detection source product and vendor information.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.Process
+      description: Process information associated with the alert.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.Observables
+      description: Observable indicators such as process name or IP associated with the alert.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.DetectionTime
+      description: Scope information at the time of detection.
+      type: unknown
+  - arguments:
     - description: The content hash.
       name: hash
       required: true
@@ -492,6 +821,324 @@ script:
     - contextPath: SentinelOne.Threat.MarkedAsBenign
       description: Whether the threat is marked as benign. Relevant for version 2.0 only.
       type: Boolean
+  - arguments:
+    - description: The name of the firewall rule.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: The action the agent takes on traffic that matches the rule.
+      name: action
+      predefined:
+      - Allow
+      - Block
+      required: true
+    - auto: PREDEFINED
+      description: The rule status.
+      name: status
+      predefined:
+      - Enabled
+      - Disabled
+      required: true
+    - auto: PREDEFINED
+      description: The traffic direction the rule applies to.
+      name: direction
+      predefined:
+      - any
+      - inbound
+      - outbound
+    - auto: PREDEFINED
+      description: A comma-separated list of OS types for the rule.
+      isArray: true
+      name: os_types
+      predefined:
+      - linux
+      - windows
+      - macos
+      - windows_legacy
+    - description: The network protocol for the rule.
+      name: protocol
+    - auto: PREDEFINED
+      description: The type of remote host to match. Use 'addresses' for IP addresses and 'fqdn' for domains/FQDNs.
+      name: remote_host_type
+      predefined:
+      - any
+      - cidr
+      - range
+      - addresses
+      - fqdn
+    - description: A comma-separated list of remote host values.
+      isArray: true
+      name: remote_host_values
+    - auto: PREDEFINED
+      description: The type of local host to match.
+      name: local_host_type
+      predefined:
+      - any
+      - cidr
+      - range
+      - addresses
+      - fqdn
+    - description: A comma-separated list of local host values.
+      isArray: true
+      name: local_host_values
+    - auto: PREDEFINED
+      description: The type of remote ports to match.
+      name: remote_port_type
+      predefined:
+      - any
+      - ports
+      - range
+    - description: A comma-separated list of remote port numbers (integers between 0 and 65535).
+      isArray: true
+      name: remote_port_values
+    - auto: PREDEFINED
+      description: The type of local ports to match.
+      name: local_port_type
+      predefined:
+      - any
+      - ports
+      - range
+    - description: A comma-separated list of local port numbers (integers between 0 and 65535).
+      isArray: true
+      name: local_port_values
+    - auto: PREDEFINED
+      description: The type of application for the rule.
+      name: application_type
+      predefined:
+      - any
+      - path
+      - sha1
+      - system
+    - description: A comma-separated list of application values.
+      isArray: true
+      name: application_values
+    - auto: PREDEFINED
+      description: The location type for the rule.
+      name: location_type
+      predefined:
+      - all
+      - specific
+      - fallback
+    - description: A comma-separated list of location IDs (applicable when location_type is 'specific').
+      isArray: true
+      name: location_ids
+    - description: The description of the firewall rule.
+      name: description
+    - description: A comma-separated list of tag IDs to link to this firewall rule.
+      isArray: true
+      name: tag_ids
+    - auto: PREDEFINED
+      description: Whether to apply the rule at the tenant (global) scope. Can't be combined with account_ids, site_ids, or group_ids.
+      name: tenant
+      predefined:
+      - 'true'
+      - 'false'
+    - description: A comma-separated list of account IDs to scope the firewall rule to.
+      isArray: true
+      name: account_ids
+    - description: A comma-separated list of site IDs to scope the firewall rule to.
+      isArray: true
+      name: site_ids
+    - description: A comma-separated list of group IDs to scope the firewall rule to.
+      isArray: true
+      name: group_ids
+    description: Creates a Firewall Control rule that allows or blocks network traffic on endpoints in the specified scope. Relevant for API version 2.1.
+    name: sentinelone-create-firewall-rule
+    outputs:
+    - contextPath: SentinelOne.FirewallRule.Created.ID
+      description: The ID of the firewall rule.
+      type: String
+    - contextPath: SentinelOne.FirewallRule.Created.Name
+      description: The name of the firewall rule.
+      type: String
+    - contextPath: SentinelOne.FirewallRule.Created.Action
+      description: The rule action.
+      type: String
+    - contextPath: SentinelOne.FirewallRule.Created.Status
+      description: The status of the rule.
+      type: String
+    - contextPath: SentinelOne.FirewallRule.Created.Direction
+      description: The direction of the firewall rule.
+      type: String
+    - contextPath: SentinelOne.FirewallRule.Created.OsType
+      description: The primary OS type of the rule.
+      type: String
+    - contextPath: SentinelOne.FirewallRule.Created.OsTypes
+      description: The list of OS types for the rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.Created.Protocol
+      description: The protocol of the firewall rule.
+      type: String
+    - contextPath: SentinelOne.FirewallRule.Created.RemoteHost
+      description: The first remote host in the rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.Created.RemoteHosts
+      description: The list of remote hosts in the rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.Created.LocalHost
+      description: The local host of the rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.Created.RemotePort
+      description: The remote ports of the rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.Created.LocalPort
+      description: The local ports of the rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.Created.Application
+      description: The application of the rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.Created.Location
+      description: The location associated with the rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.Created.Scope
+      description: The scope of the rule.
+      type: String
+    - contextPath: SentinelOne.FirewallRule.Created.ScopeId
+      description: The group, site, or account ID depending on the scope.
+      type: String
+    - contextPath: SentinelOne.FirewallRule.Created.Order
+      description: The position of the rule in the list of rules.
+      type: Number
+    - contextPath: SentinelOne.FirewallRule.Created.Editable
+      description: Whether the rule can be modified at this scope level.
+      type: Boolean
+    - contextPath: SentinelOne.FirewallRule.Created.Creator
+      description: The full name of the user who created the rule.
+      type: String
+    - contextPath: SentinelOne.FirewallRule.Created.CreatorId
+      description: The ID of the user who created the rule.
+      type: String
+    - contextPath: SentinelOne.FirewallRule.Created.CreatedAt
+      description: The date and time of rule creation.
+      type: Date
+    - contextPath: SentinelOne.FirewallRule.Created.UpdatedAt
+      description: The date and time of the last update.
+      type: Date
+    - contextPath: SentinelOne.FirewallRule.Created.Description
+      description: The description of the firewall rule.
+      type: String
+    - contextPath: SentinelOne.FirewallRule.Created.RuleCategory
+      description: The rule category.
+      type: String
+    - contextPath: SentinelOne.FirewallRule.Created.TagIds
+      description: The list of tag IDs linked to this rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.Created.TagNames
+      description: The list of tag names linked to this rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.Created.Tags
+      description: The list of tag objects linked to this rule.
+      type: Unknown
+    - contextPath: SentinelOne.FirewallRule.Created.ProductId
+      description: The product identifier.
+      type: String
+  - arguments:
+    - description: A comma-separated list of firewall rule IDs to filter by.
+      isArray: true
+      name: ids
+    - description: A comma-separated list of account IDs to filter by.
+      isArray: true
+      name: account_ids
+    - description: A comma-separated list of site IDs to filter by.
+      isArray: true
+      name: site_ids
+    - description: A comma-separated list of group IDs to filter by.
+      isArray: true
+      name: group_ids
+    - auto: PREDEFINED
+      description: Whether to apply the request at the tenant (global) scope.
+      name: tenant
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Free-text search on name, tag, application, or protocol.
+      name: query
+    - auto: PREDEFINED
+      description: A comma-separated list of scopes to filter firewall rules by.
+      isArray: true
+      name: scopes
+      predefined:
+      - global
+      - account
+      - group
+      - site
+    - description: A comma-separated list of applications to filter firewall rules by.
+      isArray: true
+      name: applications
+    - description: The exact rule name to filter firewall rules by.
+      name: name
+    - description: A comma-separated list of protocols to filter firewall rules by.
+      isArray: true
+      name: protocols
+    - auto: PREDEFINED
+      description: A comma-separated list of OS types to filter firewall rules by.
+      isArray: true
+      name: os_types
+      predefined:
+      - linux
+      - windows
+      - macos
+      - windows_legacy
+    - auto: PREDEFINED
+      description: A comma-separated list of directions to filter firewall rules by.
+      isArray: true
+      name: directions
+      predefined:
+      - any
+      - inbound
+      - outbound
+    - auto: PREDEFINED
+      description: A comma-separated list of actions to filter firewall rules by.
+      isArray: true
+      name: actions
+      predefined:
+      - Allow
+      - Block
+    - auto: PREDEFINED
+      description: A comma-separated list of statuses to filter firewall rules by.
+      isArray: true
+      name: statuses
+      predefined:
+      - Enabled
+      - Disabled
+    - description: 'Filter firewall rules created before this timestamp. Only ISO 8601 timestamps are supported (e.g., 2018-02-27T04:49:26.257525Z).'
+      name: created_at_lt
+    - description: 'Filter firewall rules created after this timestamp. Only ISO 8601 timestamps are supported (e.g., 2018-02-27T04:49:26.257525Z).'
+      name: created_at_gt
+    - description: 'Filter firewall rules created before or at this timestamp. Only ISO 8601 timestamps are supported (e.g., 2018-02-27T04:49:26.257525Z).'
+      name: created_at_lte
+    - description: 'Filter firewall rules created after or at this timestamp. Only ISO 8601 timestamps are supported (e.g., 2018-02-27T04:49:26.257525Z).'
+      name: created_at_gte
+    - description: 'Filter firewall rules created within this range of epoch milliseconds (inclusive), for example: "1514978764288-1514978999999".'
+      name: created_at_between
+    - description: A comma-separated list of associated location IDs to filter by.
+      isArray: true
+      name: location_ids
+    - description: A comma-separated list of associated tag IDs to filter by.
+      isArray: true
+      name: tag_ids
+    - description: 'Filter firewall rules whose name contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules.'
+      isArray: true
+      name: name_contains
+    - description: 'Filter firewall rules whose tag name contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules.'
+      isArray: true
+      name: tag_name_contains
+    - description: 'Filter firewall rules whose application contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules.'
+      isArray: true
+      name: application_contains
+    - description: 'Filter firewall rules whose protocol contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules.'
+      isArray: true
+      name: protocol_contains
+    - description: 'Filter firewall rules whose service contains this value (partial, substring match). Supports multiple comma-separated values. Note: all matching rules will be deleted, which may include multiple rules.'
+      isArray: true
+      name: service_contains
+    description: 'Deletes Firewall Control rules that match the specified filters. Relevant for API version 2.1. Warning: all filters are combined, and every rule in the selected scope that matches them is deleted. Broad filters (for example, tenant=true with only scopes=global, or statuses without ids) can delete many or all rules in the scope. To delete specific rules, use the ids argument.'
+    execution: true
+    name: sentinelone-delete-firewall-rule
+    outputs:
+    - contextPath: SentinelOne.FirewallRule.Deleted.Affected
+      description: The number of firewall rules successfully deleted.
+      type: Number
   - arguments:
     - description: 'A comma-separated list of group IDs by which to filter, for example: "225494730938493804,225494730938493915".'
       isArray: true
@@ -3156,7 +3803,7 @@ script:
     - contextPath: SentinelOne.Export.Events.Filename
       description: The name of the file containing the Timeline.
       type: Boolean
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.13495286
   isfetch: true
   ismappable: true
   isremotesyncin: true

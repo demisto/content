@@ -5,10 +5,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: c8a98379-7a6f-4cb6-8a98-ff9971eafd79
+    taskid: 16d44437-894f-4718-8d1d-d33cc973de38
     type: start
     task:
-      id: c8a98379-7a6f-4cb6-8a98-ff9971eafd79
+      id: 16d44437-894f-4718-8d1d-d33cc973de38
       version: -1
       name: ''
       iscommand: false
@@ -21,8 +21,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": -130
+          "x": 695,
+          "y": 50
         }
       }
     note: false
@@ -32,12 +32,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '1':
     id: '1'
-    taskid: 9383a473-e924-4468-8059-9e3910912bf5
+    taskid: 06a64bf1-ac61-43a4-83bb-e3e2c7b1d811
     type: regular
     task:
-      id: 9383a473-e924-4468-8059-9e3910912bf5
+      id: 06a64bf1-ac61-43a4-83bb-e3e2c7b1d811
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -55,8 +56,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 35
+          "x": 695,
+          "y": 210
         }
       }
     note: false
@@ -66,23 +67,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '5':
     id: '5'
-    taskid: 650405f6-867e-4ca9-8009-4d3d4c2ec794
+    taskid: 8a906748-548e-4940-a0eb-1a35af7c0ea0
     type: regular
     task:
-      id: 650405f6-867e-4ca9-8009-4d3d4c2ec794
+      id: 8a906748-548e-4940-a0eb-1a35af7c0ea0
       version: -1
       name: create user with activation
-      description: Creates a new user with an option of setting password, recovery question and answer.The new user will immediately be able to login after activation with the assigned password. This flow is common when developing a custom user registration experience.
-      script: Okta v2|||okta-create-user
+      description: Creates a new user with an option of setting a password, recovery question, and answer. The new user will immediately be able to log in after activation with the assigned password. This flow is common when developing a custom user registration experience.
+      script: '|||okta-create-user'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - '7'
-      - '36'
     scriptarguments:
       activate:
         simple: 'true'
@@ -116,8 +117,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 545
+          "x": 695,
+          "y": 735
         }
       }
     note: false
@@ -127,19 +128,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '7':
     id: '7'
-    taskid: 3e52684c-fc15-43d2-883a-8187c59cd272
+    taskid: bd7e302e-94de-4986-8f19-14d960321a71
     type: regular
     task:
-      id: 3e52684c-fc15-43d2-883a-8187c59cd272
+      id: bd7e302e-94de-4986-8f19-14d960321a71
       version: -1
       name: deactivate user
       description: Deactivate User.
-      script: Okta v2|||okta-deactivate-user
+      script: '|||okta-deactivate-user'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - '9'
@@ -150,8 +152,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 720
+          "x": 695,
+          "y": 910
         }
       }
     note: false
@@ -161,16 +163,17 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '8':
     id: '8'
-    taskid: 3f27c908-2025-45fd-8a74-a22e4e1e3749
+    taskid: ced12544-5b43-406c-8d38-5965bcaf9fa1
     type: regular
     task:
-      id: 3f27c908-2025-45fd-8a74-a22e4e1e3749
+      id: ced12544-5b43-406c-8d38-5965bcaf9fa1
       version: -1
       name: add user to Demisto group
       description: Adds a user to a group with OKTA_GROUP type
-      script: Okta v2|||okta-add-to-group
+      script: '|||okta-add-to-group'
       type: regular
       iscommand: true
       brand: ''
@@ -187,8 +190,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 1070
+          "x": 265,
+          "y": 1610
         }
       }
     note: false
@@ -198,19 +201,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '9':
     id: '9'
-    taskid: baabbffc-bdd5-451a-8759-8deb807d2073
+    taskid: a9813344-8cb6-423d-8e0c-2bbdf3bfb5f4
     type: regular
     task:
-      id: baabbffc-bdd5-451a-8759-8deb807d2073
+      id: a9813344-8cb6-423d-8e0c-2bbdf3bfb5f4
       version: -1
       name: activate user
       description: Activates a specific user.
-      script: Okta v2|||okta-activate-user
+      script: '|||okta-activate-user'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - '15'
@@ -222,8 +226,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 895
+          "x": 695,
+          "y": 1085
         }
       }
     note: false
@@ -233,19 +237,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '10':
     id: '10'
-    taskid: a00fa662-ecfb-4ffc-88ce-93733b47e2ba
+    taskid: 64db5ca8-68ec-42b1-85d8-671147a279d4
     type: regular
     task:
-      id: a00fa662-ecfb-4ffc-88ce-93733b47e2ba
+      id: 64db5ca8-68ec-42b1-85d8-671147a279d4
       version: -1
       name: get Demisto group members
       description: Enumerates all users that are members of  a group
-      script: Okta v2|||okta-get-group-members
+      script: '|||okta-get-group-members'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - '23'
@@ -256,8 +261,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
-          "y": 1245
+          "x": 480,
+          "y": 1785
         }
       }
     note: false
@@ -267,19 +272,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '11':
     id: '11'
-    taskid: a07224f6-9330-4480-85c9-ed967a9db650
+    taskid: be8bd78e-1b90-48a0-81f6-a6a2f4daebce
     type: regular
     task:
-      id: a07224f6-9330-4480-85c9-ed967a9db650
+      id: be8bd78e-1b90-48a0-81f6-a6a2f4daebce
       version: -1
       name: get groups for user
       description: Returns all user groups associated with a specified user.
-      script: Okta v2|||okta-get-groups
+      script: '|||okta-get-groups'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - '22'
@@ -290,8 +296,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1245
+          "x": 50,
+          "y": 1785
         }
       }
     note: false
@@ -301,23 +307,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '13':
     id: '13'
-    taskid: 9df091f8-ac8d-4169-89fa-86fdc55edfaa
+    taskid: eb06cece-2468-4a33-809e-a8ebee139c80
     type: regular
     task:
-      id: 9df091f8-ac8d-4169-89fa-86fdc55edfaa
+      id: eb06cece-2468-4a33-809e-a8ebee139c80
       version: -1
       name: remove from group
       description: Removes a user from a group with OKTA_GROUP type
-      script: Okta v2|||okta-remove-from-group
+      script: '|||okta-remove-from-group'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - '40'
-      - '29'
     scriptarguments:
       groupName:
         simple: Demisto
@@ -327,8 +333,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 1595
+          "x": 265,
+          "y": 2135
         }
       }
     note: false
@@ -338,19 +344,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '14':
     id: '14'
-    taskid: b5d33a85-4fff-4d58-8691-d00a046cbcb8
+    taskid: ce5ce5fc-39a8-4a17-8e30-661cd4fd1ce0
     type: regular
     task:
-      id: b5d33a85-4fff-4d58-8691-d00a046cbcb8
+      id: ce5ce5fc-39a8-4a17-8e30-661cd4fd1ce0
       version: -1
       name: update user
       description: Update user with a given login, all fields are optional, fields which are not set will not be overriden.
-      script: Okta v2|||okta-update-user
+      script: '|||okta-update-user'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - '27'
@@ -363,8 +370,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 910,
+          "y": 1610
         }
       }
     note: false
@@ -374,19 +381,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '15':
     id: '15'
-    taskid: ae90bf75-72e9-4097-8b89-de3735af422d
+    taskid: a3a2f780-2eaf-4aea-80cb-b64cc76ca713
     type: regular
     task:
-      id: ae90bf75-72e9-4097-8b89-de3735af422d
+      id: a3a2f780-2eaf-4aea-80cb-b64cc76ca713
       version: -1
       name: suspend user
       description: Suspends a user. This operation can only be performed on users with an ACTIVE status. The user has a status of SUSPENDED when the process is completed
-      script: Okta v2|||okta-suspend-user
+      script: '|||okta-suspend-user'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - '16'
@@ -397,8 +405,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1070
+          "x": 1125,
+          "y": 1260
         }
       }
     note: false
@@ -408,19 +416,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '16':
     id: '16'
-    taskid: 97498508-5ff4-40df-8aa6-472059d3e1ae
+    taskid: 478605fa-8a85-483a-83b4-bffae9384633
     type: regular
     task:
-      id: 97498508-5ff4-40df-8aa6-472059d3e1ae
+      id: 478605fa-8a85-483a-83b4-bffae9384633
       version: -1
       name: unsuspend user
       description: Returns a user to ACTIVE status. This operation can only be performed on users that have a SUSPENDED status.
-      script: Okta v2|||okta-unsuspend-user
+      script: '|||okta-unsuspend-user'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - '14'
@@ -432,8 +441,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1245
+          "x": 1125,
+          "y": 1435
         }
       }
     note: false
@@ -443,12 +452,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '22':
     id: '22'
-    taskid: 58e6ad72-d969-4940-8c29-be9489ede7e8
+    taskid: 548646c8-c2e5-4b0c-803d-372a397faa8b
     type: condition
     task:
-      id: 58e6ad72-d969-4940-8c29-be9489ede7e8
+      id: 548646c8-c2e5-4b0c-803d-372a397faa8b
       version: -1
       name: verify results
       type: condition
@@ -472,8 +482,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1420
+          "x": 50,
+          "y": 1960
         }
       }
     note: false
@@ -483,12 +493,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '23':
     id: '23'
-    taskid: 9aa642ad-d0f1-43d8-868f-216606879af6
+    taskid: f2a39d80-c084-441c-898b-0e1f72553fb3
     type: condition
     task:
-      id: 9aa642ad-d0f1-43d8-868f-216606879af6
+      id: f2a39d80-c084-441c-898b-0e1f72553fb3
       version: -1
       name: verify results
       type: condition
@@ -513,8 +524,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
-          "y": 1420
+          "x": 480,
+          "y": 1960
         }
       }
     note: false
@@ -524,19 +535,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '27':
     id: '27'
-    taskid: 6277e71f-abc4-41d3-8e66-d129af8dfc6e
+    taskid: 6d21ccf9-76a0-45d6-8f8e-f44b0c6f2e97
     type: regular
     task:
-      id: 6277e71f-abc4-41d3-8e66-d129af8dfc6e
+      id: 6d21ccf9-76a0-45d6-8f8e-f44b0c6f2e97
       version: -1
       name: get-user
       description: Fetches information for a specific user. You must enter one or more parameters for the command to run
-      script: Okta v2|||okta-get-user
+      script: '|||okta-get-user'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - '28'
@@ -547,8 +559,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1595
+          "x": 1125,
+          "y": 1785
         }
       }
     note: false
@@ -558,12 +570,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '28':
     id: '28'
-    taskid: 90c1aaf9-e43f-4a81-8015-78d648a8e54a
+    taskid: 920dda09-4514-41d3-8814-c085d25c9b53
     type: condition
     task:
-      id: 90c1aaf9-e43f-4a81-8015-78d648a8e54a
+      id: 920dda09-4514-41d3-8814-c085d25c9b53
       version: -1
       name: verify result
       type: condition
@@ -587,8 +600,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1770
+          "x": 1125,
+          "y": 1960
         }
       }
     note: false
@@ -598,19 +611,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '29':
     id: '29'
-    taskid: 34fa30fd-bf9b-45c5-8a17-bd756486b630
+    taskid: 475f0210-6b13-4324-8f3e-71b36a1499f2
     type: regular
     task:
-      id: 34fa30fd-bf9b-45c5-8a17-bd756486b630
+      id: 475f0210-6b13-4324-8f3e-71b36a1499f2
       version: -1
       name: okta-delete-user
       description: Delete specified user
-      script: Okta v2|||okta-delete-user
+      script: '|||okta-delete-user'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - '39'
@@ -621,8 +635,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2295
+          "x": 1125,
+          "y": 2485
         }
       }
     note: false
@@ -632,19 +646,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '30':
     id: '30'
-    taskid: 7f06b3a6-2911-4087-8c7a-cd6087ac7648
+    taskid: c73fbca2-3e8f-4f25-81f1-81e45c7b4853
     type: regular
     task:
-      id: 7f06b3a6-2911-4087-8c7a-cd6087ac7648
+      id: c73fbca2-3e8f-4f25-81f1-81e45c7b4853
       version: -1
       name: set-password
       description: Sets passwords without validating existing user credentials
-      script: Okta v2|||okta-set-password
+      script: '|||okta-set-password'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - '27'
@@ -657,8 +672,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 1420
+          "x": 1340,
+          "y": 1610
         }
       }
     note: false
@@ -668,19 +683,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '34':
     id: '34'
-    taskid: 14c46606-c34e-45c3-873c-567885bfed16
+    taskid: 72aac069-b11d-48cf-8bfe-7d846b8028f6
     type: regular
     task:
-      id: 14c46606-c34e-45c3-873c-567885bfed16
+      id: 72aac069-b11d-48cf-8bfe-7d846b8028f6
       version: -1
       name: okta-search
       description: Search for Okta users
-      script: Okta v2|||okta-search
+      script: '|||okta-search'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - '35'
@@ -691,8 +707,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1945
+          "x": 1125,
+          "y": 2135
         }
       }
     note: false
@@ -702,12 +718,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '35':
     id: '35'
-    taskid: 0c3eefc7-334a-4b83-8b90-80a94b65dc37
+    taskid: c38d49f8-c94a-4dde-82b9-0828b1309d57
     type: condition
     task:
-      id: 0c3eefc7-334a-4b83-8b90-80a94b65dc37
+      id: c38d49f8-c94a-4dde-82b9-0828b1309d57
       version: -1
       name: verify result
       type: condition
@@ -732,8 +749,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2120
+          "x": 1125,
+          "y": 2310
         }
       }
     note: false
@@ -743,90 +760,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '36':
-    id: '36'
-    taskid: 15135df8-bce4-4586-8a76-3cfde30d2b30
-    type: regular
-    task:
-      id: 15135df8-bce4-4586-8a76-3cfde30d2b30
-      version: -1
-      name: get-user-factors
-      description: Returns all the enrolled facors for the specified user.
-      script: '|||okta-get-user-factors'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '37'
-    scriptarguments:
-      userId:
-        simple: 00upt1w8t40wFQM2v0h7
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1042.5,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '37':
-    id: '37'
-    taskid: f928cd2a-c5ef-4dbc-84ce-766999ce418c
-    type: condition
-    task:
-      id: f928cd2a-c5ef-4dbc-84ce-766999ce418c
-      version: -1
-      name: verify result
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      yes:
-      - '8'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: containsString
-          left:
-            value:
-              complex:
-                root: Account
-                accessor: Factor.FactorType
-                transformers:
-                - operator: FirstArrayElement
-            iscontext: true
-          right:
-            value:
-              simple: sms
-    view: |-
-      {
-        "position": {
-          "x": 1042.5,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '38':
     id: '38'
-    taskid: 28a14f17-0339-4998-8229-44fa39e7d38d
+    taskid: c320a226-41aa-4c49-81d7-0f20b7030cb4
     type: title
     task:
-      id: 28a14f17-0339-4998-8229-44fa39e7d38d
+      id: c320a226-41aa-4c49-81d7-0f20b7030cb4
       version: -1
       name: Done
       type: title
@@ -837,8 +777,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 3600
+          "x": 695,
+          "y": 3710
         }
       }
     note: false
@@ -848,12 +788,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '39':
     id: '39'
-    taskid: 437df453-54ee-4d2d-889a-3a2398f06c45
+    taskid: 8d90b8db-8ed2-4ff9-8c1a-3c0d7cfa06a0
     type: regular
     task:
-      id: 437df453-54ee-4d2d-889a-3a2398f06c45
+      id: 8d90b8db-8ed2-4ff9-8c1a-3c0d7cfa06a0
       version: -1
       name: okta-search
       description: Search for Okta users
@@ -871,8 +812,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2470
+          "x": 1125,
+          "y": 2660
         }
       }
     note: false
@@ -882,12 +823,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '40':
     id: '40'
-    taskid: eb9cc005-e2e9-480e-8b3c-0d3b08151d01
+    taskid: fe42decf-1592-456a-8bf8-2fa9dde7b4da
     type: regular
     task:
-      id: eb9cc005-e2e9-480e-8b3c-0d3b08151d01
+      id: fe42decf-1592-456a-8bf8-2fa9dde7b4da
       version: -1
       name: get Demisto group members
       description: Enumerates all users that are members of  a group
@@ -905,8 +847,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 1770
+          "x": 265,
+          "y": 2310
         }
       }
     note: false
@@ -916,12 +858,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '41':
     id: '41'
-    taskid: bf297581-1b21-432e-8888-c62210de67b3
+    taskid: 68cbc010-2612-426a-8f05-14fa2498d444
     type: condition
     task:
-      id: bf297581-1b21-432e-8888-c62210de67b3
+      id: 68cbc010-2612-426a-8f05-14fa2498d444
       version: -1
       name: verify results
       type: condition
@@ -945,8 +888,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 1945
+          "x": 265,
+          "y": 2485
         }
       }
     note: false
@@ -956,12 +899,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '42':
     id: '42'
-    taskid: 3b1e8549-ac5b-437f-8390-c2ad0cd1eeeb
+    taskid: 4e7fcedf-5890-4205-8a36-473edcce8153
     type: condition
     task:
-      id: 3b1e8549-ac5b-437f-8390-c2ad0cd1eeeb
+      id: 4e7fcedf-5890-4205-8a36-473edcce8153
       version: -1
       name: verify result
       type: condition
@@ -985,8 +929,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2645
+          "x": 1125,
+          "y": 2835
         }
       }
     note: false
@@ -996,19 +940,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '43':
     id: '43'
-    taskid: 0ee45839-9826-429d-8847-d744de957402
+    taskid: 2834b370-fceb-4a54-89a7-b536540569aa
     type: regular
     task:
-      id: 0ee45839-9826-429d-8847-d744de957402
+      id: 2834b370-fceb-4a54-89a7-b536540569aa
       version: -1
       name: list groups with query =de
       description: Lists groups in your organization. A subset of groups can be returned that match a supported filter expression or query.
-      script: Okta v2|||okta-list-groups
+      script: '|||okta-list-groups'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - '44'
@@ -1019,8 +964,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 2120
+          "x": 265,
+          "y": 2660
         }
       }
     note: false
@@ -1030,12 +975,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '44':
     id: '44'
-    taskid: 5733cf66-3abb-4d61-855e-f7db5ca10d94
+    taskid: a87f37f8-2a94-476d-8c3d-60d1057e6841
     type: condition
     task:
-      id: 5733cf66-3abb-4d61-855e-f7db5ca10d94
+      id: a87f37f8-2a94-476d-8c3d-60d1057e6841
       version: -1
       name: verify results
       type: condition
@@ -1059,8 +1005,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 2295
+          "x": 265,
+          "y": 2835
         }
       }
     note: false
@@ -1070,12 +1016,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '47':
     id: '47'
-    taskid: 10b42e04-6003-4bb0-80df-b028316a630b
+    taskid: f7374d33-b4ab-42c5-8516-598f60507a9e
     type: regular
     task:
-      id: 10b42e04-6003-4bb0-80df-b028316a630b
+      id: f7374d33-b4ab-42c5-8516-598f60507a9e
       version: -1
       name: get-group-assignments
       description: Get events for when a user added to a group
@@ -1093,8 +1040,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 2645
+          "x": 50,
+          "y": 3185
         }
       }
     note: false
@@ -1104,12 +1051,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '48':
     id: '48'
-    taskid: 4bf88e0e-6e65-4f39-868e-f48906dae5c0
+    taskid: 0843dccd-2e69-474a-8680-ff5559213724
     type: condition
     task:
-      id: 4bf88e0e-6e65-4f39-868e-f48906dae5c0
+      id: 0843dccd-2e69-474a-8680-ff5559213724
       version: -1
       name: verify results
       type: condition
@@ -1135,8 +1083,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 2820
+          "x": 50,
+          "y": 3360
         }
       }
     note: false
@@ -1146,12 +1094,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '50':
     id: '50'
-    taskid: cc533b99-6c42-40cc-8a88-d10ea0108988
+    taskid: b7bda056-0f47-41fe-81d6-99adc83d5e97
     type: condition
     task:
-      id: cc533b99-6c42-40cc-8a88-d10ea0108988
+      id: b7bda056-0f47-41fe-81d6-99adc83d5e97
       version: -1
       name: verify results
       type: condition
@@ -1177,8 +1126,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
-          "y": 2820
+          "x": 480,
+          "y": 3360
         }
       }
     note: false
@@ -1188,12 +1137,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '51':
     id: '51'
-    taskid: fa1278c5-9be3-4d0c-81e0-370e6bf44ec8
+    taskid: c1dc64e7-06be-4522-8c30-bedc5e7fb391
     type: title
     task:
-      id: fa1278c5-9be3-4d0c-81e0-370e6bf44ec8
+      id: c1dc64e7-06be-4522-8c30-bedc5e7fb391
       version: -1
       name: Logs
       type: title
@@ -1208,8 +1158,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 2485
+          "x": 265,
+          "y": 3017.5
         }
       }
     note: false
@@ -1219,12 +1169,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '52':
     id: '52'
-    taskid: 994b1ff4-ecf5-4e30-82eb-50ef3d27793e
+    taskid: 42cb8eba-dede-4626-8d82-5cf5270d57c9
     type: title
     task:
-      id: 994b1ff4-ecf5-4e30-82eb-50ef3d27793e
+      id: 42cb8eba-dede-4626-8d82-5cf5270d57c9
       version: -1
       name: End of Logs
       type: title
@@ -1238,8 +1189,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 2995
+          "x": 265,
+          "y": 3542.5
         }
       }
     note: false
@@ -1249,12 +1200,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '53':
     id: '53'
-    taskid: 3f6b35ee-1bc8-46e3-897a-73b0aa9ba66b
+    taskid: 6ab0dc69-3123-41f5-845b-b90605f2f65f
     type: regular
     task:
-      id: 3f6b35ee-1bc8-46e3-897a-73b0aa9ba66b
+      id: 6ab0dc69-3123-41f5-845b-b90605f2f65f
       version: -1
       name: application-assignments
       description: Returnes events for when a user was assigned to an application
@@ -1272,8 +1224,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
-          "y": 2645
+          "x": 480,
+          "y": 3185
         }
       }
     note: false
@@ -1283,12 +1235,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '60':
     id: '60'
-    taskid: 3e0ea1c8-3741-498c-861b-f171ea6817ad
+    taskid: 328322e8-557e-4663-803d-02626b016bba
     type: regular
     task:
-      id: 3e0ea1c8-3741-498c-861b-f171ea6817ad
+      id: 328322e8-557e-4663-803d-02626b016bba
       version: -1
       name: 'Generate a random login prefix '
       description: Generates random string
@@ -1314,8 +1267,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 210
+          "x": 695,
+          "y": 385
         }
       }
     note: false
@@ -1325,12 +1278,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '61':
     id: '61'
-    taskid: 751b5eb8-60b2-4dbc-896a-4239ca40895e
+    taskid: 547dfeda-bf97-4245-8b69-1da0221a6c41
     type: regular
     task:
-      id: 751b5eb8-60b2-4dbc-896a-4239ca40895e
+      id: 547dfeda-bf97-4245-8b69-1da0221a6c41
       version: -1
       name: GeneratePassword
       description: "This function generates a password and allows various parameters to customize the properties of the password depending on the use case (e.g. password complexity requirements).  The default behavior is to generate a password of  *random length* including all four character classes (upper, lower, digits, symbols) with at least five and at most ten characters per class. \n\nThe min_* values all default to 0. This means that if the command is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that a password of length zero could be generated. It is therefore recommended to always include a min_* parameter that matches. \n\nThe debug parameter will print certain properties of the command into the WarRoom for easy diagnostics."
@@ -1362,8 +1316,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 380
+          "x": 695,
+          "y": 560
         }
       }
     note: false
@@ -1373,19 +1327,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '63':
     id: '63'
-    taskid: 8f2938e1-9305-45f7-83dd-ab48e362768b
+    taskid: fec12244-a381-4dde-8c1b-62b42dd2e037
     type: regular
     task:
-      id: 8f2938e1-9305-45f7-83dd-ab48e362768b
+      id: fec12244-a381-4dde-8c1b-62b42dd2e037
       version: -1
       name: list-users
       description: Lists users in your organization.
-      script: Okta v2|||okta-list-users
+      script: '|||okta-list-users'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - '64'
@@ -1396,8 +1351,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2820
+          "x": 1125,
+          "y": 3010
         }
       }
     note: false
@@ -1407,12 +1362,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '64':
     id: '64'
-    taskid: 7280e61c-ad9f-4575-8177-fec8cab75fe9
+    taskid: dc2a990c-7707-4710-88b6-7849bd5c1e29
     type: condition
     task:
-      id: 7280e61c-ad9f-4575-8177-fec8cab75fe9
+      id: dc2a990c-7707-4710-88b6-7849bd5c1e29
       version: -1
       name: verify results
       type: condition
@@ -1433,8 +1389,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2995
+          "x": 1125,
+          "y": 3185
         }
       }
     note: false
@@ -1444,19 +1400,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '65':
     id: '65'
-    taskid: f19162ac-081c-4a37-8f7b-e8b0dc85f5a6
+    taskid: ee32a071-0494-4b12-89b4-0f80e8b2b7e8
     type: regular
     task:
-      id: f19162ac-081c-4a37-8f7b-e8b0dc85f5a6
+      id: ee32a071-0494-4b12-89b4-0f80e8b2b7e8
       version: -1
       name: list-zones
       description: Get an Okta Zone object
-      script: Okta v2|||okta-list-zones
+      script: '|||okta-list-zones'
       type: regular
       iscommand: true
-      brand: Okta v2
+      brand: ""
     nexttasks:
       '#none#':
       - '66'
@@ -1467,8 +1424,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3170
+          "x": 1125,
+          "y": 3360
         }
       }
     note: false
@@ -1478,12 +1435,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '66':
     id: '66'
-    taskid: 00f1981d-e1d3-41ea-8ba7-69e1b5628271
+    taskid: 3d355c2d-2424-4be7-8c2b-ee97c40d6ce1
     type: condition
     task:
-      id: 00f1981d-e1d3-41ea-8ba7-69e1b5628271
+      id: 3d355c2d-2424-4be7-8c2b-ee97c40d6ce1
       version: -1
       name: verify results
       type: condition
@@ -1504,8 +1462,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3340
+          "x": 1125,
+          "y": 3535
         }
       }
     note: false
@@ -1515,6 +1473,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {},

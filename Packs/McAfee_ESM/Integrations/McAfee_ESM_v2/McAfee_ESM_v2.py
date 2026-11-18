@@ -5,11 +5,106 @@ from datetime import datetime, timedelta
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from packaging.version import InvalidVersion, Version
 from urllib3 import disable_warnings
 
 disable_warnings()
 
 CONTEXT_INTEGRATION_NAME = "McAfeeESM."
+
+# Starting with ESM 11.6.11, the login API requires the username and password to be AES-encrypted.
+# The key and IV below are fixed constants published by Trellix for all customers in KB90289
+# (https://support.trellix.com/s/article/KB90289) - they are not secret and are not instance-specific.
+# The KB documents the equivalent CLI command:
+#   echo -n 'NGCP' | openssl enc -aes-128-cbc -K 3132...3738 -iv 3132...3738 -base64
+# NOTE: because the key is public, this encoding provides obfuscation only, not confidentiality.
+# It is not a substitute for TLS, which remains controlled by the "insecure" parameter.
+ESM_AES_KEY = bytes.fromhex("31323334353637383132333435363738")
+ESM_AES_IV = bytes.fromhex("31323334353637383132333435363738")
+AES_BLOCK_SIZE_BITS = 128
+
+
+# Minimum supported ESM version (inclusive). Versions below this reached Trellix end-of-life.
+# See https://www.trellix.com/support/end-of-life-products/
+MIN_SUPPORTED_VERSION = Version("11.6.0")
+
+# ESM 11.6.11+ requires AES-encrypted credentials; 11.6.0–11.6.10 use plain Base64.
+AES_MIN_VERSION = Version("11.6.11")
+
+# The ESM session is cached between command executions to avoid logging in on every run.
+# ESM expires idle sessions after 15 minutes, so the cached session is refreshed well before that.
+SESSION_CACHE_KEY = "esm_session"
+SESSION_TTL_SECONDS = 10 * 60
+
+# Status codes returned by ESM when the cached session is no longer accepted.
+UNAUTHORIZED_STATUS_CODES = (401, 403)
+
+# The "ESM date format" parameter values. An ESM that uses a day-first date format (e.g. DD-MM-YYYY) reads the
+# customStart / customEnd query times with the day and month swapped, so the integration swaps them before sending.
+DATE_FORMAT_MONTH_FIRST = "MM/DD/YYYY"
+DATE_FORMAT_DAY_FIRST = "DD/MM/YYYY"
+ESM_DAY_FIRST_QUERY_FORMAT = "%Y-%d-%mT%H:%M:%SZ"
+
+
+def parse_version(version: str) -> Version:
+    """Parses the ESM version string configured in the "Version" parameter.
+
+    :param version: The version string entered by the user (e.g. "11.6.11").
+    :return: The parsed version.
+    :raises DemistoException: If the value is not a valid version number.
+    """
+    try:
+        return Version(version)
+    except InvalidVersion:
+        raise DemistoException(
+            f'Invalid ESM version "{version}". '
+            f'The "Version" parameter expects the version number of your ESM instance, for example "11.6.11".'
+        )
+
+
+def validate_version(version: str) -> None:
+    """Validates that the configured ESM version is supported.
+
+    Versions below 11.6.0 are not supported by Trellix and will raise an error immediately.
+
+    :param version: The version string entered by the user (e.g. "11.6.11").
+    :raises DemistoException: If the value is not a valid version number, or is below the minimum supported version.
+    """
+    if parse_version(version) < MIN_SUPPORTED_VERSION:
+        raise DemistoException(
+            f'ESM version "{version}" is not supported. '
+            f"Trellix has reached end-of-life for all ESM versions below {MIN_SUPPORTED_VERSION} "
+            f"(see https://www.trellix.com/support/end-of-life-products/). "
+            f'Enter version {MIN_SUPPORTED_VERSION} or later in the "Version" parameter.'
+        )
+
+
+def encrypt_credential(value: str) -> str:
+    """AES-128-CBC encrypts a credential and base64-encodes the ciphertext, as required by ESM 11.6.11+.
+
+    :param value: The plaintext credential (username or password).
+    :return: The base64-encoded ciphertext.
+    """
+    padder = padding.PKCS7(AES_BLOCK_SIZE_BITS).padder()
+    padded = padder.update(value.encode("utf-8")) + padder.finalize()
+    encryptor = Cipher(algorithms.AES(ESM_AES_KEY), modes.CBC(ESM_AES_IV)).encryptor()
+    return base64.b64encode(encryptor.update(padded) + encryptor.finalize()).decode()
+
+
+def encode_credential(value: str, version: str) -> str:
+    """Encodes a credential for the login request according to the configured ESM version.
+
+    ESM 11.6.11 and later require AES-encrypted credentials; versions 11.6.0–11.6.10 use Base64.
+
+    :param value: The plaintext credential (username or password).
+    :param version: The version string entered by the user (e.g. "11.6.11").
+    :return: The encoded credential to send in the login body.
+    """
+    if parse_version(version) >= AES_MIN_VERSION:
+        return encrypt_credential(value)
+    return base64.b64encode(value.encode("utf-8")).decode()
 
 
 class EmptyFile(Exception):
@@ -23,20 +118,18 @@ class McAfeeESMClient(BaseClient):
         self.args = demisto.args()
         self.__user_name = params.get("credentials", {}).get("identifier", "")
         self.__password = params.get("credentials", {}).get("password", "")
-        self.difference = int(params.get("timezone", 0))
-        self.version = params.get("version", "10.2")
+        self.difference = parse_timezone_offset(params.get("timezone"))
+        self.day_first = is_day_first_date_format(params.get("dateFormat"))
+        self.version = params.get("version", "11.6.0")
+        validate_version(self.version)
         super().__init__(
             "{}/rs/esm/v2/".format(params.get("url", "").strip("/")),
             proxy=params.get("proxy", False),
             verify=not params.get("insecure", False),
         )
         self._headers = {"Content-Type": "application/json"}
-        self.__login()
+        self.__set_session()
         self.__cache: dict = {"users": [], "org": [], "status": []}
-
-    def __del__(self):
-        self.__logout()
-        super().__del__()
 
     def _is_status_code_valid(self, *_other):  # noqa
         return True
@@ -45,6 +138,11 @@ class McAfeeESMClient(BaseClient):
         if data:
             data = json.dumps(data)
         result = self._http_request("POST", mcafee_command, data=data, params=params, resp_type="request", timeout=60)
+        if result.status_code in UNAUTHORIZED_STATUS_CODES:
+            # The cached session was invalidated on the ESM side - log in again and retry once.
+            demisto.debug(f"{mcafee_command} was rejected as unauthorized. Refreshing the ESM session and retrying.")
+            self.__login()
+            result = self._http_request("POST", mcafee_command, data=data, params=params, resp_type="request", timeout=60)
         if result.ok:
             if result.content:
                 return result.json()
@@ -53,22 +151,53 @@ class McAfeeESMClient(BaseClient):
         else:
             raise DemistoException(f"{mcafee_command} failed with error[{result.content.decode()}].")
 
+    def __set_session(self):
+        """Sets the session headers, reusing the cached session when it is still valid.
+
+        The JWT and XSRF tokens are stored in the integration context so that consecutive
+        command executions reuse the same ESM session instead of logging in on every run.
+        """
+        session = self.__get_cached_session()
+        if session:
+            self._headers["Cookie"] = session["cookie"]
+            self._headers["X-Xsrf-Token"] = session["xsrf_token"]
+        else:
+            self.__login()
+
+    @staticmethod
+    def __get_cached_session() -> dict:
+        """Returns the cached ESM session if it exists and has not expired, otherwise an empty dict."""
+        session = demisto.getIntegrationContext().get(SESSION_CACHE_KEY) or {}
+        if session.get("expiry", 0) > time.time():
+            demisto.debug("Reusing the cached ESM session.")
+            return session
+        demisto.debug("No valid ESM session in the integration context, logging in.")
+        return {}
+
     def __login(self):
+        """Logs in to ESM, applies the session headers, and caches the session in the integration context."""
         params = {
-            "username": base64.b64encode(self.__user_name.encode("ascii")).decode(),
-            "password": base64.b64encode(self.__password.encode("ascii")).decode(),
+            "username": encode_credential(self.__user_name, self.version),
+            "password": encode_credential(self.__password, self.version),
             "locale": "en_US",
         }
         res = self._http_request("POST", "login", data=json.dumps(params), resp_type="response", timeout=20)
-        self._headers["Cookie"] = "JWTToken={}".format(res.cookies.get("JWTToken"))
-        self._headers["X-Xsrf-Token"] = res.headers.get("Xsrf-Token")
-        if None in (self._headers["X-Xsrf-Token"], self._headers["Cookie"]):
+        jwt_token = res.cookies.get("JWTToken")
+        xsrf_token = res.headers.get("Xsrf-Token")
+        if None in (jwt_token, xsrf_token):
             raise DemistoException(
                 f"Failed login\nurl: {self._base_url}login\nresponse status: {res.status_code}\nresponse: {res.text}\n"
             )
 
-    def __logout(self):
-        self._http_request("DELETE", "logout", resp_type="response")
+        self._headers["Cookie"] = f"JWTToken={jwt_token}"
+        self._headers["X-Xsrf-Token"] = xsrf_token
+        context = demisto.getIntegrationContext()
+        context[SESSION_CACHE_KEY] = {
+            "cookie": self._headers["Cookie"],
+            "xsrf_token": xsrf_token,
+            "expiry": time.time() + SESSION_TTL_SECONDS,
+        }
+        demisto.setIntegrationContext(context)
 
     def test_module(self) -> tuple[str, dict, str]:
         params = demisto.params()
@@ -385,7 +514,7 @@ class McAfeeESMClient(BaseClient):
         start_time = start_time if start_time else self.args.get("customStart")
         end_time = end_time if end_time else self.args.get("customEnd")
 
-        since, start_time, end_time = set_query_times(since, start_time, end_time, self.difference)
+        since, start_time, end_time = set_query_times(since, start_time, end_time, self.difference, self.day_first)
         params = {"triggeredTimeRange": since}
         if since == "CUSTOM":
             params["customStart"] = start_time
@@ -460,7 +589,8 @@ class McAfeeESMClient(BaseClient):
         path = f"alarm{command}TriggeredAlarm"
         alarm_ids = argToList(str(self.args.get("alarmIds")))
         alarm_ids = [int(i) for i in alarm_ids]
-        data = {"triggeredIds": {"alarmIdList": alarm_ids} if not self.version < "11.3" else alarm_ids}
+        # All supported versions (11.6 and later) expect the alarm IDs wrapped in an "alarmIdList" object.
+        data = {"triggeredIds": {"alarmIdList": alarm_ids}}
         self.__request(path, data=data)
 
     def get_alarm_event_details(self) -> tuple[str, dict, dict]:
@@ -676,9 +806,10 @@ class McAfeeESMClient(BaseClient):
             "watchlist": {
                 "name": watchlist_name,
                 "type": {"name": watchlist_type, "id": 0},
-                "customType": {"name": "", "id": 0},
-                "dynamic": "False",
-                "enabled": "True",
+                "customType": {"name": watchlist_type, "id": 0},
+                "dynamic": False,
+                "enabled": True,
+                "values": [],
             }
         }
         watchlist_id = self.__request(command, data=data)
@@ -694,13 +825,9 @@ class McAfeeESMClient(BaseClient):
         command = "sysRemoveWatchlist"
         ids_to_delete = argToList(self.args.get("ids", ""))
         ids_to_delete.extend(list(map(self.__get_watchlist_id, argToList(self.args.get("names")))))
-        if self.version.startswith("11."):
-            data = {"ids": {"watchlistIdList": ids_to_delete}}
-            self.__request(command, data)
-        else:
-            for single_id in ids_to_delete:
-                data = {"id": single_id}
-                self.__request(command, data)
+        # All supported versions (11.6 and later) accept the watchlist IDs in a single "watchlistIdList" request.
+        data = {"ids": {"watchlistIdList": ids_to_delete}}
+        self.__request(command, data)
         return "Watchlists removed", {}, {}
 
     def watchlist_add_entry(self):
@@ -828,7 +955,7 @@ def expected_errors(error: DemistoException) -> bool:
     return str(error) in expected_error
 
 
-def time_format(current_time: str, difference: int = 0) -> str:
+def time_format(current_time: str, difference: float = 0) -> str:
     """
 
     :param current_time: the current time in the current format
@@ -859,7 +986,7 @@ def time_format(current_time: str, difference: int = 0) -> str:
 
 
 def convert_time_format(
-    current_time: str, difference: int = 0, to_demisto: bool = True, mcafee_format: str = "%Y/%m/%d %H:%M:%S"
+    current_time: str, difference: float = 0, to_demisto: bool = True, mcafee_format: str = "%Y/%m/%d %H:%M:%S"
 ) -> str:
     """
 
@@ -881,7 +1008,7 @@ def convert_time_format(
 
 
 def set_query_times(
-    since: str = None, start_time: str = None, end_time: str = None, difference: int = 0
+    since: str = None, start_time: str = None, end_time: str = None, difference: float = 0, day_first: bool = False
 ) -> tuple[str | None, str | None, str | None]:
     """
     checks all time args
@@ -889,6 +1016,7 @@ def set_query_times(
     :param start_time: start_time from args
     :param end_time: end_time from args
     :param difference: the difference (e.g. time zone)
+    :param day_first: True if the ESM uses a day-first date format and reads the custom times with day and month swapped
     :return: the args in the machine time and after validation
     """
     if not since:
@@ -905,10 +1033,55 @@ def set_query_times(
 
         if start_time and end_time and start_time > end_time:
             raise ValueError("Invalid set times.")
+        if day_first:
+            start_time = to_day_first_query_time(start_time)
+            end_time = to_day_first_query_time(end_time)
     return since, start_time, end_time
 
 
-def list_times_set(list_to_set: list, indexes: list, difference: int = 0) -> list:
+def to_day_first_query_time(query_time: str | None) -> str | None:
+    """
+    An ESM with a day-first date format reads a custom query time such as 2026-11-10T09:00:00Z as October 11.
+    Swapping the day and month makes it read the intended date.
+
+    :param query_time: the query time in the demisto format, e.g. 2026-11-10T09:00:00Z
+    :return: the query time with the day and month swapped, e.g. 2026-10-11T09:00:00Z
+    """
+    if not query_time:
+        return query_time
+    return datetime.strptime(query_time, McAfeeESMClient.demisto_format).strftime(ESM_DAY_FIRST_QUERY_FORMAT)
+
+
+def is_day_first_date_format(date_format: str | None) -> bool:
+    """
+    :param date_format: the "ESM date format" instance parameter
+    :return: True if the ESM uses a day-first date format
+    """
+    if date_format in (None, "", DATE_FORMAT_MONTH_FIRST):
+        return False
+    if date_format == DATE_FORMAT_DAY_FIRST:
+        return True
+    raise DemistoException(
+        f"Invalid ESM date format '{date_format}'. Possible values: {DATE_FORMAT_MONTH_FIRST}, {DATE_FORMAT_DAY_FIRST}."
+    )
+
+
+def parse_timezone_offset(timezone_offset: str | int | float | None) -> float:
+    """
+    :param timezone_offset: the "McAfee ESM Timezone in hours" instance parameter, e.g. 3, -5 or 5.5 (for +05:30)
+    :return: the offset in hours
+    """
+    if timezone_offset in (None, ""):
+        return 0
+    try:
+        return float(timezone_offset)  # type: ignore[arg-type]
+    except ValueError:
+        raise DemistoException(
+            f"Invalid McAfee ESM Timezone in hours '{timezone_offset}'. Enter the offset in hours, e.g. 3, -5 or 5.5."
+        )
+
+
+def list_times_set(list_to_set: list, indexes: list, difference: float = 0) -> list:
     """
 
     :param list_to_set: the raw list
@@ -922,7 +1095,7 @@ def list_times_set(list_to_set: list, indexes: list, difference: int = 0) -> lis
     return list_to_set
 
 
-def dict_times_set(dict_to_set: dict, difference: int = 0) -> dict:
+def dict_times_set(dict_to_set: dict, difference: float = 0) -> dict:
     """
 
     :param dict_to_set: the raw dict
@@ -955,7 +1128,7 @@ def time_fields(field_list: list[dict]) -> list:
     return indexes_list
 
 
-def table_times_set(table_to_set: dict, difference: int = 0) -> dict:
+def table_times_set(table_to_set: dict, difference: float = 0) -> dict:
     """
 
     :param table_to_set: the raw event/ alarm
