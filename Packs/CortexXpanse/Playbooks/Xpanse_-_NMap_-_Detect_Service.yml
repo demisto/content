@@ -1,5 +1,7 @@
 id: Xpanse - NMap - Detect Service
 version: -1
+marketplaces:
+- xsoar
 contentitemexportablefields:
   contentitemfields: {}
 name: Xpanse - NMap - Detect Service

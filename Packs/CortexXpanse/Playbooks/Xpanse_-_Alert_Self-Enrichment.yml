@@ -1,5 +1,7 @@
 id: Xpanse - Alert Self-Enrichment
 version: -1
+marketplaces:
+- xsoar
 contentitemexportablefields:
   contentitemfields: {}
 name: Xpanse - Alert Self-Enrichment

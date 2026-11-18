@@ -1,5 +1,7 @@
 id: Xpanse - Alert Handler
 version: -1
+marketplaces:
+- xsoar
 name: Xpanse - Alert Handler
 description: Default alert handling for Cortex Xpanse alerts.
 starttaskid: "0"
