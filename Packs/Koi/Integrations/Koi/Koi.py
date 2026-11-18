@@ -1,6 +1,6 @@
 import json
 import traceback
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, UTC
 from enum import Enum
@@ -72,7 +72,9 @@ class Config:
     # Pagination
     DEFAULT_PAGE_SIZE = 50
     MAX_PAGE_SIZE = 500
-    MAX_PAGES_PER_FETCH = 10
+    # Kept below the API's 30 requests/minute per route, so one fetch cycle never trips the limit.
+    MAX_PAGES_PER_FETCH = 20
+    FETCH_PAGE_SIZE = 250
     DEFAULT_PAGE = 1
     DEFAULT_LIMIT = 50
     MAX_LIMIT = 1000
@@ -81,6 +83,9 @@ class Config:
     DEFAULT_MAX_FETCH = 5000
     # Default lookback time for first fetch or get-events command
     DEFAULT_FROM_TIME = "5 minutes ago"
+    # KOI writes events asynchronously, so an event can land with a timestamp slightly in the past.
+    # Fetching only up to now minus this lag keeps the cursor from passing events still in flight.
+    INGESTION_LAG_SECONDS = 120
 
     # API sort direction for chronological ordering
     SORT_DIRECTION = "asc"
@@ -93,13 +98,35 @@ class Config:
 class LogType(Enum):
     """Enum to hold all configuration for different log types."""
 
-    ALERTS = ("alerts", "Alerts", ApiPaths.ALERTS)
-    AUDIT = ("audit", "Audit", ApiPaths.AUDIT_LOGS)
+    ALERTS = ("alerts", "Alerts", ApiPaths.ALERTS, "alerts")
+    AUDIT = ("audit", "Audit", ApiPaths.AUDIT_LOGS, "items")
 
-    def __init__(self, type_string: str, title: str, api_endpoint: str):
+    def __init__(self, type_string: str, title: str, api_endpoint: str, response_key: str):
         self.type_string = type_string
         self.title = title
         self.api_endpoint = api_endpoint
+        self.response_key = response_key
+
+
+LEGACY_LAST_RUN_KEY_PREFIXES = ("last_fetch_", "previous_ids_", "page_", "page_size_", "window_end_")
+
+API_WITHOUT_CURSOR_ERROR = (
+    "The KOI API did not return a next_cursor. This integration version requires cursor paging on "
+    "/api/external/v2/alerts and /audit-logs; contact KOI support."
+)
+
+
+@dataclass
+class EventsPage:
+    """One page of events and the cursor that continues after it."""
+
+    events: list[dict]
+    next_cursor: str | None
+
+
+def is_auth_error(error: Exception) -> bool:
+    error_msg = str(error)
+    return "401" in error_msg or "403" in error_msg
 
 
 # Valid audit log type filters
@@ -567,53 +594,32 @@ class Client(ContentClient):
     def get_events_page(
         self,
         log_type: LogType,
+        cursor: str | None = None,
         created_at_gte: str | None = None,
         created_at_lte: str | None = None,
-        page: int = 1,
-        page_size: int = Config.DEFAULT_PAGE_SIZE,
+        page_size: int = Config.FETCH_PAGE_SIZE,
         audit_types: list[str] | None = None,
-    ) -> list[dict]:
-        """Fetch a single page of events from the KOI API.
-
-        This is the single unified method used by all commands (test-module,
-        fetch-events, get-events) to retrieve events from the API.
-
-        Args:
-            log_type: The LogType to fetch (ALERTS or AUDIT).
-            created_at_gte: Filter events created at or after this datetime (ISO 8601).
-            created_at_lte: Filter events created at or before this datetime (ISO 8601).
-            page: Page number (1-based).
-            page_size: Number of results per page (max 500).
-            audit_types: Optional list of audit log types to filter by (only for AUDIT).
-
-        Returns:
-            List of event dictionaries from the API response.
-        """
+    ) -> EventsPage:
+        """Fetch the events after `cursor` (or from `created_at_gte` when there is no cursor), oldest first."""
         params: dict[str, Any] = {
-            "page": page,
             "page_size": min(page_size, Config.MAX_PAGE_SIZE),
             "sort_direction": Config.SORT_DIRECTION,
+            "include_total": "false",
         }
-
-        if created_at_gte:
+        if cursor:
+            params["cursor"] = cursor
+        elif created_at_gte:
             params["created_at_gte"] = created_at_gte
         if created_at_lte:
             params["created_at_lte"] = created_at_lte
         if log_type == LogType.AUDIT and audit_types:
             params["types"] = ",".join(audit_types)
 
-        demisto.debug(f"[API Fetch] {log_type.type_string} | Page: {page} | Params: {params}")
-
-        response = self._http_request(
-            method="GET",
-            url_suffix=log_type.api_endpoint,
-            params=params,
-        )
-
-        events = response.get("alerts") or response.get("data") or response.get("items") or response.get("results") or []
-        demisto.debug(f"[API Fetch] {log_type.type_string} | Page {page}: {len(events)} events returned")
-
-        return events
+        demisto.debug(f"[API Fetch] {log_type.type_string} | Params: {params}")
+        response = self._http_request(method="GET", url_suffix=log_type.api_endpoint, params=params)
+        events = response.get(log_type.response_key) or []
+        demisto.debug(f"[API Fetch] {log_type.type_string} | {len(events)} events returned")
+        return EventsPage(events=events, next_cursor=response.get("next_cursor"))
 
     def get_policies(
         self,
@@ -1025,36 +1031,26 @@ class Client(ContentClient):
 
 
 def test_module(client: Client) -> str:
-    """Test API connectivity by fetching a small number of events.
-
-    Args:
-        client: The KOI client.
-
-    Returns:
-        'ok' if test passed, otherwise raises an exception.
-    """
-    demisto.debug("[Test Module] Starting...")
+    """Check that the API key can read every event type selected for fetching."""
+    params = demisto.params()
+    log_types = get_log_types_from_titles(argToList(params.get("event_types_to_fetch", ["Alerts", "Audit"])))
+    audit_types = argToList(params.get("audit_types_filter")) or None
+    created_after = get_formatted_utc_time(f"{Config.TEST_MODULE_LOOKBACK_MINUTES} minutes ago")
     try:
-        utc_now = datetime.now(UTC)
-        test_time = (utc_now - timedelta(minutes=Config.TEST_MODULE_LOOKBACK_MINUTES)).strftime(Config.DATE_FORMAT)
-
-        demisto.debug(f"[Test Module] Fetching alerts from: {test_time}")
-        fetch_events_with_pagination(
-            client,
-            log_type=LogType.ALERTS,
-            created_after=test_time,
-            max_events=Config.TEST_MODULE_MAX_EVENTS,
-        )
-
-        demisto.debug("[Test Module] Success")
-        return "ok"
-
+        for log_type in log_types or list(LogType):
+            fetch_events_with_pagination(
+                client,
+                log_type=log_type,
+                created_after=created_after,
+                max_events=Config.TEST_MODULE_MAX_EVENTS,
+                audit_types=audit_types,
+            )
     except Exception as error:
-        error_msg = str(error)
-        demisto.debug(f"[Test Module] Failed: {error_msg}")
-        if "401" in error_msg or "403" in error_msg:
+        demisto.debug(f"[Test Module] Failed: {error!s}")
+        if is_auth_error(error):
             return "Authorization Error: Verify your API Key."
         raise
+    return "ok"
 
 
 def fetch_events_with_pagination(
@@ -1065,70 +1061,25 @@ def fetch_events_with_pagination(
     max_events: int = Config.DEFAULT_MAX_FETCH,
     audit_types: list[str] | None = None,
 ) -> list[dict]:
-    """Fetch events with pagination support.
-
-    Used by the bounded, low-volume paths (test-module and koi-get-events) that
-    need the full list for display. The high-volume fetch-events path fetches and
-    streams pages itself (send-and-flush) to keep memory flat.
-
-    Args:
-        client: The KOI client.
-        log_type: The LogType to fetch.
-        created_after: Start time (ISO 8601).
-        created_before: End time (ISO 8601) or None.
-        max_events: Maximum number of events to fetch.
-        audit_types: Optional list of audit log types to filter by.
-
-    Returns:
-        List of event dictionaries.
-    """
+    """Collect up to max_events events in [created_after, created_before] for the display paths
+    (test-module and koi-get-events). fetch-events streams pages itself to keep memory flat."""
     events: list[dict] = []
-    page = 1
-    page_size = min(Config.MAX_PAGE_SIZE, max_events)
-
-    demisto.debug(
-        f"[Pagination Loop] Start | Type: {log_type.type_string} | Goal: {max_events} | "
-        f"Time: {created_after} -> {created_before or 'Now'}"
-    )
-
-    while len(events) < max_events:
-        page_events = client.get_events_page(
+    cursor: str | None = None
+    for _ in range(Config.MAX_PAGES_PER_FETCH):
+        page_size = min(Config.FETCH_PAGE_SIZE, max_events - len(events))
+        page = client.get_events_page(
             log_type=log_type,
+            cursor=cursor,
             created_at_gte=created_after,
             created_at_lte=created_before,
-            page=page,
             page_size=page_size,
             audit_types=audit_types if log_type == LogType.AUDIT else None,
         )
-
-        if not page_events:
-            demisto.debug(f"[Pagination Loop] Page {page}: Empty. Stopping.")
+        events.extend(page.events)
+        if len(page.events) < page_size or len(events) >= max_events or not page.next_cursor:
             break
-
-        events.extend(page_events)
-        demisto.debug(f"[Pagination Loop] Page {page}: +{len(page_events)} events. Total: {len(events)}")
-
-        if len(page_events) < page_size:
-            demisto.debug("[Pagination Loop] Last page (partial). Stopping.")
-            break
-
-        page += 1
-
-        if page > Config.MAX_PAGES_PER_FETCH:
-            demisto.debug(f"[Pagination Loop] Max page limit reached ({Config.MAX_PAGES_PER_FETCH}). Stopping.")
-            break
-
-        if len(events) >= max_events:
-            demisto.debug(f"[Pagination Loop] Threshold reached ({len(events)} >= {max_events}). Stopping.")
-            break
-
-    # Slice to limit
-    if len(events) > max_events:
-        demisto.debug(f"[Pagination Result] Slicing {len(events)} events to limit {max_events}")
-        events = events[:max_events]
-
-    demisto.debug(f"[Pagination Result] Returning {len(events)} {log_type.type_string} events")
-    return events
+        cursor = page.next_cursor
+    return events[:max_events]
 
 
 def get_events_command(client: Client, args: dict, params: dict) -> CommandResults | str:
@@ -1192,285 +1143,140 @@ def get_events_command(client: Client, args: dict, params: dict) -> CommandResul
 
 @dataclass
 class FetchResult:
-    """Result of fetching events for a single log type.
+    """Outcome of one fetch cycle for a single log type.
 
-    Carries only a count of events sent (not the events themselves), since each
-    page is streamed and freed in _fetch_single_log_type to keep memory flat.
+    last_run_updates always holds the cursor after the last page that was sent, even when a later
+    page failed, so a failure costs at most the failing page and never re-sends earlier ones.
     """
 
     log_type: LogType
     new_event_count: int = 0
-    last_run_updates: dict[str, str | int | list[str]] = field(default_factory=dict)
-    error: str | None = None
+    last_run_updates: dict[str, str] = field(default_factory=dict)
+    error: Exception | None = None
 
 
 def _fetch_single_log_type(
     client: Client,
     log_type: LogType,
-    last_run: dict[str, str | int | list[str]],
+    last_run: dict[str, Any],
     max_events: int,
     audit_types: list[str] | None,
+    window_end: str,
 ) -> FetchResult:
-    """Fetch, dedup and stream events for a single log type, page by page.
-
-    Runs in its own thread with an immutable copy of last_run. Each page is streamed
-    to XSIAM and freed before the next is fetched (send-and-flush), so peak memory is
-    independent of event volume. The high-water-mark (timestamp + IDs at that time) is
-    tracked incrementally as pages stream through. Errors are captured in
-    FetchResult.error so a failing type doesn't affect the others.
-
-    Args:
-        client: The KOI client.
-        log_type: The LogType to fetch (ALERTS or AUDIT).
-        last_run: Immutable copy of the current last_run state dict.
-        max_events: Maximum events to fetch per type.
-        audit_types: Optional audit type filter (AUDIT only).
-
-    Returns:
-        FetchResult with new_event_count, last_run_updates, and any error.
-    """
+    """Read events after the stored cursor, up to window_end, streaming each page to XSIAM."""
     result = FetchResult(log_type=log_type)
+    cursor_key = f"cursor_{log_type.type_string}"
+    stored_cursor = last_run.get(cursor_key)
+    cursor: str | None = stored_cursor if isinstance(stored_cursor, str) and stored_cursor else None
 
+    # State written by versions before cursor paging: start once from its timestamp and drop the
+    # events it already sent at that timestamp. After the first page the cursor takes over.
+    legacy_ids: list[str] = []
+    created_after: str | None = None
+    if not cursor:
+        legacy_timestamp = last_run.get(f"last_fetch_{log_type.type_string}")
+        created_after = get_formatted_utc_time(
+            legacy_timestamp if isinstance(legacy_timestamp, str) else Config.DEFAULT_FROM_TIME
+        )
+        raw_ids = last_run.get(f"previous_ids_{log_type.type_string}")
+        legacy_ids = raw_ids if isinstance(raw_ids, list) else []
+        if created_after > window_end:
+            demisto.debug(f"[Fetch] {log_type.type_string}: start {created_after} is inside the lag window. Waiting.")
+            return result
+
+    fetched = 0
     try:
-        last_fetch_key = f"last_fetch_{log_type.type_string}"
-        previous_ids_key = f"previous_ids_{log_type.type_string}"
-        page_key = f"page_{log_type.type_string}"
-        page_size_key = f"page_size_{log_type.type_string}"
-        window_end_key = f"window_end_{log_type.type_string}"
-
-        raw_timestamp = last_run.get(last_fetch_key)
-        last_fetch_timestamp: str | None = raw_timestamp if isinstance(raw_timestamp, str) else None
-        raw_ids = last_run.get(previous_ids_key)
-        last_fetched_ids: list[str] = raw_ids if isinstance(raw_ids, list) else []
-
-        # Resume page: a timestamp holding more events than one fetch can read would be
-        # re-read forever from page 1, so resume deeper instead of exceeding max_fetch.
-        raw_page = last_run.get(page_key)
-        start_page = raw_page if isinstance(raw_page, int) and raw_page > 0 else Config.DEFAULT_PAGE
-        page_size = min(Config.MAX_PAGE_SIZE, max_events)
-
-        # A resume page only addresses the same events under the same page size. If max_fetch
-        # changed (or the size was never saved), restart from page 1; already-sent events are
-        # dropped by dedup.
-        saved_page_size = last_run.get(page_size_key)
-        if start_page > Config.DEFAULT_PAGE and saved_page_size != page_size:
-            reason = f"Page size changed from {saved_page_size} to {page_size}" if saved_page_size else "No saved page size"
-            demisto.debug(f"[Fetch] {log_type.type_string}: {reason}. Restarting from page 1.")
-            start_page = Config.DEFAULT_PAGE
-
-        # Page numbers are only valid against a stable result set, so reuse the original
-        # end time while resuming mid-window. A fresh window is capped at the current time.
-        raw_window_end = last_run.get(window_end_key)
-        if start_page > Config.DEFAULT_PAGE and isinstance(raw_window_end, str):
-            created_before = raw_window_end
-            demisto.debug(f"[Fetch] {log_type.type_string}: Resuming at page {start_page} within window ending {created_before}")
-        else:
-            created_before = get_formatted_utc_time(None)
-
-        if last_fetch_timestamp:
-            time_input = last_fetch_timestamp
-            demisto.debug(f"[Fetch] {log_type.type_string}: Continuing from {time_input}. Prev ID count: {len(last_fetched_ids)}")
-        else:
-            time_input = Config.DEFAULT_FROM_TIME
-            demisto.debug(f"[Fetch] {log_type.type_string}: First run - starting from default time")
-
-        created_after = get_formatted_utc_time(time_input)
-
-        # Fetch one page at a time and send-and-flush it, so we never hold more than a
-        # single page in memory (this is what fixes the OOM).
-        page = start_page
-        fetched = 0
-
-        # Only a full last page means the stuck timestamp may hold more events; a partial
-        # page means it is fully read, so resuming stops.
-        last_page_was_full = False
-        pages_read = 0
-
-        # Incremental HWM state (updated per page — never holds all events).
-        hwm_time: str | None = None
-        hwm_ids: set[str] = set()
-        total_new = 0
-
-        while fetched < max_events:
-            page_events = client.get_events_page(
+        for _ in range(Config.MAX_PAGES_PER_FETCH):
+            page_size = min(Config.FETCH_PAGE_SIZE, max_events - fetched)
+            if page_size <= 0:
+                break
+            page = client.get_events_page(
                 log_type=log_type,
+                cursor=cursor,
                 created_at_gte=created_after,
-                created_at_lte=created_before,
-                page=page,
+                created_at_lte=window_end,
                 page_size=page_size,
                 audit_types=audit_types if log_type == LogType.AUDIT else None,
             )
-            if not page_events:
+            if not page.events:
                 break
-
-            raw_count = len(page_events)
-            last_page_was_full = raw_count >= page_size
-            # Trim the final page so the total fetched never exceeds max_events.
-            remaining = max_events - fetched
-            if raw_count > remaining:
-                page_events = page_events[:remaining]
-            else:
-                # Count only fully read pages, so a trimmed page is resumed instead of skipped.
-                pages_read += 1
-            fetched += len(page_events)
-
-            # Parse each event's time ONCE here: stamp _time/source_log_type and update the
-            # HWM in the same pass. The streaming send empties its input list, so the HWM
-            # (from the trimmed page) and the count MUST be computed BEFORE sending;
-            # hwm_time/hwm_ids hold only strings, so they survive the send.
-            for event in page_events:
-                event["source_log_type"] = log_type.title
-                event_time = extract_time_from_event(event, log_type)
-                if not event_time:
-                    demisto.debug(f"[Event Time] WARNING: Event missing time field: {event.get('id', 'unknown')}")
-                    continue
-                event["_time"] = event_time
-                if hwm_time is None or event_time > hwm_time:
-                    hwm_time = event_time
-                    hwm_ids = set()
-                if event_time == hwm_time and (event_id := get_event_id(event)):
-                    hwm_ids.add(event_id)
-
-            # A full page sharing one timestamp is the signature of a bucket larger than
-            # the fetch limit, which is what pins the cursor.
-            if last_page_was_full and len({event.get("_time") for event in page_events}) == 1:
-                demisto.debug(
-                    f"[Fetch] {log_type.type_string}: Full page ({raw_count} events) all at {hwm_time}. "
-                    f"Timestamp holds at least {raw_count} events."
-                )
-
-            # Dedup against the previous run's IDs, then stream-and-flush this page.
-            new_events = deduplicate_events(page_events, last_fetched_ids)
+            if not page.next_cursor:
+                raise DemistoException(API_WITHOUT_CURSOR_ERROR)
+            fetched += len(page.events)
+            new_events = deduplicate_events(page.events, legacy_ids) if legacy_ids else page.events
+            legacy_ids = []
+            add_time_to_events(new_events, log_type)
+            count = len(new_events)
             if new_events:
-                count = len(new_events)  # count before the send empties the list
-                total_new += count
                 client.send_events(new_events, use_streaming_send=True)
-                demisto.debug(f"[Fetch] {log_type.type_string}: streamed {count} new events (running total {total_new})")
-
-            # Stop on a partial page (no more data) or when the page cap is hit.
-            if raw_count < page_size:
+            cursor = page.next_cursor
+            result.new_event_count += count
+            result.last_run_updates[cursor_key] = cursor
+            if len(page.events) < page_size:
                 break
-            page += 1
-            if page - start_page >= Config.MAX_PAGES_PER_FETCH:
-                break
+    except Exception as error:
+        result.error = error
+        demisto.debug(f"[Fetch] {log_type.type_string}: failed after {result.new_event_count} events: {error!s}")
 
-        result.new_event_count = total_new
-        demisto.debug(f"[Fetch] {log_type.type_string}: {total_new} new events sent after dedup")
-
-        # Persist the incrementally computed HWM state.
-        if hwm_time:
-            ids_at_last_timestamp = hwm_ids
-            # If the HWM timestamp hasn't changed, merge with previous IDs to prevent duplicates.
-            if hwm_time == last_fetch_timestamp:
-                ids_at_last_timestamp = set(last_fetched_ids) | hwm_ids
-
-            # Advance the resume page only while the cursor is stuck and the page was full.
-            # `page` is not always incremented before the loop exits, so use pages_read,
-            # which excludes a trimmed last page so its unread events are fetched next cycle.
-            # Otherwise go back to page 1 with a fresh window. The cursor stays on the stuck
-            # timestamp, so late events at it are still fetched; sent ones are deduplicated.
-            if hwm_time == last_fetch_timestamp and last_page_was_full:
-                next_page = start_page + pages_read
-                demisto.debug(f"[Fetch] {log_type.type_string}: Cursor stuck at {hwm_time}. Resuming at page {next_page}.")
-            else:
-                next_page = Config.DEFAULT_PAGE
-
-            result.last_run_updates[last_fetch_key] = hwm_time
-            result.last_run_updates[previous_ids_key] = list(ids_at_last_timestamp)
-            result.last_run_updates[page_key] = next_page
-            result.last_run_updates[page_size_key] = page_size
-            # Keep the window end only while mid-window; clearing it opens a fresh window.
-            saved_window_end = created_before if next_page > Config.DEFAULT_PAGE else ""
-            result.last_run_updates[window_end_key] = saved_window_end
-            demisto.debug(
-                f"[Fetch] {log_type.type_string}: State updated. New HWM: {hwm_time}, "
-                f"next page: {next_page}, window end: {saved_window_end}"
-            )
-        elif start_page > Config.DEFAULT_PAGE:
-            # An empty resumed page means the stuck timestamp is fully read. Reset to page 1
-            # and a fresh window; otherwise the same empty page would be requested forever.
-            result.last_run_updates[page_key] = Config.DEFAULT_PAGE
-            result.last_run_updates[window_end_key] = ""
-            demisto.debug(f"[Fetch] {log_type.type_string}: Page {start_page} was empty. Resetting to page 1.")
-        else:
-            demisto.debug(f"[Fetch] {log_type.type_string}: No events with a time field. State not updated.")
-
-    except Exception as e:
-        result.error = str(e)
-        demisto.debug(f"[Fetch] {log_type.type_string}: Error fetching events: {e!s}.")
-
+    demisto.debug(f"[Fetch] {log_type.type_string}: sent {result.new_event_count} events, cursor: {cursor}")
     return result
 
 
+def _merge_last_run(last_run: dict[str, Any], results: list[FetchResult]) -> dict[str, Any]:
+    """Apply each type's cursor and drop the pre-cursor state keys of every type that has one."""
+    merged = dict(last_run)
+    for result in results:
+        merged.update(result.last_run_updates)
+        if merged.get(f"cursor_{result.log_type.type_string}"):
+            for prefix in LEGACY_LAST_RUN_KEY_PREFIXES:
+                merged.pop(f"{prefix}{result.log_type.type_string}", None)
+    return merged
+
+
 def fetch_events_command(client: Client) -> None:
-    """Scheduled command to fetch events using parallel threads.
+    """Fetch every selected log type in parallel, save progress, then fail loudly on any error.
 
-    Fetches all configured log types (Alerts, Audit) in parallel via
-    ThreadPoolExecutor. Each type streams its own pages to XSIAM inside
-    _fetch_single_log_type, so this function only reads last_run once, merges
-    counts + last_run updates from successful types, and writes last_run once.
-    It never holds the events, keeping peak memory flat.
-
-    Args:
-        client: The KOI client.
+    Progress is saved before raising, so the error is shown in the XSIAM integration status without
+    losing (or re-sending) the pages that were already ingested.
     """
     params = demisto.params()
     max_events_to_fetch = int(params.get("max_fetch", Config.DEFAULT_MAX_FETCH))
-
-    event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Alerts", "Audit"]))
-    log_types = get_log_types_from_titles(event_types_to_fetch)
-
+    log_types = get_log_types_from_titles(argToList(params.get("event_types_to_fetch", ["Alerts", "Audit"])))
     audit_types_filter = argToList(params.get("audit_types_filter")) or None
+    window_end = (datetime.now(UTC) - timedelta(seconds=Config.INGESTION_LAG_SECONDS)).strftime(Config.DATE_FORMAT)
 
-    # Single read of last_run state — no race condition
     last_run = demisto.getLastRun()
-    demisto.debug(f"[Fetch] Starting with last_run: {last_run}")
-
-    # Guard against an empty log_types selection — ThreadPoolExecutor(max_workers=0) raises ValueError.
+    demisto.debug(f"[Fetch] Starting with last_run: {last_run}, window end: {window_end}")
     if not log_types:
-        demisto.debug("[Fetch] No event types selected. Nothing to fetch. Preserving last_run as-is.")
+        demisto.debug("[Fetch] No event types selected. Nothing to fetch.")
         demisto.setLastRun(last_run)
         return
 
-    # Fetch all log types in parallel so one slow type doesn't block the other
-    results: list[FetchResult] = []
     with ThreadPoolExecutor(max_workers=len(log_types)) as executor:
-        futures = {
-            executor.submit(
-                _fetch_single_log_type,
-                client=client,
-                log_type=log_type,
-                last_run=dict(last_run),
-                max_events=max_events_to_fetch,
-                audit_types=audit_types_filter,
-            ): log_type
-            for log_type in log_types
-        }
-        for future in as_completed(futures):
-            log_type = futures[future]
-            try:
-                result = future.result()
-                results.append(result)
-            except Exception as e:
-                demisto.debug(f"[Fetch] {log_type.type_string}: Thread failed: {e!s}")
+        results = list(
+            executor.map(
+                lambda log_type: _fetch_single_log_type(
+                    client=client,
+                    log_type=log_type,
+                    last_run=dict(last_run),
+                    max_events=max_events_to_fetch,
+                    audit_types=audit_types_filter,
+                    window_end=window_end,
+                ),
+                log_types,
+            )
+        )
 
-    # Merge results — events were already streamed per page; here we only merge
-    # last_run updates and sum counts for logging (no event objects are held).
-    total_new_events = 0
-    updated_last_run: dict[str, str | int | list[str]] = dict(last_run)
-
-    for result in results:
-        if result.error:
-            demisto.debug(f"[Fetch] {result.log_type.type_string}: Skipped due to error: {result.error}")
-            continue
-        total_new_events += result.new_event_count
-        updated_last_run.update(result.last_run_updates)
-
-    demisto.debug(f"[Fetch] Total new events streamed to XSIAM this cycle: {total_new_events}")
-
-    # Single write of last_run state — preserves progress from successful types
+    updated_last_run = _merge_last_run(last_run, results)
     demisto.setLastRun(updated_last_run)
-    demisto.debug(f"[Fetch] Last run updated: {updated_last_run}")
+    demisto.debug(f"[Fetch] Sent {sum(r.new_event_count for r in results)} events. Last run: {updated_last_run}")
+
+    failures = [result for result in results if result.error]
+    if any(is_auth_error(result.error) for result in failures if result.error):
+        raise DemistoException("Authorization Error: the KOI API rejected the API key. Create a new key and update the instance.")
+    if failures:
+        details = "; ".join(f"{result.log_type.title}: {result.error!s}" for result in failures)
+        raise DemistoException(f"Failed to fetch KOI events. Progress up to the last ingested page is saved. {details}")
 
 
 def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResults:

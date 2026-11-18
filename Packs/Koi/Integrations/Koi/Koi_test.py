@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta, UTC
 from pathlib import Path
 
 import pytest
@@ -351,1499 +351,293 @@ class TestDeduplicateEvents:
 # region Client tests
 
 
-class TestClient:
-    """Tests for the Client class methods."""
+class FakeKoiEventsApi:
+    """In-memory stand-in for GET /api/external/v2/alerts and /audit-logs with cursor paging.
 
-    def test_get_events_page_alerts(self, mock_client, alerts_response, mocker):
-        """Test fetching a page of alerts."""
-        mocker.patch.object(mock_client, "_http_request", return_value=alerts_response)
+    Events are ordered by (time, id) like the real API, and a cursor encodes the position of the last
+    returned event, so the integration is exercised against the same contract it runs against.
+    """
 
-        events = mock_client.get_events_page(
-            log_type=LogType.ALERTS,
-            created_at_gte="2024-01-01T00:00:00Z",
-            page=1,
-            page_size=100,
-        )
+    def __init__(self, events_by_endpoint: dict[str, list[dict]]):
+        self.events_by_endpoint = events_by_endpoint
+        self.calls: list[dict] = []
+        self.fail_on_call: int | None = None
+        self.error: Exception = DemistoException("Error in API call [503] - Service Unavailable")
 
-        assert len(events) == 2
-        assert events[0]["id"] == "alert-001"
+    @staticmethod
+    def position(event: dict) -> tuple[str, str]:
+        return (str(event.get("time") or event.get("created_at")), str(event.get("id")))
 
-    def test_get_events_page_audit(self, mock_client, audit_response, mocker):
-        """Test fetching a page of audit logs."""
-        mocker.patch.object(mock_client, "_http_request", return_value=audit_response)
-
-        events = mock_client.get_events_page(
-            log_type=LogType.AUDIT,
-            created_at_gte="2024-01-01T00:00:00Z",
-            page=1,
-            page_size=100,
-            audit_types=["policies", "settings"],
-        )
-
-        assert len(events) == 2
-        assert events[0]["id"] == "audit-001"
-
-    def test_get_events_page_with_created_at_lte(self, mock_client, alerts_response, mocker):
-        """Test fetching events with created_at_lte parameter (covers line 322)."""
-        mocker.patch.object(mock_client, "_http_request", return_value=alerts_response)
-
-        events = mock_client.get_events_page(
-            log_type=LogType.ALERTS,
-            created_at_gte="2024-01-01T00:00:00Z",
-            created_at_lte="2024-01-02T00:00:00Z",
-            page=1,
-            page_size=100,
-        )
-
-        assert len(events) == 2
-        # Verify created_at_lte was passed in params
-        call_kwargs = mock_client._http_request.call_args[1]
-        assert call_kwargs["params"]["created_at_lte"] == "2024-01-02T00:00:00Z"
-
-    def test_sort_direction_asc_alerts(self, mock_client, alerts_response, mocker):
-        """Test that sort_direction=asc is passed to the API for alerts."""
-        mocker.patch.object(mock_client, "_http_request", return_value=alerts_response)
-
-        mock_client.get_events_page(
-            log_type=LogType.ALERTS,
-            created_at_gte="2024-01-01T00:00:00Z",
-            page=1,
-            page_size=100,
-        )
-
-        call_kwargs = mock_client._http_request.call_args[1]
-        assert call_kwargs["params"]["sort_direction"] == Config.SORT_DIRECTION
-
-    def test_sort_direction_asc_audit(self, mock_client, audit_response, mocker):
-        """Test that sort_direction=asc is passed to the API for audit logs."""
-        mocker.patch.object(mock_client, "_http_request", return_value=audit_response)
-
-        mock_client.get_events_page(
-            log_type=LogType.AUDIT,
-            created_at_gte="2024-01-01T00:00:00Z",
-            page=1,
-            page_size=100,
-        )
-
-        call_kwargs = mock_client._http_request.call_args[1]
-        assert call_kwargs["params"]["sort_direction"] == Config.SORT_DIRECTION
-
-    def test_get_events_page_empty(self, mock_client, empty_response, mocker):
-        """Test fetching when no events are returned."""
-        mocker.patch.object(mock_client, "_http_request", return_value=empty_response)
-
-        events = mock_client.get_events_page(
-            log_type=LogType.ALERTS,
-            page=1,
-            page_size=100,
-        )
-
-        assert len(events) == 0
+    def __call__(self, method: str, url_suffix: str, params: dict) -> dict:
+        self.calls.append({"url_suffix": url_suffix, **params})
+        if self.fail_on_call is not None and len(self.calls) == self.fail_on_call:
+            raise self.error
+        events = sorted(self.events_by_endpoint.get(url_suffix, []), key=self.position)
+        if "cursor" in params:
+            events = [e for e in events if self.position(e) > tuple(json.loads(params["cursor"]))]
+        page = events[: params["page_size"]]
+        key = "alerts" if url_suffix == ApiPaths.ALERTS else "items"
+        next_cursor = json.dumps(self.position(page[-1])) if page else params.get("cursor")
+        return {key: page, "next_cursor": next_cursor}
 
 
-# endregion
-
-# region fetch_events_with_pagination tests
-
-
-class TestFetchEventsWithPagination:
-    """Tests for the fetch_events_with_pagination function."""
-
-    def test_single_page(self, mock_client, alerts_response, mocker):
-        """Test fetching events that fit in a single page."""
-        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
-
-        events = fetch_events_with_pagination(
-            mock_client,
-            log_type=LogType.ALERTS,
-            created_after="2024-01-01T00:00:00Z",
-            max_events=100,
-        )
-
-        assert len(events) == 2
-
-    def test_multiple_pages(self, mock_client, mocker):
-        """Test fetching events across multiple pages."""
-        # page_size = min(MAX_PAGE_SIZE, max_events) = min(500, 1000) = 500
-        # page1 must have exactly page_size items to trigger next page fetch
-        page_size = Config.MAX_PAGE_SIZE
-        page1 = [{"id": f"event-{i}", "created_at": f"2024-01-01T00:{i:02d}:00Z"} for i in range(page_size)]
-        page2 = [{"id": f"event-{i}", "created_at": f"2024-01-01T01:{i:02d}:00Z"} for i in range(3)]
-
-        mocker.patch.object(mock_client, "get_events_page", side_effect=[page1, page2])
-
-        events = fetch_events_with_pagination(
-            mock_client,
-            log_type=LogType.AUDIT,
-            created_after="2024-01-01T00:00:00Z",
-            max_events=1000,
-        )
-
-        assert len(events) == page_size + 3
-
-    def test_empty_response(self, mock_client, mocker):
-        """Test fetching when API returns no events."""
-        mocker.patch.object(mock_client, "get_events_page", return_value=[])
-
-        events = fetch_events_with_pagination(
-            mock_client,
-            log_type=LogType.ALERTS,
-            created_after="2024-01-01T00:00:00Z",
-            max_events=100,
-        )
-
-        assert len(events) == 0
-
-    def test_max_events_limit(self, mock_client, mocker):
-        """Test that max_events limit is respected."""
-        large_page = [{"id": f"event-{i}", "created_at": f"2024-01-01T00:00:{i:02d}Z"} for i in range(500)]
-        mocker.patch.object(mock_client, "get_events_page", return_value=large_page)
-
-        events = fetch_events_with_pagination(
-            mock_client,
-            log_type=LogType.AUDIT,
-            created_after="2024-01-01T00:00:00Z",
-            max_events=10,
-        )
-
-        assert len(events) == 10
-
-    def test_max_pages_limit(self, mock_client, mocker):
-        """Test pagination stops at MAX_PAGES_PER_FETCH (covers lines 438-439)."""
-        page_size = Config.MAX_PAGE_SIZE
-        # Return full pages every time to force pagination to continue
-        full_page = [{"id": f"event-{i}", "created_at": f"2024-01-01T00:00:{i:02d}Z"} for i in range(page_size)]
-        mocker.patch.object(mock_client, "get_events_page", return_value=full_page)
-
-        fetch_events_with_pagination(
-            mock_client,
-            log_type=LogType.AUDIT,
-            created_after="2024-01-01T00:00:00Z",
-            max_events=999999,  # Very high limit so pages limit is hit first
-        )
-
-        # Should have fetched MAX_PAGES_PER_FETCH pages
-        assert mock_client.get_events_page.call_count == Config.MAX_PAGES_PER_FETCH
+def make_alerts(count: int, time_ms: int = 1704067200000, prefix: str = "a") -> list[dict]:
+    return [{"id": f"{prefix}{i}", "time": time_ms, "metadata": {"notification_event_id": f"{prefix}{i}"}} for i in range(count)]
 
 
-# endregion
+def make_audit(count: int, created_at: str = "2024-01-01T00:00:00.000Z", prefix: str = "u") -> list[dict]:
+    return [{"id": f"{prefix}{i}", "created_at": created_at, "type": "policies"} for i in range(count)]
 
-# region Command tests
+
+@pytest.fixture
+def fetch_env(mocker, mock_client):
+    """A client wired to a FakeKoiEventsApi, with XSIAM sends captured and last_run kept in memory."""
+    api = FakeKoiEventsApi({})
+    mocker.patch.object(mock_client, "_http_request", side_effect=api)
+    sent: list[dict] = []
+    mocker.patch.object(mock_client, "send_events", side_effect=lambda events, use_streaming_send=False: sent.extend(events))
+    state: dict = {"last_run": {}}
+    mocker.patch.object(demisto, "getLastRun", side_effect=lambda: state["last_run"])
+    mocker.patch.object(demisto, "setLastRun", side_effect=lambda value: state.update(last_run=value))
+    mocker.patch.object(demisto, "params", return_value={"event_types_to_fetch": "Alerts,Audit", "max_fetch": "5000"})
+    return mock_client, api, sent, state
 
 
-class TestTestModule:
-    """Tests for the test_module command."""
-
-    def test_success(self, mock_client, mocker):
-        """Test successful test-module."""
-        mocker.patch.object(mock_client, "get_events_page", return_value=[{"id": "1"}])
-
-        result = koi_test_module(mock_client)
-        assert result == "ok"
-
-    def test_auth_failure(self, mock_client, mocker):
-        """Test test-module with authentication failure."""
-        mocker.patch.object(mock_client, "get_events_page", side_effect=Exception("401 Unauthorized"))
-
-        result = koi_test_module(mock_client)
-        assert "Authorization Error" in result
-
-    def test_non_auth_failure_reraises(self, mock_client, mocker):
-        """Test test-module re-raises non-auth errors (covers line 378)."""
-        mocker.patch.object(mock_client, "get_events_page", side_effect=Exception("Connection timeout"))
-
-        with pytest.raises(Exception, match="Connection timeout"):
-            koi_test_module(mock_client)
+def sent_ids(sent: list[dict]) -> list[str]:
+    return [str(event["id"]) for event in sent]
 
 
 @pytest.fixture()
 def mock_xsiam(mocker):
-    """Mock is_xsiam to return True so resolve_should_push_events allows pushing.
-
-    Patches is_xsiam in the CommonServerPython namespace, since
-    resolve_should_push_events (defined there) resolves is_xsiam from its own module.
-    """
+    """Patches is_xsiam where resolve_should_push_events (CommonServerPython) looks it up."""
     mocker.patch("CommonServerPython.is_xsiam", return_value=True)
 
 
-class TestGetEventsCommand:
-    """Tests for the koi-get-events command."""
+class TestGetEventsPage:
+    def test_requests_ascending_cursor_page_without_total_and_returns_next_cursor(self, mock_client, mocker):
+        http = mocker.patch.object(mock_client, "_http_request", return_value={"alerts": [{"id": "x"}], "next_cursor": "n1"})
 
-    @pytest.fixture(autouse=True)
-    def _mock_xsiam(self, mock_xsiam):
-        """Apply the shared mock_xsiam fixture to all tests in this class."""
-        return mock_xsiam
-
-    def test_get_events_alerts_and_audit(self, mock_client, alerts_response, audit_response, mocker):
-        """Test get-events command fetching both alerts and audit logs."""
-        mocker.patch.object(
-            mock_client,
-            "get_events_page",
-            side_effect=[alerts_response["alerts"], audit_response["data"]],
+        page = mock_client.get_events_page(
+            LogType.ALERTS, cursor="c0", created_at_gte="ignored", created_at_lte="2024-01-02T00:00:00Z"
         )
 
-        args = {"limit": "50", "should_push_events": "false"}
-        params = {"event_types_to_fetch": "Alerts,Audit"}
+        params = http.call_args.kwargs["params"]
+        assert params == {
+            "page_size": Config.FETCH_PAGE_SIZE,
+            "sort_direction": "asc",
+            "include_total": "false",
+            "cursor": "c0",
+            "created_at_lte": "2024-01-02T00:00:00Z",
+        }
+        assert page.events == [{"id": "x"}]
+        assert page.next_cursor == "n1"
 
-        result = get_events_command(mock_client, args, params)
+    def test_reads_audit_items_with_type_filter_and_start_time_when_no_cursor(self, mock_client, mocker):
+        http = mocker.patch.object(mock_client, "_http_request", return_value={"items": [{"id": "u"}], "next_cursor": "n"})
 
-        assert not isinstance(result, str)
-        assert "KOI Events" in result.readable_output  # type: ignore[union-attr]
+        page = mock_client.get_events_page(
+            LogType.AUDIT, created_at_gte="2024-01-01T00:00:00Z", audit_types=["policies", "devices"]
+        )
 
-    def test_get_events_push_to_xsiam(self, mock_client, alerts_response, mocker):
-        """Test get-events command with push to XSIAM."""
-        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
-        mock_send = mocker.patch.object(mock_client, "send_events")
-
-        args = {"limit": "50", "should_push_events": "true", "event_type": "Alerts"}
-        params = {"event_types_to_fetch": "Alerts"}
-
-        result = get_events_command(mock_client, args, params)
-
-        assert isinstance(result, str)
-        assert "Successfully retrieved and pushed" in result
-        mock_send.assert_called_once()
+        params = http.call_args.kwargs["params"]
+        assert params["created_at_gte"] == "2024-01-01T00:00:00Z"
+        assert params["types"] == "policies,devices"
+        assert "cursor" not in params
+        assert page.events == [{"id": "u"}]
 
 
 class TestFetchEventsCommand:
-    """Tests for the fetch-events command."""
-
-    def test_first_run(self, mock_client, alerts_response, audit_response, mocker):
-        """Test fetch-events on first run (no last_run state)."""
-
-        def side_effect_get_events_page(**kwargs):
-            log_type = kwargs.get("log_type")
-            if log_type == LogType.ALERTS:
-                return alerts_response["alerts"]
-            return audit_response["data"]
-
-        mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "5000",
-                "event_types_to_fetch": "Alerts,Audit",
-            },
-        )
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_send = mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        # Send-and-flush: each log type streams its page separately (Alerts + Audit = 2 sends),
-        # and every fetch-path send must use the streaming sender to keep memory flat.
-        assert mock_send.call_count == 2
-        for call in mock_send.call_args_list:
-            assert call.kwargs.get("use_streaming_send") is True
-        mock_set_last_run.assert_called_once()
-
-        # Verify last_run contains state for both log types
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert "last_fetch_alerts" in last_run_arg
-        assert "last_fetch_audit" in last_run_arg
-
-    def test_subsequent_run_with_dedup(self, mock_client, alerts_response, mocker):
-        """Test fetch-events on subsequent run with deduplication."""
-        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "5000",
-                "event_types_to_fetch": "Alerts",
-            },
-        )
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "last_fetch_alerts": "2024-01-01T00:00:00Z",
-                "previous_ids_alerts": ["alert-001"],
-            },
-        )
-        mock_send = mocker.patch.object(mock_client, "send_events")
-        mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        # Should have sent only 1 event (alert-002, since alert-001 is deduped),
-        # streamed page-by-page with the streaming sender.
-        mock_send.assert_called_once()
-        assert mock_send.call_args.kwargs.get("use_streaming_send") is True
-        sent_events = mock_send.call_args[0][0]
-        assert len(sent_events) == 1
-        assert sent_events[0]["id"] == "alert-002"
-
-    def test_no_events(self, mock_client, mocker):
-        """Test fetch-events when no events are returned."""
-        mocker.patch.object(mock_client, "get_events_page", return_value=[])
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "5000",
-                "event_types_to_fetch": "Alerts",
-            },
-        )
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_send = mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        mock_send.assert_not_called()
-        mock_set_last_run.assert_called_once()
-
-    def test_all_events_are_duplicates(self, mock_client, alerts_response, mocker):
-        """Test fetch-events when all returned events are duplicates (covers line 578)."""
-        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "5000",
-                "event_types_to_fetch": "Alerts",
-            },
-        )
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "last_fetch_alerts": "2024-01-01T00:00:00Z",
-                "previous_ids_alerts": ["alert-001", "alert-002"],
-            },
-        )
-        mock_send = mocker.patch.object(mock_client, "send_events")
-        mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        mock_send.assert_not_called()
-
-    def test_hwm_timestamp_unchanged_merges_ids(self, mock_client, mocker):
-        """Test that when HWM timestamp hasn't changed, IDs are merged (covers line 594)."""
-        # Events with same timestamp as last_fetch
-        events = [
-            {"metadata": {"notification_event_id": "alert-003"}, "time": 1704067200000},
-        ]
-        mocker.patch.object(mock_client, "get_events_page", return_value=events)
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "5000",
-                "event_types_to_fetch": "Alerts",
-            },
-        )
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "last_fetch_alerts": "2024-01-01T00:00:00Z",
-                "previous_ids_alerts": ["alert-001"],
-            },
-        )
-        mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        # Verify IDs were merged
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        previous_ids = last_run_arg["previous_ids_alerts"]
-        assert "alert-001" in previous_ids
-        assert "alert-003" in previous_ids
-
-    def test_same_timestamp_batch_sent_once_then_deduped(self, mock_client, mocker):
-        """A batch of distinct alerts sharing one timestamp must be sent once, then fully deduped
-        on the next cycle instead of being re-sent indefinitely."""
-        same_time_ms = 1704067200000
-        batch = [{"metadata": {"notification_event_id": f"notif-{i}"}, "time": same_time_ms} for i in range(34)]
-        mocker.patch.object(mock_client, "get_events_page", return_value=batch)
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={"max_fetch": "5000", "event_types_to_fetch": "Alerts"},
-        )
-        mock_send = mocker.patch.object(mock_client, "send_events")
-
-        # First cycle: no prior state -> all 34 are new and sent once.
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        captured = {}
-        mocker.patch.object(demisto, "setLastRun", side_effect=lambda lr: captured.update(lr))
-
-        fetch_events_command(mock_client)
-
-        assert mock_send.call_count == 1
-        assert len(mock_send.call_args[0][0]) == 34
-        assert captured["last_fetch_alerts"] == "2024-01-01T00:00:00Z"
-        assert set(captured["previous_ids_alerts"]) == {f"notif-{i}" for i in range(34)}
-
-        # Second cycle: same batch, carrying forward the persisted IDs -> nothing re-sent.
-        mock_send.reset_mock()
-        mocker.patch.object(demisto, "getLastRun", return_value=captured)
-
-        fetch_events_command(mock_client)
-
-        mock_send.assert_not_called()
-
-    def test_last_event_missing_time(self, mock_client, mocker):
-        """Test fetch-events when last event has no time field (covers line 600)."""
-        # Audit event without created_at
-        events = [{"id": "audit-no-time"}]
-        mocker.patch.object(mock_client, "get_events_page", return_value=events)
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "5000",
-                "event_types_to_fetch": "Audit",
-            },
-        )
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        # Event should still be sent (it's new), but last_run should not have audit timestamp
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert "last_fetch_audit" not in last_run_arg
-
-    def test_alerts_failure_does_not_block_audit(self, mock_client, audit_response, mocker):
-        """Test that if alerts fetching fails, audit logs are still fetched and sent."""
-
-        # Alerts raises an exception, audit returns data
-        def side_effect_get_events_page(**kwargs):
-            if kwargs.get("log_type") == LogType.ALERTS:
-                raise Exception("API timeout for alerts")
-            return audit_response["data"]
-
-        mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "5000",
-                "event_types_to_fetch": "Alerts,Audit",
-            },
-        )
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_send = mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        # Audit events should still be sent despite alerts failure
-        mock_send.assert_called_once()
-        sent_events = mock_send.call_args[0][0]
-        assert len(sent_events) == 2
-        assert all(e.get("source_log_type") == "Audit" for e in sent_events)
-
-        # Last run should have audit state but no alerts state
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert "last_fetch_audit" in last_run_arg
-        assert "last_fetch_alerts" not in last_run_arg
-
-    def test_audit_failure_does_not_block_alerts(self, mock_client, alerts_response, mocker):
-        """Test that if audit fetching fails, alerts are still fetched and sent."""
-
-        # Alerts returns data, audit raises an exception
-        def side_effect_get_events_page(**kwargs):
-            if kwargs.get("log_type") == LogType.AUDIT:
-                raise Exception("API timeout for audit")
-            return alerts_response["alerts"]
-
-        mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "5000",
-                "event_types_to_fetch": "Alerts,Audit",
-            },
-        )
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_send = mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        # Alerts events should still be sent despite audit failure
-        mock_send.assert_called_once()
-        sent_events = mock_send.call_args[0][0]
-        assert len(sent_events) == 2
-        assert all(e.get("source_log_type") == "Alerts" for e in sent_events)
-
-        # Last run should have alerts state but no audit state
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert "last_fetch_alerts" in last_run_arg
-        assert "last_fetch_audit" not in last_run_arg
-
-    def test_send_and_flush_streams_one_send_per_page(self, mock_client, mocker):
-        """Events must be streamed once per page (send-and-flush), not accumulated."""
-        page_size = Config.MAX_PAGE_SIZE
-        # Two full pages then a partial page for a single log type (Audit).
-        page1 = [{"id": f"audit-{i}", "created_at": f"2024-01-01T00:{i // 60:02d}:{i % 60:02d}Z"} for i in range(page_size)]
-        page2 = [
-            {"id": f"audit-{page_size + i}", "created_at": f"2024-01-01T01:{i // 60:02d}:{i % 60:02d}Z"} for i in range(page_size)
-        ]
-        page3 = [{"id": "audit-last", "created_at": "2024-01-01T02:00:00Z"}]
-
-        mocker.patch.object(mock_client, "get_events_page", side_effect=[page1, page2, page3])
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={"max_fetch": "5000", "event_types_to_fetch": "Audit"},
-        )
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_send = mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        # One send per page (3 pages) — never a single accumulated send.
-        assert mock_send.call_count == 3
-        for call in mock_send.call_args_list:
-            assert call.kwargs.get("use_streaming_send") is True
-        # Every page passed to send is bounded by page_size (no single giant list).
-        assert all(len(call.args[0]) <= page_size for call in mock_send.call_args_list)
-        # Total streamed equals all events across pages.
-        total_sent = sum(len(call.args[0]) for call in mock_send.call_args_list)
-        assert total_sent == (2 * page_size) + 1
-
-        # HWM state reflects the last page's newest event.
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert last_run_arg["last_fetch_audit"] == "2024-01-01T02:00:00Z"
-        assert last_run_arg["previous_ids_audit"] == ["audit-last"]
-
-    def test_streaming_send_consuming_list_does_not_corrupt_state(self, mock_client, mocker):
-        """Streaming send empties its input list, but HWM/state must still be correct.
-
-        The mock clears the list (like CSP) to prove all derived values are captured
-        before the send consumes them, including the first-run aliasing case where
-        deduplicate_events returns the same page object.
-        """
-        page = [
-            {"id": "audit-1", "created_at": "2024-01-01T00:00:00Z"},
-            {"id": "audit-2", "created_at": "2024-01-01T00:00:02Z"},
-            {"id": "audit-3", "created_at": "2024-01-01T00:00:02Z"},  # ties HWM with audit-2
-        ]
-        # Single partial page (len < page_size) so pagination stops after it.
-        mocker.patch.object(mock_client, "get_events_page", side_effect=[page, []])
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={"max_fetch": "5000", "event_types_to_fetch": "Audit"},
-        )
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-
-        def consuming_send(events, use_streaming_send=False):
-            # Mimic CSP streaming send: null out every slot in the passed list.
-            if use_streaming_send:
-                for i in range(len(events)):
-                    events[i] = None
-
-        mock_send = mocker.patch.object(mock_client, "send_events", side_effect=consuming_send)
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        # The page was streamed with the streaming sender (which emptied the list).
-        mock_send.assert_called_once()
-        assert mock_send.call_args.kwargs.get("use_streaming_send") is True
-
-        # Despite the send emptying the list, HWM state is intact and correct.
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert last_run_arg["last_fetch_audit"] == "2024-01-01T00:00:02Z"
-        assert set(last_run_arg["previous_ids_audit"]) == {"audit-2", "audit-3"}
-
-    def test_max_events_truncation_does_not_advance_hwm_past_discarded(self, mock_client, mocker):
-        """When a page is trimmed to honor max_fetch, the HWM must not advance past discarded events.
-
-        Events are sorted ascending, so trimming drops the newest events. The HWM must reflect
-        only the kept (sent) events, so the next cycle re-fetches the discarded tail.
-        """
-        max_fetch = 3
-        # A single page with more events than max_fetch; the last two are the newest.
-        page = [
-            {"id": "audit-1", "created_at": "2024-01-01T00:00:01Z"},
-            {"id": "audit-2", "created_at": "2024-01-01T00:00:02Z"},
-            {"id": "audit-3", "created_at": "2024-01-01T00:00:03Z"},  # kept HWM
-            {"id": "audit-4", "created_at": "2024-01-01T00:00:04Z"},  # discarded
-            {"id": "audit-5", "created_at": "2024-01-01T00:00:05Z"},  # discarded
-        ]
-        mocker.patch.object(mock_client, "get_events_page", side_effect=[page, []])
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={"max_fetch": str(max_fetch), "event_types_to_fetch": "Audit"},
-        )
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_send = mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        # Only the first max_fetch events are sent.
-        mock_send.assert_called_once()
-        assert len(mock_send.call_args[0][0]) == max_fetch
-
-        # HWM stops at the newest KEPT event (audit-3), not the discarded audit-5.
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert last_run_arg["last_fetch_audit"] == "2024-01-01T00:00:03Z"
-        assert last_run_arg["previous_ids_audit"] == ["audit-3"]
-
-    def test_max_pages_per_fetch_cap_is_honored(self, mock_client, mocker):
-        """Feeding MAX_PAGES_PER_FETCH + 1 full pages must stop after MAX_PAGES_PER_FETCH sends."""
-        page_size = Config.MAX_PAGE_SIZE
-        # More full pages than the cap allows; each full page forces another iteration.
-        pages = [
-            [{"id": f"audit-{p}-{i}", "created_at": f"2024-01-{p + 1:02d}T00:00:{i % 60:02d}Z"} for i in range(page_size)]
-            for p in range(Config.MAX_PAGES_PER_FETCH + 1)
-        ]
-        mocker.patch.object(mock_client, "get_events_page", side_effect=pages)
-        # max_fetch high enough that the page cap (not max_events) is the limiting factor.
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={"max_fetch": str(page_size * (Config.MAX_PAGES_PER_FETCH + 5)), "event_types_to_fetch": "Audit"},
-        )
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_send = mocker.patch.object(mock_client, "send_events")
-        mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        # Exactly MAX_PAGES_PER_FETCH sends — the extra page is never fetched/sent.
-        assert mock_send.call_count == Config.MAX_PAGES_PER_FETCH
-
-    def test_mid_pagination_api_failure_preserves_last_run(self, mock_client, mocker):
-        """If get_events_page raises on page 2 (after page 1 streamed), last_run is NOT advanced.
-
-        This documents the at-least-once guarantee: page 1 will be re-sent next cycle.
-        """
-        page_size = Config.MAX_PAGE_SIZE
-        page1 = [{"id": f"audit-{i}", "created_at": f"2024-01-01T00:00:{i % 60:02d}Z"} for i in range(page_size)]
-
-        call_count = {"n": 0}
-
-        def failing_get_events_page(**kwargs):
-            call_count["n"] += 1
-            if call_count["n"] == 1:
-                return page1
-            raise Exception("API failure on page 2")
-
-        mocker.patch.object(mock_client, "get_events_page", side_effect=failing_get_events_page)
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={"max_fetch": "5000", "event_types_to_fetch": "Audit"},
-        )
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_send = mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        # Page 1 was streamed before the failure.
-        assert mock_send.call_count == 1
-        # The failure aborts the type, so its last_run state is NOT advanced (page 1 re-sent next cycle).
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert "last_fetch_audit" not in last_run_arg
-
-    def test_mid_pagination_send_failure_preserves_failing_type_but_persists_sibling(self, mock_client, alerts_response, mocker):
-        """If send_events raises for one type, its last_run is preserved and the sibling type still persists."""
-        page_size = Config.MAX_PAGE_SIZE
-        audit_page1 = [{"id": f"audit-{i}", "created_at": f"2024-01-01T00:00:{i % 60:02d}Z"} for i in range(page_size)]
-        audit_page2 = [{"id": "audit-last", "created_at": "2024-01-02T00:00:00Z"}]
-
-        def get_events_page(**kwargs):
-            if kwargs.get("log_type") == LogType.AUDIT:
-                return audit_page1 if kwargs.get("page") == 1 else audit_page2
-            return alerts_response["alerts"]
-
-        def send_events(events, use_streaming_send=False):
-            # Fail only for the audit page(s); alerts send succeeds.
-            if events and str(events[0].get("id", "")).startswith("audit"):
-                raise Exception("send failure for audit")
-
-        mocker.patch.object(mock_client, "get_events_page", side_effect=get_events_page)
-        mocker.patch.object(mock_client, "send_events", side_effect=send_events)
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={"max_fetch": "5000", "event_types_to_fetch": "Alerts,Audit"},
-        )
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        # Audit send failed → its state must NOT be advanced.
-        assert "last_fetch_audit" not in last_run_arg
-        # Alerts succeeded → its state still persists via the single setLastRun.
-        assert "last_fetch_alerts" in last_run_arg
-
-    def test_events_with_no_extractable_time_leaves_state_unchanged(self, mock_client, mocker):
-        """A page whose events have no extractable time must not set an HWM or last_fetch_<type>."""
-        # Audit events with no created_at → extract_time_from_event returns None for all.
-        page = [{"id": "audit-1"}, {"id": "audit-2"}]
-        mocker.patch.object(mock_client, "get_events_page", side_effect=[page, []])
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={"max_fetch": "5000", "event_types_to_fetch": "Audit"},
-        )
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_send = mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        # Events are still sent (they have IDs) but no HWM can be computed.
-        mock_send.assert_called_once()
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert "last_fetch_audit" not in last_run_arg
-        assert "previous_ids_audit" not in last_run_arg
-
-    def test_out_of_order_page_uses_true_maximum_time(self, mock_client, mocker):
-        """When the newest event is NOT the last element, HWM must still reflect the true maximum."""
-        # Newest event (00:00:09) is in the middle, not last.
-        page = [
-            {"id": "audit-1", "created_at": "2024-01-01T00:00:01Z"},
-            {"id": "audit-2", "created_at": "2024-01-01T00:00:09Z"},  # true max
-            {"id": "audit-3", "created_at": "2024-01-01T00:00:05Z"},
-        ]
-        mocker.patch.object(mock_client, "get_events_page", side_effect=[page, []])
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={"max_fetch": "5000", "event_types_to_fetch": "Audit"},
-        )
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert last_run_arg["last_fetch_audit"] == "2024-01-01T00:00:09Z"
-        assert last_run_arg["previous_ids_audit"] == ["audit-2"]
-
-
-class TestOversizedTimestampBucket:
-    """Regression tests for a timestamp holding at least max_fetch events.
-
-    Page 1 then fills entirely with that one timestamp, so the HWM equals the stored
-    cursor, every event dedups away, and the same window is re-requested forever. The
-    resume page breaks the deadlock by continuing deeper into the window next cycle.
-    """
-
-    AUDIT_PARAMS = {"max_fetch": "200", "event_types_to_fetch": "Audit"}
-    STUCK_TIME = "2026-10-11T10:47:07Z"
-
-    def _bucket(self, count, time=STUCK_TIME, prefix="audit"):
-        """A page of `count` events that all share one timestamp."""
-        return [{"id": f"{prefix}-{i}", "created_at": time} for i in range(count)]
-
-    def test_first_run_sets_cursor_without_a_resume_page(self, mock_client, mocker):
-        """A first run moving the cursor off None is progress, so no resume page is needed.
-
-        The deadlock is only detectable once the cursor is already parked on the
-        oversized timestamp, which is the following cycle.
-        """
-        mocker.patch.object(mock_client, "get_events_page", return_value=self._bucket(200))
-        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert last_run_arg["last_fetch_audit"] == self.STUCK_TIME
-        assert last_run_arg["page_audit"] == Config.DEFAULT_PAGE
-        assert not last_run_arg["window_end_audit"]
-
-    def test_full_page_of_one_timestamp_advances_resume_page(self, mock_client, mocker):
-        """A full page sharing the stored cursor's timestamp must advance the resume page.
-
-        Without it the cursor cannot move and the collector re-reads page 1 forever.
-        """
-        mocker.patch.object(mock_client, "get_events_page", return_value=self._bucket(200))
-        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "last_fetch_audit": self.STUCK_TIME,
-                "previous_ids_audit": [f"audit-{i}" for i in range(200)],
-            },
-        )
-        mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert last_run_arg["last_fetch_audit"] == self.STUCK_TIME
-        # The cursor could not advance, so the next cycle must resume at page 2.
-        assert last_run_arg["page_audit"] == 2
-        # The window end is retained so the resumed pages address a stable result set.
-        assert last_run_arg["window_end_audit"]
-
-    def test_resumes_from_stored_page_instead_of_page_one(self, mock_client, mocker):
-        """A stored resume page must be used as the starting page of the next cycle."""
-        mock_get_page = mocker.patch.object(mock_client, "get_events_page", return_value=self._bucket(200))
-        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "last_fetch_audit": self.STUCK_TIME,
-                "previous_ids_audit": [f"audit-{i}" for i in range(200)],
-                "page_audit": 3,
-                "page_size_audit": 200,
-                "window_end_audit": "2026-10-11T12:00:00Z",
-            },
-        )
-        mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        # The request must start at the stored page, not page 1.
-        assert mock_get_page.call_args.kwargs["page"] == 3
-        # The frozen window end must be reused so page numbers stay meaningful.
-        assert mock_get_page.call_args.kwargs["created_at_lte"] == "2026-10-11T12:00:00Z"
-        # Still stuck on the same timestamp, so the resume page keeps advancing.
-        assert mock_set_last_run.call_args[0][0]["page_audit"] == 4
-
-    def test_resumed_cycle_reads_full_page_budget(self, mock_client, mocker):
-        """A cycle resuming deep into a stuck timestamp must still read MAX_PAGES_PER_FETCH pages.
-
-        The page cap counts pages read in this cycle, not the absolute page number, so resuming
-        at page 11 reads pages 11-20 instead of stopping after page 11.
-        """
-        page_size = Config.MAX_PAGE_SIZE
-        start_page = Config.MAX_PAGES_PER_FETCH + 1
-        mock_get_page = mocker.patch.object(mock_client, "get_events_page", return_value=self._bucket(page_size))
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={"max_fetch": str(page_size * Config.MAX_PAGES_PER_FETCH), "event_types_to_fetch": "Audit"},
-        )
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "last_fetch_audit": self.STUCK_TIME,
-                "previous_ids_audit": [f"audit-{i}" for i in range(page_size)],
-                "page_audit": start_page,
-                "page_size_audit": page_size,
-                "window_end_audit": "2026-10-11T12:00:00Z",
-            },
-        )
-        mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        requested_pages = [call.kwargs["page"] for call in mock_get_page.call_args_list]
-        assert requested_pages == list(range(start_page, start_page + Config.MAX_PAGES_PER_FETCH))
-        assert mock_set_last_run.call_args[0][0]["page_audit"] == start_page + Config.MAX_PAGES_PER_FETCH
-
-    def test_resume_page_resets_once_cursor_advances(self, mock_client, mocker):
-        """Leaving the oversized timestamp must reset the resume page and clear the window."""
-        newer_page = [{"id": "audit-new", "created_at": "2026-10-11T10:47:09Z"}]
-        mocker.patch.object(mock_client, "get_events_page", side_effect=[newer_page, []])
-        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "last_fetch_audit": self.STUCK_TIME,
-                "previous_ids_audit": ["audit-0"],
-                "page_audit": 5,
-                "page_size_audit": 200,
-                "window_end_audit": "2026-10-11T12:00:00Z",
-            },
-        )
-        mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert last_run_arg["last_fetch_audit"] == "2026-10-11T10:47:09Z"
-        assert last_run_arg["page_audit"] == Config.DEFAULT_PAGE
-        # Cleared so the next cycle opens a fresh window up to the then-current time.
-        assert not last_run_arg["window_end_audit"]
-
-    def test_partial_resumed_page_resets_to_page_one(self, mock_client, mocker):
-        """A partial resumed page means the stuck timestamp is fully read.
-
-        Holding the page with a frozen window would request the same partial page forever,
-        so it resets to page 1 and clears the window while keeping the cursor.
-        """
-        mocker.patch.object(mock_client, "get_events_page", return_value=self._bucket(50, prefix="tail"))
-        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "last_fetch_audit": self.STUCK_TIME,
-                "previous_ids_audit": [f"audit-{i}" for i in range(600)],
-                "page_audit": 4,
-                "page_size_audit": 200,
-                "window_end_audit": "2026-10-11T12:00:00Z",
-            },
-        )
-        mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert last_run_arg["last_fetch_audit"] == self.STUCK_TIME
-        assert last_run_arg["page_audit"] == Config.DEFAULT_PAGE
-        assert not last_run_arg["window_end_audit"]
-        # IDs from earlier pages are kept, so re-reading the timestamp resends nothing.
-        assert len(last_run_arg["previous_ids_audit"]) == 650
-
-    def test_trimmed_page_is_resumed_not_skipped(self, mock_client, mocker):
-        """A page trimmed to respect max_fetch must be read again next cycle, not skipped.
-
-        With max_fetch=700 the page size is 500. Page 1 is read in full; page 2 is trimmed to
-        200 events, so the resume page must be 2 (not 3) and nothing is skipped or resent.
-        """
-        window = self._bucket(1500)
-        page_size = 500
-        last_run: dict = {"last_fetch_audit": self.STUCK_TIME, "previous_ids_audit": []}
-        sent_ids: list[str] = []
-
-        def paged(**kwargs):
-            start = (kwargs["page"] - 1) * page_size
-            return window[start : start + page_size]
-
-        mocker.patch.object(mock_client, "get_events_page", side_effect=paged)
-        mocker.patch.object(demisto, "params", return_value={"max_fetch": "700", "event_types_to_fetch": "Audit"})
-        mocker.patch.object(demisto, "getLastRun", side_effect=lambda: last_run)
-        mocker.patch.object(demisto, "setLastRun", side_effect=lambda lr: last_run.update(lr))
-        mocker.patch.object(
-            mock_client, "send_events", side_effect=lambda events, **kwargs: sent_ids.extend(e["id"] for e in events)
-        )
-
-        fetch_events_command(mock_client)
-        # Only page 1 was read in full, so the next cycle resumes at the trimmed page 2.
-        assert last_run["page_audit"] == 2
-
-        fetch_events_command(mock_client)
-        # The rest of page 2 (events 700-999) is fetched, and nothing is sent twice.
-        assert len(sent_ids) == len(set(sent_ids))
-        assert {f"audit-{i}" for i in range(1000)} <= set(sent_ids)
-
-    def test_empty_resumed_page_resets_to_page_one(self, mock_client, mocker):
-        """An empty resumed page (timestamp held an exact multiple of the page size) must reset.
-
-        Without it, no state is written and the same empty page is requested forever.
-        """
-        mocker.patch.object(mock_client, "get_events_page", return_value=[])
-        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "last_fetch_audit": self.STUCK_TIME,
-                "previous_ids_audit": [f"audit-{i}" for i in range(400)],
-                "page_audit": 3,
-                "page_size_audit": 200,
-                "window_end_audit": "2026-10-11T12:00:00Z",
-            },
-        )
-        mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert last_run_arg["page_audit"] == Config.DEFAULT_PAGE
-        assert not last_run_arg["window_end_audit"]
-        # The cursor and saved IDs are untouched, so nothing is lost or resent.
-        assert last_run_arg["last_fetch_audit"] == self.STUCK_TIME
-        assert len(last_run_arg["previous_ids_audit"]) == 400
-
-    def test_late_event_at_stuck_timestamp_is_fetched_after_reset(self, mock_client, mocker):
-        """An event arriving late at the stuck timestamp is sent once after a reset, with no resends.
-
-        The stuck timestamp holds 450 events; the first 400 were sent on pages 1-2. Page 3 is
-        partial, so the next cycle resets to page 1. A late event then appears at the same
-        timestamp and must be picked up while all earlier events are deduplicated.
-        """
-        window = self._bucket(450)
-        page_size = 200
-        last_run: dict = {
-            "last_fetch_audit": self.STUCK_TIME,
-            "previous_ids_audit": [f"audit-{i}" for i in range(400)],
-            "page_audit": 3,
-            "page_size_audit": 200,
-            "window_end_audit": "2026-10-11T12:00:00Z",
+    def test_streams_every_event_once_across_cycles_even_when_one_timestamp_spans_pages(self, fetch_env):
+        client, api, sent, state = fetch_env
+        api.events_by_endpoint[ApiPaths.ALERTS] = make_alerts(Config.FETCH_PAGE_SIZE + 7)
+        api.events_by_endpoint[ApiPaths.AUDIT_LOGS] = make_audit(3)
+
+        fetch_events_command(client)
+        api.events_by_endpoint[ApiPaths.ALERTS].extend(make_alerts(2, time_ms=1704067300000, prefix="late"))
+        fetch_events_command(client)
+        fetch_events_command(client)
+
+        expected = [e["id"] for e in api.events_by_endpoint[ApiPaths.ALERTS]] + [e["id"] for e in make_audit(3)]
+        assert sorted(sent_ids(sent)) == sorted(expected)
+        assert {e["source_log_type"] for e in sent} == {"Alerts", "Audit"}
+        assert all("_time" in e for e in sent)
+        assert set(state["last_run"]) == {"cursor_alerts", "cursor_audit"}
+        alert_calls = [c for c in api.calls if c["url_suffix"] == ApiPaths.ALERTS]
+        assert all(c["include_total"] == "false" and c["sort_direction"] == "asc" for c in alert_calls)
+        assert all("cursor" in c for c in alert_calls[1:])
+
+    def test_reads_only_up_to_the_ingestion_lag_window(self, fetch_env):
+        client, api, _sent, _state = fetch_env
+
+        fetch_events_command(client)
+
+        assert len(api.calls) == 2
+        for call in api.calls:
+            window_end = datetime.strptime(call["created_at_lte"], Config.DATE_FORMAT).replace(tzinfo=UTC)
+            lag = (datetime.now(UTC) - window_end).total_seconds()
+            assert Config.INGESTION_LAG_SECONDS <= lag < Config.INGESTION_LAG_SECONDS + 5
+
+    def test_failure_mid_stream_keeps_progress_reports_error_and_resumes_without_resending(self, fetch_env):
+        client, api, sent, state = fetch_env
+        mocker_params = {"event_types_to_fetch": "Alerts", "max_fetch": "5000"}
+        demisto.params.return_value = mocker_params
+        api.events_by_endpoint[ApiPaths.ALERTS] = make_alerts(Config.FETCH_PAGE_SIZE * 2 + 1)
+        api.fail_on_call = 2
+
+        with pytest.raises(DemistoException, match="Progress up to the last ingested page is saved"):
+            fetch_events_command(client)
+
+        assert len(sent) == Config.FETCH_PAGE_SIZE
+        assert state["last_run"]["cursor_alerts"]
+        api.fail_on_call = None
+        fetch_events_command(client)
+        assert sorted(sent_ids(sent)) == sorted(e["id"] for e in api.events_by_endpoint[ApiPaths.ALERTS])
+
+    def test_one_failing_type_does_not_block_the_other(self, fetch_env):
+        client, api, sent, state = fetch_env
+        api.events_by_endpoint[ApiPaths.AUDIT_LOGS] = make_audit(2)
+        original = api.__call__
+
+        def fail_alerts(method, url_suffix, params):
+            if url_suffix == ApiPaths.ALERTS:
+                raise DemistoException("Error in API call [504] - Gateway Timeout")
+            return original(method, url_suffix, params)
+
+        client._http_request.side_effect = fail_alerts
+
+        with pytest.raises(DemistoException, match="Alerts: .*504"):
+            fetch_events_command(client)
+
+        assert sent_ids(sent) == ["u0", "u1"]
+        assert "cursor_audit" in state["last_run"]
+        assert "cursor_alerts" not in state["last_run"]
+
+    def test_rejected_api_key_raises_an_authorization_error(self, fetch_env):
+        client, api, _sent, _state = fetch_env
+        api.fail_on_call = 1
+        api.error = DemistoException("Error in API call [401] - Unauthorized")
+
+        with pytest.raises(DemistoException, match="Authorization Error"):
+            fetch_events_command(client)
+
+    def test_respects_max_fetch_per_cycle_and_continues_next_cycle(self, fetch_env):
+        client, api, sent, state = fetch_env
+        demisto.params.return_value = {"event_types_to_fetch": "Alerts", "max_fetch": "10"}
+        api.events_by_endpoint[ApiPaths.ALERTS] = make_alerts(15)
+
+        fetch_events_command(client)
+        assert len(sent) == 10
+        fetch_events_command(client)
+
+        assert sorted(sent_ids(sent)) == sorted(f"a{i}" for i in range(15))
+
+    def test_stops_with_a_clear_error_when_the_api_returns_no_cursor(self, fetch_env):
+        client, _api, sent, state = fetch_env
+        client._http_request.side_effect = lambda method, url_suffix, params: {"alerts": [{"id": "x", "time": 1}], "items": []}
+
+        with pytest.raises(DemistoException, match="next_cursor"):
+            fetch_events_command(client)
+
+        assert sent == []
+        assert "cursor_alerts" not in state["last_run"]
+
+
+class TestLegacyLastRunMigration:
+    def test_starts_from_the_legacy_timestamp_once_drops_already_sent_ids_and_clears_legacy_keys(self, fetch_env):
+        client, api, sent, state = fetch_env
+        demisto.params.return_value = {"event_types_to_fetch": "Alerts", "max_fetch": "5000"}
+        api.events_by_endpoint[ApiPaths.ALERTS] = make_alerts(3)
+        state["last_run"] = {
+            "last_fetch_alerts": "2024-01-01T00:00:00Z",
+            "previous_ids_alerts": ["a0"],
+            "page_alerts": 3,
+            "page_size_alerts": 500,
+            "window_end_alerts": "2024-01-01T00:05:00Z",
+            "last_fetch_audit": "2024-01-01T00:00:00Z",
         }
-        sent_ids: list[str] = []
 
-        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
-        mocker.patch.object(demisto, "getLastRun", side_effect=lambda: last_run)
-        mocker.patch.object(demisto, "setLastRun", side_effect=lambda lr: last_run.update(lr))
-        mocker.patch.object(
-            mock_client, "send_events", side_effect=lambda events, **kwargs: sent_ids.extend(e["id"] for e in events)
-        )
+        fetch_events_command(client)
 
-        def paged(**kwargs):
-            start = (kwargs["page"] - 1) * page_size
-            return window[start : start + page_size]
-
-        mocker.patch.object(mock_client, "get_events_page", side_effect=paged)
-
-        # Cycle 1: partial page 3 sends the remaining 50 and resets to page 1.
-        fetch_events_command(mock_client)
-        assert last_run["page_audit"] == Config.DEFAULT_PAGE
-
-        # A late event arrives at the stuck timestamp, then the timestamp is walked again.
-        window.append({"id": "audit-late", "created_at": self.STUCK_TIME})
-        for _ in range(5):
-            fetch_events_command(mock_client)
-
-        assert "audit-late" in sent_ids
-        assert len(sent_ids) == len(set(sent_ids))
-        assert set(sent_ids) == {f"audit-{i}" for i in range(400, 450)} | {"audit-late"}
-
-    def test_escapes_bucket_larger_than_max_fetch_across_cycles(self, mock_client, mocker):
-        """A bucket several times max_fetch must drain across cycles and then move on.
-
-        Walks the real production shape: 500 events at one timestamp with max_fetch=200,
-        followed by a newer event.
-        """
-        window = self._bucket(500) + [{"id": "audit-newer", "created_at": "2026-10-11T10:47:09Z"}]
-        page_size = 200
-        last_run: dict = {}
-
-        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
-        mocker.patch.object(mock_client, "send_events")
-        mocker.patch.object(demisto, "getLastRun", side_effect=lambda: last_run)
-        mocker.patch.object(demisto, "setLastRun", side_effect=lambda lr: last_run.update(lr))
-
-        def paged(**kwargs):
-            start = (kwargs["page"] - 1) * page_size
-            return window[start : start + page_size]
-
-        mocker.patch.object(mock_client, "get_events_page", side_effect=paged)
-
-        # Drive cycles until the cursor leaves the oversized timestamp.
-        for _ in range(10):
-            fetch_events_command(mock_client)
-            if last_run["last_fetch_audit"] != self.STUCK_TIME:
-                break
-
-        assert last_run["last_fetch_audit"] == "2026-10-11T10:47:09Z"
-        assert last_run["page_audit"] == Config.DEFAULT_PAGE
-
-    def test_normal_traffic_is_unaffected(self, mock_client, mocker):
-        """Mixed timestamps must behave exactly as before: no resume page, no frozen window."""
-        page = [{"id": f"audit-{i}", "created_at": f"2024-01-01T00:00:{i:02d}Z"} for i in range(10)]
-        mocker.patch.object(mock_client, "get_events_page", side_effect=[page, []])
-        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert last_run_arg["last_fetch_audit"] == "2024-01-01T00:00:09Z"
-        assert last_run_arg["page_audit"] == Config.DEFAULT_PAGE
-        assert not last_run_arg["window_end_audit"]
-
-    def test_page_size_change_restarts_from_page_one(self, mock_client, mocker):
-        """Raising max_fetch mid-bucket must restart at page 1 instead of skipping events.
-
-        Page 3 at size 200 starts at event 401, but at size 500 it starts at event 1001,
-        so resuming at page 3 would skip events 401-1000.
-        """
-        mock_get_page = mocker.patch.object(mock_client, "get_events_page", return_value=self._bucket(500))
-        mocker.patch.object(demisto, "params", return_value={"max_fetch": "5000", "event_types_to_fetch": "Audit"})
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "last_fetch_audit": self.STUCK_TIME,
-                "previous_ids_audit": [f"audit-{i}" for i in range(400)],
-                "page_audit": 3,
-                "page_size_audit": 200,
-                "window_end_audit": "2026-10-11T12:00:00Z",
-            },
-        )
-        mock_send = mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        first_call = mock_get_page.call_args_list[0].kwargs
-        assert first_call["page"] == Config.DEFAULT_PAGE
-        assert first_call["page_size"] == 500
-        # The 400 already-sent events are dropped by dedup, so only new ones are sent.
-        sent_ids = {event["id"] for call in mock_send.call_args_list for event in call.args[0]}
-        assert sent_ids == {f"audit-{i}" for i in range(400, 500)}
-        assert mock_set_last_run.call_args[0][0]["page_size_audit"] == 500
-
-    def test_missing_page_size_restarts_from_page_one(self, mock_client, mocker):
-        """State saved before page_size was stored must restart at page 1 without resending.
-
-        This is the first cycle after upgrading while a stuck timestamp is mid-way.
-        """
-        mock_get_page = mocker.patch.object(mock_client, "get_events_page", return_value=self._bucket(200))
-        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "last_fetch_audit": self.STUCK_TIME,
-                "previous_ids_audit": [f"audit-{i}" for i in range(400)],
-                "page_audit": 3,
-                "window_end_audit": "2026-10-11T12:00:00Z",
-            },
-        )
-        mock_send = mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        assert mock_get_page.call_args_list[0].kwargs["page"] == Config.DEFAULT_PAGE
-        # Page 1 holds only already-sent events, so nothing is sent again.
-        mock_send.assert_not_called()
-        last_run_arg = mock_set_last_run.call_args[0][0]
-        assert last_run_arg["page_size_audit"] == 200
-        # Still stuck on the same timestamp, so it moves on to page 2 next cycle.
-        assert last_run_arg["page_audit"] == 2
-
-    def test_restart_after_upgrade_sends_each_event_exactly_once(self, mock_client, mocker):
-        """Across the full restart walk, dedup must drop every already-sent event and nothing is skipped.
-
-        1000 events share one timestamp; the first 400 were sent before the upgrade, which
-        left page 3 saved with no page size. The new build restarts at page 1 and walks forward.
-        """
-        window = self._bucket(1000) + [{"id": "audit-newer", "created_at": "2026-10-11T10:47:09Z"}]
-        page_size = 200
-        last_run: dict = {
-            "last_fetch_audit": self.STUCK_TIME,
-            "previous_ids_audit": [f"audit-{i}" for i in range(400)],
-            "page_audit": 3,
-            "window_end_audit": "2026-10-11T12:00:00Z",
+        assert api.calls[0]["created_at_gte"] == "2024-01-01T00:00:00Z"
+        assert "cursor" not in api.calls[0]
+        assert sent_ids(sent) == ["a1", "a2"]
+        assert state["last_run"] == {
+            "cursor_alerts": state["last_run"]["cursor_alerts"],
+            "last_fetch_audit": "2024-01-01T00:00:00Z",
         }
-        sent_ids: list[str] = []
 
-        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
-        mocker.patch.object(demisto, "getLastRun", side_effect=lambda: last_run)
-        mocker.patch.object(demisto, "setLastRun", side_effect=lambda lr: last_run.update(lr))
-        mocker.patch.object(
-            mock_client, "send_events", side_effect=lambda events, **kwargs: sent_ids.extend(e["id"] for e in events)
+    def test_waits_while_the_start_time_is_inside_the_lag_window(self, fetch_env):
+        client, api, sent, state = fetch_env
+        future = (datetime.now(UTC) + timedelta(minutes=1)).strftime(Config.DATE_FORMAT)
+        state["last_run"] = {"last_fetch_alerts": future, "last_fetch_audit": future}
+
+        fetch_events_command(client)
+
+        assert api.calls == []
+        assert sent == []
+
+
+class TestFetchEventsWithPagination:
+    def test_collects_pages_by_cursor_up_to_max_events(self, mock_client, mocker):
+        api = FakeKoiEventsApi({ApiPaths.ALERTS: make_alerts(Config.FETCH_PAGE_SIZE + 5)})
+        mocker.patch.object(mock_client, "_http_request", side_effect=api)
+
+        events = fetch_events_with_pagination(
+            mock_client, LogType.ALERTS, created_after="2024-01-01T00:00:00Z", max_events=Config.FETCH_PAGE_SIZE + 2
         )
 
-        def paged(**kwargs):
-            start = (kwargs["page"] - 1) * page_size
-            return window[start : start + page_size]
-
-        mocker.patch.object(mock_client, "get_events_page", side_effect=paged)
-
-        for _ in range(10):
-            fetch_events_command(mock_client)
-            if last_run["last_fetch_audit"] != self.STUCK_TIME:
-                break
-
-        # No event is sent twice, and every event not sent before the upgrade is sent.
-        assert len(sent_ids) == len(set(sent_ids))
-        assert set(sent_ids) == {f"audit-{i}" for i in range(400, 1000)} | {"audit-newer"}
-        assert last_run["last_fetch_audit"] == "2026-10-11T10:47:09Z"
-
-    def test_unchanged_page_size_keeps_resume_page(self, mock_client, mocker):
-        """With max_fetch unchanged, the stored resume page is used as before."""
-        mock_get_page = mocker.patch.object(mock_client, "get_events_page", return_value=self._bucket(200))
-        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "last_fetch_audit": self.STUCK_TIME,
-                "previous_ids_audit": [f"audit-{i}" for i in range(400)],
-                "page_audit": 3,
-                "page_size_audit": 200,
-                "window_end_audit": "2026-10-11T12:00:00Z",
-            },
-        )
-        mocker.patch.object(mock_client, "send_events")
-        mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        assert mock_get_page.call_args_list[0].kwargs["page"] == 3
+        assert len(events) == Config.FETCH_PAGE_SIZE + 2
+        assert len({e["id"] for e in events}) == len(events)
+        assert api.calls[1]["cursor"]
 
 
-class TestLastRunState:
-    """Parametrized tests for last_run state management across all scenarios."""
+class TestTestModule:
+    def test_checks_every_selected_type(self, mock_client, mocker):
+        api = FakeKoiEventsApi({})
+        mocker.patch.object(mock_client, "_http_request", side_effect=api)
+        mocker.patch.object(demisto, "params", return_value={"event_types_to_fetch": "Alerts,Audit"})
 
-    @pytest.mark.parametrize(
-        "description, event_types, initial_last_run, alert_events, audit_events, "
-        "expected_last_run_keys, expected_missing_keys, expected_event_count",
-        [
-            (
-                "first_run_both_types",
-                "Alerts,Audit",
-                {},
-                [{"metadata": {"notification_event_id": "a1"}, "time": 1704067200000}],
-                [{"id": "au1", "created_at": "2024-01-01T00:00:00Z"}],
-                ["last_fetch_alerts", "previous_ids_alerts", "last_fetch_audit", "previous_ids_audit"],
-                [],
-                2,
-            ),
-            (
-                "first_run_alerts_only",
-                "Alerts",
-                {},
-                [{"metadata": {"notification_event_id": "a1"}, "time": 1704067200000}],
-                [],
-                ["last_fetch_alerts", "previous_ids_alerts"],
-                ["last_fetch_audit"],
-                1,
-            ),
-            (
-                "first_run_audit_only",
-                "Audit",
-                {},
-                [],
-                [{"id": "au1", "created_at": "2024-01-01T00:00:00Z"}],
-                ["last_fetch_audit", "previous_ids_audit"],
-                ["last_fetch_alerts"],
-                1,
-            ),
-            (
-                "subsequent_run_preserves_existing_state",
-                "Alerts",
-                {
-                    "last_fetch_alerts": "2024-01-01T00:00:00Z",
-                    "previous_ids_alerts": ["old-id"],
-                    "last_fetch_audit": "2024-01-01T00:00:00Z",
-                    "previous_ids_audit": ["old-audit-id"],
-                },
-                [{"metadata": {"notification_event_id": "a2"}, "time": 1704067260000}],
-                [],
-                ["last_fetch_alerts", "previous_ids_alerts", "last_fetch_audit", "previous_ids_audit"],
-                [],
-                1,
-            ),
-            (
-                "no_events_preserves_state",
-                "Alerts,Audit",
-                {
-                    "last_fetch_alerts": "2024-01-01T00:00:00Z",
-                    "previous_ids_alerts": ["existing-id"],
-                },
-                [],
-                [],
-                ["last_fetch_alerts", "previous_ids_alerts"],
-                [],
-                0,
-            ),
-            (
-                "hwm_unchanged_merges_ids",
-                "Alerts",
-                {
-                    "last_fetch_alerts": "2024-01-01T00:00:00Z",
-                    "previous_ids_alerts": ["a1"],
-                },
-                [
-                    {"metadata": {"notification_event_id": "a1"}, "time": 1704067200000},
-                    {"metadata": {"notification_event_id": "a2"}, "time": 1704067200000},
-                ],
-                [],
-                ["last_fetch_alerts", "previous_ids_alerts"],
-                [],
-                1,
-            ),
-        ],
-        ids=[
-            "first_run_both_types",
-            "first_run_alerts_only",
-            "first_run_audit_only",
-            "subsequent_run_preserves_existing_state",
-            "no_events_preserves_state",
-            "hwm_unchanged_merges_ids",
-        ],
-    )
-    def test_last_run_state(
-        self,
-        mock_client,
-        mocker,
-        description: str,
-        event_types: str,
-        initial_last_run: dict,
-        alert_events: list,
-        audit_events: list,
-        expected_last_run_keys: list,
-        expected_missing_keys: list,
-        expected_event_count: int,
-    ):
-        """Parametrized test for last_run state management across all scenarios."""
+        assert koi_test_module(mock_client) == "ok"
+        assert {c["url_suffix"] for c in api.calls} == {ApiPaths.ALERTS, ApiPaths.AUDIT_LOGS}
 
-        def side_effect_get_events_page(**kwargs):
-            log_type = kwargs.get("log_type")
-            if log_type == LogType.ALERTS:
-                return alert_events
-            return audit_events
+    def test_auth_failure(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "_http_request", side_effect=DemistoException("Error in API call [401]"))
+        mocker.patch.object(demisto, "params", return_value={})
 
-        mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "5000",
-                "event_types_to_fetch": event_types,
-            },
-        )
-        mocker.patch.object(demisto, "getLastRun", return_value=initial_last_run)
-        mock_send = mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+        assert koi_test_module(mock_client) == "Authorization Error: Verify your API Key."
 
-        fetch_events_command(mock_client)
+    def test_non_auth_failure_reraises(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "_http_request", side_effect=DemistoException("Error in API call [500]"))
+        mocker.patch.object(demisto, "params", return_value={})
 
-        # Verify setLastRun was called exactly once (single write, no race condition)
-        mock_set_last_run.assert_called_once()
-        last_run_arg = mock_set_last_run.call_args[0][0]
-
-        # Verify expected keys are present
-        for key in expected_last_run_keys:
-            assert key in last_run_arg, f"Expected key '{key}' missing from last_run: {last_run_arg}"
-
-        # Verify expected missing keys are absent
-        for key in expected_missing_keys:
-            assert key not in last_run_arg, f"Unexpected key '{key}' found in last_run: {last_run_arg}"
-
-        # Verify event count. Events are now streamed per page/log-type (send-and-flush),
-        # so sum the events across all send_events calls rather than expecting one call.
-        if expected_event_count > 0:
-            total_sent = sum(len(call.args[0]) for call in mock_send.call_args_list)
-            assert total_sent == expected_event_count
-            # Every fetch-path send must use the streaming sender to keep memory flat.
-            for call in mock_send.call_args_list:
-                assert call.kwargs.get("use_streaming_send") is True
-        else:
-            mock_send.assert_not_called()
-
-    def test_last_run_ids_stored_per_type(self, mock_client, mocker):
-        """Test that IDs are stored independently per event type in last_run."""
-
-        def side_effect_get_events_page(**kwargs):
-            log_type = kwargs.get("log_type")
-            if log_type == LogType.ALERTS:
-                return [{"metadata": {"notification_event_id": "alert-100"}, "time": 1704067200000}]
-            return [{"id": "audit-200", "created_at": "2024-01-01T00:00:00Z"}]
-
-        mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "5000",
-                "event_types_to_fetch": "Alerts,Audit",
-            },
-        )
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        last_run_arg = mock_set_last_run.call_args[0][0]
-
-        # Verify IDs are stored per type, not mixed
-        assert "alert-100" in last_run_arg["previous_ids_alerts"]
-        assert "audit-200" in last_run_arg["previous_ids_audit"]
-        assert "audit-200" not in last_run_arg["previous_ids_alerts"]
-        assert "alert-100" not in last_run_arg["previous_ids_audit"]
-
-    def test_last_run_single_get_single_set(self, mock_client, alerts_response, audit_response, mocker):
-        """Test that getLastRun is called once and setLastRun is called once (no race condition)."""
-
-        def side_effect_get_events_page(**kwargs):
-            log_type = kwargs.get("log_type")
-            if log_type == LogType.ALERTS:
-                return alerts_response["alerts"]
-            return audit_response["data"]
-
-        mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "5000",
-                "event_types_to_fetch": "Alerts,Audit",
-            },
-        )
-        mock_get_last_run = mocker.patch.object(demisto, "getLastRun", return_value={})
-        mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        # Single read, single write — no race condition
-        mock_get_last_run.assert_called_once()
-        mock_set_last_run.assert_called_once()
-
-    def test_last_run_failure_preserves_successful_type_state(self, mock_client, mocker):
-        """Test that when one type fails, the other type's state is still saved in last_run."""
-
-        def side_effect_get_events_page(**kwargs):
-            log_type = kwargs.get("log_type")
-            if log_type == LogType.ALERTS:
-                return [{"metadata": {"notification_event_id": "alert-ok"}, "time": 1704067200000}]
-            raise Exception("Audit API is down")
-
-        mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={
-                "max_fetch": "5000",
-                "event_types_to_fetch": "Alerts,Audit",
-            },
-        )
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "last_fetch_audit": "2024-01-01T00:00:00Z",
-                "previous_ids_audit": ["old-audit-id"],
-            },
-        )
-        mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-
-        fetch_events_command(mock_client)
-
-        last_run_arg = mock_set_last_run.call_args[0][0]
-
-        # Alerts state should be updated (successful)
-        assert "last_fetch_alerts" in last_run_arg
-        assert "alert-ok" in last_run_arg["previous_ids_alerts"]
-
-        # Audit state should be preserved from initial last_run (failed, not overwritten)
-        assert last_run_arg["last_fetch_audit"] == "2024-01-01T00:00:00Z"
-        assert last_run_arg["previous_ids_audit"] == ["old-audit-id"]
+        with pytest.raises(DemistoException):
+            koi_test_module(mock_client)
 
 
-# endregion
+class TestGetEventsCommand:
+    def test_get_events_alerts_and_audit(self, mock_client, alerts_response, audit_response, mocker):
+        def respond(method, url_suffix, params):
+            return alerts_response if url_suffix == ApiPaths.ALERTS else audit_response
+
+        mocker.patch.object(mock_client, "_http_request", side_effect=respond)
+        mocker.patch("Koi.resolve_should_push_events", return_value=False)
+
+        result = get_events_command(mock_client, {"limit": "50"}, {"event_types_to_fetch": "Alerts,Audit"})
+
+        ids = {e["id"] for e in result.outputs}
+        assert {e["id"] for e in alerts_response["alerts"]} <= ids
+        assert {e["id"] for e in audit_response["items"]} <= ids
+
+    def test_get_events_push_to_xsiam(self, mock_client, alerts_response, mocker):
+        mocker.patch.object(mock_client, "_http_request", return_value=alerts_response)
+        mocker.patch("Koi.resolve_should_push_events", return_value=True)
+        send = mocker.patch.object(mock_client, "send_events")
+
+        result = get_events_command(mock_client, {"limit": "50", "event_type": "Alerts"}, {})
+
+        assert send.call_count == 1
+        assert "Successfully retrieved and pushed" in result
+
 
 # region Date helper tests
 
@@ -1913,7 +707,7 @@ class TestGetEventsCommandErrors:
     def test_should_push_events_overridden_on_non_xsiam(self, mock_client, alerts_response, mocker):
         """Test that should_push_events is silently overridden to False on non-XSIAM platforms via resolve_should_push_events."""
         mocker.patch("CommonServerPython.is_xsiam", return_value=False)
-        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
+        mocker.patch.object(mock_client, "_http_request", return_value=alerts_response)
         mock_send = mocker.patch.object(mock_client, "send_events")
 
         args = {"limit": "10", "should_push_events": "true", "event_type": "Alerts"}
@@ -1968,7 +762,7 @@ class TestConfig:
         assert Config.PRODUCT == "koi"
         assert Config.MAX_PAGE_SIZE == 500
         assert Config.DEFAULT_MAX_FETCH == 5000
-        assert Config.MAX_PAGES_PER_FETCH == 10
+        assert Config.MAX_PAGES_PER_FETCH == 20
         assert Config.DEFAULT_FROM_TIME == "5 minutes ago"
 
 
