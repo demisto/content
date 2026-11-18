@@ -4,18 +4,17 @@ For more information, visit: https://urlhaus.abuse.ch/
 Fetch indicators from URLhaus api
 =======
 
-Fetch indicators from the URLhaus API.
+Fetch indicators from the URLhaus API. The integration downloads the abuse.ch v2 export of online URLs (`https://urlhaus-api.abuse.ch/v2/files/exports/<Auth-Key>/online.csv`).
 
 | **Parameter**        | **Description**                                                                            | **Required** |
 |----------------------|--------------------------------------------------------------------------------------------|--------------|
-| Auth Key | Auth Key for authentication with abuse.ch  | True |
+| Auth Key | The abuse.ch Auth-Key used to download the URLhaus export. | True |
 | Fetches indicators   | Check tofetch indicators                                                                   | True         |
 | Indicator Reputation | The type of reputation for the indicator                                                   | True         |
-| Feed Source          | The type of data we want to get from the api                                               | True         |
 | Traffic Light Protocol Color               | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. | True         |
 | Indicator Expiration Method              | The indicator expiration method                                                            | True         |
 | Source Reliability             | The reliability of the feed                                                                | True         |
-| Feed Fetch Interval    | The time interval to fetch indicators from the api                                         | True         |
+| Feed Fetch Interval    | The time interval to fetch indicators from the api. abuse.ch regenerates the URLhaus dump every 5 minutes. The minimum is 5 minutes; instances set lower must be raised to 5 or more after upgrading. | False        |
 | Trust any certificate    | Weather or not to trust any certificate                                                    | True         |
 | Use system proxy settings   | If you want to use proxy for the integration                                               | True         |
 
