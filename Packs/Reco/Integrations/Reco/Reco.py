@@ -1677,11 +1677,17 @@ def list_alerts_command(reco_client: RecoClient, args: dict[str, Any]) -> Comman
     sort_order = _parse_sort_order(args, default="descending")
 
     alerts: list[dict[str, Any]] = []
+    seen_ids: set[str | None] = set()
+    offset = 0
     while len(alerts) < limit:
         page_size = min(PAGE_SIZE, limit - len(alerts))
-        page = reco_client.get_alerts(**query, limit=page_size, start_index=len(alerts), sort_order=sort_order)
-        alerts.extend(page)
-        if len(page) < page_size:
+        page = reco_client.get_alerts(**query, limit=page_size, start_index=offset, sort_order=sort_order)
+        offset += len(page)
+        # A new alert arriving between pages shifts the offsets; never return the same alert twice.
+        new_alerts = [alert for alert in page if alert.get("id") not in seen_ids]
+        seen_ids.update(alert.get("id") for alert in new_alerts)
+        alerts.extend(new_alerts)
+        if len(page) < page_size or not new_alerts:
             break
     return _alerts_to_command_results("Reco Alerts", alerts)
 
