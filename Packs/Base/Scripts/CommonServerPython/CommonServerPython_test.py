@@ -2083,7 +2083,7 @@ def test_permission_error_lists_missing_permissions_in_message():
                 "Missing permissions: CSP, Tenant support entitlement. " + not_retryable)
 
     # when
-    error = CortexPermissionError(missing_permissions=['CSP', 'Tenant support entitlement'])
+    error = CortexPermissionError(['CSP', 'Tenant support entitlement'])
 
     # then
     assert error.build_message() == expected
@@ -2102,7 +2102,7 @@ def test_permission_error_exposes_missing_permissions_in_details():
     """
     from CommonServerPython import CortexPermissionError, RetryGuidance
     # when
-    error = CortexPermissionError(missing_permissions=['CSP'])
+    error = CortexPermissionError(['CSP'])
 
     # then
     assert error.missing_permissions == ['CSP']
@@ -2130,23 +2130,23 @@ def test_permission_error_without_missing_permissions_omits_key():
     assert 'Missing permissions' not in error.build_message()
 
 
-def test_permission_error_override_message_appends_missing_permissions():
+def test_permission_error_override_message_keeps_missing_permissions_in_auto_message_only():
     """
     Given
     - A CortexPermissionError with both override_message and missing_permissions
     When
     - build_message and auto_message are called
     Then
-    - build_message returns the override followed by the missing permissions,
-      and auto_message lists them as well
+    - build_message (playground/playbooks) returns the override verbatim,
+      while auto_message (Agentix) lists the missing permissions
     """
     from CommonServerPython import CortexPermissionError
     # when
-    error = CortexPermissionError(override_message='Custom denial.', missing_permissions=['CSP'])
+    error = CortexPermissionError(['CSP'], override_message='Custom denial.')
 
     # then
-    assert error.build_message() == 'Custom denial. Missing permissions: CSP.'
-    assert str(error) == 'Custom denial. Missing permissions: CSP.'
+    assert error.build_message() == 'Custom denial.'
+    assert str(error) == 'Custom denial.'
     assert 'Missing permissions: CSP.' in error.auto_message()
 
 
@@ -2165,6 +2165,24 @@ def test_permission_error_override_message_without_missing_permissions_is_verbat
 
     # then
     assert error.build_message() == 'Custom denial.'
+
+
+def test_permission_error_accepts_single_permission_string():
+    """
+    Given
+    - A single missing permission passed as a string
+    When
+    - A CortexPermissionError is constructed with it
+    Then
+    - It is normalized to a one-item list and listed in the message
+    """
+    from CommonServerPython import CortexPermissionError
+    # when
+    error = CortexPermissionError('CSP')
+
+    # then
+    assert error.missing_permissions == ['CSP']
+    assert 'Missing permissions: CSP.' in error.build_message()
 
 
 def test_content_error_api_auth_status_not_retryable():
