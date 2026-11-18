@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Incidents are now fetched from the v4 incident inventory API, which returns a summary of each incident. Fetched incidents no longer include several attributes the previous incident notifications API returned under *incidentDetails*, such as the URL, source and destination IP addresses, user details, direction, asset size and hash, data patterns and device information. The fields mapped by the default *Data Loss Prevention* mapper are still populated, but custom mappers, layouts or playbooks that use these attributes must be updated."
+}

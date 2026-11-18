@@ -1,6 +1,9 @@
 """Unit tests for Halcyon integration."""
 
+import copy
 import json
+from datetime import UTC, datetime, timedelta
+
 import pytest
 from freezegun import freeze_time
 
@@ -520,3 +523,660 @@ class TestLogTypeEnum:
         assert LogType.EVENTS.title == "Events"
         assert LogType.EVENTS.api_endpoint == "/v2/events"
         assert LogType.EVENTS.time_field == "occurredAt"
+
+
+class FakeHalcyonEventsApi:
+    """Stateful fake of ``/v2/events``: inclusive occurredAfter/occurredBefore, ascending, paged.
+
+    Each event has an ``indexed_at`` time: it is not returned before that time, which models the
+    Halcyon indexing delay (an event can become queryable minutes after its occurredAt).
+
+    With ``ignore_occurred_before=True`` the fake returns events dated after occurredBefore,
+    which models the real API returning future-dated events.
+    """
+
+    def __init__(self, ignore_occurred_before: bool = False):
+        self.rows: list[dict] = []
+        self.now = ""
+        self.calls: list[dict] = []
+        self.ignore_occurred_before = ignore_occurred_before
+
+    def add(self, event_id: str | None, occurred_at: str, indexed_at: str | None = None, **extra) -> None:
+        event = {"occurredAt": occurred_at, **extra}
+        if event_id:
+            event["eventId"] = event_id
+        self.rows.append({"event": event, "indexed_at": indexed_at or occurred_at})
+
+    def get_events(self, occurred_after=None, occurred_before=None, page=1, page_size=100, **_):
+        from Halcyon import normalize_timestamp
+
+        def time_of(value: str) -> str:
+            return normalize_timestamp(value) or ""
+
+        self.calls.append({"occurred_after": occurred_after, "occurred_before": occurred_before, "page": page})
+        visible = [
+            row["event"]
+            for row in self.rows
+            if time_of(row["indexed_at"]) <= self.now
+            and (not occurred_after or time_of(row["event"]["occurredAt"]) >= occurred_after)
+            and (self.ignore_occurred_before or not occurred_before or time_of(row["event"]["occurredAt"]) <= occurred_before)
+        ]
+        visible.sort(key=lambda e: (time_of(e["occurredAt"]), e.get("eventId", "")))
+        # Fresh copies, like real JSON responses, so enrichment of a sent event does not leak into later cycles.
+        visible = copy.deepcopy(visible)
+        return {"data": visible[(page - 1) * page_size : page * page_size]}
+
+
+def run_cycles(
+    mock_client,
+    mocker,
+    api: FakeHalcyonEventsApi,
+    cycle_starts: list[str],
+    max_fetch=1000,
+    last_run=None,
+    fetch_interval_minutes=1,
+):
+    """Run one events fetch per cycle start time. Returns (Counter of sent IDs, final last run)."""
+    from collections import Counter
+    from Halcyon import LogType, fetch_events_for_log_type
+
+    mocker.patch.object(mock_client, "get_events", side_effect=api.get_events)
+    sent: Counter = Counter()
+    last_run = last_run if last_run is not None else {}
+    for cycle_start in cycle_starts:
+        api.now = cycle_start
+        events, last_run = fetch_events_for_log_type(
+            client=mock_client,
+            log_type=LogType.EVENTS,
+            last_run=last_run,
+            max_fetch=max_fetch,
+            cycle_start=datetime.strptime(cycle_start, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC),
+            fetch_interval_minutes=fetch_interval_minutes,
+        )
+        sent.update(e.get("eventId", e["occurredAt"]) for e in events)
+    return sent, last_run
+
+
+def minute_cycles(start_minute: int, count: int) -> list[str]:
+    return [f"2026-10-05T07:{start_minute + i:02d}:00.000000Z" for i in range(count)]
+
+
+class TestEventsLookback:
+    """Events re-read the last fetch interval + 10 minutes every cycle (11 minutes at the default
+    1-minute interval used here) and are deduplicated against earlier cycles."""
+
+    def test_late_indexed_event_is_collected_once(self, mock_client, mocker):
+        """An event indexed 3 minutes late, behind events we already sent, is still collected - once."""
+        api = FakeHalcyonEventsApi()
+        api.add("on-time", "2026-10-05T07:00:30Z")
+        api.add("late", "2026-10-05T07:00:10Z", indexed_at="2026-10-05T07:03:30Z")
+        api.add("after", "2026-10-05T07:02:00Z")
+
+        sent, _ = run_cycles(mock_client, mocker, api, minute_cycles(1, 6))
+
+        assert dict(sent) == {"on-time": 1, "late": 1, "after": 1}
+
+    def test_query_reads_lookback_window_up_to_now(self, mock_client, mocker):
+        """Each cycle queries from now - 11 minutes up to now, not up to now - 11 minutes."""
+        api = FakeHalcyonEventsApi()
+        api.add("fresh", "2026-10-05T07:10:59Z")
+
+        sent, _ = run_cycles(mock_client, mocker, api, ["2026-10-05T07:11:00.000000Z"])
+
+        assert sent == {"fresh": 1}
+        assert api.calls[0]["occurred_after"] == "2026-10-05T07:00:00.000000Z"
+        assert api.calls[0]["occurred_before"] == "2026-10-05T07:11:00.000000Z"
+
+    def test_event_indexed_ten_minutes_late_is_collected(self, mock_client, mocker):
+        """An event indexed ~10 minutes late (missed by the old 10-minute lookback on a customer tenant) is collected once."""
+        api = FakeHalcyonEventsApi()
+        api.add("ten-minutes-late", "2026-10-05T07:00:10Z", indexed_at="2026-10-05T07:10:30Z")
+
+        sent, _ = run_cycles(mock_client, mocker, api, minute_cycles(1, 14))
+
+        assert dict(sent) == {"ten-minutes-late": 1}
+
+    def test_event_indexed_within_lookback_is_collected(self, mock_client, mocker):
+        """An event indexed 6 minutes late (beyond the old 5-minute lookback) is collected once."""
+        api = FakeHalcyonEventsApi()
+        api.add("six-minutes-late", "2026-10-05T07:00:10Z", indexed_at="2026-10-05T07:06:30Z")
+
+        sent, _ = run_cycles(mock_client, mocker, api, minute_cycles(1, 13))
+
+        assert dict(sent) == {"six-minutes-late": 1}
+
+    def test_event_indexed_after_lookback_is_lost(self, mock_client, mocker):
+        """Documents the limit: an event indexed more than 11 minutes after it occurred is not collected."""
+        api = FakeHalcyonEventsApi()
+        api.add("too-late", "2026-10-05T07:00:10Z", indexed_at="2026-10-05T07:12:30Z")
+
+        sent, _ = run_cycles(mock_client, mocker, api, minute_cycles(1, 14))
+
+        assert "too-late" not in sent
+
+    def test_dedup_cache_keeps_only_lookback_window_plus_margin(self, mock_client, mocker):
+        api = FakeHalcyonEventsApi()
+        for minute in range(20):
+            api.add(f"evt-{minute}", f"2026-10-05T07:{minute:02d}:30Z")
+
+        _, last_run = run_cycles(mock_client, mocker, api, minute_cycles(1, 20))
+
+        # Last cycle 07:20 -> next window starts 07:09:00, minus the 1-minute margin = 07:08:00.
+        assert sorted(last_run["events_dedup_cache"], key=lambda k: int(k.split("-")[1])) == [f"evt-{m}" for m in range(8, 20)]
+        assert last_run["last_fetch_events"] == "2026-10-05T07:20:00.000000Z"
+
+    def test_margin_prevents_duplicates_when_next_query_starts_early(self, mock_client, mocker):
+        """If a query starts a bit earlier than expected (API rounding or clock skew), events just
+        before the window are still recognized as sent and are not sent again.
+
+        Without the margin, the 07:15:55 cycle trims the cache at 07:04:55 and drops "edge"
+        (07:04:50). The 07:16:00 cycle's query, starting 30 seconds early at 07:04:30, then
+        returns "edge" again and it would be sent twice.
+        """
+        api = FakeHalcyonEventsApi()
+        api.add("edge", "2026-10-05T07:04:50Z")
+        original_get_events = api.get_events
+
+        def get_events_starting_early(occurred_after: str, **kwargs):
+            early_start = (datetime.strptime(occurred_after, "%Y-%m-%dT%H:%M:%S.%fZ") - timedelta(seconds=30)).strftime(
+                "%Y-%m-%dT%H:%M:%S.%fZ"
+            )
+            return original_get_events(occurred_after=early_start, **kwargs)
+
+        api.get_events = get_events_starting_early  # type: ignore[method-assign]
+        cycles = ["2026-10-05T07:05:00.000000Z", "2026-10-05T07:15:55.000000Z", "2026-10-05T07:16:00.000000Z"]
+        sent, _ = run_cycles(mock_client, mocker, api, cycles)
+
+        assert dict(sent) == {"edge": 1}
+
+    def test_events_without_id_are_skipped(self, mock_client, mocker):
+        """Events without an ID cannot be deduplicated, so they are skipped (same as the previous version)."""
+        api = FakeHalcyonEventsApi()
+        api.add(None, "2026-10-05T07:00:20Z", kind="NoId")
+        api.add("with-id", "2026-10-05T07:00:30Z")
+
+        sent, last_run = run_cycles(mock_client, mocker, api, minute_cycles(1, 5))
+
+        assert dict(sent) == {"with-id": 1}
+        assert list(last_run["events_dedup_cache"]) == ["with-id"]
+
+    def test_mixed_timestamp_precision_is_deduplicated(self, mock_client, mocker):
+        api = FakeHalcyonEventsApi()
+        api.add("no-fraction", "2026-10-05T07:00:30Z")
+        api.add("with-fraction", "2026-10-05T07:00:30.123Z")
+
+        sent, _ = run_cycles(mock_client, mocker, api, minute_cycles(1, 5))
+
+        assert dict(sent) == {"no-fraction": 1, "with-fraction": 1}
+
+    def test_backlog_over_max_fetch_drains_without_gaps_or_duplicates(self, mock_client, mocker):
+        """250 events in one cycle's window with max_fetch=100: drained over 3 cycles, each sent once."""
+        api = FakeHalcyonEventsApi()
+        for i in range(250):
+            api.add(f"evt-{i:03d}", f"2026-10-05T07:00:{i % 60:02d}.{i:03d}Z")
+
+        sent, _ = run_cycles(mock_client, mocker, api, minute_cycles(1, 4), max_fetch=100)
+
+        assert len(sent) == 250
+        assert set(sent.values()) == {1}
+
+    def test_same_second_burst_over_max_fetch_drains(self, mock_client, mocker):
+        api = FakeHalcyonEventsApi()
+        for i in range(250):
+            api.add(f"burst-{i:03d}", "2026-10-05T07:00:30Z")
+
+        sent, _ = run_cycles(mock_client, mocker, api, minute_cycles(1, 4), max_fetch=100)
+
+        assert len(sent) == 250
+        assert set(sent.values()) == {1}
+
+    def test_backlog_older_than_lookback_resumes_from_watermark(self, mock_client, mocker):
+        """When max_fetch stops a cycle early, the next one continues from where it stopped, even
+        if that point is older than the next cycle's lookback window."""
+        api = FakeHalcyonEventsApi()
+        for i in range(300):
+            api.add(f"evt-{i:03d}", f"2026-10-05T07:00:{i % 60:02d}.{i:03d}Z")
+
+        # Cycles 20 minutes apart, so the backlog falls out of the lookback window between cycles.
+        cycles = ["2026-10-05T07:01:00.000000Z", "2026-10-05T07:21:00.000000Z", "2026-10-05T07:41:00.000000Z"]
+        sent, _ = run_cycles(mock_client, mocker, api, cycles, max_fetch=100)
+
+        assert len(sent) == 300
+        assert set(sent.values()) == {1}
+
+
+class TestEventsLookbackFollowsFetchInterval:
+    """The events lookback is the fetch interval + 10 minutes, not a fixed 11 minutes."""
+
+    @pytest.mark.parametrize(
+        "fetch_interval_minutes, expected_lookback",
+        [
+            (1, timedelta(minutes=11)),
+            (5, timedelta(minutes=15)),
+            (60, timedelta(minutes=70)),
+            (None, timedelta(minutes=11)),
+            (0, timedelta(minutes=11)),
+            (-5, timedelta(minutes=11)),
+        ],
+    )
+    def test_get_events_lookback(self, fetch_interval_minutes, expected_lookback):
+        from Halcyon import get_events_lookback
+
+        assert get_events_lookback(fetch_interval_minutes) == expected_lookback
+
+    def test_query_window_uses_fetch_interval_plus_ten_minutes(self, mock_client, mocker):
+        """With a 5-minute fetch interval each cycle queries from now - 15 minutes."""
+        api = FakeHalcyonEventsApi()
+
+        run_cycles(mock_client, mocker, api, ["2026-10-05T07:20:00.000000Z"], fetch_interval_minutes=5)
+
+        assert api.calls[0]["occurred_after"] == "2026-10-05T07:05:00.000000Z"
+
+    def test_event_indexed_ten_minutes_late_is_collected_with_five_minute_interval(self, mock_client, mocker):
+        """Cycles every 5 minutes: the first cycle that sees the event runs ~15 minutes after it
+        occurred. A fixed 11-minute lookback would miss it; interval + 10 minutes catches it."""
+        api = FakeHalcyonEventsApi()
+        api.add("ten-minutes-late", "2026-10-05T07:00:10Z", indexed_at="2026-10-05T07:10:30Z")
+        cycles = [f"2026-10-05T07:{minute:02d}:00.000000Z" for minute in range(5, 35, 5)]
+
+        sent, _ = run_cycles(mock_client, mocker, api, cycles, fetch_interval_minutes=5)
+
+        assert dict(sent) == {"ten-minutes-late": 1}
+
+    def test_event_indexed_after_interval_lookback_is_lost(self, mock_client, mocker):
+        """Documents the limit with a 5-minute interval: an event first visible to a cycle more than
+        15 minutes after it occurred is not collected."""
+        api = FakeHalcyonEventsApi()
+        api.add("too-late", "2026-10-05T07:00:10Z", indexed_at="2026-10-05T07:16:30Z")
+        cycles = [f"2026-10-05T07:{minute:02d}:00.000000Z" for minute in range(5, 35, 5)]
+
+        sent, _ = run_cycles(mock_client, mocker, api, cycles, fetch_interval_minutes=5)
+
+        assert "too-late" not in sent
+
+    def test_event_at_window_start_is_collected(self, mock_client, mocker):
+        """The window start (cycle start - interval - 10 minutes) is inclusive."""
+        api = FakeHalcyonEventsApi()
+        api.add("at-edge", "2026-10-05T07:05:00Z", indexed_at="2026-10-05T07:19:59Z")
+
+        sent, _ = run_cycles(
+            mock_client,
+            mocker,
+            api,
+            ["2026-10-05T07:15:00.000000Z", "2026-10-05T07:20:00.000000Z"],
+            fetch_interval_minutes=5,
+        )
+
+        assert dict(sent) == {"at-edge": 1}
+
+    def test_interval_increase_does_not_resend_events(self, mock_client, mocker):
+        """Raising the interval from 1 to 60 minutes widens the window to 70 minutes, but the dedup
+        cache was trimmed with the old 11-minute window. The next cycle (here right away, as after
+        reaching max_fetch) must not query before the cache coverage, or older events are re-sent."""
+        api = FakeHalcyonEventsApi()
+        for minute in range(20):
+            api.add(f"evt-{minute}", f"2026-10-05T07:{minute:02d}:30Z")
+
+        sent_before, last_run = run_cycles(mock_client, mocker, api, minute_cycles(1, 20), fetch_interval_minutes=1)
+        sent_after, _ = run_cycles(
+            mock_client, mocker, api, ["2026-10-05T07:20:01.000000Z"], last_run=last_run, fetch_interval_minutes=60
+        )
+
+        assert dict(sent_before + sent_after) == {f"evt-{minute}": 1 for minute in range(20)}
+
+    def test_interval_decrease_keeps_collecting_without_duplicates(self, mock_client, mocker):
+        """Lowering the interval from 5 to 1 minute shrinks the window; late events are still collected once."""
+        api = FakeHalcyonEventsApi()
+        api.add("before", "2026-10-05T07:12:00Z")
+        api.add("late", "2026-10-05T07:18:10Z", indexed_at="2026-10-05T07:20:30Z")
+        api.add("after", "2026-10-05T07:22:00Z")
+        five_minute_cycles = [f"2026-10-05T07:{minute:02d}:00.000000Z" for minute in range(5, 25, 5)]
+
+        sent_before, last_run = run_cycles(mock_client, mocker, api, five_minute_cycles, fetch_interval_minutes=5)
+        sent_after, _ = run_cycles(mock_client, mocker, api, minute_cycles(21, 5), last_run=last_run, fetch_interval_minutes=1)
+
+        assert dict(sent_before + sent_after) == {"before": 1, "late": 1, "after": 1}
+
+    def test_last_run_without_cache_coverage_key(self, mock_client, mocker):
+        """A lookback-format last run without events_dedup_cache_from (written before the key existed)
+        does not fail: the query starts at the normal window start and the key is written."""
+        api = FakeHalcyonEventsApi()
+        api.add("sent-before", "2026-10-05T07:15:00Z")
+        api.add("new", "2026-10-05T07:19:30Z")
+        last_run = {
+            "last_fetch_events": "2026-10-05T07:19:00.000000Z",
+            "events_dedup_cache": {"sent-before": "2026-10-05T07:15:00.000000Z"},
+        }
+
+        sent, last_run = run_cycles(mock_client, mocker, api, ["2026-10-05T07:20:00.000000Z"], last_run=last_run)
+
+        assert dict(sent) == {"new": 1}
+        assert api.calls[0]["occurred_after"] == "2026-10-05T07:09:00.000000Z"
+        assert last_run["events_dedup_cache_from"] == "2026-10-05T07:09:00.000000Z"
+
+    def test_first_fetch_writes_cache_coverage(self, mock_client, mocker):
+        api = FakeHalcyonEventsApi()
+
+        _, last_run = run_cycles(mock_client, mocker, api, ["2026-10-05T07:20:00.000000Z"], fetch_interval_minutes=5)
+
+        assert last_run["events_dedup_cache_from"] == "2026-10-05T07:05:00.000000Z"
+
+    def test_cache_coverage_never_moves_back_and_is_logged(self, mock_client, mocker):
+        """After an interval increase the coverage keeps its old value (IDs before it were dropped),
+        the query starts there, and the START line explains why."""
+        import demistomock as demisto
+
+        debug = mocker.patch.object(demisto, "debug")
+        api = FakeHalcyonEventsApi()
+        _, last_run = run_cycles(mock_client, mocker, api, ["2026-10-05T07:20:00.000000Z"], fetch_interval_minutes=1)
+        _, last_run = run_cycles(
+            mock_client, mocker, api, ["2026-10-05T07:20:01.000000Z"], last_run=last_run, fetch_interval_minutes=60
+        )
+
+        assert api.calls[-1]["occurred_after"] == "2026-10-05T07:09:00.000000Z"
+        assert last_run["events_dedup_cache_from"] == "2026-10-05T07:09:00.000000Z"
+        starts = [str(c.args[0]) for c in debug.call_args_list if str(c.args[0]).startswith("HALCYON-EVENTS START")]
+        assert "dedup cache coverage" in starts[-1]
+
+    def test_cache_coverage_does_not_skip_backlog(self, mock_client, mocker):
+        """When max_fetch stops a cycle early, coverage stays at or before the watermark, so the backlog drains fully."""
+        api = FakeHalcyonEventsApi()
+        for i in range(300):
+            api.add(f"evt-{i:03d}", f"2026-10-05T07:00:{i % 60:02d}.{i:03d}Z")
+        cycles = ["2026-10-05T07:01:00.000000Z", "2026-10-05T07:21:00.000000Z", "2026-10-05T07:41:00.000000Z"]
+
+        sent, last_run = run_cycles(mock_client, mocker, api, cycles, max_fetch=100, fetch_interval_minutes=20)
+
+        assert len(sent) == 300
+        assert set(sent.values()) == {1}
+        assert last_run["events_dedup_cache_from"] <= last_run["last_fetch_events"]
+
+    def test_lookback_warning_uses_interval_lookback(self, mock_client, mocker):
+        """A late event 700s old is close to a fixed 660s lookback but not to the 900s lookback of a
+        5-minute interval, so no warning is logged; the START line shows the lookback in use."""
+        import demistomock as demisto
+
+        debug = mocker.patch.object(demisto, "debug")
+        api = FakeHalcyonEventsApi()
+        api.add("late", "2026-10-05T07:08:20Z", indexed_at="2026-10-05T07:19:00Z")
+
+        sent, _ = run_cycles(
+            mock_client,
+            mocker,
+            api,
+            ["2026-10-05T07:10:00.000000Z", "2026-10-05T07:20:00.000000Z"],
+            fetch_interval_minutes=5,
+        )
+
+        logs = [str(call.args[0]) for call in debug.call_args_list]
+        assert dict(sent) == {"late": 1}
+        assert any("HALCYON-EVENTS LATE-INDEXED" in line for line in logs)
+        assert not any("HALCYON-EVENTS WARNING" in line for line in logs)
+        assert any(line.startswith("HALCYON-EVENTS START") and "lookback=900s" in line for line in logs)
+
+    def test_dedup_cache_follows_fetch_interval_lookback(self, mock_client, mocker):
+        """With a 5-minute interval the cache keeps IDs from (last cycle - 15 minutes - 1 minute margin)."""
+        api = FakeHalcyonEventsApi()
+        for minute in range(30):
+            api.add(f"evt-{minute}", f"2026-10-05T07:{minute:02d}:30Z")
+        cycles = [f"2026-10-05T07:{minute:02d}:00.000000Z" for minute in range(5, 35, 5)]
+
+        _, last_run = run_cycles(mock_client, mocker, api, cycles, fetch_interval_minutes=5)
+
+        # Last cycle 07:30 -> next window starts 07:15:00, minus the 1-minute margin = 07:14:00.
+        assert sorted(last_run["events_dedup_cache"], key=lambda k: int(k.split("-")[1])) == [f"evt-{m}" for m in range(14, 30)]
+
+    def test_fetch_events_command_passes_fetch_interval(self, mock_client, mocker):
+        from Halcyon import LogType, fetch_events_command
+
+        api = FakeHalcyonEventsApi()
+        api.now = "2026-10-05T07:20:00.000000Z"
+        mocker.patch.object(mock_client, "get_events", side_effect=api.get_events)
+
+        with freeze_time("2026-10-05T07:20:00Z"):
+            fetch_events_command(
+                client=mock_client, last_run={}, log_types=[LogType.EVENTS], max_fetch=100, fetch_interval_minutes=30
+            )
+
+        assert api.calls[0]["occurred_after"] == "2026-10-05T06:40:00.000000Z"
+
+
+class TestEventsNextTrigger:
+    """When a fetch reaches max_fetch, the next fetch runs right away so a burst drains quickly."""
+
+    def test_next_trigger_set_when_max_fetch_reached(self, mock_client, mocker):
+        api = FakeHalcyonEventsApi()
+        for i in range(150):
+            api.add(f"evt-{i:03d}", f"2026-10-05T07:00:{i % 60:02d}.{i:03d}Z")
+
+        _, last_run = run_cycles(mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z"], max_fetch=100)
+
+        assert last_run["nextTrigger"] == "1"
+
+    def test_next_trigger_cleared_once_backlog_drained(self, mock_client, mocker):
+        api = FakeHalcyonEventsApi()
+        for i in range(150):
+            api.add(f"evt-{i:03d}", f"2026-10-05T07:00:{i % 60:02d}.{i:03d}Z")
+
+        _, last_run = run_cycles(
+            mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z", "2026-10-05T07:01:01.000000Z"], max_fetch=100
+        )
+
+        assert "nextTrigger" not in last_run
+
+    def test_next_trigger_not_set_below_max_fetch(self, mock_client, mocker):
+        api = FakeHalcyonEventsApi()
+        api.add("only", "2026-10-05T07:00:30Z")
+
+        _, last_run = run_cycles(mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z"], max_fetch=100)
+
+        assert "nextTrigger" not in last_run
+
+
+class TestFutureDatedEvents:
+    """The API returns some events with occurredAt in the future. They wait for a later cycle."""
+
+    def test_future_event_waits_for_its_time(self, mock_client, mocker):
+        """A future-dated event is not sent early and does not move the watermark, and is sent once its time passes."""
+        api = FakeHalcyonEventsApi()
+        api.add("now", "2026-10-05T07:00:30Z")
+        api.add("future", "2026-10-05T07:02:30Z", indexed_at="2026-10-05T07:00:31Z")
+
+        sent, last_run = run_cycles(mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z"])
+        assert sent == {"now": 1}
+        assert "future" not in last_run["events_dedup_cache"]
+
+        sent, _ = run_cycles(mock_client, mocker, api, minute_cycles(2, 4), last_run=last_run)
+        assert sent == {"future": 1}
+
+    def test_future_event_returned_by_api_is_filtered(self, mock_client, mocker):
+        """Even if the API ignores occurredBefore, an event after the cycle start is not sent."""
+        from Halcyon import LogType, fetch_events_for_log_type
+
+        response = {"data": [{"eventId": "future", "occurredAt": "2026-10-05T08:00:00Z"}]}
+        mocker.patch.object(mock_client, "get_events", return_value=response)
+
+        events, last_run = fetch_events_for_log_type(
+            client=mock_client,
+            log_type=LogType.EVENTS,
+            last_run={},
+            max_fetch=1000,
+            cycle_start=datetime(2026, 10, 5, 7, 0, tzinfo=UTC),
+        )
+
+        assert events == []
+        assert last_run["events_dedup_cache"] == {}
+
+    def test_alerts_are_not_filtered(self, mock_client, mocker):
+        from Halcyon import LogType, fetch_events_for_log_type
+
+        response = {"data": [{"alertId": "alert-future", "firstOccurredAt": "2026-10-05T08:00:00.000Z"}]}
+        mocker.patch.object(mock_client, "get_alerts", return_value=response)
+
+        events, _ = fetch_events_for_log_type(
+            client=mock_client,
+            log_type=LogType.ALERTS,
+            last_run={"last_fetch_alerts": "2026-10-05T06:00:00.000Z"},
+            max_fetch=1000,
+            cycle_start=datetime(2026, 10, 5, 7, 0, tzinfo=UTC),
+        )
+
+        assert [e["alertId"] for e in events] == ["alert-future"]
+
+
+class TestEventsLogging:
+    """The events flow logs enough to verify the lookback on a customer tenant."""
+
+    def test_summary_reports_late_indexed_event(self, mock_client, mocker):
+        import demistomock as demisto
+
+        debug = mocker.patch.object(demisto, "debug")
+        api = FakeHalcyonEventsApi()
+        api.add("on-time", "2026-10-05T07:00:30Z")
+        api.add("late", "2026-10-05T07:00:10Z", indexed_at="2026-10-05T07:01:30Z")
+
+        run_cycles(mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z", "2026-10-05T07:02:00.000000Z"])
+
+        logs = [str(call.args[0]) for call in debug.call_args_list]
+        assert any("HALCYON-EVENTS LATE-INDEXED" in line and "late@2026-10-05T07:00:10.000000Z" in line for line in logs)
+        summaries = [line for line in logs if line.startswith("HALCYON-EVENTS SUMMARY")]
+        assert len(summaries) == 2
+        assert "new=1" in summaries[1]
+        assert "late_indexed=1" in summaries[1]
+        assert "duplicates=1" in summaries[1]
+
+    def test_summary_reports_future_dated_event(self, mock_client, mocker):
+        import demistomock as demisto
+
+        debug = mocker.patch.object(demisto, "debug")
+        api = FakeHalcyonEventsApi(ignore_occurred_before=True)
+        api.add("future", "2026-10-05T07:03:00Z", indexed_at="2026-10-05T07:00:00Z")
+
+        run_cycles(mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z"])
+
+        logs = [str(call.args[0]) for call in debug.call_args_list]
+        assert any("HALCYON-EVENTS FUTURE-DATED" in line and "future@2026-10-05T07:03:00.000000Z(+120s)" in line for line in logs)
+        assert any("future_held_back=1" in line for line in logs if line.startswith("HALCYON-EVENTS SUMMARY"))
+
+    def test_logging_failure_does_not_fail_fetch(self, mock_client, mocker):
+        import demistomock as demisto
+
+        def fail_on_summary(message: str) -> None:
+            if "HALCYON-EVENTS SUMMARY" in message:
+                raise Exception("log failure")
+
+        debug = mocker.patch.object(demisto, "debug", side_effect=fail_on_summary)
+        api = FakeHalcyonEventsApi()
+        api.add("evt", "2026-10-05T07:00:30Z")
+
+        sent, last_run = run_cycles(mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z"])
+
+        assert sent == {"evt": 1}
+        assert last_run["last_fetch_events"] == "2026-10-05T07:01:00.000000Z"
+        failure_line = next(str(c.args[0]) for c in debug.call_args_list if "logging failed" in str(c.args[0]))
+        assert "Traceback" in failure_line
+
+    def test_summarize_last_run_hides_dedup_cache(self):
+        from Halcyon import summarize_last_run
+
+        last_run = {"last_fetch_events": "t", "events_dedup_cache": {"a": "t", "b": "t"}}
+
+        assert summarize_last_run(last_run) == {"last_fetch_events": "t", "events_dedup_cache": "<2 keys>"}
+
+
+class TestEventsLastRunMigration:
+    """A last run written by the previous version is converted without losing or re-sending events."""
+
+    def test_migrates_legacy_keys(self):
+        from Halcyon import migrate_events_last_run
+
+        last_run = {
+            "last_fetch_events": "2026-10-05T07:00:30Z",
+            "previous_ids_events": ["a", "b"],
+            "last_fetch_alerts": "2026-10-05T06:00:00.000Z",
+            "previous_ids_alerts": ["alert-1"],
+        }
+
+        migrated = migrate_events_last_run(last_run)
+
+        assert migrated == {
+            "last_fetch_events": "2026-10-05T07:00:30.000000Z",
+            "events_dedup_cache": {"a": "2026-10-05T07:00:30.000000Z", "b": "2026-10-05T07:00:30.000000Z"},
+            "events_fetch_floor": "2026-10-05T07:00:30.000000Z",
+            "last_fetch_alerts": "2026-10-05T06:00:00.000Z",
+            "previous_ids_alerts": ["alert-1"],
+        }
+
+    def test_already_migrated_last_run_is_unchanged(self):
+        from Halcyon import migrate_events_last_run
+
+        last_run = {
+            "last_fetch_events": "2026-10-05T07:00:30.000000Z",
+            "events_dedup_cache": {"a": "2026-10-05T07:00:30.000000Z"},
+        }
+
+        assert migrate_events_last_run(dict(last_run)) == last_run
+
+    def test_empty_last_run_is_unchanged(self):
+        from Halcyon import migrate_events_last_run
+
+        assert migrate_events_last_run({}) == {}
+
+    def test_upgrade_does_not_resend_events_before_legacy_watermark(self, mock_client, mocker):
+        """The old version already sent everything up to its watermark; the first lookback cycle must not send it again."""
+        api = FakeHalcyonEventsApi()
+        api.add("sent-by-old-version", "2026-10-05T07:00:10Z")
+        api.add("boundary", "2026-10-05T07:00:30Z")
+        api.add("new", "2026-10-05T07:00:45Z")
+        legacy_last_run = {"last_fetch_events": "2026-10-05T07:00:30.000Z", "previous_ids_events": ["boundary"]}
+
+        sent, last_run = run_cycles(mock_client, mocker, api, minute_cycles(1, 12), last_run=legacy_last_run)
+
+        assert dict(sent) == {"new": 1}
+        assert "previous_ids_events" not in last_run
+        assert "events_fetch_floor" not in last_run  # Dropped once the window moved past it.
+
+    def test_upgrade_with_old_watermark_resumes_from_it(self, mock_client, mocker):
+        """A legacy watermark older than the lookback window: everything after it is collected, nothing before it."""
+        api = FakeHalcyonEventsApi()
+        api.add("before", "2026-10-05T06:00:00Z")
+        api.add("after-1", "2026-10-05T06:30:00Z")
+        api.add("after-2", "2026-10-05T06:59:00Z")
+        legacy_last_run = {"last_fetch_events": "2026-10-05T06:10:00.000Z", "previous_ids_events": []}
+
+        sent, _ = run_cycles(mock_client, mocker, api, ["2026-10-05T07:00:00.000000Z"], last_run=legacy_last_run)
+
+        assert dict(sent) == {"after-1": 1, "after-2": 1}
+
+    def test_migration_does_not_add_cache_coverage(self):
+        """The migration only converts legacy keys; events_dedup_cache_from is written by the first cycle."""
+        from Halcyon import migrate_events_last_run
+
+        migrated = migrate_events_last_run({"last_fetch_events": "2026-10-05T07:00:30Z", "previous_ids_events": ["a"]})
+
+        assert "events_dedup_cache_from" not in migrated
+
+    def test_upgrade_writes_cache_coverage_on_first_cycle(self, mock_client, mocker):
+        api = FakeHalcyonEventsApi()
+        legacy_last_run = {"last_fetch_events": "2026-10-05T07:00:30.000Z", "previous_ids_events": []}
+
+        _, last_run = run_cycles(mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z"], last_run=legacy_last_run)
+
+        assert last_run["events_dedup_cache_from"] == "2026-10-05T06:50:00.000000Z"
+
+    def test_upgrade_with_increased_interval_does_not_resend(self, mock_client, mocker):
+        """Upgrade and a 60-minute interval on the same first cycle: the migration floor still stops the
+        wider window from re-sending events the old version already sent, and later cycles stay clean."""
+        api = FakeHalcyonEventsApi()
+        api.add("sent-by-old-version", "2026-10-05T06:30:00Z")
+        api.add("boundary", "2026-10-05T07:00:30Z")
+        api.add("new", "2026-10-05T07:00:45Z")
+        legacy_last_run = {"last_fetch_events": "2026-10-05T07:00:30.000Z", "previous_ids_events": ["boundary"]}
+        cycles = ["2026-10-05T07:01:00.000000Z", "2026-10-05T07:01:01.000000Z", "2026-10-05T08:01:00.000000Z"]
+
+        sent, last_run = run_cycles(mock_client, mocker, api, cycles, last_run=legacy_last_run, fetch_interval_minutes=60)
+
+        assert dict(sent) == {"new": 1}
+        assert api.calls[0]["occurred_after"] == "2026-10-05T07:00:30.000000Z"
+        # The 70-minute window of the 08:01 cycle starts at 06:51, still before the floor, so the floor is kept.
+        assert last_run["events_fetch_floor"] == "2026-10-05T07:00:30.000000Z"

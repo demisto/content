@@ -382,6 +382,7 @@ def test_command_install_pack_calls_download_and_sdk(tmp_path):
             args={
                 "url": "https://github.com/example/releases/download/Pack-v1.0.0/Pack-v1.0.0.zip",
                 "filename": "Pack-v1.0.0.zip",
+                "use_sdk": "true",
             },
         )
     finally:
@@ -428,6 +429,7 @@ def test_command_install_pack_threads_insecure_param(tmp_path):
             client,
             args={
                 "url": "https://github.com/example/releases/download/Pack-v1.0.0/Pack-v1.0.0.zip",
+                "use_sdk": "true",
             },
         )
     finally:
@@ -470,7 +472,10 @@ def test_command_install_pack_derives_filename_from_url(monkeypatch):
     with pytest.raises(RuntimeError, match="stop_here"):
         mod.install_pack_command(
             client,
-            args={"url": "https://github.com/org/repo/releases/download/Pack-v2.0.0/Pack-v2.0.0.zip"},
+            args={
+                "url": "https://github.com/org/repo/releases/download/Pack-v2.0.0/Pack-v2.0.0.zip",
+                "use_sdk": "true",
+            },
         )
 
     assert derived == ["Pack-v2.0.0.zip"]
@@ -492,7 +497,7 @@ def test_command_install_pack_appends_zip_if_missing(monkeypatch):
     with pytest.raises(RuntimeError, match="stop"):
         mod.install_pack_command(
             client,
-            args={"url": "https://example.com/Pack-v1.0.0", "filename": "Pack-v1.0.0"},
+            args={"url": "https://example.com/Pack-v1.0.0", "filename": "Pack-v1.0.0", "use_sdk": "true"},
         )
 
     assert derived
@@ -604,3 +609,110 @@ def test_get_catalog_url_command_accepts_a_valid_override():
         res = integration.get_catalog_url_command({"catalog_url": good})
         assert res["outputs"]["CatalogURL"] == good, good
         assert "ignored" not in res["readable_output"], good
+
+
+def test_filename_version_and_pack_id_parsing():
+    """The post-install check derives both values from the release filename."""
+    mod, _ = load_integration()
+    assert mod._version_from_filename("soc-crowdstrike-idp-v1.1.8.zip") == "1.1.8"
+    assert mod._pack_id_from_filename("soc-crowdstrike-idp-v1.1.8.zip") == "soc-crowdstrike-idp"
+    # Unparseable names degrade to the pre-check behaviour rather than raising.
+    assert mod._version_from_filename("Pack.zip") == ""
+    assert mod._pack_id_from_filename("Pack.zip") == ""
+
+
+def _install_client(mod, tmp_path, installed_version):
+    """Client whose download succeeds and whose tenant reports installed_version."""
+    zip_path = str(tmp_path / "soc-pack-v2.0.0.zip")
+    with zipfile.ZipFile(zip_path, "w") as zf:
+        zf.writestr("soc-pack/pack_metadata.json", json.dumps({"name": "p", "currentVersion": "2.0.0"}))
+    data = open(zip_path, "rb").read()
+
+    client = _make_client(mod, verify=True)
+    client._http_request = lambda **kw: _StreamingResponse(data, headers={"Content-Length": str(len(data))})
+    # Both upload paths are stubbed: the SDK path is the default since 1.2.1,
+    # and leaving it live reaches is_debug_mode(), which the harness does not
+    # provide (it comes from CommonServerPython at runtime).
+    client.upload_pack_zip_direct = lambda zp: {"success": True}
+    client.upload_pack_as_system_content = lambda pp: {"success": True}
+    client.installed_pack_versions = lambda: {"soc-pack": installed_version}
+    return client
+
+
+def test_install_pack_raises_when_version_did_not_change(tmp_path):
+    """The defect this guards: upload returns cleanly, tenant keeps old content.
+
+    Without the check the command reported success, so a pack that never
+    upgraded looked identical to one that did.
+    """
+    mod, _ = load_integration()
+    client = _install_client(mod, tmp_path, installed_version="1.0.0")
+
+    orig = os.getcwd()
+    try:
+        os.chdir(str(tmp_path))
+        with pytest.raises(Exception, match="did NOT take"):
+            mod.install_pack_command(client, args={"url": "https://x/soc-pack-v2.0.0.zip", "filename": "soc-pack-v2.0.0.zip"})
+    finally:
+        os.chdir(orig)
+
+
+def test_install_pack_reports_verified_when_version_matches(tmp_path):
+    mod, _ = load_integration()
+    client = _install_client(mod, tmp_path, installed_version="2.0.0")
+
+    orig = os.getcwd()
+    try:
+        os.chdir(str(tmp_path))
+        result = mod.install_pack_command(
+            client, args={"url": "https://x/soc-pack-v2.0.0.zip", "filename": "soc-pack-v2.0.0.zip"}
+        )
+    finally:
+        os.chdir(orig)
+    assert "verified" in result["readable_output"]
+
+
+def test_install_pack_survives_unreadable_installed_versions(tmp_path):
+    """A failing version lookup must not block an install that may have worked."""
+    mod, _ = load_integration()
+    client = _install_client(mod, tmp_path, installed_version="2.0.0")
+
+    def boom():
+        raise Exception("tenant unreachable")
+
+    client.installed_pack_versions = boom
+
+    orig = os.getcwd()
+    try:
+        os.chdir(str(tmp_path))
+        result = mod.install_pack_command(
+            client, args={"url": "https://x/soc-pack-v2.0.0.zip", "filename": "soc-pack-v2.0.0.zip"}
+        )
+    finally:
+        os.chdir(orig)
+    assert "installed successfully" in result["readable_output"]
+    assert "verified" not in result["readable_output"]
+
+
+def test_install_pack_uses_sdk_path_by_default(tmp_path):
+    """Default must be the SDK path: it is the one that installs content.
+
+    The direct ZIP POST was briefly the default and reverted -- it registers
+    the pack version and installs none of its content. Verified on a live
+    tenant: soc-optimization-unified reported 3.20.3 with all 24 of its
+    scripts and lists missing.
+    """
+    mod, _ = load_integration()
+    client = _install_client(mod, tmp_path, installed_version="2.0.0")
+
+    called = []
+    client.upload_pack_zip_direct = lambda zp: (called.append("direct"), {"success": True})[1]
+    client.upload_pack_as_system_content = lambda pp: (called.append("sdk"), {"success": True})[1]
+
+    orig = os.getcwd()
+    try:
+        os.chdir(str(tmp_path))
+        mod.install_pack_command(client, args={"url": "https://x/soc-pack-v2.0.0.zip", "filename": "soc-pack-v2.0.0.zip"})
+    finally:
+        os.chdir(orig)
+    assert called == ["sdk"]

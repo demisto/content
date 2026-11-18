@@ -65,8 +65,9 @@ modified. Run it first when an install does not behave as expected.
 !SOCFWPackManager action=apply pack_id=<pack_id>
 ```
 
-Downloads the pack ZIP from GitHub Releases, installs it as system content,
-then applies all configuration from the pack's `xsoar_config.json`
+Downloads the pack ZIP from GitHub Releases, installs it on the tenant, and
+confirms the installed version matches the one requested. It then applies all
+configuration from the pack's `xsoar_config.json`
 (integration instances, jobs, lookup datasets). Safe to re-run — existing
 configuration is detected and preserved.
 
@@ -138,8 +139,12 @@ This pack ships two pieces that work together:
   pack catalog, sequences installs, and configures integration instances,
   jobs, and lookup datasets from each pack's `xsoar_config.json`.
 - **SOC Framework Pack Manager (integration)** — credential storage and a
-  single `socfw-install-pack` command that downloads and uploads a pack ZIP
-  as system content. The integration is internal plumbing; end users do not
+  single `socfw-install-pack` command that downloads a pack ZIP, installs it
+  through the `demisto-sdk` installation method, and checks that the tenant's
+  version record moved to the expected version. This check catches an upload
+  that failed; it does not guarantee that the pack's content items were
+  installed, which the tenant
+  records separately. The integration is internal plumbing; end users do not
   call it directly.
 
 The split exists because Cortex XSIAM integrations cannot call

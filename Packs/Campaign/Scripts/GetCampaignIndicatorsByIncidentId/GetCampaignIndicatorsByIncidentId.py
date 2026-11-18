@@ -1,6 +1,31 @@
+from collections.abc import Callable
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
 import pandas as pd
 from CommonServerPython import *  # noqa: F401
+
+
+def get_indicator_link_creator() -> Callable[[Any], str]:
+    """Returns a function to build a markdown link to an indicator details page.
+
+    The URL format depends on the platform:
+
+    - Unified Cortex platform (XSIAM v3 / XSOAR on platform): ``/indicator/{id}``
+    - Cortex XSOAR 8.x (SaaS, non-platform): ``/indicator/{id}``
+    - Cortex XSOAR 6.x (on-prem, legacy): ``#/indicator/{id}``
+
+    :return: A function that takes an indicator_id and returns a markdown-formatted link.
+    """
+    if is_platform() or is_xsoar_saas():
+        template = "[{id}](/indicator/{id})"
+    else:
+        template = "[{id}](#/indicator/{id})"
+
+    def create_indicator_link(indicator_id: Any) -> str:
+        return template.format(id=indicator_id)
+
+    return create_indicator_link
 
 
 def get_incidents_ids_from_context() -> list:
@@ -26,7 +51,7 @@ def get_indicators_from_incidents(incident_ids: list):
     Returns:
         List of the campaign indicators.
     """
-    indicators_query = f"""investigationIDs:({' '.join(f'"{id_}"' for id_ in incident_ids)})"""
+    indicators_query = f"""investigationIDs:({" ".join(f'"{id_}"' for id_ in incident_ids)})"""
     fields = ["id", "indicator_type", "investigationIDs", "investigationsCount", "score", "value"]
     search_indicators = IndicatorsSearcher(query=indicators_query, limit=150, size=500, filter_fields=",".join(fields))
     indicators: list[dict] = []
@@ -61,7 +86,7 @@ def format_results(indicators: list, incident_ids: list) -> str:
         return "No mutual indicators were found."
 
     associate_to_current_incident(indicators)
-    indicators_df["Id"] = indicators_df["id"].apply(lambda x: f"[{x}](#/indicator/{x})")
+    indicators_df["Id"] = indicators_df["id"].apply(get_indicator_link_creator())
     indicators_df = indicators_df.sort_values(["score", "Involved Incidents Count"], ascending=False)
     indicators_df["Reputation"] = indicators_df["score"].apply(scoreToReputation)
     indicators_df = indicators_df.rename({"value": "Value", "indicator_type": "Type"}, axis=1)

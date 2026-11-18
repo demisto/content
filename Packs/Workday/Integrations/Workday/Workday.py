@@ -9,7 +9,8 @@ urllib3.disable_warnings()
 
 # CONSTANTS
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-API_VERSION = "v34.0"
+DEFAULT_API_VERSION = "v47.0"
+API_VERSION_PATTERN = re.compile(r"^v\d+\.\d+$")
 HEADERS = [
     "Worker_ID",
     "User_ID",
@@ -44,8 +45,8 @@ GET_EMPLOYEES_REQ = """
                 <bsvc:Count>{count}</bsvc:Count>
             </bsvc:Response_Filter>
             <bsvc:Response_Group>
-                <bsvc:Include_Personal_Information>1</bsvc:Include_Personal_Information>
                 <bsvc:Include_Reference>1</bsvc:Include_Reference>
+                <bsvc:Include_Personal_Information>1</bsvc:Include_Personal_Information>
                 <bsvc:Include_Employment_Information>1</bsvc:Include_Employment_Information>
                 <bsvc:Include_Management_Chain_Data>1</bsvc:Include_Management_Chain_Data>
                 <bsvc:Include_Photo>1</bsvc:Include_Photo>
@@ -76,8 +77,8 @@ GET_EMPLOYEE_BY_ID = """
                 </bsvc:Worker_Reference>
             </bsvc:Request_References>
             <bsvc:Response_Group>
-                <bsvc:Include_Personal_Information>1</bsvc:Include_Personal_Information>
                 <bsvc:Include_Reference>1</bsvc:Include_Reference>
+                <bsvc:Include_Personal_Information>1</bsvc:Include_Personal_Information>
                 <bsvc:Include_Employment_Information>1</bsvc:Include_Employment_Information>
                 <bsvc:Include_Management_Chain_Data>1</bsvc:Include_Management_Chain_Data>
                 <bsvc:Include_Photo>1</bsvc:Include_Photo>
@@ -100,180 +101,211 @@ def convert_to_json(response):
     return raw_json_response, workers_data
 
 
-def create_worker_context(workers, num_of_managers):
-    workers = workers if isinstance(workers, list) else [workers]
-    workers_context = []
+def _as_dict(value) -> dict:
+    """Returns the value if it is a dict, otherwise an empty dict (xml2json renders empty elements as None)."""
+    return value if isinstance(value, dict) else {}
 
-    for worker in workers:
-        worker = worker.get("Worker_Data")
 
-        # Common Paths for fields
-        name_detail_data_path = (
-            worker.get("Personal_Data", {}).get("Name_Data", {}).get("Legal_Name_Data", {}).get("Name_Detail_Data")
-        )
-        position_data_path = worker.get("Employment_Data", {}).get("Worker_Job_Data", {}).get("Position_Data", {})
-        worker_status_data = worker.get("Employment_Data", {}).get("Worker_Status_Data", {})
-        business_site_address_data = position_data_path.get("Business_Site_Summary_Data", {}).get("Address_Data", {})
-        if isinstance(business_site_address_data, list):
-            business_site_address_data = business_site_address_data[-1]
+def _as_list(value) -> list:
+    """Returns the value as a list (xml2json renders a single element as a dict and a missing one as None)."""
+    if value is None:
+        return []
+    return value if isinstance(value, list) else [value]
 
-        worker_context = {
-            "Worker_ID": worker.get("Worker_ID"),
-            "User_ID": worker.get("User_ID"),
-            "Country": name_detail_data_path.get("Country_Reference")["ID"][1]["#text"],
-            "Legal_First_Name": name_detail_data_path.get("First_Name"),
-            "Legal_Last_Name": name_detail_data_path.get("Last_Name"),
-            "Preferred_First_Name": name_detail_data_path.get("First_Name"),
-            "Preferred_Last_Name": name_detail_data_path.get("Last_Name"),
-            "Has_International_Assignment": worker.get("Employment_Data", {})
-            .get("International_Assignment_Summary_Data", {})
-            .get("Has_International_Assignment"),
-            "Home_Country_Reference": worker.get("Employment_Data", {})
-            .get("International_Assignment_Summary_Data", {})
-            .get("Home_Country_Reference", {})["ID"][1]["#text"]
-            if worker.get("Employment_Data", {}).get("International_Assignment_Summary_Data", {}).get("Home_Country_Reference")
-            else None,
-            "Photo": worker.get("Photo_Data", {}).get("Image"),
-        }
 
-        if position_data_path:
-            position_context = {
-                "Position_ID": position_data_path.get("Position_ID"),
-                "Position_Title": position_data_path.get("Position_Title"),
-                "Business_Title": position_data_path.get("Business_Title"),
-                "Start_Date": position_data_path.get("Start_Date"),
-                "End_Employment_Reason_Reference": position_data_path["End_Employment_Reason_Reference"]["ID"][1]["#text"]
-                if position_data_path.get("End_Employment_Reason_Reference")
-                else "",
-                "Worker_Type": position_data_path["Worker_Type_Reference"]["ID"][1]["#text"],
-                "Position_Time_Type": position_data_path["Position_Time_Type_Reference"]["ID"][1]["#text"],
-                "Scheduled_Weekly_Hours": position_data_path.get("Scheduled_Weekly_Hours"),
-                "Default_Weekly_Hours": position_data_path.get("Default_Weekly_Hours"),
-                "Full_Time_Equivalent_Percentage": position_data_path.get("Full_Time_Equivalent_Percentage"),
-                "Exclude_from_Headcount": position_data_path.get("Exclude_from_Headcount"),
-                "Pay_Rate_Type": position_data_path["Pay_Rate_Type_Reference"]["ID"][1]["#text"]
-                if position_data_path.get("Pay_Rate_Type_Reference")
-                else "",
-                "Job_Profile_Name": position_data_path.get("Job_Profile_Summary_Data", {}).get("Job_Profile_Name"),
-                "Work_Shift_Required": position_data_path.get("Job_Profile_Summary_Data", {}).get("Work_Shift_Required"),
-                "Critical_Job": position_data_path.get("Job_Profile_Summary_Data", {}).get("Critical_Job"),
-                "Business_Site_id": position_data_path.get("Business_Site_Summary_Data", {})
-                .get("Location_Reference", {})
-                .get("ID")[1]["#text"],
-                "Business_Site_Name": position_data_path.get("Business_Site_Summary_Data", {}).get("Name"),
-                "Business_Site_Type": position_data_path.get("Business_Site_Summary_Data", {})
-                .get("Location_Type_Reference")
-                .get("ID")[1]["#text"],
-                "Business_Site_Address": {
-                    "Address_ID": business_site_address_data.get("Address_ID"),
-                    "Formatted_Address": business_site_address_data.get("@{urn:com.workday/bsvc}Formatted_Address"),
-                    "Country": business_site_address_data.get("Country_Reference", {}).get("ID")[1]["#text"],
-                    "Postal_Code": business_site_address_data.get("Postal_Code"),
-                },
-                "End_Date": position_data_path.get("End_Date"),
-                "Pay_Through_Date": position_data_path.get("Pay_Through_Date"),
-            }
-            worker_context.update(position_context)
-        if worker_status_data:
-            status_data_context = {
-                "Active": bool(int(worker_status_data.get("Active"))) if worker_status_data.get("Active") else None,
-                "Hire_Date": worker_status_data.get("Hire_Date"),
-                "Hire_Reason": worker_status_data.get("Hire_Reason_Reference", {}).get("ID")[2]["#text"],
-                "First_Day_of_Work": worker_status_data.get("First_Day_of_Work"),
-                "Retired": worker_status_data.get("Retired"),
-                # Number of days unemployed since the employee first joined the work force. Used only for China:
-                "Days_Unemployed": worker_status_data.get("Days_Unemployed"),
-                "Terminated": bool(int(worker_status_data.get("Terminated"))) if worker_status_data.get("Terminated") else None,
-                "Rehire": worker_status_data.get("Rehire"),
-                "Resignation_Date": worker_status_data.get("Resignation_Date"),
-            }
-            worker_context.update(status_data_context)
+def _primary_or_first(value) -> dict:
+    """Returns the element marked as primary (or the first one) when Workday returns a list, e.g. multiple jobs."""
+    items = [_as_dict(item) for item in _as_list(value)]
+    for item in items:
+        if item.get("@{urn:com.workday/bsvc}Primary_Job") == "1":
+            return item
+    return items[0] if items else {}
 
-        if worker_status_data.get("Terminated") == "1":
-            worker_context["Termination_Date"] = worker_status_data.get("Termination_Date")
-            worker_context["Primary_Termination_Reason"] = worker_status_data.get("Primary_Termination_Reason_Reference", {}).get(
-                "ID"
-            )[2]["#text"]
-            worker_context["Primary_Termination_Category"] = worker_status_data.get(
-                "Primary_Termination_Category_Reference", {}
-            ).get("ID")[1]["#text"]
-            worker_context["Termination_Involuntary"] = worker_status_data.get("Termination_Involuntary")
-            worker_context["Termination_Last_Day_of_Work"] = worker_status_data.get("Termination_Last_Day_of_Work")
 
-        # Addresses:
-        addresses = worker.get("Personal_Data", {}).get("Contact_Data", {}).get("Address_Data")
-        if not isinstance(addresses, list):
-            addresses = [addresses]
-        worker_context["Addresses"] = [
+def get_reference_id(reference, index: int) -> str | None:
+    """Returns the text of the ID at the given position of a Workday reference, or None if it does not exist.
+
+    Workday references hold a list of IDs of different types (e.g. WID first, then a readable ID).
+    Not every tenant returns every reference or every ID type, so missing values must not raise.
+    """
+    ids = _as_list(_as_dict(reference).get("ID"))
+    if index >= len(ids):
+        return None
+    return _as_dict(ids[index]).get("#text")
+
+
+def _to_bool(value) -> bool | None:
+    return bool(int(value)) if value not in (None, "") else None
+
+
+def _position_context(position: dict) -> dict:
+    job_profile = _as_dict(position.get("Job_Profile_Summary_Data"))
+    business_site = _as_dict(position.get("Business_Site_Summary_Data"))
+    site_address = business_site.get("Address_Data")
+    site_address = _as_dict(site_address[-1] if isinstance(site_address, list) and site_address else site_address)
+    return {
+        "Position_ID": position.get("Position_ID"),
+        "Position_Title": position.get("Position_Title"),
+        "Business_Title": position.get("Business_Title"),
+        "Start_Date": position.get("Start_Date"),
+        "End_Employment_Reason_Reference": get_reference_id(position.get("End_Employment_Reason_Reference"), 1) or "",
+        "Worker_Type": get_reference_id(position.get("Worker_Type_Reference"), 1),
+        "Position_Time_Type": get_reference_id(position.get("Position_Time_Type_Reference"), 1),
+        "Scheduled_Weekly_Hours": position.get("Scheduled_Weekly_Hours"),
+        "Default_Weekly_Hours": position.get("Default_Weekly_Hours"),
+        "Full_Time_Equivalent_Percentage": position.get("Full_Time_Equivalent_Percentage"),
+        "Exclude_from_Headcount": position.get("Exclude_from_Headcount"),
+        "Pay_Rate_Type": get_reference_id(position.get("Pay_Rate_Type_Reference"), 1) or "",
+        "Job_Profile_Name": job_profile.get("Job_Profile_Name"),
+        "Work_Shift_Required": job_profile.get("Work_Shift_Required"),
+        "Critical_Job": job_profile.get("Critical_Job"),
+        "Business_Site_id": get_reference_id(business_site.get("Location_Reference"), 1),
+        "Business_Site_Name": business_site.get("Name"),
+        "Business_Site_Type": get_reference_id(business_site.get("Location_Type_Reference"), 1),
+        "Business_Site_Address": {
+            "Address_ID": site_address.get("Address_ID"),
+            "Formatted_Address": site_address.get("@{urn:com.workday/bsvc}Formatted_Address"),
+            "Country": get_reference_id(site_address.get("Country_Reference"), 1),
+            "Postal_Code": site_address.get("Postal_Code"),
+        },
+        "End_Date": position.get("End_Date"),
+        "Pay_Through_Date": position.get("Pay_Through_Date"),
+    }
+
+
+def _status_context(worker_status: dict) -> dict:
+    return {
+        "Active": _to_bool(worker_status.get("Active")),
+        "Hire_Date": worker_status.get("Hire_Date"),
+        "Hire_Reason": get_reference_id(worker_status.get("Hire_Reason_Reference"), 2),
+        "First_Day_of_Work": worker_status.get("First_Day_of_Work"),
+        "Retired": worker_status.get("Retired"),
+        # Number of days unemployed since the employee first joined the work force. Used only for China:
+        "Days_Unemployed": worker_status.get("Days_Unemployed"),
+        "Terminated": _to_bool(worker_status.get("Terminated")),
+        "Rehire": worker_status.get("Rehire"),
+        "Resignation_Date": worker_status.get("Resignation_Date"),
+    }
+
+
+def _termination_context(worker_status: dict) -> dict:
+    return {
+        "Termination_Date": worker_status.get("Termination_Date"),
+        "Primary_Termination_Reason": get_reference_id(worker_status.get("Primary_Termination_Reason_Reference"), 2),
+        "Primary_Termination_Category": get_reference_id(worker_status.get("Primary_Termination_Category_Reference"), 1),
+        "Termination_Involuntary": worker_status.get("Termination_Involuntary"),
+        "Termination_Last_Day_of_Work": worker_status.get("Termination_Last_Day_of_Work"),
+    }
+
+
+def _addresses_context(addresses) -> list:
+    addresses_context = []
+    for address in map(_as_dict, _as_list(addresses)):
+        type_data = _as_dict(_as_dict(address.get("Usage_Data")).get("Type_Data"))
+        addresses_context.append(
             {
                 "Address_ID": address.get("Address_ID"),
                 "Formatted_Address": address.get("@{urn:com.workday/bsvc}Formatted_Address"),
-                "Country": address["Country_Reference"]["ID"][1]["#text"] if address.get("Country_Reference") else "",
-                "Region": address["Country_Region_Reference"]["ID"][2]["#text"]
-                if address.get("Country_Region_Reference")
-                else "",
+                "Country": get_reference_id(address.get("Country_Reference"), 1) or "",
+                "Region": get_reference_id(address.get("Country_Region_Reference"), 2) or "",
                 "Region_Descriptor": address.get("Country_Region_Descriptor", ""),
                 "Postal_Code": address.get("Postal_Code"),
-                "Type": address["Usage_Data"]["Type_Data"]["Type_Reference"]["ID"][1]["#text"]
-                if address.get("Usage_Data")
-                else "",
+                "Type": get_reference_id(type_data.get("Type_Reference"), 1) or "",
             }
-            for address in addresses
-        ]
-
-        # Emails:
-        emails = worker.get("Personal_Data", {}).get("Contact_Data", {}).get("Email_Address_Data")
-        if emails:
-            if not isinstance(emails, list):
-                emails = [emails]
-            worker_context["Emails"] = [
-                {
-                    "Email_Address": email.get("Email_Address"),
-                    "Type": email.get("Usage_Data", {}).get("Type_Data", {}).get("Type_Reference")["ID"][1]["#text"]
-                    if email["Usage_Data"]
-                    else "",
-                    "Primary": bool(int(email.get("Usage_Data", {}).get("Type_Data", {}).get("@{urn:com.workday/bsvc}Primary"))),
-                    "Public": bool(int(email.get("Usage_Data", {}).get("@{urn:com.workday/bsvc}Public"))),
-                }
-                for email in emails
-            ]
-
-        # Phones:
-        phones = worker.get("Personal_Data", {}).get("Contact_Data", {}).get("Phone_Data")
-        if phones:
-            if not isinstance(phones, list):
-                phones = [phones]
-            worker_context["Phones"] = [
-                {
-                    "ID": phone.get("ID"),
-                    "Phone_Number": phone.get("@{urn:com.workday/bsvc}E164_Formatted_Phone"),
-                    "Type": phone.get("Phone_Device_Type_Reference", {})["ID"][1]["#text"],
-                    "Usage": phone.get("Usage_Data", {}).get("Type_Data", {}).get("Type_Reference", {})["ID"][1]["#text"],
-                }
-                for phone in phones
-            ]
-
-        # Managers:
-        managers = (
-            worker.get("Management_Chain_Data", {})
-            .get("Worker_Supervisory_Management_Chain_Data", {})
-            .get("Management_Chain_Data")
         )
-        if managers:
-            if not isinstance(managers, list):
-                managers = [managers]
-            # Taking the n'th managers from the end of the list(descending from top level manager(ceo))
-            worker_context["Managers"] = [
-                {
-                    "Manager_ID": manager.get("Manager", {}).get("Worker_Reference", {})["ID"][1]["#text"],
-                    "Manager_Name": manager.get("Manager", {}).get("Worker_Descriptor"),
-                }
-                for manager in managers[-num_of_managers:]
-            ]
+    return addresses_context
 
-        workers_context.append(worker_context)
 
-    return workers_context
+def _emails_context(emails) -> list:
+    emails_context = []
+    for email in map(_as_dict, _as_list(emails)):
+        usage_data = _as_dict(email.get("Usage_Data"))
+        type_data = _as_dict(usage_data.get("Type_Data"))
+        emails_context.append(
+            {
+                "Email_Address": email.get("Email_Address"),
+                "Type": get_reference_id(type_data.get("Type_Reference"), 1) or "",
+                "Primary": _to_bool(type_data.get("@{urn:com.workday/bsvc}Primary")),
+                "Public": _to_bool(usage_data.get("@{urn:com.workday/bsvc}Public")),
+            }
+        )
+    return emails_context
+
+
+def _phones_context(phones) -> list:
+    phones_context = []
+    for phone in map(_as_dict, _as_list(phones)):
+        type_data = _as_dict(_as_dict(phone.get("Usage_Data")).get("Type_Data"))
+        phones_context.append(
+            {
+                "ID": phone.get("ID"),
+                "Phone_Number": phone.get("@{urn:com.workday/bsvc}E164_Formatted_Phone"),
+                "Type": get_reference_id(phone.get("Phone_Device_Type_Reference"), 1),
+                "Usage": get_reference_id(type_data.get("Type_Reference"), 1),
+            }
+        )
+    return phones_context
+
+
+def _managers_context(management_chain_data, num_of_managers: int) -> list:
+    chain = _as_dict(_as_dict(management_chain_data).get("Worker_Supervisory_Management_Chain_Data"))
+    managers = _as_list(chain.get("Management_Chain_Data"))
+    # Taking the n'th managers from the end of the list (descending from top level manager (ceo))
+    managers_context = []
+    for level in managers[-num_of_managers:]:
+        manager = _primary_or_first(_as_dict(level).get("Manager"))
+        managers_context.append(
+            {
+                "Manager_ID": get_reference_id(manager.get("Worker_Reference"), 1),
+                "Manager_Name": manager.get("Worker_Descriptor"),
+            }
+        )
+    return managers_context
+
+
+def _worker_context(worker: dict, num_of_managers: int) -> dict:
+    personal_data = _as_dict(worker.get("Personal_Data"))
+    employment_data = _as_dict(worker.get("Employment_Data"))
+    name_detail = _as_dict(_as_dict(_as_dict(personal_data.get("Name_Data")).get("Legal_Name_Data")).get("Name_Detail_Data"))
+    international_assignment = _as_dict(employment_data.get("International_Assignment_Summary_Data"))
+
+    worker_context = {
+        "Worker_ID": worker.get("Worker_ID"),
+        "User_ID": worker.get("User_ID"),
+        "Country": get_reference_id(name_detail.get("Country_Reference"), 1),
+        "Legal_First_Name": name_detail.get("First_Name"),
+        "Legal_Last_Name": name_detail.get("Last_Name"),
+        "Preferred_First_Name": name_detail.get("First_Name"),
+        "Preferred_Last_Name": name_detail.get("Last_Name"),
+        "Has_International_Assignment": international_assignment.get("Has_International_Assignment"),
+        "Home_Country_Reference": get_reference_id(international_assignment.get("Home_Country_Reference"), 1),
+        "Photo": _as_dict(worker.get("Photo_Data")).get("Image"),
+    }
+
+    position = _as_dict(_primary_or_first(employment_data.get("Worker_Job_Data")).get("Position_Data"))
+    if position:
+        worker_context.update(_position_context(position))
+
+    worker_status = _as_dict(employment_data.get("Worker_Status_Data"))
+    if worker_status:
+        worker_context.update(_status_context(worker_status))
+    if worker_status.get("Terminated") == "1":
+        worker_context.update(_termination_context(worker_status))
+
+    contact_data = _as_dict(personal_data.get("Contact_Data"))
+    worker_context["Addresses"] = _addresses_context(contact_data.get("Address_Data"))
+    if emails := _emails_context(contact_data.get("Email_Address_Data")):
+        worker_context["Emails"] = emails
+    if phones := _phones_context(contact_data.get("Phone_Data")):
+        worker_context["Phones"] = phones
+    if managers := _managers_context(worker.get("Management_Chain_Data"), num_of_managers):
+        worker_context["Managers"] = managers
+
+    return worker_context
+
+
+def create_worker_context(workers, num_of_managers):
+    return [_worker_context(_as_dict(_as_dict(worker).get("Worker_Data")), num_of_managers) for worker in _as_list(workers)]
 
 
 class Client(BaseClient):
@@ -282,25 +314,48 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, tenant_url, verify_certificate, proxy, tenant_name, token, username, password):
+    def __init__(
+        self, tenant_url, verify_certificate, proxy, tenant_name, token, username, password, api_version=DEFAULT_API_VERSION
+    ):
         headers = {"content-type": "text/xml;charset=UTF-8"}
         super().__init__(base_url=tenant_url, verify=verify_certificate, proxy=proxy, headers=headers)
         self.tenant_name = tenant_name
         self.token = token
         self.username = username
         self.password = password
+        self.api_version = api_version
 
     def list_workers(self, page, count, employee_id=None) -> tuple:
         if employee_id:
             body = GET_EMPLOYEE_BY_ID.format(
-                token=self.token, username=self.username, password=self.password, api_version=API_VERSION, employee_id=employee_id
+                token=self.token,
+                username=self.username,
+                password=self.password,
+                api_version=self.api_version,
+                employee_id=employee_id,
             )
         else:
             body = GET_EMPLOYEES_REQ.format(
-                token=self.token, username=self.username, password=self.password, api_version=API_VERSION, page=page, count=count
+                token=self.token,
+                username=self.username,
+                password=self.password,
+                api_version=self.api_version,
+                page=page,
+                count=count,
             )
         raw_response = self._http_request(method="POST", url_suffix="", data=body, resp_type="text", timeout=120)
         return convert_to_json(raw_response)
+
+
+def get_api_version(params: dict) -> str:
+    """
+    Returns the Workday API version configured in the instance (e.g. 'v47.0').
+    Falls back to DEFAULT_API_VERSION when not set, and raises on a malformed value.
+    """
+    api_version = (params.get("api_version") or DEFAULT_API_VERSION).strip()
+    if not API_VERSION_PATTERN.match(api_version):
+        raise DemistoException(f"Invalid API version '{api_version}'. Expected a format such as {DEFAULT_API_VERSION}.")
+    return api_version
 
 
 def test_module(client: Client, args: dict) -> str:
@@ -344,6 +399,7 @@ def main():
         raise DemistoException("Token and Tenant name must be provided.")
     verify_certificate: bool = not params.get("insecure", False)
     proxy: bool = params.get("proxy", False)
+    api_version = get_api_version(params)
 
     tenant_url = f"{base_url}/{tenant_name}/Staffing/"
 
@@ -364,6 +420,7 @@ def main():
             token=token,
             username=username,
             password=password,
+            api_version=api_version,
         )
 
         if command in commands:

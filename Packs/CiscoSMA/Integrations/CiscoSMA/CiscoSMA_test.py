@@ -892,3 +892,277 @@ def test_message_search_command_with_timout(requests_mock):
     assert outputs[0]["mid"] == [315]
     assert outputs[1]["recipient"] == ["test@test.com"]
     assert mock_request.last_request.timeout == 90
+
+
+""" TESTING AUTHENTICATION HANDLING """
+
+
+@pytest.fixture
+def clean_integration_context():
+    """Reset the integration context before and after an authentication test."""
+    from CommonServerPython import set_integration_context
+
+    set_integration_context({})
+    yield
+    set_integration_context({})
+
+
+def build_client(**kwargs):
+    """Instantiate a client without performing the initial authentication call."""
+    from CiscoSMA import Client
+
+    with patch("CiscoSMA.Client.handle_request_headers", mock_access_token):
+        return Client(BASE_URL, USERNAME, PASSWORD, verify=False, proxy=False, **kwargs)
+
+
+def test_handle_request_headers_retrieves_new_token(requests_mock, clean_integration_context):
+    """
+    Scenario: Handle the JWT token in the request headers.
+    Given:
+     - An empty integration context.
+    When:
+     - handle_request_headers is called.
+    Then:
+     - Ensure a new token is retrieved and stored in the integration context.
+    """
+    from CommonServerPython import get_integration_context
+
+    client = build_client()
+    login_request = requests_mock.post(url=f"{BASE_URL}/login", json=load_mock_response("login.json"))
+
+    client.handle_request_headers()
+
+    assert login_request.call_count == 1
+    assert client._headers["jwtToken"] == "new_token"
+    assert get_integration_context()["jwt_token"] == "new_token"
+
+
+def test_handle_request_headers_uses_cached_token(requests_mock, clean_integration_context):
+    """
+    Scenario: Handle the JWT token in the request headers.
+    Given:
+     - An integration context holding a token that has not expired.
+    When:
+     - handle_request_headers is called.
+    Then:
+     - Ensure the cached token is used and no login request is sent.
+    """
+    import time
+
+    from CommonServerPython import set_integration_context
+
+    client = build_client()
+    login_request = requests_mock.post(url=f"{BASE_URL}/login", json=load_mock_response("login.json"))
+    set_integration_context({"jwt_token": "cached_token", "jwt_token_issued_time": time.time()})
+
+    client.handle_request_headers()
+
+    assert login_request.call_count == 0
+    assert client._headers["jwtToken"] == "cached_token"
+
+
+def test_handle_request_headers_expired_token(requests_mock, clean_integration_context):
+    """
+    Scenario: Handle the JWT token in the request headers.
+    Given:
+     - An integration context holding a token that was issued before the expiration period.
+    When:
+     - handle_request_headers is called.
+    Then:
+     - Ensure a new token is retrieved.
+    """
+    import time
+
+    from CommonServerPython import set_integration_context
+
+    client = build_client()
+    login_request = requests_mock.post(url=f"{BASE_URL}/login", json=load_mock_response("login.json"))
+    set_integration_context({"jwt_token": "expired_token", "jwt_token_issued_time": time.time() - 60 * 60})
+
+    client.handle_request_headers()
+
+    assert login_request.call_count == 1
+    assert client._headers["jwtToken"] == "new_token"
+
+
+def test_handle_request_headers_missing_issued_time(requests_mock, clean_integration_context):
+    """
+    Scenario: Handle the JWT token in the request headers.
+    Given:
+     - An integration context holding a token without an issue time.
+    When:
+     - handle_request_headers is called.
+    Then:
+     - Ensure a new token is retrieved instead of raising a TypeError.
+    """
+    from CommonServerPython import set_integration_context
+
+    client = build_client()
+    login_request = requests_mock.post(url=f"{BASE_URL}/login", json=load_mock_response("login.json"))
+    set_integration_context({"jwt_token": "token_without_issued_time"})
+
+    client.handle_request_headers()
+
+    assert login_request.call_count == 1
+    assert client._headers["jwtToken"] == "new_token"
+
+
+def test_handle_request_headers_force_retrieve(requests_mock, clean_integration_context):
+    """
+    Scenario: Handle the JWT token in the request headers.
+    Given:
+     - An integration context holding a token that has not expired.
+    When:
+     - handle_request_headers is called with force_retrieve_jwt=True.
+    Then:
+     - Ensure the cached token is discarded and a new token is retrieved.
+    """
+    import time
+
+    from CommonServerPython import set_integration_context
+
+    client = build_client()
+    login_request = requests_mock.post(url=f"{BASE_URL}/login", json=load_mock_response("login.json"))
+    set_integration_context({"jwt_token": "cached_token", "jwt_token_issued_time": time.time()})
+
+    client.handle_request_headers(force_retrieve_jwt=True)
+
+    assert login_request.call_count == 1
+    assert client._headers["jwtToken"] == "new_token"
+
+
+def test_http_request_reauthenticates_on_401(requests_mock, clean_integration_context):
+    """
+    Scenario: The appliance invalidated the session before the client-side expiration period elapsed.
+    Given:
+     - A cached token that the API rejects with a 401.
+    When:
+     - An API request is sent.
+    Then:
+     - Ensure a new token is retrieved and the request is retried successfully.
+    """
+    import time
+
+    from CommonServerPython import get_integration_context, set_integration_context
+
+    client = build_client()
+    set_integration_context({"jwt_token": "stale_token", "jwt_token_issued_time": time.time()})
+    client.handle_request_headers()
+
+    login_request = requests_mock.post(url=f"{BASE_URL}/login", json=load_mock_response("login.json"))
+    search_request = requests_mock.get(
+        url=f"{BASE_URL}/quarantine/messages",
+        response_list=[
+            {"status_code": 401, "json": {"error": {"message": "Unauthorized request.", "code": "401"}}},
+            {"status_code": 200, "json": load_mock_response("spam_quarantine_message_search.json")},
+        ],
+    )
+
+    response = client.spam_quarantine_message_search_request(
+        quarantine_type="spam",
+        start_date="2026-10-03T05:37:00.000Z",
+        end_date="2026-10-06T05:37:00.000Z",
+        offset=0,
+        limit=50,
+    )
+
+    assert login_request.call_count == 1
+    assert search_request.call_count == 2
+    assert search_request.request_history[0].headers["jwtToken"] == "stale_token"
+    assert search_request.request_history[1].headers["jwtToken"] == "new_token"
+    assert get_integration_context()["jwt_token"] == "new_token"
+    assert response["meta"]["totalCount"] is not None
+
+
+def test_http_request_raises_when_retry_also_fails(requests_mock, clean_integration_context):
+    """
+    Scenario: The API keeps rejecting the request after re-authentication.
+    Given:
+     - An API that responds with a 401 to every request.
+    When:
+     - An API request is sent.
+    Then:
+     - Ensure the request is retried only once and the error is raised.
+    """
+    import time
+
+    from CommonServerPython import DemistoException, set_integration_context
+
+    client = build_client()
+    set_integration_context({"jwt_token": "stale_token", "jwt_token_issued_time": time.time()})
+    client.handle_request_headers()
+
+    requests_mock.post(url=f"{BASE_URL}/login", json=load_mock_response("login.json"))
+    search_request = requests_mock.get(
+        url=f"{BASE_URL}/quarantine/messages",
+        status_code=401,
+        json={"error": {"message": "Unauthorized request.", "code": "401"}},
+    )
+
+    with pytest.raises(DemistoException):
+        client.spam_quarantine_message_search_request(
+            quarantine_type="spam",
+            start_date="2026-10-03T05:37:00.000Z",
+            end_date="2026-10-06T05:37:00.000Z",
+            offset=0,
+            limit=50,
+        )
+
+    assert search_request.call_count == 2
+
+
+def test_http_request_does_not_retry_on_other_errors(requests_mock, clean_integration_context):
+    """
+    Scenario: The API responds with an error other than 401.
+    Given:
+     - An API that responds with a 500.
+    When:
+     - An API request is sent.
+    Then:
+     - Ensure no re-authentication is attempted and the error is raised.
+    """
+    import time
+
+    from CommonServerPython import DemistoException, set_integration_context
+
+    client = build_client()
+    set_integration_context({"jwt_token": "valid_token", "jwt_token_issued_time": time.time()})
+    client.handle_request_headers()
+
+    login_request = requests_mock.post(url=f"{BASE_URL}/login", json=load_mock_response("login.json"))
+    search_request = requests_mock.get(url=f"{BASE_URL}/quarantine/messages", status_code=500, json={})
+
+    with pytest.raises(DemistoException):
+        client.spam_quarantine_message_search_request(
+            quarantine_type="spam",
+            start_date="2026-10-03T05:37:00.000Z",
+            end_date="2026-10-06T05:37:00.000Z",
+            offset=0,
+            limit=50,
+        )
+
+    assert login_request.call_count == 0
+    assert search_request.call_count == 1
+
+
+def test_retrieve_jwt_token_invalid_credentials(requests_mock, clean_integration_context):
+    """
+    Scenario: The login call itself is rejected.
+    Given:
+     - Invalid credentials.
+    When:
+     - retrieve_jwt_token is called.
+    Then:
+     - Ensure an authorization error is raised and the login call is not retried endlessly.
+    """
+    client = build_client()
+    login_request = requests_mock.post(
+        url=f"{BASE_URL}/login",
+        status_code=401,
+        json={"error": {"message": "Unauthorized request.", "code": "401"}},
+    )
+
+    with pytest.raises(Exception, match="Authorization Error: make sure username and password are set correctly."):
+        client.retrieve_jwt_token()
+
+    assert login_request.call_count == 1

@@ -20,12 +20,11 @@ DEFAULT_BASE_URL = "https://api.dlp.paloaltonetworks.com/v1/"
 DEFAULT_AUTH_URL = "https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token"
 REPORT_URL = "public/report/{}"
 SERVICE_NAME_HEADER = "service-name"
-INCIDENTS_URL = "public/incident-notifications"
 REFRESH_TOKEN_URL = "public/oauth/refreshToken"
 UPDATE_INCIDENT_URL = "public/incident-feedback"
 SLEEP_TIME_URL = "public/seconds-between-incident-notifications-pull"
-FETCH_SLEEP = 5  # sleep between fetches (in seconds)
-LAST_FETCH_TIME = "last_fetch_time"
+V4_INCIDENTS_PATH = "/v4/api/incidents"
+V4_PAGE_SIZE = 1000
 DEFAULT_FIRST_FETCH = "60 minutes"
 ACCESS_TOKEN = "access_token"
 RESET_KEY = "reset"
@@ -35,6 +34,68 @@ PASSWORD = "password"
 USE_CLIENT_CREDENTIALS = "use_client_credentials"
 END_TIME_BUFFER = 30  # seconds
 MAX_API_CALLS_PER_FETCH = 100
+
+# Incident filters. Maps each instance parameter to the v4 filter field it drives.
+# Field names are case-sensitive server-side. Insertion order fixes the order of the
+# clauses in the generated expression.
+FILTER_PARAMS = {
+    "dlp_regions": "Region",
+    "dlp_channels": "Channel",
+    "dlp_severities": "Severity",
+    "dlp_statuses": "Status",
+    "dlp_priorities": "Priority",
+    "dlp_data_profile_ids": "DataProfile",
+    "dlp_data_pattern_ids": "DataPattern",
+    "dlp_tags": "Tag",
+    "dlp_report_ids": "ReportId",
+    "dlp_url_domains": "UrlDomain",
+    "dlp_assets": "Asset",
+    "dlp_actions": "Action",
+    "dlp_policy_types": "PolicyType",
+    "dlp_sub_policy_types": "SubPolicyType",
+}
+# Fields whose column stores uppercase enum names. Status and Severity are deliberately
+# absent — Status values are mixed case and Severity values are numeric.
+UPPERCASE_FILTER_FIELDS = {"Region", "Channel"}
+# Translation from the value configured on the instance to the value the column stores.
+# Keys are lowercased; a value that is not mapped is passed through, so the stored values
+# may also be configured directly.
+FILTER_VALUE_MAPS = {
+    # Severity is stored as a numeric string, so the readable names must be translated.
+    "Severity": {"critical": "5", "high": "4", "medium": "3", "low": "2", "informational": "1"},
+    # Status casing is inconsistent server-side: only "New" is capitalized. The entries
+    # that look like no-ops are what normalize the casing, since Status cannot simply be
+    # uppercased the way the fields in UPPERCASE_FILTER_FIELDS are.
+    "Status": {
+        "new": "New",
+        "open": "open",
+        "under_investigation": "under_investigation",
+        "closed": "closed",
+    },
+    # Region tokens that earlier versions offered but that never matched a stored value.
+    # Translated on the way out so upgraded instances keep fetching.
+    "Region": {"ap": "SG", "par": "FR", "sui": "CH"},
+    # Action is stored lowercase.
+    "Action": {"allow": "allow", "alert": "alert", "block": "block"},
+    # PolicyType is not stored on the incident; it is derived, and the API rejects any value
+    # that is not one of these three display values rather than matching nothing.
+    "PolicyType": {
+        "data in motion": "Data in Motion",
+        "data at rest": "Data at Rest",
+        "peripheral control": "Peripheral Control",
+    },
+}
+# DLP scores severity from 1 (Informational) to 5 (Critical), while XSOAR scores it from 0.5 to 4,
+# so the stored value must be translated before the incoming mapper copies it into the severity field.
+XSOAR_SEVERITY_BY_DLP_SEVERITY = {
+    "5": IncidentSeverity.CRITICAL,
+    "4": IncidentSeverity.HIGH,
+    "3": IncidentSeverity.MEDIUM,
+    "2": IncidentSeverity.LOW,
+    "1": IncidentSeverity.INFO,
+}
+# Characters that could break out of a quoted filter literal.
+UNSAFE_FILTER_VALUE = re.compile(r"['\\\x00-\x1f]")
 
 # Last run
 LAST_RUN_KEY = "last_run"
@@ -132,28 +193,36 @@ class Client(BaseClient):
         except Exception:
             pass
 
-    def _get_dlp_api_call(self, url_suffix: str, extra_headers: dict[str, str] | None = None) -> tuple[dict[str, Any], int]:
+    def _get_dlp_api_call(
+        self, url_suffix: str = "", full_url: str = "", extra_headers: dict[str, str] | None = None
+    ) -> tuple[dict[str, Any], int]:
         """
         Makes a HTTPS Get call on the DLP API
         Args:
             url_suffix: URL suffix for dlp api call
+            full_url: Absolute URL (takes precedence over url_suffix)
             extra_headers: Optional additional request headers
         """
         count = 0
-        print_debug_msg(f"Calling GET method on {self._base_url}{url_suffix}")
+        log_url = full_url or f"{self._base_url}{url_suffix}"
+        print_debug_msg(f"Calling GET method on {log_url}")
         while count < MAX_ATTEMPTS:
             headers = {"Authorization": "Bearer " + self.access_token}
             if extra_headers:
                 headers.update(extra_headers)
-            res = self._http_request(
-                method="GET",
-                headers=headers,
-                url_suffix=url_suffix,
-                ok_codes=[200, 201, 204],
-                error_handler=self._handle_4xx_errors,
-                resp_type="",
-                return_empty_response=True,
-            )
+            http_kwargs: dict[str, Any] = {
+                "method": "GET",
+                "headers": headers,
+                "ok_codes": [200, 201, 204],
+                "error_handler": self._handle_4xx_errors,
+                "resp_type": "",
+                "return_empty_response": True,
+            }
+            if full_url:
+                http_kwargs["full_url"] = full_url
+            else:
+                http_kwargs["url_suffix"] = url_suffix
+            res = self._http_request(**http_kwargs)
             if res.status_code < 400 or res.status_code >= 500:
                 break
             count += 1
@@ -168,26 +237,31 @@ class Client(BaseClient):
 
         return result_json, res.status_code
 
-    def _post_dlp_api_call(self, url_suffix: str, payload: dict = None):
+    def _post_dlp_api_call(self, url_suffix: str = "", payload: dict = None, full_url: str = ""):
         """
         Makes a POST HTTP(s) call to the DLP API
         Args:
             url_suffix: URL suffix for dlp api call
             payload: Optional JSON payload
+            full_url: Absolute URL (takes precedence over url_suffix)
         """
         count = 0
 
         while count < MAX_ATTEMPTS:
-            res = self._http_request(
-                method="POST",
-                headers={"Authorization": f"Bearer {self.access_token}"},
-                url_suffix=url_suffix,
-                json_data=payload,
-                ok_codes=[200, 201, 204],
-                error_handler=self._handle_4xx_errors,
-                resp_type="response",
-                return_empty_response=True,
-            )
+            http_kwargs: dict[str, Any] = {
+                "method": "POST",
+                "headers": {"Authorization": f"Bearer {self.access_token}"},
+                "json_data": payload,
+                "ok_codes": [200, 201, 204],
+                "error_handler": self._handle_4xx_errors,
+                "resp_type": "response",
+                "return_empty_response": True,
+            }
+            if full_url:
+                http_kwargs["full_url"] = full_url
+            else:
+                http_kwargs["url_suffix"] = url_suffix
+            res = self._http_request(**http_kwargs)
             if res.status_code < 400 or res.status_code >= 500:
                 break
             count += 1
@@ -221,26 +295,63 @@ class Client(BaseClient):
             url = url + "?fetchSnippets=true"
 
         extra_headers = {SERVICE_NAME_HEADER: service_name} if service_name else None
-        return self._get_dlp_api_call(url, extra_headers)
+        return self._get_dlp_api_call(url, extra_headers=extra_headers)
 
-    def get_dlp_incidents(
+    def _v4_incidents_url(self) -> str:
+        """Build the absolute v4 incidents URL from the configured base URL's host.
+
+        The v4 API is not versioned under the v1 base path, so only the scheme and
+        host are reused. Deriving the path by string replacement on ``base_url``
+        silently no-ops when the URL is customized, so it is not used here.
+        """
+        parsed = urllib.parse.urlparse(self._base_url)
+        return f"{parsed.scheme}://{parsed.netloc}{V4_INCIDENTS_PATH}"
+
+    def get_incidents_first_page(
         self,
-        regions: str,
-        start_time: int | None = None,
-        end_time: int | None = None,
+        start_time_ms: int,
+        end_time_ms: int,
+        filter_expression: str = "",
+        page_size: int = V4_PAGE_SIZE,
     ) -> tuple[dict[str, Any], int]:
-        url = INCIDENTS_URL
-        params = {}
-        if regions:
-            params["regions"] = regions
-        if start_time:
-            params["start_timestamp"] = str(start_time)
-        if end_time:
-            params["end_timestamp"] = str(end_time)
-        query_string = urllib.parse.urlencode(params)
-        url = f"{url}?{query_string}"
-        resp, status_code = self._get_dlp_api_call(url)
-        return resp, status_code
+        """Start a v4 incident inventory query and fetch its first page.
+
+        Args:
+            start_time_ms: Start time in epoch milliseconds (inclusive).
+            end_time_ms: End time in epoch milliseconds (inclusive).
+            filter_expression: Server-side filter expression. Empty = no filtering.
+            page_size: Rows per page.
+
+        Returns:
+            (response_json, status_code) — response contains ``rows``, ``status``,
+            ``query_token`` and ``total_rows``.
+        """
+        payload: dict[str, Any] = {
+            "time_range": "CUSTOM",
+            "start_time": start_time_ms,
+            "end_time": end_time_ms,
+            "sort_by": "IncidentCreatedDate",
+            "sort_order": "ASC",
+            "page_size": page_size,
+        }
+        if filter_expression:
+            payload["filter"] = filter_expression
+
+        return self._post_dlp_api_call(full_url=self._v4_incidents_url(), payload=payload)
+
+    def get_incidents_next_page(self, token: str, offset: int, page_size: int = V4_PAGE_SIZE) -> tuple[dict[str, Any], int]:
+        """Fetch a subsequent page of an already-started v4 inventory query.
+
+        Args:
+            token: Query token returned by ``get_incidents_first_page``.
+            offset: Zero-indexed row offset into the query result set.
+            page_size: Rows per page.
+
+        Returns:
+            (response_json, status_code)
+        """
+        query_string = urllib.parse.urlencode({"token": token, "offset": offset, "pageSize": page_size})
+        return self._get_dlp_api_call(full_url=f"{self._v4_incidents_url()}?{query_string}")
 
     def update_dlp_incident(
         self,
@@ -433,8 +544,11 @@ def get_dlp_report_command(client: Client, args: dict) -> CommandResults:
 
 def test(client: Client, params: dict):
     """Test Function to test validity of access and refresh tokens"""
-    dlp_regions = params.get("dlp_regions", "")
-    report_json, status_code = client.get_dlp_incidents(regions=dlp_regions)
+    now_ms = int(datetime.now(tz=UTC).timestamp() * 1000)
+    one_hour_ago_ms = now_ms - 3_600_000
+    report_json, status_code = client.get_incidents_first_page(
+        start_time_ms=one_hour_ago_ms, end_time_ms=now_ms, filter_expression=build_incident_filter(params), page_size=1
+    )
     if status_code in [200, 204]:
         return_results("ok")
     else:
@@ -442,7 +556,7 @@ def test(client: Client, params: dict):
         if "error" in report_json:
             message += f"Error message: \"{report_json.get('error')}\""
         else:
-            message += "Could not determine the error reason. Make sure the DLP Regions parameter is configured correctly."
+            message += "Could not determine the error reason. Make sure the incident filter parameters are configured correctly."
         raise DemistoException(message)
 
 
@@ -491,41 +605,176 @@ def parse_incident_details(compressed_details: str):
     return details_obj
 
 
-def create_incident(notification: dict, region: str, incident_type: str = "Data Loss Prevention") -> dict[str, Any]:
+def build_filter_clause(field: str, values: str | list[str] | None) -> str:
     """
-    Create an XSOAR incident from a DLP notification.
+    Build a single ``<Field> in (...)`` clause of the v4 filter expression.
+
+    Values configured on the instance are translated to the values the column stores:
+    the readable names in ``FILTER_VALUE_MAPS`` are looked up, and the enum-backed fields
+    listed in ``UPPERCASE_FILTER_FIELDS`` are uppercased. A value that matches neither is
+    passed through, so a stored value may also be configured directly.
+
+    Quotes, backslashes and control characters are rejected rather than dropped. A
+    dropped value would silently widen the query — losing every token removes the
+    clause altogether, so an instance meant to watch one channel would fetch them all.
 
     Args:
-        notification: DLP notification containing incident data and previous notifications
-        region: DLP region where the incident occurred
-        incident_type: Type of incident to create (default: "Data Loss Prevention")
+        field: Filter field name, as declared by the v4 API (case-sensitive).
+        values: Configured values, either as a list (a multi-select parameter is handed
+            to the integration as a list) or as a comma-separated string.
 
     Returns:
-        dict[str, Any]: XSOAR incident object with name, type, occurred time, and raw JSON data
-    """
-    raw_incident = notification["incident"]
-    previous_notifications = notification["previous_notifications"]
-    raw_incident["region"] = region
-    raw_incident["previousNotification"] = previous_notifications[0] if len(previous_notifications) > 0 else None
-    parsed_details = parse_incident_details(raw_incident["incidentDetails"])
-    raw_incident["incidentDetails"] = parsed_details
-    if not raw_incident.get("userId"):
-        for header in parsed_details.get("headers", []):
-            attribute_name = header.get("attribute_name")
-            attribute_value = header.get("attribute_value")
-            if attribute_name == "username" and attribute_value:
-                raw_incident["userId"] = attribute_value
+        str: Filter clause, or an empty string when nothing is configured.
 
-    incident_creation_time = cast(datetime, dateparser.parse(raw_incident["createdAt"]))
-    incident_id = raw_incident["incidentId"]
-    incident_timestamp = int(incident_creation_time.timestamp())
-    demisto.debug(f"Creating new incident with {incident_id=} and {incident_timestamp=} in {region=}.")
+    Raises:
+        DemistoException: If a value contains a character that cannot be represented in
+            the filter expression.
+    """
+    tokens = []
+    for value in argToList(values):
+        token = str(value).strip()
+        if not token:
+            continue
+        if UNSAFE_FILTER_VALUE.search(token):
+            raise DemistoException(
+                f"Invalid value {token!r} for the {field} filter: quotes, backslashes and "
+                "control characters are not supported."
+            )
+        mapped = FILTER_VALUE_MAPS.get(field, {}).get(token.lower())
+        if mapped is not None:
+            token = mapped
+        elif field in UPPERCASE_FILTER_FIELDS:
+            token = token.upper()
+        tokens.append(token)
+
+    if not tokens:
+        return ""
+    return "{} in ({})".format(field, ", ".join(f"'{token}'" for token in tokens))
+
+
+def build_incident_filter(params: dict) -> str:
+    """
+    Combine every configured filter parameter into one v4 filter expression.
+
+    Args:
+        params: Integration instance configuration parameters.
+
+    Returns:
+        str: ``AND``-joined filter expression, or an empty string when no filter is
+            configured, in which case the query covers everything the tenant can see.
+    """
+    clauses = [build_filter_clause(field, params.get(param)) for param, field in FILTER_PARAMS.items()]
+    return " AND ".join(clause for clause in clauses if clause)
+
+
+def to_xsoar_severity(dlp_severity: Any) -> float:
+    """
+    Translate a DLP incident severity to the XSOAR severity scale.
+
+    Args:
+        dlp_severity: The row's severity, either the stored number (1-5) or its readable name.
+
+    Returns:
+        float: The matching IncidentSeverity value, or IncidentSeverity.UNKNOWN when unrecognized.
+    """
+    severity = str(dlp_severity).strip().lower() if dlp_severity is not None else ""
+    # Readable names are accepted too, translated with the same map the severity filter uses.
+    severity = FILTER_VALUE_MAPS["Severity"].get(severity, severity)
+    return XSOAR_SEVERITY_BY_DLP_SEVERITY.get(severity, IncidentSeverity.UNKNOWN)
+
+
+def parse_created_date(value: Any) -> datetime | None:
+    """
+    Normalize a v4 ``created_date`` into a timezone-aware datetime.
+
+    The field is typed as a number but the unit is not pinned by the contract —
+    seconds, milliseconds and microseconds all appear — so the magnitude decides.
+    Strings are handed to ``dateparser``.
+
+    Args:
+        value: Raw ``created_date`` value from a v4 inventory row.
+
+    Returns:
+        datetime | None: Parsed timestamp, or None when it cannot be parsed.
+    """
+    if value is None or value == "":
+        return None
+
+    if isinstance(value, (int, float)) or (isinstance(value, str) and value.strip().lstrip("-").isdigit()):
+        seconds = float(value)
+        if abs(seconds) >= 1e14:  # microseconds
+            seconds /= 1_000_000
+        elif abs(seconds) >= 1e11:  # milliseconds
+            seconds /= 1_000
+        try:
+            return datetime.fromtimestamp(seconds, tz=UTC)
+        except (OverflowError, OSError, ValueError):
+            return None
+
+    return dateparser.parse(str(value), settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True})
+
+
+def create_incident(row: dict, created_at: datetime, incident_type: str = "Data Loss Prevention") -> dict[str, Any]:
+    """
+    Create an XSOAR incident from a v4 incident inventory row.
+
+    Maps the flat v4 row onto the rawJSON keys the v1 fetch emitted — including the
+    nested ``previousNotification`` and ``incidentDetails.headers`` shapes — so that
+    downstream classifiers, layouts and playbooks keep resolving unchanged.
+
+    Args:
+        row: Single item from the v4 ``rows`` array.
+        created_at: Parsed incident creation time.
+        incident_type: Incident type label (default: "Data Loss Prevention").
+
+    Returns:
+        dict[str, Any]: XSOAR incident dict.
+    """
+    incident_id = row.get("incident_id", "")
+    control_point = row.get("control_point") or ""
+    # The server unwraps the data profiles JSON and derives data_profile_id from the
+    # last element, so the matching name/version come from the same element.
+    data_profiles = row.get("data_profiles") or []
+    data_profile = data_profiles[-1] if data_profiles else {}
+
+    raw_incident: dict[str, Any] = {
+        "incidentId": incident_id,
+        "userId": row.get("source"),
+        "tenantId": None,
+        "reportId": row.get("report_id"),
+        "dataProfileId": row.get("data_profile_id"),
+        "dataProfileName": data_profile.get("name"),
+        "dataProfileVersion": data_profile.get("version"),
+        "action": row.get("action"),
+        "channel": control_point.lower().replace("_", "-"),
+        "filename": row.get("asset_name"),
+        "checksum": None,
+        "fileType": None,
+        "source": control_point,
+        "appId": None,
+        "appName": row.get("destination"),
+        "createdAt": created_at.isoformat(),
+        "region": row.get("source_region"),
+        "previousNotification": {"feedback_status": row.get("feedback_status")},
+        "incidentDetails": {
+            # The incoming mapper copies this value into the severity field unchanged.
+            "headers": [{"attribute_name": "severity", "attribute_value": to_xsoar_severity(row.get("severity"))}],
+            # The incoming mapper reads the App incident field from incidentDetails.app_details.name,
+            # which the v1 fetch filled from the compressed details blob. "destination" is that
+            # same value: the control point reports the application it resolved, and the inventory
+            # API returns it under this name. Do not read "destination" from the incident-detail
+            # API expecting the same thing - there the key means the network destination address.
+            "app_details": {"name": row.get("destination")},
+        },
+    }
+
+    demisto.debug(f"Creating new incident with {incident_id=} in region={raw_incident['region']}.")
     event_dump = json.dumps(raw_incident)
 
     return {
         "name": f"Palo Alto Networks DLP Incident {incident_id}",
         "type": incident_type,
-        "occurred": incident_creation_time.isoformat(),
+        "occurred": created_at.isoformat(),
         "rawJSON": event_dump,
         "details": event_dump,
     }
@@ -638,7 +887,7 @@ def _migrate_last_run(last_run: dict[str, Any], start_timestamp: int) -> dict[st
 
 def fetch_notifications(
     client: Client,
-    regions: str,
+    filter_expression: str,
     first_fetch_timestamp: int,
     incident_type: str = "Data Loss Prevention",
     max_fetch: int = DEFAULT_MAX_FETCH,
@@ -649,7 +898,7 @@ def fetch_notifications(
 
     Args:
         client (Client): DLP API client.
-        regions (str): Comma-separated DLP regions to fetch from.
+        filter_expression (str): Server-side filter expression narrowing the incidents fetched.
         first_fetch_timestamp (int): Timestamp to use for first fetch (unix epoch seconds).
         incident_type (str): Type of incident to create (default: "Data Loss Prevention").
         max_fetch (int): Maximum number of incidents to fetch (default: DEFAULT_MAX_FETCH).
@@ -685,61 +934,103 @@ def fetch_notifications(
     )
 
     new_incidents: list[dict] = []
-    last_queried_end_time: int = effective_start_timestamp
 
-    # Query the API in 3 minute start/end time window, this filters incidents according to their "committedAt" timestamps
-    start_end_time_intervals = get_start_end_time_intervals(effective_start_timestamp, end_timestamp, seconds_delta=180)
-    for api_call_number, (start_time, end_time) in enumerate(start_end_time_intervals, start=1):
-        if len(new_incidents) >= max_fetch:
-            demisto.debug(f"Reached or exceeded fetch limit. Fetched {len(new_incidents)} incidents. Breaking...")
-            break
+    # Convert to milliseconds for the v4 API
+    start_time_ms = effective_start_timestamp * 1000
+    end_time_ms = end_timestamp * 1000
 
-        if api_call_number > MAX_API_CALLS_PER_FETCH:
-            demisto.debug(f"Reached or exceeded maximum number of API calls per fetch. Fetched {len(new_incidents)} incidents. ")
-            break
+    # A single query covers every configured region, so the watermark below is derived
+    # from all of them rather than from whichever region happened to be queried last.
+    resp, status_code = client.get_incidents_first_page(
+        start_time_ms=start_time_ms, end_time_ms=end_time_ms, filter_expression=filter_expression
+    )
+    rows: list[dict] = resp.get("rows") or []
+    demisto.debug(f"First page: {len(rows)} rows, total_rows={resp.get('total_rows')}, status={resp.get('status')}.")
 
-        demisto.debug(f"Getting incidents between {start_time=} and {end_time=} from {regions=}.")
-        notification_map, _ = client.get_dlp_incidents(regions, start_time, end_time)
-        last_queried_end_time = end_time
-
-        notifications = [
-            {**raw_notification, "region": region}
-            for region, raw_notifications in notification_map.items()
-            for raw_notification in raw_notifications
-        ]
-        demisto.debug(f"Received {len(notifications)} notifications between {start_time=} and {end_time=}.")
-        notifications.sort(key=lambda x: x["incident"]["committedAt"])
-
-        for notification in notifications:
-            # Use "incidentId" and "committedAt" fields for deduplication and last run tracking
-            # These are required fields that are guaranteed to exist for each DLP incident
-            region = notification["region"]
-            incident_id = notification["incident"]["incidentId"]
-            incident_committed_timestamp = int(dateparser.parse(notification["incident"]["committedAt"]).timestamp())  # type: ignore
-            if incident_id in fetched_incident_ids_committed_timestamps:
-                demisto.debug(f"Skipping duplicate {incident_id=} with {incident_committed_timestamp=} in {region=}.")
-                continue
-
-            if len(new_incidents) >= max_fetch:
-                demisto.debug(f"Reached or exceeded fetch limit. Fetched {len(new_incidents)} incidents. Breaking...")
-                break
-
-            incident = create_incident(notification, region, incident_type)
-            new_incidents.append(incident)
-            fetched_incident_ids_committed_timestamps[incident_id] = incident_committed_timestamp
-
-    demisto.debug(f"Finished fetching incidents using {max_fetch=} between {effective_start_timestamp=} and {end_timestamp=}.")
-    demisto.debug(f"Fetched {len(new_incidents)} deduplicated incidents: {[inc.get('name') for inc in new_incidents]}.")
-
+    # Persist a token that may have been refreshed during the call above before returning early.
     demisto.debug("Updating integration context with access token.")
     demisto.setIntegrationContext({ACCESS_TOKEN: client.access_token})
+
+    # An unread window must not be treated as an empty one. compute_next_run advances the
+    # watermark whenever no incidents are returned, so returning early without touching the
+    # last run is what keeps a failed query from skipping the window it never read.
+    if status_code not in (200, 201, 204):
+        error_message = resp.get("error") or "Could not determine the error reason."
+        raise DemistoException(
+            f"Failed to query incidents, got status code {status_code}. {error_message} "
+            "The last run was left unchanged, so this time window is re-queried on the next fetch."
+        )
+
+    # The backend can acknowledge a query before its results are ready. Rather than polling
+    # within the fetch, the same window is re-queried on the next fetch, widened to "now".
+    if resp.get("status") == "PENDING" and not rows:
+        demisto.debug("Query results are not ready yet. Leaving the last run unchanged to re-query this window.")
+        return last_run, []
+
+    query_token = resp.get("query_token") or ""
+    total_rows = resp.get("total_rows") or 0
+    # Set when paging stops before the result set was fully read, so the unread part of the
+    # window is not mistaken for an empty one.
+    incomplete_reason = ""
+
+    offset = 0
+    while rows:
+        offset += len(rows)
+        for row in rows:
+            if len(new_incidents) >= max_fetch:
+                break
+
+            incident_id = row.get("incident_id", "")
+            if incident_id in fetched_incident_ids_committed_timestamps:
+                demisto.debug(f"Skipping duplicate {incident_id=}.")
+                continue
+
+            created_at = parse_created_date(row.get("created_date"))
+            if created_at is None:
+                demisto.debug(f"Skipping {incident_id=}, unparsable created_date={row.get('created_date')!r}.")
+                continue
+
+            new_incidents.append(create_incident(row, created_at, incident_type))
+            fetched_incident_ids_committed_timestamps[incident_id] = int(created_at.timestamp())
+
+        if len(new_incidents) >= max_fetch or (total_rows and offset >= total_rows):
+            break
+
+        if not query_token:
+            # Without total_rows, a full page is the only sign that more rows may follow.
+            if total_rows or len(rows) >= V4_PAGE_SIZE:
+                incomplete_reason = f"No query token was returned after reading {offset} of {total_rows or 'unknown'} rows."
+            break
+
+        resp, status_code = client.get_incidents_next_page(query_token, offset)
+        if status_code not in (200, 201, 204):
+            error_message = resp.get("error") or "Could not determine the error reason."
+            incomplete_reason = f"Failed to fetch the page at {offset=}, got status code {status_code}. {error_message}"
+            break
+
+        rows = resp.get("rows") or []
+        demisto.debug(f"Fetched {len(rows)} rows at {offset=}.")
+        if not rows and total_rows and offset < total_rows:
+            incomplete_reason = f"Got an empty page after reading {offset} of {total_rows} rows."
+
+    demisto.debug(f"Finished fetching. Got {len(new_incidents)} new incidents.")
+    demisto.debug(f"Fetched incidents: {[inc.get('name') for inc in new_incidents]}.")
+
+    # Same contract as the first-page check above: an unread window must not advance the watermark.
+    # Incidents already collected are still returned, since the next run resumes from the latest of them.
+    if incomplete_reason and not new_incidents:
+        raise DemistoException(
+            f"{incomplete_reason} The last run was left unchanged, so this time window is re-queried on the next fetch."
+        )
+    if incomplete_reason:
+        demisto.info(f"{incomplete_reason} Returning the {len(new_incidents)} incidents collected so far.")
 
     next_run = compute_next_run(
         fetched_incident_ids_committed_timestamps,
         last_run=last_run,
         look_back_minutes=look_back_minutes,
         has_new_incidents=bool(new_incidents),
-        last_queried_end_time=last_queried_end_time,
+        last_queried_end_time=end_timestamp,
     )
     demisto.debug(f"Computed updated {next_run=}.")
     return next_run, new_incidents
@@ -756,7 +1047,8 @@ def fetch_incidents(client: Client, params: dict) -> tuple[dict, list[dict]]:
     Returns:
         tuple[dict, list[dict]]: Next run state and list of fetched incidents.
     """
-    regions = params.get("dlp_regions", "")
+    filter_expression = build_incident_filter(params)
+    demisto.debug(f"Fetching incidents with {filter_expression=}.")
     incident_type = params.get("incidentType", "Data Loss Prevention")
 
     first_fetch = params.get("first_fetch") or DEFAULT_FIRST_FETCH
@@ -768,7 +1060,7 @@ def fetch_incidents(client: Client, params: dict) -> tuple[dict, list[dict]]:
 
     return fetch_notifications(
         client=client,
-        regions=regions,
+        filter_expression=filter_expression,
         first_fetch_timestamp=first_fetch_timestamp,
         incident_type=incident_type,
         max_fetch=max_fetch,

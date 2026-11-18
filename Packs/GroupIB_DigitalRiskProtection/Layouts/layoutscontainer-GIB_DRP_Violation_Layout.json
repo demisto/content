@@ -473,6 +473,15 @@
                                 "startCol": 0
                             },
                             {
+                                "endCol": 4,
+                                "fieldId": "gibdrpstages",
+                                "height": 106,
+                                "id": "5f3a1c10-0000-4a10-9b00-000000000001",
+                                "index": 13,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "endCol": 6,
                                 "fieldId": "gibdrphtmlimages",
                                 "height": 44,
@@ -483,31 +492,46 @@
                             },
                             {
                                 "args": {
-                                    "id": {
-                                        "simple": "${incident.gibdrpid}"
-                                    },
                                     "status": {
                                         "simple": "reject"
                                     }
                                 },
                                 "buttonClass": "error",
-                                "dropEffect": "move",
                                 "endCol": 6,
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "4ad2d5d0-edcb-11ef-b8bb-2182ba34affd",
                                 "index": 0,
-                                "listId": "caseinfoid-96ff2940-71a2-11ef-8c49-f9d8b5e80cf6",
                                 "name": "Reject Violation",
-                                "scriptId": "Group-IB Digital Risk Protection|||gibdrp-change-violation-status",
+                                "scriptId": "GIBDRPResolveViolation",
                                 "sectionItemType": "button",
-                                "startCol": 4
+                                "startCol": 4,
+                                "dropEffect": "move",
+                                "listId": "caseinfoid-96ff2940-71a2-11ef-8c49-f9d8b5e80cf6",
+                                "filters": [
+                                    [
+                                        {
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "gibdrpapprovestate"
+                                                }
+                                            },
+                                            "operator": "isEqualString",
+                                            "right": {
+                                                "isContext": false,
+                                                "value": {
+                                                    "simple": "under_review"
+                                                }
+                                            },
+                                            "type": "shortText"
+                                        }
+                                    ]
+                                ]
                             },
                             {
                                 "args": {
-                                    "id": {
-                                        "simple": "${incident.gibdrpid}"
-                                    },
                                     "status": {
                                         "simple": "approve"
                                     }
@@ -519,9 +543,30 @@
                                 "id": "ad1d0940-edcb-11ef-b8bb-2182ba34affd",
                                 "index": 1,
                                 "name": "Approve Violation",
-                                "scriptId": "Group-IB Digital Risk Protection|||gibdrp-change-violation-status",
+                                "scriptId": "GIBDRPResolveViolation",
                                 "sectionItemType": "button",
-                                "startCol": 4
+                                "startCol": 4,
+                                "filters": [
+                                    [
+                                        {
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "gibdrpapprovestate"
+                                                }
+                                            },
+                                            "operator": "isEqualString",
+                                            "right": {
+                                                "isContext": false,
+                                                "value": {
+                                                    "simple": "under_review"
+                                                }
+                                            },
+                                            "type": "shortText"
+                                        }
+                                    ]
+                                ]
                             }
                         ],
                         "maxW": 3,
@@ -610,6 +655,15 @@
                                 "height": 22,
                                 "id": "f7778190-ed22-11ef-bdfd-773f20036f06",
                                 "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibdrpcreated",
+                                "height": 22,
+                                "id": "5f3a1c10-0000-4a10-9b00-000000000002",
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

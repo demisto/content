@@ -33,7 +33,7 @@ configuration:
   required: false
   section: Collect
   type: 8
-- additionalinfo: Maximum number of incidents per fetch. The default value is 200.
+- additionalinfo: The maximum number of incidents per fetch run, across all incident types.
   defaultvalue: '200'
   display: Maximum incidents to fetch.
   name: max_fetch
@@ -86,6 +86,49 @@ configuration:
   type: 0
   required: false
   additionalinfo: Maximum number of pages to fetch for incidents
+  section: Collect
+- display: Case fetch mode
+  name: case_fetch_mode
+  defaultvalue: Last modified time
+  options:
+  - Last modified time
+  - Created time
+  type: 15
+  required: false
+  advanced: true
+  additionalinfo: 'The timestamp used to fetch Account Takeover cases. "Last modified time" creates a new incident each time a case is modified, resolved or reopened, as in earlier versions. "Created time" creates one incident per case.'
+  section: Collect
+- display: Fetch time budget (in seconds)
+  name: fetch_time_budget
+  defaultvalue: "150"
+  type: 0
+  required: false
+  advanced: true
+  additionalinfo: The maximum time a fetch run can spend calling the API before it saves its progress and stops. Keep this below the 3-minute fetch timeout.
+  section: Collect
+- display: Maximum fetch window (in minutes)
+  name: max_window_minutes
+  defaultvalue: "1440"
+  type: 0
+  required: false
+  advanced: true
+  additionalinfo: The longest time range listed in one request. Windows with too many items to list at once are split automatically.
+  section: Collect
+- display: Concurrent detail requests
+  name: detail_concurrency
+  defaultvalue: "4"
+  type: 0
+  required: false
+  advanced: true
+  additionalinfo: The number of incident detail requests that run concurrently.
+  section: Collect
+- display: Maximum requests per second
+  name: detail_rate_per_second
+  defaultvalue: "2"
+  type: 0
+  required: false
+  advanced: true
+  additionalinfo: The maximum number of API requests per second during a fetch run, shared by all concurrent requests.
   section: Collect
 description: Abnormal Security detects the whole spectrum of email attacks, from vendor email compromise and spear-phishing to unwanted email spam and graymail. To stop these advanced attacks, Abnormal leverages the industry’s most advanced behavioral data science to baseline known good behavior and detects anomalies.
 display: Abnormal Security
@@ -1126,7 +1169,7 @@ script:
     description: Download a message in RFC822 EML format for forensic analysis. For quarantine messages, both quarantine_identity and recipient_mailbox parameters are required.
     name: abnormal-security-download-message-eml
 
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/fastapi:0.125.0.12689358
   script: ""
   subtype: python3
   type: python

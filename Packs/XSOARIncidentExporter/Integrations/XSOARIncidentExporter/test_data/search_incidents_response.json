@@ -1,0 +1,50 @@
+{
+    "data": [
+        {
+            "id": "100",
+            "name": "Test Incident 1",
+            "type": "Unclassified",
+            "severity": 2,
+            "status": 0,
+            "owner": "admin",
+            "occurred": "2026-09-01T12:00:00Z",
+            "created": "2026-09-01T12:00:00Z",
+            "modified": "2026-09-01T12:30:00Z",
+            "closed": "",
+            "closeReason": "",
+            "closeNotes": "",
+            "phase": "",
+            "playbookId": "",
+            "sourceBrand": "Manual",
+            "sourceInstance": "",
+            "details": "Test incident details",
+            "labels": [
+                {"type": "Brand", "value": "Manual"}
+            ],
+            "CustomFields": {
+                "severity": "medium"
+            }
+        },
+        {
+            "id": "101",
+            "name": "Test Incident 2",
+            "type": "Phishing",
+            "severity": 3,
+            "status": 1,
+            "owner": "analyst",
+            "occurred": "2026-09-02T08:00:00Z",
+            "created": "2026-09-02T08:00:00Z",
+            "modified": "2026-09-02T10:00:00Z",
+            "closed": "2026-09-02T10:00:00Z",
+            "closeReason": "Resolved",
+            "closeNotes": "Phishing email quarantined",
+            "phase": "",
+            "playbookId": "phishing_playbook",
+            "sourceBrand": "EWS",
+            "sourceInstance": "EWS_instance",
+            "details": "",
+            "labels": [],
+            "CustomFields": {}
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "data": [
+        {"id": 1137, "name": "low risk"},
+        {"id": 912, "name": "Medium Risk"},
+        {"id": 7841, "name": "Risky Device"}
+    ]
+}

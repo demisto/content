@@ -3,6 +3,7 @@ import secrets
 import string
 from datetime import datetime, timedelta
 from itertools import zip_longest
+from urllib.parse import urlparse
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -258,11 +259,72 @@ def handle_excluded_data_from_alerts_param(excluded_alert_fields: list = []) -> 
     return formatted_excluded_data, remove_nulls_from_alerts
 
 
+def normalize_url_host(url: str) -> str:
+    """
+    Normalizes a URL down to a comparable host, stripping the scheme, port, path,
+    and common API-host prefixes (e.g. 'api-' / 'api.') used to distinguish a tenant's
+    API endpoint from its UI endpoint.
+
+    Args:
+        url (str): The URL to normalize.
+
+    Returns:
+        str: The normalized hostname, or an empty string if the input is empty or has no host.
+    """
+    if not url:
+        return ""
+    url = url.strip()
+    # urlparse() requires a scheme (or a leading '//') to correctly identify the netloc/hostname,
+    # otherwise a schemeless input like 'host:port' is misparsed (e.g. 'host' is read as the scheme).
+    if "://" not in url:
+        url = f"//{url}"
+    host = urlparse(url).hostname or ""
+    for api_prefix in ("api-", "api."):
+        if host.startswith(api_prefix):
+            host = host[len(api_prefix) :]
+            break
+    return host
+
+
+def check_self_pointing_url(configured_url: str, local_server_url: str) -> None:
+    """
+    Verifies that the Cortex XDR server URL configured for this integration instance does not
+    point back to the local tenant it is running on. Pointing the integration at itself can
+    lead to recursive fetch/mirror loops and other undefined behavior.
+
+    This check is only relevant on the Cortex Platform, where this integration is used to connect
+    to a *different* Cortex XDR/XSIAM tenant, and same-tenant actions are available via the
+    built-in Cortex Platform commands instead. It is not relevant for Cortex XSOAR customers,
+    who commonly connect their XSOAR tenant to their own (single) Cortex XDR tenant.
+
+    Args:
+        configured_url (str): The 'url' parameter configured on the integration instance.
+        local_server_url (str): The local tenant's own server URL, as reported by the platform.
+
+    Raises:
+        DemistoException: If running on the Cortex Platform and the configured URL and the local
+            server URL resolve to the same host.
+    """
+    if not is_platform():
+        return
+    normalized_configured = normalize_url_host(configured_url)
+    normalized_local = normalize_url_host(local_server_url)
+    if not normalized_configured or not normalized_local:
+        return
+    if normalized_configured == normalized_local:
+        raise DemistoException(
+            "The configured Cortex XDR server URL points to the tenant this integration instance is running on. "
+            "Configure this integration with the URL of a different Cortex XDR/XSIAM tenant. "
+            "For same-tenant actions, use the built-in Cortex Platform commands instead."
+        )
+
+
 class Client(CoreClient):
     def __init__(self, base_url, proxy, verify, timeout, params=None):
         if not params:
             params = {}
         self._params = params
+        check_self_pointing_url(params.get("url") or "", demisto.demistoUrls().get("server") or "")
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=self.headers, timeout=timeout)
 
     @property

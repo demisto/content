@@ -157,7 +157,7 @@ script:
     - contextPath: IllusionBlack.Event.type
       description: IllusionBLACK Event Attack Type.
       type: Unknown
-  dockerimage: demisto/python3:3.12.13.12042988
+  dockerimage: demisto/python3:3.12.14.13053055
   isfetch: true
   runonce: false
   script: '-'

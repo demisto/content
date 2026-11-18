@@ -62,6 +62,9 @@ ignore=GR109
 [file:playbook-Remote_PsExec_with_Lolbin_Command_Execution_alert.yml]
 ignore=GR109
 
+[file:playbook-Issue_Exception_Approval.yml]
+ignore=PB106
+
 [known_words]
 xsiam
 coreirapimodule

@@ -11,7 +11,7 @@ This integration utilizes the Asimily Insight RESTful APIs to provide seamless a
 - **Vulnerability (CVE) Synchronization**: Periodically retrieve and update known device vulnerabilities detected by Asimily Insight to support informed risk management and mitigation.
 - **Incident Creation in Cortex XSOAR**: All synced data—whether alerts, or vulnerabilities is automatically converted into incidents within the Cortex XSOAR platform for streamlined investigation and response workflows. Asset info can be automatically queried and stored by using Playbook to call the `asimily-get-asset-details` command.
 
-## Configure Asimily Insight on Cortex XSOAR
+## Configure Asimily Insight in Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Asimily Insight.
@@ -151,6 +151,13 @@ Fetch assets details from Asimily Insight. You can add argument filters.
 | AsimilyInsight.Asset.asimilydeviceapplications | unknown | Asimily Device Applications |
 | AsimilyInsight.Asset.asimilydeviceurl | string | Asimily Device URL |
 | AsimilyInsight.Asset.asimilydeviceifusingendpointsecurity | boolean | Asimily Device If Using Endpoint Security |
+| AsimilyInsight.Asset.asimilydevicenasip | string | Asimily Device NAS IP |
+| AsimilyInsight.Asset.asimilydevicenasport | string | Asimily Device NAS Port |
+| AsimilyInsight.Asset.asimilydevicelocationlastlocatedat | date | Asimily Device Location Last Located At |
+| AsimilyInsight.Asset.asimilydevicelocationaccesspoint | string | Asimily Device Location Access Point |
+| AsimilyInsight.Asset.asimilydevicelocationcampus | string | Asimily Device Location Campus |
+| AsimilyInsight.Asset.asimilydevicelocationbuilding | string | Asimily Device Location Building |
+| AsimilyInsight.Asset.asimilydevicelocationfloor | string | Asimily Device Location Floor |
 
 ### asimily-get-asset-anomalies
 
