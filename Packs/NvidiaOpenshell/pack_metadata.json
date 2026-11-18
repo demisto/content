@@ -1,0 +1,27 @@
+{
+    "name": "NVIDIA OpenShell",
+    "description": "NVIDIA OpenShell is a sandbox supervisor and network proxy for containerized workloads that logs network activity, policy enforcement and configuration events in OCSF format. This pack provides a modeling rule that maps OpenShell logs to the Cortex Data Model (XDM).",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSIAM",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2026-11-15T15:06:01Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "NVIDIA",
+        "OpenShell",
+        "OCSF"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam"
+    ]
+}
