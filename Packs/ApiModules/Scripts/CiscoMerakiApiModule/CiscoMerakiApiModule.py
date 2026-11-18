@@ -79,7 +79,9 @@ def resolve_meraki_base_url(params: dict[str, Any]) -> str:
         base_url = MERAKI_REGION_BASE_URLS.get(region, "")
         if not base_url:
             raise DemistoException(f"Unknown Cisco Meraki endpoint region: {region!r}.")
-    return (base_url or MERAKI_DEFAULT_BASE_URL).rstrip("/")
+    resolved = (base_url or MERAKI_DEFAULT_BASE_URL).rstrip("/")
+    demisto.debug(f"[Config] Resolved the base URL {resolved} (endpoint region: {region}).")
+    return resolved
 
 
 def resolve_meraki_auth_mode(api_key: str | None, client_id: str | None, client_secret: str | None) -> MerakiAuthMode:
@@ -206,23 +208,47 @@ class MerakiOAuthTokenManager:
                 auth=(self.client_id, self.client_secret),
             )
         except DemistoException as exc:
-            if exc.res is not None and exc.res.status_code in (http.HTTPStatus.BAD_REQUEST, http.HTTPStatus.UNAUTHORIZED):
-                oauth_context.pop("access_token", None)
-                oauth_context.pop("refresh_token", None)
-                self._save(oauth_context)
-                raise DemistoException(
-                    "Cisco Meraki rejected the OAuth 2.0 grant (the authorization code or refresh token is invalid or "
-                    "expired). Run the auth-reset command and authorize again.",
-                    exception=exc,
-                    res=exc.res,
-                )
-            raise
+            if exc.res is None or exc.res.status_code not in (http.HTTPStatus.BAD_REQUEST, http.HTTPStatus.UNAUTHORIZED):
+                raise
+            return self._handle_rejected_grant(data, oauth_context, exc)
 
         oauth_context["access_token"] = response["access_token"]
         oauth_context["valid_until"] = time.time() + int(response.get("expires_in") or 3600)
         oauth_context["refresh_token"] = response.get("refresh_token") or oauth_context.get("refresh_token")
         self._save(oauth_context)
+        demisto.debug(f"[OAuth] Obtained a new access token (grant: {data.get('grant_type')}).")
         return oauth_context["access_token"]
+
+    def _handle_rejected_grant(self, data: dict[str, str], oauth_context: dict[str, Any], exc: DemistoException) -> str:
+        """Handle a 400/401 from the token endpoint.
+
+        Meraki revokes the previous refresh token on every refresh. When a concurrent run (e.g. a fetch and a
+        command) refreshed first, our refresh token is already revoked, but the stored context holds the rotated
+        one: use it instead of deleting the authorization.
+
+        Raises:
+            DemistoException: When the grant is really invalid and the user must authorize again.
+        """
+        sent_refresh_token = data.get("refresh_token")
+        latest = self._load()
+        stored_refresh_token = latest.get("refresh_token")
+        if sent_refresh_token and stored_refresh_token and stored_refresh_token != sent_refresh_token:
+            demisto.debug("[OAuth] The refresh token was rotated by a concurrent run; using the newest tokens.")
+            if latest.get("access_token") and latest.get("valid_until", 0) > time.time() + MERAKI_TOKEN_RENEWAL_MARGIN_SECONDS:
+                return latest["access_token"]
+            return self._request_token({"grant_type": "refresh_token", "refresh_token": stored_refresh_token}, latest)
+
+        demisto.debug(f"[OAuth] The token endpoint rejected the grant ({data.get('grant_type')}); clearing the stored tokens.")
+        context_to_save = oauth_context if not sent_refresh_token else latest
+        context_to_save.pop("access_token", None)
+        context_to_save.pop("refresh_token", None)
+        self._save(context_to_save)
+        raise DemistoException(
+            "Cisco Meraki rejected the OAuth 2.0 grant (the authorization code or refresh token is invalid or "
+            "expired). Run the auth-reset command and authorize again.",
+            exception=exc,
+            res=exc.res,
+        )
 
     def invalidate_access_token(self) -> None:
         oauth_context = self._load()
@@ -254,6 +280,7 @@ class MerakiBaseClient(BaseClient):
         base_url = base_url.rstrip("/")
         super().__init__(base_url=urljoin(base_url, MERAKI_API_V1), verify=verify, proxy=proxy)
         self.auth_mode = resolve_meraki_auth_mode(api_key, client_id, client_secret)
+        demisto.debug(f"[Auth] Selected the {self.auth_mode.value} authentication mode.")
         self.api_key = api_key
         self.token_manager: MerakiOAuthTokenManager | None = None
 
@@ -302,10 +329,35 @@ class MerakiBaseClient(BaseClient):
                 or exc.res.status_code != http.HTTPStatus.UNAUTHORIZED
             ):
                 raise
-            demisto.debug("Cisco Meraki returned 401 with an OAuth 2.0 token; refreshing and retrying once.")
+            demisto.debug("[OAuth] The API returned 401 for the access token; refreshing it and retrying once.")
             self.token_manager.invalidate_access_token()
             kwargs["headers"] = {**base_headers, **self._legacy_auth_headers()}
             return super()._http_request(*args, **kwargs)
+
+    def get_page(self, url_suffix: str, params: dict[str, Any] | None = None) -> tuple[Any, dict[str, Any]]:
+        """GET the first page of a paginated endpoint.
+
+        Returns:
+            tuple[Any, dict[str, Any]]: The JSON body and the relationship links of the response.
+        """
+        response: requests.Response = self._http_request(method="GET", url_suffix=url_suffix, params=params, resp_type="response")
+        demisto.debug(f"[API] GET {url_suffix} returned {response.status_code}; next page available: {'next' in response.links}.")
+        return response.json(), response.links
+
+    def call_link(self, url: str) -> tuple[Any, dict[str, Any]]:
+        """Call a relationship link (e.g. `rel=next`) returned by a previous response.
+
+        Raises:
+            DemistoException: When the URL does not belong to the configured base URL.
+
+        Returns:
+            tuple[Any, dict[str, Any]]: The JSON body and the relationship links of the response.
+        """
+        if not url.startswith(self._base_url):
+            raise DemistoException(f"The pagination URL '{url}' does not match the Base URL '{self._base_url}'.")
+        response: requests.Response = self._http_request(method="GET", full_url=url, resp_type="response")
+        demisto.debug(f"[API] Called the relationship link; next page available: {'next' in response.links}.")
+        return response.json(), response.links
 
     def require_oauth(self) -> MerakiOAuthTokenManager:
         if not self.token_manager:
@@ -337,10 +389,7 @@ def oauth_auth_test_command(client: MerakiBaseClient) -> CommandResults:
 
 
 def oauth_auth_reset_command(client: MerakiBaseClient, command_prefix: str) -> CommandResults:
-    if should_use_ucp_auth():
-        invalidate_ucp_credentials(get_ucp_method_unique_id())
-    else:
-        client.require_oauth().reset()
+    client.require_oauth().reset()
     return CommandResults(
         readable_output=f"Authorization was reset successfully. Run `!{command_prefix}-generate-login-url` to authorize again."
     )
@@ -668,7 +717,6 @@ RuleType = TypeVar("RuleType", L3FirewallRule, L7FirewallRule)
 class Client(MerakiBaseClient):
     """Client class to interact with the API."""
 
-    API_V1 = MERAKI_API_V1
     MIN_PAGE_SIZE = 3
     ORGANIZATION_MAX_PER_PAGE = 9000
     NETWORK_MAX_PER_PAGE = 100000
@@ -716,29 +764,6 @@ class Client(MerakiBaseClient):
             verify=verify,
             proxy=proxy,
         )
-
-    def call_link(self, url: str) -> tuple[Any, dict[str, Any]]:
-        """Call the given relationship link from a previous request.
-
-        Args:
-            url (str): URL received from a relationship link within a prior response.
-
-        Raises:
-            DemistoException: Incase the `base_url` isn't part of the given URL.
-
-        Returns:
-            tuple[Any, dict[str, Any]]: The JSON body and links response from the API.
-        """
-        if not url.startswith(self._base_url):
-            raise DemistoException(f"Mismatch between the 'Base URL' and `next_token`. '{self._base_url}' != '{url}'")
-
-        response: requests.Response = self._http_request(
-            method="GET",
-            full_url=url,
-            resp_type="response",
-        )
-
-        return response.json(), response.links
 
     def list_organization(self, per_page: int | None = None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         """List the organizations that the user has privileges on.
@@ -4188,22 +4213,13 @@ def run_cisco_meraki_v2_integration() -> None:
     args = demisto.args()
     command = demisto.command()
 
-    base_url: str = resolve_meraki_base_url(params)
-    api_key: str | None = dict_safe_get(params, keys=["api_key", "password"]) or None
-    client_id: str | None = dict_safe_get(params, keys=["credentials", "identifier"]) or None
-    client_secret: str | None = dict_safe_get(params, keys=["credentials", "password"]) or None
-    auth_code: str | None = dict_safe_get(params, keys=["auth_code", "password"]) or None
-    redirect_uri: str | None = params.get("redirect_uri") or None
-    verify_certificate: bool = not argToBoolean(params.get("insecure") or False)
-    proxy: bool = argToBoolean(params.get("proxy") or False)
-
     if not args.get("organization_id"):
         args["organization_id"] = params.get("organization_id")
 
     if not args.get("network_id"):
         args["network_id"] = params.get("network_id")
 
-    demisto.debug(f"Command being called is {command}")
+    demisto.debug(f"[Main] Command being called is {command}")
 
     commands = {
         f"{INTEGRATION_NAME}-organization-list": list_organization_command,
@@ -4240,15 +4256,16 @@ def run_cisco_meraki_v2_integration() -> None:
     }
 
     try:
+        # Parameter resolution stays inside the try so that an invalid region is reported through return_error.
         client = Client(
-            base_url=base_url,
-            api_key=api_key,
-            verify=verify_certificate,
-            proxy=proxy,
-            client_id=client_id,
-            client_secret=client_secret,
-            redirect_uri=redirect_uri,
-            auth_code=auth_code,
+            base_url=resolve_meraki_base_url(params),
+            api_key=dict_safe_get(params, keys=["api_key", "password"]) or None,
+            verify=not argToBoolean(params.get("insecure") or False),
+            proxy=argToBoolean(params.get("proxy") or False),
+            client_id=dict_safe_get(params, keys=["credentials", "identifier"]) or None,
+            client_secret=dict_safe_get(params, keys=["credentials", "password"]) or None,
+            redirect_uri=params.get("redirect_uri") or None,
+            auth_code=dict_safe_get(params, keys=["auth_code", "password"]) or None,
         )
 
         if command == "test-module":

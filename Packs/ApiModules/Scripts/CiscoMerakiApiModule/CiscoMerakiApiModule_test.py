@@ -1248,15 +1248,7 @@ def test_get_commands(
 
 
 @pytest.mark.parametrize(
-    (
-        "update_command,"
-        "endpoint_suffix,"
-        "response_file,"
-        "table_file,"
-        "readable_output_title,"
-        "table_headers,"
-        "outputs_prefix"
-    ),
+    ("update_command,endpoint_suffix,response_file,table_file,readable_output_title,table_headers,outputs_prefix"),
     [
         (
             CiscoMerakiv2.update_network_l3firewall_rule_command,
@@ -1351,16 +1343,7 @@ def test_update_firewall_rule_commands_multiple_rules(
 
 
 @pytest.mark.parametrize(
-    (
-        "update_command,"
-        "args,"
-        "endpoint_suffix,"
-        "response_file,"
-        "table_file,"
-        "readable_output_title,"
-        "table_headers,"
-        "outputs_prefix"
-    ),
+    ("update_command,args,endpoint_suffix,response_file,table_file,readable_output_title,table_headers,outputs_prefix"),
     [
         (
             CiscoMerakiv2.update_network_l3firewall_rule_command,
@@ -1754,3 +1737,158 @@ def test_ucp_skips_legacy_auth_header(requests_mock, mocker):
 
 def test_test_module_with_oauth():
     assert "meraki-auth-test" in CiscoMerakiv2.test_module(build_oauth_client())
+
+
+def test_oauth_refresh_race_uses_rotated_access_token(requests_mock, integration_context):
+    """
+    Given: An expired access token and refresh token rt1, while a concurrent run already rotated it to rt2.
+    When:  The token endpoint rejects rt1 with 400.
+    Then:  The rotated, still valid access token is used and the authorization is not cleared.
+    """
+    integration_context["meraki_oauth"] = {"access_token": "old", "valid_until": 0, "refresh_token": "rt1"}
+
+    def concurrent_rotation(request, context):
+        integration_context["meraki_oauth"] = {"access_token": "at2", "valid_until": 9e12, "refresh_token": "rt2"}
+        return {"error": "invalid_grant"}
+
+    requests_mock.post(OAUTH_TOKEN_URL, json=concurrent_rotation, status_code=400)
+
+    token = build_oauth_client(auth_code=None).require_oauth().get_access_token()
+
+    assert token == "at2"
+    assert integration_context["meraki_oauth"]["refresh_token"] == "rt2"
+
+
+def test_oauth_refresh_race_refreshes_with_rotated_token(requests_mock, integration_context):
+    """
+    Given: A concurrent run rotated the refresh token to rt2, but its access token is already expired.
+    When:  The token endpoint rejects rt1 with 400.
+    Then:  The refresh is retried once with rt2 and the newly rotated tokens are stored.
+    """
+    integration_context["meraki_oauth"] = {"access_token": "old", "valid_until": 0, "refresh_token": "rt1"}
+
+    def concurrent_rotation(request, context):
+        integration_context["meraki_oauth"] = {"access_token": "at2", "valid_until": 0, "refresh_token": "rt2"}
+        return {"error": "invalid_grant"}
+
+    token_mock = requests_mock.post(
+        OAUTH_TOKEN_URL,
+        [
+            {"json": concurrent_rotation, "status_code": 400},
+            {"json": {"access_token": "at3", "refresh_token": "rt3", "expires_in": 3600}},
+        ],
+    )
+
+    token = build_oauth_client(auth_code=None).require_oauth().get_access_token()
+
+    assert token == "at3"
+    assert "refresh_token=rt2" in token_mock.request_history[1].text
+    assert integration_context["meraki_oauth"]["refresh_token"] == "rt3"
+
+
+def test_oauth_invalid_refresh_token_clears_tokens(requests_mock, integration_context):
+    """
+    Given: A refresh token that nobody rotated.
+    When:  The token endpoint rejects it with 400.
+    Then:  The stored tokens are cleared and the user is told to authorize again.
+    """
+    integration_context["meraki_oauth"] = {"access_token": "old", "valid_until": 0, "refresh_token": "rt1"}
+    requests_mock.post(OAUTH_TOKEN_URL, status_code=400, json={"error": "invalid_grant"})
+
+    with pytest.raises(CommonServerPython.DemistoException, match="rejected the OAuth 2.0 grant"):
+        build_oauth_client(auth_code=None).require_oauth().get_access_token()
+
+    assert "refresh_token" not in integration_context["meraki_oauth"]
+    assert "access_token" not in integration_context["meraki_oauth"]
+
+
+def test_oauth_invalid_authorization_code_is_not_retried(requests_mock, integration_context):
+    """
+    Given: An authorization code that Meraki rejects.
+    When:  Exchanging it, then getting a token again with the same code.
+    Then:  The first call raises, and the used code is remembered so it is not sent again.
+    """
+    token_mock = requests_mock.post(OAUTH_TOKEN_URL, status_code=400, json={"error": "invalid_grant"})
+    manager = build_oauth_client(auth_code="bad-code").require_oauth()
+
+    with pytest.raises(CommonServerPython.DemistoException, match="rejected the OAuth 2.0 grant"):
+        manager.get_access_token()
+    assert integration_context["meraki_oauth"]["used_auth_code"] == "bad-code"
+
+    with pytest.raises(CommonServerPython.DemistoException, match="authorization is required"):
+        manager.get_access_token()
+    assert token_mock.call_count == 1
+
+
+def test_oauth_token_endpoint_server_error_is_raised(requests_mock, integration_context):
+    """
+    Given: A refresh token and a token endpoint returning 500.
+    When:  Getting an access token.
+    Then:  The error is raised and the stored refresh token is kept for the next attempt.
+    """
+    integration_context["meraki_oauth"] = {"access_token": "old", "valid_until": 0, "refresh_token": "rt1"}
+    requests_mock.post(OAUTH_TOKEN_URL, status_code=500, json={})
+
+    with pytest.raises(CommonServerPython.DemistoException):
+        build_oauth_client(auth_code=None).require_oauth().get_access_token()
+
+    assert integration_context["meraki_oauth"]["refresh_token"] == "rt1"
+
+
+def test_call_link_rejects_foreign_url(mock_client):
+    """
+    Given: A pagination URL that does not belong to the configured base URL.
+    When:  Calling the relationship link.
+    Then:  The call is refused, so the credential is never sent to another host.
+    """
+    with pytest.raises(CommonServerPython.DemistoException, match="does not match the Base URL"):
+        mock_client.call_link("https://evil.example.com/api/v1/organizations")
+
+
+def test_get_page_and_call_link_return_links(requests_mock, mock_client):
+    """
+    Given: A first page with a rel=next link.
+    When:  Getting the page and then following the link.
+    Then:  Both return the JSON body and the relationship links.
+    """
+    next_url = f"{BASE_URL}/organizations?startingAfter=abc"
+    requests_mock.get(f"{BASE_URL}/organizations", json=[{"id": "1"}], headers={"Link": f'<{next_url}>; rel="next"'})
+    requests_mock.get(next_url, json=[{"id": "2"}], complete_qs=True)
+
+    page, links = mock_client.get_page("organizations")
+    assert page == [{"id": "1"}]
+    assert links["next"]["url"] == next_url
+
+    page, links = mock_client.call_link(links["next"]["url"])
+    assert page == [{"id": "2"}]
+    assert "next" not in links
+
+
+def test_auth_reset_under_ucp_requires_oauth(mocker):
+    """
+    Given: UCP brokers the credentials, so there is no local OAuth token manager.
+    When:  Running auth-reset.
+    Then:  The command explains that it applies only to the local OAuth 2.0 flow.
+    """
+    mocker.patch.object(CiscoMerakiv2, "should_use_ucp_auth", return_value=True)
+    mocker.patch.object(CiscoMerakiv2, "ucp_credentials_are_oauth", return_value=False)
+    client = CiscoMerakiv2.Client(base_url="https://api.meraki.com")
+
+    with pytest.raises(CommonServerPython.DemistoException, match="available only when OAuth 2.0"):
+        CiscoMerakiv2.oauth_auth_reset_command(client, "meraki")
+
+
+def test_run_v2_unknown_region_reported_through_return_error(mocker):
+    """
+    Given: An unknown UCP endpoint region.
+    When:  Running any command.
+    Then:  The error is reported through return_error instead of escaping the entry point.
+    """
+    mocker.patch.object(CiscoMerakiv2.demisto, "params", return_value={"endpoint_region": "Mars", "api_key": {"password": "k"}})
+    mocker.patch.object(CiscoMerakiv2.demisto, "args", return_value={})
+    mocker.patch.object(CiscoMerakiv2.demisto, "command", return_value="test-module")
+    return_error = mocker.patch.object(CiscoMerakiv2, "return_error")
+
+    CiscoMerakiv2.run_cisco_meraki_v2_integration()
+
+    assert "Unknown Cisco Meraki endpoint region" in return_error.call_args.args[0]

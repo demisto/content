@@ -12,10 +12,12 @@ from CiscoMerakiEventCollectorApiModule import (
     WINDOWED_EVENT_TYPES,
     CiscoMerakiEventCollectorClient,
     DemistoException,
+    EntryType,
     collector_test_module,
     enrich_events,
     event_hash,
     fetch_events_by_type,
+    fetch_events_command,
     fetch_network_events,
     fetch_windowed_events,
     format_meraki_time,
@@ -39,7 +41,17 @@ def config_change(ts: str, label: str = "x") -> dict:
 
 
 def test_parse_event_types_defaults_to_all():
-    assert parse_event_types(None) == [CONFIGURATION_CHANGES, NETWORK_EVENTS, API_REQUESTS, APPLIANCE_SECURITY_EVENTS]
+    assert parse_event_types(None) == [CONFIGURATION_CHANGES, API_REQUESTS, APPLIANCE_SECURITY_EVENTS, NETWORK_EVENTS]
+
+
+def test_event_type_display_names_come_from_the_registry():
+    """
+    Given: the display name of every windowed event type in the registry.
+    When:  parsing the event types param.
+    Then:  each display name maps to its registry entry, so the registry is the single source of the names.
+    """
+    displays = [event_type.display for event_type in WINDOWED_EVENT_TYPES.values()]
+    assert parse_event_types(",".join(displays)) == list(WINDOWED_EVENT_TYPES)
 
 
 def test_parse_event_types_maps_display_names():
@@ -155,8 +167,26 @@ def test_fetch_windowed_resumes_next_url(client, requests_mock):
 
 def test_fetch_windowed_rejects_foreign_next_url(client):
     state = {"next_url": "https://evil.example.com/x", "window_start": "a", "window_end": "b"}
-    with pytest.raises(DemistoException, match="does not match"):
+    with pytest.raises(DemistoException, match="does not match the Base URL"):
         fetch_windowed_events(client, WINDOWED_EVENT_TYPES[CONFIGURATION_CHANGES], state, 100, NOW)
+
+
+def test_fetch_windowed_follows_pagination_within_the_budget(client, requests_mock):
+    """
+    Given: a first page with a rel=next link and a budget larger than both pages.
+    When:  fetching.
+    Then:  the next page is fetched through the shared call_link helper and the window is completed.
+    """
+    next_link = f"{BASE_URL}/organizations/{ORG_ID}/configurationChanges?startingAfter=abc"
+    requests_mock.get(
+        f"{BASE_URL}/organizations/{ORG_ID}/configurationChanges",
+        json=[config_change("2026-01-01T11:10:00Z", "a")],
+        headers={"Link": f'<{next_link}>; rel="next"'},
+    )
+    requests_mock.get(next_link, json=[config_change("2026-01-01T11:20:00Z", "b")], complete_qs=True)
+    events, state = fetch_windowed_events(client, WINDOWED_EVENT_TYPES[CONFIGURATION_CHANGES], {}, 100, NOW)
+    assert [event["label"] for event in events] == ["a", "b"]
+    assert "next_url" not in state
 
 
 def test_fetch_windowed_dedups_boundary_events(client, requests_mock):
@@ -230,13 +260,87 @@ def test_fetch_network_events_shared_budget_rotates(client, requests_mock):
     assert {event["n"] for event in events} == {2}
 
 
+def test_fetch_network_events_failing_network_keeps_cursor_and_continues(client, requests_mock):
+    """
+    Given: two networks, where the events endpoint of N1 fails.
+    When:  fetching network events.
+    Then:  N2's events are returned, N1 keeps its previous cursor and the failure is reported in errors.
+    """
+    mock_networks(requests_mock, [{"id": "N1", "productTypes": ["switch"]}, {"id": "N2", "productTypes": ["switch"]}])
+    requests_mock.get(f"{BASE_URL}/networks/N1/events", status_code=400, json={"errors": ["bad"]})
+    requests_mock.get(f"{BASE_URL}/networks/N2/events", json={"events": [{"occurredAt": "2026-01-01T11:40:00Z", "n": 2}]})
+    old_cursor = {"starting_after": "2026-01-01T11:00:00Z", "boundary_hashes": []}
+    errors: list[str] = []
+
+    events, state = fetch_network_events(client, [], {"cursors": {"N1:switch": old_cursor}}, 100, NOW, errors)
+
+    assert [event["n"] for event in events] == [2]
+    assert state["cursors"]["N1:switch"] == old_cursor
+    assert state["cursors"]["N2:switch"]["starting_after"] == "2026-01-01T11:40:00Z"
+    assert len(errors) == 1
+    assert errors[0].startswith("network N1 (switch)")
+
+
 def test_fetch_events_by_type_independent_state(client, requests_mock):
     requests_mock.get(f"{BASE_URL}/organizations/{ORG_ID}/configurationChanges", json=[config_change("2026-01-01T11:30:00Z")])
     requests_mock.get(f"{BASE_URL}/organizations/{ORG_ID}/apiRequests", json=[{"ts": "2026-01-01T11:31:00Z"}])
-    events_by_type, next_run = fetch_events_by_type(client, [CONFIGURATION_CHANGES, API_REQUESTS], [], {"other": 1}, 10, NOW)
+    events_by_type, next_run, errors = fetch_events_by_type(
+        client, [CONFIGURATION_CHANGES, API_REQUESTS], [], {"other": 1}, 10, NOW
+    )
     assert events_by_type[CONFIGURATION_CHANGES][0]["_source_log_type"] == CONFIGURATION_CHANGES
     assert events_by_type[API_REQUESTS][0]["_time"] == "2026-01-01T11:31:00Z"
     assert set(next_run) == {"other", CONFIGURATION_CHANGES, API_REQUESTS}
+    assert errors == []
+
+
+def test_fetch_events_by_type_failing_type_keeps_state_and_continues(client, requests_mock):
+    """
+    Given: configuration changes fail (403) and API requests succeed.
+    When:  fetching both types.
+    Then:  API requests are returned and advance, configuration changes keep their previous state, and one error is reported.
+    """
+    requests_mock.get(f"{BASE_URL}/organizations/{ORG_ID}/configurationChanges", status_code=403, json={"errors": ["no"]})
+    requests_mock.get(f"{BASE_URL}/organizations/{ORG_ID}/apiRequests", json=[{"ts": "2026-01-01T11:31:00Z"}])
+    previous_state = {"last_window_end": "2026-01-01T11:00:00Z", "boundary_hashes": []}
+
+    events_by_type, next_run, errors = fetch_events_by_type(
+        client, [CONFIGURATION_CHANGES, API_REQUESTS], [], {CONFIGURATION_CHANGES: previous_state}, 10, NOW
+    )
+
+    assert events_by_type[CONFIGURATION_CHANGES] == []
+    assert len(events_by_type[API_REQUESTS]) == 1
+    assert next_run[CONFIGURATION_CHANGES] == previous_state
+    assert next_run[API_REQUESTS]["last_window_end"] == "2026-01-01T12:00:00Z"
+    assert len(errors) == 1
+    assert errors[0].startswith(f"{CONFIGURATION_CHANGES}:")
+
+
+def test_fetch_events_command_sends_and_saves_before_raising(client, requests_mock, mocker):
+    """
+    Given: one type that fails and one that succeeds.
+    When:  running fetch-events.
+    Then:  the successful events are sent and the last run is saved before the combined error is raised.
+    """
+    requests_mock.get(f"{BASE_URL}/organizations/{ORG_ID}/configurationChanges", status_code=500, json={"errors": ["boom"]})
+    requests_mock.get(f"{BASE_URL}/organizations/{ORG_ID}/apiRequests", json=[{"ts": "2026-01-01T11:31:00Z"}])
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    send = mocker.patch("CiscoMerakiEventCollectorApiModule.send_events_to_xsiam")
+
+    with pytest.raises(DemistoException, match="retried next cycle"):
+        fetch_events_command(client, [CONFIGURATION_CHANGES, API_REQUESTS], [], 10)
+
+    assert len(send.call_args.args[0]) == 1
+    saved = set_last_run.call_args.args[0]
+    assert API_REQUESTS in saved
+    assert CONFIGURATION_CHANGES not in saved
+
+
+def test_get_events_command_reports_errors(client, requests_mock):
+    requests_mock.get(f"{BASE_URL}/organizations/{ORG_ID}/apiRequests", status_code=500, json={"errors": ["boom"]})
+    results = get_events_command(client, {"event_types": "API requests"}, [])
+    assert results[-1].entry_type == EntryType.ERROR
+    assert API_REQUESTS in results[-1].readable_output
 
 
 def test_collector_test_module_ok(client, requests_mock):
