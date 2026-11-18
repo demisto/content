@@ -20,3 +20,4 @@
 | alter XDM.Network.http.referrer =Referrer
 | alter  XDM.Network.Destination.bytes=to_number(bytes_size)
 | alter XDM.Network.Source.ipv4 =sourceip;
+// rules investigation
