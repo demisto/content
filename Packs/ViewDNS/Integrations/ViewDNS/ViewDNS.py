@@ -395,7 +395,8 @@ def account_balance_command(client: Client, args: dict[str, Any]) -> CommandResu
         "Plan": plan,
         "MonthlyLimit": limit,
         "MonthlyUsage": usage,
-        "MonthlyRemaining": max(limit - usage, 0) if limit and usage is not None else None,
+        # A limit of 0 means the plan is unlimited, so there is no remaining count.
+        "MonthlyRemaining": max(limit - usage, 0) if limit is not None and limit > 0 and usage is not None else None,
         "PrepaidBalance": to_int((response.get("prepaid") or {}).get("balance")),
     }
     return CommandResults(
@@ -556,7 +557,7 @@ def ip_history_command(client: Client, args: dict[str, Any]) -> CommandResults:
 def dns_record_command(client: Client, args: dict[str, Any]) -> CommandResults:
     domain = get_required_arg(args, "domain")
     record_type = str(args.get("record_type") or "ANY").strip().upper()
-    body = client.dns_record(domain, record_type)
+    body = client.dns_record(domain, record_type.lower())
     records = [
         remove_blank_values(
             {

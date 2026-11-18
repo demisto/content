@@ -258,6 +258,22 @@ def test_account_balance_command_trial_plan(client, requests_mock):
     assert result.outputs["PrepaidBalance"] == 0
 
 
+def test_account_balance_command_unlimited_plan(client, requests_mock):
+    """
+    Given: an unlimited plan, which the API reports with a monthly limit of 0
+    When: running viewdns-account-balance
+    Then: no remaining count is returned, instead of a misleading 0
+    """
+    body = load_json("account_balance")
+    body["response"]["monthly"]["limit"] = "0"
+    requests_mock.get(f"{BASE_URL}/account/", json=body)
+
+    result = ViewDNS.account_balance_command(client, {})
+
+    assert result.outputs["MonthlyLimit"] == 0
+    assert result.outputs["MonthlyRemaining"] is None
+
+
 """ LOOKUP COMMANDS """
 
 

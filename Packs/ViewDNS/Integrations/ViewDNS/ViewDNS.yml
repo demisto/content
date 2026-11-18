@@ -1,3 +1,5 @@
+name: ViewDNS
+display: ViewDNS
 category: Data Enrichment & Threat Intelligence
 sectionorder:
 - Connect
@@ -56,8 +58,6 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
 description: Enrich and pivot on domains, IP addresses, and registrants with ViewDNS.info DNS, IP, and WHOIS intelligence, including reverse IP, reverse WHOIS, IP history, and DNS record lookups.
-display: ViewDNS
-name: ViewDNS
 supportlevelheader: community
 script:
   commands:
