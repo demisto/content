@@ -1,5 +1,5 @@
 {
-    "name": "NVIDIA OpenShell",
+    "name": "NVIDIA OpenShell Response",
     "description": "Respond to AI agent threats in NVIDIA OpenShell sandboxes: stop or suspend a sandbox, block its egress to a host, and detach its credentials.",
     "support": "community",
     "currentVersion": "1.0.0",
