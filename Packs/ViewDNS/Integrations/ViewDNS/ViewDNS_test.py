@@ -69,7 +69,7 @@ def test_http_errors_are_mapped_to_clear_messages(client, requests_mock, status_
     requests_mock.get(f"{BASE_URL}/whois/v2/", status_code=status_code, json=load_json(fixture))
 
     with pytest.raises(DemistoException, match=expected):
-        client.whois("domain.com")
+        client.whois("example.com")
 
     assert requests_mock.call_count == 1
 
@@ -78,7 +78,7 @@ def test_error_message_never_contains_api_key(client, requests_mock):
     requests_mock.get(f"{BASE_URL}/whois/v2/", status_code=401, json=load_json("error_401"))
 
     with pytest.raises(DemistoException) as error:
-        client.whois("domain.com")
+        client.whois("example.com")
 
     assert API_KEY not in str(error.value)
 
@@ -341,13 +341,13 @@ def test_reverse_whois_command_rejects_demo_data(client, requests_mock):
 def test_reverse_ns_command(client, requests_mock):
     requests_mock.get(f"{BASE_URL}/reversens/", json=load_json("reverse_ns"))
 
-    result = ViewDNS.reverse_ns_command(client, {"nameserver": "a.ns.facebook.com", "limit": "2"})
+    result = ViewDNS.reverse_ns_command(client, {"nameserver": "ns1.example.com", "limit": "2"})
 
-    assert query_of(requests_mock)["ns"] == ["a.ns.facebook.com"]
+    assert query_of(requests_mock)["ns"] == ["ns1.example.com"]
     assert result.outputs_prefix == "ViewDNS.ReverseNS"
     assert result.outputs_key_field == "Nameserver"
     assert result.outputs == {
-        "Nameserver": "a.ns.facebook.com",
+        "Nameserver": "ns1.example.com",
         "DomainCount": 2217,
         "TotalPages": 1,
         "CurrentPage": 1,
@@ -358,9 +358,9 @@ def test_reverse_ns_command(client, requests_mock):
 def test_reverse_mx_command(client, requests_mock):
     requests_mock.get(f"{BASE_URL}/reversemx/", json=load_json("reverse_mx"))
 
-    result = ViewDNS.reverse_mx_command(client, {"mail_server": "mail.google.com"})
+    result = ViewDNS.reverse_mx_command(client, {"mail_server": "mail.example.com"})
 
-    assert query_of(requests_mock)["mx"] == ["mail.google.com"]
+    assert query_of(requests_mock)["mx"] == ["mail.example.com"]
     assert result.outputs_prefix == "ViewDNS.ReverseMX"
     assert result.outputs_key_field == "MailServer"
     assert result.outputs["DomainCount"] == 981
@@ -388,12 +388,12 @@ def test_reverse_server_commands_no_results(client, requests_mock, command, path
 def test_ip_history_command(client, requests_mock):
     requests_mock.get(f"{BASE_URL}/iphistory/", json=load_json("ip_history"))
 
-    result = ViewDNS.ip_history_command(client, {"domain": "domain.com", "limit": "1"})
+    result = ViewDNS.ip_history_command(client, {"domain": "example.com", "limit": "1"})
 
     assert result.outputs_prefix == "ViewDNS.IPHistory"
     assert result.outputs_key_field == "Domain"
     assert result.outputs == {
-        "Domain": "domain.com",
+        "Domain": "example.com",
         "RecordCount": 4,
         "Records": [{"IP": "172.64.145.59", "Location": "Unknown", "Owner": "Cloudflare, Inc", "LastSeen": "2024-09-20"}],
     }
@@ -418,13 +418,13 @@ def test_ip_history_command_invalid_input(client, requests_mock):
     requests_mock.get(f"{BASE_URL}/iphistory/", json=load_json("ip_history_error"))
 
     with pytest.raises(DemistoException, match="Please provide a domain name not an IP address."):
-        ViewDNS.ip_history_command(client, {"domain": "8.8.8.8"})
+        ViewDNS.ip_history_command(client, {"domain": "198.51.100.1"})
 
 
 def test_dns_record_command(client, requests_mock):
     requests_mock.get(f"{BASE_URL}/dnsrecord/", json=load_json("dns_record"))
 
-    result = ViewDNS.dns_record_command(client, {"domain": "domain.com"})
+    result = ViewDNS.dns_record_command(client, {"domain": "example.com"})
 
     assert query_of(requests_mock)["recordtype"] == ["any"]
     assert result.outputs_prefix == "ViewDNS.DNSRecord"
@@ -432,7 +432,7 @@ def test_dns_record_command(client, requests_mock):
     assert result.outputs["RecordType"] == "ANY"
     records = result.outputs["Records"]
     assert len(records) == 5
-    assert records[2] == {"Name": "domain.com.", "TTL": 300, "Class": "IN", "Type": "A", "Data": "172.64.145.59"}
+    assert records[2] == {"Name": "example.com.", "TTL": 300, "Class": "IN", "Type": "A", "Data": "172.64.145.59"}
     assert records[4]["Priority"] == 10
     assert "Priority" not in records[0]
 
@@ -440,36 +440,36 @@ def test_dns_record_command(client, requests_mock):
 def test_dns_record_command_no_results(client, requests_mock):
     requests_mock.get(f"{BASE_URL}/dnsrecord/", json=load_json("dns_record_empty"))
 
-    result = ViewDNS.dns_record_command(client, {"domain": "domain.com", "record_type": "caa"})
+    result = ViewDNS.dns_record_command(client, {"domain": "example.com", "record_type": "caa"})
 
     assert query_of(requests_mock)["recordtype"] == ["caa"]
-    assert result.outputs == {"Domain": "domain.com", "RecordType": "CAA", "Records": []}
-    assert "No results found for CAA records of domain.com" in result.readable_output
+    assert result.outputs == {"Domain": "example.com", "RecordType": "CAA", "Records": []}
+    assert "No results found for CAA records of example.com" in result.readable_output
 
 
 def test_whois_command_domain(client, requests_mock):
     requests_mock.get(f"{BASE_URL}/whois/v2/", json=load_json("whois_domain"))
 
-    result = ViewDNS.whois_command(client, {"domain": "domain.com"})
+    result = ViewDNS.whois_command(client, {"domain": "example.com"})
 
     assert result.outputs_prefix == "ViewDNS.Whois"
     assert result.outputs_key_field == "DomainName"
     outputs = result.outputs
-    assert outputs["DomainName"] == "domain.com"
-    assert outputs["RegistrarName"] == "Domain.com, LLC"
+    assert outputs["DomainName"] == "example.com"
+    assert outputs["RegistrarName"] == "Example Registrar, LLC"
     assert outputs["RegistrarIANAID"] == "886"
     assert outputs["CreatedDate"] == "1994-07-01T04:00:00Z"
     assert outputs["ExpiresDate"] == "2031-01-07T13:34:24Z"
-    assert outputs["AbuseEmail"] == "compliance@domain-inc.net"
-    assert outputs["Registrant"]["Email"] == "corpdomains@newfold.com"
-    assert outputs["Registrant"]["Phone"] == "+1.9046806600"
+    assert outputs["AbuseEmail"] == "abuse@example.net"
+    assert outputs["Registrant"]["Email"] == "domains@example.com"
+    assert outputs["Registrant"]["Phone"] == "+1.5555550100"
     assert "Fax" not in outputs["Registrant"]
     assert outputs["NameServers"] == ["lee.ns.cloudflare.com", "sarah.ns.cloudflare.com"]
     assert outputs["Status"] == ["clientDeleteProhibited", "clientTransferProhibited", "clientUpdateProhibited"]
-    assert outputs["RawText"].startswith("Domain Name: DOMAIN.COM")
-    assert outputs["RawText"].endswith("Newfold Digital, Inc. & Co")
+    assert outputs["RawText"].startswith("Domain Name: EXAMPLE.COM")
+    assert outputs["RawText"].endswith("Example Organization, Inc. & Co")
     assert "RawText" not in result.readable_output
-    assert "Domain.com, LLC" in result.readable_output
+    assert "Example Registrar, LLC" in result.readable_output
 
 
 @pytest.mark.parametrize(
@@ -499,20 +499,20 @@ def test_whois_command_ip(client, requests_mock):
     """
     requests_mock.get(f"{BASE_URL}/whois/v2/", json=load_json("whois_ip"))
 
-    result = ViewDNS.whois_command(client, {"domain": "8.8.8.8"})
+    result = ViewDNS.whois_command(client, {"domain": "198.51.100.1"})
 
     assert result.outputs_prefix == "ViewDNS.IPWhois"
     assert result.outputs_key_field == "IP"
     outputs = result.outputs
-    assert outputs["IP"] == "8.8.8.8"
+    assert outputs["IP"] == "198.51.100.1"
     assert outputs["Registry"] == "ARIN"
-    assert outputs["Owner"] == "Google LLC (GOGL)"
-    assert outputs["CIDR"] == "8.8.8.0/24"
-    assert outputs["NetRange"] == "8.8.8.0 - 8.8.8.255"
+    assert outputs["Owner"] == "Example Networks LLC (EXNET)"
+    assert outputs["CIDR"] == "198.51.100.0/24"
+    assert outputs["NetRange"] == "198.51.100.0 - 198.51.100.255"
     assert "ASN" not in outputs
     assert "Status" not in outputs
-    assert outputs["Abuse"] == {"Name": "Abuse", "Phone": "+1-650-253-0000", "Email": "network-abuse@google.com"}
-    assert outputs["Tech"]["Email"] == "arin-contact@google.com"
+    assert outputs["Abuse"] == {"Name": "Abuse", "Phone": "+1-555-555-0100", "Email": "abuse@example.net"}
+    assert outputs["Tech"]["Email"] == "noc@example.net"
 
 
 def test_whois_command_no_results(client, requests_mock):
@@ -616,7 +616,7 @@ def test_active_commands_invalid_host(client, requests_mock, command, path):
 
 @pytest.mark.parametrize(
     "command, args",
-    [(ViewDNS.domain_command, {"domain": "domain.com"}), (ViewDNS.ip_command, {"ip": "8.8.8.8"})],
+    [(ViewDNS.domain_command, {"domain": "example.com"}), (ViewDNS.ip_command, {"ip": "198.51.100.1"})],
 )
 def test_reputation_commands_disabled(client, requests_mock, command, args):
     """
@@ -641,20 +641,20 @@ def test_domain_command(client, requests_mock):
     requests_mock.get(f"{BASE_URL}/whois/v2/", json=load_json("whois_domain"))
     requests_mock.get(f"{BASE_URL}/iphistory/", json=load_json("ip_history"))
 
-    results = ViewDNS.domain_command(client, {"domain": "domain.com"}, True, RELIABILITY)
+    results = ViewDNS.domain_command(client, {"domain": "example.com"}, True, RELIABILITY)
 
     assert len(results) == 1
     context = results[0].to_context()["EntryContext"]
     domain = context["Domain(val.Name && val.Name == obj.Name)"][0]
-    assert domain["Name"] == "domain.com"
-    assert domain["Registrar"]["Name"] == "Domain.com, LLC"
-    assert domain["Registrant"]["Email"] == "corpdomains@newfold.com"
+    assert domain["Name"] == "example.com"
+    assert domain["Registrar"]["Name"] == "Example Registrar, LLC"
+    assert domain["Registrant"]["Email"] == "domains@example.com"
     assert domain["CreationDate"] == "1994-07-01T04:00:00Z"
     assert domain["NameServers"] == ["lee.ns.cloudflare.com", "sarah.ns.cloudflare.com"]
 
     score = next(value for key, value in context.items() if key.startswith("DBotScore"))[0]
     assert score == {
-        "Indicator": "domain.com",
+        "Indicator": "example.com",
         "Type": "domain",
         "Vendor": "ViewDNS",
         "Score": 0,
@@ -662,11 +662,11 @@ def test_domain_command(client, requests_mock):
     }
 
     outputs = results[0].outputs
-    assert outputs["Name"] == "domain.com"
+    assert outputs["Name"] == "example.com"
     assert outputs["IPHistoryCount"] == 4
     assert outputs["IPHistory"][0]["IP"] == "172.64.145.59"
     assert "RawText" not in outputs["Whois"]
-    assert "IP History for domain.com" in results[0].readable_output
+    assert "IP History for example.com" in results[0].readable_output
 
 
 def test_domain_command_without_data(client, requests_mock):
@@ -684,16 +684,16 @@ def test_ip_command(client, requests_mock):
     requests_mock.get(f"{BASE_URL}/whois/v2/", json=load_json("whois_ip"))
     requests_mock.get(f"{BASE_URL}/reverseip/", json=load_json("reverse_ip"))
 
-    results = ViewDNS.ip_command(client, {"ip": "8.8.8.8"}, True, RELIABILITY)
+    results = ViewDNS.ip_command(client, {"ip": "198.51.100.1"}, True, RELIABILITY)
 
     assert len(results) == 1
     context = results[0].to_context()["EntryContext"]
     ip = context["IP(val.Address && val.Address == obj.Address)"][0]
-    assert ip["Address"] == "8.8.8.8"
-    assert ip["ASOwner"] == "Google LLC (GOGL)"
+    assert ip["Address"] == "198.51.100.1"
+    assert ip["ASOwner"] == "Example Networks LLC (EXNET)"
     assert ip["Geo"]["Country"] == "US"
-    assert ip["Registrar"]["Abuse"]["Email"] == "network-abuse@google.com"
-    assert ip["Registrar"]["Abuse"]["Network"] == "8.8.8.0/24"
+    assert ip["Registrar"]["Abuse"]["Email"] == "abuse@example.net"
+    assert ip["Registrar"]["Abuse"]["Network"] == "198.51.100.0/24"
 
     score = next(value for key, value in context.items() if key.startswith("DBotScore"))[0]
     assert score["Score"] == 0
@@ -701,7 +701,7 @@ def test_ip_command(client, requests_mock):
     assert score["Vendor"] == "ViewDNS"
 
     outputs = results[0].outputs
-    assert outputs["Address"] == "8.8.8.8"
+    assert outputs["Address"] == "198.51.100.1"
     assert outputs["HostedDomainCount"] == 5
     assert len(outputs["HostedDomains"]) == 5
     assert outputs["Whois"]["Registry"] == "ARIN"
@@ -714,15 +714,15 @@ def test_reputation_command_continues_after_failed_indicator(client, requests_mo
     Then: a warning is returned for the first and the second is still enriched
     """
     requests_mock.get(f"{BASE_URL}/whois/v2/?domain=bad", status_code=400, json=load_json("error_400"))
-    requests_mock.get(f"{BASE_URL}/whois/v2/?domain=8.8.8.8", json=load_json("whois_ip"))
+    requests_mock.get(f"{BASE_URL}/whois/v2/?domain=198.51.100.1", json=load_json("whois_ip"))
     requests_mock.get(f"{BASE_URL}/reverseip/", json=load_json("reverse_ip_empty"))
 
-    results = ViewDNS.ip_command(client, {"ip": "bad,8.8.8.8"}, True, RELIABILITY)
+    results = ViewDNS.ip_command(client, {"ip": "bad,198.51.100.1"}, True, RELIABILITY)
 
     assert len(results) == 2
     assert results[0].entry_type == EntryType.WARNING
     assert "could not enrich bad" in results[0].readable_output
-    assert results[1].outputs["Address"] == "8.8.8.8"
+    assert results[1].outputs["Address"] == "198.51.100.1"
     assert results[1].outputs["HostedDomainCount"] == 0
 
 
@@ -763,7 +763,7 @@ def test_main_test_module(mocker, requests_mock):
     results.assert_called_once_with("ok")
 
 
-@pytest.mark.parametrize("command, args", [("domain", {"domain": "domain.com"}), ("ip", {"ip": "8.8.8.8"})])
+@pytest.mark.parametrize("command, args", [("domain", {"domain": "example.com"}), ("ip", {"ip": "198.51.100.1"})])
 def test_main_reputation_disabled_by_default(mocker, requests_mock, command, args):
     results, error = run_main(mocker, command, args)
 
@@ -777,7 +777,7 @@ def test_main_reputation_enabled(mocker, requests_mock):
     requests_mock.get(f"{BASE_URL}/reverseip/", json=load_json("reverse_ip"))
     params = {"credentials": {"password": API_KEY}, "enable_reputation": True, "integrationReliability": "B - Usually reliable"}
 
-    results, error = run_main(mocker, "ip", {"ip": "8.8.8.8"}, params)
+    results, error = run_main(mocker, "ip", {"ip": "198.51.100.1"}, params)
 
     error.assert_not_called()
     assert results.call_args.args[0][0].indicator.dbot_score.reliability == "B - Usually reliable"
@@ -787,16 +787,22 @@ def test_main_reports_errors_without_api_key(mocker, requests_mock):
     """
     Given: a request failure whose message contains the request URL, including the API key
     When: main handles the error
-    Then: the API key is removed from the message shown to the user
+    Then: the API key is removed from the message shown to the user and from the debug traceback
     """
     mocker.patch.object(Client, "_http_request", side_effect=DemistoException(f"failed: {BASE_URL}/whois/v2/?apikey={API_KEY}"))
+    debug = mocker.patch.object(ViewDNS.demisto, "debug")
 
-    _, error = run_main(mocker, "viewdns-whois", {"domain": "domain.com"})
+    _, error = run_main(mocker, "viewdns-whois", {"domain": "example.com"})
 
     message = error.call_args.args[0]
     assert "Failed to execute viewdns-whois command." in message
     assert API_KEY not in message
     assert "<api-key>" in message
+    assert isinstance(error.call_args.kwargs["error"], DemistoException)
+    traceback_text = debug.call_args.args[0]
+    assert "Traceback" in traceback_text
+    assert API_KEY not in traceback_text
+    assert "<api-key>" in traceback_text
 
 
 @pytest.mark.parametrize(
@@ -812,6 +818,6 @@ def test_main_reports_errors_without_api_key(mocker, requests_mock):
     ],
 )
 def test_main_configuration_errors(mocker, command, params, expected):
-    _, error = run_main(mocker, command, {"domain": "domain.com"}, params)
+    _, error = run_main(mocker, command, {"domain": "example.com"}, params)
 
     assert expected in error.call_args.args[0]

@@ -1,7 +1,7 @@
 {
     "query": {
         "tool": "dnsrecord_PRO",
-        "domain": "domain.com",
+        "domain": "example.com",
         "recordtype": "CAA"
     },
     "response": {

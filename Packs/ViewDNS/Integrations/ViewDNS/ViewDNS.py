@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 import html
 import re
+import traceback
 from collections.abc import Callable
 from typing import Any
 
@@ -909,9 +910,12 @@ def main() -> None:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception as error:
         message = str(error)
+        details = traceback.format_exc()
         if api_key:
             message = message.replace(api_key, "<api-key>")
-        return_error(f"Failed to execute {command} command.\nError:\n{message}")
+            details = details.replace(api_key, "<api-key>")
+        demisto.debug(details)
+        return_error(f"Failed to execute {command} command.\nError:\n{message}", error=error)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

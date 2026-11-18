@@ -1,15 +1,15 @@
 {
     "query": {
         "tool": "whois_PRO_v2",
-        "ip": "8.8.8.8"
+        "ip": "198.51.100.1"
     },
     "response": {
-        "ip": "8.8.8.8",
+        "ip": "198.51.100.1",
         "registrarName": "ARIN",
-        "owner": "Google LLC (GOGL)",
-        "netname": "GOGL",
-        "netrange": "8.8.8.0 - 8.8.8.255",
-        "cidr": "8.8.8.0/24",
+        "owner": "Example Networks LLC (EXNET)",
+        "netname": "EXNET",
+        "netrange": "198.51.100.0 - 198.51.100.255",
+        "cidr": "198.51.100.0/24",
         "as": "",
         "country": "US",
         "registryData": {
@@ -19,8 +19,8 @@
             "standardUpdatedDate": "2023-12-28T00:00:00Z",
             "abuseContact": {
                 "name": "Abuse",
-                "telephone": "+1-650-253-0000",
-                "email": "network-abuse@google.com",
+                "telephone": "+1-555-555-0100",
+                "email": "abuse@example.net",
                 "organization": null,
                 "street1": null,
                 "city": null,
@@ -32,19 +32,19 @@
             "administrativeContact": {
                 "name": "",
                 "organization": "",
-                "street1": "1600 Amphitheatre Parkway",
-                "city": "Mountain View",
+                "street1": "456 Example Avenue",
+                "city": "Anytown",
                 "state": "CA",
-                "postalCode": "94043",
+                "postalCode": "00000",
                 "country": "",
                 "telephone": "",
                 "fax": "US",
                 "email": ""
             },
             "technicalContact": {
-                "name": "Google LLC",
-                "telephone": "+1-650-253-0000",
-                "email": "arin-contact@google.com",
+                "name": "Example Networks LLC",
+                "telephone": "+1-555-555-0100",
+                "email": "noc@example.net",
                 "organization": null,
                 "street1": null,
                 "city": null,
@@ -54,7 +54,7 @@
                 "fax": null
             },
             "status": "",
-            "rawText": "NetRange:       8.8.8.0 - 8.8.8.255\nCIDR:           8.8.8.0/24\nNetName:        GOGL\nOrganization:   Google LLC (GOGL)\nRegDate:        2023-12-28\nUpdated:        2023-12-28\n"
+            "rawText": "NetRange:       198.51.100.0 - 198.51.100.255\nCIDR:           198.51.100.0/24\nNetName:        EXNET\nOrganization:   Example Networks LLC (EXNET)\nRegDate:        2023-12-28\nUpdated:        2023-12-28\n"
         }
     }
 }

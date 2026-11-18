@@ -1,6 +1,6 @@
-id: silent-ViewDNS - Domain Enrichment
+id: ViewDNS - Domain Enrichment
 version: -1
-name: silent-ViewDNS - Domain Enrichment
+name: ViewDNS - Domain Enrichment
 description: 'Enriches a domain with ViewDNS.info data: the WHOIS record, the historical IP addresses the domain was hosted on, and its current DNS records. The results are written to the context. The playbook consumes three ViewDNS API queries for every domain provided, and the WHOIS lookup requires a paid ViewDNS API key. A failed lookup does not stop the other lookups.'
 starttaskid: '0'
 tasks:
@@ -331,4 +331,3 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 8.9.0
-issilent: true

@@ -1,11 +1,11 @@
 {
     "query": {
         "tool": "whois_PRO_v2",
-        "domain": "domain.com"
+        "domain": "example.com"
     },
     "response": {
-        "domainName": "DOMAIN.COM",
-        "registrarName": "Domain.com, LLC",
+        "domainName": "EXAMPLE.COM",
+        "registrarName": "Example Registrar, LLC",
         "registrarIANAID": "886",
         "registryData": {
             "createdDate": "1994-07-01T04:00:00",
@@ -14,19 +14,19 @@
             "standardUpdatedDate": "2024-01-22T21:36:01Z",
             "expiresDate": "2031-01-07T13:34:24",
             "standardExpiresDate": "2031-01-07T13:34:24Z",
-            "abuseEmail": "compliance@domain-inc.net",
+            "abuseEmail": "abuse@example.net",
             "registrant": {
                 "name": "Domain Manager",
-                "organization": "Newfold Digital, Inc.",
-                "street1": "5335 Gate Parkway",
-                "city": "Jacksonville",
+                "organization": "Example Organization, Inc.",
+                "street1": "123 Example Street",
+                "city": "Anytown",
                 "state": "FL",
-                "postalCode": "32256",
+                "postalCode": "00000",
                 "country": "US",
-                "telephone": "+1.9046806600",
+                "telephone": "+1.5555550100",
                 "fax": "",
-                "email": "corpdomains@newfold.com",
-                "rawText": "Registrant Name: Domain Manager\nRegistrant Email: corpdomains@newfold.com"
+                "email": "domains@example.com",
+                "rawText": "Registrant Name: Domain Manager\nRegistrant Email: domains@example.com"
             },
             "administrativeContact": {
                 "name": "REDACTED FOR PRIVACY",
@@ -66,7 +66,7 @@
                 ]
             },
             "status": "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited\nclientTransferProhibited https://icann.org/epp#clientTransferProhibited\nclientUpdateProhibited https://icann.org/epp#clientUpdateProhibited",
-            "rawText": "Domain Name: DOMAIN.COM\nRegistry Domain ID: 608082_DOMAIN_COM-VRSN\nRegistrar WHOIS Server: whois.domain.com\nUpdated Date: 2024-01-22T21:36:01\nCreation Date: 1994-07-01T04:00:00\nRegistrant Organization: Newfold Digital, Inc. &amp; Co"
+            "rawText": "Domain Name: EXAMPLE.COM\nRegistry Domain ID: 0000000_EXAMPLE_COM-VRSN\nRegistrar WHOIS Server: whois.example-registrar.com\nUpdated Date: 2024-01-22T21:36:01\nCreation Date: 1994-07-01T04:00:00\nRegistrant Organization: Example Organization, Inc. &amp; Co"
         }
     }
 }

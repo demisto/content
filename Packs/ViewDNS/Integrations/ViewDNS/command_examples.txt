@@ -1,13 +1,13 @@
 !viewdns-account-balance
 !viewdns-reverse-ip host=example.com limit=5
 !viewdns-reverse-whois query=domain@example.com limit=5
-!viewdns-ip-history domain=domain.com limit=5
-!viewdns-dns-record domain=domain.com record_type=MX
-!viewdns-whois domain=domain.com
-!viewdns-reverse-ns nameserver=a.ns.facebook.com limit=5
-!viewdns-reverse-mx mail_server=mail.google.com limit=5
+!viewdns-ip-history domain=example.com limit=5
+!viewdns-dns-record domain=example.com record_type=MX
+!viewdns-whois domain=example.com
+!viewdns-reverse-ns nameserver=ns1.example.com limit=5
+!viewdns-reverse-mx mail_server=mail.example.com limit=5
 !viewdns-port-scan host=example.com
 !viewdns-ping host=example.com
 !viewdns-traceroute host=example.com
-!domain domain=domain.com
-!ip ip=8.8.8.8
+!domain domain=example.com
+!ip ip=198.51.100.1

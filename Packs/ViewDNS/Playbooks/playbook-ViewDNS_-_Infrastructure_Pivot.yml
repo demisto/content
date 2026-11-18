@@ -1,6 +1,6 @@
-id: silent-ViewDNS - Infrastructure Pivot
+id: ViewDNS - Infrastructure Pivot
 version: -1
-name: silent-ViewDNS - Infrastructure Pivot
+name: ViewDNS - Infrastructure Pivot
 description: Pivots from a known piece of attacker infrastructure to related domains with ViewDNS.info. Given an IP address, the playbook lists the domains hosted on the same server (reverse IP). Given a registrant email address, it lists the domains registered with that address (reverse WHOIS, which requires a paid ViewDNS API key). To keep API usage predictable, the playbook retrieves only the first page of results for each input, so it consumes exactly one ViewDNS API query per IP address and one per email address. The MaxResults input caps how many domains are written to the context for each lookup; the total number of matches is always reported.
 starttaskid: '0'
 tasks:
@@ -288,4 +288,3 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 8.9.0
-issilent: true

@@ -1,7 +1,7 @@
 {
     "query": {
         "tool": "iphistory_PRO",
-        "domain": "domain.com"
+        "domain": "example.com"
     },
     "response": {
         "records": [

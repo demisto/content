@@ -22,7 +22,7 @@ ViewDNS plans include a monthly number of API queries, and prepaid queries can b
 
 - Every command consumes one API query for each call, except **viewdns-account-balance** and the instance **Test** button, which are free.
 - Commands with a **page** argument consume one query for each page retrieved. The **limit** argument only controls how many results of that page are returned; it does not change the number of queries consumed.
-- The generic **domain** and **ip** reputation commands are disabled by default. When **Enable reputation commands** is selected, every enriched indicator consumes two API queries. Because Cortex XSOAR can run reputation commands automatically on every extracted indicator, enable this option only if your ViewDNS plan can cover that volume.
+- The generic **domain** and **ip** reputation commands are disabled by default. When **Enable reputation commands** is selected, every enriched indicator consumes two API queries. Because Cortex can run reputation commands automatically on every extracted indicator, enable this option only if your ViewDNS plan can cover that volume.
 - When the monthly quota is used up and no prepaid queries remain, commands fail with a "query limit was reached" error until the quota resets or more queries are purchased. The integration does not retry these requests.
 - ViewDNS does not provide a verdict, so the reputation commands always return a DBot score of 0 (Unknown). Use them for context, not for scoring.
 
@@ -41,10 +41,10 @@ The **viewdns-port-scan**, **viewdns-ping**, and **viewdns-traceroute** commands
 | --- | --- | --- |
 | Server URL | The URL of the ViewDNS API. | True |
 | API Key | The API key of your ViewDNS.info account. | True |
+| Use system proxy settings | When selected, requests to ViewDNS are sent through the system proxy. | False |
+| Trust any certificate (not secure) | When selected, the integration does not verify the SSL certificate of the ViewDNS server. | False |
 | Enable reputation commands (consumes API credits on every indicator) | When selected, the generic domain and ip reputation commands query ViewDNS, consuming two API queries for every indicator enriched. When cleared, these commands return a message and consume nothing. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
 
 ## Commands
 
@@ -63,8 +63,7 @@ Retrieves the query usage and remaining balance of the ViewDNS API key. This com
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -128,8 +127,8 @@ Finds the domains hosted on the same server as a given domain or IP address. Eac
 | ViewDNS.ReverseIP.Host | String | The domain or IP address that was searched for. |
 | ViewDNS.ReverseIP.DomainCount | Number | The total number of domains hosted on the server. |
 | ViewDNS.ReverseIP.Page | Number | The result page that was retrieved. |
-| ViewDNS.ReverseIP.Domains.Name | String | A domain hosted on the server. |
-| ViewDNS.ReverseIP.Domains.LastResolved | Date | The date the domain was last seen resolving to the server. |
+| ViewDNS.ReverseIP.Domains.Name | String | The domain hosted on the server. |
+| ViewDNS.ReverseIP.Domains.LastResolved | Date | The date the domain was last seen resolving to the server in YYYY-MM-DD format \(e.g., 2024-09-28\). |
 
 #### Command example
 
@@ -198,8 +197,8 @@ Finds the domains registered by a given person or organization, searching by reg
 | ViewDNS.ReverseWhois.ResultCount | Number | The total number of matching domains. |
 | ViewDNS.ReverseWhois.TotalPages | Number | The total number of result pages available. |
 | ViewDNS.ReverseWhois.CurrentPage | Number | The result page that was retrieved. |
-| ViewDNS.ReverseWhois.Matches.Domain | String | A domain that matches the search. |
-| ViewDNS.ReverseWhois.Matches.CreatedDate | Date | The date the domain was registered. |
+| ViewDNS.ReverseWhois.Matches.Domain | String | The domain that matches the search. |
+| ViewDNS.ReverseWhois.Matches.CreatedDate | Date | The date the domain was registered in YYYY-MM-DD format \(e.g., 2024-09-28\). |
 | ViewDNS.ReverseWhois.Matches.Registrar | String | The registrar of the domain. |
 
 #### Command example
@@ -270,14 +269,14 @@ Retrieves the IP addresses a domain has been hosted on over time. Only registere
 | --- | --- | --- |
 | ViewDNS.IPHistory.Domain | String | The domain that was searched for. |
 | ViewDNS.IPHistory.RecordCount | Number | The total number of historical records available for the domain. |
-| ViewDNS.IPHistory.Records.IP | String | An IP address the domain was hosted on. |
+| ViewDNS.IPHistory.Records.IP | String | The IP address the domain was hosted on. |
 | ViewDNS.IPHistory.Records.Location | String | The location of the IP address. |
 | ViewDNS.IPHistory.Records.Owner | String | The owner of the IP address. |
-| ViewDNS.IPHistory.Records.LastSeen | Date | The date the domain was last seen on the IP address. |
+| ViewDNS.IPHistory.Records.LastSeen | Date | The date the domain was last seen on the IP address in YYYY-MM-DD format \(e.g., 2024-09-28\). |
 
 #### Command example
 
-```!viewdns-ip-history domain=domain.com limit=3```
+```!viewdns-ip-history domain=example.com limit=3```
 
 #### Context Example
 
@@ -285,7 +284,7 @@ Retrieves the IP addresses a domain has been hosted on over time. Only registere
 {
     "ViewDNS": {
         "IPHistory": {
-            "Domain": "domain.com",
+            "Domain": "example.com",
             "RecordCount": 4,
             "Records": [
                 {
@@ -314,7 +313,7 @@ Retrieves the IP addresses a domain has been hosted on over time. Only registere
 
 #### Human Readable Output
 
->### ViewDNS IP History for domain.com (showing 3 of 4)
+>### ViewDNS IP History for example.com (showing 3 of 4)
 >
 >|IP|Location|Owner|Last Seen|
 >|---|---|---|---|
@@ -353,7 +352,7 @@ Retrieves the DNS records of a domain or hostname. Each call consumes one API qu
 
 #### Command example
 
-```!viewdns-dns-record domain=domain.com record_type=ANY```
+```!viewdns-dns-record domain=example.com record_type=ANY```
 
 #### Context Example
 
@@ -361,39 +360,39 @@ Retrieves the DNS records of a domain or hostname. Each call consumes one API qu
 {
     "ViewDNS": {
         "DNSRecord": {
-            "Domain": "domain.com",
+            "Domain": "example.com",
             "RecordType": "ANY",
             "Records": [
                 {
-                    "Name": "domain.com.",
+                    "Name": "example.com.",
                     "TTL": 1800,
                     "Class": "IN",
                     "Type": "SOA",
                     "Data": "lee.ns.cloudflare.com. dns.cloudflare.com. 2352199173 10000 2400 604800 1800"
                 },
                 {
-                    "Name": "domain.com.",
+                    "Name": "example.com.",
                     "TTL": 86400,
                     "Class": "IN",
                     "Type": "NS",
                     "Data": "lee.ns.cloudflare.com."
                 },
                 {
-                    "Name": "domain.com.",
+                    "Name": "example.com.",
                     "TTL": 300,
                     "Class": "IN",
                     "Type": "A",
                     "Data": "172.64.145.59"
                 },
                 {
-                    "Name": "domain.com.",
+                    "Name": "example.com.",
                     "TTL": 300,
                     "Class": "IN",
                     "Type": "TXT",
                     "Data": "\"v=spf1 include:spf.protection.outlook.com -all\""
                 },
                 {
-                    "Name": "domain.com.",
+                    "Name": "example.com.",
                     "TTL": 300,
                     "Class": "IN",
                     "Type": "MX",
@@ -408,15 +407,15 @@ Retrieves the DNS records of a domain or hostname. Each call consumes one API qu
 
 #### Human Readable Output
 
->### ViewDNS DNS Records for domain.com (ANY)
+>### ViewDNS DNS Records for example.com (ANY)
 >
 >|Name|Type|TTL|Class|Priority|Data|
 >|---|---|---|---|---|---|
->| domain.com. | SOA | 1800 | IN |  | lee.ns.cloudflare.com. dns.cloudflare.com. 2352199173 10000 2400 604800 1800 |
->| domain.com. | NS | 86400 | IN |  | lee.ns.cloudflare.com. |
->| domain.com. | A | 300 | IN |  | 172.64.145.59 |
->| domain.com. | TXT | 300 | IN |  | "v=spf1 include:spf.protection.outlook.com -all" |
->| domain.com. | MX | 300 | IN | 10 | domain-com.mail.protection.outlook.com. |
+>| example.com. | SOA | 1800 | IN |  | lee.ns.cloudflare.com. dns.cloudflare.com. 2352199173 10000 2400 604800 1800 |
+>| example.com. | NS | 86400 | IN |  | lee.ns.cloudflare.com. |
+>| example.com. | A | 300 | IN |  | 172.64.145.59 |
+>| example.com. | TXT | 300 | IN |  | "v=spf1 include:spf.protection.outlook.com -all" |
+>| example.com. | MX | 300 | IN | 10 | domain-com.mail.protection.outlook.com. |
 
 ### viewdns-whois
 
@@ -440,9 +439,9 @@ Retrieves the WHOIS record of a domain or IP address. Requires a paid ViewDNS AP
 | ViewDNS.Whois.DomainName | String | The domain name. |
 | ViewDNS.Whois.RegistrarName | String | The name of the registrar. |
 | ViewDNS.Whois.RegistrarIANAID | String | The IANA ID of the registrar. |
-| ViewDNS.Whois.CreatedDate | Date | The date the domain was registered. |
-| ViewDNS.Whois.UpdatedDate | Date | The date the domain registration was last updated. |
-| ViewDNS.Whois.ExpiresDate | Date | The date the domain registration expires. |
+| ViewDNS.Whois.CreatedDate | Date | The date the domain was registered in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
+| ViewDNS.Whois.UpdatedDate | Date | The date the domain registration was last updated in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
+| ViewDNS.Whois.ExpiresDate | Date | The date the domain registration expires in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
 | ViewDNS.Whois.AbuseEmail | String | The abuse contact email address. |
 | ViewDNS.Whois.Registrant.Name | String | The name of the registrant. |
 | ViewDNS.Whois.Registrant.Organization | String | The organization of the registrant. |
@@ -485,8 +484,8 @@ Retrieves the WHOIS record of a domain or IP address. Requires a paid ViewDNS AP
 | ViewDNS.IPWhois.CIDR | String | The network in CIDR notation. |
 | ViewDNS.IPWhois.ASN | String | The autonomous system number of the network, when available. |
 | ViewDNS.IPWhois.Country | String | The country of the network. |
-| ViewDNS.IPWhois.CreatedDate | Date | The date the network was registered. |
-| ViewDNS.IPWhois.UpdatedDate | Date | The date the network registration was last updated. |
+| ViewDNS.IPWhois.CreatedDate | Date | The date the network was registered in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
+| ViewDNS.IPWhois.UpdatedDate | Date | The date the network registration was last updated in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
 | ViewDNS.IPWhois.Abuse.Name | String | The name of the abuse contact. |
 | ViewDNS.IPWhois.Abuse.Organization | String | The organization of the abuse contact. |
 | ViewDNS.IPWhois.Abuse.Street | String | The street address of the abuse contact. |
@@ -522,7 +521,7 @@ Retrieves the WHOIS record of a domain or IP address. Requires a paid ViewDNS AP
 
 #### Command example
 
-```!viewdns-whois domain=domain.com```
+```!viewdns-whois domain=example.com```
 
 #### Context Example
 
@@ -530,22 +529,22 @@ Retrieves the WHOIS record of a domain or IP address. Requires a paid ViewDNS AP
 {
     "ViewDNS": {
         "Whois": {
-            "RegistrarName": "Domain.com, LLC",
+            "RegistrarName": "Example Registrar, LLC",
             "RegistrarIANAID": "886",
             "CreatedDate": "1994-07-01T04:00:00Z",
             "UpdatedDate": "2024-01-22T21:36:01Z",
             "ExpiresDate": "2031-01-07T13:34:24Z",
-            "AbuseEmail": "compliance@domain-inc.net",
+            "AbuseEmail": "abuse@example.net",
             "Registrant": {
                 "Name": "Domain Manager",
-                "Organization": "Newfold Digital, Inc.",
-                "Street": "5335 Gate Parkway",
-                "City": "Jacksonville",
+                "Organization": "Example Organization, Inc.",
+                "Street": "123 Example Street",
+                "City": "Anytown",
                 "State": "FL",
-                "PostalCode": "32256",
+                "PostalCode": "00000",
                 "Country": "US",
-                "Phone": "+1.9046806600",
-                "Email": "corpdomains@newfold.com"
+                "Phone": "+1.5555550100",
+                "Email": "domains@example.com"
             },
             "Admin": {
                 "Name": "REDACTED FOR PRIVACY",
@@ -580,7 +579,7 @@ Retrieves the WHOIS record of a domain or IP address. Requires a paid ViewDNS AP
                 "clientTransferProhibited",
                 "clientUpdateProhibited"
             ],
-            "DomainName": "domain.com",
+            "DomainName": "example.com",
             "RawText": "..."
         }
     }
@@ -589,11 +588,11 @@ Retrieves the WHOIS record of a domain or IP address. Requires a paid ViewDNS AP
 
 #### Human Readable Output
 
->### ViewDNS WHOIS for domain.com
+>### ViewDNS WHOIS for example.com
 >
 >|DomainName|RegistrarName|RegistrarIANAID|CreatedDate|UpdatedDate|ExpiresDate|AbuseEmail|Registrant|Admin|Tech|NameServers|Status|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| domain.com | Domain.com, LLC | 886 | 1994-07-01T04:00:00Z | 2024-01-22T21:36:01Z | 2031-01-07T13:34:24Z | compliance@domain-inc.net | Name: Domain Manager, Organization: Newfold Digital, Inc., Street: 5335 Gate Parkway, City: Jacksonville, State: FL, PostalCode: 32256, Country: US, Phone: +1.9046806600, Email: corpdomains@newfold.com | Name: REDACTED FOR PRIVACY, Organization: REDACTED FOR PRIVACY, Street: REDACTED FOR PRIVACY, City: REDACTED FOR PRIVACY, State: REDACTED FOR PRIVACY, PostalCode: REDACTED FOR PRIVACY, Country: REDACTED FOR PRIVACY, Phone: REDACTED FOR PRIVACY, Fax: REDACTED FOR PRIVACY, Email: REDACTED FOR PRIVACY | Name: REDACTED FOR PRIVACY, Organization: REDACTED FOR PRIVACY, Street: REDACTED FOR PRIVACY, City: REDACTED FOR PRIVACY, State: REDACTED FOR PRIVACY, PostalCode: REDACTED FOR PRIVACY, Country: REDACTED FOR PRIVACY, Phone: REDACTED FOR PRIVACY, Fax: REDACTED FOR PRIVACY, Email: REDACTED FOR PRIVACY | lee.ns.cloudflare.com,<br>sarah.ns.cloudflare.com | clientDeleteProhibited,<br>clientTransferProhibited,<br>clientUpdateProhibited |
+>| example.com | Example Registrar, LLC | 886 | 1994-07-01T04:00:00Z | 2024-01-22T21:36:01Z | 2031-01-07T13:34:24Z | abuse@example.net | Name: Domain Manager, Organization: Example Organization, Inc., Street: 123 Example Street, City: Anytown, State: FL, PostalCode: 00000, Country: US, Phone: +1.5555550100, Email: domains@example.com | Name: REDACTED FOR PRIVACY, Organization: REDACTED FOR PRIVACY, Street: REDACTED FOR PRIVACY, City: REDACTED FOR PRIVACY, State: REDACTED FOR PRIVACY, PostalCode: REDACTED FOR PRIVACY, Country: REDACTED FOR PRIVACY, Phone: REDACTED FOR PRIVACY, Fax: REDACTED FOR PRIVACY, Email: REDACTED FOR PRIVACY | Name: REDACTED FOR PRIVACY, Organization: REDACTED FOR PRIVACY, Street: REDACTED FOR PRIVACY, City: REDACTED FOR PRIVACY, State: REDACTED FOR PRIVACY, PostalCode: REDACTED FOR PRIVACY, Country: REDACTED FOR PRIVACY, Phone: REDACTED FOR PRIVACY, Fax: REDACTED FOR PRIVACY, Email: REDACTED FOR PRIVACY | lee.ns.cloudflare.com,<br>sarah.ns.cloudflare.com | clientDeleteProhibited,<br>clientTransferProhibited,<br>clientUpdateProhibited |
 
 ### viewdns-reverse-ns
 
@@ -624,7 +623,7 @@ Finds the domains that use a given name server. Each call consumes one API query
 
 #### Command example
 
-```!viewdns-reverse-ns nameserver=a.ns.facebook.com limit=3```
+```!viewdns-reverse-ns nameserver=ns1.example.com limit=3```
 
 #### Context Example
 
@@ -632,7 +631,7 @@ Finds the domains that use a given name server. Each call consumes one API query
 {
     "ViewDNS": {
         "ReverseNS": {
-            "Nameserver": "a.ns.facebook.com",
+            "Nameserver": "ns1.example.com",
             "DomainCount": 2217,
             "TotalPages": 1,
             "CurrentPage": 1,
@@ -648,7 +647,7 @@ Finds the domains that use a given name server. Each call consumes one API query
 
 #### Human Readable Output
 
->### ViewDNS Reverse NS for a.ns.facebook.com (showing 3 of 2217, page 1)
+>### ViewDNS Reverse NS for ns1.example.com (showing 3 of 2217, page 1)
 >
 >|Domain|
 >|---|
@@ -685,7 +684,7 @@ Finds the domains that use a given mail server. Each call consumes one API query
 
 #### Command example
 
-```!viewdns-reverse-mx mail_server=mail.google.com limit=3```
+```!viewdns-reverse-mx mail_server=mail.example.com limit=3```
 
 #### Context Example
 
@@ -693,7 +692,7 @@ Finds the domains that use a given mail server. Each call consumes one API query
 {
     "ViewDNS": {
         "ReverseMX": {
-            "MailServer": "mail.google.com",
+            "MailServer": "mail.example.com",
             "DomainCount": 981,
             "TotalPages": 1,
             "CurrentPage": 1,
@@ -709,7 +708,7 @@ Finds the domains that use a given mail server. Each call consumes one API query
 
 #### Human Readable Output
 
->### ViewDNS Reverse MX for mail.google.com (showing 3 of 981, page 1)
+>### ViewDNS Reverse MX for mail.example.com (showing 3 of 981, page 1)
 >
 >|Domain|
 >|---|
@@ -988,9 +987,9 @@ Enriches a domain with its WHOIS record and IP history. ViewDNS does not provide
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | Domain.Name | String | The domain name. |
 | Domain.Organization | String | The organization of the registrant. |
-| Domain.CreationDate | Date | The date the domain was registered. |
-| Domain.UpdatedDate | Date | The date the domain registration was last updated. |
-| Domain.ExpirationDate | Date | The date the domain registration expires. |
+| Domain.CreationDate | Date | The date the domain was registered in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
+| Domain.UpdatedDate | Date | The date the domain registration was last updated in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
+| Domain.ExpirationDate | Date | The date the domain registration expires in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
 | Domain.DomainStatus | String | The EPP status codes of the domain. |
 | Domain.NameServers | String | The name servers of the domain. |
 | Domain.Registrar.Name | String | The name of the registrar. |
@@ -1007,9 +1006,9 @@ Enriches a domain with its WHOIS record and IP history. ViewDNS does not provide
 | Domain.Tech.Email | String | The email address of the technical contact. |
 | Domain.Tech.Organization | String | The organization of the technical contact. |
 | Domain.Tech.Country | String | The country of the technical contact. |
-| Domain.WHOIS.CreationDate | Date | The date the domain was registered. |
-| Domain.WHOIS.UpdatedDate | Date | The date the domain registration was last updated. |
-| Domain.WHOIS.ExpirationDate | Date | The date the domain registration expires. |
+| Domain.WHOIS.CreationDate | Date | The date the domain was registered in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
+| Domain.WHOIS.UpdatedDate | Date | The date the domain registration was last updated in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
+| Domain.WHOIS.ExpirationDate | Date | The date the domain registration expires in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
 | Domain.WHOIS.DomainStatus | String | The EPP status codes of the domain. |
 | Domain.WHOIS.NameServers | String | The name servers of the domain. |
 | Domain.WHOIS.Registrar.Name | String | The name of the registrar. |
@@ -1026,9 +1025,9 @@ Enriches a domain with its WHOIS record and IP history. ViewDNS does not provide
 | ViewDNS.Domain.Whois.DomainName | String | The domain name. |
 | ViewDNS.Domain.Whois.RegistrarName | String | The name of the registrar. |
 | ViewDNS.Domain.Whois.RegistrarIANAID | String | The IANA ID of the registrar. |
-| ViewDNS.Domain.Whois.CreatedDate | Date | The date the domain was registered. |
-| ViewDNS.Domain.Whois.UpdatedDate | Date | The date the domain registration was last updated. |
-| ViewDNS.Domain.Whois.ExpiresDate | Date | The date the domain registration expires. |
+| ViewDNS.Domain.Whois.CreatedDate | Date | The date the domain was registered in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
+| ViewDNS.Domain.Whois.UpdatedDate | Date | The date the domain registration was last updated in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
+| ViewDNS.Domain.Whois.ExpiresDate | Date | The date the domain registration expires in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
 | ViewDNS.Domain.Whois.AbuseEmail | String | The abuse contact email address. |
 | ViewDNS.Domain.Whois.Registrant.Name | String | The name of the registrant. |
 | ViewDNS.Domain.Whois.Registrant.Organization | String | The organization of the registrant. |
@@ -1063,14 +1062,14 @@ Enriches a domain with its WHOIS record and IP history. ViewDNS does not provide
 | ViewDNS.Domain.Whois.NameServers | String | The name servers of the domain. |
 | ViewDNS.Domain.Whois.Status | String | The EPP status codes of the domain. |
 | ViewDNS.Domain.IPHistoryCount | Number | The total number of historical IP records available for the domain. |
-| ViewDNS.Domain.IPHistory.IP | String | An IP address the domain was hosted on. |
+| ViewDNS.Domain.IPHistory.IP | String | The IP address the domain was hosted on. |
 | ViewDNS.Domain.IPHistory.Location | String | The location of the IP address. |
 | ViewDNS.Domain.IPHistory.Owner | String | The owner of the IP address. |
-| ViewDNS.Domain.IPHistory.LastSeen | Date | The date the domain was last seen on the IP address. |
+| ViewDNS.Domain.IPHistory.LastSeen | Date | The date the domain was last seen on the IP address in YYYY-MM-DD format \(e.g., 2024-09-28\). |
 
 #### Command example
 
-```!domain domain=domain.com```
+```!domain domain=example.com```
 
 #### Context Example
 
@@ -1078,16 +1077,16 @@ Enriches a domain with its WHOIS record and IP history. ViewDNS does not provide
 {
     "Domain": [
         {
-            "Name": "domain.com",
+            "Name": "example.com",
             "Registrar": {
-                "Name": "Domain.com, LLC",
-                "AbuseEmail": "compliance@domain-inc.net",
+                "Name": "Example Registrar, LLC",
+                "AbuseEmail": "abuse@example.net",
                 "AbusePhone": null
             },
             "Registrant": {
                 "Name": "Domain Manager",
-                "Email": "corpdomains@newfold.com",
-                "Phone": "+1.9046806600",
+                "Email": "domains@example.com",
+                "Phone": "+1.5555550100",
                 "Country": "US"
             },
             "Admin": {
@@ -1096,7 +1095,7 @@ Enriches a domain with its WHOIS record and IP history. ViewDNS does not provide
                 "Phone": "REDACTED FOR PRIVACY",
                 "Country": "REDACTED FOR PRIVACY"
             },
-            "Organization": "Newfold Digital, Inc.",
+            "Organization": "Example Organization, Inc.",
             "DomainStatus": [
                 "clientDeleteProhibited",
                 "clientTransferProhibited",
@@ -1117,14 +1116,14 @@ Enriches a domain with its WHOIS record and IP history. ViewDNS does not provide
             },
             "WHOIS": {
                 "Registrar": {
-                    "Name": "Domain.com, LLC",
-                    "AbuseEmail": "compliance@domain-inc.net",
+                    "Name": "Example Registrar, LLC",
+                    "AbuseEmail": "abuse@example.net",
                     "AbusePhone": null
                 },
                 "Registrant": {
                     "Name": "Domain Manager",
-                    "Email": "corpdomains@newfold.com",
-                    "Phone": "+1.9046806600",
+                    "Email": "domains@example.com",
+                    "Phone": "+1.5555550100",
                     "Country": "US"
                 },
                 "Admin": {
@@ -1150,7 +1149,7 @@ Enriches a domain with its WHOIS record and IP history. ViewDNS does not provide
     ],
     "DBotScore": [
         {
-            "Indicator": "domain.com",
+            "Indicator": "example.com",
             "Type": "domain",
             "Vendor": "ViewDNS",
             "Score": 0,
@@ -1159,24 +1158,24 @@ Enriches a domain with its WHOIS record and IP history. ViewDNS does not provide
     ],
     "ViewDNS": {
         "Domain": {
-            "Name": "domain.com",
+            "Name": "example.com",
             "Whois": {
-                "RegistrarName": "Domain.com, LLC",
+                "RegistrarName": "Example Registrar, LLC",
                 "RegistrarIANAID": "886",
                 "CreatedDate": "1994-07-01T04:00:00Z",
                 "UpdatedDate": "2024-01-22T21:36:01Z",
                 "ExpiresDate": "2031-01-07T13:34:24Z",
-                "AbuseEmail": "compliance@domain-inc.net",
+                "AbuseEmail": "abuse@example.net",
                 "Registrant": {
                     "Name": "Domain Manager",
-                    "Organization": "Newfold Digital, Inc.",
-                    "Street": "5335 Gate Parkway",
-                    "City": "Jacksonville",
+                    "Organization": "Example Organization, Inc.",
+                    "Street": "123 Example Street",
+                    "City": "Anytown",
                     "State": "FL",
-                    "PostalCode": "32256",
+                    "PostalCode": "00000",
                     "Country": "US",
-                    "Phone": "+1.9046806600",
-                    "Email": "corpdomains@newfold.com"
+                    "Phone": "+1.5555550100",
+                    "Email": "domains@example.com"
                 },
                 "Admin": {
                     "Name": "REDACTED FOR PRIVACY",
@@ -1211,7 +1210,7 @@ Enriches a domain with its WHOIS record and IP history. ViewDNS does not provide
                     "clientTransferProhibited",
                     "clientUpdateProhibited"
                 ],
-                "DomainName": "domain.com"
+                "DomainName": "example.com"
             },
             "IPHistoryCount": 4,
             "IPHistory": [
@@ -1247,13 +1246,13 @@ Enriches a domain with its WHOIS record and IP history. ViewDNS does not provide
 
 #### Human Readable Output
 
->### ViewDNS WHOIS for domain.com
+>### ViewDNS WHOIS for example.com
 >
 >|DomainName|RegistrarName|RegistrarIANAID|CreatedDate|UpdatedDate|ExpiresDate|AbuseEmail|Registrant|Admin|Tech|NameServers|Status|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| domain.com | Domain.com, LLC | 886 | 1994-07-01T04:00:00Z | 2024-01-22T21:36:01Z | 2031-01-07T13:34:24Z | compliance@domain-inc.net | Name: Domain Manager, Organization: Newfold Digital, Inc., Street: 5335 Gate Parkway, City: Jacksonville, State: FL, PostalCode: 32256, Country: US, Phone: +1.9046806600, Email: corpdomains@newfold.com | Name: REDACTED FOR PRIVACY, Organization: REDACTED FOR PRIVACY, Street: REDACTED FOR PRIVACY, City: REDACTED FOR PRIVACY, State: REDACTED FOR PRIVACY, PostalCode: REDACTED FOR PRIVACY, Country: REDACTED FOR PRIVACY, Phone: REDACTED FOR PRIVACY, Fax: REDACTED FOR PRIVACY, Email: REDACTED FOR PRIVACY | Name: REDACTED FOR PRIVACY, Organization: REDACTED FOR PRIVACY, Street: REDACTED FOR PRIVACY, City: REDACTED FOR PRIVACY, State: REDACTED FOR PRIVACY, PostalCode: REDACTED FOR PRIVACY, Country: REDACTED FOR PRIVACY, Phone: REDACTED FOR PRIVACY, Fax: REDACTED FOR PRIVACY, Email: REDACTED FOR PRIVACY | lee.ns.cloudflare.com,<br>sarah.ns.cloudflare.com | clientDeleteProhibited,<br>clientTransferProhibited,<br>clientUpdateProhibited |
+>| example.com | Example Registrar, LLC | 886 | 1994-07-01T04:00:00Z | 2024-01-22T21:36:01Z | 2031-01-07T13:34:24Z | abuse@example.net | Name: Domain Manager, Organization: Example Organization, Inc., Street: 123 Example Street, City: Anytown, State: FL, PostalCode: 00000, Country: US, Phone: +1.5555550100, Email: domains@example.com | Name: REDACTED FOR PRIVACY, Organization: REDACTED FOR PRIVACY, Street: REDACTED FOR PRIVACY, City: REDACTED FOR PRIVACY, State: REDACTED FOR PRIVACY, PostalCode: REDACTED FOR PRIVACY, Country: REDACTED FOR PRIVACY, Phone: REDACTED FOR PRIVACY, Fax: REDACTED FOR PRIVACY, Email: REDACTED FOR PRIVACY | Name: REDACTED FOR PRIVACY, Organization: REDACTED FOR PRIVACY, Street: REDACTED FOR PRIVACY, City: REDACTED FOR PRIVACY, State: REDACTED FOR PRIVACY, PostalCode: REDACTED FOR PRIVACY, Country: REDACTED FOR PRIVACY, Phone: REDACTED FOR PRIVACY, Fax: REDACTED FOR PRIVACY, Email: REDACTED FOR PRIVACY | lee.ns.cloudflare.com,<br>sarah.ns.cloudflare.com | clientDeleteProhibited,<br>clientTransferProhibited,<br>clientUpdateProhibited |
 >
->### ViewDNS IP History for domain.com (showing 4 of 4)
+>### ViewDNS IP History for example.com (showing 4 of 4)
 >
 >|IP|Location|Owner|Last Seen|
 >|---|---|---|---|
@@ -1291,7 +1290,7 @@ Enriches an IP address with its WHOIS record and the domains hosted on it. ViewD
 | IP.ASOwner | String | The owner of the network the IP address belongs to. |
 | IP.Geo.Country | String | The country of the network the IP address belongs to. |
 | IP.Organization.Name | String | The organization that owns the network. |
-| IP.UpdatedDate | Date | The date the network registration was last updated. |
+| IP.UpdatedDate | Date | The date the network registration was last updated in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
 | IP.Registrar.Abuse.Name | String | The name of the abuse contact. |
 | IP.Registrar.Abuse.Email | String | The email address of the abuse contact. |
 | IP.Registrar.Abuse.Phone | String | The phone number of the abuse contact. |
@@ -1305,8 +1304,8 @@ Enriches an IP address with its WHOIS record and the domains hosted on it. ViewD
 | ViewDNS.IP.Whois.CIDR | String | The network in CIDR notation. |
 | ViewDNS.IP.Whois.ASN | String | The autonomous system number of the network, when available. |
 | ViewDNS.IP.Whois.Country | String | The country of the network. |
-| ViewDNS.IP.Whois.CreatedDate | Date | The date the network was registered. |
-| ViewDNS.IP.Whois.UpdatedDate | Date | The date the network registration was last updated. |
+| ViewDNS.IP.Whois.CreatedDate | Date | The date the network was registered in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
+| ViewDNS.IP.Whois.UpdatedDate | Date | The date the network registration was last updated in ISO 8601 format \(e.g., 2024-01-22T21:36:01Z\). |
 | ViewDNS.IP.Whois.Abuse.Name | String | The name of the abuse contact. |
 | ViewDNS.IP.Whois.Abuse.Organization | String | The organization of the abuse contact. |
 | ViewDNS.IP.Whois.Abuse.Street | String | The street address of the abuse contact. |
@@ -1339,12 +1338,12 @@ Enriches an IP address with its WHOIS record and the domains hosted on it. ViewD
 | ViewDNS.IP.Whois.Tech.Email | String | The email address of the technical contact. |
 | ViewDNS.IP.Whois.Status | String | The status of the network registration. |
 | ViewDNS.IP.HostedDomainCount | Number | The total number of domains hosted on the IP address. |
-| ViewDNS.IP.HostedDomains.Name | String | A domain hosted on the IP address. |
-| ViewDNS.IP.HostedDomains.LastResolved | Date | The date the domain was last seen resolving to the IP address. |
+| ViewDNS.IP.HostedDomains.Name | String | The domain hosted on the IP address. |
+| ViewDNS.IP.HostedDomains.LastResolved | Date | The date the domain was last seen resolving to the IP address in YYYY-MM-DD format \(e.g., 2024-09-28\). |
 
 #### Command example
 
-```!ip ip=8.8.8.8```
+```!ip ip=198.51.100.1```
 
 #### Context Example
 
@@ -1352,28 +1351,28 @@ Enriches an IP address with its WHOIS record and the domains hosted on it. ViewD
 {
     "IP": [
         {
-            "Address": "8.8.8.8",
-            "ASOwner": "Google LLC (GOGL)",
+            "Address": "198.51.100.1",
+            "ASOwner": "Example Networks LLC (EXNET)",
             "UpdatedDate": "2023-12-28T00:00:00Z",
             "Registrar": {
                 "Abuse": {
                     "Name": "Abuse",
-                    "Network": "8.8.8.0/24",
-                    "Phone": "+1-650-253-0000",
-                    "Email": "network-abuse@google.com"
+                    "Network": "198.51.100.0/24",
+                    "Phone": "+1-555-555-0100",
+                    "Email": "abuse@example.net"
                 }
             },
             "Geo": {
                 "Country": "US"
             },
             "Organization": {
-                "Name": "Google LLC (GOGL)"
+                "Name": "Example Networks LLC (EXNET)"
             }
         }
     ],
     "DBotScore": [
         {
-            "Indicator": "8.8.8.8",
+            "Indicator": "198.51.100.1",
             "Type": "ip",
             "Vendor": "ViewDNS",
             "Score": 0,
@@ -1382,34 +1381,34 @@ Enriches an IP address with its WHOIS record and the domains hosted on it. ViewD
     ],
     "ViewDNS": {
         "IP": {
-            "Address": "8.8.8.8",
+            "Address": "198.51.100.1",
             "Whois": {
                 "Registry": "ARIN",
-                "Owner": "Google LLC (GOGL)",
-                "NetName": "GOGL",
-                "NetRange": "8.8.8.0 - 8.8.8.255",
-                "CIDR": "8.8.8.0/24",
+                "Owner": "Example Networks LLC (EXNET)",
+                "NetName": "EXNET",
+                "NetRange": "198.51.100.0 - 198.51.100.255",
+                "CIDR": "198.51.100.0/24",
                 "Country": "US",
                 "CreatedDate": "2023-12-28T00:00:00Z",
                 "UpdatedDate": "2023-12-28T00:00:00Z",
                 "Abuse": {
                     "Name": "Abuse",
-                    "Phone": "+1-650-253-0000",
-                    "Email": "network-abuse@google.com"
+                    "Phone": "+1-555-555-0100",
+                    "Email": "abuse@example.net"
                 },
                 "Admin": {
-                    "Street": "1600 Amphitheatre Parkway",
-                    "City": "Mountain View",
+                    "Street": "456 Example Avenue",
+                    "City": "Anytown",
                     "State": "CA",
-                    "PostalCode": "94043",
+                    "PostalCode": "00000",
                     "Fax": "US"
                 },
                 "Tech": {
-                    "Name": "Google LLC",
-                    "Phone": "+1-650-253-0000",
-                    "Email": "arin-contact@google.com"
+                    "Name": "Example Networks LLC",
+                    "Phone": "+1-555-555-0100",
+                    "Email": "noc@example.net"
                 },
-                "IP": "8.8.8.8"
+                "IP": "198.51.100.1"
             },
             "HostedDomainCount": 5,
             "HostedDomains": [
@@ -1441,13 +1440,13 @@ Enriches an IP address with its WHOIS record and the domains hosted on it. ViewD
 
 #### Human Readable Output
 
->### ViewDNS WHOIS for 8.8.8.8
+>### ViewDNS WHOIS for 198.51.100.1
 >
 >|IP|Registry|Owner|NetName|NetRange|CIDR|Country|CreatedDate|UpdatedDate|Abuse|Admin|Tech|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 8.8.8.8 | ARIN | Google LLC (GOGL) | GOGL | 8.8.8.0 - 8.8.8.255 | 8.8.8.0/24 | US | 2023-12-28T00:00:00Z | 2023-12-28T00:00:00Z | Name: Abuse, Phone: +1-650-253-0000, Email: network-abuse@google.com | Street: 1600 Amphitheatre Parkway, City: Mountain View, State: CA, PostalCode: 94043, Fax: US | Name: Google LLC, Phone: +1-650-253-0000, Email: arin-contact@google.com |
+>| 198.51.100.1 | ARIN | Example Networks LLC (EXNET) | EXNET | 198.51.100.0 - 198.51.100.255 | 198.51.100.0/24 | US | 2023-12-28T00:00:00Z | 2023-12-28T00:00:00Z | Name: Abuse, Phone: +1-555-555-0100, Email: abuse@example.net | Street: 456 Example Avenue, City: Anytown, State: CA, PostalCode: 00000, Fax: US | Name: Example Networks LLC, Phone: +1-555-555-0100, Email: noc@example.net |
 >
->### ViewDNS Domains Hosted on 8.8.8.8 (showing 5 of 5)
+>### ViewDNS Domains Hosted on 198.51.100.1 (showing 5 of 5)
 >
 >|Name|Last Resolved|
 >|---|---|

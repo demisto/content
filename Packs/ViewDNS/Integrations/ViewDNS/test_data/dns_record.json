@@ -1,41 +1,41 @@
 {
     "query": {
         "tool": "dnsrecord_PRO",
-        "domain": "domain.com",
+        "domain": "example.com",
         "recordtype": "ANY"
     },
     "response": {
         "records": [
             {
-                "name": "domain.com.",
+                "name": "example.com.",
                 "ttl": "1800",
                 "class": "IN",
                 "type": "SOA",
                 "data": "lee.ns.cloudflare.com. dns.cloudflare.com. 2352199173 10000 2400 604800 1800"
             },
             {
-                "name": "domain.com.",
+                "name": "example.com.",
                 "ttl": "86400",
                 "class": "IN",
                 "type": "NS",
                 "data": "lee.ns.cloudflare.com."
             },
             {
-                "name": "domain.com.",
+                "name": "example.com.",
                 "ttl": "300",
                 "class": "IN",
                 "type": "A",
                 "data": "172.64.145.59"
             },
             {
-                "name": "domain.com.",
+                "name": "example.com.",
                 "ttl": "300",
                 "class": "IN",
                 "type": "TXT",
                 "data": "\"v=spf1 include:spf.protection.outlook.com -all\""
             },
             {
-                "name": "domain.com.",
+                "name": "example.com.",
                 "ttl": "300",
                 "class": "IN",
                 "type": "MX",
