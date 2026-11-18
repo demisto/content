@@ -1679,3 +1679,5 @@ script:
 tests:
 - Cortex XDR - XQL Query - Test
 fromversion: 5.5.0
+supportedModules:
+- agentix

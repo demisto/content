@@ -1331,7 +1331,7 @@ script:
     - name: query_run_uuid
       description: The query run UUID to retrieve query results.
       hidden: true
-  dockerimage: demisto/python3:3.12.13.10404775
+  dockerimage: demisto/python3:3.12.15.14069087
   isfetch: true
   runonce: false
   subtype: python3

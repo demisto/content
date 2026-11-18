@@ -19,7 +19,9 @@ Because the fetch ignores older messages once newer ones were fetched, it's reco
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| service_account_json | Service Account Private Key File Contents \(JSON\) | True |
+| Service account private key (JSON) | The full contents of a service account JSON key file \(contains type: service_account, client_email, and private_key\). Without impersonation, use the key of the service account that has the Pub/Sub permissions. With impersonation, use the key of the base \(caller\) service account, not of the service account to impersonate. The base service account needs only roles/iam.serviceAccountTokenCreator on the service account to impersonate. Provide either this parameter or the Workload Identity Federation configuration, not both. | False |
+| Workload Identity Federation configuration (JSON) | The external_account credential configuration JSON that you generate for your Workload Identity Pool provider. Provide either this parameter or the Service account private key, not both. | False |
+| Service Account to impersonate | The email of the target service account \(for example, target-sa@my-project.iam.gserviceaccount.com\). You need only the email, not a key file. This account must hold the Pub/Sub permissions, since all Pub/Sub calls run as this account. This parameter requires a base credential \(Service account private key or Workload Identity Federation configuration\) and cannot be used on its own. This parameter overrides any impersonation URL that the Workload Identity Federation configuration contains. Leave empty for no impersonation. | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | isFetch | Fetch incidents | False |

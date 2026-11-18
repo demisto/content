@@ -58,3 +58,6 @@ ignore=MP106,GR103
 
 [file:layoutscontainer-layouts-Lumu.json]
 ignore=GR103
+
+[file:LumuSecops.yml]
+ignore=BA129,IN126

@@ -5,7 +5,7 @@ Use this integration to connect securely with a Cloudflare Model Context Protoco
 | **Parameter** | **Required** |
 | --- | --- |
 | Cloudflare Server | True |
-| Authorization code |  |
+| Redirect URL or Authorization Code |  |
 | Redirect URI |  |
 
 ## Commands

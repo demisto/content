@@ -952,7 +952,7 @@ class Client(BaseClient):
                 field_data = {"FieldId": field_id, "ValuesList": values_list}
 
                 # Write the value to cache so it can be retrieved next time using both field ID and depth
-                cache["fieldValueList"][cache_key] = field_data
+                cache.setdefault("fieldValueList", {})[cache_key] = field_data
                 demisto.debug(f"Merging field value list for field ID: {field_id} and depth: {depth} into integration context.")
                 merge_integration_context(cache)
                 return field_data
@@ -960,9 +960,10 @@ class Client(BaseClient):
 
     def get_field_value_name(self, field_id):
         cache = get_integration_context()
+        field_value_names = cache.setdefault("fieldValueNames", {})
 
-        if cache["fieldValueNames"].get(field_id):
-            return cache.get("fieldValueNames").get(field_id)
+        if cached_field_name := field_value_names.get(str(field_id)):
+            return cached_field_name
         res = self.do_rest_request("GET", f"{API_ENDPOINT}/core/system/fielddefinition/{field_id}")
         errors = get_errors_from_res(res)
         if errors:
@@ -970,7 +971,7 @@ class Client(BaseClient):
 
         if res.get("RequestedObject") and res.get("IsSuccessful"):
             field_obj = res["RequestedObject"]
-            cache["fieldValueNames"][field_obj.get("Id")] = field_obj.get("Name")
+            field_value_names[str(field_obj.get("Id"))] = field_obj.get("Name")
             merge_integration_context(cache)
             return field_obj.get("Name")
         return field_id
@@ -1792,8 +1793,9 @@ def main():
     base_url = params.get("url").strip("/")
 
     cache = get_integration_context()
-    if not cache.get("fieldValueList"):
-        cache["fieldValueList"] = {}
+    if "fieldValueList" not in cache or "fieldValueNames" not in cache:
+        cache.setdefault("fieldValueList", {})
+        cache.setdefault("fieldValueNames", {})
         merge_integration_context(cache)
 
     client = Client(
