@@ -88,6 +88,9 @@ ALERT_STATUSES: list[str] = ["NEW", "IN_PROGRESS", "CLOSED"]
 # Statuses the External API accepts on a threat alert (POST /external-api/alerts/{id}/status).
 THREAT_ALERT_STATUSES: list[str] = [f"{ALERT_STATUS_PREFIX}{name}" for name in ALERT_STATUSES]
 
+# Entity types the External API accepts on labels/add and labels/remove.
+ENTITY_LABEL_TYPES: list[str] = ["account", "app", "identity", "posture", "saas-to-saas", "ip-address", "ai-agent", "device"]
+
 LIST_ALERTS_DEFAULT_LIMIT = 50
 LIST_ALERTS_MAX_LIMIT = 5000
 FETCH_ALERTS_MAX_LIMIT = 500  # reco-fetch-alerts enriches every alert with one detail call each
@@ -466,6 +469,27 @@ class RecoClient(BaseClient):
 
     # --- Labels (external API) ---
 
+    def _entity_label_request(
+        self,
+        endpoint: str,
+        entity_id: str,
+        entity_type: str,
+        label_name: str,
+        instance_id: str = "",
+    ) -> Any:
+        body: dict[str, Any] = {
+            "entityId": entity_id,
+            "entityType": entity_type,
+            "labelName": label_name,
+        }
+        if instance_id:
+            body["instanceId"] = instance_id
+        try:
+            return self._external_api_post(endpoint, body)
+        except Exception as e:
+            demisto.error(f"{endpoint} error: {str(e)}")
+            raise
+
     def add_entity_label(
         self,
         entity_id: str,
@@ -477,18 +501,27 @@ class RecoClient(BaseClient):
 
         entity_type: "account", "identity", "app", "posture", "saas-to-saas",
                      "ip-address", "ai-agent", "device"
+        The label must already exist in the tenant's label catalog.
         """
-        body: dict[str, Any] = {
-            "entityId": entity_id,
-            "entityType": entity_type,
-            "labelName": label_name,
-        }
-        if instance_id:
-            body["instanceId"] = instance_id
+        return self._entity_label_request("labels/add", entity_id, entity_type, label_name, instance_id)
+
+    def remove_entity_label(
+        self,
+        entity_id: str,
+        entity_type: str,
+        label_name: str,
+        instance_id: str = "",
+    ) -> Any:
+        """Remove a label from any Reco entity via the external API (same entity types as add_entity_label)."""
+        return self._entity_label_request("labels/remove", entity_id, entity_type, label_name, instance_id)
+
+    def update_alert_severity(self, alert_id: str, severity: str) -> dict[str, Any]:
+        """Set a threat alert's severity (LOW, MEDIUM, HIGH, CRITICAL) via the external API; returns the updated alert."""
         try:
-            return self._external_api_post("labels/add", body)
+            response = self._external_api_post(f"alerts/{alert_id}/severity", {"severity": severity})
+            return response.get("alert", {})
         except Exception as e:
-            demisto.error(f"add_entity_label error: {str(e)}")
+            demisto.error(f"update_alert_severity error: {str(e)}")
             raise
 
     def resolve_visibility_event(self, entity_id: str, label_name: str) -> Any:
@@ -1676,6 +1709,45 @@ def get_alert_command(reco_client: RecoClient, alert_id: str) -> CommandResults:
     return _alerts_to_command_results(f"Reco Alert {alert_id}", [normalize_policy_violations(detail)])
 
 
+# --- Alert severity and entity label commands (external API) ---
+
+
+def update_alert_severity_command(reco_client: RecoClient, alert_id: str, severity: str) -> CommandResults:
+    """Set the severity of a threat alert."""
+    severities = parse_risk_levels(severity) or []
+    if len(severities) != 1:
+        raise ValueError("severity must be exactly one of LOW, MEDIUM, HIGH, CRITICAL (or 10, 20, 30, 40).")
+    alert = reco_client.update_alert_severity(alert_id, severities[0])
+    return CommandResults(
+        readable_output=f"Alert {alert_id} severity updated to {severities[0]}",
+        outputs_prefix="Reco.Alerts",
+        outputs_key_field="id",
+        outputs=normalize_policy_violations(alert),
+        raw_response=alert,
+    )
+
+
+def _validated_entity_type(entity_type: str) -> str:
+    normalized = entity_type.strip().lower()
+    if normalized not in ENTITY_LABEL_TYPES:
+        raise ValueError(f"Unknown entity_type '{entity_type}'. Valid values: {', '.join(ENTITY_LABEL_TYPES)}.")
+    return normalized
+
+
+def add_entity_label_command(reco_client: RecoClient, args: dict[str, Any]) -> CommandResults:
+    """Add an existing catalog label to an entity."""
+    entity_type = _validated_entity_type(args["entity_type"])
+    reco_client.add_entity_label(args["entity_id"], entity_type, args["label_name"], args.get("instance_id", ""))
+    return CommandResults(readable_output=f"Label '{args['label_name']}' added to {entity_type} {args['entity_id']}")
+
+
+def remove_entity_label_command(reco_client: RecoClient, args: dict[str, Any]) -> CommandResults:
+    """Remove a label from an entity."""
+    entity_type = _validated_entity_type(args["entity_type"])
+    reco_client.remove_entity_label(args["entity_id"], entity_type, args["label_name"], args.get("instance_id", ""))
+    return CommandResults(readable_output=f"Label '{args['label_name']}' removed from {entity_type} {args['entity_id']}")
+
+
 # --- New command functions (external API) ---
 
 
@@ -1995,6 +2067,15 @@ def main() -> None:  # pragma: no cover
 
         elif command == "reco-get-alert":
             return_results(get_alert_command(reco_client, args["alert_id"]))
+
+        elif command == "reco-update-alert-severity":
+            return_results(update_alert_severity_command(reco_client, args["alert_id"], args["severity"]))
+
+        elif command == "reco-add-entity-label":
+            return_results(add_entity_label_command(reco_client, args))
+
+        elif command == "reco-remove-entity-label":
+            return_results(remove_entity_label_command(reco_client, args))
 
         elif command == "reco-get-risky-users":
             return_results(get_risky_users_from_reco(reco_client))

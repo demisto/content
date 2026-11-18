@@ -724,6 +724,94 @@ The same paths as `reco-fetch-alerts`.
 !reco-get-alert alert_id="ee593dc2-a50e-415e-bed0-8403c18b26ca"
 ```
 
+### reco-update-alert-severity
+
+***
+Set the severity of a Reco threat alert. The change is recorded in the Reco audit log.
+
+#### Base Command
+
+`reco-update-alert-severity`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The ID (UUID) of the alert, as returned in `id` by `reco-list-alerts`. | Required |
+| severity | The new severity: `LOW`, `MEDIUM`, `HIGH`, or `CRITICAL`. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.Alerts.id | String | The alert ID. |
+| Reco.Alerts.description | String | The alert description. |
+| Reco.Alerts.riskLevel | String | The alert severity after the update. |
+| Reco.Alerts.status | String | The alert status. |
+| Reco.Alerts.updatedAt | Date | The alert last update time. |
+
+#### Command Example
+
+```
+!reco-update-alert-severity alert_id="ee593dc2-a50e-415e-bed0-8403c18b26ca" severity="CRITICAL"
+```
+
+### reco-add-entity-label
+
+***
+Add an existing label from the label catalog to a Reco entity.
+
+#### Base Command
+
+`reco-add-entity-label`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity_id | The ID (UUID) of the entity to label. | Required |
+| entity_type | The entity type: `account`, `app`, `identity`, `posture`, `saas-to-saas`, `ip-address`, `ai-agent`, or `device`. | Required |
+| label_name | The name of the label. It must already exist in the label catalog of your Reco tenant. | Required |
+| instance_id | The instance ID (UUID) for instance-scoped entities such as accounts. Leave empty for global entities. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```
+!reco-add-entity-label entity_id="0b1f6c1e-6d7a-4f3b-9c52-1d2e3f4a5b6c" entity_type="identity" label_name="Privileged Access"
+```
+
+### reco-remove-entity-label
+
+***
+Remove a label from a Reco entity.
+
+#### Base Command
+
+`reco-remove-entity-label`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity_id | The ID (UUID) of the entity to remove the label from. | Required |
+| entity_type | The entity type: `account`, `app`, `identity`, `posture`, `saas-to-saas`, `ip-address`, `ai-agent`, or `device`. | Required |
+| label_name | The name of the label to remove. | Required |
+| instance_id | The instance ID (UUID) for instance-scoped entities such as accounts. Leave empty for global entities. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```
+!reco-remove-entity-label entity_id="0b1f6c1e-6d7a-4f3b-9c52-1d2e3f4a5b6c" entity_type="identity" label_name="Privileged Access"
+```
+
 ### reco-list-events
 
 ***

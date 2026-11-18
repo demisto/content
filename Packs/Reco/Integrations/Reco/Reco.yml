@@ -1482,6 +1482,87 @@ script:
     - contextPath: Reco.Alerts.policyViolations
       description: The policy violations of the alert (detailed alert only).
       type: Unknown
+  - arguments:
+    - description: The ID (UUID) of the alert, as returned in `id` by reco-list-alerts.
+      name: alert_id
+      required: true
+    - auto: PREDEFINED
+      description: The new severity.
+      name: severity
+      required: true
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+    description: Sets the severity of a Reco threat alert. The change is recorded in the Reco audit log.
+    name: reco-update-alert-severity
+    outputs:
+    - contextPath: Reco.Alerts.id
+      description: The alert ID.
+      type: String
+    - contextPath: Reco.Alerts.description
+      description: The alert description.
+      type: String
+    - contextPath: Reco.Alerts.riskLevel
+      description: The alert severity after the update.
+      type: String
+    - contextPath: Reco.Alerts.status
+      description: The alert status.
+      type: String
+    - contextPath: Reco.Alerts.updatedAt
+      description: The alert last update time.
+      type: Date
+  - arguments:
+    - description: The ID (UUID) of the entity to add the label.
+      name: entity_id
+      required: true
+    - auto: PREDEFINED
+      description: The type of the entity.
+      name: entity_type
+      required: true
+      predefined:
+      - account
+      - app
+      - identity
+      - posture
+      - saas-to-saas
+      - ip-address
+      - ai-agent
+      - device
+    - description: The name of the label. When adding, the label must already exist in the label catalog of your Reco tenant.
+      name: label_name
+      required: true
+    - description: The instance ID (UUID) for instance-scoped entities such as accounts. Leave empty for global entities.
+      name: instance_id
+      required: false
+    description: Adds an existing label from the label catalog to a Reco entity.
+    name: reco-add-entity-label
+  - arguments:
+    - description: The ID (UUID) of the entity to remove the label.
+      name: entity_id
+      required: true
+    - auto: PREDEFINED
+      description: The type of the entity.
+      name: entity_type
+      required: true
+      predefined:
+      - account
+      - app
+      - identity
+      - posture
+      - saas-to-saas
+      - ip-address
+      - ai-agent
+      - device
+    - description: The name of the label. When adding, the label must already exist in the label catalog of your Reco tenant.
+      name: label_name
+      required: true
+    - description: The instance ID (UUID) for instance-scoped entities such as accounts. Leave empty for global entities.
+      name: instance_id
+      required: false
+    description: Removes a label from a Reco entity.
+    name: reco-remove-entity-label
 tests:
 - No tests
 fromversion: 6.5.0

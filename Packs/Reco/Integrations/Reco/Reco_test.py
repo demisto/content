@@ -57,6 +57,9 @@ from Reco import (
     list_alerts_command,
     fetch_alerts_command,
     get_alert_command,
+    update_alert_severity_command,
+    add_entity_label_command,
+    remove_entity_label_command,
 )
 
 from test_data.structs import (
@@ -1487,3 +1490,83 @@ def test_on_demand_alert_commands_never_touch_the_fetch_cursor(requests_mock, mo
 
     get_last_run.assert_not_called()
     set_last_run.assert_not_called()
+
+
+# --- alert severity and entity labels ---
+
+
+def test_update_alert_severity_sends_severity_and_returns_alert(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.post(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/{ALERT_ID}/severity",
+        json=build_alert_detail(ALERT_ID, INCIDENT_DESCRIPTION, 40, "2026-10-05T00:00:00Z"),
+    )
+
+    result = update_alert_severity_command(reco_client, ALERT_ID, "critical")
+
+    assert json.loads(requests_mock.last_request.text) == {"severity": "CRITICAL"}
+    assert result.outputs_prefix == "Reco.Alerts"
+    assert result.outputs["id"] == ALERT_ID
+    assert result.outputs["policyViolations"][0]["jsonData"] == {"id": "91bef1de"}
+    assert "CRITICAL" in result.readable_output
+
+
+def test_update_alert_severity_accepts_numeric_level(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.post(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/{ALERT_ID}/severity", json={"alert": {"id": ALERT_ID}})
+
+    update_alert_severity_command(reco_client, ALERT_ID, "20")
+
+    assert json.loads(requests_mock.last_request.text) == {"severity": "MEDIUM"}
+
+
+@pytest.mark.parametrize("severity", ["", "HIGH,CRITICAL", "SEVERE"])
+def test_update_alert_severity_rejects_invalid_values(requests_mock, reco_client: RecoClient, severity: str) -> None:
+    with pytest.raises(ValueError):
+        update_alert_severity_command(reco_client, ALERT_ID, severity)
+    assert not requests_mock.request_history
+
+
+def test_update_alert_severity_propagates_api_error(capfd, requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.post(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/{ALERT_ID}/severity", status_code=404, json={})
+
+    with capfd.disabled(), pytest.raises(Exception):
+        update_alert_severity_command(reco_client, ALERT_ID, "HIGH")
+
+
+def test_add_entity_label_command(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.post(f"{DUMMY_RECO_API_DNS_NAME}/external-api/labels/add", json={})
+
+    result = add_entity_label_command(
+        reco_client,
+        {"entity_id": "e1", "entity_type": "Account", "label_name": "Privileged Access", "instance_id": "i1"},
+    )
+
+    assert json.loads(requests_mock.last_request.text) == {
+        "entityId": "e1",
+        "entityType": "account",
+        "labelName": "Privileged Access",
+        "instanceId": "i1",
+    }
+    assert "added" in result.readable_output
+
+
+def test_remove_entity_label_command(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.post(f"{DUMMY_RECO_API_DNS_NAME}/external-api/labels/remove", json={})
+
+    result = remove_entity_label_command(reco_client, {"entity_id": "e1", "entity_type": "identity", "label_name": "VIP"})
+
+    assert json.loads(requests_mock.last_request.text) == {"entityId": "e1", "entityType": "identity", "labelName": "VIP"}
+    assert "removed" in result.readable_output
+
+
+@pytest.mark.parametrize("command", [add_entity_label_command, remove_entity_label_command])
+def test_entity_label_commands_reject_unknown_entity_type(requests_mock, reco_client: RecoClient, command) -> None:
+    with pytest.raises(ValueError, match="Unknown entity_type"):
+        command(reco_client, {"entity_id": "e1", "entity_type": "event", "label_name": "VIP"})
+    assert not requests_mock.request_history
+
+
+def test_remove_entity_label_propagates_api_error(capfd, requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.post(f"{DUMMY_RECO_API_DNS_NAME}/external-api/labels/remove", status_code=400, json={})
+
+    with capfd.disabled(), pytest.raises(Exception):
+        remove_entity_label_command(reco_client, {"entity_id": "e1", "entity_type": "app", "label_name": "VIP"})
