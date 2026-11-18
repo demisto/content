@@ -256,7 +256,7 @@ IOC_HEADERS = [
 
 IOC_DEVICE_COUNT_MAP = {"id": "ID", "type": "Type", "value": "Value", "device_count": "DeviceCount"}
 # Safety cap on the number of pages fetched from the IOC devices query endpoint (100 device IDs per page by default).
-MAX_IOC_DEVICE_PAGES = 1
+MAX_IOC_DEVICE_PAGES = 1000
 # Per-execution cache of which IOC route family works for this API client ("modern" or "legacy").
 # Deliberately NOT persisted in the integration context: scopes can change between executions, so the modern
 # route is probed (at most once) in every execution.
