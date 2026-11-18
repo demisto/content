@@ -10,7 +10,9 @@ import pytest
 
 
 SCRIPT = Path(__file__).with_name("TypeSafeJevMarketplaceAssessment.py")
-sys.modules.setdefault("CommonServerPython", types.ModuleType("CommonServerPython"))
+common_server = sys.modules.setdefault("CommonServerPython", types.ModuleType("CommonServerPython"))
+common_server.is_error = lambda entry: entry.get("Type") == 4
+common_server.argToBoolean = lambda value: value if isinstance(value, bool) else str(value).lower() == "true"
 SPEC = importlib.util.spec_from_file_location("marketplace_assessment", SCRIPT)
 marketplace = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(marketplace)
@@ -596,6 +598,22 @@ def test_command_and_core_wrappers_validate_cortex_responses(monkeypatch):
     monkeypatch.setattr(marketplace.demisto, "executeCommand", lambda *_args: [{"Type": 1, "Contents": "not-json"}])
     with pytest.raises(RuntimeError, match="expected API response"):
         marketplace.core("get", "/empty", "Core")
+
+
+def test_main_parses_dry_run_with_arg_to_boolean(monkeypatch):
+    captured = {}
+    monkeypatch.setattr(
+        marketplace,
+        "install_updates",
+        lambda snapshot, assessment, instance, dry_run: captured.update(dry_run=dry_run) or {"ok": True},
+    )
+    monkeypatch.setattr(marketplace, "CommandResults", lambda **kwargs: kwargs, raising=False)
+    monkeypatch.setattr(marketplace, "return_results", lambda _result: None, raising=False)
+    monkeypatch.setattr(marketplace, "demisto", types.SimpleNamespace(setContext=lambda *_args: None), raising=False)
+
+    marketplace.main({"action": "install", "core_instance": "Core", "dry_run": "false"})
+
+    assert captured["dry_run"] is False
 
 
 def test_dependency_metadata_helpers_validate_exact_versions(monkeypatch):

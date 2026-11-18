@@ -4,10 +4,17 @@
 
 import json
 import re
+import traceback
 from datetime import datetime, UTC
 from functools import cmp_to_key
 from typing import Any
 from urllib.parse import quote
+
+try:
+    import demistomock as demisto
+except ModuleNotFoundError:
+    # Some XSIAM runtime images provide Demisto through CommonServerPython only.
+    demisto = None
 
 from CommonServerPython import *  # noqa: F401,F403
 
@@ -248,7 +255,7 @@ def _command(name, values):
     if not isinstance(entries, list) or not entries:
         raise RuntimeError(f"{name} returned no response")
     for entry in entries:
-        if entry.get("Type") == 4:
+        if is_error(entry):
             raise RuntimeError("{}: {}".format(name, str(entry.get("Contents") or "command failed")[:1000]))
     return entries
 
@@ -739,7 +746,7 @@ def dependency_groups(candidates, current):
                 low[node] = min(low[node], indices[child])
         if low[node] == indices[node]:
             group = []
-            while True:
+            while stack:
                 child = stack.pop()
                 active.remove(child)
                 group.append(by_id[child])
@@ -1623,6 +1630,7 @@ def main(args):
     """Run one playbook action and return its structured result."""
     action = args.get("action", "collect")
     instance = str(args.get("core_instance") or "").strip()
+    dry_run = argToBoolean(args.get("dry_run", "true"))
     if action not in ("unpack_ai", "wrap_ai") and not instance:
         raise ValueError(f"core_instance is required for action {action}")
     if action == "collect":
@@ -1641,9 +1649,7 @@ def main(args):
     elif action == "install":
         key, value = (
             CONTEXT + ".Installation",
-            install_updates(
-                args.get("snapshot"), args.get("assessment"), instance, str(args.get("dry_run", "true")).lower() != "false"
-            ),
+            install_updates(args.get("snapshot"), args.get("assessment"), instance, dry_run),
         )
     elif action == "review":
         key, value = (
@@ -1653,13 +1659,13 @@ def main(args):
                 args.get("assessment"),
                 args.get("installation"),
                 instance,
-                str(args.get("dry_run", "true")).lower() == "true",
+                dry_run,
             ),
         )
     elif action == "publish":
         key, value = (
             CONTEXT + ".Routing",
-            publish(args.get("assessment"), instance, str(args.get("dry_run", "true")).lower() == "true"),
+            publish(args.get("assessment"), instance, dry_run),
         )
     elif action == "pack_detail":
         key, value = (
@@ -1678,4 +1684,5 @@ if __name__ in ("__builtin__", "__main__"):
     try:
         main(demisto.args())
     except Exception as exc:  # noqa: BLE001 - surface safe, actionable automation errors
+        demisto.error(traceback.format_exc())
         return_error(str(exc))

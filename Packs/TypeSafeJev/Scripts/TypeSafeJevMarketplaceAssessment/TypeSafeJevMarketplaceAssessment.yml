@@ -131,6 +131,9 @@ script: ''
 fromversion: 6.10.0
 tests:
 - TypeSafeJevMarketplaceAssessment_test
+marketplaces:
+- marketplacev2
+- platform
 supportedModules:
 - xsiam
 scripttarget: 0

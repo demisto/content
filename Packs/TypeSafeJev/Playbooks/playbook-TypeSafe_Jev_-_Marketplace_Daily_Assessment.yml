@@ -2,7 +2,7 @@ adopted: true
 contentitemexportablefields:
   contentitemfields: {}
 description: Daily Jev Marketplace assessment with recursive mandatory dependency planning, supported ContentPackInstaller execution, verified versions, and deduplicated issues for evidenced breaking impact. Held, unresolved or failed updates get one deduplicated manual-review case each.
-id: silent-TypeSafe Jev - Marketplace Daily Assessment
+id: TypeSafe Jev - Marketplace Daily Assessment
 inputs:
 - description: Run without installing packs or creating, updating, or closing cases. Set to false only after reviewing the playbook behavior in your environment.
   key: DryRun
@@ -21,7 +21,7 @@ inputs:
   required: false
   value:
     simple: jev-1.13.0
-name: silent-TypeSafe Jev - Marketplace Daily Assessment
+name: TypeSafe Jev - Marketplace Daily Assessment
 outputs: []
 starttaskid: "0"
 tasks:

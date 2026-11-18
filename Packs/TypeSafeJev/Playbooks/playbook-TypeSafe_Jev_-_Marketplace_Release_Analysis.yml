@@ -1,6 +1,6 @@
 adopted: true
 description: Review a batch of Marketplace releases with TypeSafe Jev using the supplied source notes, installed versions and observed enabled integrations. Return all Jev answers for validation by the parent playbook.
-id: silent-TypeSafe Jev - Marketplace Release Analysis
+id: TypeSafe Jev - Marketplace Release Analysis
 inputs:
 - description: 'One serialized review batch: items, StateJSON and QuestionsJSON.'
   key: BatchJSON
@@ -12,7 +12,7 @@ inputs:
   playbookInputQuery:
   required: true
   value: {}
-name: silent-TypeSafe Jev - Marketplace Release Analysis
+name: TypeSafe Jev - Marketplace Release Analysis
 outputs:
 - contextPath: TypeSafeJevMarketplace.AnalystBatch
   description: Wrapped Jev batch answers returned to the parent validator.
