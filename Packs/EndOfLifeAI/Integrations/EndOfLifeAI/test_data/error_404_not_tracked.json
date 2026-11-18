@@ -1,0 +1,7 @@
+{
+  "error": "Product \"pyton\" not found",
+  "not_tracked": true,
+  "request_coverage": "We do not track this product yet. Email partners@endoflife.ai with the product name and we will look at adding it.",
+  "tracked_products": "https://api.endoflife.ai/v1/products",
+  "docs": "https://endoflife.ai/api"
+}

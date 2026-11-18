@@ -1,0 +1,53 @@
+{
+  "product": "nodejs",
+  "version": "18",
+  "latest_release": "18.20.8",
+  "release_date": "2022-04-19",
+  "eol_date": "2025-04-30",
+  "eol_boolean": null,
+  "status": "eol",
+  "is_supported": false,
+  "days_until_eol": null,
+  "days_past_eol": 567,
+  "score": 85,
+  "grade": "F",
+  "grade_label": "Critical risk",
+  "band": "Critical",
+  "factors": {
+    "eol_recency": 35,
+    "attack_surface": 30,
+    "cisa_kev_exposure": 20,
+    "extended_support": 0
+  },
+  "extended_support_available": true,
+  "extended_support_vendor": null,
+  "extended_support_date": null,
+  "extended_support_ships_fixes": null,
+  "eol_date_precision": "day",
+  "support_date": "2023-10-18",
+  "support_date_precision": "day",
+  "extended_support_date_precision": null,
+  "score_card_url": "https://endoflife.ai/score/nodejs/18",
+  "product_url": "https://endoflife.ai/nodejs",
+  "cpe": [
+    "cpe:2.3:a:nodejs:node.js"
+  ],
+  "purl": [
+    "pkg:generic/node",
+    "pkg:docker/circleci/node",
+    "pkg:docker/library/node",
+    "pkg:docker/cimg/node",
+    "pkg:docker/bitnami/node",
+    "pkg:rpm/redhat/nodejs",
+    "pkg:rpm/redhat/nodejs24"
+  ],
+  "eol_date_source": "vendor-fetched",
+  "eol_date_source_url": "https://github.com/nodejs/Release/blob/main/schedule.json",
+  "eol_date_verified_at": "2026-11-16",
+  "eol_date_status": "ok",
+  "eol_date_agreement": 3,
+  "eol_date_confidence": "high",
+  "methodology_url": "https://endoflife.ai/risk-score",
+  "data_source": "https://github.com/nodejs/Release/blob/main/schedule.json",
+  "generated_at": "2026-11-18T04:37:02.864Z"
+}

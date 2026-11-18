@@ -1,0 +1,9 @@
+{
+  "error": "Product \"windows-server-2012\" not found",
+  "did_you_mean": [
+    "windows-server"
+  ],
+  "hint": "No product has the slug \"windows-server-2012\". The closest tracked slugs are listed in did_you_mean; ask again with one of them.",
+  "tracked_products": "https://api.endoflife.ai/v1/products",
+  "docs": "https://endoflife.ai/api"
+}

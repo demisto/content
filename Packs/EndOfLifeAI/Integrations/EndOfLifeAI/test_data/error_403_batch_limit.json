@@ -1,0 +1,4 @@
+{
+  "error": "Batch limit is 5 products for Free tier. Upgrade for larger batches (Starter: 25, Pro: 50). https://endoflife.ai/api",
+  "docs": "https://endoflife.ai/api"
+}
