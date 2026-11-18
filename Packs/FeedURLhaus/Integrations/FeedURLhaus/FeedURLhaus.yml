@@ -12,8 +12,8 @@ configuration:
   name: credentials
   type: 9
   section: Connect
-  required: false
-  additionalinfo: Starting June 30th 2025 this parameter is mandatory.
+  required: true
+  additionalinfo: The abuse.ch Auth-Key used to download the URLhaus export.
 - name: feedTags
   display: Tags
   type: 0
@@ -85,6 +85,7 @@ configuration:
   section: Collect
   defaultvalue: '60'
   required: false
+  additionalinfo: abuse.ch regenerates the URLhaus dump every 5 minutes. The minimum is 5 minutes; instances set lower must be raised to 5 or more after upgrading.
 - name: feedBypassExclusionList
   display: Bypass exclusion list
   type: 8
