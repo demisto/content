@@ -1,0 +1,254 @@
+{
+    "fromVersion": "6.13.0",
+    "description": "Maps incoming Taegis XDR case fields for XSOAR incident creation and mirroring.",
+    "feed": false,
+    "id": "TaegisXDR-Case-Incoming-Mapper",
+    "mapping": {
+        "Taegis XDR - Case": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "External ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    }
+                },
+                "Incident Link": {
+                    "simple": "url"
+                },
+                "Source Create time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "created_at",
+                        "transformers": []
+                    }
+                },
+                "Source Created By": {
+                    "complex": {
+                        "filters": [],
+                        "root": "created_by",
+                        "transformers": []
+                    }
+                },
+                "Taegis XDR Assignee": {
+                    "simple": "taegisxdrassignee"
+                },
+                "Taegis XDR Assignee ID": {
+                    "simple": "assignee_id"
+                },
+                "Taegis XDR Case Comments Synced IDs": {
+                    "simple": "taegisxdrcasecommentsyncedids"
+                },
+                "Taegis XDR Case Detections": {
+                    "complex": {
+                        "filters": [],
+                        "root": "taegisxdrcasedetections",
+                        "transformers": []
+                    }
+                },
+                "Taegis XDR Case Entities": {
+                    "complex": {
+                        "filters": [],
+                        "root": "taegisxdrcaseentities",
+                        "transformers": []
+                    }
+                },
+                "Taegis XDR Case Status": {
+                    "simple": "status"
+                },
+                "Taegis XDR Case Type": {
+                    "simple": "type"
+                },
+                "Taegis XDR Key Findings": {
+                    "simple": "key_findings"
+                },
+                "Taegis XDR Tenant ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tenant_id",
+                        "transformers": []
+                    }
+                },
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                },
+                "Ticket Number": {
+                    "simple": "shortId"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
+                "occurred": {
+                    "complex": {
+                        "root": "created_at",
+                        "filters": [],
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3,4"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Low,Medium,High,Critical"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "External ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    }
+                },
+                "Incident Link": {
+                    "simple": "url"
+                },
+                "Source Create time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "created_at",
+                        "transformers": []
+                    }
+                },
+                "Source Created By": {
+                    "complex": {
+                        "filters": [],
+                        "root": "created_by",
+                        "transformers": []
+                    }
+                },
+                "Taegis XDR Case Comments Synced IDs": {
+                    "simple": "taegisxdrcasecommentsyncedids"
+                },
+                "Taegis XDR Case Detections": {
+                    "complex": {
+                        "filters": [],
+                        "root": "taegisxdrcasedetections",
+                        "transformers": []
+                    }
+                },
+                "Taegis XDR Case Entities": {
+                    "complex": {
+                        "filters": [],
+                        "root": "taegisxdrcaseentities",
+                        "transformers": []
+                    }
+                },
+                "Taegis XDR Tenant ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tenant_id",
+                        "transformers": []
+                    }
+                },
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                },
+                "Ticket Number": {
+                    "simple": "shortId"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
+                "occurred": {
+                    "complex": {
+                        "root": "created_at",
+                        "filters": [],
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3,4"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Low,Medium,High,Critical"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "name": "TaegisXDR-Case-Incoming-Mapper",
+    "type": "mapping-incoming",
+    "version": -1
+}

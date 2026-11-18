@@ -1,0 +1,33 @@
+{
+    "fromVersion": "6.13.0",
+    "id": "incident_taegisxdrassigneeprevious",
+    "version": -1,
+    "modified": "2026-02-05T00:00:00.000000000Z",
+    "name": "Taegis XDR Assignee Previous",
+    "ownerOnly": false,
+    "description": "Stores previous assignee for status logic (handoff vs take-from-queue). Used by TaegisXDRSetStatusFromAssignee. Do not map or display.",
+    "cliName": "taegisxdrassigneeprevious",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": true,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": true,
+    "openEnded": false,
+    "associatedTypes": [
+        "Taegis XDR - Case"
+    ],
+    "associatedToAll": false,
+    "unmapped": true,
+    "unsearchable": true,
+    "caseInsensitive": false,
+    "sla": 0,
+    "threshold": 72
+}
