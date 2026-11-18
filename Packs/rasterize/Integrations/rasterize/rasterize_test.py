@@ -2346,3 +2346,86 @@ def test_extract_content_from_tab_uses_navigation_timeout(mocker):
     extract_content_from_tab(mock_tab, 145)
 
     assert mock_tab.Runtime.evaluate.call_args.kwargs["_timeout"] == 145
+
+
+def test_chrome_manager_one_port_stale_record_starts_new_chrome(mocker):
+    """
+    Given:
+        - A saved chrome_instances record for port 9301 whose Chrome options match the instance's,
+          while no Chrome is running on that port (it crashed in a previous execution).
+    When:
+        - Executing the chrome_manager_one_port function.
+    Then:
+        - The stale record is dropped (terminate_chrome on the saved port) and a new Chrome is started,
+          instead of returning no browser and failing with "Could not use local Chrome".
+    """
+    from rasterize import chrome_manager_one_port
+
+    instance_id = "33333333-3333-3333-3333-333333333333"
+    chrome_options = "--disable-gpu"
+    stale_record = {"9301": {"instance_id": instance_id, "chrome_options": chrome_options, "rasterization_count": 0}}
+
+    mocker.patch.object(demisto, "callingContext", {"context": {"IntegrationInstanceID": instance_id}})
+    mocker.patch.object(demisto, "params", return_value={"chrome_options": chrome_options})
+    mocker.patch.object(rasterize, "read_json_file", return_value=stale_record)
+    mocker.patch.object(rasterize, "get_chrome_browser", return_value=None)
+    terminate_chrome_mocker = mocker.patch.object(rasterize, "terminate_chrome", return_value=None)
+    generate_new_chrome_instance_mocker = mocker.patch.object(
+        rasterize, "generate_new_chrome_instance", return_value=("new_browser", "9301")
+    )
+
+    browser, chrome_port = chrome_manager_one_port()
+
+    terminate_chrome_mocker.assert_called_once_with(chrome_port="9301")
+    generate_new_chrome_instance_mocker.assert_called_once_with(instance_id, chrome_options)
+    assert browser == "new_browser"
+    assert chrome_port == "9301"
+
+
+def test_get_tabs_count_for_log_chrome_gone():
+    """
+    Given:
+        - A browser whose Chrome process is gone, so list_tab raises ConnectionError.
+    When:
+        - Calling get_tabs_count_for_log.
+    Then:
+        - "unavailable" is returned instead of raising.
+    """
+    from rasterize import get_tabs_count_for_log
+
+    browser = MagicMock()
+    browser.list_tab.side_effect = requests.exceptions.ConnectionError("Connection refused")
+    assert get_tabs_count_for_log(browser) == "unavailable"
+
+    browser.list_tab.side_effect = None
+    browser.list_tab.return_value = ["tab1", "tab2"]
+    assert get_tabs_count_for_log(browser) == 2
+
+
+def test_perform_rasterize_chrome_crashed_still_terminates_chrome(mocker, tmp_path):
+    """
+    Given:
+        - Lightweight mode, and Chrome crashed during the rasterization (the screenshot failed and
+          browser.list_tab now raises ConnectionError).
+    When:
+        - perform_rasterize finishes the rasterization threads.
+    Then:
+        - terminate_chrome is still called for the port, so the chrome_instances record is removed
+          and the next execution does not reuse a Chrome that is not running.
+    """
+    mocker.patch.object(rasterize, "IS_LIGHTWEIGHT", True)
+    mocker.patch.object(rasterize, "RASTERIZE_LOCK_FILE_PATH", str(tmp_path / "rasterize.lock"))
+    browser = MagicMock()
+    browser.list_tab.side_effect = requests.exceptions.ConnectionError("Connection refused")
+    mocker.patch.object(rasterize, "chrome_manager_one_port", return_value=(browser, "9301"))
+    mocker.patch.object(rasterize, "close_orphaned_tabs", return_value=0)
+    mocker.patch.object(rasterize, "support_multithreading")
+    mocker.patch.object(rasterize, "rasterize_thread", return_value=(None, "Failed to capture screenshot due to User abort"))
+    mocker.patch.object(rasterize, "read_json_file", return_value={})
+    mocker.patch.object(rasterize, "return_results")
+    terminate_chrome_mocker = mocker.patch.object(rasterize, "terminate_chrome", return_value=None)
+
+    results = perform_rasterize(path="https://www.example.com", rasterize_type=RasterizeType.PNG)
+
+    terminate_chrome_mocker.assert_called_once_with(chrome_port="9301")
+    assert results == []
