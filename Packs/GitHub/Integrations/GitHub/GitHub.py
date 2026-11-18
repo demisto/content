@@ -1757,9 +1757,6 @@ def build_folder_file_content_items(owner: str, repo: str, ref: str, folder_item
 def get_file_content_command() -> None:
     """get-file-content: retrieves a file (or the supported files of a folder) by GitHub URL in the generic FileContent format."""
     url = demisto.args().get("url", "")
-    if not url:
-        raise ValueError("The 'url' argument is required.")
-
     owner, repo, ref, path = parse_github_file_url(url)
     contents = get_repo_contents(owner, repo, path, ref)
 
