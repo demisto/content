@@ -4109,9 +4109,7 @@ def test_ioc_fallback_cached_legacy_mode_clear_error(mocker, requests_mock):
 
     CrowdStrikeFalcon.IOC_ROUTE_MODE = "legacy"
     modern_mock = requests_mock.get(f"{SERVER_URL}/iocs/queries/indicators/devices/v1", json={"resources": []})
-    requests_mock.get(
-        f"{SERVER_URL}/indicators/queries/devices/v1", json=FORBIDDEN_RESPONSE, status_code=403, reason="Forbidden"
-    )
+    requests_mock.get(f"{SERVER_URL}/indicators/queries/devices/v1", json=FORBIDDEN_RESPONSE, status_code=403, reason="Forbidden")
 
     with pytest.raises(DemistoException, match="returned HTTP 403 earlier in this execution"):
         _run_ioc_command("device-ran-on", mocker)
