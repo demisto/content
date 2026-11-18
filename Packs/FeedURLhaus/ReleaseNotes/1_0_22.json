@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The Feed Fetch Interval parameter now has a minimum of 5 minutes, as requested by abuse.ch. The test-module and fetch-indicators commands fail for instances set lower. Raise the interval to 5 minutes or more after upgrading."
+}
