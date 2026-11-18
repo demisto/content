@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import base64
 import json
 import time
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 import dateutil.parser
 
@@ -76,6 +77,147 @@ def parse_minimum_risk_level(risk_level_param: str | None) -> list[str] | None:
         return [value.upper()]
     min_index = SEVERITY_ORDER.index(severity_name)
     return SEVERITY_ORDER[min_index:]
+
+
+# Alert statuses an analyst can filter on (short name -> API enum). ALERT_STATUS_PREVIEW is never
+# offered: Preview-state alerts are always excluded from every alert query in this pack.
+ALERT_STATUS_PREFIX = "ALERT_STATUS_"
+ALERT_STATUSES: list[str] = ["NEW", "IN_PROGRESS", "CLOSED"]
+
+# Caps for the on-demand alert commands.
+LIST_ALERTS_DEFAULT_LIMIT = 50
+LIST_ALERTS_MAX_LIMIT = 5000
+FETCH_ALERTS_MAX_LIMIT = 500  # reco-fetch-alerts enriches every alert with one detail call each
+
+
+@dataclass
+class AlertFilterOptions:
+    """Source-side alert filters, sent to the Reco API as part of the SCIM `filters` query.
+
+    All lists are OR-ed within themselves and AND-ed with every other filter.
+    """
+
+    saas_platforms: list[str] = field(default_factory=list)  # matched against the app instance name
+    statuses: list[str] = field(default_factory=list)  # ALERT_STATUS_* enum names
+    include_labels: list[str] = field(default_factory=list)  # alert must carry at least one of these labels
+    exclude_labels: list[str] = field(default_factory=list)  # alert must carry none of these labels
+    custom_filter: str = ""  # raw SCIM expression, for AND / OR / NOT combinations not covered above
+
+
+def _scim_quote(value: str) -> str:
+    """Quote a value as a SCIM string literal, escaping backslashes and double quotes."""
+    return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+
+def _scim_or_group(clauses: list[str]) -> str:
+    """Join clauses with `or`, parenthesized when there is more than one."""
+    return f"({' or '.join(clauses)})" if len(clauses) > 1 else clauses[0]
+
+
+def build_alerts_scim_filter(
+    risk_levels: list[str] | None = None,
+    source: str | None = None,
+    before: datetime | None = None,
+    after: datetime | None = None,
+    filter_options: AlertFilterOptions | None = None,
+) -> str:
+    """Build the SCIM filter for `alerts/list`. Single source of truth for fetch-incidents,
+    the Test button and the on-demand alert commands, so they always send the same query.
+
+    Every OR group (and the raw user expression) is parenthesized before being AND-ed, so a
+    value can never change the meaning of a neighbouring clause. Preview-state alerts are
+    always excluded.
+    """
+    options = filter_options or AlertFilterOptions()
+    filter_parts: list[str] = [f'status ne "{ALERT_STATUS_PREFIX}PREVIEW"']
+
+    if risk_levels:
+        # `eq` clauses joined with `or` - the External API rejects the SCIM `in` operator (HTTP 500).
+        filter_parts.append(_scim_or_group([f"severity eq {_scim_quote(r)}" for r in risk_levels]))
+    if options.statuses:
+        filter_parts.append(_scim_or_group([f"status eq {_scim_quote(s)}" for s in options.statuses]))
+    if source:
+        filter_parts.append(f"apps co {_scim_quote(source)}")
+    if options.saas_platforms:
+        filter_parts.append(_scim_or_group([f"instance.appName co {_scim_quote(p)}" for p in options.saas_platforms]))
+    if options.include_labels:
+        filter_parts.append(_scim_or_group([f"customLabels eq {_scim_quote(label)}" for label in options.include_labels]))
+    if options.exclude_labels:
+        excluded = " or ".join(f"customLabels eq {_scim_quote(label)}" for label in options.exclude_labels)
+        filter_parts.append(f"not ({excluded})")
+    if after:
+        filter_parts.append(f'createdAt gt "{after.strftime(DEMISTO_OCCURRED_FORMAT)}"')
+    if before:
+        filter_parts.append(f'createdAt lt "{before.strftime(DEMISTO_OCCURRED_FORMAT)}"')
+    if options.custom_filter.strip():
+        filter_parts.append(f"({options.custom_filter.strip()})")
+
+    return " and ".join(filter_parts)
+
+
+def parse_risk_levels(value: str | list[str] | None) -> list[str] | None:
+    """Parse an explicit list of risk levels (e.g. "HIGH,CRITICAL" or "30,40") into severity names.
+
+    Unlike parse_minimum_risk_level this does not expand to "and above", and unknown values raise.
+    """
+    names: list[str] = []
+    for item in argToList(value):
+        name = RISK_LEVEL_TO_SEVERITY_NAME.get(item.strip()) or RISK_LEVEL_TO_SEVERITY_NAME.get(item.strip().upper())
+        if not name:
+            raise ValueError(f"Unknown risk level '{item}'. Valid values: LOW, MEDIUM, HIGH, CRITICAL (or 10, 20, 30, 40).")
+        if name not in names:
+            names.append(name)
+    return names or None
+
+
+def parse_alert_statuses(value: str | list[str] | None) -> list[str]:
+    """Parse alert statuses ("new", "In Progress", "ALERT_STATUS_CLOSED") into ALERT_STATUS_* enum names."""
+    statuses: list[str] = []
+    for item in argToList(value):
+        short = item.strip().upper().replace(" ", "_").replace("-", "_").removeprefix(ALERT_STATUS_PREFIX)
+        if short not in ALERT_STATUSES:
+            raise ValueError(f"Unknown alert status '{item}'. Valid values: {', '.join(ALERT_STATUSES)}.")
+        if ALERT_STATUS_PREFIX + short not in statuses:
+            statuses.append(ALERT_STATUS_PREFIX + short)
+    return statuses
+
+
+DATE_ONLY_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def parse_date_param(value: str | None, name: str, include_whole_day: bool = False) -> datetime | None:
+    """Parse a user-supplied date (ISO 8601 or relative like "3 days ago") into a UTC datetime.
+
+    Values with a UTC offset are converted to UTC. With include_whole_day, a date-only value
+    (e.g. "2026-10-31") is moved to the start of the next day, so that using it as an exclusive
+    upper bound includes the whole day. Raises if the value can't be parsed.
+    """
+    if not value:
+        return None
+    parsed = dateparser.parse(str(value), settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True})
+    if not parsed:
+        raise ValueError(f"Could not parse '{name}' value '{value}' as a date.")
+    parsed = parsed.astimezone(timezone.utc)
+    if include_whole_day and DATE_ONLY_PATTERN.match(str(value).strip()):
+        parsed += timedelta(days=1)
+    return parsed
+
+
+def build_filter_options(
+    saas_platform: str | list[str] | None = None,
+    status: str | list[str] | None = None,
+    include_labels: str | list[str] | None = None,
+    exclude_labels: str | list[str] | None = None,
+    custom_filter: str | None = None,
+) -> AlertFilterOptions:
+    """Build AlertFilterOptions from comma-separated integration parameters / command arguments."""
+    return AlertFilterOptions(
+        saas_platforms=argToList(saas_platform),
+        statuses=parse_alert_statuses(status),
+        include_labels=argToList(include_labels),
+        exclude_labels=argToList(exclude_labels),
+        custom_filter=custom_filter or "",
+    )
 
 
 def extract_response(response: Any) -> list[dict[str, Any]]:
@@ -220,38 +362,29 @@ class RecoClient(BaseClient):
         after: datetime | None = None,
         limit: int = PAGE_SIZE,
         start_index: int = 0,
+        filter_options: AlertFilterOptions | None = None,
+        sort_order: str = "ascending",
     ) -> list[dict[str, Any]]:
-        """List threat alerts via the external API, oldest first.
+        """List threat alerts via the external API (oldest first by default).
 
         risk_levels: list of severity names, e.g. ["HIGH", "CRITICAL"].  Multiple
         values are combined with OR so a single call fetches all matching severities.
+        filter_options: further source-side filters (platform, status, labels, raw SCIM);
+        see build_alerts_scim_filter. They are all evaluated by the Reco API, not after retrieval.
 
         API errors are raised rather than swallowed, so a failed call is never mistaken
         for "no new alerts" and shows up as a failure in XSOAR.
 
         Sorted ascending by createdAt (rather than the API's default descending order) so
         that fetch_incidents can page through a burst via `start_index` without ever
-        skipping alerts, regardless of how many share the same fetch window.
+        skipping alerts, regardless of how many share the same fetch window. Only the
+        on-demand commands pass sort_order="descending".
 
         Preview-state alerts are always excluded: a Policy in Preview state is explicitly
         meant to stay out of the customer's SOAR/ticketing systems while it's being
         evaluated (the webhook and share-service paths already enforce this upstream).
         """
-        filter_parts: list[str] = ['status ne "ALERT_STATUS_PREVIEW"']
-
-        if risk_levels:
-            # `eq` clauses joined with `or` - the External API rejects the SCIM `in` operator (HTTP 500).
-            severity_clauses = " or ".join(f'severity eq "{r}"' for r in risk_levels)
-            filter_parts.append(f"({severity_clauses})" if len(risk_levels) > 1 else severity_clauses)
-
-        if source:
-            filter_parts.append(f'apps co "{source}"')
-        if after:
-            filter_parts.append(f'createdAt gt "{after.strftime(DEMISTO_OCCURRED_FORMAT)}"')
-        if before:
-            filter_parts.append(f'createdAt lt "{before.strftime(DEMISTO_OCCURRED_FORMAT)}"')
-
-        scim_filter = " and ".join(filter_parts)
+        scim_filter = build_alerts_scim_filter(risk_levels, source, before, after, filter_options)
         demisto.debug(f"get_alerts SCIM filter: {scim_filter!r}")
 
         response = self._external_api_list(
@@ -260,7 +393,7 @@ class RecoClient(BaseClient):
             count=limit,
             start_index=start_index,
             sort_by="createdAt",
-            sort_order="ascending",
+            sort_order=sort_order,
         )
         alerts = response.get("alerts", [])
         demisto.info(f"get_alerts: fetched {len(alerts)} alerts (total={response.get('totalResults', '?')})")
@@ -841,14 +974,21 @@ class RecoClient(BaseClient):
 
     # --- API key validation ---
 
-    def validate_api_key(self, risk_levels: list[str] | None = None) -> str:
+    def validate_api_key(
+        self,
+        risk_levels: list[str] | None = None,
+        source: str | None = None,
+        before: datetime | None = None,
+        after: datetime | None = None,
+        filter_options: AlertFilterOptions | None = None,
+    ) -> str:
         """Validate the API token with the same alerts query fetch-incidents sends.
 
         Going through get_alerts (rather than an unfiltered call) means a filter the API
         rejects fails the Test button instead of only surfacing later during fetch.
         """
         try:
-            self.get_alerts(risk_levels=risk_levels, limit=1)
+            self.get_alerts(risk_levels, source, before, after, limit=1, filter_options=filter_options)
             return "ok"
         except Exception as e:
             demisto.error(f"validate_api_key error: {str(e)}")
@@ -908,6 +1048,20 @@ def parse_table_row_to_dict(alert: list[dict[str, Any]]) -> dict[str, Any]:
 # --- Alert fetching ---
 
 
+def normalize_policy_violations(detail: dict[str, Any]) -> dict[str, Any]:
+    """Parse each policy violation's `jsonData` (a JSON string, not base64, in the external API) in place."""
+    for violation in detail.get("policyViolations", []):
+        json_data = violation.get("jsonData", "{}")
+        if isinstance(json_data, str):
+            try:
+                parsed = json.loads(json_data)
+                parsed.pop("violation", None)
+                violation["jsonData"] = parsed
+            except json.JSONDecodeError:
+                pass
+    return detail
+
+
 def get_alerts(
     reco_client: RecoClient,
     risk_levels: list[str] | None = None,
@@ -916,13 +1070,17 @@ def get_alerts(
     after: datetime | None = None,
     limit: int = PAGE_SIZE,
     start_index: int = 0,
+    filter_options: AlertFilterOptions | None = None,
+    sort_order: str = "ascending",
 ) -> tuple[list[Any], int]:
     """Fetch alert summaries then enrich each with full detail (policy violations).
 
     Returns the enriched ThreatAlertDetail dicts alongside the raw page size, so callers
     can tell whether the page was truncated by `limit` (more alerts may remain).
     """
-    raw_alerts = reco_client.get_alerts(risk_levels, source, before, after, limit, start_index)
+    raw_alerts = reco_client.get_alerts(
+        risk_levels, source, before, after, limit, start_index, filter_options=filter_options, sort_order=sort_order
+    )
     alerts_data: list[Any] = []
 
     for raw in raw_alerts:
@@ -934,17 +1092,7 @@ def get_alerts(
             detail = reco_client.get_single_alert(alert_id)
             if not detail:
                 continue
-            # policy violations arrive as JSON strings (not base64) from the external API
-            for violation in detail.get("policyViolations", []):
-                json_data = violation.get("jsonData", "{}")
-                if isinstance(json_data, str):
-                    try:
-                        parsed = json.loads(json_data)
-                        parsed.pop("violation", None)
-                        violation["jsonData"] = parsed
-                    except json.JSONDecodeError:
-                        pass
-            alerts_data.append(detail)
+            alerts_data.append(normalize_policy_violations(detail))
         except Exception as e:
             demisto.error(f"Failed to enrich alert {alert_id}: {str(e)}")
 
@@ -1034,6 +1182,7 @@ def fetch_incidents(
     source: str | None = None,
     before: datetime | None = None,
     after: datetime | None = None,
+    filter_options: AlertFilterOptions | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     demisto.info(f"fetch-incidents called {max_fetch=}")
     next_run: dict[str, Any] = {}
@@ -1043,7 +1192,9 @@ def fetch_incidents(
         after = dateutil.parser.parse(last_run_time)
     start_index = last_run.get("startIndex", 0)
 
-    alerts, raw_page_size = get_alerts(reco_client, risk_levels, source, before, after, max_fetch, start_index)
+    alerts, raw_page_size = get_alerts(
+        reco_client, risk_levels, source, before, after, max_fetch, start_index, filter_options=filter_options
+    )
     incidents = parse_alerts_to_incidents(alerts)
 
     existing_incidents = last_run.get("incident_ids", [])
@@ -1073,6 +1224,34 @@ def fetch_incidents(
     next_run["incident_ids"] = existing_incidents + [inc["dbotMirrorId"] for inc in incidents]
 
     return next_run, incidents
+
+
+# --- Fetch filters shared by fetch-incidents and the Test button ---
+
+
+def get_fetch_filters(params: dict[str, Any]) -> dict[str, Any]:
+    """Translate integration parameters into the alert-query keyword arguments.
+
+    fetch-incidents and test-module both call this and pass the result straight through, so the
+    Test button always exercises exactly the query that fetch will send.
+    """
+    after = parse_date_param(params.get("after"), "after")
+    if not after and (first_fetch := params.get("first_fetch")):
+        after = dateparser.parse(first_fetch) or None
+    return {
+        # risk_level accepts a single value; alerts at or above it are fetched (PRO-303)
+        "risk_levels": parse_minimum_risk_level(params.get("risk_level")),
+        "source": params.get("source") or None,
+        "before": parse_date_param(params.get("before"), "before", include_whole_day=True),
+        "after": after,
+        "filter_options": build_filter_options(
+            saas_platform=params.get("saas_platform"),
+            status=params.get("alert_status"),
+            include_labels=params.get("include_labels"),
+            exclude_labels=params.get("exclude_labels"),
+            custom_filter=params.get("custom_filter"),
+        ),
+    }
 
 
 # --- Command functions ---
@@ -1389,6 +1568,96 @@ def set_app_authorization_status_command(reco_client: RecoClient, app_id: str, a
     )
 
 
+# --- On-demand alert commands (never read or write the fetch-incidents last-run) ---
+
+ALERT_TABLE_HEADERS = ["id", "description", "severity", "status", "createdAt", "apps", "instanceName", "customLabels"]
+
+
+def _alert_query_from_args(args: dict[str, Any]) -> dict[str, Any]:
+    """Parse the shared alert filter arguments of reco-list-alerts / reco-fetch-alerts."""
+    return {
+        "risk_levels": parse_risk_levels(args.get("risk_level")),
+        "source": args.get("source") or None,
+        "after": parse_date_param(args.get("after"), "after"),
+        "before": parse_date_param(args.get("before"), "before", include_whole_day=True),
+        "filter_options": build_filter_options(
+            saas_platform=args.get("saas_platform"),
+            status=args.get("status"),
+            include_labels=args.get("labels"),
+            exclude_labels=args.get("exclude_labels"),
+            custom_filter=args.get("filters"),
+        ),
+    }
+
+
+def _parse_limit(args: dict[str, Any], maximum: int) -> int:
+    raw_limit = arg_to_number(args.get("limit"), arg_name="limit")
+    limit = LIST_ALERTS_DEFAULT_LIMIT if raw_limit is None else int(raw_limit)
+    if limit < 1 or limit > maximum:
+        raise ValueError(f"limit must be between 1 and {maximum}.")
+    return limit
+
+
+def _parse_sort_order(args: dict[str, Any], default: str) -> str:
+    sort_order = str(args.get("sort_order") or default).lower()
+    if sort_order not in ("ascending", "descending"):
+        raise ValueError("sort_order must be 'ascending' or 'descending'.")
+    return sort_order
+
+
+def _alerts_to_command_results(title: str, alerts: list[dict[str, Any]]) -> CommandResults:
+    rows = [{**alert, "instanceName": (alert.get("instance") or {}).get("appName", "")} for alert in alerts]
+    return CommandResults(
+        readable_output=tableToMarkdown(title, rows, headers=ALERT_TABLE_HEADERS, removeNull=True),
+        outputs_prefix="Reco.Alerts",
+        outputs_key_field="id",
+        outputs=alerts,
+    )
+
+
+def list_alerts_command(reco_client: RecoClient, args: dict[str, Any]) -> CommandResults:
+    """List alert summaries for an analyst-defined window and filters. One list call per page, no per-alert detail calls.
+
+    Deliberately independent of fetch-incidents: it never reads or writes the last-run, so it
+    cannot move the production fetch cursor.
+    """
+    query = _alert_query_from_args(args)
+    limit = _parse_limit(args, LIST_ALERTS_MAX_LIMIT)
+    sort_order = _parse_sort_order(args, default="descending")
+
+    alerts: list[dict[str, Any]] = []
+    while len(alerts) < limit:
+        page_size = min(PAGE_SIZE, limit - len(alerts))
+        page = reco_client.get_alerts(**query, limit=page_size, start_index=len(alerts), sort_order=sort_order)
+        alerts.extend(page)
+        if len(page) < page_size:
+            break
+    return _alerts_to_command_results("Reco Alerts", alerts)
+
+
+def fetch_alerts_command(reco_client: RecoClient, args: dict[str, Any]) -> CommandResults:
+    """Retrieve enriched alerts (full detail incl. policy violations - the same shape fetch-incidents
+    ingests) for a historical window, for investigations, mapping tests and controlled backfills.
+
+    It returns the alerts to the war room / context only: it does not create incidents, and it never
+    reads or writes the fetch-incidents last-run.
+    """
+    query = _alert_query_from_args(args)
+    limit = _parse_limit(args, FETCH_ALERTS_MAX_LIMIT)
+    sort_order = _parse_sort_order(args, default="ascending")
+
+    alerts, _raw_page_size = get_alerts(reco_client, limit=limit, sort_order=sort_order, **query)
+    return _alerts_to_command_results("Reco Alerts (detailed)", alerts)
+
+
+def get_alert_command(reco_client: RecoClient, alert_id: str) -> CommandResults:
+    """Retrieve one alert, with its policy violations, by ID."""
+    detail = reco_client.get_single_alert(alert_id)
+    if not detail:
+        raise DemistoException(f"Alert {alert_id} was not found.")
+    return _alerts_to_command_results(f"Reco Alert {alert_id}", [normalize_policy_violations(detail)])
+
+
 # --- New command functions (external API) ---
 
 
@@ -1666,25 +1935,11 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == "fetch-incidents":
-            # risk_level accepts a single value; alerts at or above it are fetched (PRO-303)
-            risk_levels = parse_minimum_risk_level(params.get("risk_level"))
-            source = params.get("source")
-            before = params.get("before")
-            after: datetime | None = None
-
-            if arg := params.get("first_fetch"):
-                first_fetch_ts = dateparser.parse(arg)
-                if first_fetch_ts:
-                    after = first_fetch_ts
-
             next_run, incidents = fetch_incidents(
                 reco_client,
                 last_run=demisto.getLastRun(),
                 max_fetch=max_fetch,
-                risk_levels=risk_levels,
-                source=source,
-                before=before,
-                after=after,
+                **get_fetch_filters(params),
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
@@ -1712,7 +1967,16 @@ def main() -> None:  # pragma: no cover
             return_results(CommandResults(raw_response=response, readable_output=f"Visibility event {entity_id} resolved"))
 
         elif command == "test-module":
-            return_results(reco_client.validate_api_key(parse_minimum_risk_level(params.get("risk_level"))))
+            return_results(reco_client.validate_api_key(**get_fetch_filters(params)))
+
+        elif command == "reco-list-alerts":
+            return_results(list_alerts_command(reco_client, args))
+
+        elif command == "reco-fetch-alerts":
+            return_results(fetch_alerts_command(reco_client, args))
+
+        elif command == "reco-get-alert":
+            return_results(get_alert_command(reco_client, args["alert_id"]))
 
         elif command == "reco-get-risky-users":
             return_results(get_risky_users_from_reco(reco_client))

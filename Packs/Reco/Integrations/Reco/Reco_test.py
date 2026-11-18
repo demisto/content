@@ -8,6 +8,7 @@ import base64
 import demistomock as demisto
 import pytest
 import datetime
+from urllib.parse import parse_qs, urlparse
 
 from Reco import (
     RecoClient,
@@ -47,6 +48,15 @@ from Reco import (
     list_exclusions_command,
     list_app_instances_command,
     add_legacy_output_aliases,
+    AlertFilterOptions,
+    build_alerts_scim_filter,
+    parse_risk_levels,
+    parse_alert_statuses,
+    parse_date_param,
+    get_fetch_filters,
+    list_alerts_command,
+    fetch_alerts_command,
+    get_alert_command,
 )
 
 from test_data.structs import (
@@ -1092,3 +1102,353 @@ def test_list_app_instances_command(requests_mock, reco_client: RecoClient) -> N
     assert result.outputs_key_field == "id"
     assert len(result.outputs) == 1
     assert "App Instances" in result.readable_output
+
+
+# --- PRO-410: source-side alert filters and on-demand alert commands ---
+
+ALERTS_LIST_URL = f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/list"
+
+
+def sent_filter(requests_mock, request_index: int = -1) -> str:
+    """The raw `filters` query value of a recorded request (requests_mock lower-cases `.qs`, so parse the URL)."""
+    request = requests_mock.request_history[request_index]
+    return parse_qs(urlparse(request.url).query)["filters"][0]
+
+
+def test_build_alerts_scim_filter_default_only_excludes_preview() -> None:
+    assert build_alerts_scim_filter() == 'status ne "ALERT_STATUS_PREVIEW"'
+
+
+def test_build_alerts_scim_filter_combines_every_filter_with_parenthesised_groups() -> None:
+    options = AlertFilterOptions(
+        saas_platforms=["Microsoft 365", "Okta"],
+        statuses=["ALERT_STATUS_NEW", "ALERT_STATUS_IN_PROGRESS"],
+        include_labels=["Identity", "Privileged Access"],
+        exclude_labels=["Noise"],
+        custom_filter='description co "x" or description co "y"',
+    )
+    result = build_alerts_scim_filter(
+        risk_levels=["HIGH", "CRITICAL"],
+        source="GOOGLE_DRIVE",
+        after=datetime.datetime(2026, 11, 1, 0, 0, 0),
+        before=datetime.datetime(2026, 11, 8, 23, 59, 59),
+        filter_options=options,
+    )
+    assert result == (
+        'status ne "ALERT_STATUS_PREVIEW"'
+        ' and (severity eq "HIGH" or severity eq "CRITICAL")'
+        ' and (status eq "ALERT_STATUS_NEW" or status eq "ALERT_STATUS_IN_PROGRESS")'
+        ' and apps co "GOOGLE_DRIVE"'
+        ' and (instance.appName co "Microsoft 365" or instance.appName co "Okta")'
+        ' and (customLabels eq "Identity" or customLabels eq "Privileged Access")'
+        ' and not (customLabels eq "Noise")'
+        ' and createdAt gt "2026-11-01T00:00:00Z"'
+        ' and createdAt lt "2026-11-08T23:59:59Z"'
+        ' and (description co "x" or description co "y")'
+    )
+
+
+def test_build_alerts_scim_filter_exclude_multiple_labels_is_a_single_not_group() -> None:
+    result = build_alerts_scim_filter(filter_options=AlertFilterOptions(exclude_labels=["A", "B"]))
+    assert result.endswith('and not (customLabels eq "A" or customLabels eq "B")')
+
+
+def test_build_alerts_scim_filter_escapes_quotes_and_backslashes() -> None:
+    options = AlertFilterOptions(include_labels=['evil" or severity eq "LOW', "back\\slash"])
+    result = build_alerts_scim_filter(filter_options=options)
+    assert 'customLabels eq "evil\\" or severity eq \\"LOW"' in result
+    assert 'customLabels eq "back\\\\slash"' in result
+
+
+def test_parse_risk_levels_is_an_explicit_list_not_a_minimum() -> None:
+    assert parse_risk_levels("HIGH,critical, 40") == ["HIGH", "CRITICAL"]
+    assert parse_risk_levels(None) is None
+    with pytest.raises(ValueError, match="Unknown risk level"):
+        parse_risk_levels("HIGH,SEVERE")
+
+
+def test_parse_alert_statuses_accepts_short_and_full_names() -> None:
+    assert parse_alert_statuses("new, In Progress,ALERT_STATUS_CLOSED, new") == [
+        "ALERT_STATUS_NEW",
+        "ALERT_STATUS_IN_PROGRESS",
+        "ALERT_STATUS_CLOSED",
+    ]
+    assert parse_alert_statuses(None) == []
+
+
+def test_parse_alert_statuses_rejects_preview_and_unknown() -> None:
+    with pytest.raises(ValueError, match="Unknown alert status"):
+        parse_alert_statuses("PREVIEW")
+
+
+def test_parse_date_param_utc_and_invalid() -> None:
+    parsed = parse_date_param("2026-11-01T00:00:00Z", "after")
+    assert parsed is not None
+    assert parsed.strftime("%Y-%m-%dT%H:%M:%SZ") == "2026-11-01T00:00:00Z"
+    assert parse_date_param("", "after") is None
+    with pytest.raises(ValueError, match="Could not parse 'before'"):
+        parse_date_param("not a date", "before")
+
+
+def test_parse_date_param_converts_utc_offsets() -> None:
+    """A value with an offset must be converted to UTC, not have its wall time stamped with a 'Z'."""
+    parsed = parse_date_param("2026-11-01T02:00:00+02:00", "after")
+    assert parsed is not None
+    assert parsed.strftime("%Y-%m-%dT%H:%M:%SZ") == "2026-11-01T00:00:00Z"
+
+
+def test_parse_date_param_date_only_before_includes_the_whole_day() -> None:
+    before = parse_date_param("2026-10-31", "before", include_whole_day=True)
+    after = parse_date_param("2026-10-01", "after")
+    assert before is not None
+    assert after is not None
+    assert before.strftime("%Y-%m-%dT%H:%M:%SZ") == "2026-11-01T00:00:00Z"  # exclusive bound = all of Oct 31
+    assert after.strftime("%Y-%m-%dT%H:%M:%SZ") == "2026-10-01T00:00:00Z"
+    # an explicit time is never shifted
+    explicit = parse_date_param("2026-10-31T23:59:59Z", "before", include_whole_day=True)
+    assert explicit is not None
+    assert explicit.strftime("%Y-%m-%dT%H:%M:%SZ") == "2026-10-31T23:59:59Z"
+
+
+def test_fetch_alerts_command_date_only_range_covers_both_days(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.get(ALERTS_LIST_URL, json=build_alerts_list_response([]))
+
+    fetch_alerts_command(reco_client, {"after": "2026-10-01", "before": "2026-10-31"})
+
+    result = sent_filter(requests_mock)
+    assert 'createdAt gt "2026-10-01T00:00:00Z"' in result
+    assert 'createdAt lt "2026-11-01T00:00:00Z"' in result
+
+
+def test_get_alerts_sends_filter_options_to_the_api(requests_mock, reco_client: RecoClient) -> None:
+    """Filters are applied by the Reco API (sent in the query), not after retrieval."""
+    requests_mock.get(ALERTS_LIST_URL, json=build_alerts_list_response([]))
+
+    reco_client.get_alerts(filter_options=AlertFilterOptions(saas_platforms=["Microsoft 365"], include_labels=["Identity"]))
+
+    result = sent_filter(requests_mock)
+    assert 'instance.appName co "Microsoft 365"' in result
+    assert 'customLabels eq "Identity"' in result
+
+
+def test_fetch_incidents_forwards_filter_options(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.get(ALERTS_LIST_URL, json=build_alerts_list_response([]))
+
+    fetch_incidents(
+        reco_client=reco_client,
+        last_run={},
+        max_fetch=10,
+        filter_options=AlertFilterOptions(exclude_labels=["Noise"], statuses=["ALERT_STATUS_NEW"]),
+    )
+
+    result = sent_filter(requests_mock)
+    assert 'not (customLabels eq "Noise")' in result
+    assert 'status eq "ALERT_STATUS_NEW"' in result
+
+
+FETCH_PARAMS = {
+    "risk_level": "HIGH",
+    "source": "GOOGLE_DRIVE",
+    "first_fetch": "7 days",
+    "saas_platform": "Microsoft 365, Okta",
+    "alert_status": ["New", "In Progress"],
+    "include_labels": "Identity",
+    "exclude_labels": "Noise",
+    "custom_filter": 'actors co "@example.com"',
+}
+
+
+def test_get_fetch_filters_maps_every_integration_parameter() -> None:
+    filters = get_fetch_filters(FETCH_PARAMS)
+
+    assert filters["risk_levels"] == ["HIGH", "CRITICAL"]
+    assert filters["source"] == "GOOGLE_DRIVE"
+    assert filters["after"] is not None
+    assert filters["before"] is None
+    options = filters["filter_options"]
+    assert options.saas_platforms == ["Microsoft 365", "Okta"]
+    assert options.statuses == ["ALERT_STATUS_NEW", "ALERT_STATUS_IN_PROGRESS"]
+    assert options.include_labels == ["Identity"]
+    assert options.exclude_labels == ["Noise"]
+    assert options.custom_filter == 'actors co "@example.com"'
+
+
+def test_get_fetch_filters_parses_before_and_after_parameters() -> None:
+    """`before` used to be passed as a raw string (crashing fetch on strftime) and `after` was ignored."""
+    filters = get_fetch_filters({"before": "2026-11-08T00:00:00Z", "after": "2026-11-01T00:00:00Z", "first_fetch": "7 days"})
+
+    assert filters["before"].strftime("%Y-%m-%d") == "2026-11-08"
+    assert get_fetch_filters({"before": "2026-11-08"})["before"].strftime("%Y-%m-%d") == "2026-11-09"  # date-only = whole day
+    assert filters["after"].strftime("%Y-%m-%d") == "2026-11-01"  # explicit `after` wins over first_fetch
+
+
+def test_get_fetch_filters_rejects_unparsable_dates() -> None:
+    with pytest.raises(ValueError, match="Could not parse 'before'"):
+        get_fetch_filters({"before": "garbage"})
+
+
+def test_test_module_and_fetch_send_identical_filters(requests_mock, reco_client: RecoClient) -> None:
+    """The Test button must exercise exactly the query fetch-incidents sends."""
+    requests_mock.get(ALERTS_LIST_URL, json={"alerts": [], "totalResults": 0})
+    filters = get_fetch_filters({k: v for k, v in FETCH_PARAMS.items() if k != "first_fetch"})
+
+    assert reco_client.validate_api_key(**filters) == "ok"
+    fetch_incidents(reco_client, last_run={}, max_fetch=10, **filters)
+
+    assert sent_filter(requests_mock, 0) == sent_filter(requests_mock, 1)
+
+
+def test_list_alerts_command_sends_filters_and_does_not_enrich(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.get(
+        ALERTS_LIST_URL,
+        json={
+            "alerts": [
+                {
+                    "id": ALERT_ID,
+                    "description": INCIDENT_DESCRIPTION,
+                    "severity": "HIGH",
+                    "status": "ALERT_STATUS_NEW",
+                    "createdAt": "2026-11-02T10:00:00Z",
+                    "apps": ["OKTA"],
+                    "instance": {"appName": "Okta Prod", "id": "i1"},
+                    "customLabels": ["Identity"],
+                }
+            ],
+            "totalResults": 1,
+        },
+    )
+
+    result = list_alerts_command(
+        reco_client,
+        {
+            "after": "2026-11-01T00:00:00Z",
+            "before": "2026-11-08T23:59:59Z",
+            "saas_platform": "Okta",
+            "risk_level": "HIGH,CRITICAL",
+            "labels": "Identity,Privileged Access",
+            "exclude_labels": "Noise",
+            "status": "new",
+            "filters": 'actors co "@example.com"',
+            "limit": "500",
+        },
+    )
+
+    assert len(requests_mock.request_history) == 1  # a single list call, no alert-details calls
+    assert sent_filter(requests_mock) == (
+        'status ne "ALERT_STATUS_PREVIEW"'
+        ' and (severity eq "HIGH" or severity eq "CRITICAL")'
+        ' and status eq "ALERT_STATUS_NEW"'
+        ' and instance.appName co "Okta"'
+        ' and (customLabels eq "Identity" or customLabels eq "Privileged Access")'
+        ' and not (customLabels eq "Noise")'
+        ' and createdAt gt "2026-11-01T00:00:00Z"'
+        ' and createdAt lt "2026-11-08T23:59:59Z"'
+        ' and (actors co "@example.com")'
+    )
+    assert requests_mock.last_request.qs["sortorder"] == ["descending"]
+    assert requests_mock.last_request.qs["count"] == ["500"]
+    assert result.outputs_prefix == "Reco.Alerts"
+    assert result.outputs[0]["id"] == ALERT_ID
+    assert "Okta Prod" in result.readable_output
+
+
+def test_list_alerts_command_paginates_up_to_limit(requests_mock, reco_client: RecoClient) -> None:
+    page_1 = build_alerts_list_response([f"a{i}" for i in range(1000)])
+    page_2 = build_alerts_list_response([f"b{i}" for i in range(500)])
+    requests_mock.get(ALERTS_LIST_URL, [{"json": page_1}, {"json": page_2}])
+
+    result = list_alerts_command(reco_client, {"limit": "1500"})
+
+    assert len(result.outputs) == 1500
+    first, second = (r.qs for r in requests_mock.request_history)
+    assert (first["startindex"], first["count"]) == (["0"], ["1000"])
+    assert (second["startindex"], second["count"]) == (["1000"], ["500"])
+
+
+def test_list_alerts_command_stops_on_a_short_page(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.get(ALERTS_LIST_URL, json=build_alerts_list_response(["a", "b"]))
+
+    result = list_alerts_command(reco_client, {"limit": "100"})
+
+    assert len(result.outputs) == 2
+    assert len(requests_mock.request_history) == 1
+
+
+@pytest.mark.parametrize(
+    "args, message",
+    [
+        ({"limit": "0"}, "limit must be between"),
+        ({"limit": "5001"}, "limit must be between"),
+        ({"risk_level": "SEVERE"}, "Unknown risk level"),
+        ({"status": "preview"}, "Unknown alert status"),
+        ({"after": "garbage"}, "Could not parse 'after'"),
+        ({"sort_order": "sideways"}, "sort_order must be"),
+    ],
+)
+def test_list_alerts_command_validates_arguments(requests_mock, reco_client: RecoClient, args, message) -> None:
+    requests_mock.get(ALERTS_LIST_URL, json=build_alerts_list_response([]))
+
+    with pytest.raises(ValueError, match=message):
+        list_alerts_command(reco_client, args)
+    assert not requests_mock.request_history
+
+
+def test_fetch_alerts_command_returns_enriched_alerts(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.get(ALERTS_LIST_URL, json=build_alerts_list_response([ALERT_ID]))
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/alert-details/{ALERT_ID}",
+        json=build_alert_detail(ALERT_ID, INCIDENT_DESCRIPTION, 30, "2026-10-05T00:00:00Z"),
+    )
+
+    result = fetch_alerts_command(
+        reco_client, {"after": "2026-10-01", "before": "2026-10-31", "labels": "Privileged", "limit": "10"}
+    )
+
+    assert 'customLabels eq "Privileged"' in sent_filter(requests_mock, 0)
+    assert requests_mock.request_history[0].qs["sortorder"] == ["ascending"]
+    assert result.outputs_prefix == "Reco.Alerts"
+    assert result.outputs[0]["id"] == ALERT_ID
+    # policy violation jsonData is parsed, as in fetch-incidents
+    assert result.outputs[0]["policyViolations"][0]["jsonData"] == {"id": "91bef1de"}
+
+
+def test_fetch_alerts_command_caps_limit_at_500(requests_mock, reco_client: RecoClient) -> None:
+    with pytest.raises(ValueError, match="limit must be between 1 and 500"):
+        fetch_alerts_command(reco_client, {"limit": "501"})
+
+
+def test_get_alert_command_returns_alert_with_parsed_violations(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/alert-details/{ALERT_ID}",
+        json=build_alert_detail(ALERT_ID, INCIDENT_DESCRIPTION, 30, "2026-10-05T00:00:00Z"),
+    )
+
+    result = get_alert_command(reco_client, ALERT_ID)
+
+    assert result.outputs[0]["id"] == ALERT_ID
+    assert result.outputs[0]["policyViolations"][0]["jsonData"] == {"id": "91bef1de"}
+
+
+def test_get_alert_command_not_found_raises(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alert-details/missing", json={})
+
+    with pytest.raises(Exception, match="was not found"):
+        get_alert_command(reco_client, "missing")
+
+
+def test_on_demand_alert_commands_never_touch_the_fetch_cursor(requests_mock, mocker, reco_client: RecoClient) -> None:
+    """reco-list-alerts / reco-fetch-alerts / reco-get-alert must not read or write last-run."""
+    get_last_run = mocker.patch.object(demisto, "getLastRun")
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    requests_mock.get(ALERTS_LIST_URL, json=build_alerts_list_response([ALERT_ID]))
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/alert-details/{ALERT_ID}",
+        json=build_alert_detail(ALERT_ID, INCIDENT_DESCRIPTION, 30, "2026-10-05T00:00:00Z"),
+    )
+
+    list_alerts_command(reco_client, {"after": "2026-10-01", "before": "2026-10-31"})
+    fetch_alerts_command(reco_client, {"after": "2026-10-01", "before": "2026-10-31"})
+    get_alert_command(reco_client, ALERT_ID)
+
+    get_last_run.assert_not_called()
+    set_last_run.assert_not_called()
