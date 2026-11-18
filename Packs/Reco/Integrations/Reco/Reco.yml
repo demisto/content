@@ -780,6 +780,14 @@ script:
       - AUTH_STATUS_INVESTIGATED
       - AUTH_STATUS_CLOUD_INVENTORY
       - AUTH_STATUS_SYSTEM_SANCTIONED
+    - description: The app inventory the application belongs to. Defaults to app discovery.
+      name: app_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - APP_ENTITY_TYPE_APP_DISCOVERY
+      - APP_ENTITY_TYPE_SAAS_TO_SAAS
+      - APP_ENTITY_TYPE_APP_PORTFOLIO
     description: Set authorization status for an application in Reco.
     name: reco-set-app-authorization-status
     outputs:

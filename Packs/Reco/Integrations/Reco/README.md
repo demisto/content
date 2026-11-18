@@ -379,7 +379,7 @@ List files shared with a specific third-party domain.
 ### reco-change-alert-status
 
 ***
-Update the status of a Reco alert.
+Update the status of a Reco alert. The `ALERT_STATUS_NEW`, `ALERT_STATUS_IN_PROGRESS`, and `ALERT_STATUS_CLOSED` statuses on threat alerts use the Reco External API.
 
 #### Base Command
 
@@ -579,6 +579,7 @@ Update the authorization status of an application.
 | --- | --- | --- |
 | app_id | Application ID. | Required |
 | authorization_status | Authorization status. Possible values: `AUTH_STATUS_SANCTIONED`, `AUTH_STATUS_UNSANCTIONED`, `AUTH_STATUS_TO_REVIEW`, `AUTH_STATUS_ACCEPTED_RISK`, `AUTH_STATUS_EVALUATING`, `AUTH_STATUS_UNDER_INVESTIGATION`, `AUTH_STATUS_INVESTIGATED`, `AUTH_STATUS_CLOUD_INVENTORY`, `AUTH_STATUS_SYSTEM_SANCTIONED`. | Required |
+| app_type | The app inventory the application belongs to: `APP_ENTITY_TYPE_APP_DISCOVERY` (default), `APP_ENTITY_TYPE_SAAS_TO_SAAS`, or `APP_ENTITY_TYPE_APP_PORTFOLIO`. | Optional |
 
 #### Context Output
 

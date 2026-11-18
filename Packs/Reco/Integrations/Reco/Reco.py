@@ -85,6 +85,9 @@ ALERT_STATUS_PREFIX = "ALERT_STATUS_"
 ALERT_STATUSES: list[str] = ["NEW", "IN_PROGRESS", "CLOSED"]
 
 # Caps for the on-demand alert commands.
+# Statuses the External API accepts on a threat alert (POST /external-api/alerts/{id}/status).
+THREAT_ALERT_STATUSES: list[str] = [f"{ALERT_STATUS_PREFIX}{name}" for name in ALERT_STATUSES]
+
 LIST_ALERTS_DEFAULT_LIMIT = 50
 LIST_ALERTS_MAX_LIMIT = 5000
 FETCH_ALERTS_MAX_LIMIT = 500  # reco-fetch-alerts enriches every alert with one detail call each
@@ -425,8 +428,20 @@ class RecoClient(BaseClient):
             raise
 
     def change_alert_status(self, alert_id: str, status: str) -> Any:
-        """Change alert status (internal API - no external equivalent yet)."""
+        """Change an alert's status.
+
+        Threat-alert statuses (new / in progress / closed) go through the External API, which also
+        records the change in the audit log and emits the webhook event. Posture statuses, and
+        posture issue IDs (which the External API answers with 404), still need the internal endpoint.
+        """
         try:
+            if status in THREAT_ALERT_STATUSES:
+                try:
+                    return self._external_api_post(f"alerts/{alert_id}/status", {"status": status})
+                except DemistoException as exc:
+                    if getattr(exc.res, "status_code", None) != 404:
+                        raise
+                    demisto.debug(f"Alert {alert_id} is not a threat alert (404); falling back to the internal status endpoint")
             return self._http_request(
                 method="PUT",
                 url_suffix=f"/policy-subsystem/alert-inbox/{alert_id}/status/{status}",
@@ -435,8 +450,6 @@ class RecoClient(BaseClient):
         except Exception as e:
             demisto.error(f"change_alert_status error: {str(e)}")
             raise
-
-    # --- Comments (external API) ---
 
     def update_reco_incident_timeline(self, incident_id: str, comment: str) -> Any:
         """Add a comment to an alert entity via the external API."""
@@ -565,13 +578,16 @@ class RecoClient(BaseClient):
             demisto.error(f"get_app_discovery error: {str(e)}")
             raise
 
-    def set_app_authorization_status(self, app_id: str, authorization_status: str) -> Any:
-        """Update app authorization status via the external API."""
+    def set_app_authorization_status(self, app_id: str, authorization_status: str, app_type: str = "") -> Any:
+        """Update app authorization status via the external API.
+
+        app_type (APP_ENTITY_TYPE_*) selects the app inventory; the API defaults to app discovery.
+        """
+        body: dict[str, Any] = {"authorizationStatus": authorization_status}
+        if app_type:
+            body["appType"] = app_type
         try:
-            return self._external_api_put(
-                f"{EXTERNAL_API_BASE}/apps/{app_id}/auth-status",
-                {"authorizationStatus": authorization_status},
-            )
+            return self._external_api_put(f"{EXTERNAL_API_BASE}/apps/{app_id}/auth-status", body)
         except Exception as e:
             demisto.error(f"set_app_authorization_status error: {str(e)}")
             raise
@@ -1558,9 +1574,11 @@ def get_apps_command(
     )
 
 
-def set_app_authorization_status_command(reco_client: RecoClient, app_id: str, authorization_status: str) -> CommandResults:
+def set_app_authorization_status_command(
+    reco_client: RecoClient, app_id: str, authorization_status: str, app_type: str = ""
+) -> CommandResults:
     """Update app authorization status via the external API."""
-    reco_client.set_app_authorization_status(app_id, authorization_status)
+    reco_client.set_app_authorization_status(app_id, authorization_status, app_type)
     return CommandResults(
         readable_output=f"App {app_id} authorization status updated to {authorization_status}",
         outputs_prefix="Reco.AppAuthorization",
@@ -2058,7 +2076,11 @@ def main() -> None:  # pragma: no cover
             )
 
         elif command == "reco-set-app-authorization-status":
-            return_results(set_app_authorization_status_command(reco_client, args["app_id"], args["authorization_status"]))
+            return_results(
+                set_app_authorization_status_command(
+                    reco_client, args["app_id"], args["authorization_status"], args.get("app_type", "")
+                )
+            )
 
         elif command == "reco-list-events":
             return_results(

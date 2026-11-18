@@ -735,15 +735,36 @@ def test_add_exclusion_filter(requests_mock, reco_client: RecoClient) -> None:
 
 
 def test_change_alert_status(requests_mock, reco_client: RecoClient) -> None:
-    alert_id = uuid.uuid1()
-    status = "ALERT_STATUS_CLOSED"
-    requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{str(alert_id)}/status/{status}",
-        json={},
-        status_code=200,
+    """Threat-alert statuses use the External API endpoint."""
+    alert_id = str(uuid.uuid1())
+    requests_mock.post(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/{alert_id}/status", json={"alert": {"id": alert_id}})
+
+    res = reco_client.change_alert_status(alert_id=alert_id, status="ALERT_STATUS_CLOSED")
+
+    assert res == {"alert": {"id": alert_id}}
+    assert json.loads(requests_mock.last_request.text) == {"status": "ALERT_STATUS_CLOSED"}
+    assert len(requests_mock.request_history) == 1  # the internal endpoint was not called
+
+
+def test_change_alert_status_falls_back_to_internal_for_posture_ids(requests_mock, reco_client: RecoClient) -> None:
+    """The External API answers 404 for posture issue IDs; the internal endpoint still handles them."""
+    alert_id = str(uuid.uuid1())
+    requests_mock.post(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/{alert_id}/status", status_code=404, json={})
+    internal = requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{alert_id}/status/ALERT_STATUS_CLOSED", json={}
     )
-    res = reco_client.change_alert_status(alert_id=str(alert_id), status=status)
-    assert res == {}
+
+    assert reco_client.change_alert_status(alert_id=alert_id, status="ALERT_STATUS_CLOSED") == {}
+    assert internal.called
+
+
+def test_change_alert_status_does_not_swallow_other_external_errors(capfd, requests_mock, reco_client: RecoClient) -> None:
+    alert_id = str(uuid.uuid1())
+    requests_mock.post(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/{alert_id}/status", status_code=400, json={})
+
+    with capfd.disabled(), pytest.raises(Exception):
+        reco_client.change_alert_status(alert_id=alert_id, status="ALERT_STATUS_NEW")
+    assert len(requests_mock.request_history) == 1
 
 
 def test_change_alert_status_posture_status(requests_mock, reco_client: RecoClient) -> None:
@@ -837,6 +858,20 @@ def test_set_app_authorization_status(requests_mock, reco_client: RecoClient) ->
 
     response = reco_client.set_app_authorization_status(app_id, authorization_status)
     assert response == {"authorizationStatus": authorization_status}
+
+
+def test_set_app_authorization_status_sends_app_type_only_when_given(requests_mock, reco_client: RecoClient) -> None:
+    url = f"{DUMMY_RECO_API_DNS_NAME}/external-api/apps/app-1/auth-status"
+    requests_mock.put(url, json={})
+
+    reco_client.set_app_authorization_status("app-1", "AUTH_STATUS_SANCTIONED")
+    assert json.loads(requests_mock.last_request.text) == {"authorizationStatus": "AUTH_STATUS_SANCTIONED"}
+
+    reco_client.set_app_authorization_status("app-1", "AUTH_STATUS_SANCTIONED", "APP_ENTITY_TYPE_APP_PORTFOLIO")
+    assert json.loads(requests_mock.last_request.text) == {
+        "authorizationStatus": "AUTH_STATUS_SANCTIONED",
+        "appType": "APP_ENTITY_TYPE_APP_PORTFOLIO",
+    }
 
 
 def test_set_app_authorization_status_command(requests_mock, reco_client: RecoClient) -> None:
