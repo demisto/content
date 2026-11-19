@@ -45,7 +45,7 @@ configuration:
   type: 0
   required: false
   section: Collect
-  additionalinfo: How far back in minutes to look for messages on each fetch. Use this to recover PhishER messages that were reported earlier but indexed late. Duplicates within the overlap window are filtered automatically. Empty, 0 or negative values use the default of 15 minutes.
+  additionalinfo: How far back in minutes to look for messages on each fetch. Use this to recover PhishER messages that were reported earlier but indexed late. Duplicates within the overlap window are filtered automatically. Empty, 0, or negative values use the default value.
 - display: Incident type
   name: incidentType
   type: 13

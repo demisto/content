@@ -10,7 +10,7 @@ This integration was integrated and tested with version 6.0.0 of XSOAR
 | First Fetch Time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
 | Fetch incidents |  | False |
 | Fetch Limit | Maximum number of alerts per fetch. Default is 50, maximum is 100. | False |
-| Advanced: Minutes to look back when fetching | How far back, in minutes, each fetch re-checks for messages that became searchable late. Empty, 0 or negative uses 15. | False |
+| Advanced: Minutes to look back when fetching | How far back in minutes to look for messages on each fetch. Use this to recover PhishER messages that were reported earlier but indexed late. Duplicates within the overlap window are filtered automatically. Empty, 0, or negative values use the default value. | False |
 | Incident type |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
