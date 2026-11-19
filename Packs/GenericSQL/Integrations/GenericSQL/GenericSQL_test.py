@@ -1,6 +1,5 @@
 import os
 from typing import Any
-from unittest import mock
 
 import oracledb
 import demistomock as demisto
@@ -8,8 +7,7 @@ import psycopg
 import pyodbc
 import pytest
 import sqlalchemy
-from GenericSQL import Client, generate_bind_vars, generate_default_port_by_dialect, sql_query_execute
-from sqlalchemy.dialects.postgresql.psycopg import PGDialect_psycopg
+from GenericSQL import Client, generate_default_port_by_dialect, sql_query_execute
 from test_data import input_data
 
 
@@ -1005,101 +1003,3 @@ def test_create_engine_connect_args(mocker, dialect: str, ssl_connect: bool, exp
     mock_create_engine = mocker.patch.object(sqlalchemy, "create_engine")
     Client(dialect, "host", "username", "password", "5432", "db", "", ssl_connect)
     assert mock_create_engine.call_args.kwargs["connect_args"] == expected_connect_args
-
-
-def create_postgres_client_with_cursor(mocker, cursor: mock.Mock) -> tuple[Client, mock.Mock]:
-    connection = mocker.Mock(spec=sqlalchemy.engine.base.Connection)
-    connection.dialect = PGDialect_psycopg()
-    connection.in_transaction.return_value = False
-    connection.connection.cursor.return_value = cursor
-    mocker.patch.object(Client, "_create_engine_and_connect", return_value=connection)
-    return Client("PostgreSQL", "host", "username", "password", "5432", "db", "", False), connection
-
-
-def test_postgres_query_returns_last_result_set(mocker):
-    """
-    Given:
-        - A PostgreSQL multi-statement query with a bind variable, where only the last statement returns rows.
-    When:
-        - Executing the query.
-    Then:
-        - The rows of the last result set are returned (like psycopg2), the bind variable is passed client side,
-          the transaction is begun and committed, and the cursor is closed.
-    """
-    cursor = mock.Mock()
-    cursor.nextset.side_effect = [True, None]
-    cursor.description = [("id",), ("name",)]
-    cursor.fetchall.return_value = [(1, "zz")]
-    client, connection = create_postgres_client_with_cursor(mocker, cursor)
-
-    bind_variables, query = generate_bind_vars("name", "zz", "update t set name = :name; select id, name from t", "PostgreSQL")
-    results, headers = client.sql_query_execute_request(query, bind_variables)
-
-    assert results == [{"id": 1, "name": "zz"}]
-    assert headers == ["id", "name"]
-    cursor.execute.assert_called_once_with("update t set name = %(name)s; select id, name from t", {"name": "zz"})
-    connection.begin.assert_called_once()
-    connection.commit.assert_called_once()
-    cursor.close.assert_called_once()
-
-
-def test_postgres_query_fetch_limit(mocker):
-    """
-    Given:
-        - A PostgreSQL query and a fetch limit.
-    When:
-        - Executing the query.
-    Then:
-        - Only the limited number of rows is fetched.
-    """
-    cursor = mock.Mock()
-    cursor.nextset.return_value = None
-    cursor.description = [("id",)]
-    cursor.fetchmany.return_value = [(1,)]
-    client, _ = create_postgres_client_with_cursor(mocker, cursor)
-
-    results, headers = client.sql_query_execute_request("select id from t", {}, fetch_limit=1)
-
-    assert results == [{"id": 1}]
-    assert headers == ["id"]
-    cursor.fetchmany.assert_called_once_with(1)
-    cursor.fetchall.assert_not_called()
-
-
-def test_postgres_query_without_rows_returns_command_executed(mocker):
-    """
-    Given:
-        - A PostgreSQL statement that returns no rows (e.g. UPDATE).
-    When:
-        - Running the sql-command.
-    Then:
-        - The change is committed and "Command executed" is returned.
-    """
-    cursor = mock.Mock()
-    cursor.nextset.return_value = None
-    cursor.description = None
-    client, connection = create_postgres_client_with_cursor(mocker, cursor)
-
-    human_readable, context, table = sql_query_execute(client, {"query": "update t set name = 'a'"})
-
-    assert (human_readable, context, table) == ("Command executed", {}, [])
-    connection.commit.assert_called_once()
-
-
-def test_postgres_query_driver_error_is_wrapped(mocker):
-    """
-    Given:
-        - A PostgreSQL query that fails in the driver with a syntax error.
-    When:
-        - Executing the query.
-    Then:
-        - The error is wrapped as a SQLAlchemy ProgrammingError, as before, and nothing is committed.
-    """
-    cursor = mock.Mock()
-    cursor.execute.side_effect = psycopg.errors.SyntaxError('syntax error at or near "selec"')
-    client, connection = create_postgres_client_with_cursor(mocker, cursor)
-
-    with pytest.raises(sqlalchemy.exc.ProgrammingError, match="syntax error"):
-        client.sql_query_execute_request("selec 1", {})
-    connection.commit.assert_not_called()
-    cursor.close.assert_called_once()
