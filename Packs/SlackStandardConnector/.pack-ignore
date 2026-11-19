@@ -1,0 +1,11 @@
+[file:README.md]
+ignore=RM104
+
+[file:SlackV3StandardConnector.yml]
+ignore=PR101,BA129
+
+[file:SlackIAMStandardConnector.yml]
+ignore=PR101,BA129
+
+[file:SlackEventCollectorStandardConnector.yml]
+ignore=PR101,BA129

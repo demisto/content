@@ -1,5 +1,5 @@
 from IAMApiModule import *
-from Slack_IAM import Client, get_mapping_fields
+from SlackIAMApiModule import SCIM_BASE_URL, Client, build_headers, get_mapping_fields
 
 APP_USER_OUTPUT = {
     "schemas": ["urn:scim:schemas:core:1.0"],
@@ -282,3 +282,28 @@ def test_get_mapping_fields_command(mocker):
 
     assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get("field1") == "desc1"
     assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get("field2") == "desc2"
+
+
+class TestBuildHeaders:
+    def test_legacy_path_uses_credentials_password(self, mocker):
+        mocker.patch("SlackIAMApiModule.should_use_ucp_auth", return_value=False)
+        headers = build_headers({"credentials": {"password": "xoxp-scim"}})
+        assert headers["Authorization"] == "Bearer xoxp-scim"
+
+    def test_legacy_path_falls_back_to_hidden_access_token(self, mocker):
+        mocker.patch("SlackIAMApiModule.should_use_ucp_auth", return_value=False)
+        headers = build_headers({"access_token": "legacy-token"})
+        assert headers["Authorization"] == "Bearer legacy-token"
+
+    def test_ucp_path_leaves_authorization_to_profile(self, mocker):
+        mocker.patch("SlackIAMApiModule.should_use_ucp_auth", return_value=True)
+        headers = build_headers({})
+        assert "Authorization" not in headers
+        assert headers["Content-Type"] == "application/json"
+
+    def test_ucp_api_key_profile_writes_bearer_header(self, mocker):
+        mocker.patch("SlackIAMApiModule.should_use_ucp_auth", return_value=True)
+        client = Client(base_url=SCIM_BASE_URL, verify=True, proxy=False, headers=build_headers({}))
+        ctx = UcpRequestContext(headers={}, params={}, auth=None, data=None, json_data=None)
+        client._apply_ucp_credentials({"type": "api_key", "api_key": {"key": "xoxp-ucp"}}, ctx)
+        assert ctx.headers["Authorization"] == "Bearer xoxp-ucp"
