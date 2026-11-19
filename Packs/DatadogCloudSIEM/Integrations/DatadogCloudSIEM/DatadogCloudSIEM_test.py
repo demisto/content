@@ -970,7 +970,7 @@ class TestSecuritySignalCommentCommands:
             "data": {
                 "id": "user-uuid-456",
                 "attributes": {
-                    "name": "Jane Smith",
+                    "name": "jane Test",
                     "handle": "jane.smith@example.com",
                 },
             }

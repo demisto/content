@@ -1,3 +1,4 @@
+import io
 import json
 from collections import namedtuple
 from copy import deepcopy
@@ -5856,6 +5857,7 @@ def test_add_investigation_note_success_without_notable_time():
     assert result == expected_result
     mock_service.post.assert_called_once_with(
         "public/v2/investigations/finding-abc/notes",
+        headers=[("Content-Type", "application/json")],
         body=json.dumps({"content": "test note"}),
     )
 
@@ -5938,7 +5940,130 @@ def test_add_investigation_note_with_note_type():
     assert result == expected_result
     mock_service.post.assert_called_once_with(
         "public/v2/investigations/finding-xyz/notes",
+        headers=[("Content-Type", "application/json")],
         body=json.dumps({"content": "typed note", "type": "Task"}),
+    )
+
+
+def _build_wire_capturing_service(captured_requests: list[dict]) -> client.Service:
+    """Build a real splunklib Service whose HTTP handler records each outgoing request instead of sending it."""
+
+    def fake_handler(url, message, **kwargs):
+        captured_requests.append({"url": url, "headers": message.get("headers", []), "body": message.get("body")})
+        return {"status": 200, "reason": "OK", "headers": [], "body": io.BytesIO(b'{"id": "note-1"}')}
+
+    return client.Service(
+        handler=fake_handler,
+        host="splunk.example.com",
+        port=8089,
+        token="test-token",
+        owner="nobody",
+        app="missioncontrol",
+    )
+
+
+@pytest.mark.parametrize(
+    "note_content",
+    [
+        "Confidence of Abuse is 0%. Closing.",
+        "100% match on a+b",
+        "https://example.com/a%20b?q=1&r=2",
+    ],
+)
+def test_add_investigation_note_sends_json_content_type_on_the_wire(note_content):
+    """
+    Given:
+        - A real splunklib Service (HTTP layer captured) and note content containing '%', '+', '&' or '%XX' sequences.
+    When:
+        - add_investigation_note is called.
+    Then:
+        - The request carries a single Content-Type header, 'application/json' (not x-www-form-urlencoded),
+          so splunkd does not URL-decode the body (XSUP-80754: '0%.' caused HTTP 400 Unparsable URI-encoded request data).
+        - The body is the raw JSON with the note content unchanged.
+    """
+    captured_requests: list[dict] = []
+    service = _build_wire_capturing_service(captured_requests)
+
+    result = splunk.add_investigation_note(service=service, investigation_or_finding_id="finding-abc", content=note_content)
+
+    assert result == {"id": "note-1"}
+    assert len(captured_requests) == 1
+    request = captured_requests[0]
+    content_types = [value for name, value in request["headers"] if name.lower() == "content-type"]
+    assert content_types == ["application/json"]
+    assert request["url"].endswith("/servicesNS/nobody/missioncontrol/public/v2/investigations/finding-abc/notes")
+    assert json.loads(request["body"]) == {"content": note_content}
+
+
+def test_post_json_passes_query_params_on_the_wire():
+    """
+    Given:
+        - A real splunklib Service (HTTP layer captured).
+    When:
+        - _post_json is called with a notable_time query parameter.
+    Then:
+        - notable_time is sent in the query string, the body stays raw JSON and the Content-Type is application/json.
+    """
+    captured_requests: list[dict] = []
+    service = _build_wire_capturing_service(captured_requests)
+
+    splunk._post_json(service, "public/v2/investigations/finding-abc", {"status": "5"}, notable_time="now")
+
+    request = captured_requests[0]
+    assert request["url"].endswith("/public/v2/investigations/finding-abc?notable_time=now")
+    assert json.loads(request["body"]) == {"status": "5"}
+    assert [value for name, value in request["headers"] if name.lower() == "content-type"] == ["application/json"]
+
+
+def test_post_json_through_requests_handler_sends_single_json_content_type(mocker):
+    """
+    Given:
+        - A real splunklib Service wired to the integration's requests_handler (requests.request mocked).
+    When:
+        - _post_json is called with a body containing '%'.
+    Then:
+        - requests receives exactly one Content-Type header, application/json, and the raw JSON body.
+    """
+    mock_response = MagicMock(status_code=200, reason="OK", headers={}, content=b'{"id": "note-1"}')
+    mock_request = mocker.patch.object(splunk.requests, "request", return_value=mock_response)
+    service = client.Service(
+        handler=splunk.requests_handler,
+        host="splunk.example.com",
+        port=8089,
+        token="test-token",
+        owner="nobody",
+        app="missioncontrol",
+    )
+
+    splunk._post_json(service, "public/v2/investigations/finding-abc/notes", {"content": "0% abuse"})
+
+    sent_headers = mock_request.call_args.kwargs["headers"]
+    assert {name: value for name, value in sent_headers.items() if name.lower() == "content-type"} == {
+        "Content-Type": "application/json"
+    }
+    assert json.loads(mock_request.call_args.kwargs["data"]) == {"content": "0% abuse"}
+
+
+def test_es_rest_request_post_sends_json_content_type():
+    """
+    Given:
+        - A mock Splunk service.
+    When:
+        - _es_rest_request is called with method POST.
+    Then:
+        - service.post is called with the application/json Content-Type header and a JSON body.
+    """
+    mock_service = MagicMock()
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = b'{"ok": true}'
+    mock_service.post.return_value = mock_response
+
+    splunk._es_rest_request(mock_service, "POST", "public/v2/investigations", body={"name": "50% done"})
+
+    mock_service.post.assert_called_once_with(
+        "public/v2/investigations",
+        headers=[("Content-Type", "application/json")],
+        body=json.dumps({"name": "50% done"}),
     )
 
 
@@ -5970,6 +6095,7 @@ def test_update_investigation_or_finding_success_without_notable_time():
     assert result == expected_result
     mock_service.post.assert_called_once_with(
         "public/v2/investigations/finding-abc",
+        headers=[("Content-Type", "application/json")],
         body=json.dumps({"status": "closed"}),
     )
 
@@ -6073,6 +6199,7 @@ def test_update_investigation_or_finding_partial_fields():
     assert result == expected_result
     mock_service.post.assert_called_once_with(
         "public/v2/investigations/finding-abc",
+        headers=[("Content-Type", "application/json")],
         body=json.dumps({"owner": "admin", "urgency": "high"}),
     )
 
@@ -6106,6 +6233,7 @@ def test_update_investigation_or_finding_with_finding_time():
     assert result == expected_result
     mock_service.post.assert_called_once_with(
         "public/v2/investigations/finding-abc",
+        headers=[("Content-Type", "application/json")],
         body=json.dumps({"status": "closed"}),
         notable_time=finding_time,
     )
@@ -7874,6 +8002,7 @@ def test_add_findings_to_investigation_posts_batch():
     assert mock_service.post.call_count == 1
     args, kwargs = mock_service.post.call_args
     assert args[0] == "public/v2/investigations/INV-9/findings"
+    assert kwargs["headers"] == [("Content-Type", "application/json")]
     body = json.loads(kwargs["body"])
     assert body == {"finding_ids": ["FND-A", "FND-B"]}
 
