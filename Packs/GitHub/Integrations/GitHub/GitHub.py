@@ -1670,12 +1670,6 @@ def parse_github_file_url(url: str, base_url: str) -> tuple[str, str, str, str]:
     return owner, repo, ref, "/".join(path_segments)
 
 
-def get_approved_extension(file_name: str) -> str | None:
-    """Returns the lower-cased file extension if it is an approved format, otherwise None."""
-    _, extension = os.path.splitext(file_name.lower())
-    return extension if extension in APPROVED_EXTENSIONS else None
-
-
 def build_contents_url_suffix(owner: str, repo: str, path: str) -> str:
     """Builds the /repos/{owner}/{repo}/contents/{path} URL suffix with every component percent-encoded."""
     return f"/repos/{urllib.parse.quote(owner, safe='')}/{urllib.parse.quote(repo, safe='')}/contents/{urllib.parse.quote(path)}"
@@ -1734,8 +1728,8 @@ def build_file_content(owner: str, repo: str, file_metadata: dict, ref: str, url
     suffixed with ';base64'.
     """
     file_name = file_metadata.get("name", "")
-    extension = get_approved_extension(file_name)
-    if not extension:
+    extension = os.path.splitext(file_name.lower())[1]
+    if extension not in APPROVED_EXTENSIONS:
         supported = ", ".join(sorted(APPROVED_EXTENSIONS))
         raise ValueError(f"File format not approved: {file_name}. Supported formats: {supported}.")
     validate_file_size(file_name, file_metadata.get("size"))
