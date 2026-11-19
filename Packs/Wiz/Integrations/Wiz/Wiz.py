@@ -14,7 +14,7 @@ MAX_NOTE_LENGTH = 1400  # Hard limit for issue note text length enforced by the 
 MAX_COMMENT_PAGES = 100
 WIZ = "wiz"
 
-WIZ_VERSION = "1.8.0"
+WIZ_VERSION = "1.9.0"
 INTEGRATION_GUID = "8864e131-72db-4928-1293-e292f0ed699f"
 NOT_DEFINED = "Not Defined"
 
@@ -2468,27 +2468,12 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
         "patch": {
             "status": status,
             "resolutionReason": reject_or_resolve_reason,
+            "resolutionNote": truncate_note(reject_or_resolve_comment),
         },
     }
     query = UPDATE_ISSUE_QUERY
 
-    try:
-        response = checkAPIerrors(query, variables)
-    except Exception as e:
-        if status != "REJECTED" or "A note is required for rejection" not in str(e):
-            raise
-        # Only the legacy `note` field satisfies a required rejection note.
-        variables["patch"]["note"] = truncate_note(reject_or_resolve_comment)
-        try:
-            return checkAPIerrors(query, variables)
-        except Exception as retry_error:
-            raise Exception(
-                "This Wiz tenant requires a note to reject issues, and the note could not be added. "
-                "If the Wiz Issue Notes API is retired, disable 'Require note on rejection' in Wiz Issue settings "
-                f"or reject the issue in Wiz. Wiz API error: {retry_error}"
-            ) from retry_error
-
-    return _add_note_after_status_update(issue_id, reject_or_resolve_comment, response)
+    return checkAPIerrors(query, variables)
 
 
 def _add_note_after_status_update(issue_id: str, note: str, response: dict) -> dict:

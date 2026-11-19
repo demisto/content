@@ -2934,42 +2934,23 @@ def test_reopen_threat(mock_return_results, reopen_note, get_entries_effect, exp
 
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries", return_value=({"id": "threat-123"}, None))
-def test_reject_or_resolve_issue_posts_comment_after_update(mock_get_entries, mock_return_results):
+def test_reject_or_resolve_issue_sends_resolution_note(mock_get_entries, mock_return_results):
     issue_id = str(uuid.uuid4())
-    reject_or_resolve_issue(issue_id, "ISSUE_FIXED", "Fixed the issue", WizStatus.RESOLVED)
+    reject_or_resolve_issue(issue_id, "ISSUE_FIXED", "x" * (MAX_NOTE_LENGTH + 1), WizStatus.RESOLVED)
 
-    assert mock_get_entries.call_count == 2
-
-    update_query, update_variables, update_type = mock_get_entries.call_args_list[0][0]
-    assert update_query == UPDATE_ISSUE_QUERY
-    assert update_type == WizApiResponse.UPDATE_ISSUE
-    assert update_variables[WizApiVariables.ISSUE_ID] == issue_id
-    assert update_variables[WizApiVariables.PATCH] == {
-        WizApiVariables.STATUS: WizStatus.RESOLVED,
-        WizApiVariables.RESOLUTION_REASON: "ISSUE_FIXED",
-    }
-
-    comment_query, comment_variables, comment_type = mock_get_entries.call_args_list[1][0]
-    assert comment_query == CREATE_COMMENT_QUERY
-    assert comment_type == WizApiResponse.CREATE_COMMENT
-    assert comment_variables == {"input": {"subjectId": issue_id, "subjectType": "ISSUE", "body": "Fixed the issue"}}
-
-    mock_return_results.assert_called_once()
-
-
-@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
-@patch(
-    "Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries",
-    side_effect=[({"id": "threat-123"}, None), Exception("access denied: [write:all write:comments]")],
-)
-def test_reject_or_resolve_issue_warns_when_note_fails(mock_get_entries, mock_return_results):
-    reject_or_resolve_issue(str(uuid.uuid4()), "ISSUE_FIXED", "Fixed the issue", WizStatus.RESOLVED)
-
-    assert mock_get_entries.call_args_list[1][1] == {"raise_errors": True}
-    outputs = mock_return_results.call_args[0][0].outputs
-    assert outputs.startswith("Successfully modified the threat status to RESOLVED.")
-    assert "Warning: the note could not be added" in outputs
-    assert "write:comments" in outputs
+    mock_get_entries.assert_called_once_with(
+        UPDATE_ISSUE_QUERY,
+        {
+            WizApiVariables.ISSUE_ID: issue_id,
+            WizApiVariables.PATCH: {
+                WizApiVariables.STATUS: WizStatus.RESOLVED,
+                WizApiVariables.RESOLUTION_REASON: "ISSUE_FIXED",
+                "resolutionNote": "x" * (MAX_NOTE_LENGTH - 15) + "... [truncated]",
+            },
+        },
+        WizApiResponse.UPDATE_ISSUE,
+    )
+    assert mock_return_results.call_args[0][0].outputs == "Successfully modified the threat status to RESOLVED."
 
 
 @patch.object(demisto, "error")

@@ -5,7 +5,7 @@ from CommonServerPython import *
 import demistomock as demisto
 from urllib import parse
 
-WIZ_VERSION = "1.2.0"
+WIZ_VERSION = "1.3.0"
 WIZ_DEFEND = "wiz_defend"
 WIZ_DEFEND_INCIDENT_TYPE = "WizDefend Detection"
 USER_AGENT_NAME = "xsoar_defend"
@@ -144,6 +144,7 @@ class WizApiVariables:
     FETCH_CLOUD_ACCOUNTS_AND_CLOUD_ORG = "fetchCloudAccountsAndCloudOrganizations"
     PATCH = "patch"
     RESOLUTION_REASON = "resolutionReason"
+    RESOLUTION_NOTE = "resolutionNote"
     DESCRIPTION = "description"
 
 
@@ -3568,16 +3569,14 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
         WizApiVariables.PATCH: {
             WizApiVariables.STATUS: status,
             WizApiVariables.RESOLUTION_REASON: reject_or_resolve_reason,
+            WizApiVariables.RESOLUTION_NOTE: truncate_note(reject_or_resolve_comment),
         },
     }
     query = UPDATE_ISSUE_QUERY
 
     get_entries(query, variables, WizApiResponse.UPDATE_ISSUE)
-    warning = _note_warning(issue_id, reject_or_resolve_comment)
     return_results(
-        CommandResults(
-            outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully modified the threat status to {status}.{warning}"
-        )
+        CommandResults(outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully modified the threat status to {status}.")
     )
     return None
 
