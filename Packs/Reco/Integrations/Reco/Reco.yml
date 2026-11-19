@@ -166,12 +166,6 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
-- display: Incident type
-  name: incidentType
-  type: 13
-- display: Fetch incidents
-  name: isFetch
-  type: 8
 description: Reco is the leader in SaaS & AI Security, providing full visibility and control across your SaaS ecosystem and AI agents.
 display: Reco
 name: Reco

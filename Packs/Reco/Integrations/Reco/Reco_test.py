@@ -8,6 +8,8 @@ import base64
 import demistomock as demisto
 import pytest
 import datetime
+import os
+import yaml
 import Reco
 from urllib.parse import parse_qs, urlparse
 
@@ -1773,3 +1775,16 @@ def test_main_reports_invalid_arguments_as_errors(capfd, mocker) -> None:
     entry = calls["results"].call_args.args[0]
     assert entry["Type"] == 4
     assert "Unknown risk level" in entry["Contents"]
+
+
+def test_integration_yml_has_no_duplicate_configuration_parameters() -> None:
+    """A duplicated parameter (e.g. a second "Fetch incidents" checkbox) shows up twice in the XSOAR UI."""
+    yml_path = os.path.join(os.path.dirname(__file__), "Reco.yml")
+    with open(yml_path) as yml_file:
+        names = [param["name"] for param in yaml.safe_load(yml_file)["configuration"]]
+
+    assert len(names) == len(set(names)), (
+        f"duplicate configuration parameters: {sorted({n for n in names if names.count(n) > 1})}"
+    )
+    assert names.count("isFetch") == 1
+    assert names.count("incidentType") == 1
