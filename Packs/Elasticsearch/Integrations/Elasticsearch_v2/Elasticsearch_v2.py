@@ -1877,7 +1877,7 @@ def get_multiple_documents_command(args, proxies):
 
     if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
         resp = resp.body
-        
+
     if "docs" in resp:
         readable = f"Retrieved {len(resp['docs'])} documents"
     else:
@@ -3253,7 +3253,7 @@ def es_kibana_alerts_index_create_command(args: Dict[str, Any], proxies) -> Comm
 
 def es_kibana_get_all_indeces_command(args: Dict[str, Any], proxies) -> CommandResults:
     space_id = args.get("space_id")
-    
+
     response = kibana_http_request("GET", "/api/detection_engine/index", space_id=space_id, proxies=proxies)
 
     return CommandResults(
@@ -3261,6 +3261,7 @@ def es_kibana_get_all_indeces_command(args: Dict[str, Any], proxies) -> CommandR
         outputs=response,
         raw_response=response,
     )
+
 
 def es_kibana_alerts_index_delete_command(args: Dict[str, Any], proxies) -> CommandResults:
     space_id = args.get("space_id")
