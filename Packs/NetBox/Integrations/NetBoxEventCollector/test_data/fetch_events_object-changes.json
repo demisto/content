@@ -1,6 +1,6 @@
 {
     "count": 10,
-    "next": "https://www.example.com/api/extras/object-changes/?id__gte=0&limit=2&offset=2&ordering=",
+    "next": "https://www.example.com/api/core/object-changes/?id__gte=0&limit=2&offset=2&ordering=",
     "previous": null,
     "results": [
         {
