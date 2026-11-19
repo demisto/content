@@ -1822,8 +1822,8 @@ def test_integration_yml_has_no_duplicate_configuration_parameters() -> None:
     with open(yml_path) as yml_file:
         names = [param["name"] for param in yaml.safe_load(yml_file)["configuration"]]
 
-    assert len(names) == len(set(names)), (
-        f"duplicate configuration parameters: {sorted({n for n in names if names.count(n) > 1})}"
-    )
+    assert len(names) == len(
+        set(names)
+    ), f"duplicate configuration parameters: {sorted({n for n in names if names.count(n) > 1})}"
     assert names.count("isFetch") == 1
     assert names.count("incidentType") == 1

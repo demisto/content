@@ -662,9 +662,11 @@ List alerts for a specified time range and filters, without using or changing th
 | Reco.Alerts.ticketUrl | String | The linked ticket URL, if any. |
 
 #### Command example
+
 `!reco-list-alerts after="2026-11-01T00:00:00Z" before="2026-11-08T23:59:59Z" saas_platform="Salesforce" risk_level="HIGH,CRITICAL" labels="Identity,Privileged Access" limit=500`
 
 #### Context Example
+
 ```json
 {
     "Reco": {
@@ -702,7 +704,9 @@ List alerts for a specified time range and filters, without using or changing th
 ```
 
 #### Human Readable Output
+>
 > ### Reco Alerts
+>
 >|id|description|severity|status|createdAt|apps|instanceName|customLabels|
 >|---|---|---|---|---|---|---|---|
 >| 0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40 | Reco - Former Employees with Active Access to Salesforce | HIGH | ALERT_STATUS_NEW | 2026-11-05T09:14:22.512340Z | SALESFORCE_SOQL_API_EVENT_API | Salesforce Production | Privileged Access |
@@ -751,9 +755,11 @@ Retrieve full alert details (including policy violations, the same data fetch-in
 | Reco.Alerts.customLabels | Unknown | The custom labels of the policy that triggered the alert. |
 
 #### Command example
+
 `!reco-fetch-alerts after="2026-10-01" before="2026-10-31" labels="Privileged Access" limit=10`
 
 #### Context Example
+
 ```json
 {
     "Reco": {
@@ -791,7 +797,9 @@ Retrieve full alert details (including policy violations, the same data fetch-in
 ```
 
 #### Human Readable Output
+>
 > ### Reco Alerts (detailed)
+>
 >|id|description|severity|status|createdAt|apps|instanceName|customLabels|
 >|---|---|---|---|---|---|---|---|
 >| 0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40 | Reco - Former Employees with Active Access to Salesforce | HIGH | ALERT_STATUS_NEW | 2026-11-05T09:14:22.512340Z | SALESFORCE_SOQL_API_EVENT_API | Salesforce Production | Privileged Access |
@@ -830,9 +838,11 @@ Retrieve a single alert, including its policy violations, by ID. Does not use or
 | Reco.Alerts.customLabels | Unknown | The custom labels of the policy that triggered the alert. |
 
 #### Command example
+
 `!reco-get-alert alert_id="0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40"`
 
 #### Context Example
+
 ```json
 {
     "Reco": {
@@ -868,7 +878,9 @@ Retrieve a single alert, including its policy violations, by ID. Does not use or
 ```
 
 #### Human Readable Output
+>
 > ### Reco Alert 0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40
+>
 >|id|description|severity|status|createdAt|apps|instanceName|customLabels|
 >|---|---|---|---|---|---|---|---|
 >| 0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40 | Reco - Former Employees with Active Access to Salesforce | HIGH | ALERT_STATUS_NEW | 2026-11-05T09:14:22.512340Z | SALESFORCE_SOQL_API_EVENT_API | Salesforce Production | Privileged Access |
@@ -900,9 +912,11 @@ Set the severity of a Reco threat alert. The change is recorded in the Reco audi
 | Reco.Alerts.updatedAt | Date | The alert last update time. |
 
 #### Command example
+
 `!reco-update-alert-severity alert_id="0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40" severity="CRITICAL"`
 
 #### Context Example
+
 ```json
 {
     "Reco": {
@@ -918,6 +932,7 @@ Set the severity of a Reco threat alert. The change is recorded in the Reco audi
 ```
 
 #### Human Readable Output
+>
 >Alert 0192a4c1-6d3e-7f10-8a52-3b9e1c7d2f40 severity updated to CRITICAL
 
 ### reco-add-entity-label
@@ -939,9 +954,11 @@ Add an existing label from the label catalog to a Reco entity.
 | instance_id | The instance ID (UUID) for instance-scoped entities such as accounts. Leave empty for global entities. | Optional |
 
 #### Command example
+
 `!reco-add-entity-label entity_id="0b1f6c1e-6d7a-4f3b-9c52-1d2e3f4a5b6c" entity_type="identity" label_name="Privileged Access"`
 
 #### Human Readable Output
+>
 >Label 'Privileged Access' added to identity 0b1f6c1e-6d7a-4f3b-9c52-1d2e3f4a5b6c
 
 ### reco-remove-entity-label
@@ -963,9 +980,11 @@ Remove a label from a Reco entity.
 | instance_id | The instance ID (UUID) for instance-scoped entities such as accounts. Leave empty for global entities. | Optional |
 
 #### Command example
+
 `!reco-remove-entity-label entity_id="0b1f6c1e-6d7a-4f3b-9c52-1d2e3f4a5b6c" entity_type="identity" label_name="Privileged Access"`
 
 #### Human Readable Output
+>
 >Label 'Privileged Access' removed from identity 0b1f6c1e-6d7a-4f3b-9c52-1d2e3f4a5b6c
 
 ### reco-list-events
