@@ -702,6 +702,7 @@ Get timeline activity for an IP address.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| GreyNoise.Timeline.ip_address | string | Timeline IP address. |
 | GreyNoise.Timeline.metadata.ip | string | The IP address the daily timeline was requested for. |
 | GreyNoise.Timeline.metadata.days | number | The number of days of daily timeline data requested. |
 | GreyNoise.Timeline.metadata.granularity | string | The timeline bucket size. Daily results use 1d. |

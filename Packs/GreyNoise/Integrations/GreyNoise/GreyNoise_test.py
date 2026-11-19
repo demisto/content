@@ -601,7 +601,9 @@ def test_timeline_command(mocker, args, test_scenario, api_response, status_code
     if test_scenario == "positive":
         mocker.patch.object(client, "timelinedaily", return_value=expected_output)
         response = GreyNoise.timeline_command(client, args)
-        assert response.outputs == expected_output
+        assert response.outputs["ip_address"] == expected_output.get("metadata", {}).get("ip") or expected_output.get("ip")
+        outputs_without_legacy_ip = {key: value for key, value in response.outputs.items() if key != "ip_address"}
+        assert outputs_without_legacy_ip == expected_output
     else:
         # For error cases, we need to mock the timelinedaily method to raise an exception
         if status_code == 404:
@@ -656,6 +658,7 @@ def test_timeline_command_current_daily_response(mocker):
     response = GreyNoise.timeline_command(client, {"ip": "5.6.7.8", "days": "30", "maximum_results": "1"})
 
     client.timelinedaily.assert_called_once_with("5.6.7.8", days=30)
+    assert response.outputs["ip_address"] == "5.6.7.8"
     assert response.outputs["metadata"]["ip"] == "5.6.7.8"
     assert len(response.outputs["data"]) == 2
     assert "2026-11-12" in response.readable_output

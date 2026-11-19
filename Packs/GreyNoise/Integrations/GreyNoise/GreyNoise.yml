@@ -1252,6 +1252,9 @@ script:
       description: The maximum number of results to return. Default value is 50.
       defaultValue: '50'
     outputs:
+    - contextPath: GreyNoise.Timeline.ip_address
+      description: Timeline IP address.
+      type: string
     - contextPath: GreyNoise.Timeline.metadata.ip
       description: The IP address the daily timeline was requested for.
       type: string

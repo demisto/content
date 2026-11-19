@@ -1037,6 +1037,15 @@ def timeline_command(client: Client, args: dict) -> Any:
         viz_link = f"https://viz.greynoise.io/ip/{ip}"
         human_readable += f"\n*To view this IP on the GreyNoise Visualizer please click [here]({viz_link}).*"
 
+    # Keep GreyNoise.Timeline.ip_address populated for existing playbooks.
+    metadata = response.get("metadata")
+    if isinstance(metadata, dict) and metadata.get("ip"):
+        response["ip_address"] = metadata.get("ip")
+    elif response.get("ip"):
+        response["ip_address"] = response.get("ip")
+    else:
+        response["ip_address"] = ip
+
     return CommandResults(
         outputs_prefix="GreyNoise.Timeline",
         outputs_key_field="ip",
