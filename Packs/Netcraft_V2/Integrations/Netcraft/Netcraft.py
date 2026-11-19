@@ -187,6 +187,20 @@ class Client(BaseClient):
             params=params,
         )
 
+    def impersonation_target_list(self, params: dict) -> list[dict]:
+        return self.takedown_http_request(
+            "GET",
+            "api/v1/impersonation-targets/",
+            params=params,
+        )
+
+    def impersonation_target_profile_list(self, params: dict) -> list[dict]:
+        return self.takedown_http_request(
+            "GET",
+            "api/v1/impersonation-targets/profiles/",
+            params=params,
+        )
+
     def submission_list(self, params: dict) -> dict:
         return self.submission_http_request(
             "GET",
@@ -905,6 +919,46 @@ def attack_type_list_command(args: dict, client: Client) -> CommandResults:
     )
 
 
+def limit_results(response: list[dict], args: dict) -> list[dict]:
+    """Truncates a non-paginated list response according to the `limit` and `all_results` arguments."""
+    if argToBoolean(args.get("all_results", False)):
+        return response
+    return response[: arg_to_number(args.get("limit")) or 50]
+
+
+def impersonation_target_list_command(args: dict, client: Client) -> CommandResults:
+    response = client.impersonation_target_list({"region": args.get("region") or PARAMS["region"]})
+    response = limit_results(response, args)
+    return CommandResults(
+        outputs_prefix="Netcraft.ImpersonationTarget",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=tableToMarkdown(
+            "Netcraft Impersonation Targets",
+            response,
+            ["id", "name", "role", "has_detection", "regions"],
+            headerTransform=lambda h: "ID" if h == "id" else string_to_table_header(h),
+            removeNull=True,
+        ),
+    )
+
+
+def impersonation_target_profile_list_command(args: dict, client: Client) -> CommandResults:
+    response = client.impersonation_target_profile_list({"id": args["impersonation_target_id"]})
+    response = limit_results(response, args)
+    return CommandResults(
+        outputs_prefix="Netcraft.ImpersonationTargetProfile",
+        outputs=response,
+        readable_output=tableToMarkdown(
+            "Netcraft Impersonation Target Profiles",
+            response,
+            ["platform", "profile"],
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+    )
+
+
 @polling_function(
     name="netcraft-submission-list",
     interval=arg_to_number(demisto.getArg("interval_in_seconds")),
@@ -1258,6 +1312,10 @@ def main() -> None:
             return_results(takedown_note_list_command(args, client))
         elif command == "netcraft-attack-type-list":
             return_results(attack_type_list_command(args, client))
+        elif command == "netcraft-impersonation-target-list":
+            return_results(impersonation_target_list_command(args, client))
+        elif command == "netcraft-impersonation-target-profile-list":
+            return_results(impersonation_target_profile_list_command(args, client))
         elif command == "netcraft-submission-list":
             return_results(submission_list_command(args, client))
         elif command == "netcraft-submission-file-list":

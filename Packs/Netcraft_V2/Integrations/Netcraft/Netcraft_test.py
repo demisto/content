@@ -502,6 +502,105 @@ def test_attack_type_list_command(mocker):
     request.assert_called_with(*attack_type_list.http_func_args["args"], **attack_type_list.http_func_args["kwargs"])
 
 
+IMPERSONATION_TARGETS = [
+    {"id": "5880", "name": "John Doe", "role": "COO", "has_detection": True, "regions": ["region_a"]},
+    {"id": "5881", "name": "Jane Doe", "role": "CEO", "has_detection": False, "regions": ["region_a", "region_b"]},
+    {"id": "5882", "name": "Brand", "role": "Brand", "has_detection": True, "regions": ["region_b"]},
+]
+
+
+@pytest.mark.parametrize(
+    "args, expected_count",
+    [
+        ({"limit": "2", "all_results": "false"}, 2),
+        ({"limit": "1", "all_results": "true"}, 3),
+        ({}, 3),
+    ],
+)
+def test_impersonation_target_list_command(mocker, args, expected_count):
+    """
+    Given:
+        - Arguments for the "netcraft-impersonation-target-list" command, with and without a region.
+
+    When:
+        - Running the "netcraft-impersonation-target-list" command.
+
+    Then:
+        - The targets endpoint is called with the instance region as fallback.
+        - The response is truncated by "limit" unless "all_results" is true.
+        - The context, key field and readable output are set.
+    """
+    from Netcraft import impersonation_target_list_command
+
+    mocker.patch.object(Netcraft, "PARAMS", {"region": "instance_region"})
+    request = mocker.patch.object(Client, "_http_request", return_value=list(IMPERSONATION_TARGETS))
+
+    result = impersonation_target_list_command(args, MOCK_CLIENT)
+
+    assert request.call_args.kwargs["full_url"] == "https://takedown.netcraft.com/api/v1/impersonation-targets/"
+    assert request.call_args.kwargs["params"] == {"region": "instance_region"}
+    assert result.outputs == IMPERSONATION_TARGETS[:expected_count]
+    assert result.outputs_prefix == "Netcraft.ImpersonationTarget"
+    assert result.outputs_key_field == "id"
+    assert "### Netcraft Impersonation Targets" in result.readable_output
+    assert "|ID|Name|Role|Has Detection|Regions|" in result.readable_output
+    assert "| 5880 | John Doe | COO | true | region_a |" in result.readable_output
+
+
+def test_impersonation_target_list_command_region_arg(mocker):
+    """
+    Given:
+        - A "region" argument.
+
+    When:
+        - Running the "netcraft-impersonation-target-list" command.
+
+    Then:
+        - The region argument overrides the instance region.
+    """
+    from Netcraft import impersonation_target_list_command
+
+    mocker.patch.object(Netcraft, "PARAMS", {"region": "instance_region"})
+    request = mocker.patch.object(Client, "_http_request", return_value=[])
+
+    result = impersonation_target_list_command({"region": "arg_region"}, MOCK_CLIENT)
+
+    assert request.call_args.kwargs["params"] == {"region": "arg_region"}
+    assert result.outputs == []
+
+
+def test_impersonation_target_profile_list_command(mocker):
+    """
+    Given:
+        - An impersonation target ID and a limit.
+
+    When:
+        - Running the "netcraft-impersonation-target-profile-list" command.
+
+    Then:
+        - The profiles endpoint is called with the ID as the "id" query param.
+        - The response is truncated by "limit".
+    """
+    from Netcraft import impersonation_target_profile_list_command
+
+    profiles = [
+        {"platform": "facebook", "profile": "https://www.facebook.com/john.doe"},
+        {"platform": "linkedin", "profile": "https://www.linkedin.com/in/john-doe"},
+    ]
+    request = mocker.patch.object(Client, "_http_request", return_value=profiles)
+
+    result = impersonation_target_profile_list_command(
+        {"impersonation_target_id": "5880", "limit": "1", "all_results": "false"}, MOCK_CLIENT
+    )
+
+    assert request.call_args.kwargs["full_url"] == "https://takedown.netcraft.com/api/v1/impersonation-targets/profiles/"
+    assert request.call_args.kwargs["params"] == {"id": "5880"}
+    assert result.outputs == profiles[:1]
+    assert result.outputs_prefix == "Netcraft.ImpersonationTargetProfile"
+    assert "### Netcraft Impersonation Target Profiles" in result.readable_output
+    assert "| facebook | https://www.facebook.com/john.doe |" in result.readable_output
+
+
 def test_submission_list_command(mocker):
     """
     Given:
