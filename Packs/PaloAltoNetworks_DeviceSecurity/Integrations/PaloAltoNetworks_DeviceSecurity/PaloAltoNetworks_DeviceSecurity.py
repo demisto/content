@@ -41,11 +41,13 @@ class Client(ContentClient):
         proxy: bool = False,
         ok_codes: tuple = (),
         headers: dict | None = None,
+        tsg_id: str = "",
     ) -> None:
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
         self.api_timeout = api_timeout
         self.first_fetch = first_fetch
         self.max_fetch = min(max_fetch, PAGELENGTH)
+        self.tsg_id = tsg_id
 
     def _http_request(self, **kwargs) -> Any:  # type: ignore[override]
         try:
@@ -250,7 +252,7 @@ def get_scm_ui_base_url() -> str:
     return "https://stratacloudmanager.paloaltonetworks.com"
 
 
-def get_scm_alert_url(alert_id: str) -> str:
+def get_scm_alert_url(alert_id: str, tsg_id: str = "") -> str:
     """Build the SCM alert details URL.
 
     Args:
@@ -258,10 +260,13 @@ def get_scm_alert_url(alert_id: str) -> str:
     Returns:
         str: Full alert details URL.
     """
-    return f"{get_scm_ui_base_url()}/insights/iot-security/alerts/security-alerts/alert-detail?id={alert_id}"
+    return (
+        f"{get_scm_ui_base_url()}/insights/iot-security/alerts/security-alerts/alert-detail"
+        f"?id={alert_id}&tsg_id={tsg_id}"
+    )
 
 
-def get_scm_vuln_url(vuln: dict) -> str:
+def get_scm_vuln_url(vuln: dict, tsg_id: str = "") -> str:
     """Build the SCM vulnerability details URL.
 
     Args:
@@ -274,7 +279,7 @@ def get_scm_vuln_url(vuln: dict) -> str:
     return (
         f"{get_scm_ui_base_url()}"
         f"/insights/iot-security/assets/assets/overview/{device_id}"
-        f"?vulnerabilityname={vulnerability_name}"
+        f"?vulnerabilityname={vulnerability_name}&tsg_id={tsg_id}"
     )
 
 
@@ -625,7 +630,7 @@ def fetch_alert_incidents(
             if len(incidents) >= max_fetch:
                 break
 
-            device_security_incident_url = get_scm_alert_url(alert_id)
+            device_security_incident_url = get_scm_alert_url(alert_id, client.tsg_id)
             alert_raw_json = {
                 **alert,
                 "rawType": "Device Security Alert",
@@ -823,7 +828,7 @@ def initialize_vulnerability_fetch(
     )
 
 
-def vulnerability_to_incident(vulnerability: dict, occurred: str) -> dict:
+def vulnerability_to_incident(vulnerability: dict, occurred: str, tsg_id: str = "") -> dict:
     """Convert a vulnerability record into a Cortex incident.
 
     Args:
@@ -834,7 +839,7 @@ def vulnerability_to_incident(vulnerability: dict, occurred: str) -> dict:
         An incident containing serialized raw data, device and vulnerability
         details, and the SCM vulnerability URL in its raw data and custom fields.
     """
-    incident_url = get_scm_vuln_url(vulnerability)
+    incident_url = get_scm_vuln_url(vulnerability, tsg_id)
     demisto.debug(f"[Fetch vulnerabilities] Creating incident: occurred={occurred}")
     raw = {**vulnerability, "rawType": "Device Security Vulnerability", "devicesecurityincidenturl": incident_url}
     return {
@@ -879,7 +884,7 @@ def fetch_vulnerability_incidents(
     page = client.list_vulns_page(state.stime, offset=state.offset, pagelength=max_fetch)
     for vulnerability in page["items"]:
         if occurred := state.accept(vulnerability):
-            incidents.append(vulnerability_to_incident(vulnerability, occurred))
+            incidents.append(vulnerability_to_incident(vulnerability, occurred, client.tsg_id))
     # Offset counts requested source rows, not the shorter post-filtered response.
     state.offset += max_fetch
     complete = state.offset >= page["total"]
@@ -1046,6 +1051,7 @@ def main():
             proxy=proxy,
             ok_codes=(200,),
             headers=headers,
+            tsg_id=tsg_id,
         )
 
         demisto.info(f"Command being called is {command}")

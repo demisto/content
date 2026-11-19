@@ -42,6 +42,7 @@ def client() -> "Client":
             "Authorization": "Bearer test-token",
             "Content-Type": "application/json",
         },
+        tsg_id="1912782606",
     )
 
 
@@ -49,18 +50,22 @@ def test_incident_links_use_production_environment() -> None:
     from PaloAltoNetworks_DeviceSecurity import get_scm_alert_url, get_scm_vuln_url
 
     expected_base_url = "https://stratacloudmanager.paloaltonetworks.com"
-    assert get_scm_alert_url("alert-123") == (
-        f"{expected_base_url}/insights/iot-security/alerts/security-alerts/alert-detail?id=alert-123"
+    assert get_scm_alert_url("alert-123", "1912782606") == (
+        f"{expected_base_url}/insights/iot-security/alerts/security-alerts/alert-detail?id=alert-123&tsg_id=1912782606"
     )
-    assert get_scm_vuln_url({"deviceid": "device-123", "vulnerability_name": "Test vulnerability"}) == (
-        f"{expected_base_url}/insights/iot-security/assets/assets/overview/device-123" "?vulnerabilityname=Test%20vulnerability"
+    assert get_scm_vuln_url({"deviceid": "device-123", "vulnerability_name": "Test vulnerability"}, "1912782606") == (
+        f"{expected_base_url}/insights/iot-security/assets/assets/overview/device-123"
+        "?vulnerabilityname=Test%20vulnerability&tsg_id=1912782606"
     )
 
 
 def test_main_routes_authentication_and_api(mocker: MockerFixture) -> None:
     from PaloAltoNetworks_DeviceSecurity import main
 
-    mocker.patch("PaloAltoNetworks_DeviceSecurity.demisto.params", return_value={"client_secret": "test-secret"})
+    mocker.patch(
+        "PaloAltoNetworks_DeviceSecurity.demisto.params",
+        return_value={"client_secret": "test-secret", "tsg_id": "1912782606"},
+    )
     mocker.patch("PaloAltoNetworks_DeviceSecurity.demisto.args", return_value={})
     mocker.patch("PaloAltoNetworks_DeviceSecurity.demisto.command", return_value="test-module")
     token_mock = mocker.patch("PaloAltoNetworks_DeviceSecurity.get_scm_access_token", return_value="test-token")
@@ -73,6 +78,7 @@ def test_main_routes_authentication_and_api(mocker: MockerFixture) -> None:
     assert token_mock.call_args.args[0] == "https://auth.apps.paloaltonetworks.com"
     assert token_mock.call_args.args[3] == "test-secret"
     assert client_mock.call_args.kwargs["base_url"] == "https://api.strata.paloaltonetworks.com/iot/pub/v1"
+    assert client_mock.call_args.kwargs["tsg_id"] == "1912782606"
 
 
 @pytest.mark.parametrize("client_secret", [None, ""])
