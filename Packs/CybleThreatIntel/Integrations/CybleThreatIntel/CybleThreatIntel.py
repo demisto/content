@@ -1,5 +1,6 @@
 from typing import *
 from datetime import datetime, timedelta, UTC
+import re
 import traceback
 import time
 import demistomock as demisto
@@ -47,7 +48,8 @@ class Client(BaseClient):
             "Content-Type": "application/json",
         }
         super().__init__(base_url=self.base_url, verify=verify, proxy=proxy, headers=self.headers)
-        demisto.debug(f"Client initialized with base_url: {self.base_url}")
+        self.ioc_filters = build_ioc_filters(params)
+        demisto.debug(f"Client initialized with base_url: {self.base_url}, ioc_filters: {self.ioc_filters}")
 
     def http_post(self, endpoint: str, json_body: dict):
         """POST JSON to the Cyble Vision API with built-in retries (no time.sleep)."""
@@ -74,9 +76,60 @@ class Client(BaseClient):
     # ------------------------------
     def fetch_iocs(self, start_dt: str, end_dt: str, page: int = 1, limit: int = 50):
         endpoint = "/y/iocs"
-        body = {"page": page, "limit": limit, "startDate": start_dt, "endDate": end_dt}
+        body = {"page": page, "limit": limit, "startDate": start_dt, "endDate": end_dt, **self.ioc_filters}
         demisto.debug(f"Fetching IOCs with body: {body}")
         return self.http_post(endpoint, body)
+
+
+def parse_risk_score(params: dict, name: str) -> int | None:
+    """Read a 0-100 risk score param; None when left empty."""
+    value = arg_to_number(params.get(name), arg_name=name)
+    if value is not None and not 0 <= value <= 100:
+        raise DemistoException(f"{name} must be between 0 and 100, got {value}.")
+    return value
+
+
+def build_ioc_filters(params: dict) -> dict:
+    """
+    Build the optional /y/iocs filter fields from the instance configuration.
+    The API splits list filters on ',' without trimming, so values are joined with no spaces.
+    Countries are shown as 'Name (CODE)' in the UI; only the code is sent.
+    """
+    filters: dict[str, Any] = {}
+
+    list_params = {
+        "iocType": "ioc_types",
+        "confidentRating": "confidence_ratings",
+        "industries": "industries",
+        "regions": "regions",
+    }
+    for api_field, param_name in list_params.items():
+        values = [v.strip() for v in argToList(params.get(param_name)) if v.strip()]
+        if values:
+            filters[api_field] = ",".join(values)
+
+    country_codes = []
+    for country in argToList(params.get("countries")):
+        match = re.search(r"\(([A-Z]{2})\)\s*$", country)
+        code = match.group(1) if match else country.strip()
+        if code:
+            country_codes.append(code)
+    if country_codes:
+        filters["countryCodes"] = ",".join(country_codes)
+
+    risk_min = parse_risk_score(params, "risk_score_min")
+    risk_max = parse_risk_score(params, "risk_score_max")
+    if risk_min is not None and risk_max is not None and risk_min > risk_max:
+        raise DemistoException(f"risk_score_min ({risk_min}) cannot be greater than risk_score_max ({risk_max}).")
+    risk_rating = {}
+    if risk_min is not None:
+        risk_rating["gte"] = risk_min
+    if risk_max is not None:
+        risk_rating["lte"] = risk_max
+    if risk_rating:
+        filters["riskRating"] = risk_rating
+
+    return filters
 
 
 def get_time_range(hours_back: int, last_run: dict) -> Tuple[str, str]:

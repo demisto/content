@@ -35,6 +35,20 @@ This integration allows Cortex to:
 |                              | (1–3 hours allowed)                                                |                                      |
 | **Indicator Fetch Limit**    | Maximum indicators per API page                                    | `100`                                |
 
+### Optional IOC Filters
+
+All filters are optional and combined with AND. Leave a filter empty to fetch everything for that field. Multi-select filters match any of the selected values.
+
+| Parameter              | Description                                       | Example                        |
+|------------------------|---------------------------------------------------|--------------------------------|
+| **IOC Types**          | Fetch only these IOC types                        | `Domain`, `IPv4`               |
+| **Confidence Rating**  | Fetch only IOCs with these confidence ratings     | `High`                         |
+| **Minimum Risk Score** | Lowest risk score to fetch (0–100)                | `70`                           |
+| **Maximum Risk Score** | Highest risk score to fetch (0–100)               | `100`                          |
+| **Target Industries**  | Fetch only IOCs targeting these industries        | `BFSI`                         |
+| **Target Countries**   | Fetch only IOCs targeting these countries         | `India (IN)`                   |
+| **Target Regions**     | Fetch only IOCs targeting these regions           | `Asia & Pacific (APAC)`        |
+
 ### Fetch Behavior
 
 * The integration fetches indicators **in 15-minute chunks** until the full range is covered.
