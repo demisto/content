@@ -1,0 +1,543 @@
+id: SoChain-Test
+version: -1
+name: SoChain-Test
+description: Runs every SoChain command against public mainnet data and checks the context.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 39bb06f4-1c2a-5ca1-9df4-4cb7b905f6e4
+    type: start
+    task:
+      id: 39bb06f4-1c2a-5ca1-9df4-4cb7b905f6e4
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      type: start
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      '#none#':
+      - '1'
+  '1':
+    id: '1'
+    taskid: 7aa2f331-ee2f-5fbc-a27f-0029f75c9d27
+    type: regular
+    task:
+      id: 7aa2f331-ee2f-5fbc-a27f-0029f75c9d27
+      version: -1
+      name: DeleteContext
+      iscommand: false
+      brand: ''
+      scriptName: DeleteContext
+      description: Delete field from context
+      type: regular
+    scriptarguments:
+      all:
+        simple: 'yes'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      '#none#':
+      - '2'
+  '2':
+    id: '2'
+    taskid: cfe43c5c-d76b-51f2-9039-abbc3601a41b
+    type: regular
+    task:
+      id: cfe43c5c-d76b-51f2-9039-abbc3601a41b
+      version: -1
+      name: crypto
+      iscommand: true
+      brand: ''
+      script: SoChain|||crypto
+      description: Enriches cryptocurrency addresses.
+      type: regular
+    scriptarguments:
+      crypto:
+        simple: bitcoin:1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      '#none#':
+      - '3'
+  '3':
+    id: '3'
+    taskid: f8b521b8-8cdf-57f4-917b-4db9a49ebc9b
+    type: condition
+    task:
+      id: f8b521b8-8cdf-57f4-917b-4db9a49ebc9b
+      version: -1
+      name: Verify Results
+      iscommand: false
+      brand: ''
+      type: condition
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: bitcoin:1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: '0'
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Cryptocurrency.AddressType
+            iscontext: true
+          right:
+            value:
+              simple: bitcoin
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SoChain.Address.Network
+            iscontext: true
+          right:
+            value:
+              simple: BTC
+      - - operator: isExists
+          left:
+            value:
+              simple: SoChain.Address.Poisoning.LookalikesFound
+            iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      'yes':
+      - '4'
+  '4':
+    id: '4'
+    taskid: adb197dc-dce4-5a25-8dca-1f7ccc21796b
+    type: regular
+    task:
+      id: adb197dc-dce4-5a25-8dca-1f7ccc21796b
+      version: -1
+      name: DeleteContext
+      iscommand: false
+      brand: ''
+      scriptName: DeleteContext
+      description: Delete field from context
+      type: regular
+    scriptarguments:
+      all:
+        simple: 'yes'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      '#none#':
+      - '5'
+  '5':
+    id: '5'
+    taskid: a7ca2233-316e-5d65-a764-46e851d5c6b4
+    type: regular
+    task:
+      id: a7ca2233-316e-5d65-a764-46e851d5c6b4
+      version: -1
+      name: sochain-address-summary
+      iscommand: true
+      brand: ''
+      script: SoChain|||sochain-address-summary
+      description: Gets an address summary.
+      type: regular
+    scriptarguments:
+      address:
+        simple: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      '#none#':
+      - '6'
+  '6':
+    id: '6'
+    taskid: 6e9800fd-d3db-5c8b-970f-928799aa8072
+    type: condition
+    task:
+      id: 6e9800fd-d3db-5c8b-970f-928799aa8072
+      version: -1
+      name: Verify Results
+      iscommand: false
+      brand: ''
+      type: condition
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SoChain.Address.Network
+            iscontext: true
+          right:
+            value:
+              simple: BTC
+      - - operator: isExists
+          left:
+            value:
+              simple: SoChain.Address.TxsTotal
+            iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      'yes':
+      - '7'
+  '7':
+    id: '7'
+    taskid: 7ecec915-3ed4-5df0-9b96-538804c4afaf
+    type: regular
+    task:
+      id: 7ecec915-3ed4-5df0-9b96-538804c4afaf
+      version: -1
+      name: sochain-transaction
+      iscommand: true
+      brand: ''
+      script: SoChain|||sochain-transaction
+      description: Gets a transaction.
+      type: regular
+    scriptarguments:
+      txid:
+        simple: 597bafa25fcbb081467bdeb030a42bf441dbfcc054bdcfad31a829d7db5d931f
+      network:
+        simple: BTC
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      '#none#':
+      - '8'
+  '8':
+    id: '8'
+    taskid: 4a1ca246-6313-5f7b-8f52-515fd1924918
+    type: condition
+    task:
+      id: 4a1ca246-6313-5f7b-8f52-515fd1924918
+      version: -1
+      name: Verify Results
+      iscommand: false
+      brand: ''
+      type: condition
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SoChain.Transaction.Hash
+            iscontext: true
+          right:
+            value:
+              simple: 597bafa25fcbb081467bdeb030a42bf441dbfcc054bdcfad31a829d7db5d931f
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SoChain.Transaction.Fee
+            iscontext: true
+          right:
+            value:
+              simple: '0.00090000'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      'yes':
+      - '9'
+  '9':
+    id: '9'
+    taskid: eca66528-bd90-53cc-878e-aa29eaded52d
+    type: regular
+    task:
+      id: eca66528-bd90-53cc-878e-aa29eaded52d
+      version: -1
+      name: sochain-address-counterparties
+      iscommand: true
+      brand: ''
+      script: SoChain|||sochain-address-counterparties
+      description: Lists counterparties.
+      type: regular
+    scriptarguments:
+      address:
+        simple: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+      network:
+        simple: BTC
+      limit:
+        simple: '3'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      '#none#':
+      - '10'
+  '10':
+    id: '10'
+    taskid: 826d20b0-99b8-5743-97cb-6e56625aee83
+    type: condition
+    task:
+      id: 826d20b0-99b8-5743-97cb-6e56625aee83
+      version: -1
+      name: Verify Results
+      iscommand: false
+      brand: ''
+      type: condition
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SoChain.Counterparties.Address
+            iscontext: true
+          right:
+            value:
+              simple: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      'yes':
+      - '11'
+  '11':
+    id: '11'
+    taskid: ddddc3ac-055f-5558-9097-1afb6fc220f5
+    type: regular
+    task:
+      id: ddddc3ac-055f-5558-9097-1afb6fc220f5
+      version: -1
+      name: sochain-address-poisoning
+      iscommand: true
+      brand: ''
+      script: SoChain|||sochain-address-poisoning
+      description: Checks address poisoning.
+      type: regular
+    scriptarguments:
+      address:
+        simple: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+      network:
+        simple: BTC
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      '#none#':
+      - '12'
+  '12':
+    id: '12'
+    taskid: c92022b9-5cfa-596e-a0d8-0de5a8e90a7e
+    type: condition
+    task:
+      id: c92022b9-5cfa-596e-a0d8-0de5a8e90a7e
+      version: -1
+      name: Verify Results
+      iscommand: false
+      brand: ''
+      type: condition
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SoChain.AddressPoisoning.Address
+            iscontext: true
+          right:
+            value:
+              simple: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+      - - operator: isExists
+          left:
+            value:
+              simple: SoChain.AddressPoisoning.LookalikesFound
+            iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      'yes':
+      - '13'
+  '13':
+    id: '13'
+    taskid: 08f46c19-8c5f-546e-8c7c-49442c7a9e64
+    type: title
+    task:
+      id: 08f46c19-8c5f-546e-8c7c-49442c7a9e64
+      version: -1
+      name: Done
+      iscommand: false
+      brand: ''
+      type: title
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2570,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0

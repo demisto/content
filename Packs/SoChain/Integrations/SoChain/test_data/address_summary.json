@@ -1,0 +1,19 @@
+{
+  "status": "success",
+  "data": {
+    "txs_sent": 0,
+    "txs_received": 67159,
+    "txs_total": 67159,
+    "confirmed_balance": "57.69048146",
+    "unconfirmed_balance": "0.00003672",
+    "confirmed_received": "57.69048146",
+    "first_active": {
+      "height": 123723,
+      "time": 1305320645
+    },
+    "last_active": {
+      "height": 973482,
+      "time": 1793152989
+    }
+  }
+}

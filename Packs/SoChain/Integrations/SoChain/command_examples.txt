@@ -1,0 +1,5 @@
+!crypto crypto="bitcoin:1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+!sochain-address-summary address="1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+!sochain-transaction txid="597bafa25fcbb081467bdeb030a42bf441dbfcc054bdcfad31a829d7db5d931f" network="BTC"
+!sochain-address-counterparties address="1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" network="BTC" limit="3"
+!sochain-address-poisoning address="1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" network="BTC"
