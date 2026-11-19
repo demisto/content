@@ -442,20 +442,49 @@ def fetch_events_command(client: Client, params: dict, last_run: dict) -> tuple[
 """ MAIN FUNCTION """
 
 
+def get_ucp_passthrough_user_token(module: str) -> str:
+    """
+    Returns the Slack user token from the ConnectUs (UCP) passthrough envelope.
+
+    The Slack standard connector shares one passthrough profile (bot, app and user token) across
+    its handlers. BaseClient never applies a passthrough envelope, so the integration reads the
+    user token itself: {"type": "passthrough", "passthrough": {"parameters": {...}}}.
+
+    Args:
+        module: the module name used in the debug log prefix.
+
+    Returns:
+        The user token, or an empty string when the envelope is not passthrough or has no token.
+    """
+    credentials = get_ucp_credentials() or {}
+    if credentials.get("type") != "passthrough":
+        demisto.debug(f"[UCP][{module}] Expected a passthrough envelope, got type={credentials.get('type')}.")
+        return ""
+    type_data = credentials.get("passthrough") or {}
+    user_token = str(type_data.get("parameters", type_data).get("user_token") or "")
+    demisto.debug(f"[UCP][{module}] Passthrough user_token={'set' if user_token else 'missing'}.")
+    return user_token
+
+
 def build_client(params: dict) -> Client:
     """
-    Builds the Slack audit-logs client for both execution paths.
+    Builds the Slack audit-logs client for every execution path.
 
-    On the ConnectUs (UCP) path the user token arrives through the `api_key` profile and
-    BaseClient's default `_apply_ucp_api_key` writes `Authorization: Bearer {key}` on every
-    request, which is exactly what the Slack Audit Logs API expects. The legacy path keeps
-    reading the token from the `user_token` credentials parameter.
+    - UCP `api_key` profile: BaseClient's default `_apply_ucp_api_key` writes
+      `Authorization: Bearer {key}`, which the Slack Audit Logs API expects.
+    - UCP `passthrough` profile (the Slack standard connector's shared profile): BaseClient never
+      applies it, so the user token is read from the envelope.
+    - Legacy XSOAR: the user token comes from the `user_token` credentials parameter.
     """
     headers = {"Accept": "application/json"}
     if should_use_ucp_auth():
         demisto.debug("[UCP][SlackEventCollectorApiModule.py] UCP auth enabled; token supplied by the api_key profile.")
     else:
-        user_token = (params.pop("user_token", None) or {}).get("password")
+        user_token: str | None
+        if is_ucp_enabled():
+            user_token = get_ucp_passthrough_user_token("SlackEventCollectorApiModule.py")
+        else:
+            user_token = (params.pop("user_token", None) or {}).get("password")
         if not user_token:
             raise DemistoException("User Token must be provided.")
         headers["Authorization"] = f"Bearer {user_token}"

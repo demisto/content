@@ -1,5 +1,6 @@
+import pytest
 from IAMApiModule import *
-from SlackIAMApiModule import SCIM_BASE_URL, Client, build_headers, get_mapping_fields
+from SlackIAMApiModule import SCIM_BASE_URL, Client, build_headers, get_mapping_fields, get_ucp_passthrough_user_token
 
 APP_USER_OUTPUT = {
     "schemas": ["urn:scim:schemas:core:1.0"],
@@ -284,14 +285,37 @@ def test_get_mapping_fields_command(mocker):
     assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get("field2") == "desc2"
 
 
+PASSTHROUGH_ENVELOPE = {
+    "type": "passthrough",
+    "passthrough": {"parameters": {"bot_token": "xoxb-1", "app_token": "xapp-1", "user_token": "xoxp-ucp"}},
+}
+
+
+@pytest.fixture
+def legacy_path(mocker):
+    """
+    Puts the module on the legacy XSOAR path: UCP disabled.
+    """
+    mocker.patch("SlackIAMApiModule.should_use_ucp_auth", return_value=False)
+    mocker.patch("SlackIAMApiModule.is_ucp_enabled", return_value=False)
+
+
+@pytest.fixture
+def ucp_passthrough(mocker):
+    """
+    Puts the module on the UCP passthrough path: UCP enabled, but no BaseClient-applied auth.
+    """
+    mocker.patch("SlackIAMApiModule.should_use_ucp_auth", return_value=False)
+    mocker.patch("SlackIAMApiModule.is_ucp_enabled", return_value=True)
+    return mocker.patch("SlackIAMApiModule.get_ucp_credentials", return_value=PASSTHROUGH_ENVELOPE)
+
+
 class TestBuildHeaders:
-    def test_legacy_path_uses_credentials_password(self, mocker):
-        mocker.patch("SlackIAMApiModule.should_use_ucp_auth", return_value=False)
+    def test_legacy_path_uses_credentials_password(self, legacy_path):
         headers = build_headers({"credentials": {"password": "xoxp-scim"}})
         assert headers["Authorization"] == "Bearer xoxp-scim"
 
-    def test_legacy_path_falls_back_to_hidden_access_token(self, mocker):
-        mocker.patch("SlackIAMApiModule.should_use_ucp_auth", return_value=False)
+    def test_legacy_path_falls_back_to_hidden_access_token(self, legacy_path):
         headers = build_headers({"access_token": "legacy-token"})
         assert headers["Authorization"] == "Bearer legacy-token"
 
@@ -307,3 +331,22 @@ class TestBuildHeaders:
         ctx = UcpRequestContext(headers={}, params={}, auth=None, data=None, json_data=None)
         client._apply_ucp_credentials({"type": "api_key", "api_key": {"key": "xoxp-ucp"}}, ctx)
         assert ctx.headers["Authorization"] == "Bearer xoxp-ucp"
+
+    def test_ucp_passthrough_uses_envelope_user_token(self, ucp_passthrough):
+        headers = build_headers({"credentials": {"password": "legacy-ignored"}})
+        assert headers["Authorization"] == "Bearer xoxp-ucp"
+        assert ucp_passthrough.call_count == 1
+
+    def test_ucp_passthrough_without_user_token_raises(self, ucp_passthrough):
+        ucp_passthrough.return_value = {"type": "passthrough", "passthrough": {"parameters": {"bot_token": "x"}}}
+        with pytest.raises(DemistoException, match="User Token must be provided"):
+            build_headers({})
+
+
+class TestGetUcpPassthroughUserToken:
+    def test_returns_user_token_from_parameters(self, ucp_passthrough):
+        assert get_ucp_passthrough_user_token("m") == "xoxp-ucp"
+
+    def test_non_passthrough_envelope_returns_empty(self, ucp_passthrough):
+        ucp_passthrough.return_value = {"type": "api_key", "api_key": {"key": "k"}}
+        assert get_ucp_passthrough_user_token("m") == ""
