@@ -591,6 +591,98 @@ def test_get_chrome_browser_error(mocker: MockerFixture):
     )
 
 
+class _FakeClock:
+    """Simulated clock: time.sleep advances time.monotonic without actually sleeping."""
+
+    def __init__(self):
+        self.now = 0.0
+
+    def monotonic(self) -> float:
+        return self.now
+
+    def sleep(self, seconds: float) -> None:
+        self.now += seconds
+
+
+def _patch_startup_env(mocker: MockerFixture, ready_after_seconds: float | None, returncode_after: float | None = None):
+    """Patches the clock, the Chrome process and pychrome so Chrome accepts connections after `ready_after_seconds`."""
+    clock = _FakeClock()
+    mocker.patch.object(rasterize.time, "monotonic", side_effect=clock.monotonic)
+    mocker.patch.object(rasterize.time, "sleep", side_effect=clock.sleep)
+
+    process = MagicMock(pid=4)
+    process.poll.side_effect = lambda: 0 if returncode_after is not None and clock.now >= returncode_after else None
+
+    def fake_browser(url):
+        if ready_after_seconds is None or clock.now < ready_after_seconds:
+            raise requests.exceptions.ConnectionError("[Errno 111] Connection refused")
+        browser = MagicMock()
+        browser.list_tab.return_value = []
+        return browser
+
+    mocker.patch("pychrome.Browser", side_effect=fake_browser)
+    return clock, process
+
+
+def test_wait_for_started_chrome_slow_start(mocker: MockerFixture):
+    """
+    Given   A freshly launched Chrome that stays alive but refuses connections for 35s
+            (CPU-starved script worker in lightweight mode, XSUP-80469).
+    When    Waiting for it to start.
+    Then    Keep waiting while the process is alive and return the connected browser,
+            instead of giving up after the old ~29s retry budget.
+    """
+    clock, process = _patch_startup_env(mocker, ready_after_seconds=35)
+
+    browser = rasterize.wait_for_started_chrome("9301", process)
+
+    assert browser is not None
+    assert 35 <= clock.now < 37
+
+
+def test_wait_for_started_chrome_process_exited(mocker: MockerFixture):
+    """
+    Given   A freshly launched Chrome that exits during startup.
+    When    Waiting for it to start.
+    Then    Fail fast and log the return code, without waiting for the full timeout.
+    """
+    clock, process = _patch_startup_env(mocker, ready_after_seconds=None, returncode_after=3)
+    debug = mocker.patch.object(demisto, "debug")
+
+    assert rasterize.wait_for_started_chrome("9301", process) is None
+    assert clock.now < 5
+    assert "exited during startup, returncode=0" in debug.call_args[0][0]
+
+
+def test_wait_for_started_chrome_timeout(mocker: MockerFixture):
+    """
+    Given   A freshly launched Chrome that stays alive but never accepts connections.
+    When    Waiting for it to start.
+    Then    Give up after CHROME_STARTUP_TIMEOUT_SECONDS.
+    """
+    clock, process = _patch_startup_env(mocker, ready_after_seconds=None)
+
+    assert rasterize.wait_for_started_chrome("9301", process) is None
+    assert rasterize.CHROME_STARTUP_TIMEOUT_SECONDS <= clock.now <= rasterize.CHROME_STARTUP_TIMEOUT_SECONDS + 1
+
+
+def test_start_chrome_headless_kills_chrome_that_did_not_start(mocker: MockerFixture):
+    """
+    Given   Chrome that never becomes ready.
+    When    Starting Chrome headless.
+    Then    The process is killed, nothing is registered in the instances file, and (None, None) is returned.
+    """
+    process = MagicMock(pid=4, returncode=None)
+    mocker.patch("subprocess.Popen", return_value=process)
+    mocker.patch("builtins.open", mocker.mock_open())
+    mocker.patch.object(rasterize, "wait_for_started_chrome", return_value=None)
+    add_instance = mocker.patch.object(rasterize, "add_new_chrome_instance")
+
+    assert rasterize.start_chrome_headless("9301", "instance_id", "None") == (None, None)
+    process.kill.assert_called_once()
+    add_instance.assert_not_called()
+
+
 def test_backoff(mocker):
     """
     Given   Waiting for a process to complete.
@@ -2254,3 +2346,86 @@ def test_extract_content_from_tab_uses_navigation_timeout(mocker):
     extract_content_from_tab(mock_tab, 145)
 
     assert mock_tab.Runtime.evaluate.call_args.kwargs["_timeout"] == 145
+
+
+def test_chrome_manager_one_port_stale_record_starts_new_chrome(mocker):
+    """
+    Given:
+        - A saved chrome_instances record for port 9301 whose Chrome options match the instance's,
+          while no Chrome is running on that port (it crashed in a previous execution).
+    When:
+        - Executing the chrome_manager_one_port function.
+    Then:
+        - The stale record is dropped (terminate_chrome on the saved port) and a new Chrome is started,
+          instead of returning no browser and failing with "Could not use local Chrome".
+    """
+    from rasterize import chrome_manager_one_port
+
+    instance_id = "33333333-3333-3333-3333-333333333333"
+    chrome_options = "--disable-gpu"
+    stale_record = {"9301": {"instance_id": instance_id, "chrome_options": chrome_options, "rasterization_count": 0}}
+
+    mocker.patch.object(demisto, "callingContext", {"context": {"IntegrationInstanceID": instance_id}})
+    mocker.patch.object(demisto, "params", return_value={"chrome_options": chrome_options})
+    mocker.patch.object(rasterize, "read_json_file", return_value=stale_record)
+    mocker.patch.object(rasterize, "get_chrome_browser", return_value=None)
+    terminate_chrome_mocker = mocker.patch.object(rasterize, "terminate_chrome", return_value=None)
+    generate_new_chrome_instance_mocker = mocker.patch.object(
+        rasterize, "generate_new_chrome_instance", return_value=("new_browser", "9301")
+    )
+
+    browser, chrome_port = chrome_manager_one_port()
+
+    terminate_chrome_mocker.assert_called_once_with(chrome_port="9301")
+    generate_new_chrome_instance_mocker.assert_called_once_with(instance_id, chrome_options)
+    assert browser == "new_browser"
+    assert chrome_port == "9301"
+
+
+def test_get_tabs_count_for_log_chrome_gone():
+    """
+    Given:
+        - A browser whose Chrome process is gone, so list_tab raises ConnectionError.
+    When:
+        - Calling get_tabs_count_for_log.
+    Then:
+        - "unavailable" is returned instead of raising.
+    """
+    from rasterize import get_tabs_count_for_log
+
+    browser = MagicMock()
+    browser.list_tab.side_effect = requests.exceptions.ConnectionError("Connection refused")
+    assert get_tabs_count_for_log(browser) == "unavailable"
+
+    browser.list_tab.side_effect = None
+    browser.list_tab.return_value = ["tab1", "tab2"]
+    assert get_tabs_count_for_log(browser) == 2
+
+
+def test_perform_rasterize_chrome_crashed_still_terminates_chrome(mocker, tmp_path):
+    """
+    Given:
+        - Lightweight mode, and Chrome crashed during the rasterization (the screenshot failed and
+          browser.list_tab now raises ConnectionError).
+    When:
+        - perform_rasterize finishes the rasterization threads.
+    Then:
+        - terminate_chrome is still called for the port, so the chrome_instances record is removed
+          and the next execution does not reuse a Chrome that is not running.
+    """
+    mocker.patch.object(rasterize, "IS_LIGHTWEIGHT", True)
+    mocker.patch.object(rasterize, "RASTERIZE_LOCK_FILE_PATH", str(tmp_path / "rasterize.lock"))
+    browser = MagicMock()
+    browser.list_tab.side_effect = requests.exceptions.ConnectionError("Connection refused")
+    mocker.patch.object(rasterize, "chrome_manager_one_port", return_value=(browser, "9301"))
+    mocker.patch.object(rasterize, "close_orphaned_tabs", return_value=0)
+    mocker.patch.object(rasterize, "support_multithreading")
+    mocker.patch.object(rasterize, "rasterize_thread", return_value=(None, "Failed to capture screenshot due to User abort"))
+    mocker.patch.object(rasterize, "read_json_file", return_value={})
+    mocker.patch.object(rasterize, "return_results")
+    terminate_chrome_mocker = mocker.patch.object(rasterize, "terminate_chrome", return_value=None)
+
+    results = perform_rasterize(path="https://www.example.com", rasterize_type=RasterizeType.PNG)
+
+    terminate_chrome_mocker.assert_called_once_with(chrome_port="9301")
+    assert results == []
