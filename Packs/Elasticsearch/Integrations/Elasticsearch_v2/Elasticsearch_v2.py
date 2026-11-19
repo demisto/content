@@ -1985,6 +1985,208 @@ def get_indices_statistics_command(args, proxies):
     return result
 
 
+"""INDEX MANAGEMENT commands"""
+
+
+def create_index_command(args: Dict[str, Any], proxies) -> CommandResults:
+    """
+    Creates an Elasticsearch index (PUT /<index>).
+
+    Args:
+        args(Dict[str, Any]): the command arguments. "index" is required, while "settings", "mappings",
+            "aliases" (JSON strings) and "wait_for_active_shards" are optional.
+        proxies: the proxy settings used when building the Elasticsearch client.
+
+    Returns:
+        CommandResults: the acknowledgment details of the created index.
+
+    Raises:
+        DemistoException: if the "index" argument is missing.
+
+    API reference: https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html
+    """
+    index = str(args.get("index") or "").strip()
+    if not index:
+        raise DemistoException('The "index" argument is required.')
+
+    create_body: Dict[str, Any] = {}
+    for arg_name in ("settings", "mappings", "aliases"):
+        if args.get(arg_name):
+            create_body[arg_name] = safe_load_json(args[arg_name])
+
+    es = elasticsearch_builder(proxies)
+    demisto.debug(f"Creating index {index} with body: {create_body}")
+    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
+        create_kwargs: Dict[str, Any] = {"index": index, **create_body}
+        if args.get("wait_for_active_shards"):
+            create_kwargs["wait_for_active_shards"] = args["wait_for_active_shards"]
+        resp = es.indices.create(**create_kwargs)  # pylint: disable=E1123,E1120,E1125
+    else:  # Elasticsearch version v7 or below, OpenSearch (BC)
+        # In elasticsearch lib <8 the create payload is sent as a single 'body', query params via 'params'
+        create_kwargs = {"index": index}
+        if create_body:
+            create_kwargs["body"] = create_body
+        if args.get("wait_for_active_shards"):
+            create_kwargs["params"] = {"wait_for_active_shards": args["wait_for_active_shards"]}
+        resp = es.indices.create(**create_kwargs)
+
+    demisto.debug(f"Create index response: {resp}")
+    index_context = {
+        "Name": index,
+        "Acknowledged": bool(resp.get("acknowledged")),
+        "ShardsAcknowledged": bool(resp.get("shards_acknowledged")),
+    }
+    human_readable = {
+        "Index name": index_context.get("Name"),
+        "Acknowledged": index_context.get("Acknowledged"),
+        "Shards Acknowledged": index_context.get("ShardsAcknowledged"),
+    }
+    headers = [str(k) for k in human_readable]
+    readable_output = tableToMarkdown(name="Created index", t=human_readable, removeNull=True, headers=headers)
+
+    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
+        resp = resp.body
+
+    result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Elasticsearch.IndexManagement",
+        outputs=index_context,
+        raw_response=resp,
+        outputs_key_field="Name",
+    )
+    return result
+
+
+def get_index_command(args: Dict[str, Any], proxies) -> Optional[CommandResults]:
+    """
+    Returns the aliases, mappings and settings of one or more Elasticsearch indices (GET /<index>).
+
+    Args:
+        args(Dict[str, Any]): the command arguments. "index" is required and accepts a comma-separated list,
+            while "expand_wildcards", "flat_settings" and "include_defaults" are optional.
+        proxies: the proxy settings used when building the Elasticsearch client.
+
+    Returns:
+        Optional[CommandResults]: one entry per retrieved index with its aliases, mappings and settings,
+            or None when the requested index was not found.
+
+    Raises:
+        DemistoException: if the "index" argument is missing.
+
+    API reference: https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-index.html
+    """
+    index_names = [str(name).strip() for name in argToList(args.get("index")) if str(name).strip()]
+    if not index_names:
+        raise DemistoException('The "index" argument is required.')
+    index = ",".join(index_names)
+
+    get_kwargs: Dict[str, Any] = {"index": index}
+    if args.get("expand_wildcards"):
+        get_kwargs["expand_wildcards"] = args["expand_wildcards"]
+    for arg_name in ("flat_settings", "include_defaults"):
+        if args.get(arg_name) is not None and str(args[arg_name]) != "":
+            get_kwargs[arg_name] = argToBoolean(args[arg_name])
+
+    es = elasticsearch_builder(proxies)
+    demisto.debug(f"Getting index {index} with args: {get_kwargs}")
+    try:
+        resp = es.indices.get(**get_kwargs)
+    except NotFoundError:
+        return_error(f'Index "{index}" was not found.')
+        return None
+
+    demisto.debug(f"Get index response: {resp}")
+    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
+        resp = resp.body
+
+    indices_context: List[Dict[str, Any]] = []
+    human_readable: List[Dict[str, str]] = []
+    for name, index_data in resp.items():
+        details: Dict[str, Any] = index_data or {}
+        aliases: Dict[str, Any] = details.get("aliases") or {}
+        index_context = {
+            "Name": name,
+            "Aliases": aliases,
+            "Mappings": details.get("mappings") or {},
+            "Settings": details.get("settings") or {},
+        }
+        indices_context.append(index_context)
+        human_readable.append({"Index name": name, "Aliases": ", ".join(aliases.keys())})
+
+    headers = [str(k) for k in human_readable[0]] if human_readable else []
+    readable_output = tableToMarkdown(name="Indices information:", t=human_readable, removeNull=True, headers=headers)
+
+    result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Elasticsearch.IndexManagement",
+        outputs=indices_context,
+        raw_response=resp,
+        outputs_key_field="Name",
+    )
+    return result
+
+
+def delete_index_command(args: Dict[str, Any], proxies) -> CommandResults:
+    """
+    Deletes one or more Elasticsearch indices (DELETE /<index>).
+
+    Args:
+        args(Dict[str, Any]): the command arguments. "index" is required and accepts a comma-separated list,
+            while "ignore_unavailable", "allow_no_indices", "expand_wildcards", "master_timeout" and
+            "timeout" are optional.
+        proxies: the proxy settings used when building the Elasticsearch client.
+
+    Returns:
+        CommandResults: the acknowledgment details of the deleted index.
+
+    Raises:
+        DemistoException: if the "index" argument is missing.
+
+    API reference: https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-delete-index.html
+    """
+    index_names = [str(name).strip() for name in argToList(args.get("index")) if str(name).strip()]
+    if not index_names:
+        raise DemistoException('The "index" argument is required.')
+
+    delete_kwargs: Dict[str, Any] = {"index": ",".join(index_names)}
+    if args.get("expand_wildcards"):
+        delete_kwargs["expand_wildcards"] = args["expand_wildcards"]
+    for arg_name in ("master_timeout", "timeout"):
+        if args.get(arg_name):
+            delete_kwargs[arg_name] = args[arg_name]
+    for arg_name in ("ignore_unavailable", "allow_no_indices"):
+        if args.get(arg_name) is not None and str(args[arg_name]) != "":
+            delete_kwargs[arg_name] = argToBoolean(args[arg_name])
+
+    es = elasticsearch_builder(proxies)
+    demisto.debug(f"Deleting index {delete_kwargs['index']} with args: {delete_kwargs}")
+    resp = es.indices.delete(**delete_kwargs)
+
+    demisto.debug(f"Delete index response: {resp}")
+    index_context = {
+        "Name": delete_kwargs["index"],
+        "Acknowledged": bool(resp.get("acknowledged")),
+    }
+    human_readable = {
+        "Index name": index_context.get("Name"),
+        "Acknowledged": index_context.get("Acknowledged"),
+    }
+    headers = [str(k) for k in human_readable]
+    readable_output = tableToMarkdown(name="Deleted index", t=human_readable, removeNull=True, headers=headers)
+
+    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
+        resp = resp.body
+
+    result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Elasticsearch.IndexManagement",
+        outputs=index_context,
+        raw_response=resp,
+        outputs_key_field="Name",
+    )
+    return result
+
+
 """KIBANA CASE MANAGEMENT COMMANDS (es-kibana-case-*)"""
 
 CONNECTOR_FIELD_ARG_MAP = {
@@ -4927,6 +5129,12 @@ def main():  # pragma: no cover
             return_results(integration_health_check(proxies))
         elif demisto.command() == "es-get-indices-statistics":
             return_results(get_indices_statistics_command(args, proxies))
+        elif demisto.command() == "es-index-create":
+            return_results(create_index_command(args, proxies))
+        elif demisto.command() == "es-index-get":
+            return_results(get_index_command(args, proxies))
+        elif demisto.command() == "es-index-delete":
+            return_results(delete_index_command(args, proxies))
         elif demisto.command() == "es-kibana-case-create":
             return_results(es_kibana_case_create_command(args, proxies))
         elif demisto.command() == "es-kibana-case-update":

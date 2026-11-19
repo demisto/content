@@ -1754,7 +1754,7 @@ Update a case comment or alert.
 ### es-kibana-case-comment-delete
 
 ***
-Deletes all comments and alerts from a case.
+Deletes all comments and alerts from a case, or a single comment or alert when comment_id is provided.
 
 #### Base Command
 
@@ -1766,6 +1766,7 @@ Deletes all comments and alerts from a case.
 | --- | --- | --- |
 | space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
 | case_id | The identifier for the case. To retrieve case IDs, use `es-kibana-case-list`. | Required |
+| comment_id | The identifier of the comment or alert to delete. When not provided, all comments and alerts for the case are deleted. | Optional |
 
 #### Context Output
 
@@ -2938,6 +2939,984 @@ Import value list items from a TXT or CSV file.
 >|Value list item ID|List ID|Value|Creation date|
 >|---|---|---|---|
 >| 5678 | 1234 | 10.0.0.1 | 2024-01-15T10:00:00.000Z |
+
+### es-update
+
+***
+Updates a document in an Elasticsearch index.
+
+#### Base Command
+
+`es-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| index_name | The name of the index in which to update. | Required |
+| id | The ID of the document to be updated. | Required |
+| body | The message body acting as the definition for the requested changes. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.UpdatedDocument.id | String | The ID of the updated document. |
+| Elasticsearch.UpdatedDocument.index | String | The name of the index from which the document was updated. |
+| Elasticsearch.UpdatedDocument.version | Number | The version number of the updated document. |
+| Elasticsearch.UpdatedDocument.result | String | The result of the update operation. |
+
+#### Command Example
+
+```!es-update index_name=test-xsoar id=1234 body="{\"doc\":{\"name\":\"new name\"}}"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "UpdatedDocument": {
+            "id": "1234",
+            "index": "test-xsoar",
+            "version": 2,
+            "result": "updated"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Updated document
+>
+>|ID|Index name|Version|Result|
+>|---|---|---|---|
+>| 1234 | test-xsoar | 2 | updated |
+
+### es-get-multiple
+
+***
+Retrieves multiple documents from Elasticsearch.
+
+#### Base Command
+
+`es-get-multiple`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| index_name | The name of the index from which to retrieve the documents. | Optional |
+| body | The message body acting as a selector for the documents. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Documents | Unknown | The retrieved documents. |
+
+#### Command Example
+
+```!es-get-multiple index_name=test-xsoar body="{\"docs\":[{\"_id\":\"1234\"},{\"_id\":\"5678\"}]}"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Documents": {
+            "docs": [
+                {"_index": "test-xsoar", "_id": "1234", "_version": 1, "found": true, "_source": {"name": "test"}},
+                {"_index": "test-xsoar", "_id": "5678", "_version": 1, "found": true, "_source": {"name": "test2"}}
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Retrieved 2 documents
+
+### es-get
+
+***
+Retrieves a document from an Elasticsearch index.
+
+#### Base Command
+
+`es-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| index_name | The name of the index from which to retrieve the document. | Required |
+| id | The ID of the document to be retrieved. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Document.id | String | The ID of the retrieved document. |
+| Elasticsearch.Document.index | String | The name of the index from which the document was retrieved. |
+| Elasticsearch.Document.version | Number | The version number of the retrieved document. |
+| Elasticsearch.Document.found | String | Whether the requested document has been found. |
+
+#### Command Example
+
+```!es-get index_name=test-xsoar id=1234```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Document": {
+            "id": "1234",
+            "index": "test-xsoar",
+            "version": 1,
+            "found": true
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Retrieved document
+>
+>|ID|Index name|Version|Found|
+>|---|---|---|---|
+>| 1234 | test-xsoar | 1 | true |
+
+### es-delete
+
+***
+Deletes a document from an Elasticsearch index.
+
+#### Base Command
+
+`es-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| index_name | The name of the index from which to delete. | Required |
+| id | The ID of the document to be deleted. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.DeletedDocument.id | String | The ID of the deleted document. |
+| Elasticsearch.DeletedDocument.index | String | The name of the index from which the document was deleted. |
+| Elasticsearch.DeletedDocument.version | Number | The version number of the deleted document. |
+| Elasticsearch.DeletedDocument.result | String | The result of the delete operation. |
+
+#### Command Example
+
+```!es-delete index_name=test-xsoar id=1234```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "DeletedDocument": {
+            "id": "1234",
+            "index": "test-xsoar",
+            "version": 3,
+            "result": "deleted"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Deleted document
+>
+>|ID|Index name|Version|Result|
+>|---|---|---|---|
+>| 1234 | test-xsoar | 3 | deleted |
+
+### es-kibana-case-activity-find
+
+***
+Find the activity (user actions) for a case.
+
+#### Base Command
+
+`es-kibana-case-activity-find`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
+| case_id | The identifier for the case. To retrieve case IDs, use `es-kibana-case-list`. | Required |
+| page | The page from which to start. ES default is 1. | Optional |
+| sort_order | The sort order for the result. ES default is desc. | Optional |
+| types | The types of user actions to return. | Optional |
+| size | Number of results to return per page. ES default is 20, maximum is 100. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.CaseActivity.id | String | The action ID. |
+| Elasticsearch.Kibana.CaseActivity.type | String | The action type. |
+| Elasticsearch.Kibana.CaseActivity.user | String | The username of the user who performed the action. |
+| Elasticsearch.Kibana.CaseActivity.action | String | A description of the action that was performed. |
+| Elasticsearch.Kibana.CaseActivity.created_at | Date | The time the action was performed. |
+
+#### Command Example
+
+```!es-kibana-case-activity-find case_id="1234"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "CaseActivity": [
+                {
+                    "id": "5678",
+                    "type": "create_case",
+                    "user": "elastic",
+                    "action": "create",
+                    "created_at": "2024-01-15T10:00:00.000Z"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Case Activity for Case 1234
+>
+>|ID|Type|User|Action|Created at|
+>|---|---|---|---|---|
+>| 5678 | create_case | elastic | create | 2024-01-15T10:00:00.000Z |
+
+### es-kibana-case-comment-find
+
+***
+Find the comments and alerts for a case.
+
+#### Base Command
+
+`es-kibana-case-comment-find`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
+| case_id | The identifier for the case. To retrieve case IDs, use `es-kibana-case-list`. | Required |
+| sort_order | The sort order for the result. ES default is desc. | Optional |
+| page | Page number to retrieve. ES default is 1. | Optional |
+| size | Number of results to return per page. ES default is 20, maximum is 100. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.CaseComment.id | String | The comment or alert ID. |
+| Elasticsearch.Kibana.CaseComment.type | String | The comment or alert type. |
+| Elasticsearch.Kibana.CaseComment.comment | String | The comment text. |
+| Elasticsearch.Kibana.CaseComment.created_by.username | String | The username of the user who created the comment. |
+| Elasticsearch.Kibana.CaseComment.created_at | Date | The time the comment was created. |
+| Elasticsearch.Kibana.CaseComment.updated_at | Date | The time the comment was last updated. |
+
+#### Command Example
+
+```!es-kibana-case-comment-find case_id="1234"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "CaseComment": [
+                {
+                    "id": "5678",
+                    "type": "user",
+                    "comment": "A new comment",
+                    "created_by": {"username": "elastic"},
+                    "created_at": "2024-01-15T10:00:00.000Z",
+                    "updated_at": "2024-01-15T11:00:00.000Z"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Case Comments for Case 1234
+>
+>|ID|Type|Comment|Created by|Created at|Updated at|
+>|---|---|---|---|---|---|
+>| 5678 | user | A new comment | elastic | 2024-01-15T10:00:00.000Z | 2024-01-15T11:00:00.000Z |
+
+### es-kibana-case-comment-get
+
+***
+Get a single comment or alert for a case.
+
+#### Base Command
+
+`es-kibana-case-comment-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
+| case_id | The identifier for the case. To retrieve case IDs, use `es-kibana-case-list`. | Required |
+| comment_id | The identifier of the comment or alert. To retrieve comment IDs, use `es-kibana-case-comment-find`. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.CaseComment.id | String | The comment or alert ID. |
+| Elasticsearch.Kibana.CaseComment.type | String | The comment or alert type. |
+| Elasticsearch.Kibana.CaseComment.comment | String | The comment text. |
+| Elasticsearch.Kibana.CaseComment.created_by.username | String | The username of the user who created the comment. |
+| Elasticsearch.Kibana.CaseComment.created_at | Date | The time the comment was created. |
+| Elasticsearch.Kibana.CaseComment.updated_at | Date | The time the comment was last updated. |
+
+#### Command Example
+
+```!es-kibana-case-comment-get case_id="1234" comment_id="5678"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "CaseComment": {
+                "id": "5678",
+                "type": "user",
+                "comment": "A new comment",
+                "created_by": {"username": "elastic"},
+                "created_at": "2024-01-15T10:00:00.000Z",
+                "updated_at": "2024-01-15T11:00:00.000Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Case Comment 5678
+>
+>|ID|Type|Comment|Created by|Created at|Updated at|
+>|---|---|---|---|---|---|
+>| 5678 | user | A new comment | elastic | 2024-01-15T10:00:00.000Z | 2024-01-15T11:00:00.000Z |
+
+### es-kibana-case-connectors-find
+
+***
+Find the connectors configured for cases.
+
+#### Base Command
+
+`es-kibana-case-connectors-find`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.CaseConnector.id | String | The connector ID. |
+| Elasticsearch.Kibana.CaseConnector.name | String | The connector name. |
+| Elasticsearch.Kibana.CaseConnector.actionTypeId | String | The connector action type. |
+| Elasticsearch.Kibana.CaseConnector.referencedByCount | Date | The amount of references. |
+
+#### Command Example
+
+```!es-kibana-case-connectors-find```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "CaseConnector": [
+                {
+                    "id": "1234",
+                    "name": "my-Jira",
+                    "actionTypeId": ".jira",
+                    "referencedByCount": 0
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Case Connectors
+>
+>|ID|Name|Type|Reference count|
+>|---|---|---|---|
+>| 1234 | my-Jira | .jira | 0 |
+
+### es-kibana-case-creators-get
+
+***
+Retrieves the case creators and the number of cases each creator has.
+
+#### Base Command
+
+`es-kibana-case-creators-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| owner | A filter to limit the response to a specific set of applications. Values are cases, observability, or securitySolution. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.CaseCreators | Unknown | A map of case creators. |
+
+#### Command Example
+
+```!es-kibana-case-creators-get owner="securitySolution"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "CaseCreators": [
+                {"username": "elastic"},
+                {"username": "jdoe"}
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Case Creators
+>
+>|name|
+>|---|
+>| elastic |
+>| jdoe |
+
+### es-kibana-case-by-alert-get
+
+***
+Retrieves the cases linked to an alert.
+
+#### Base Command
+
+`es-kibana-case-by-alert-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
+| alert_id | The identifier of the alert. To retrieve alert IDs, use `es-kibana-detection-alert-search`. | Required |
+| owner | A filter to limit the response to a specific set of applications. Values are cases, observability, or securitySolution. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.Cases.title | Unknown | The cases retrieved for the given alert. |
+
+#### Command Example
+
+```!es-kibana-case-by-alert-get alert_id="5678"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "Cases": [
+                {
+                    "id": "1234",
+                    "title": "Suspicious login",
+                    "description": "Multiple failed logins detected",
+                    "owner": "securitySolution",
+                    "severity": "medium",
+                    "status": "open",
+                    "created_at": "2024-01-15T10:00:00.000Z",
+                    "connector": {"type": ".none"}
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Cases for Alert 5678
+>
+>|Title|Case id|Description|Owner|Severity|Status|Creation date|Type|
+>|---|---|---|---|---|---|---|---|
+>| Suspicious login | 1234 | Multiple failed logins detected | securitySolution | medium | open | 2024-01-15T10:00:00.000Z | .none |
+
+### es-kibana-alerts-index-create
+
+***
+Creates a Kibana alerts index.
+
+#### Base Command
+
+`es-kibana-alerts-index-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!es-kibana-alerts-index-create```
+
+#### Context Example
+
+```json
+{}
+```
+
+#### Human Readable Output
+
+>Creation acknowledged
+
+### es-kibana-alerts-index-get
+
+***
+Retrieve all Kibana alerts indices.
+
+#### Base Command
+
+`es-kibana-alerts-index-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.Index | Unknown | The information retrieved for the Kibana alerts indices. |
+
+### es-kibana-alerts-index-delete
+
+***
+Deletes a Kibana alerts index.
+
+#### Base Command
+
+`es-kibana-alerts-index-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!es-kibana-alerts-index-delete```
+
+#### Context Example
+
+```json
+{}
+```
+
+#### Human Readable Output
+
+>Deletion acknowledged
+
+### es-kibana-value-list-delete
+
+***
+Delete a value list using the list ID.
+
+#### Base Command
+
+`es-kibana-value-list-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
+| value_list_id | Value list identifier to delete, including all of its list items. | Required |
+| delete_references | Determines whether exception items referencing this value list should be deleted. | Optional |
+| ignore_references | Determines whether to delete value list without performing any additional checks of where this list may be utilized. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.ValueList | Unknown | The deleted value list metadata. |
+
+#### Command Example
+
+```!es-kibana-value-list-delete value_list_id="1234"```
+
+#### Context Example
+
+```json
+{}
+```
+
+#### Human Readable Output
+
+>The value list item 1234 has been successfully deleted.
+
+### es-kibana-case-settings-create
+
+***
+Adds (sets) the case settings in Kibana.
+
+#### Base Command
+
+`es-kibana-case-settings-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
+| body | The full case settings object as a JSON object. If provided, the other arguments won't be considered. | Optional |
+| closure_type | Whether a case is automatically closed when it is pushed to external systems (close-by-pushing) or not (close-by-user). | Optional |
+| connector_id | The identifier of the default connector. Use none if you do not want a default connector. To retrieve connector IDs, use `es-kibana-case-connectors-find`. | Optional |
+| connector_name | The name of the default connector. Use none if you do not want a default connector. | Optional |
+| connector_type | The type of the default connector. | Optional |
+| connector_fields | The connector fields as a JSON object. The fields are not propagated to individual cases, so it is recommended to leave it unset (defaults to null). | Optional |
+| custom_fields | The custom fields case configuration as a JSON array of objects with the key, label, type (text or toggle) and an optional defaultValue property. | Optional |
+| extract_observables | Indicates whether observables (for example, IPs, hashes, and URLs) are automatically extracted from case comments and events. | Optional |
+| owner | The application that owns the cases - Stack Management, Observability, or Elastic Security.. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.CaseSettings.id | String | The identifier of the case configuration. |
+| Elasticsearch.Kibana.CaseSettings.closure_type | String | Whether a case is automatically closed when it is pushed to external systems. |
+| Elasticsearch.Kibana.CaseSettings.connector.id | String | The identifier of the default connector. |
+| Elasticsearch.Kibana.CaseSettings.connector.name | String | The name of the default connector. |
+| Elasticsearch.Kibana.CaseSettings.connector.type | String | The type of the default connector. |
+| Elasticsearch.Kibana.CaseSettings.created_at | Date | The creation date of the case settings. |
+| Elasticsearch.Kibana.CaseSettings.created_by.username | String | The user who created the case settings. |
+| Elasticsearch.Kibana.CaseSettings.customFields | Unknown | The custom fields case configuration. |
+
+#### Command Example
+
+```!es-kibana-case-settings-create owner="cases" closure_type="close-by-user" connector_id="none" connector_name="none" connector_type=".none"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "CaseSettings": {
+                "id": "1234",
+                "closure_type": "close-by-user",
+                "connector": {
+                    "id": "5678",
+                    "name": "my-jira-connector",
+                    "type": ".jira"
+                },
+                "created_at": "2024-01-15T10:00:00.000Z",
+                "created_by": {"username": "elastic"},
+                "customFields": [{"key": "field_1", "label": "Field 1", "type": "text"}]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Case Settings
+>
+>|ID|Closure type|Connector|Connector type|Custom fields|Created at|
+>|---|---|---|---|---|---|
+>| 1234 | close-by-user | my-jira-connector | .jira | field_1 | 2024-01-15T10:00:00.000Z |
+
+### es-kibana-case-settings-update
+
+***
+Updates the case settings in Kibana.
+
+#### Base Command
+
+`es-kibana-case-settings-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
+| configuration_id | The identifier of the case configuration to update. To retrieve it, use the id field of the case configuration returned by the case settings APIs (for example, `es-kibana-case-settings-create`). | Required |
+| body | The case settings object as a JSON object. If provided, the other arguments won't be considered. Only the provided fields are updated. | Optional |
+| version | The version of the connector. To retrieve the version value, use the get configuration API. | Required |
+| closure_type | Whether a case is automatically closed when it is pushed to external systems (close-by-pushing) or not (close-by-user). | Optional |
+| connector_id | The identifier of the default connector. Use none if you do not want a default connector. To retrieve connector IDs, use `es-kibana-case-connectors-find`. | Optional |
+| connector_name | The name of the default connector. Use none if you do not want a default connector. | Optional |
+| connector_type | The type of the default connector. | Optional |
+| connector_fields | The connector fields as a JSON object. The fields are not propagated to individual cases, so it is recommended to leave it unset (defaults to null). | Optional |
+| custom_fields | The custom fields case configuration as a JSON array of objects with the key, label, type (text or toggle) and an optional defaultValue property. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.CaseSettings.id | String | The identifier of the case configuration. |
+| Elasticsearch.Kibana.CaseSettings.closure_type | String | Whether a case is automatically closed when it is pushed to external systems. |
+| Elasticsearch.Kibana.CaseSettings.connector.id | String | The identifier of the default connector. |
+| Elasticsearch.Kibana.CaseSettings.connector.name | String | The name of the default connector. |
+| Elasticsearch.Kibana.CaseSettings.connector.type | String | The type of the default connector. |
+| Elasticsearch.Kibana.CaseSettings.created_at | Date | The creation date of the case settings. |
+| Elasticsearch.Kibana.CaseSettings.created_by.username | String | The user who created the case settings. |
+| Elasticsearch.Kibana.CaseSettings.customFields | Unknown | The custom fields case configuration. |
+
+#### Command Example
+
+```!es-kibana-case-settings-update configuration_id="1234" version="1" closure_type="close-by-pushing"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "CaseSettings": {
+                "id": "1234",
+                "closure_type": "close-by-pushing",
+                "connector": {
+                    "id": "5678",
+                    "name": "my-jira-connector",
+                    "type": ".jira"
+                },
+                "created_at": "2024-01-15T10:00:00.000Z",
+                "created_by": {"username": "elastic"},
+                "customFields": [{"key": "field_1", "label": "Field 1", "type": "text"}]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Case Settings Updated
+>
+>|ID|Closure type|Connector|Connector type|Custom fields|Created at|
+>|---|---|---|---|---|---|
+>| 1234 | close-by-pushing | my-jira-connector | .jira | field_1 | 2024-01-15T10:00:00.000Z |
+
+### es-index-create
+
+***
+Creates a new Elasticsearch index.
+
+#### Base Command
+
+`es-index-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| index | The name of the index to create. | Required |
+| settings | JSON object with the index settings, for example {"number_of_shards": 1}. | Optional |
+| mappings | JSON object with the index mappings. | Optional |
+| aliases | JSON object with the aliases to assign to the index. | Optional |
+| wait_for_active_shards | The number of shard copies that must be active before proceeding. Set to all or any positive integer up to the total number of shards per index (including the primary). Default: 1. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.IndexManagement.Name | String | The name of the created index. |
+| Elasticsearch.IndexManagement.Acknowledged | Boolean | Whether the request was acknowledged by the cluster. |
+| Elasticsearch.IndexManagement.ShardsAcknowledged | Boolean | Whether the request was acknowledged by all configured nodes. |
+
+#### Command Example
+
+```!es-index-create index=test-xsoar settings="{\"number_of_shards\":1}"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "IndexManagement": {
+            "Name": "test-xsoar",
+            "Acknowledged": true,
+            "ShardsAcknowledged": true
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Created index
+>
+>|Index name|Acknowledged|Shards Acknowledged|
+>|---|---|---|
+>| test-xsoar | true | true |
+
+### es-index-get
+
+***
+Retrieves information (aliases, mappings and settings) about one or more Elasticsearch indices.
+
+#### Base Command
+
+`es-index-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| index | The name of the index to retrieve. Can be a comma-separated list of index names or an index pattern. | Required |
+| expand_wildcards | Whether to expand wildcard expressions to indices that are open, closed, or both. | Optional |
+| flat_settings | Whether to return settings in the flat format. Default is false. | Optional |
+| include_defaults | Whether to return all default settings in the output. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.IndexManagement.Name | String | The name of the index. |
+| Elasticsearch.IndexManagement.Aliases | Unknown | The aliases assigned to the index. |
+| Elasticsearch.IndexManagement.Mappings | Unknown | The mappings of the index. |
+| Elasticsearch.IndexManagement.Settings | Unknown | The settings of the index. |
+
+#### Command Example
+
+```!es-index-get index=test-xsoar```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "IndexManagement": [
+            {
+                "Name": "test-xsoar",
+                "Aliases": {"test-alias": {}},
+                "Mappings": {"properties": {"name": {"type": "text"}}},
+                "Settings": {"index": {"number_of_shards": "1", "number_of_replicas": "1"}}
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Indices information
+>
+>|Index name|Aliases|
+>|---|---|
+>| test-xsoar | test-alias |
+
+### es-index-delete
+
+***
+Deletes one or more Elasticsearch indices.
+
+#### Base Command
+
+`es-index-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| index | The name of the index to delete. Can be a comma-separated list of index names or an index pattern. | Required |
+| ignore_unavailable | Whether to ignore if a wildcard expression resolves into no concrete indices instead of returning an error. | Optional |
+| allow_no_indices | Whether to ignore if a wildcard expression resolves into no concrete indices. | Optional |
+| expand_wildcards | Whether to expand wildcard expressions to indices that are open, closed, or both. | Optional |
+| master_timeout | The maximum time to wait for a connection to the master node. | Optional |
+| timeout | The maximum time to wait for the request to complete. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.IndexManagement.Name | String | The name of the deleted index. |
+| Elasticsearch.IndexManagement.Acknowledged | Boolean | Whether the request was acknowledged by the cluster. |
+
+#### Command Example
+
+```!es-index-delete index=test-xsoar```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "IndexManagement": {
+            "Name": "test-xsoar",
+            "Acknowledged": true
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Deleted index
+>
+>|Index name|Acknowledged|
+>|---|---|
+>| test-xsoar | true |
 
 <~PLATFORM>
 

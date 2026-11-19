@@ -1355,7 +1355,7 @@ def test_get_document_command(mocker):
 def test_get_multiple_documents_command(mocker):
     """
     Given
-      - body
+      - index_name and a JSON body selector
 
     When
     - executing get_multiple_documents_command function.
@@ -1365,15 +1365,14 @@ def test_get_multiple_documents_command(mocker):
     """
     import Elasticsearch_v2
 
-    mocker.patch.object(
-        Elasticsearch_v2.Elasticsearch, "mget", return_value=[MOCK_GET_FROM_INDEX_RESPONSE, MOCK_GET_FROM_INDEX_RESPONSE]
-    )
+    body = '{"docs": [{"_id": "1"}, {"_id": "2"}]}'
+    mget_response = {"docs": [MOCK_GET_FROM_INDEX_RESPONSE, MOCK_GET_FROM_INDEX_RESPONSE], "errors": False}
+    mocked_mget = mocker.patch.object(Elasticsearch_v2.Elasticsearch, "mget", return_value=mget_response)
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, "__init__", return_value=None)
-    command_result = Elasticsearch_v2.get_multiple_documents_command(
-        {"index": "my-index-000001", "body": "{'docs': [{'_id': '1'},{'_id': '2'}]}"}, ""
-    )
+    command_result = Elasticsearch_v2.get_multiple_documents_command({"index_name": "my-index-000001", "body": body}, "")
 
-    assert command_result.outputs == [MOCK_GET_FROM_INDEX_RESPONSE, MOCK_GET_FROM_INDEX_RESPONSE]
+    mocked_mget.assert_called_once_with(index="my-index-000001", body=body)
+    assert command_result.outputs == mget_response
     assert command_result.readable_output == "Retrieved 2 documents"
     assert command_result.outputs_prefix == "Elasticsearch.Documents"
 
@@ -3523,6 +3522,57 @@ class TestEsKibanaAlertsIndexCreateCommand:
         assert not result.outputs
 
 
+class TestEsKibanaAlertsIndexGetCommand:
+    """Tests for es_kibana_get_all_indeces_command (es-kibana-alerts-index-get)."""
+
+    def test_es_kibana_alerts_index_get(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "acknowledged": True,
+            "indices": {
+                ".kibana_8.x": {"mappings": {"properties": {"signal": {"properties": {"status": {"type": "keyword"}}}}}},
+            },
+            "settings": {"index": {"number_of_shards": "1", "number_of_replicas": "0"}},
+        }
+        proxies = {"http": "http://127.0.0.1:8080", "https": "http://127.0.0.1:8080"}
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+
+        result = Elasticsearch_v2.es_kibana_get_all_indeces_command({}, proxies)
+
+        mock_request.assert_called_once_with("GET", "/api/detection_engine/index", space_id=None, proxies=proxies)
+        assert result.outputs == response
+        assert result.raw_response == response
+        assert result.outputs_prefix == "Elasticsearch.Kibana.Index"
+        assert not result.readable_output
+
+    def test_es_kibana_alerts_index_get_with_space_id(self, mocker):
+        import Elasticsearch_v2
+
+        response = {"acknowledged": True, "indices": {".kibana_8.x": {}}}
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+
+        result = Elasticsearch_v2.es_kibana_get_all_indeces_command({"space_id": "custom-space"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "GET"
+        assert call_args[0][1] == "/api/detection_engine/index"
+        assert call_args[1]["space_id"] == "custom-space"
+        assert result.outputs == response
+        assert result.outputs_prefix == "Elasticsearch.Kibana.Index"
+
+    def test_es_kibana_alerts_index_get_error(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch(
+            "Elasticsearch_v2.kibana_http_request",
+            side_effect=requests.exceptions.HTTPError("403 Forbidden: missing authorization"),
+        )
+
+        with pytest.raises(requests.exceptions.HTTPError):
+            Elasticsearch_v2.es_kibana_get_all_indeces_command({"space_id": "security"}, {})
+
+
 class TestEsKibanaAlertsIndexDeleteCommand:
     def test_delete_success(self, mocker):
         import Elasticsearch_v2
@@ -5257,3 +5307,186 @@ class TestFetchSecurityAlertsSubSecondCursor:
         )
 
         assert incidents[0]["occurred"] == "2026-09-28T12:00:00Z"
+
+
+class TestCreateIndexCommand:
+    """Tests for create_index_command (es-index-create)."""
+
+    def test_create_index_forwards_parsed_dicts(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "ELASTIC_SEARCH_CLIENT", new="Elasticsearch")
+        mocked_builder = mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder")
+        mocked_builder().indices.create.return_value = {"acknowledged": True, "shards_acknowledged": True}
+
+        args = {
+            "index": "my-index",
+            "settings": '{"number_of_shards": 1}',
+            "mappings": '{"properties": {"name": {"type": "text"}}}',
+            "aliases": '{"alias-1": {}}',
+        }
+        result = Elasticsearch_v2.create_index_command(args, {})
+
+        call_kwargs = mocked_builder().indices.create.call_args.kwargs
+        assert call_kwargs["index"] == "my-index"
+        # The JSON string arguments are parsed into dicts before reaching the client.
+        assert call_kwargs["body"] == {
+            "settings": {"number_of_shards": 1},
+            "mappings": {"properties": {"name": {"type": "text"}}},
+            "aliases": {"alias-1": {}},
+        }
+        assert result.outputs_prefix == "Elasticsearch.IndexManagement"
+        assert result.outputs_key_field == "Name"
+        assert result.outputs == {"Name": "my-index", "Acknowledged": True, "ShardsAcknowledged": True}
+        assert result.raw_response == {"acknowledged": True, "shards_acknowledged": True}
+
+    def test_create_index_index_only_sends_no_payload(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "ELASTIC_SEARCH_CLIENT", new="Elasticsearch")
+        mocked_builder = mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder")
+        mocked_builder().indices.create.return_value = {"acknowledged": True, "shards_acknowledged": True}
+
+        result = Elasticsearch_v2.create_index_command({"index": "my-index"}, {})
+
+        call_kwargs = mocked_builder().indices.create.call_args.kwargs
+        assert call_kwargs == {"index": "my-index"}
+        assert result.outputs == {"Name": "my-index", "Acknowledged": True, "ShardsAcknowledged": True}
+
+    def test_create_index_v8_client_sends_kwargs_and_returns_response_body(self, mocker):
+        import Elasticsearch_v2
+
+        response_body = {"acknowledged": True, "shards_acknowledged": True}
+        v8_response = MagicMock()
+        v8_response.body = response_body
+        v8_response.get.side_effect = response_body.get
+
+        mocker.patch.object(Elasticsearch_v2, "ELASTIC_SEARCH_CLIENT", new=Elasticsearch_v2.ELASTICSEARCH_V8)
+        mocked_builder = mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder")
+        mocked_builder().indices.create.return_value = v8_response
+
+        args = {"index": "my-index", "settings": '{"number_of_replicas": 0}', "wait_for_active_shards": "1"}
+        result = Elasticsearch_v2.create_index_command(args, {})
+
+        call_kwargs = mocked_builder().indices.create.call_args.kwargs
+        assert call_kwargs == {
+            "index": "my-index",
+            "settings": {"number_of_replicas": 0},
+            "wait_for_active_shards": "1",
+        }
+        assert "body" not in call_kwargs
+        assert result.raw_response is response_body
+
+    def test_create_index_without_index_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.create_index_command({}, {})
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.create_index_command({"index": "   "}, {})
+
+
+class TestGetIndexCommand:
+    """Tests for get_index_command (es-index-get)."""
+
+    def test_get_index_returns_one_entry_per_index(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "ELASTIC_SEARCH_CLIENT", new="Elasticsearch")
+        mocked_builder = mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder")
+        response = {
+            "index-a": {
+                "aliases": {"alias-1": {}},
+                "mappings": {"properties": {}},
+                "settings": {"index": {"number_of_shards": "1"}},
+            },
+            "index-b": {},
+        }
+        mocked_builder().indices.get.return_value = response
+
+        result = Elasticsearch_v2.get_index_command({"index": "index-a,index-b"}, {})
+
+        assert result.outputs_prefix == "Elasticsearch.IndexManagement"
+        assert result.outputs_key_field == "Name"
+        assert result.outputs == [
+            {
+                "Name": "index-a",
+                "Aliases": {"alias-1": {}},
+                "Mappings": {"properties": {}},
+                "Settings": {"index": {"number_of_shards": "1"}},
+            },
+            {"Name": "index-b", "Aliases": {}, "Mappings": {}, "Settings": {}},
+        ]
+        assert result.raw_response == response
+
+    def test_get_index_forwards_joined_index_and_only_supplied_options(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "ELASTIC_SEARCH_CLIENT", new="Elasticsearch")
+        mocked_builder = mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder")
+        mocked_builder().indices.get.return_value = {"index-a": {}, "index-b": {}}
+
+        Elasticsearch_v2.get_index_command({"index": " index-a , index-b ", "expand_wildcards": "open"}, {})
+
+        call_kwargs = mocked_builder().indices.get.call_args.kwargs
+        assert call_kwargs["index"] == "index-a,index-b"
+        assert call_kwargs["expand_wildcards"] == "open"
+        assert "flat_settings" not in call_kwargs
+        assert "include_defaults" not in call_kwargs
+
+    def test_get_index_not_found_returns_none(self, mocker):
+        import Elasticsearch_v2
+
+        mocked_builder = mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder")
+        mocked_builder().indices.get.side_effect = Elasticsearch_v2.NotFoundError("404, index_not_found_exception")
+        return_error = mocker.patch.object(Elasticsearch_v2, "return_error")
+
+        result = Elasticsearch_v2.get_index_command({"index": "missing-index"}, {})
+
+        assert result is None
+        assert return_error.called
+        mocked_builder().indices.get.assert_called_once_with(index="missing-index")
+
+    def test_get_index_without_index_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.get_index_command({}, {})
+
+
+class TestDeleteIndexCommand:
+    """Tests for delete_index_command (es-index-delete)."""
+
+    def test_delete_index_forwards_only_supplied_options(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "ELASTIC_SEARCH_CLIENT", new="Elasticsearch")
+        mocked_builder = mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder")
+        mocked_builder().indices.delete.return_value = {"acknowledged": True}
+
+        args = {"index": "my-index", "ignore_unavailable": "false", "expand_wildcards": "all", "timeout": "30s"}
+        result = Elasticsearch_v2.delete_index_command(args, {})
+
+        call_kwargs = mocked_builder().indices.delete.call_args.kwargs
+        assert call_kwargs == {
+            "index": "my-index",
+            "expand_wildcards": "all",
+            "timeout": "30s",
+            "ignore_unavailable": False,
+        }
+        assert "allow_no_indices" not in call_kwargs
+        assert "master_timeout" not in call_kwargs
+        assert result.outputs_prefix == "Elasticsearch.IndexManagement"
+        assert result.outputs_key_field == "Name"
+        assert result.outputs == {"Name": "my-index", "Acknowledged": True}
+        assert result.raw_response == {"acknowledged": True}
+
+    def test_delete_index_without_index_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.delete_index_command({}, {})

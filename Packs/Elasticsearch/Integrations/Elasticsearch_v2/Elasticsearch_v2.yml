@@ -494,6 +494,108 @@ script:
     - contextPath: Elasticsearch.IndexStatistics.DocumentsDeleted
       description: The number of documents that were deleted from the index.
       type: Number
+  - name: es-index-create
+    description: Creates a new Elasticsearch index.
+    arguments:
+    - name: index
+      required: true
+      description: The name of the index to create.
+    - name: settings
+      description: 'JSON object with the index settings, for example {"number_of_shards": 1}.'
+    - name: mappings
+      description: JSON object with the index mappings.
+    - name: aliases
+      description: JSON object with the aliases to assign to the index.
+    - name: wait_for_active_shards
+      description: 'The number of shard copies that must be active before proceeding. Set to all or any positive integer up to the total number of shards per index (including the primary). Default: 1.'
+    outputs:
+    - contextPath: Elasticsearch.IndexManagement.Name
+      description: The name of the created index.
+      type: String
+    - contextPath: Elasticsearch.IndexManagement.Acknowledged
+      description: Whether the request was acknowledged by the cluster.
+      type: Boolean
+    - contextPath: Elasticsearch.IndexManagement.ShardsAcknowledged
+      description: Whether the request was acknowledged by all configured nodes.
+      type: Boolean
+  - name: es-index-get
+    description: Retrieves information (aliases, mappings and settings) about one or more Elasticsearch indices.
+    arguments:
+    - name: index
+      required: true
+      description: The name of the index to retrieve. Can be a comma-separated list of index names or an index pattern.
+    - name: expand_wildcards
+      auto: PREDEFINED
+      predefined:
+      - open
+      - closed
+      - 'none'
+      - all
+      description: Whether to expand wildcard expressions to indices that are open, closed, or both.
+    - name: flat_settings
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Whether to return settings in the flat format.
+    - name: include_defaults
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Whether to return all default settings in the output.
+    outputs:
+    - contextPath: Elasticsearch.IndexManagement.Name
+      description: The name of the index.
+      type: String
+    - contextPath: Elasticsearch.IndexManagement.Aliases
+      description: The aliases assigned to the index.
+      type: Unknown
+    - contextPath: Elasticsearch.IndexManagement.Mappings
+      description: The mappings of the index.
+      type: Unknown
+    - contextPath: Elasticsearch.IndexManagement.Settings
+      description: The settings of the index.
+      type: Unknown
+  - name: es-index-delete
+    description: Deletes one or more Elasticsearch indices.
+    arguments:
+    - name: index
+      required: true
+      description: The name of the index to delete. Can be a comma-separated list of index names or an index pattern.
+    - name: ignore_unavailable
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Whether to ignore if a wildcard expression resolves into no concrete indices instead of returning an error.
+    - name: allow_no_indices
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Whether to ignore if a wildcard expression resolves into no concrete indices.
+    - name: expand_wildcards
+      auto: PREDEFINED
+      predefined:
+      - open
+      - closed
+      - 'none'
+      - all
+      description: Whether to expand wildcard expressions to indices that are open, closed, or both.
+    - name: master_timeout
+      description: The maximum time to wait for a connection to the master node.
+    - name: timeout
+      description: The maximum time to wait for the request to complete.
+    outputs:
+    - contextPath: Elasticsearch.IndexManagement.Name
+      description: The name of the deleted index.
+      type: String
+    - contextPath: Elasticsearch.IndexManagement.Acknowledged
+      description: Whether the request was acknowledged by the cluster.
+      type: Boolean
   - description: Search using EQL query.
     name: es-eql-search
     arguments:
@@ -1794,6 +1896,10 @@ script:
     arguments:
     - name: space_id
       description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+    outputs:
+    - contextPath: Elasticsearch.Kibana.Index
+      description: The information retrieved for the Kibana alerts indices.
+      type: Unknown
   - name: es-kibana-alerts-index-delete
     description: Deletes a Kibana alerts index.
     arguments:
