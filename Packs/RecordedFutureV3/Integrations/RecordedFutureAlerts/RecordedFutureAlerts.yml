@@ -405,7 +405,7 @@ script:
           description: Alert type (classic-alert / playbook-alert).
           type: string
         - contextPath: RecordedFutureAlerts.Alert.subtype
-          description: Alert subtype (domain_abuse / cyber_vulnerability / code_repo_leakage / third_party_risk / geopolitics_facility / dark_web / identity_novel_exposures / malicious_sites / socmed_impersonation).
+          description: The alert subtype (domain_abuse / cyber_vulnerability / code_repo_leakage / third_party_risk / geopolitics_facility / dark_web / identity_novel_exposures / malicious_sites / socmed_impersonation).
           type: string
         - contextPath: RecordedFutureAlerts.Alert.status
           description: Status of the alert.

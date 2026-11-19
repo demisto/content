@@ -15,7 +15,7 @@
 	"id": "RF Data Leakage on Code Repo Playbook Alert",
 	"layout": "RF Playbook Alert Generic Layout",
 	"locked": false,
-	"name": "RF Data Leakage on Code Repo Playbook Alert (Deprecated)",
+	"name": "RF Data Leakage on Code Repo Playbook Alert",
 	"description": "Deprecated. Use RF Code Repository instead.",
 	"onChangeRepAlg": 1,
 	"readonly": false,
