@@ -44,7 +44,9 @@ EVENT_TYPES: dict[str, dict] = {
         "forbidden_message": "Insufficient permissions: missing spark-compliance:events_read scope.",
     },
 }
-UNAUTHORIZED_MESSAGE = "Authentication failure: authorization incomplete or expired. Select Re-authorize on the connector."
+UCP_CAPABILITY = "log-collection"
+AUTHORIZATION_INCOMPLETE_MESSAGE = "Authorization incomplete. Select Authorize to approve the Webex application."
+UNAUTHORIZED_MESSAGE = "Expired refresh token. Re-authorize the Webex integration."
 
 """ HELPER FUNCTIONS """
 
@@ -72,6 +74,8 @@ def increase_datetime_for_next_fetch(events: list, latest_datetime_previous_fetc
 
 def describe_error(event_type: str, error: Exception) -> str:
     """Maps an API error to the verification message for the given event type."""
+    if isinstance(error, UcpException):
+        return AUTHORIZATION_INCOMPLETE_MESSAGE
     status_code = getattr(getattr(error, "res", None), "status_code", None)
     if status_code == 401:
         return UNAUTHORIZED_MESSAGE
@@ -89,6 +93,10 @@ class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, proxy: bool, org_id: str):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.org_id = org_id
+
+    def _resolve_ucp_capability(self):
+        """Always use the Log Collection authorization profile, never another capability's profile on the connector."""
+        return UCP_CAPABILITY, None
 
     def get_events(self, event_type: str, from_date: str, limit: int, next_url: str = "") -> requests.Response:
         """Returns one page of events, either from `next_url` or for the given time range."""

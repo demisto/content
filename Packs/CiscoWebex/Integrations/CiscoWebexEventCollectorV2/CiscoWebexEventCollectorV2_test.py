@@ -207,3 +207,22 @@ def test_fetch_events_isolates_failures(client, mocker):
     assert next_run["compliance_officer_events"] == {"since_datetime": "2023-12-13T13:40:00.000Z", "next_url": ""}
     assert "security_audits" not in next_run
     error_log.assert_called_once()
+
+
+def test_test_module_authorization_incomplete(client, mocker):
+    """
+    Given the connector has no authorized token yet (UcpException), when running test-module,
+    then the PRD "Authorization incomplete" message is shown.
+    """
+    from CommonServerPython import UcpException
+
+    mocker.patch.object(client, "_http_request", side_effect=UcpException())
+    with pytest.raises(Exception, match="Authorization incomplete. Select Authorize"):
+        run_test_module(client, [COMPLIANCE_EVENTS])
+
+
+def test_client_uses_log_collection_profile(client):
+    """
+    Given the connector also has an automation profile, when resolving the UCP capability, then log-collection is used.
+    """
+    assert client._resolve_ucp_capability() == ("log-collection", None)
