@@ -211,3 +211,5 @@ if demisto.command() == "fetch-incidents":
             raise Exception("Problem comparing: " + str(datetime_object) + " " + str(start_time) + " Exception: " + str(e))
     demisto.incidents(inc)
     demisto.setLastRun({"start_time": start_time_of_int})
+
+# CIAC-17462: xsoar-lint engine comparison (pylint vs ast). Not for merge.
