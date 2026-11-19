@@ -749,34 +749,96 @@ def test_fetch_incidents_with_same_time(client, requests_mock):
     assert len(results[1]) == 2
 
 
-def test_fetch_incidents_with_all_events_uses_now_as_latest_time(client, requests_mock, mocker):
-    """When fetching with all events, the event search upper bound must be "now".
-
-    Regression test: a window capped at the alert's last_seen_at could miss events whose
-    timestamp is slightly later (or indexed with a small delay), producing alerts without events.
-    """
+def _mock_fetch_with_events(requests_mock, mocker, alerts: dict, search_status_code: int = 200):
     # Isolate the integration context so the cached (pending) incidents do not leak to other tests
     mocker.patch.object(SekoiaXDR, "get_integration_context", return_value={})
     mocker.patch.object(SekoiaXDR, "set_integration_context")
 
-    mock_alerts = util_load_json("test_data/SekoiaXDR_get_alerts.json")
-    requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=mock_alerts)
+    requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=alerts)
 
     query_job = util_load_json("test_data/SekoiaXDR_query_events.json")
-    post_mock = requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=query_job)
+    post_mock = requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=query_job, status_code=search_status_code)
 
-    # Keep the search job pending so the alerts are cached (no event retrieval needed for this test)
+    # Keep the search job pending so the alerts are cached (no event retrieval needed for these tests)
     status_pending = util_load_json("test_data/SekoiaXDR_query_events_status_in_progress.json")
     requests_mock.get(
         MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f",
         json=status_pending,
     )
+    return post_mock
+
+
+@freeze_time("2026-10-19 09:26:28 UTC")
+def test_fetch_incidents_with_all_events_uses_current_time_as_latest_time(client, requests_mock, mocker):
+    """When fetching with all events, the event search upper bound must be the current time (+ buffer).
+
+    Regression test: a window capped at the alert's last_seen_at could miss events whose
+    timestamp is slightly later (or indexed with a small delay), producing alerts without events.
+    """
+    post_mock = _mock_fetch_with_events(requests_mock, mocker, util_load_json("test_data/SekoiaXDR_get_alerts.json"))
 
     last_run = {"last_fetch": 1574065501}
     SekoiaXDR.fetch_incidents(client, 100, last_run, None, None, None, None, "Fetch With All Events", None, None, None)
 
     assert post_mock.called
-    assert post_mock.last_request.json()["latest_time"] == "now"
+    assert post_mock.last_request.json()["latest_time"] == "2026-10-19T09:27:28Z"
+
+
+@freeze_time("2026-10-19 09:26:28 UTC")
+def test_fetch_incidents_with_all_events_alert_in_the_future(client, requests_mock, mocker):
+    """An alert whose first_seen_at is later than the current time must still produce a valid search window.
+
+    Regression test: sending latest_time="now" made the Sekoia API fail with
+    "Earliest time must be anterior to latest time" (ES104), breaking the whole fetch.
+    """
+    alerts = util_load_json("test_data/SekoiaXDR_get_alerts.json")
+    for alert in alerts["items"]:
+        alert["first_seen_at"] = "2026-10-19T10:21:36.564Z"
+        alert["last_seen_at"] = "2026-10-19T10:25:00.000Z"
+    post_mock = _mock_fetch_with_events(requests_mock, mocker, alerts)
+
+    last_run = {"last_fetch": 1574065501}
+    SekoiaXDR.fetch_incidents(client, 100, last_run, None, None, None, None, "Fetch With All Events", None, None, None)
+
+    search_body = post_mock.last_request.json()
+    assert search_body["earliest_time"] == "2026-10-19T10:20:36.564Z"
+    assert search_body["latest_time"] == "2026-10-19T10:26:00Z"
+
+
+def test_fetch_incidents_with_all_events_search_failure_does_not_block_fetch(client, requests_mock, mocker):
+    """If the events search fails for an alert, the incident is still created (without events)."""
+    mocker.patch.object(SekoiaXDR.demisto, "error")
+    alerts = util_load_json("test_data/SekoiaXDR_get_alerts.json")
+    _mock_fetch_with_events(requests_mock, mocker, alerts, search_status_code=400)
+
+    last_run = {"last_fetch": 1574065501}
+    _, incidents = SekoiaXDR.fetch_incidents(
+        client, 100, last_run, None, None, None, None, "Fetch With All Events", None, None, None
+    )
+
+    assert len(incidents) == len(alerts["items"])
+    assert all("events" not in json.loads(incident["rawJSON"]) for incident in incidents)
+
+
+""" TEST GET_EVENTS_LATEST_TIME FUNCTION """
+
+
+@freeze_time("2026-10-19 09:26:28 UTC")
+def test_get_events_latest_time_uses_current_time():
+    alert = {"first_seen_at": "2026-10-19T08:00:00Z", "last_seen_at": "2026-10-19T09:00:00.123456Z"}
+    assert SekoiaXDR.get_events_latest_time(alert) == "2026-10-19T09:26:28.000Z"
+
+
+@freeze_time("2026-10-19 09:26:28 UTC")
+def test_get_events_latest_time_alert_in_the_future():
+    alert = {"first_seen_at": "2026-10-19T10:21:36.564Z", "last_seen_at": "2026-10-19T10:25:00+00:00"}
+    assert SekoiaXDR.get_events_latest_time(alert) == "2026-10-19T10:25:00.000Z"
+
+
+@freeze_time("2026-10-19 09:26:28 UTC")
+def test_get_events_latest_time_missing_or_invalid_dates():
+    assert SekoiaXDR.get_events_latest_time({}) == "2026-10-19T09:26:28.000Z"
+    assert SekoiaXDR.get_events_latest_time({"first_seen_at": "invalid", "last_seen_at": None}) == "2026-10-19T09:26:28.000Z"
 
 
 """ TEST BACKWARD COMPATIBILITY - url_sufix vs url_suffix """
